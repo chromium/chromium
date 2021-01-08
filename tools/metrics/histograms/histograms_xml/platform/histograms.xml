@@ -1236,6 +1236,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records occurrences of legacy U2F commands sent to cr50.</summary>
 </histogram>
 
+<histogram name="Platform.UnaggregatedUsageTime" units="seconds"
+    expires_after="2022-01-08">
+  <owner>mutexlox@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Use time (device ON and not asleep) in a particular period (approximately
+    every five minutes). To compute usage time in a given period (e.g. a day),
+    sum up all reported values of this metric for that period (day). As with
+    other UMA metrics on CrOS, this will be uploaded roughly every half-hour.
+    This will eventually supercede Platform.DailyUseTime, which has significant
+    limitations (e.g. it may not report on the right day).
+  </summary>
+</histogram>
+
 <histogram name="Platform.UncleanShutdownsDaily" units="count per day"
     expires_after="never">
 <!-- expires-never: Used to assess Chrome OS platform stability. -->
