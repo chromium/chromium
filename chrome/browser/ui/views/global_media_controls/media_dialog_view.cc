@@ -137,13 +137,6 @@ void MediaDialogView::AddedToWidget() {
   views::BubbleFrameView* frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(corner_radius);
-  if (!base::FeatureList::IsEnabled(
-          views::features::kEnableMDRoundedCornersOnDialogs)) {
-    SetPaintToLayer();
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
-    if (base::FeatureList::IsEnabled(media::kLiveCaption))
-      layer()->SetFillsBoundsOpaquely(false);
-  }
   service_->SetDialogDelegate(this);
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
@@ -217,6 +210,9 @@ MediaDialogView::MediaDialogView(views::View* anchor_view,
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(
           AddChildView(std::make_unique<MediaNotificationListView>())) {
+  // Enable layer based clipping to ensure children using layers are clipped
+  // appropriately.
+  SetPaintClientToLayer(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   DCHECK(service_);
 }
@@ -245,13 +241,6 @@ void MediaDialogView::Init() {
               gfx::Insets(kLiveCaptionHorizontalMarginDip,
                           kLiveCaptionVerticalMarginDip),
               kLiveCaptionBetweenChildSpacing));
-  if (!base::FeatureList::IsEnabled(
-          views::features::kEnableMDRoundedCornersOnDialogs)) {
-    SkColor native_theme_bg_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBackground);
-    live_caption_container->SetBackground(
-        views::CreateSolidBackground(native_theme_bg_color));
-  }
 
   auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(gfx::CreateVectorIcon(
