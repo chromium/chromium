@@ -117,4 +117,8 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
     app_id_to_launch_list_.erase(app_id);
 }
 
+void RestoreData::RemoveApp(const std::string& app_id) {
+  app_id_to_launch_list_.erase(app_id);
+}
+
 }  // namespace full_restore

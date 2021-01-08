@@ -7,6 +7,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/chromeos/full_restore/new_user_restore_pref_handler.h"
@@ -29,7 +30,9 @@ namespace full_restore {
 const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
 const char kRestoreNotificationId[] = "restore_notification";
 
-FullRestoreService::FullRestoreService(Profile* profile) : profile_(profile) {
+FullRestoreService::FullRestoreService(Profile* profile)
+    : profile_(profile),
+      app_launch_handler_(std::make_unique<AppLaunchHandler>(profile_)) {
   // If the system crashed before reboot, show the restore notification.
   if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     ShowRestoreNotification(kRestoreForCrashNotificationId);
@@ -140,8 +143,7 @@ void FullRestoreService::Restore() {
         user->GetAccountId(), true);
   }
 
-  // TODO(crbug.com/909794): Implement the restoration. And move the heavy load
-  // out of this KeyedService class.
+  app_launch_handler_->SetShouldRestore();
 }
 
 }  // namespace full_restore

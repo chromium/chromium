@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 #define COMPONENTS_FULL_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/callback.h"
@@ -48,6 +49,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   void OnGetRestoreData(const base::FilePath& profile_path,
                         Callback callback,
                         std::unique_ptr<RestoreData>);
+
+  // The restore data read from the full restore files.
+  std::map<base::FilePath, std::unique_ptr<RestoreData>>
+      profile_path_to_restore_data_;
 
   base::WeakPtrFactory<FullRestoreReadHandler> weak_factory_{this};
 };

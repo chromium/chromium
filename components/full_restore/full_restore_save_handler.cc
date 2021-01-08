@@ -126,6 +126,22 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
       it->second.second, window_id, window_info);
 }
 
+void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
+  if (save_running_.find(profile_path) != save_running_.end())
+    return;
+
+  save_running_.insert(profile_path);
+
+  BackendTaskRunner(profile_path)
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&FullRestoreFileHandler::WriteToFile,
+                         GetFileHandler(profile_path),
+                         profile_path_to_restore_data_[profile_path].Clone()),
+          base::BindOnce(&FullRestoreSaveHandler::OnSaveFinished,
+                         weak_factory_.GetWeakPtr(), profile_path));
+}
+
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {
   if (!save_timer_.IsRunning() && save_running_.empty()) {
     save_timer_.Start(FROM_HERE, kSaveDelay,
@@ -138,16 +154,9 @@ void FullRestoreSaveHandler::Save() {
   if (pending_save_profile_paths_.empty())
     return;
 
-  for (const auto& file_path : pending_save_profile_paths_) {
-    save_running_.insert(file_path);
-    BackendTaskRunner(file_path)->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&FullRestoreFileHandler::WriteToFile,
-                       GetFileHandler(file_path),
-                       profile_path_to_restore_data_[file_path].Clone()),
-        base::BindOnce(&FullRestoreSaveHandler::OnSaveFinished,
-                       weak_factory_.GetWeakPtr(), file_path));
-  }
+  for (const auto& file_path : pending_save_profile_paths_)
+    Flush(file_path);
+
   pending_save_profile_paths_.clear();
 }
 

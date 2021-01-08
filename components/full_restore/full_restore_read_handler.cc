@@ -41,6 +41,9 @@ void FullRestoreReadHandler::OnGetRestoreData(
     const base::FilePath& profile_path,
     Callback callback,
     std::unique_ptr<RestoreData> restore_data) {
+  if (restore_data)
+    profile_path_to_restore_data_[profile_path] = restore_data->Clone();
+
   std::move(callback).Run(std::move(restore_data));
 }
 

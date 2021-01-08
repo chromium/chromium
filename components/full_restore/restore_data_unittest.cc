@@ -271,7 +271,7 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   ModifyWindowInfos();
   VerifyRestoreData(restore_data());
 
-  // Remove kAppId1's kId1.
+  // Remove kAppId1's kWindowId1.
   restore_data().RemoveAppRestoreData(kAppId1, kWindowId1);
 
   EXPECT_EQ(2u, app_id_to_launch_list().size());
@@ -291,7 +291,7 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
 
   EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
 
-  // Remove kAppId1's kId2.
+  // Remove kAppId1's kWindowId2.
   restore_data().RemoveAppRestoreData(kAppId1, kWindowId2);
 
   EXPECT_EQ(1u, app_id_to_launch_list().size());
@@ -306,8 +306,31 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
 
   EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
 
-  // Remove kAppId2's kId3.
+  // Remove kAppId2's kWindowId3.
   restore_data().RemoveAppRestoreData(kAppId2, kWindowId3);
+
+  EXPECT_EQ(0u, app_id_to_launch_list().size());
+}
+
+TEST_F(RestoreDataTest, RemoveApp) {
+  AddAppLaunchInfos();
+  ModifyWindowInfos();
+  VerifyRestoreData(restore_data());
+
+  // Remove kAppId1.
+  restore_data().RemoveApp(kAppId1);
+
+  EXPECT_EQ(1u, app_id_to_launch_list().size());
+
+  // Verify for |kAppId2|
+  auto launch_list_it2 = app_id_to_launch_list().find(kAppId2);
+  EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
+  EXPECT_EQ(1u, launch_list_it2->second.size());
+
+  EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
+
+  // Remove kAppId2.
+  restore_data().RemoveApp(kAppId2);
 
   EXPECT_EQ(0u, app_id_to_launch_list().size());
 }

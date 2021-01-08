@@ -17,6 +17,7 @@ class Profile;
 namespace chromeos {
 namespace full_restore {
 
+class AppLaunchHandler;
 class NewUserRestorePrefHandler;
 
 extern const char kRestoreForCrashNotificationId[];
@@ -64,6 +65,10 @@ class FullRestoreService : public KeyedService {
   bool is_shut_down_ = false;
 
   std::unique_ptr<NewUserRestorePrefHandler> new_user_pref_handler_;
+
+  // |app_launch_handler_| is responsible for launching apps based on the
+  // restore data.
+  std::unique_ptr<AppLaunchHandler> app_launch_handler_;
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };
