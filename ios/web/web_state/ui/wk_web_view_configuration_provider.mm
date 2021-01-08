@@ -125,9 +125,11 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
       // displayed and also prevents the iOS 13 ContextMenu delegate methods
       // from being called.
       // https://github.com/WebKit/webkit/blob/1233effdb7826a5f03b3cdc0f67d713741e70976/Source/WebKit/UIProcess/API/Cocoa/WKWebViewConfiguration.mm#L307
-      BOOL enable_long_press_action =
-          !web::GetWebClient()->EnableLongPressAndForceTouchHandling();
-      [configuration_ setValue:@(enable_long_press_action)
+      BOOL disable_long_press_system_actions =
+
+          web::GetWebClient()->EnableLongPressAndForceTouchHandling() ||
+          web::GetWebClient()->EnableLongPressUIContextMenu();
+      [configuration_ setValue:@(!disable_long_press_system_actions)
                         forKey:@"longPressActionsEnabled"];
     } @catch (NSException* exception) {
       NOTREACHED() << "Error setting value for longPressActionsEnabled";

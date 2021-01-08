@@ -19,6 +19,7 @@
 // Delegate for the handler.
 @property(nonatomic, weak) id<CRWWKUIHandlerDelegate> delegate;
 
+// TODO(crbug.com/1156636): Remove once the new context menus have shipped.
 // Context menu controller, to be set when the WebView is created.
 @property(nonatomic, strong)
     CRWLegacyContextMenuController* contextMenuController;

@@ -189,9 +189,12 @@ class WebClient {
   virtual UIView* GetWindowedContainer();
 
   // Enables the logic to handle long press and force
-  // touch. Should return false to use the context menu API.
-  // Defaults to return true.
+  // touch through action sheet. Should return false to use the context menu
+  // API. Defaults to return true.
   virtual bool EnableLongPressAndForceTouchHandling() const;
+
+  // Enables the logic to handle long press context menu with UIContextMenu.
+  virtual bool EnableLongPressUIContextMenu() const;
 
   // This method is used when the user didn't express any preference for the
   // version of |url|. Returning true allows to make sure that for |url|, the

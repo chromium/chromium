@@ -46,6 +46,7 @@
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/web_state/page_viewport_state.h"
 #import "ios/web/web_state/ui/cookie_blocking_error_logger.h"
+#import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
@@ -222,6 +223,10 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 // appropriate NavigationItem getters.
 // Returns the navigation item for the current page.
 @property(nonatomic, readonly) web::NavigationItemImpl* currentNavItem;
+
+// ContextMenu controller, handling the interactions with the context menu.
+@property(nonatomic, strong)
+    CRWContextMenuController* contextMenuController API_AVAILABLE(ios(13.0));
 
 // Returns the current URL of the web view, and sets |trustLevel| accordingly
 // based on the confidence in the verification.
@@ -1550,10 +1555,22 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           requireGestureRecognizerToFail:swipeRecognizer];
     }
 
-    self.UIHandler.contextMenuController =
-        [[CRWLegacyContextMenuController alloc]
+    BOOL usingNewContextMenu = NO;
+    if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
+      if (@available(iOS 13, *)) {
+        usingNewContextMenu = YES;
+        self.contextMenuController = [[CRWContextMenuController alloc]
             initWithWebView:self.webView
                    webState:self.webStateImpl];
+      }
+    }
+    if (!usingNewContextMenu) {
+      // Default to legacy implementation.
+      self.UIHandler.contextMenuController =
+          [[CRWLegacyContextMenuController alloc]
+              initWithWebView:self.webView
+                     webState:self.webStateImpl];
+    }
 
     // WKWebViews with invalid or empty frames have exhibited rendering bugs, so
     // resize the view to match the container view upon creation.

@@ -120,6 +120,10 @@ bool WebClient::EnableLongPressAndForceTouchHandling() const {
   return true;
 }
 
+bool WebClient::EnableLongPressUIContextMenu() const {
+  return false;
+}
+
 bool WebClient::ForceMobileVersionByDefault(const GURL&) {
   return false;
 }
