@@ -244,6 +244,12 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindMetricsReporting(std::move(receiver));
   }
 
+  void BindPrefsReceiver(
+      mojo::PendingReceiver<crosapi::mojom::Prefs> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindPrefs(std::move(pending_receiver));
+  }
+
   void BindTestControllerReceiver(
       mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -454,6 +460,16 @@ void LacrosChromeServiceImpl::BindReceiver(
             &LacrosChromeServiceNeverBlockingState::BindClipboardReceiver,
             weak_sequenced_state_, std::move(pending_receiver)));
   }
+
+  if (IsPrefsAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::Prefs> pending_receiver =
+        prefs_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindPrefsReceiver,
+            weak_sequenced_state_, std::move(pending_receiver)));
+  }
 }
 
 // static
@@ -623,6 +639,13 @@ bool LacrosChromeServiceImpl::IsCertDbAvailable() {
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindCertDatabaseMinVersion;
+}
+
+bool LacrosChromeServiceImpl::IsPrefsAvailable() {
+  base::Optional<uint32_t> version = AshChromeServiceVersion();
+  return version &&
+         version.value() >=
+             AshChromeService::MethodMinVersions::kBindPrefsMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {

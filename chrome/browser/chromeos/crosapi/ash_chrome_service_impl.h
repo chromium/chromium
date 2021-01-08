@@ -21,6 +21,7 @@ class FileManagerAsh;
 class KeystoreServiceAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
+class PrefsAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
 class TestControllerAsh;
@@ -47,6 +48,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
   void BindMetricsReporting(
       mojo::PendingReceiver<mojom::MetricsReporting> receiver) override;
+  void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindScreenManager(
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
   void BindSelectFile(
@@ -75,6 +77,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
+  std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;

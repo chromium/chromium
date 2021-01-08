@@ -12,6 +12,7 @@ import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
+import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
@@ -43,8 +44,8 @@ struct LacrosInfo {
 // milestone when you added it, to help us reason about compatibility between
 // lacros-chrome and older ash-chrome binaries.
 //
-// Next version: 11
-// Next method id: 16
+// Next version: 12
+// Next method id: 17
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
@@ -78,6 +79,10 @@ interface AshChromeService {
   // Added in M89.
   [MinVersion=8]
   BindMetricsReporting@13(pending_receiver<MetricsReporting> receiver);
+
+  // Binds the prefs service which allows get, set, and notify update of prefs.
+  // Added in M89.
+  [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
 
   // Binds the ScreenManager interface for interacting with windows, screens and
   // displays.

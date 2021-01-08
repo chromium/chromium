@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 #include "chrome/browser/chromeos/crosapi/metrics_reporting_ash.h"
+#include "chrome/browser/chromeos/crosapi/prefs_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
 #include "chrome/browser/chromeos/crosapi/test_controller_ash.h"
@@ -45,6 +46,9 @@ AshChromeServiceImpl::AshChromeServiceImpl(
     : receiver_(this, std::move(pending_receiver)),
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
           g_browser_process->local_state())),
+      prefs_ash_(std::make_unique<PrefsAsh>(
+          g_browser_process->local_state(),
+          ProfileManager::GetPrimaryUserProfile()->GetPrefs())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
@@ -173,6 +177,11 @@ void AshChromeServiceImpl::BindTestController(
 void AshChromeServiceImpl::BindClipboard(
     mojo::PendingReceiver<mojom::Clipboard> receiver) {
   clipboard_ash_->BindReceiver(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindPrefs(
+    mojo::PendingReceiver<mojom::Prefs> receiver) {
+  prefs_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {

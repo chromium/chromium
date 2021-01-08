@@ -17,6 +17,7 @@ mojom("mojom") {
     "message_center.mojom",
     "metrics_reporting.mojom",
     "notification.mojom",
+    "prefs.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
     "test_controller.mojom",
