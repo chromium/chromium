@@ -154,7 +154,10 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/downsampling-scale/1"})
-    public void testTabToGridFromLiveTabWith10TabsNoDownsample() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsNoDownsample() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no downsample)");
     }
@@ -162,7 +165,10 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/max-duty-cycle/1"})
-    public void testTabToGridFromLiveTabWith10TabsNoRateLimit() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsNoRateLimit() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no rate-limit)");
     }
