@@ -433,6 +433,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1164414")
     public void testRedirectionFromIntentCold() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(Intent.ACTION_VIEW,
