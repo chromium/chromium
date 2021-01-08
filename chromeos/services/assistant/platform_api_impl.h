@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "chromeos/services/assistant/platform/audio_input_host.h"
 #include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 #include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
 #include "chromeos/services/assistant/platform/file_provider_impl.h"
@@ -22,6 +23,7 @@
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 
 namespace chromeos {
+class CrasAudioHandler;
 class PowerManagerClient;
 
 namespace assistant {
@@ -34,9 +36,11 @@ class PlatformApiImpl : public CrosPlatformApi {
   PlatformApiImpl(
       AssistantMediaSession* media_session,
       PowerManagerClient* power_manager_client,
+      CrasAudioHandler* cras_audio_handler,
       mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+      const std::string& pref_locale);
   ~PlatformApiImpl() override;
 
   // assistant_client::PlatformApi overrides
@@ -47,7 +51,14 @@ class PlatformApiImpl : public CrosPlatformApi {
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
 
-  void InitializeAudioInputHost(AudioInputHost& host) override;
+  // Called when the mic state associated with the interaction is changed.
+  void SetMicState(bool mic_open) override;
+
+  void OnConversationTurnStarted() override;
+  void OnConversationTurnFinished() override;
+
+  // Called when hotword enabled status changed.
+  void OnHotwordEnabled(bool enable) override;
 
  private:
   // ChromeOS does not use auth manager, so we don't yet need to implement a
@@ -87,6 +98,7 @@ class PlatformApiImpl : public CrosPlatformApi {
   FakeAuthProvider auth_provider_;
   FileProviderImpl file_provider_;
   NetworkProviderImpl network_provider_;
+  AudioInputHost audio_input_host_;
   std::unique_ptr<SystemProviderImpl> system_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformApiImpl);

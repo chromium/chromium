@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_input_host_impl.h"
+#include "chromeos/services/assistant/platform/audio_input_host.h"
 
 #include "base/check.h"
 #include "base/optional.h"
@@ -30,38 +30,35 @@ AudioInputImpl::LidState ConvertLidState(
 
 }  // namespace
 
-chromeos::assistant::AudioInputHostImpl::AudioInputHostImpl(
+chromeos::assistant::AudioInputHost::AudioInputHost(
+    AudioInputImpl* audio_input,
     CrasAudioHandler* cras_audio_handler,
     chromeos::PowerManagerClient* power_manager_client,
     const std::string& locale)
-    : power_manager_client_(power_manager_client),
+    : audio_input_(audio_input),
+      power_manager_client_(power_manager_client),
       power_manager_client_observer_(this),
       audio_devices_(cras_audio_handler, locale) {
+  DCHECK(audio_input_);
   DCHECK(power_manager_client_);
-}
 
-AudioInputHostImpl::~AudioInputHostImpl() = default;
-
-void AudioInputHostImpl::Initialize(AudioInputImpl* audio_input) {
-  DCHECK(audio_input);
-  audio_input_ = audio_input;
   audio_devices_observation_.Observe(&audio_devices_);
-  power_manager_client_observer_.Observe(power_manager_client_);
-  power_manager_client_->GetSwitchStates(
-      base::BindOnce(&AudioInputHostImpl::OnInitialLidStateReceived,
-                     weak_factory_.GetWeakPtr()));
+  power_manager_client_observer_.Observe(power_manager_client);
+  power_manager_client->GetSwitchStates(base::BindOnce(
+      &AudioInputHost::OnInitialLidStateReceived, weak_factory_.GetWeakPtr()));
 }
 
-void AudioInputHostImpl::SetMicState(bool mic_open) {
+AudioInputHost::~AudioInputHost() = default;
+
+void AudioInputHost::SetMicState(bool mic_open) {
   audio_input_->SetMicState(mic_open);
 }
 
-void AudioInputHostImpl::SetDeviceId(
-    const base::Optional<std::string>& device_id) {
+void AudioInputHost::SetDeviceId(const base::Optional<std::string>& device_id) {
   audio_input_->SetDeviceId(device_id.value_or(""));
 }
 
-void AudioInputHostImpl::OnConversationTurnStarted() {
+void AudioInputHost::OnConversationTurnStarted() {
   audio_input_->OnConversationTurnStarted();
   // Inform power manager of a wake notification when Libassistant
   // recognized hotword and started a conversation. We intentionally
@@ -70,20 +67,20 @@ void AudioInputHostImpl::OnConversationTurnStarted() {
   power_manager_client_->NotifyWakeNotification();
 }
 
-void AudioInputHostImpl::OnConversationTurnFinished() {
+void AudioInputHost::OnConversationTurnFinished() {
   audio_input_->OnConversationTurnFinished();
 }
 
-void AudioInputHostImpl::OnHotwordEnabled(bool enable) {
+void AudioInputHost::OnHotwordEnabled(bool enable) {
   audio_input_->OnHotwordEnabled(enable);
 }
 
-void AudioInputHostImpl::SetHotwordDeviceId(
+void AudioInputHost::SetHotwordDeviceId(
     const base::Optional<std::string>& device_id) {
   audio_input_->SetHotwordDeviceId(device_id.value_or(""));
 }
 
-void AudioInputHostImpl::LidEventReceived(
+void AudioInputHost::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
     base::TimeTicks timestamp) {
   // Lid switch event still gets fired during system suspend, which enables
@@ -92,7 +89,7 @@ void AudioInputHostImpl::LidEventReceived(
   audio_input_->OnLidStateChanged(ConvertLidState(state));
 }
 
-void AudioInputHostImpl::OnInitialLidStateReceived(
+void AudioInputHost::OnInitialLidStateReceived(
     base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value())
     audio_input_->OnLidStateChanged(ConvertLidState(switch_states->lid_state));

@@ -19,8 +19,6 @@ class SystemProvider;
 namespace chromeos {
 namespace assistant {
 
-class AudioInputHost;
-
 // Platform API required by the voice assistant, extended with some methods used
 // when ChromeOS needs to make changes to the platform state.
 // Note that this no longer inherits from |assistant_client::PlatformApi|,
@@ -31,10 +29,14 @@ class CrosPlatformApi {
   CrosPlatformApi() = default;
   virtual ~CrosPlatformApi() = default;
 
-  // Initialize the AudioInputHost.
-  // TODO(b/171748795): Should be gone when the Libassistant V2 migration is
-  // completed.
-  virtual void InitializeAudioInputHost(AudioInputHost&) = 0;
+  // Called when the mic state associated with the interaction is changed.
+  virtual void SetMicState(bool mic_open) = 0;
+
+  virtual void OnConversationTurnStarted() = 0;
+  virtual void OnConversationTurnFinished() = 0;
+
+  // Called when hotword enabled status changed.
+  virtual void OnHotwordEnabled(bool enable) = 0;
 
   // Returns the platform's audio input provider.
   virtual assistant_client::AudioInputProvider& GetAudioInputProvider() = 0;

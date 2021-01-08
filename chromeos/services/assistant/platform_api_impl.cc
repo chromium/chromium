@@ -12,7 +12,6 @@
 #include "chromeos/services/assistant/platform/audio_devices.h"
 #include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
 #include "chromeos/services/assistant/utils.h"
 #include "libassistant/shared/public/assistant_export.h"
 #include "libassistant/shared/public/platform_api.h"
@@ -79,13 +78,19 @@ void PlatformApiImpl::FakeAuthProvider::Reset() {}
 PlatformApiImpl::PlatformApiImpl(
     AssistantMediaSession* media_session,
     PowerManagerClient* power_manager_client,
+    CrasAudioHandler* cras_audio_handler,
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+    const std::string& pref_locale)
     : audio_input_provider_(),
       audio_output_provider_(media_session,
                              background_task_runner,
-                             media::AudioDeviceDescription::kDefaultDeviceId) {
+                             media::AudioDeviceDescription::kDefaultDeviceId),
+      audio_input_host_(&audio_input_provider_.GetAudioInput(),
+                        cras_audio_handler,
+                        power_manager_client,
+                        pref_locale) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (features::IsPowerManagerEnabled()) {
@@ -122,8 +127,20 @@ SystemProvider& PlatformApiImpl::GetSystemProvider() {
   return *system_provider_;
 }
 
-void PlatformApiImpl::InitializeAudioInputHost(AudioInputHost& host) {
-  host.Initialize(&audio_input_provider_.GetAudioInput());
+void PlatformApiImpl::SetMicState(bool mic_open) {
+  audio_input_host_.SetMicState(mic_open);
+}
+
+void PlatformApiImpl::OnConversationTurnStarted() {
+  audio_input_host_.OnConversationTurnStarted();
+}
+
+void PlatformApiImpl::OnConversationTurnFinished() {
+  audio_input_host_.OnConversationTurnFinished();
+}
+
+void PlatformApiImpl::OnHotwordEnabled(bool enable) {
+  audio_input_host_.OnHotwordEnabled(enable);
 }
 
 }  // namespace assistant

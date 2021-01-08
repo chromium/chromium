@@ -20,7 +20,6 @@ namespace chromeos {
 namespace assistant {
 
 class AssistantMediaSession;
-class AudioInputHost;
 class CrosPlatformApi;
 
 // Interface class that provides factory methods for assistant internal
@@ -29,8 +28,6 @@ class AssistantManagerServiceDelegate {
  public:
   AssistantManagerServiceDelegate() = default;
   virtual ~AssistantManagerServiceDelegate() = default;
-
-  virtual std::unique_ptr<AudioInputHost> CreateAudioInputHost() = 0;
 
   virtual std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
       AssistantMediaSession* media_session,

@@ -40,7 +40,6 @@
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
-#include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
@@ -198,10 +197,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   // constructor.
   // To solve this chicken-and-egg problem, we need a separe Initialize() call.
   assistant_proxy_->Initialize(libassistant_service_host_.get());
-
-  audio_input_host_ = delegate_->CreateAudioInputHost();
-
-  platform_api_->InitializeAudioInputHost(*audio_input_host_);
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);
@@ -366,7 +361,7 @@ void AssistantManagerServiceImpl::EnableListening(bool enable) {
 }
 
 void AssistantManagerServiceImpl::EnableHotword(bool enable) {
-  audio_input_host_->OnHotwordEnabled(enable);
+  platform_api_->OnHotwordEnabled(enable);
 }
 
 void AssistantManagerServiceImpl::SetArcPlayStoreEnabled(bool enable) {
@@ -454,14 +449,14 @@ void AssistantManagerServiceImpl::StartVoiceInteraction() {
   DCHECK(assistant_manager());
   DVLOG(1) << __func__;
 
-  audio_input_host_->SetMicState(true);
+  platform_api_->SetMicState(true);
   assistant_manager()->StartAssistantInteraction();
 }
 
 void AssistantManagerServiceImpl::StopActiveInteraction(
     bool cancel_conversation) {
   DVLOG(1) << __func__;
-  audio_input_host_->SetMicState(false);
+  platform_api_->SetMicState(false);
 
   if (!assistant_manager_internal()) {
     VLOG(1) << "Stopping interaction without assistant manager.";
@@ -583,7 +578,7 @@ void AssistantManagerServiceImpl::OnConversationTurnStartedInternal(
       &AssistantManagerServiceImpl::OnConversationTurnStartedInternal,
       metadata);
 
-  audio_input_host_->OnConversationTurnStarted();
+  platform_api_->OnConversationTurnStarted();
 
   // Retrieve the cached interaction metadata associated with this conversation
   // turn or construct a new instance if there's no match in the cache.
@@ -612,10 +607,10 @@ void AssistantManagerServiceImpl::OnConversationTurnFinished(
   if (resolution != Resolution::NORMAL_WITH_FOLLOW_ON &&
       resolution != Resolution::CANCELLED &&
       resolution != Resolution::BARGE_IN) {
-    audio_input_host_->SetMicState(false);
+    platform_api_->SetMicState(false);
   }
 
-  audio_input_host_->OnConversationTurnFinished();
+  platform_api_->OnConversationTurnFinished();
 
   switch (resolution) {
     // Interaction ended normally.
@@ -1399,11 +1394,6 @@ assistant_client::AssistantManagerInternal*
 AssistantManagerServiceImpl::assistant_manager_internal() {
   auto* api = LibassistantV1Api::Get();
   return api ? api->assistant_manager_internal() : nullptr;
-}
-
-void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
-  DCHECK(audio_input_host_);
-  audio_input_host_->SetMicState(mic_open);
 }
 
 ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {

@@ -28,7 +28,10 @@ class FakePlatformApi : public CrosPlatformApi {
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
-  void InitializeAudioInputHost(AudioInputHost&) override {}
+  void SetMicState(bool mic_open) override {}
+  void OnHotwordEnabled(bool enable) override {}
+  void OnConversationTurnStarted() override {}
+  void OnConversationTurnFinished() override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakePlatformApi);
