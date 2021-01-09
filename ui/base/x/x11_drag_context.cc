@@ -42,12 +42,12 @@ const char kChromiumDragReciever[] = "_CHROMIUM_DRAG_RECEIVER";
 
 XDragContext::XDragContext(x11::Window local_window,
                            const x11::ClientMessageEvent& event,
-                           XDragDropClient* source_client,
                            const SelectionFormatMap& data)
     : local_window_(local_window),
-      source_window_(static_cast<x11::Window>(event.data.data32[0])),
-      source_client_(source_client) {
-  if (!source_client_) {
+      source_window_(static_cast<x11::Window>(event.data.data32[0])) {
+  XDragDropClient* source_client =
+      XDragDropClient::GetForWindow(source_window_);
+  if (!source_client) {
     bool get_types_from_property = ((event.data.data32[1] & 1) != 0);
 
     if (get_types_from_property) {
@@ -160,7 +160,9 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
 }
 
 void XDragContext::ReadActions() {
-  if (!source_client_) {
+  XDragDropClient* source_client =
+      XDragDropClient::GetForWindow(source_window_);
+  if (!source_client) {
     std::vector<x11::Atom> atom_array;
     if (!GetAtomArrayProperty(source_window_, kXdndActionList, &atom_array))
       actions_.clear();
@@ -170,7 +172,7 @@ void XDragContext::ReadActions() {
     // We have a property notify set up for other windows in case they change
     // their action list. Thankfully, the views interface is static and you
     // can't change the action list after you enter StartDragAndDrop().
-    actions_ = source_client_->GetOfferedDragOperations();
+    actions_ = source_client->GetOfferedDragOperations();
   }
 }
 

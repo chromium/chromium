@@ -24,7 +24,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragContext {
  public:
   XDragContext(x11::Window local_window,
                const x11::ClientMessageEvent& event,
-               XDragDropClient* source_client,
                const SelectionFormatMap& data);
   ~XDragContext();
 
@@ -32,7 +31,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragContext {
   XDragContext& operator=(const XDragContext&) = delete;
 
   x11::Window source_window() const { return source_window_; }
-  XDragDropClient* source_client() { return source_client_; }
   const SelectionFormatMap& fetched_targets() const { return fetched_targets_; }
 
   // When we receive an XdndPosition message, we need to have all the data
@@ -73,10 +71,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragContext {
 
   // The x11::Window of the window that initiated the drag.
   x11::Window source_window_;
-
-  // The DesktopDragDropClientAuraX11 for |source_window_| if |source_window_|
-  // belongs to a Chrome window.
-  XDragDropClient* source_client_;
 
   // The client we inform once we're done with requesting data.
   XDragDropClient* drag_drop_client_ = nullptr;
