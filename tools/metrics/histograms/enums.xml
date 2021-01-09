@@ -36902,6 +36902,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="HistoryUrlType">
+  <obsolete>
+    Removed Jan 2021 as the only user has expired
+  </obsolete>
   <int value="0" label="Empty"/>
   <int value="1" label="Same as baseUrl"/>
   <int value="2" label="Different from baseUrl"/>

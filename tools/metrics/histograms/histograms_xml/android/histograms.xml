@@ -2539,6 +2539,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.HistoryUrl"
     enum="HistoryUrlType" expires_after="M85">
+  <obsolete>
+    Removed Jan 2021 (had already expired)
+  </obsolete>
   <owner>jamwalla@chromium.org</owner>
   <summary>
     Records whether the historyUrl parameter to loadDataWithBaseUrl is empty/

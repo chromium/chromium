@@ -191,16 +191,6 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    // Used to record the UMA histogram Android.WebView.LoadDataWithBaseUrl.HistoryUrl. Since these
-    // values are persisted to logs, they should never be renumbered or reused.
-    @IntDef({HistoryUrl.EMPTY, HistoryUrl.BASEURL, HistoryUrl.DIFFERENT, HistoryUrl.COUNT})
-    @interface HistoryUrl {
-        int EMPTY = 0;
-        int BASEURL = 1;
-        int DIFFERENT = 2;
-        int COUNT = 3;
-    }
-
     // Used to record the UMA histogram Android.WebView.LoadDataWithBaseUrl.UrlScheme. Since these
     // values are persisted to logs, they should never be renumbered or reused.
     @VisibleForTesting
@@ -1912,11 +1902,6 @@ public class AwContents implements SmartClipProvider {
         return "base64".equals(encoding);
     }
 
-    private static void recordHistoryUrl(@HistoryUrl int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.LoadDataWithBaseUrl.HistoryUrl", value, HistoryUrl.COUNT);
-    }
-
     private static void recordBaseUrl(@UrlScheme int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 DATA_BASE_URL_SCHEME_HISTOGRAM_NAME, value, UrlScheme.COUNT);
@@ -2015,14 +2000,6 @@ public class AwContents implements SmartClipProvider {
         LoadUrlParams loadUrlParams;
         baseUrl = fixupBase(baseUrl);
         historyUrl = fixupHistory(historyUrl);
-
-        if (historyUrl.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
-            recordHistoryUrl(HistoryUrl.EMPTY);
-        } else if (historyUrl.equals(baseUrl)) {
-            recordHistoryUrl(HistoryUrl.BASEURL);
-        } else {
-            recordHistoryUrl(HistoryUrl.DIFFERENT);
-        }
 
         recordBaseUrl(schemeForUrl(baseUrl));
 
