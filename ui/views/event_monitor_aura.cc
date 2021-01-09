@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -32,13 +33,13 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(window, target_window_);
-    window_observer_.Remove(target_window_);
+    window_observer_.Remove(target_window_.get());
     target_window_ = nullptr;
     TearDown();
   }
 
  private:
-  aura::Window* target_window_;
+  CheckedPtr<aura::Window> target_window_;
   ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowMonitorAura);

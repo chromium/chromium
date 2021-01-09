@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/windows_version.h"
 
@@ -35,7 +36,7 @@ struct _HEAP_32 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
-  struct _HEAP_32* Heap;
+  CheckedPtr<struct _HEAP_32> Heap;
   char Unknown0[0x24];
   // Offset 0x40
   DWORD Flags;
@@ -50,7 +51,7 @@ struct _HEAP_64 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
-  struct _HEAP_64* Heap;
+  CheckedPtr<struct _HEAP_64> Heap;
   char Unknown0[0x40];
   // Offset 0x70
   DWORD Flags;

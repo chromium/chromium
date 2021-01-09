@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual ~QuotaManagerProxy();
 
  private:
-  QuotaManager* manager_;  // only accessed on the io thread
+  CheckedPtr<QuotaManager> manager_;  // only accessed on the io thread
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(QuotaManagerProxy);

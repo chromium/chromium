@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/native_library.h"
 #include "base/strings/string16.h"
 
@@ -73,7 +74,7 @@ enum SECItemType {
 
 struct SECItem {
   SECItemType type;
-  unsigned char *data;
+  CheckedPtr<unsigned char> data;
   unsigned int len;
 };
 

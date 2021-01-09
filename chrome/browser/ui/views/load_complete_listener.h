@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -37,7 +38,7 @@ class LoadCompleteListener : public content::NotificationObserver {
   content::NotificationRegistrar registrar_;
 
   // Delegate to be notified after the first page load has completed.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadCompleteListener);
 };

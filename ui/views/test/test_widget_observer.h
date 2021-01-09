@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -26,7 +27,7 @@ class TestWidgetObserver : public WidgetObserver {
   // WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override;
 
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWidgetObserver);
 };

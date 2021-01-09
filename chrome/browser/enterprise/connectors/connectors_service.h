@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -96,7 +97,7 @@ class ConnectorsService : public KeyedService {
   // - The profile is incognito
   bool ConnectorsEnabled() const;
 
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 

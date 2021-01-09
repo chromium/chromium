@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -87,7 +88,7 @@ class ThrottledOfflineContentProvider
   base::TimeTicks last_update_time_;
   bool update_queued_;
 
-  OfflineContentProvider* const wrapped_provider_;
+  const CheckedPtr<OfflineContentProvider> wrapped_provider_;
   base::ObserverList<OfflineContentProvider::Observer>::Unchecked observers_;
 
   typedef std::map<ContentId,

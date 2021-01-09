@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/desktop_environment.h"
@@ -55,11 +56,11 @@ class FakeInputInjector : public InputInjector {
  private:
   friend class FakeDesktopEnvironment;
 
-  std::vector<protocol::KeyEvent>* key_events_ = nullptr;
-  std::vector<protocol::TextEvent>* text_events_ = nullptr;
-  std::vector<protocol::MouseEvent>* mouse_events_ = nullptr;
-  std::vector<protocol::TouchEvent>* touch_events_ = nullptr;
-  std::vector<protocol::ClipboardEvent>* clipboard_events_ = nullptr;
+  CheckedPtr<std::vector<protocol::KeyEvent>> key_events_ = nullptr;
+  CheckedPtr<std::vector<protocol::TextEvent>> text_events_ = nullptr;
+  CheckedPtr<std::vector<protocol::MouseEvent>> mouse_events_ = nullptr;
+  CheckedPtr<std::vector<protocol::TouchEvent>> touch_events_ = nullptr;
+  CheckedPtr<std::vector<protocol::ClipboardEvent>> clipboard_events_ = nullptr;
 
   base::WeakPtrFactory<FakeInputInjector> weak_factory_{this};
 

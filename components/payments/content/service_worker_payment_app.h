@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -140,7 +141,7 @@ class ServiceWorkerPaymentApp : public PaymentApp,
 
   // Weak pointer is fine here since the owner of this object is
   // PaymentRequestState which also owns PaymentResponseHelper.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   bool is_incognito_;
 

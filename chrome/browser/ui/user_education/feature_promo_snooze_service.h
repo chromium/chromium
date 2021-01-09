@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 
@@ -79,7 +80,7 @@ class FeaturePromoSnoozeService {
   void SaveSnoozeData(const base::Feature& iph_feature,
                       const SnoozeData& snooze_data);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_

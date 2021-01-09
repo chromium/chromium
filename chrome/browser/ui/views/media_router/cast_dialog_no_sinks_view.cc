@@ -70,7 +70,7 @@ CastDialogNoSinksView::~CastDialogNoSinksView() = default;
 
 void CastDialogNoSinksView::SetHelpIconView() {
   // Replace the throbber with the help icon.
-  RemoveChildViewT(icon_);
+  RemoveChildViewT(icon_.get());
   const auto navigate = [](Profile* profile) {
     NavigateParams params(profile, GURL(chrome::kCastNoDestinationFoundURL),
                           ui::PAGE_TRANSITION_LINK);

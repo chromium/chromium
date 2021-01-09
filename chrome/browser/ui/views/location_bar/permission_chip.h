@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
@@ -80,9 +81,9 @@ class PermissionChip : public views::View,
   void AnimateCollapse();
   void AnimateExpand();
 
-  Browser* browser_ = nullptr;
-  permissions::PermissionPrompt::Delegate* delegate_ = nullptr;
-  PermissionPromptBubbleView* prompt_bubble_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
+  CheckedPtr<permissions::PermissionPrompt::Delegate> delegate_ = nullptr;
+  CheckedPtr<PermissionPromptBubbleView> prompt_bubble_ = nullptr;
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
@@ -91,7 +92,7 @@ class PermissionChip : public views::View,
   base::OneShotTimer timer_;
 
   // The button that displays the icon and text.
-  views::MdTextButton* chip_button_;
+  CheckedPtr<views::MdTextButton> chip_button_;
 
   // The time when the permission was requested.
   base::TimeTicks requested_time_;

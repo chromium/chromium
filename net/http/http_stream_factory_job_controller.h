@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/privacy_mode.h"
 #include "net/http/http_stream_factory_job.h"
@@ -271,17 +272,17 @@ class HttpStreamFactory::JobController
   // Returns true if QUIC is allowed for |host|.
   bool IsQuicAllowedForHost(const std::string& host);
 
-  HttpStreamFactory* factory_;
-  HttpNetworkSession* session_;
-  JobFactory* job_factory_;
+  CheckedPtr<HttpStreamFactory> factory_;
+  CheckedPtr<HttpNetworkSession> session_;
+  CheckedPtr<JobFactory> job_factory_;
 
   // Request will be handed out to factory once created. This just keeps an
   // reference and is safe as |request_| will notify |this| JobController
   // when it's destructed by calling OnRequestComplete(), which nulls
   // |request_|.
-  HttpStreamRequest* request_;
+  CheckedPtr<HttpStreamRequest> request_;
 
-  HttpStreamRequest::Delegate* const delegate_;
+  const CheckedPtr<HttpStreamRequest::Delegate> delegate_;
 
   // True if this JobController is used to preconnect streams.
   const bool is_preconnect_;
@@ -330,7 +331,7 @@ class HttpStreamFactory::JobController
 
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.
-  Job* bound_job_;
+  CheckedPtr<Job> bound_job_;
 
   State next_state_;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;

@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -92,14 +93,14 @@ class SharedMemIPCServer {
     // The size of this channel.
     uint32_t channel_size;
     // The pointer to the actual channel data.
-    char* channel_buffer;
+    CheckedPtr<char> channel_buffer;
     // The pointer to the base of the shared memory.
-    char* shared_base;
+    CheckedPtr<char> shared_base;
     // A pointer to this channel's client-side control structure this structure
     // lives in the shared memory.
-    ChannelControl* channel;
+    CheckedPtr<ChannelControl> channel;
     // the IPC dispatcher associated with this channel.
-    Dispatcher* dispatcher;
+    CheckedPtr<Dispatcher> dispatcher;
     // The target process information associated with this channel.
     ClientInfo target_info;
   };
@@ -111,14 +112,14 @@ class SharedMemIPCServer {
 
   // Points to the shared memory channel control which lives at
   // the start of the shared section.
-  IPCControl* client_control_;
+  CheckedPtr<IPCControl> client_control_;
 
   // Keeps track of the server side objects that are used to answer an IPC.
   std::list<std::unique_ptr<ServerControl>> server_contexts_;
 
   // The thread provider provides the threads that call back into this object
   // when the IPC events fire.
-  ThreadProvider* thread_provider_;
+  CheckedPtr<ThreadProvider> thread_provider_;
 
   // The IPC object is associated with a target process.
   HANDLE target_process_;
@@ -127,7 +128,7 @@ class SharedMemIPCServer {
   DWORD target_process_id_;
 
   // The dispatcher handles 'ready' IPC calls.
-  Dispatcher* call_dispatcher_;
+  CheckedPtr<Dispatcher> call_dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedMemIPCServer);
 };

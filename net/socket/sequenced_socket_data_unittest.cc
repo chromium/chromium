@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -131,7 +132,7 @@ class ReentrantHelper {
     }
   }
 
-  StreamSocket* socket_;
+  CheckedPtr<StreamSocket> socket_;
 
   bool verify_read_;
   scoped_refptr<IOBuffer> first_read_buf_;

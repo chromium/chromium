@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/tasks/load_stream_from_store_task.h"
 #include "components/offline_pages/task/task.h"
@@ -44,7 +45,7 @@ class GetPrefetchSuggestionsTask : public offline_pages::Task {
 
   void PullSuggestionsFromModel(const StreamModel& model);
 
-  FeedStream* stream_;
+  CheckedPtr<FeedStream> stream_;
   base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>
       result_callback_;
 

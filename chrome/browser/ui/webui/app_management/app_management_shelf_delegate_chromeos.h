@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 
 class AppManagementPageHandler;
@@ -31,7 +32,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemRemoved(int index, const ash::ShelfItem& old_item) override;
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
-  AppManagementPageHandler* page_handler_;
+  CheckedPtr<AppManagementPageHandler> page_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementShelfDelegate);
 };

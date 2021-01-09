@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -98,7 +99,7 @@ class EventPrinter : public logging_win::LogFileDelegate {
                          const base::StringPiece& context);
   void PrintBadEvent(const EVENT_TRACE* event, const base::StringPiece& error);
 
-  std::ostream* out_;
+  CheckedPtr<std::ostream> out_;
   DISALLOW_COPY_AND_ASSIGN(EventPrinter);
 };
 

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -95,7 +96,8 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   std::unique_ptr<PrefService> local_state_;
 #endif
 
-  base::debug::CrashKeyString* headless_crash_key_;  // Note: never deallocated.
+  CheckedPtr<base::debug::CrashKeyString>
+      headless_crash_key_;  // Note: never deallocated.
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessContentMainDelegate);
 };

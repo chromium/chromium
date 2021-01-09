@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
@@ -127,7 +128,7 @@ class RTLAnimationTestDelegate : public gfx::AnimationDelegate {
   gfx::Rect target_;
 
   // view to be animated.
-  View* view_;
+  CheckedPtr<View> view_;
 
   base::RepeatingClosure quit_closure_;
 };
@@ -141,7 +142,7 @@ class BoundsAnimatorTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         child_(new TestView()) {
-    parent_.AddChildView(child_);
+    parent_.AddChildView(child_.get());
     RecreateAnimator(/*use_transforms=*/false);
   }
 
@@ -195,7 +196,7 @@ class BoundsAnimatorTest : public testing::Test {
 
  private:
   TestView parent_;
-  TestView* child_;  // Owned by |parent_|.
+  CheckedPtr<TestView> child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
 
   DISALLOW_COPY_AND_ASSIGN(BoundsAnimatorTest);

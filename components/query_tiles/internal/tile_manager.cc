@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -326,7 +327,7 @@ class TileManagerImpl : public TileManager {
   std::unique_ptr<TileGroup> tile_stats_group_;
 
   // Clock object.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // Accept languages from the PrefService. Used to check if tiles stored are of
   // the same language.

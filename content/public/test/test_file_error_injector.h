@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "url/gurl.h"
@@ -126,10 +127,10 @@ class TestFileErrorInjector
   size_t total_file_count_ = 0;
 
   // The factory we created. May outlive this class.
-  DownloadFileWithErrorFactory* created_factory_ = nullptr;
+  CheckedPtr<DownloadFileWithErrorFactory> created_factory_ = nullptr;
 
   // The download manager we set the factory on.
-  DownloadManagerImpl* download_manager_ = nullptr;
+  CheckedPtr<DownloadManagerImpl> download_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestFileErrorInjector);
 };

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "services/audio/service.h"
@@ -50,7 +51,7 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
 #endif
   AudioManagerFactoryCallback audio_manager_factory_cb_;
   std::unique_ptr<media::AudioManager> audio_manager_;
-  media::AudioLogFactory* log_factory_ = nullptr;  // not owned.
+  CheckedPtr<media::AudioLogFactory> log_factory_ = nullptr;  // not owned.
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(OwningAudioManagerAccessor);

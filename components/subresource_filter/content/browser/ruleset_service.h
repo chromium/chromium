@@ -42,6 +42,7 @@
 #include "base/files/file_util.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -260,7 +261,7 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
   void OpenAndPublishRuleset(const IndexedRulesetVersion& version);
   void OnRulesetSet(base::File file);
 
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
 
   // Obsolete files deletion and indexing should be done on this runner.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

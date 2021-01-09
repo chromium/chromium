@@ -158,7 +158,7 @@ void ContentAutofillDriver::SendFormDataToRenderer(
 void ContentAutofillDriver::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
   AutofillHandler* handler =
-      autofill_manager_ ? autofill_manager_ : autofill_handler_.get();
+      autofill_manager_ ? autofill_manager_.get() : autofill_handler_.get();
   DCHECK(handler);
   handler->PropagateAutofillPredictions(render_frame_host_, forms);
 }

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -98,10 +99,10 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       base::Optional<std::string> message_id,
       SharingChannelType channel_type);
 
-  gcm::GCMDriver* const gcm_driver_;
-  syncer::DeviceInfoTracker* device_info_tracker_;
-  SharingFCMSender* sharing_fcm_sender_;
-  SharingHandlerRegistry* handler_registry_;
+  const CheckedPtr<gcm::GCMDriver> gcm_driver_;
+  CheckedPtr<syncer::DeviceInfoTracker> device_info_tracker_;
+  CheckedPtr<SharingFCMSender> sharing_fcm_sender_;
+  CheckedPtr<SharingHandlerRegistry> handler_registry_;
 
   bool is_listening_ = false;
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -37,7 +38,7 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
 
  private:
   std::unique_ptr<AcceleratorDelegate> delegate_;
-  ui::AcceleratorHistory* accelerator_history_;
+  CheckedPtr<ui::AcceleratorHistory> accelerator_history_;
 
   DISALLOW_COPY_AND_ASSIGN(AcceleratorFilter);
 };

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -236,7 +237,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     URLLoader* get() const { return pointer_; }
 
    private:
-    URLLoader* const pointer_;
+    const CheckedPtr<URLLoader> pointer_;
 
     DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
@@ -365,9 +366,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool CanConnectToAddressSpace(
       mojom::IPAddressSpace resource_address_space) const;
 
-  net::URLRequestContext* url_request_context_;
-  mojom::NetworkServiceClient* network_service_client_;
-  mojom::NetworkContextClient* network_context_client_;
+  CheckedPtr<net::URLRequestContext> url_request_context_;
+  CheckedPtr<mojom::NetworkServiceClient> network_service_client_;
+  CheckedPtr<mojom::NetworkContextClient> network_context_client_;
   DeleteCallback delete_callback_;
 
   int32_t options_;
@@ -379,9 +380,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // URLLoaderFactory is guaranteed to outlive URLLoader, so it is safe to
   // store a raw pointer to mojom::URLLoaderFactoryParams.
-  const mojom::URLLoaderFactoryParams* const factory_params_;
+  const CheckedPtr<const mojom::URLLoaderFactoryParams> factory_params_;
   // This also belongs to URLLoaderFactory and outlives this loader.
-  mojom::CrossOriginEmbedderPolicyReporter* const coep_reporter_;
+  const CheckedPtr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   int render_frame_id_;
   uint32_t request_id_;
@@ -493,7 +494,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
 
   // Will only be set for requests that have |obey_origin_policy| set.
-  mojom::OriginPolicyManager* origin_policy_manager_;
+  CheckedPtr<mojom::OriginPolicyManager> origin_policy_manager_;
 
   // If the request is configured for Trust Tokens
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates
@@ -515,7 +516,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   base::Optional<mojom::TrustTokenOperationStatus> trust_token_status_;
 
   // Outlives `this`.
-  const cors::OriginAccessList* const origin_access_list_;
+  const CheckedPtr<const cors::OriginAccessList> origin_access_list_;
 
   // Observer listening to all cookie reads and writes made by this request.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;

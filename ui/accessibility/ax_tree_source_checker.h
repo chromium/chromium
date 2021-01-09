@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/accessibility/ax_tree_source.h"
@@ -29,7 +30,7 @@ class AXTreeSourceChecker {
   bool Check(AXSourceNode node, std::string indent, std::string* output);
   std::string NodeToString(AXSourceNode node);
 
-  AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>* tree_;
+  CheckedPtr<AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>> tree_;
 
   std::map<int32_t, int32_t> node_id_to_parent_id_map_;
 

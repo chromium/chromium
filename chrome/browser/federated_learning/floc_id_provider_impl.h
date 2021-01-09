@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ID_PROVIDER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
@@ -173,12 +174,12 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // profile-keyed service factories, and the dependency declared in
   // FlocIdProviderFactory::FlocIdProviderFactory() guarantees that this object
   // will be destroyed first among those services.
-  PrefService* prefs_;
-  syncer::SyncService* sync_service_;
-  PrivacySandboxSettings* privacy_sandbox_settings_;
-  FlocRemotePermissionService* floc_remote_permission_service_;
-  history::HistoryService* history_service_;
-  syncer::UserEventService* user_event_service_;
+  CheckedPtr<PrefService> prefs_;
+  CheckedPtr<syncer::SyncService> sync_service_;
+  CheckedPtr<PrivacySandboxSettings> privacy_sandbox_settings_;
+  CheckedPtr<FlocRemotePermissionService> floc_remote_permission_service_;
+  CheckedPtr<history::HistoryService> history_service_;
+  CheckedPtr<syncer::UserEventService> user_event_service_;
 
   // The id to be exposed to the JS API. It will always be in sync with the one
   // stored in prefs.

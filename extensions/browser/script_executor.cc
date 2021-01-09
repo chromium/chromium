@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/hash/hash.h"
+#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -226,7 +227,7 @@ class Handler : public content::WebContentsObserver {
 
   // The primary frame of the injection, if only a single frame is explicitly
   // specified.
-  content::RenderFrameHost* root_rfh_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> root_rfh_ = nullptr;
 
   // Whether |root_rfh_| is the main frame of a tab.
   bool root_is_main_frame_ = false;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/games/core/catalog_store.h"
@@ -60,7 +61,7 @@ class GamesServiceImpl : public GamesService {
   std::unique_ptr<HighlightedGamesStore> highlighted_games_store_;
 
   // Will outlive the current instance.
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   // Cached data files installation directory. Will be used by the stores to
   // find their data files.

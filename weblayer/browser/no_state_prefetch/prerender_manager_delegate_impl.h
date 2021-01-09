@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 
@@ -29,7 +30,7 @@ class PrerenderManagerDelegateImpl
   std::string GetReasonForDisablingPrediction() override;
 
  private:
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace weblayer

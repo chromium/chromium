@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_CART_CART_SERVICE_H_
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +32,7 @@ class CartService : public KeyedService {
   // Use |CartServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
   explicit CartService(Profile* profile);
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

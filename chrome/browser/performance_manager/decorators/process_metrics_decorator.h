@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -58,7 +59,7 @@ class ProcessMetricsDecorator : public GraphOwned {
   base::RetainingOneShotTimer refresh_timer_;
 
   // The Graph instance owning this decorator.
-  Graph* graph_;
+  CheckedPtr<Graph> graph_;
 
   base::WeakPtrFactory<ProcessMetricsDecorator> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ProcessMetricsDecorator);

@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/views/views_export.h"
@@ -136,11 +137,11 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   std::map<int32_t, std::unique_ptr<AXAuraObjWrapper>> cache_;
 
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
   std::set<aura::Window*> root_windows_;
 
-  views::Widget* focused_widget_for_testing_ = nullptr;
+  CheckedPtr<views::Widget> focused_widget_for_testing_ = nullptr;
 };
 
 }  // namespace views

@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
@@ -68,7 +69,7 @@ class CONTENT_EXPORT StylusTextSelector : public ui::SimpleGestureListener {
 
   static bool ShouldStartTextSelection(const ui::MotionEvent& event);
 
-  StylusTextSelectorClient* client_;
+  CheckedPtr<StylusTextSelectorClient> client_;
   bool text_selection_triggered_;
   bool secondary_button_pressed_;
   DragState drag_state_;

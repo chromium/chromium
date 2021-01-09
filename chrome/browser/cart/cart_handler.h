@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CART_CART_HANDLER_H_
 #define CHROME_BROWSER_CART_CART_HANDLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,7 +26,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
 
  private:
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_CART_CART_HANDLER_H_

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -24,7 +25,7 @@ class FullscreenChangeWaiter {
   void Wait();
 
  private:
-  extensions::NativeAppWindow* window_;
+  CheckedPtr<extensions::NativeAppWindow> window_;
   bool initial_fullscreen_state_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenChangeWaiter);

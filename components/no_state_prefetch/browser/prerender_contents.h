@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -276,7 +277,7 @@ class PrerenderContents : public content::NotificationObserver,
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // The prerender manager owning this object.
-  PrerenderManager* prerender_manager_;
+  CheckedPtr<PrerenderManager> prerender_manager_;
 
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<PrerenderContentsDelegate> delegate_;
@@ -292,7 +293,7 @@ class PrerenderContents : public content::NotificationObserver,
   const base::Optional<url::Origin> initiator_origin_;
 
   // The browser context being used
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   content::NotificationRegistrar notification_registrar_;
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_MODEL_H_
 #define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_MODEL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -126,7 +127,7 @@ class SecurePaymentConfirmationModel {
 
   base::string16 instrument_label_;
   base::string16 instrument_value_;
-  const SkBitmap* instrument_icon_ = nullptr;
+  CheckedPtr<const SkBitmap> instrument_icon_ = nullptr;
 
   base::string16 total_label_;
   base::string16 total_value_;

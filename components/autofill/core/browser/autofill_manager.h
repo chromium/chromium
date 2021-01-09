@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -602,13 +603,13 @@ class AutofillManager : public AutofillHandler,
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
-  AutofillClient* const client_;
+  const CheckedPtr<AutofillClient> client_;
 
   // Delegate to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
 
-  LogManager* log_manager_;
+  CheckedPtr<LogManager> log_manager_;
 
   std::string app_locale_;
 
@@ -616,7 +617,7 @@ class AutofillManager : public AutofillHandler,
   // web database.  This is overridden by the AutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  PersonalDataManager* personal_data_;
+  CheckedPtr<PersonalDataManager> personal_data_;
 
   // Used to help fill data into fields.
   FieldFiller field_filler_;
@@ -664,7 +665,7 @@ class AutofillManager : public AutofillHandler,
 
   // The autofill offer manager, used to to retrieve offers for card
   // suggestions.
-  AutofillOfferManager* offer_manager_;
+  CheckedPtr<AutofillOfferManager> offer_manager_;
 
   // Collected information about the autofill form where a credit card will be
   // filled.
@@ -686,7 +687,7 @@ class AutofillManager : public AutofillHandler,
   mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
-  AutofillManagerTestDelegate* test_delegate_ = nullptr;
+  CheckedPtr<AutofillManagerTestDelegate> test_delegate_ = nullptr;
 
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.

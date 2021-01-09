@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)
@@ -73,7 +74,7 @@ class FilePermissionRestorer {
 
  private:
   const FilePath path_;
-  void* info_;  // The opaque stored permission information.
+  CheckedPtr<void> info_;  // The opaque stored permission information.
   size_t length_;  // The length of the stored permission information.
 
   DISALLOW_COPY_AND_ASSIGN(FilePermissionRestorer);

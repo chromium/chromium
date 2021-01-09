@@ -8,6 +8,7 @@
 #include <deque>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -138,12 +139,12 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  LayerTreeFrameSinkClient* client_ = nullptr;
+  CheckedPtr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;
 

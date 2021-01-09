@@ -255,7 +255,7 @@ void PageNodeImpl::SetOpenerFrameNodeAndOpenedType(FrameNodeImpl* opener,
   DCHECK_NE(this, opener->page_node());
   DCHECK_NE(OpenedType::kInvalid, opened_type);
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
   auto previous_type = opened_type_;
 
   if (previous_opener)
@@ -273,7 +273,7 @@ void PageNodeImpl::ClearOpenerFrameNodeAndOpenedType() {
   DCHECK_NE(nullptr, opener_frame_node_);
   DCHECK_NE(OpenedType::kInvalid, opened_type_);
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
   auto previous_type = opened_type_;
 
   opener_frame_node_->RemoveOpenedPage(PassKey(), this);

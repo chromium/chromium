@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -333,7 +334,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   base::RunLoop run_loop_;
 
   // The last tab that was added.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -373,7 +374,7 @@ class BrowserChangeObserver : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
 };

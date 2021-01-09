@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -105,13 +106,13 @@ class PendingAppInstallTask {
                         base::ScopedClosureRunner scoped_closure,
                         const OsHooksResults os_hooks_results);
 
-  Profile* const profile_;
-  WebAppUrlLoader* const url_loader_;
-  AppRegistrar* const registrar_;
-  OsIntegrationManager* const os_integration_manager_;
-  InstallFinalizer* const install_finalizer_;
-  InstallManager* const install_manager_;
-  WebAppUiManager* const ui_manager_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<WebAppUrlLoader> url_loader_;
+  const CheckedPtr<AppRegistrar> registrar_;
+  const CheckedPtr<OsIntegrationManager> os_integration_manager_;
+  const CheckedPtr<InstallFinalizer> install_finalizer_;
+  const CheckedPtr<InstallManager> install_manager_;
+  const CheckedPtr<WebAppUiManager> ui_manager_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 

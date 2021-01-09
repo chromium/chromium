@@ -18,6 +18,7 @@
 #include "base/containers/stack_container.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/clamped_math.h"
@@ -199,7 +200,7 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     }
   }
 
-  ThreadGroupImpl* const outer_;
+  const CheckedPtr<ThreadGroupImpl> outer_;
 
   WorkerContainer workers_to_wake_up_;
   WorkerContainer workers_to_start_;

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/resource/scale_factor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedScaleFactors {
   ~ScopedSetSupportedScaleFactors();
 
  private:
-  std::vector<ui::ScaleFactor>* original_scale_factors_;
+  CheckedPtr<std::vector<ui::ScaleFactor>> original_scale_factors_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSetSupportedScaleFactors);
 };

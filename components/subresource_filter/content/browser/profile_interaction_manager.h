@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -59,7 +60,7 @@ class ProfileInteractionManager : public content::WebContentsObserver {
 
  private:
   // Unowned and must outlive this object.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  CheckedPtr<SubresourceFilterProfileContext> profile_context_ = nullptr;
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
 };

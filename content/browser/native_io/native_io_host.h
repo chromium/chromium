@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -104,7 +105,7 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
 
   // Raw pointer use is safe because NativeIOManager owns this NativeIOHost, and
   // therefore is guaranteed to outlive it.
-  NativeIOManager* const manager_;
+  const CheckedPtr<NativeIOManager> manager_;
 
   // The origin served by this host.
   const url::Origin origin_;

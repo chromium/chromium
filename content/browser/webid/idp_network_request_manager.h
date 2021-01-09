@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
@@ -97,7 +98,7 @@ class IdpNetworkRequestManager {
   // URL of the Identity Provider.
   GURL provider_;
 
-  RenderFrameHost* render_frame_host_;
+  CheckedPtr<RenderFrameHost> render_frame_host_;
 
   FetchWellKnownCallback idp_well_known_callback_;
   SigninRequestCallback signin_request_callback_;

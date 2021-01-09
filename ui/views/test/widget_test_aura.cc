@@ -4,6 +4,7 @@
 
 #include "ui/views/test/widget_test.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/focus_client.h"
@@ -58,7 +59,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
 #if defined(OS_WIN)
 
 struct FindAllWindowsData {
-  std::vector<aura::Window*>* windows;
+  CheckedPtr<std::vector<aura::Window*>> windows;
 };
 
 BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {

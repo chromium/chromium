@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/feed/core/v2/enums.h"
@@ -78,7 +79,7 @@ class LoadStreamTask : public offline_pages::Task {
   void Done(LoadStreamStatus status);
 
   LoadType load_type_;
-  FeedStream* stream_;  // Unowned.
+  CheckedPtr<FeedStream> stream_;  // Unowned.
   std::unique_ptr<LoadStreamFromStoreTask> load_from_store_task_;
 
   // Information to be stuffed in |Result|.

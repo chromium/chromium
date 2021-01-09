@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -64,7 +65,7 @@ class NtpIconSource : public content::URLDataSource {
                                     const SkBitmap& bitmap);
 
   base::CancelableTaskTracker cancelable_task_tracker_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<image_fetcher::ImageFetcher> const image_fetcher_;
 
   base::WeakPtrFactory<NtpIconSource> weak_ptr_factory_{this};

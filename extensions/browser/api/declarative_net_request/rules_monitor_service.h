@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
@@ -228,11 +229,11 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   std::unique_ptr<const FileSequenceBridge> file_sequence_bridge_;
 
   // Guaranteed to be valid through-out the lifetime of this instance.
-  ExtensionPrefs* const prefs_;
-  ExtensionRegistry* const extension_registry_;
-  WarningService* const warning_service_;
+  const CheckedPtr<ExtensionPrefs> prefs_;
+  const CheckedPtr<ExtensionRegistry> extension_registry_;
+  const CheckedPtr<WarningService> warning_service_;
 
-  content::BrowserContext* const context_;
+  const CheckedPtr<content::BrowserContext> context_;
 
   declarative_net_request::RulesetManager ruleset_manager_;
 
@@ -241,7 +242,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   GlobalRulesTracker global_rules_tracker_;
 
   // Non-owned pointer.
-  TestObserver* test_observer_ = nullptr;
+  CheckedPtr<TestObserver> test_observer_ = nullptr;
 
   // Stores the tasks to be performed once ruleset loading is done for an
   // extension. This is only maintained for extensions which are undergoing a

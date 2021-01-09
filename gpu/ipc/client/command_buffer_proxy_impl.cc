@@ -134,7 +134,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
 }
 
 bool CommandBufferProxyImpl::OnMessageReceived(const IPC::Message& message) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(CommandBufferProxyImpl, message)
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_Destroyed, OnDestroyed);
@@ -160,7 +160,7 @@ bool CommandBufferProxyImpl::OnMessageReceived(const IPC::Message& message) {
 }
 
 void CommandBufferProxyImpl::OnChannelError() {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   base::AutoLock last_state_lock(last_state_lock_);
 
   gpu::error::ContextLostReason context_lost_reason =
@@ -831,7 +831,7 @@ void CommandBufferProxyImpl::DisconnectChannelInFreshCallStack() {
 }
 
 void CommandBufferProxyImpl::LockAndDisconnectChannel() {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   DisconnectChannel();
 }
 

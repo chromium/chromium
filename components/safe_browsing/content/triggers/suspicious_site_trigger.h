@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_SUSPICIOUS_SITE_TRIGGER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -161,11 +162,11 @@ class SuspiciousSiteTrigger
 
   // TriggerManager gets called if this trigger detects a suspicious site and
   // wants to collect data abou tit. Not owned.
-  TriggerManager* trigger_manager_;
+  CheckedPtr<TriggerManager> trigger_manager_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.

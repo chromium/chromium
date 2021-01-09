@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -206,7 +207,7 @@ class MIDI_EXPORT MidiManager {
   base::Lock lock_;
 
   // MidiService outlives MidiManager.
-  MidiService* const service_;
+  const CheckedPtr<MidiService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(MidiManager);
 };

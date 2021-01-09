@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -116,7 +117,7 @@ class PrerenderContents::WebContentsDelegateImpl
   }
 
  private:
-  PrerenderContents* prerender_contents_;
+  CheckedPtr<PrerenderContents> prerender_contents_;
 };
 
 PrerenderContents::Observer::~Observer() {}

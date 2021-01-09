@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
@@ -600,7 +601,7 @@ class CacheStorageDispatcherHost::CacheImpl
   }
 
   // Owns this.
-  CacheStorageDispatcherHost* const host_;
+  const CheckedPtr<CacheStorageDispatcherHost> host_;
 
   CacheStorageCacheHandle cache_handle_;
   const url::Origin origin_;
@@ -944,7 +945,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   }
 
   // Owns this.
-  CacheStorageDispatcherHost* const host_;
+  const CheckedPtr<CacheStorageDispatcherHost> host_;
 
   const url::Origin origin_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;

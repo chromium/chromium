@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -58,7 +59,7 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   }
 
  private:
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 };
 
 // Creates a TimeDelta from a delay as specified in the API.

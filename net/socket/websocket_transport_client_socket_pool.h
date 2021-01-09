@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -131,11 +132,11 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const NetLogWithSource& connect_job_net_log();
 
    private:
-    WebSocketTransportClientSocketPool* owner_;
+    CheckedPtr<WebSocketTransportClientSocketPool> owner_;
 
     CompletionOnceCallback callback_;
     std::unique_ptr<ConnectJob> connect_job_;
-    ClientSocketHandle* const socket_handle_;
+    const CheckedPtr<ClientSocketHandle> socket_handle_;
     const NetLogWithSource request_net_log_;
 
     DISALLOW_COPY_AND_ASSIGN(ConnectJobDelegate);
@@ -160,7 +161,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const scoped_refptr<SocketParams> params;
     const base::Optional<NetworkTrafficAnnotationTag> proxy_annotation_tag;
     const RequestPriority priority;
-    ClientSocketHandle* const handle;
+    const CheckedPtr<ClientSocketHandle> handle;
     CompletionOnceCallback callback;
     ProxyAuthCallback proxy_auth_callback;
     const NetLogWithSource net_log;
@@ -201,7 +202,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   bool DeleteStalledRequest(ClientSocketHandle* handle);
 
   const ProxyServer proxy_server_;
-  const CommonConnectJobParams* const common_connect_job_params_;
+  const CheckedPtr<const CommonConnectJobParams> common_connect_job_params_;
   std::set<const ClientSocketHandle*> pending_callbacks_;
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;

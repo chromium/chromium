@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_AD_POPUP_TRIGGER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -71,7 +72,7 @@ class AdPopupTrigger : public content::WebContentsUserData<AdPopupTrigger> {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // WebContents of the current tab.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // The delay (in milliseconds) to wait before starting a report. Can be
   // ovewritten for tests.
@@ -83,11 +84,11 @@ class AdPopupTrigger : public content::WebContentsUserData<AdPopupTrigger> {
 
   // TriggerManager gets called if this trigger detects apopup caused by ad and
   // wants to collect some data about it. Not owned.
-  TriggerManager* trigger_manager_;
+  CheckedPtr<TriggerManager> trigger_manager_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.

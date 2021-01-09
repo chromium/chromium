@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -231,7 +232,7 @@ class Browser : public TabStripModelObserver,
     Type type;
 
     // The associated profile.
-    Profile* profile;
+    CheckedPtr<Profile> profile;
 
     // Specifies the browser is_trusted_source_ value.
     bool trusted_source = false;
@@ -264,7 +265,7 @@ class Browser : public TabStripModelObserver,
 
     // Supply a custom BrowserWindow implementation, to be used instead of the
     // default. Intended for testing.
-    BrowserWindow* window = nullptr;
+    CheckedPtr<BrowserWindow> window = nullptr;
 
     // User-set title of this browser window, if there is one.
     std::string user_title;
@@ -1113,13 +1114,13 @@ class Browser : public TabStripModelObserver,
   const Type type_;
 
   // This Browser's profile.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
-  BrowserWindow* window_;
+  CheckedPtr<BrowserWindow> window_;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;

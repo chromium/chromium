@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -33,7 +34,7 @@ class MessageAccumulator : public MessageReceiver {
   bool Accept(Message* message) override;
 
  private:
-  MessageQueue* queue_;
+  CheckedPtr<MessageQueue> queue_;
   base::OnceClosure closure_;
 };
 

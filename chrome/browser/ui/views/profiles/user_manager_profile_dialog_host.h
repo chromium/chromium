@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -52,7 +53,7 @@ class UserManagerProfileDialogHost {
   void OnDialogDestroyed();
 
   // Owned by the view hierarchy.
-  UserManagerProfileDialogDelegate* delegate_ = nullptr;
+  CheckedPtr<UserManagerProfileDialogDelegate> delegate_ = nullptr;
 
   // The path of profile that is being force signed in.
   base::FilePath force_signin_profile_path_;

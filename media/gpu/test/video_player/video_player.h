@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -139,7 +140,7 @@ class VideoPlayer {
   // whether the decoder client should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
-  const Video* video_ = nullptr;
+  CheckedPtr<const Video> video_ = nullptr;
   VideoPlayerState video_player_state_ = VideoPlayerState::kUninitialized;
   std::unique_ptr<VideoDecoderClient> decoder_client_;
 

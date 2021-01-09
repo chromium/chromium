@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
@@ -98,7 +99,7 @@ class RecordHandlerImpl::ReportUploader
 
   bool need_encryption_key_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
-  policy::CloudPolicyClient* client_;
+  CheckedPtr<policy::CloudPolicyClient> client_;
 
   // Encryption key delivery callback.
   DmServerUploadService::EncryptionKeyAttachedCallback

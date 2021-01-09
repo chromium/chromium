@@ -314,7 +314,7 @@ void UserManagerView::DisplayErrorMessage() {
 void UserManagerView::Init(Profile* system_profile, const GURL& url) {
   web_view_ = new views::WebView(system_profile);
   web_view_->set_allow_accelerators(true);
-  AddChildView(web_view_);
+  AddChildView(web_view_.get());
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
   AddAccelerator(ui::Accelerator(ui::VKEY_F4, ui::EF_ALT_DOWN));

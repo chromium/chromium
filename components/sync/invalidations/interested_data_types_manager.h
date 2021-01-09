@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
@@ -38,7 +39,8 @@ class InterestedDataTypesManager {
   bool IsInitialized() const;
 
  private:
-  InterestedDataTypesHandler* interested_data_types_handler_ = nullptr;
+  CheckedPtr<InterestedDataTypesHandler> interested_data_types_handler_ =
+      nullptr;
 
   bool initialized_ = false;
 

@@ -6,6 +6,7 @@
 #define UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace display {
 
@@ -23,7 +24,7 @@ class ScopedScreenOverride {
   ~ScopedScreenOverride();
 
  private:
-  Screen* original_screen_;
+  CheckedPtr<Screen> original_screen_;
   DISALLOW_COPY_AND_ASSIGN(ScopedScreenOverride);
 };
 

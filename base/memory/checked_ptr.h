@@ -20,7 +20,13 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
+#if defined(OS_NACL)
 #define ENABLE_BACKUP_REF_PTR_IMPL 0
+#else
+#include "base/allocator/partition_allocator/address_pool_manager.h"
+#define ENABLE_BACKUP_REF_PTR_IMPL 1
+#endif // defined(OS_NACL)
+
 #if ENABLE_BACKUP_REF_PTR_IMPL
 static_assert(ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR,
               "BackupRefPtrImpl can only by used if PartitionRefCount is "

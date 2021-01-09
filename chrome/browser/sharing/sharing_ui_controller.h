@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -127,9 +128,9 @@ class SharingUiController {
                       const base::Optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
-  SharingDialog* dialog_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  SharingService* sharing_service_ = nullptr;
+  CheckedPtr<SharingDialog> dialog_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  CheckedPtr<SharingService> sharing_service_ = nullptr;
 
   bool is_loading_ = false;
   SharingSendMessageResult send_result_ = SharingSendMessageResult::kSuccessful;

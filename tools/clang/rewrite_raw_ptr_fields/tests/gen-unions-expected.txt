@@ -11,7 +11,7 @@ r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 my_namespace::MyNestedStruct::ptr_field  # union
-my_namespace::MyUnion1::char_ptr  # union
+my_namespace::MyUnion1::char_ptr  # const-char, union
 my_namespace::MyUnion1::some_class_ptr  # union
 my_namespace::MyUnion2::some_class_ptr  # union
 my_namespace::MyUnion3::some_class_ptr  # union

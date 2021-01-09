@@ -445,6 +445,10 @@ AST_MATCHER(clang::FunctionDecl, isImplicitFunctionTemplateSpecialization) {
   }
 }
 
+AST_MATCHER(clang::Type, anyCharType) {
+  return Node.isAnyCharacterType();
+}
+
 AST_POLYMORPHIC_MATCHER(isInMacroLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
@@ -1086,7 +1090,7 @@ int main(int argc, const char* argv[]) {
   // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
   // be removed if https://bugs.llvm.org/show_bug.cgi?id=46287 is fixed.
   match_finder.addMatcher(
-      traverse(clang::ast_type_traits::TK_AsIs,
+      traverse(clang::TraversalKind::TK_AsIs,
                cxxConstructExpr(templated_function_arg_matcher)),
       &affected_expr_rewriter);
 
@@ -1203,6 +1207,16 @@ int main(int argc, const char* argv[]) {
       fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
   FilteredExprWriter macro_field_decl_writer(&output_helper, "macro");
   match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
+
+  // See the doc comment for the anyCharType matcher
+  // and the testcases in tests/gen-char-test.cc.
+  auto char_ptr_field_decl_matcher = fieldDecl(allOf(
+      field_decl_matcher,
+      hasType(pointerType(pointee(qualType(allOf(
+          isConstQualified(), hasUnqualifiedDesugaredType(anyCharType()))))))));
+  FilteredExprWriter char_ptr_field_decl_writer(&output_helper, "const-char");
+  match_finder.addMatcher(char_ptr_field_decl_matcher,
+                          &char_ptr_field_decl_writer);
 
   // See the testcases in tests/gen-global-destructor-test.cc.
   auto global_destructor_matcher =
