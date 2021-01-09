@@ -4,18 +4,103 @@
 
 #include "android_webview/test/shell/src/draw_fn/context_manager.h"
 
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
 #include <android/native_window_jni.h>
 
-#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
+#include "base/native_library.h"
 #include "base/notreached.h"
-#include "ui/gl/gl_bindings.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace draw_fn {
+
+namespace {
+
+// TODO(penghuang): remove those proc types when EGL header is updated to 1.5.
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLCHOOSECONFIGPROC)(
+    EGLDisplay dpy,
+    const EGLint* attrib_list,
+    EGLConfig* configs,
+    EGLint config_size,
+    EGLint* num_config);
+typedef EGLContext(EGLAPIENTRYP PFNEGLCREATECONTEXTPROC)(
+    EGLDisplay dpy,
+    EGLConfig config,
+    EGLContext share_context,
+    const EGLint* attrib_list);
+typedef EGLSurface(EGLAPIENTRYP PFNEGLCREATEWINDOWSURFACEPROC)(
+    EGLDisplay dpy,
+    EGLConfig config,
+    EGLNativeWindowType win,
+    const EGLint* attrib_list);
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLDESTROYCONTEXTPROC)(EGLDisplay dpy,
+                                                          EGLContext ctx);
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLDESTROYSURFACEPROC)(EGLDisplay dpy,
+                                                          EGLSurface surface);
+typedef EGLDisplay(EGLAPIENTRYP PFNEGLGETDISPLAYPROC)(
+    EGLNativeDisplayType display_id);
+typedef __eglMustCastToProperFunctionPointerType(
+    EGLAPIENTRYP PFNEGLGETPROCADDRESSPROC)(const char* procname);
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLMAKECURRENTPROC)(EGLDisplay dpy,
+                                                       EGLSurface draw,
+                                                       EGLSurface read,
+                                                       EGLContext ctx);
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLSWAPBUFFERSPROC)(EGLDisplay dpy,
+                                                       EGLSurface surface);
+typedef EGLBoolean(EGLAPIENTRYP PFNEGLBINDAPIPROC)(EGLenum api);
+
+PFNEGLGETPROCADDRESSPROC eglGetProcAddressFn = nullptr;
+PFNEGLBINDAPIPROC eglBindAPIFn = nullptr;
+PFNEGLGETDISPLAYPROC eglGetDisplayFn = nullptr;
+PFNEGLMAKECURRENTPROC eglMakeCurrentFn = nullptr;
+PFNEGLSWAPBUFFERSPROC eglSwapBuffersFn = nullptr;
+PFNEGLCHOOSECONFIGPROC eglChooseConfigFn = nullptr;
+PFNEGLCREATECONTEXTPROC eglCreateContextFn = nullptr;
+PFNEGLDESTROYCONTEXTPROC eglDestroyContextFn = nullptr;
+PFNEGLCREATEWINDOWSURFACEPROC eglCreateWindowSurfaceFn = nullptr;
+PFNEGLDESTROYSURFACEPROC eglDestroySurfaceFn = nullptr;
+PFNGLREADPIXELSPROC glReadPixelsFn = nullptr;
+
+template <typename T>
+void AssignProc(T& fn, const char* name) {
+  fn = reinterpret_cast<T>(eglGetProcAddressFn(name));
+  CHECK(fn) << "Failed to get " << name;
+}
+
+void InitializeBindings() {
+  if (eglGetProcAddressFn)
+    return;
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::NativeLibraryLoadError error;
+  base::FilePath filename("libEGL.so");
+  base::NativeLibrary egl_library = base::LoadNativeLibrary(filename, &error);
+  CHECK(egl_library) << "Failed to load " << filename.MaybeAsASCII() << ": "
+                     << error.ToString();
+
+  eglGetProcAddressFn = reinterpret_cast<PFNEGLGETPROCADDRESSPROC>(
+      base::GetFunctionPointerFromNativeLibrary(egl_library,
+                                                "eglGetProcAddress"));
+  CHECK(eglGetProcAddressFn) << "Failed to get eglGetProcAddress.";
+
+  AssignProc(eglBindAPIFn, "eglBindAPI");
+  AssignProc(eglGetDisplayFn, "eglGetDisplay");
+  AssignProc(eglMakeCurrentFn, "eglMakeCurrent");
+  AssignProc(eglSwapBuffersFn, "eglSwapBuffers");
+  AssignProc(eglChooseConfigFn, "eglChooseConfig");
+  AssignProc(eglCreateContextFn, "eglCreateContext");
+  AssignProc(eglDestroyContextFn, "eglDestroyContext");
+  AssignProc(eglCreateWindowSurfaceFn, "eglCreateWindowSurface");
+  AssignProc(eglDestroySurfaceFn, "eglDestroySurface");
+  AssignProc(glReadPixelsFn, "glReadPixels");
+}
+
+}  // namespace
 
 static jlong JNI_ContextManager_GetDrawFnFunctionTable(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(draw_fn::GetDrawFnFunctionTable());
@@ -25,7 +110,9 @@ static jlong JNI_ContextManager_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new ContextManager);
 }
 
-ContextManager::ContextManager() = default;
+ContextManager::ContextManager() {
+  InitializeBindings();
+}
 
 ContextManager::~ContextManager() {
   DestroyContext();
@@ -67,7 +154,7 @@ void MergeTransaction(ASurfaceTransaction* transaction) {
 }
 
 EGLDisplay GetDisplay() {
-  static EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+  static EGLDisplay display = eglGetDisplayFn(EGL_DEFAULT_DISPLAY);
   CHECK_NE(display, EGL_NO_DISPLAY);
   return display;
 }
@@ -152,21 +239,21 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManager::Draw(
     int quarter_width = width / 4;
     int quarter_height = height / 4;
     GLubyte bytes[4] = {};
-    glReadPixels(quarter_width, quarter_height * 3, 1, 1, GL_RGBA,
-                 GL_UNSIGNED_BYTE, bytes);
+    glReadPixelsFn(quarter_width, quarter_height * 3, 1, 1, GL_RGBA,
+                   GL_UNSIGNED_BYTE, bytes);
     results[0] = rgbaToArgb(bytes);
-    glReadPixels(quarter_width * 3, quarter_height * 3, 1, 1, GL_RGBA,
-                 GL_UNSIGNED_BYTE, bytes);
+    glReadPixelsFn(quarter_width * 3, quarter_height * 3, 1, 1, GL_RGBA,
+                   GL_UNSIGNED_BYTE, bytes);
     results[1] = rgbaToArgb(bytes);
-    glReadPixels(quarter_width, quarter_height, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                 bytes);
+    glReadPixelsFn(quarter_width, quarter_height, 1, 1, GL_RGBA,
+                   GL_UNSIGNED_BYTE, bytes);
     results[2] = rgbaToArgb(bytes);
-    glReadPixels(quarter_width * 3, quarter_height, 1, 1, GL_RGBA,
-                 GL_UNSIGNED_BYTE, bytes);
+    glReadPixelsFn(quarter_width * 3, quarter_height, 1, 1, GL_RGBA,
+                   GL_UNSIGNED_BYTE, bytes);
     results[3] = rgbaToArgb(bytes);
   }
 
-  CHECK(eglSwapBuffers(GetDisplay(), surface_));
+  CHECK(eglSwapBuffersFn(GetDisplay(), surface_));
 
   return readback_quadrants ? base::android::ToJavaIntArray(env, results)
                             : nullptr;
@@ -206,14 +293,14 @@ EGLConfig GetConfig(bool* out_use_es3) {
         EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
         EGL_NONE};
     EGLint num_configs = 0;
-    if (!eglChooseConfig(GetDisplay(), config_attribs, nullptr, 0,
-                         &num_configs) ||
+    if (!eglChooseConfigFn(GetDisplay(), config_attribs, nullptr, 0,
+                           &num_configs) ||
         num_configs == 0) {
       continue;
     }
 
-    CHECK(eglChooseConfig(GetDisplay(), config_attribs, &config, 1,
-                          &num_configs));
+    CHECK(eglChooseConfigFn(GetDisplay(), config_attribs, &config, 1,
+                            &num_configs));
     use_es3 = try_es3;
     break;
   }
@@ -227,9 +314,6 @@ EGLConfig GetConfig(bool* out_use_es3) {
 void ContextManager::CreateContext(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& surface) {
-  // Initialize bindings.
-  android_webview::GpuServiceWebView::GetInstance();
-
   java_surface_.Reset(surface);
   if (java_surface_.is_null())
     return;
@@ -242,8 +326,8 @@ void ContextManager::CreateContext(
     std::vector<EGLint> egl_window_attributes;
     egl_window_attributes.push_back(EGL_NONE);
     surface_ =
-        eglCreateWindowSurface(GetDisplay(), GetConfig(&use_es3),
-                               native_window_, &egl_window_attributes[0]);
+        eglCreateWindowSurfaceFn(GetDisplay(), GetConfig(&use_es3),
+                                 native_window_, &egl_window_attributes[0]);
     CHECK(surface_);
   }
 
@@ -253,10 +337,10 @@ void ContextManager::CreateContext(
     context_attributes.push_back(use_es3 ? 3 : 2);
     context_attributes.push_back(EGL_NONE);
 
-    CHECK(eglBindAPI(EGL_OPENGL_ES_API));
+    CHECK(eglBindAPIFn(EGL_OPENGL_ES_API));
 
-    context_ = eglCreateContext(GetDisplay(), GetConfig(&use_es3), nullptr,
-                                context_attributes.data());
+    context_ = eglCreateContextFn(GetDisplay(), GetConfig(&use_es3), nullptr,
+                                  context_attributes.data());
     CHECK(context_);
   }
 }
@@ -272,11 +356,11 @@ void ContextManager::DestroyContext() {
   }
 
   DCHECK(context_);
-  CHECK(eglDestroyContext(GetDisplay(), context_));
+  CHECK(eglDestroyContextFn(GetDisplay(), context_));
   context_ = nullptr;
 
   DCHECK(surface_);
-  CHECK(eglDestroySurface(GetDisplay(), surface_));
+  CHECK(eglDestroySurfaceFn(GetDisplay(), surface_));
   surface_ = nullptr;
   ANativeWindow_release(native_window_);
   java_surface_.Reset();
@@ -285,7 +369,7 @@ void ContextManager::DestroyContext() {
 void ContextManager::MakeCurrent() {
   DCHECK(surface_);
   DCHECK(context_);
-  CHECK(eglMakeCurrent(GetDisplay(), surface_, surface_, context_));
+  CHECK(eglMakeCurrentFn(GetDisplay(), surface_, surface_, context_));
 }
 
 }  // namespace draw_fn
