@@ -202,10 +202,13 @@ MultiThreadedCertVerifier::~MultiThreadedCertVerifier() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Reset the callbacks for each InternalRequest to fulfill the respective
   // net::CertVerifier contract.
-  while (!request_list_.empty()) {
-    base::LinkNode<InternalRequest>* curr = request_list_.head();
-    curr->value()->ResetCallback();
-    curr->RemoveFromList();
+  for (base::LinkNode<InternalRequest>* node = request_list_.head();
+       node != request_list_.end();) {
+    // Resetting the callback may delete the request, so save a pointer to the
+    // next node first.
+    base::LinkNode<InternalRequest>* next_node = node->next();
+    node->value()->ResetCallback();
+    node = next_node;
   }
 }
 

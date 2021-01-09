@@ -50,6 +50,10 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier : public CertVerifier {
   Config config_;
   scoped_refptr<CertVerifyProc> verify_proc_;
 
+  // Holds a list of CertVerifier::Requests that have not yet completed or been
+  // deleted. It is used to ensure that when the MultiThreadedCertVerifier is
+  // deleted, we eagerly reset all of the callbacks provided to Verify(), and
+  // don't call them later, as required by the CertVerifier contract.
   base::LinkedList<InternalRequest> request_list_;
 
 #if defined(USE_NSS_CERTS)
