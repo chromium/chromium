@@ -33,6 +33,7 @@ constexpr int kBytesPerFrame = kBytesPerChannel * kChannelsPerFrame;
 constexpr float kBufferTimeDurationSec = 0.01f;  // 10ms
 constexpr size_t kBufferByteSize =
     kSampleRate * kBytesPerFrame * kBufferTimeDurationSec;
+constexpr int kAudioSilenceThreshold = 0;
 
 // Total delay: kBufferTimeDurationSec * kNumberBuffers
 constexpr int kNumberBuffers = 2;
@@ -94,7 +95,8 @@ AudioCapturerInstanceSet* AudioCapturerInstanceSet::Get() {
 }  // namespace
 
 AudioCapturerMac::AudioCapturerMac(const std::string& audio_device_uid)
-    : audio_device_uid_(audio_device_uid) {
+    : audio_device_uid_(audio_device_uid),
+      silence_detector_(kAudioSilenceThreshold) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(!audio_device_uid.empty());
 
@@ -170,15 +172,17 @@ void AudioCapturerMac::HandleInputBuffer(AudioQueueRef aq,
   DCHECK_EQ(input_queue_, aq);
   DCHECK(callback_);
 
-  // TODO(yuweih): Add silence detection and drop empty packets.
-
-  auto packet = std::make_unique<AudioPacket>();
-  packet->add_data(buffer->mAudioData, buffer->mAudioDataByteSize);
-  packet->set_encoding(AudioPacket::ENCODING_RAW);
-  packet->set_sampling_rate(kSampleRate);
-  packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
-  packet->set_channels(AudioPacket::CHANNELS_STEREO);
-  callback_.Run(std::move(packet));
+  if (!silence_detector_.IsSilence(
+          reinterpret_cast<const int16_t*>(buffer->mAudioData),
+          buffer->mAudioDataByteSize / sizeof(int16_t) / kChannelsPerFrame)) {
+    auto packet = std::make_unique<AudioPacket>();
+    packet->add_data(buffer->mAudioData, buffer->mAudioDataByteSize);
+    packet->set_encoding(AudioPacket::ENCODING_RAW);
+    packet->set_sampling_rate(kSampleRate);
+    packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
+    packet->set_channels(AudioPacket::CHANNELS_STEREO);
+    callback_.Run(std::move(packet));
+  }
 
   // Recycle the buffer.
   // Only the first 2 params are needed for recording.
@@ -241,6 +245,8 @@ bool AudioCapturerMac::StartInputQueue() {
     return false;
   }
   is_started_ = true;
+
+  silence_detector_.Reset(kSampleRate, kChannelsPerFrame);
 
   return true;
 }

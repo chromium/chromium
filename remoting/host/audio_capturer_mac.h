@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/audio_silence_detector.h"
 
 namespace remoting {
 
@@ -57,6 +58,7 @@ class AudioCapturerMac : public AudioCapturer {
   std::string audio_device_uid_;
 
   AudioStreamBasicDescription stream_description_;
+  AudioSilenceDetector silence_detector_;
   PacketCapturedCallback callback_;
   AudioQueueRef input_queue_ = nullptr;
   bool is_started_ = false;
