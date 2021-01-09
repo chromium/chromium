@@ -124,12 +124,13 @@ class CreditCardAccessoryControllerTest
     CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &af_manager_, &mock_af_driver_);
-    data_manager_.SetPrefService(profile_.GetPrefs());
+    data_manager_.SetPrefService(profile()->GetPrefs());
   }
 
   void TearDown() override {
     data_manager_.SetPrefService(nullptr);
     data_manager_.ClearCreditCards();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   CreditCardAccessoryController* controller() {
@@ -152,7 +153,6 @@ class CreditCardAccessoryControllerTest
   MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   TestAutofillManager af_manager_;
-  TestingProfile profile_;
 };
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {

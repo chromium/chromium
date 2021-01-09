@@ -87,7 +87,10 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     SimulateNavigateToUrl(GURL(kFakeDeepLink));
   }
 
-  void TearDown() override { coordinator_->RemoveObserver(&mock_observer_); }
+  void TearDown() override {
+    coordinator_->RemoveObserver(&mock_observer_);
+    RenderViewHostTestHarness::TearDown();
+  }
 
   void SimulateWebContentsVisibilityChanged(content::Visibility visibility) {
     coordinator_->OnVisibilityChanged(visibility);

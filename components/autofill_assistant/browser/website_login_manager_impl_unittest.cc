@@ -103,6 +103,7 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
 
  protected:
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
     profile_store_ = new password_manager::MockPasswordStore;
     ON_CALL(*profile_store_, IsAccountStore()).WillByDefault(Return(false));
     ASSERT_TRUE(profile_store_->Init(/*prefs=*/nullptr));
@@ -129,6 +130,7 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
       account_store_->ShutdownOnUIThread();
     }
     profile_store_->ShutdownOnUIThread();
+    RenderViewHostTestHarness::TearDown();
   }
 
   WebsiteLoginManagerImpl* manager() { return manager_.get(); }

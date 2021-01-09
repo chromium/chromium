@@ -76,7 +76,10 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         web_contents(), mock_manual_filling_controller_.AsWeakPtr());
   }
 
-  void TearDown() override { personal_data_manager()->ClearProfiles(); }
+  void TearDown() override {
+    personal_data_manager()->ClearProfiles();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
 
   AddressAccessoryController* controller() {
     return AddressAccessoryControllerImpl::FromWebContents(web_contents());

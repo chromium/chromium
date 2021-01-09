@@ -217,6 +217,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     if (mock_password_store_)
       mock_password_store_->ShutdownOnUIThread();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void CreateSheetController(
@@ -869,9 +870,9 @@ class PasswordAccessoryControllerWithTestStoreTest
   }
 
   void TearDown() override {
-    PasswordAccessoryControllerTest::TearDown();
     test_store_->ShutdownOnUIThread();
     task_environment()->RunUntilIdle();
+    PasswordAccessoryControllerTest::TearDown();
   }
 
   void DisableFeature() {
@@ -882,14 +883,13 @@ class PasswordAccessoryControllerWithTestStoreTest
 
  protected:
   PasswordStore* CreateInternalPasswordStore() override {
+    test_store_ = CreateAndUseTestPasswordStore(profile());
     return test_store_.get();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingProfile profile_;
-  scoped_refptr<TestPasswordStore> test_store_ =
-      CreateAndUseTestPasswordStore(&profile_);
+  scoped_refptr<TestPasswordStore> test_store_;
 };
 
 TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherPasswords) {

@@ -143,7 +143,10 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     controller_->AddObserver(&mock_observer_);
   }
 
-  void TearDown() override { controller_->RemoveObserver(&mock_observer_); }
+  void TearDown() override {
+    controller_->RemoveObserver(&mock_observer_);
+    RenderViewHostTestHarness::TearDown();
+  }
 
  protected:
   static SupportedScriptProto* AddRunnableScript(

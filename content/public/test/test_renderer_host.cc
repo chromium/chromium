@@ -169,6 +169,7 @@ RenderViewHostTestEnabler::~RenderViewHostTestEnabler() {
 // RenderViewHostTestHarness --------------------------------------------------
 
 RenderViewHostTestHarness::~RenderViewHostTestHarness() {
+  DCHECK(!task_environment_) << "TearDown() was not called.";
 }
 
 NavigationController& RenderViewHostTestHarness::controller() {
