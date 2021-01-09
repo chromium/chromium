@@ -167,6 +167,37 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 }
 
+// Tests that the window shape is updated from the
+// |NonClientView::GetWindowMask|.
+TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(host_platform);
+  auto* content_window =
+      DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
+          widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(content_window);
+  // alpha_shape for the layer of content window is updated from the
+  // |NonClientView::GetWindowMask|.
+  EXPECT_TRUE(host_platform
+                  ->GetWindowMaskForWindowShape(content_window->bounds().size())
+                  .has_value());
+  EXPECT_TRUE(content_window->layer()->alpha_shape());
+
+  // When fullscreen mode, alpha_shape is set to empty since there is no
+  // |NonClientView::GetWindowMask|.
+  host_platform->SetFullscreen(true);
+  widget->SetBounds(gfx::Rect(800, 800));
+  EXPECT_FALSE(
+      host_platform
+          ->GetWindowMaskForWindowShape(content_window->bounds().size())
+          .has_value());
+  EXPECT_FALSE(content_window->layer()->alpha_shape());
+}
+
 // A Widget that allows setting the min/max size for the widget.
 class CustomSizeWidget : public Widget {
  public:

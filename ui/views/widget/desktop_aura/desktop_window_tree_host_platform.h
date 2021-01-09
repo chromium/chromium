@@ -42,6 +42,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   aura::Window* GetContentWindow();
   const aura::Window* GetContentWindow() const;
 
+  bool is_shape_explicitly_set() const { return is_shape_explicitly_set_; }
+
   // DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
@@ -175,6 +177,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   // Used for tab dragging in move loop requests.
   WindowMoveClientPlatform window_move_client_;
+
+  // ui::Layer::SetAlphaShape can be set from either SetShape or default window
+  // mask. When explicitly setting from SetShape, |explicitly_set_shape_:true|.
+  bool is_shape_explicitly_set_ = false;
 
   base::WeakPtrFactory<DesktopWindowTreeHostPlatform> close_widget_factory_{
       this};
