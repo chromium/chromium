@@ -1102,10 +1102,10 @@ void LocalStorageImpl::OnOriginsDeleted(leveldb::Status status) {
 void LocalStorageImpl::OnShutdownComplete() {
   DCHECK(shutdown_complete_callback_);
   // Flush any final tasks on the DB task runner before invoking the callback.
-  leveldb_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
   PurgeAllStorageAreas();
   database_.reset();
+  leveldb_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
 }
 
 void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
