@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DocumentMetadata} from '../constants.js';
+
 export class ViewerPropertiesDialogElement extends PolymerElement {
   static get is() {
     return 'viewer-properties-dialog';
@@ -17,6 +19,13 @@ export class ViewerPropertiesDialogElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
+  static get properties() {
+    return {
+      /** @type {!DocumentMetadata} */
+      documentMetadata: Object,
+    };
+  }
+
   /**
    * @return {!CrDialogElement}
    * @private
@@ -24,6 +33,15 @@ export class ViewerPropertiesDialogElement extends PolymerElement {
   getDialog_() {
     return /** @type {!CrDialogElement} */ (
         this.shadowRoot.querySelector('cr-dialog'));
+  }
+
+  /**
+   * @param {string} value
+   * @return {string}
+   * @private
+   */
+  getOrPlaceholder_(value) {
+    return value || '-';
   }
 
   /** @private */

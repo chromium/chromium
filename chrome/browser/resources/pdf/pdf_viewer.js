@@ -24,7 +24,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
-import {Attachment, FittingType, Point, SaveRequestType} from './constants.js';
+import {Attachment, DocumentMetadata, FittingType, Point, SaveRequestType} from './constants.js';
 import {PluginController} from './controller.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
@@ -61,15 +61,6 @@ let EmailMessageData;
  * }}
  */
 let NavigateMessageData;
-
-/**
- * @typedef {{
- *   type: string,
- *   title: string,
- *   canSerializeDocument: boolean,
- * }}
- */
-let MetadataMessageData;
 
 /**
  * @typedef {{
@@ -182,6 +173,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       documentHasFocus_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @private {!DocumentMetadata} */
+      documentMetadata_: {
+        type: Object,
+        value: () => {},
       },
 
       /** @private */
@@ -940,7 +937,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
             destinationData.zoom);
         return;
       case 'metadata':
-        this.setDocumentMetadata_(/** @type {!MetadataMessageData} */ (data));
+        this.setDocumentMetadata_(
+            /** @type {{ metadataData: !DocumentMetadata }} */ (data)
+                .metadataData);
         return;
       case 'setIsEditing':
         // Editing mode can only be entered once, and cannot be exited.
@@ -1056,13 +1055,15 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /**
    * Sets document metadata from the current controller.
-   * @param {!MetadataMessageData} metadata
+   * @param {!DocumentMetadata} metadata
    * @private
    */
   setDocumentMetadata_(metadata) {
-    this.title_ = metadata.title || getFilenameFromURL(this.originalUrl);
+    this.documentMetadata_ = metadata;
+    this.title_ =
+        this.documentMetadata_.title || getFilenameFromURL(this.originalUrl);
     document.title = this.title_;
-    this.canSerializeDocument_ = metadata.canSerializeDocument;
+    this.canSerializeDocument_ = this.documentMetadata_.canSerializeDocument;
   }
 
   /**

@@ -46,15 +46,21 @@
       </tr>
       <tr>
         <td class="name">$i18n{propertiesTitle}</td>
-        <td class="value" id="title">-</td>
+        <td class="value" id="title">
+          [[getOrPlaceholder_(documentMetadata.title)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesAuthor}</td>
-        <td class="value" id="author">-</td>
+        <td class="value" id="author">
+          [[getOrPlaceholder_(documentMetadata.author)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesSubject}</td>
-        <td class="value" id="subject">-</td>
+        <td class="value" id="subject">
+          [[getOrPlaceholder_(documentMetadata.subject)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesKeywords}</td>
@@ -70,11 +76,15 @@
       </tr>
       <tr class="break">
         <td class="name">$i18n{propertiesApplication}</td>
-        <td class="value" id="application">-</td>
+        <td class="value" id="application">
+          [[getOrPlaceholder_(documentMetadata.creator)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesPdfProducer}</td>
-        <td class="value" id="pdf-producer">-</td>
+        <td class="value" id="pdf-producer">
+          [[getOrPlaceholder_(documentMetadata.producer)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesPdfVersion}</td>

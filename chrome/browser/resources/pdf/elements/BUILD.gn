@@ -157,6 +157,7 @@ js_library("viewer-pen-options") {
 
 js_library("viewer-properties-dialog") {
   deps = [
+    "..:constants",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]

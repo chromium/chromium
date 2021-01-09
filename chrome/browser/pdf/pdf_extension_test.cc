@@ -918,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerPdfSidenav) {
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest,
                        ViewerPropertiesDialogTest) {
-  RunTestsInJsModule("viewer_properties_dialog_test.js", "test.pdf");
+  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnailBar) {

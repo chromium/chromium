@@ -33,10 +33,41 @@ function getPropertiesDialog() {
       viewer.shadowRoot.querySelector('#properties-dialog'));
 }
 
+/**
+ * @param {string} field
+ * @param {string} expectedValue
+ */
+function assertField(field, expectedValue) {
+  const actualValue = getPropertiesDialog()
+                          .shadowRoot.querySelector(`#${field}`)
+                          .textContent.trim();
+  chrome.test.assertEq(expectedValue, actualValue);
+}
+
 const tests = [
   async function testPropertiesDialog() {
     await ensurePropertiesDialogOpen();
+
+    // TODO(crbug.com/93169): None of the following expected values should be
+    // '-' when support for every property is implemented.
+    [['file-name', '-'],
+     ['file-size', '-'],
+     ['title', 'Sample PDF Document Info'],
+     ['author', 'Chromium Authors'],
+     ['subject', 'Testing'],
+     ['keywords', '-'],
+     ['created', '-'],
+     ['modified', '-'],
+     ['application', 'Your Preferred Text Editor'],
+     ['pdf-producer', 'fixup_pdf_template.py'],
+     ['pdf-version', '-'],
+     ['page-count', '-'],
+     ['page-size', '-'],
+     ['fast-web-view', '-'],
+    ].forEach(([field, expectedValue]) => assertField(field, expectedValue));
+
     await ensurePropertiesDialogClose();
+
     chrome.test.succeed();
   },
 ];

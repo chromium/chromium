@@ -129,7 +129,12 @@ constexpr char kJSBookmarksType[] = "bookmarks";
 constexpr char kJSBookmarksData[] = "bookmarksData";
 // Metadata (Plugin -> Page)
 constexpr char kJSMetadataType[] = "metadata";
+constexpr char kJSMetadataData[] = "metadataData";
 constexpr char kJSTitle[] = "title";
+constexpr char kJSAuthor[] = "author";
+constexpr char kJSSubject[] = "subject";
+constexpr char kJSCreator[] = "creator";
+constexpr char kJSProducer[] = "producer";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
 // Get password (Plugin -> Page)
 constexpr char kJSGetPasswordType[] = "getPassword";
@@ -2373,14 +2378,31 @@ void OutOfProcessInstance::SendMetadata() {
   pp::VarDictionary metadata_message;
   metadata_message.Set(pp::Var(kType), pp::Var(kJSMetadataType));
 
-  const std::string& title = engine()->GetDocumentMetadata().title;
-  if (!title.empty())
-    metadata_message.Set(pp::Var(kJSTitle), pp::Var(title));
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+  pp::VarDictionary metadata_data;
 
-  metadata_message.Set(
+  if (!document_metadata.title.empty())
+    metadata_data.Set(pp::Var(kJSTitle), pp::Var(document_metadata.title));
+
+  if (!document_metadata.author.empty())
+    metadata_data.Set(pp::Var(kJSAuthor), pp::Var(document_metadata.author));
+
+  if (!document_metadata.subject.empty())
+    metadata_data.Set(pp::Var(kJSSubject), pp::Var(document_metadata.subject));
+
+  if (!document_metadata.creator.empty())
+    metadata_data.Set(pp::Var(kJSCreator), pp::Var(document_metadata.creator));
+
+  if (!document_metadata.producer.empty()) {
+    metadata_data.Set(pp::Var(kJSProducer),
+                      pp::Var(document_metadata.producer));
+  }
+
+  metadata_data.Set(
       pp::Var(kJSCanSerializeDocument),
       pp::Var(IsSaveDataSizeValid(engine()->GetLoadedByteSize())));
 
+  metadata_message.Set(pp::Var(kJSMetadataData), metadata_data);
   PostMessage(metadata_message);
 }
 

@@ -226,6 +226,7 @@
 
 <template is="dom-if" if="[[showPropertiesDialog_]]" restamp>
   <viewer-properties-dialog id="properties-dialog"
+      document-metadata="[[documentMetadata_]]"
       on-close="onPropertiesDialogClose_">
   </viewer-properties-dialog>
 </template>
