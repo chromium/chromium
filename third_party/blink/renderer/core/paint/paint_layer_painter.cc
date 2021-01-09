@@ -409,8 +409,10 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
-  PhysicalOffset offset_from_root;
-  paint_layer_.ConvertToLayerCoords(painting_info.root_layer, offset_from_root);
+  PhysicalOffset offset_from_root =
+      paint_layer_.GetLayoutObject().FirstFragment().PaintOffset();
+  if (const PaintLayer* root = painting_info.root_layer)
+    offset_from_root -= root->GetLayoutObject().FirstFragment().PaintOffset();
   offset_from_root += subpixel_accumulation;
 
   PhysicalRect bounds = paint_layer_.PhysicalBoundingBox(offset_from_root);
