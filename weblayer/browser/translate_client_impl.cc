@@ -53,8 +53,7 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
 TranslateClientImpl::TranslateClientImpl(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       translate_driver_(&web_contents->GetController(),
-                        /*url_language_histogram=*/nullptr,
-                        /*translate_model_service=*/nullptr),
+                        /*url_language_histogram=*/nullptr),
       translate_manager_(new translate::TranslateManager(
           this,
           TranslateRankerFactory::GetForBrowserContext(

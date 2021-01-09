@@ -130,9 +130,7 @@ void PerFrameContentTranslateDriver::PendingRequestStats::Report() {
 PerFrameContentTranslateDriver::PerFrameContentTranslateDriver(
     content::NavigationController* nav_controller,
     language::UrlLanguageHistogram* url_language_histogram)
-    : ContentTranslateDriver(nav_controller,
-                             url_language_histogram,
-                             /*translate_model_service=*/nullptr) {}
+    : ContentTranslateDriver(nav_controller, url_language_histogram) {}
 
 PerFrameContentTranslateDriver::~PerFrameContentTranslateDriver() = default;
 
