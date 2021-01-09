@@ -7,51 +7,53 @@ module location.nearby.connections.mojom;
 import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/file.mojom";
 
-// Generic result status of NearbyConnections API calls.
+// Generic result status of NearbyConnections API calls. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum Status {
   // The operation was successful.
-  kSuccess,
+  kSuccess = 0,
   // The operation failed, without any more information.
-  kError,
+  kError = 1,
   // The app called an API method out of order (i.e. another method is expected
   // to be called first).
-  kOutOfOrderApiCall,
+  kOutOfOrderApiCall = 2,
   // The app already has active operations (advertising, discovering, or
   // connected to other devices) with another Strategy. Stop these operations on
   // the current Strategy before trying to advertise or discover with a new
   // Strategy.
-  kAlreadyHaveActiveStrategy,
+  kAlreadyHaveActiveStrategy = 3,
   // The app is already advertising; call StopAdvertising() before trying to
   // advertise again.
-  kAlreadyAdvertising,
+  kAlreadyAdvertising = 4,
   // The app is already discovering; call StopDiscovery() before trying to
   // discover again.
-  kAlreadyDiscovering,
+  kAlreadyDiscovering = 5,
   // An attempt to read from/write to a connected remote endpoint failed. If
   // this occurs repeatedly, consider invoking DisconnectFromEndpoint().
-  kEndpointIOError,
+  kEndpointIOError = 6,
   // An attempt to interact with a remote endpoint failed because it's unknown
   // to us -- it's either an endpoint that was never discovered, or an endpoint
   // that never connected to us (both of which are indicative of bad input from
   // the client app).
-  kEndpointUnknown,
+  kEndpointUnknown = 7,
   // The remote endpoint rejected the connection request.
-  kConnectionRejected,
+  kConnectionRejected = 8,
   // The app is already connected to the specified endpoint. Multiple
   // connections to a remote endpoint cannot be maintained simultaneously.
-  kAlreadyConnectedToEndpoint,
+  kAlreadyConnectedToEndpoint = 9,
   // The remote endpoint is not connected; messages cannot be sent to it.
-  kNotConnectedToEndpoint,
+  kNotConnectedToEndpoint = 10,
   // There was an error trying to use the device's Bluetooth capabilities.
-  kBluetoothError,
+  kBluetoothError = 11,
   // There was an error trying to use the device's Bluetooth Low Energy
   // capabilities.
-  kBleError,
+  kBleError = 12,
   // There was an error trying to use the device's WiFi capabilities.
-  kWifiLanError,
+  kWifiLanError = 13,
   // An attempt to interact with an in-flight Payload failed because it's
   // unknown to us.
-  kPayloadUnknown,
+  kPayloadUnknown = 14,
 };
 
 // Information about a connection that is being initiated.

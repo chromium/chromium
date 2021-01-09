@@ -218,6 +218,8 @@ void NearbyConnectionBrokerImpl::OnDiscoveryFailure() {
 }
 
 void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
+  util::RecordRequestConnectionResult(status);
+
   // In the success case, OnConnectionInitiated() is expected to be called to
   // continue the flow, so nothing else needs to be done in this callback.
   if (status == Status::kSuccess)
@@ -228,6 +230,8 @@ void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
 }
 
 void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
+  util::RecordAcceptConnectionResult(status);
+
   if (status == Status::kSuccess) {
     DCHECK_EQ(ConnectionStatus::kAcceptingConnection, connection_status_);
     TransitionToStatus(
@@ -242,6 +246,8 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
 void NearbyConnectionBrokerImpl::OnSendPayloadResult(
     SendMessageCallback callback,
     Status status) {
+  util::RecordSendPayloadResult(status);
+
   bool success = status == Status::kSuccess;
   std::move(callback).Run(success);
 
@@ -256,6 +262,8 @@ void NearbyConnectionBrokerImpl::OnSendPayloadResult(
 }
 
 void NearbyConnectionBrokerImpl::OnDisconnectFromEndpointResult(Status status) {
+  util::RecordDisconnectFromEndpointResult(status);
+
   // If the disconnection was successful, wait for the OnDisconnected()
   // callback.
   if (status == Status::kSuccess)

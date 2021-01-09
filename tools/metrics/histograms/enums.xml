@@ -50940,6 +50940,24 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="WebRTC"/>
 </enum>
 
+<enum name="NearbyConnectionsStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already have active strategy"/>
+  <int value="4" label="Already advertising"/>
+  <int value="5" label="Already discovering"/>
+  <int value="6" label="Endpoint IO error"/>
+  <int value="7" label="Endpoint unknown"/>
+  <int value="8" label="Connection rejected"/>
+  <int value="9" label="Already connected to endpoint"/>
+  <int value="10" label="Not connected to endpoint"/>
+  <int value="11" label="Bluetooth error"/>
+  <int value="12" label="BLE error"/>
+  <int value="13" label="Wi-Fi LAN error"/>
+  <int value="14" label="Payload unknown"/>
+</enum>
+
 <enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Match"/>

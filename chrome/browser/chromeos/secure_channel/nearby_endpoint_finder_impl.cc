@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
@@ -25,6 +26,8 @@ const size_t kEndpointIdLength = 4u;
 const size_t kEndpointInfoLength = 4u;
 
 void OnStopDiscoveryDestructorResult(Status status) {
+  util::RecordStopDiscoveryResult(status);
+
   if (status != Status::kSuccess)
     PA_LOG(WARNING) << "Failed to stop discovery as part of destructor";
 }
@@ -100,6 +103,8 @@ void NearbyEndpointFinderImpl::OnEndpointFound(const std::string& endpoint_id,
 }
 
 void NearbyEndpointFinderImpl::OnStartDiscoveryResult(Status status) {
+  util::RecordStartDiscoveryResult(status);
+
   if (status != Status::kSuccess) {
     PA_LOG(WARNING) << "Failed to start Nearby discovery: " << status;
     is_discovery_active_ = false;
@@ -117,6 +122,8 @@ void NearbyEndpointFinderImpl::OnStartDiscoveryResult(Status status) {
 }
 
 void NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult(Status status) {
+  util::RecordInjectEndpointResult(status);
+
   if (status != Status::kSuccess) {
     PA_LOG(WARNING) << "Failed to inject Bluetooth endpoint: " << status;
     NotifyEndpointDiscoveryFailure();
@@ -129,6 +136,8 @@ void NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult(Status status) {
 void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
     location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
     Status status) {
+  util::RecordStopDiscoveryResult(status);
+
   is_discovery_active_ = false;
 
   if (status != Status::kSuccess) {

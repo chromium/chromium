@@ -5,9 +5,27 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 
+#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+
 namespace chromeos {
 namespace secure_channel {
 namespace util {
+
+// Logs the result of Nearby Connections API functions.
+void RecordStartDiscoveryResult(
+    location::nearby::connections::mojom::Status status);
+void RecordInjectEndpointResult(
+    location::nearby::connections::mojom::Status status);
+void RecordStopDiscoveryResult(
+    location::nearby::connections::mojom::Status status);
+void RecordRequestConnectionResult(
+    location::nearby::connections::mojom::Status status);
+void RecordAcceptConnectionResult(
+    location::nearby::connections::mojom::Status status);
+void RecordSendPayloadResult(
+    location::nearby::connections::mojom::Status status);
+void RecordDisconnectFromEndpointResult(
+    location::nearby::connections::mojom::Status status);
 
 // Enumeration of possible message transfer action via Nearby Connection
 // library. Keep in sync with corresponding enum in

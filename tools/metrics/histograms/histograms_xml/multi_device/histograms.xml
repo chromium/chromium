@@ -316,6 +316,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
+    enum="NearbyConnectionsStatus" expires_after="2022-01-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of invoking Nearby Connection's {Function} API function
+    within SecureChannel.
+
+    Emitted when the API call returns.
+  </summary>
+  <token key="Function">
+    <variant name="AcceptConnection"/>
+    <variant name="DisconnectFromEndpoint"/>
+    <variant name="InjectEndpoint"/>
+    <variant name="RequestConnection"/>
+    <variant name="SendPayload"/>
+    <variant name="StartDiscovery"/>
+    <variant name="StopDiscovery"/>
+  </token>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
     enum="BooleanSuccess" expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
