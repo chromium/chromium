@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   // calls |callback| when the reading operation is done.
   void ReadFromFile(const base::FilePath& profile_path, Callback callback);
 
+  // Removes app launching and app windows for an app with the given |app_id|
+  // from |profile_path_to_restore_data_| for |profile_path| .
+  void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
+
  private:
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.

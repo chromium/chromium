@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // data.
   void Flush(const base::FilePath& profile_path);
 
+  // Removes app launching and app windows for an app with the given |app_id|
+  // from |file_path_to_restore_data_| for |profile_path| .
+  void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
+
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:

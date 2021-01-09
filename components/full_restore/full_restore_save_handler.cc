@@ -142,6 +142,19 @@ void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
                          weak_factory_.GetWeakPtr(), profile_path));
 }
 
+void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
+                                       const std::string& app_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second.RemoveApp(app_id);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {
   if (!save_timer_.IsRunning() && save_running_.empty()) {
     save_timer_.Start(FROM_HERE, kSaveDelay,

@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_data_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/chromeos/full_restore/new_user_restore_pref_handler.h"
@@ -40,7 +41,9 @@ const int kMaxConsecutiveRestoreSelectionCount = 3;
 
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
-      app_launch_handler_(std::make_unique<AppLaunchHandler>(profile_)) {
+      app_launch_handler_(std::make_unique<AppLaunchHandler>(profile_)),
+      restore_data_handler_(
+          std::make_unique<FullRestoreDataHandler>(profile_)) {
   // If the system crashed before reboot, show the restore notification.
   if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     ShowRestoreNotification(kRestoreForCrashNotificationId);

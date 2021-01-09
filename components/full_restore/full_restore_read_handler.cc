@@ -37,6 +37,15 @@ void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
                      std::move(callback)));
 }
 
+void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
+                                       const std::string& app_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second->RemoveApp(app_id);
+}
+
 void FullRestoreReadHandler::OnGetRestoreData(
     const base::FilePath& profile_path,
     Callback callback,
