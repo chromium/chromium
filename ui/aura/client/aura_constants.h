@@ -18,7 +18,7 @@ namespace ws {
 namespace mojom {
 enum class WindowType;
 }
-}
+}  // namespace ws
 
 namespace aura {
 namespace client {
@@ -83,12 +83,6 @@ AURA_EXPORT extern const WindowProperty<bool>* const kCreatedByUserGesture;
 // A property key to indicate that a window should show that it deserves
 // attention.
 AURA_EXPORT extern const WindowProperty<bool>* const kDrawAttentionKey;
-
-// A property key to store a bounds in screen coordinates that an embedded
-// window wants to be moved out of. This is only used in MUS to move the
-// embedding top-level window at the other side.
-AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const
-    kEmbeddedWindowEnsureNotInRect;
 
 // A property key to store the focus client on the window.
 AURA_EXPORT extern const WindowProperty<FocusClient*>* const kFocusClientKey;
