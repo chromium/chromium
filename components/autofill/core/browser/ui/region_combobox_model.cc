@@ -34,7 +34,7 @@ void RegionComboboxModel::LoadRegionData(const std::string& country_code,
   region_data_loader_->LoadRegionData(
       country_code,
       base::BindRepeating(&RegionComboboxModel::OnRegionDataLoaded,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
       timeout_ms);
 }
 
