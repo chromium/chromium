@@ -11103,6 +11103,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Menu item to launch the Chrome watch feature">
       Watch
     </message>
+
+    <!-- ChromeBeta bubble -->
+    <message name="IDS_CHROMEBETA_RELAUNCH_BUTTON_LABEL"
+             desc="Label on the button in the footer of the Chrome Beta bubble which will relaunch the browser.">
+      Relaunch
+    </message>
   </messages>
 </release>
 </grit>

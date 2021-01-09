@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_provider.h"
 
 class LabsComboboxModel : public ui::ComboboxModel {
  public:
@@ -39,21 +42,35 @@ ChromeLabsItemView::ChromeLabsItemView(
     : feature_entry_(feature_entry) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets(10));
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_CONTROL_LIST_VERTICAL),
+                  0)));
+
   AddChildView(views::Builder<views::Label>()
+                   .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetText(lab.visible_name)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .Build());
   AddChildView(
       views::Builder<views::Label>()
           .SetText(lab.visible_description)
+          .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
                            views::MinimumFlexSizeRule::kPreferred,
                            views::MaximumFlexSizeRule::kPreferred, true))
+          .SetBorder(views::CreateEmptyBorder(
+              gfx::Insets(0, 0,
+                          views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0)))
           .Build());
+
   AddChildView(views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(

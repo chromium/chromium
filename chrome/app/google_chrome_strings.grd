@@ -1247,6 +1247,11 @@ Google Chrome is unable to recover your settings.
           Chrome OS can always restore your apps &amp; pages after reboot without asking every time.
         </message>
       </if>
+
+      <!-- ChromeBeta bubble -->
+      <message name="IDS_CHROMEBETA_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Beta bubble when relaunch is needed for changes to take effect.">
+        Your changes will take effect the next time you relaunch Google Chrome.
+      </message>
     </messages>
   </release>
 </grit>

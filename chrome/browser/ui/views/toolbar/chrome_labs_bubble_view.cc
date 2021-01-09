@@ -11,12 +11,15 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -70,24 +73,31 @@ class ChromeLabsFooter : public views::View {
  public:
   ChromeLabsFooter() {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kVertical);
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
     AddChildView(
         views::Builder<views::Label>()
             .CopyAddressTo(&restart_label_)
-            .SetText(base::ASCIIToUTF16(
-                "Your changes will take effect the next time you "
-                "relaunch Google Chrome."))
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_CHROMEBETA_RELAUNCH_FOOTER_MESSAGE))
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetProperty(views::kFlexBehaviorKey,
                          views::FlexSpecification(
                              views::MinimumFlexSizeRule::kPreferred,
                              views::MaximumFlexSizeRule::kPreferred, true))
+            .SetBorder(views::CreateEmptyBorder(
+                gfx::Insets(0, 0,
+                            views::LayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                            0)))
             .Build());
     AddChildView(views::Builder<views::MdTextButton>()
                      .CopyAddressTo(&restart_button_)
                      .SetCallback(base::BindRepeating(&chrome::AttemptRestart))
-                     .SetText(base::ASCIIToUTF16("Relaunch"))
+                     .SetText(l10n_util::GetStringUTF16(
+                         IDS_CHROMEBETA_RELAUNCH_BUTTON_LABEL))
+                     .SetProminent(true)
                      .Build());
     SetBackground(views::CreateThemedSolidBackground(
         this, ui::NativeTheme::kColorId_BubbleFooterBackground));
@@ -153,15 +163,16 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   flags_state_ = about_flags::GetCurrentFlagsState();
 
   menu_item_container_ = AddChildView(
-      views::Builder<views::View>()
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
                            views::MinimumFlexSizeRule::kScaleToZero,
                            views::MaximumFlexSizeRule::kPreferred, true))
+          .SetBorder(views::CreateEmptyBorder(
+              views::LayoutProvider::Get()->GetInsetsMetric(
+                  views::INSETS_DIALOG)))
           .Build());
-  menu_item_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets(10));
 
   // Create each lab item.
   const std::vector<LabInfo>& all_labs = model_->GetLabInfo();

@@ -11,11 +11,9 @@
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 // TODO(elainechien): Use composition instead of inheritance.
-// TODO(elainechien): Add screenshots and strings for translation when UI is
-// finished.
-// TODO(elainechien): Formatting for items in child views.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   static void Show(views::View* anchor_view,
@@ -54,7 +52,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   flags_ui::FlagsState* flags_state_;
 
   // This view will hold all the child lab items.
-  views::View* menu_item_container_;
+  views::FlexLayoutView* menu_item_container_;
 
   std::unique_ptr<ChromeLabsBubbleViewModel> model_;
 
