@@ -802,10 +802,7 @@ void RenderWidgetHostViewMac::GetPageTextForSpeech(SpeechCallback callback) {
 
   GetWebContents()->RequestAXTreeSnapshot(
       base::BindOnce(CombineTextNodesAndMakeCallback, std::move(callback)),
-      ui::AXMode::kWebContents,
-      /* exclude_offscreen= */ false,
-      /* max_nodes= */ 5000,
-      /* timeout= */ {});
+      ui::AXMode::kWebContents);
 }
 
 void RenderWidgetHostViewMac::SpeakSelection() {

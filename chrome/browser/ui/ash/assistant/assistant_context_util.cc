@@ -106,10 +106,7 @@ void RequestAssistantStructureForActiveBrowserWindow(
       base::BindOnce(&CreateAssistantStructureAndRunCallback,
                      std::move(callback),
                      CreateAssistantExtra(web_contents, window_bounds)),
-      ui::kAXModeComplete,
-      /* exclude_offscreen= */ false,
-      /* max_nodes= */ 5000,
-      /* timeout= */ {});
+      ui::kAXModeComplete);
 }
 
 void RequestAssistantStructureForWebContentsForTesting(
@@ -119,8 +116,5 @@ void RequestAssistantStructureForWebContentsForTesting(
       base::BindOnce(
           &CreateAssistantStructureAndRunCallback, std::move(callback),
           CreateAssistantExtra(web_contents, gfx::Rect(0, 0, 100, 100))),
-      ui::kAXModeComplete,
-      /* exclude_offscreen= */ false,
-      /* max_nodes= */ 5000,
-      /* timeout= */ {});
+      ui::kAXModeComplete);
 }

@@ -13,7 +13,6 @@ import "content/common/web_ui.mojom";
 import "content/public/common/window_container_type.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
@@ -70,30 +69,6 @@ interface FrameHTMLSerializerHandler {
   Done();
 };
 
-struct SnapshotAccessibilityTreeParams {
-  // See ui/accessibility/ax_mode.h for valid values of |ax_mode|.
-  uint32 ax_mode;
-
-  // If true, nodes that are entirely offscreen will have their entire
-  // subtree excluded.  Note that this heuristic is imperfect, and
-  // an absolute-positioned node that's visible, but whose ancestors
-  // are entirely offscreen, may get excluded.
-  bool exclude_offscreen;
-
-  // The maximum number of nodes to snapshot before exiting early.
-  // Note that this is not a hard limit; once this limit is reached a
-  // few more nodes may be added in order to ensure a well-formed
-  // tree is returned. Use 0 for no max. The corresponding C++ code
-  // uses size_t.
-  uint64 max_nodes;
-
-  // The maximum amount of time to spend snapshotting the tree. Like
-  // max_nodes, this is not a hard limit, and once this limit is reached
-  // a few more nodes may be added in order to ensure a well-formed tree.
-  // Use 0 for no timeout.
-  mojo_base.mojom.TimeDelta timeout;
-};
-
 // Implemented by the frame provider (e.g. renderer processes).
 interface Frame {
   GetInterfaceProvider(
@@ -117,7 +92,12 @@ interface Frame {
 
   // Requests a one-time snapshot of the accessibility tree without enabling
   // accessibility if it wasn't already enabled.
-  SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)
+  // See ui/accessibility/ax_mode.h for valid values of |ax_mode|.
+  //
+  // TODO(crbug.com/1141990): AXTreeUpdate can be quite large, hence the
+  // [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate
+  // can be reworked to avoid very large serialized values.
+  SnapshotAccessibilityTree(uint32 ax_mode)
       => (ax.mojom.AXTreeUpdate snapshot);
 
   // Get HTML data by serializing the target frame and replacing all resource

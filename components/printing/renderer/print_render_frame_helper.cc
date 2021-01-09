@@ -2005,10 +2005,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
   if (delegate_->ShouldGenerateTaggedPDF()) {
     snapshotter = render_frame()->CreateAXTreeSnapshotter();
-    snapshotter->Snapshot(ui::AXMode::kPDF,
-                          /* exclude_offscreen= */ false,
-                          /* max_node_count= */ 0,
-                          /* timeout= */ {}, &metafile.accessibility_tree());
+    snapshotter->Snapshot(ui::AXMode::kPDF, 0, &metafile.accessibility_tree());
   }
 
   mojom::DidPrintDocumentParamsPtr page_params =
@@ -2517,10 +2514,7 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   // http://crbug.com/1039817
   if (snapshotter_ && page_number == 0) {
     ui::AXTreeUpdate accessibility_tree;
-    snapshotter_->Snapshot(ui::AXMode::kPDF,
-                           /* exclude_offscreen= */ false,
-                           /* max_node_count= */ 0,
-                           /* timeout= */ {}, &accessibility_tree);
+    snapshotter_->Snapshot(ui::AXMode::kPDF, 0, &accessibility_tree);
     GetPrintManagerHost()->SetAccessibilityTree(
         print_pages_params_->params->document_cookie, accessibility_tree);
   }

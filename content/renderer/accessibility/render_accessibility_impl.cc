@@ -93,6 +93,27 @@ void SetAccessibilityCrashKey(ui::AXMode mode) {
 
 namespace content {
 
+// Cap the number of nodes returned in an accessibility
+// tree snapshot to avoid outrageous memory or bandwidth
+// usage.
+const size_t kMaxSnapshotNodeCount = 5000;
+
+// static
+void RenderAccessibilityImpl::SnapshotAccessibilityTree(
+    RenderFrameImpl* render_frame,
+    ui::AXTreeUpdate* response,
+    ui::AXMode ax_mode) {
+  TRACE_EVENT0("accessibility",
+               "RenderAccessibilityImpl::SnapshotAccessibilityTree");
+  DCHECK(render_frame);
+  DCHECK(response);
+  if (!render_frame->GetWebFrame())
+    return;
+
+  AXTreeSnapshotterImpl snapshotter(render_frame);
+  snapshotter.Snapshot(ax_mode, kMaxSnapshotNodeCount, response);
+}
+
 RenderAccessibilityImpl::RenderAccessibilityImpl(
     RenderAccessibilityManager* const render_accessibility_manager,
     RenderFrameImpl* const render_frame,

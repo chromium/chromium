@@ -920,7 +920,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Request a one-time snapshot of the accessibility tree without changing
   // the accessibility mode.
   void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                             mojom::SnapshotAccessibilityTreeParamsPtr params);
+                             ui::AXMode ax_mode);
 
   // Resets the accessibility serializer in the renderer.
   void AccessibilityReset();

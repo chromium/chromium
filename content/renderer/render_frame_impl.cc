@@ -2593,12 +2593,11 @@ void RenderFrameImpl::SwapIn() {
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
-    mojom::SnapshotAccessibilityTreeParamsPtr params,
+    uint32_t ax_mode,
     SnapshotAccessibilityTreeCallback callback) {
   ui::AXTreeUpdate response;
-  AXTreeSnapshotterImpl snapshotter(this);
-  snapshotter.Snapshot(ui::AXMode(params->ax_mode), params->exclude_offscreen,
-                       params->max_nodes, params->timeout, &response);
+  RenderAccessibilityImpl::SnapshotAccessibilityTree(this, &response,
+                                                     ui::AXMode(ax_mode));
   std::move(callback).Run(response);
 }
 

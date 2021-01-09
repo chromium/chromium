@@ -665,10 +665,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
   static_cast<WebContentsImpl*>(web_contents_)
       ->RequestAXTreeSnapshot(
           base::BindOnce(&AXTreeSnapshotCallback, j_callback),
-          ui::kAXModeComplete,
-          /* exclude_offscreen= */ false,
-          /* max_nodes= */ 5000,
-          /* timeout= */ {});
+          ui::kAXModeComplete);
 }
 
 ScopedJavaLocalRef<jstring> WebContentsAndroid::GetEncoding(

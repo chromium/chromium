@@ -71,30 +71,12 @@ struct WebPluginInfo;
 class AXTreeSnapshotter {
  public:
   AXTreeSnapshotter() = default;
-
   // Return in |accessibility_tree| a snapshot of the accessibility tree
-  // for the frame with the given accessibility mode.
-  //
-  // - |ax_mode| is the accessibility mode to use, which determines which
-  //   fields of AXNodeData are populated.
-  // - |exclude_offscreen| excludes a subtree if a node is entirely offscreen,
-  //   but note that this heuristic is imperfect, and an aboslute-positioned
-  //   node that's visible, but whose ancestors are entirely offscreen, may
-  //   get excluded.
-  // - |max_nodes_count| specifies the maximum number of nodes to snapshot
-  //   before exiting early. Note that this is not a hard limit; once this limit
-  //   is reached a few more nodes may be added in order to ensure a
-  //   well-formed tree is returned. Use 0 for no max.
-  // - |timeout| will stop generating the result after a certain timeout
-  //   (per frame), specified in milliseconds. Like max_node_count, this is not
-  //   a hard limit, and once this/ limit is reached a few more nodes may
-  //   be added in order to ensure a well-formed tree. Use 0 for no timeout.
+  // for the frame with the given accessibility mode. If |max_node_count|
+  // is nonzero, return no more than that many nodes.
   virtual void Snapshot(ui::AXMode ax_mode,
-                        bool exclude_offscreen,
                         size_t max_node_count,
-                        base::TimeDelta timeout,
                         ui::AXTreeUpdate* accessibility_tree) = 0;
-
   virtual ~AXTreeSnapshotter() = default;
 };
 

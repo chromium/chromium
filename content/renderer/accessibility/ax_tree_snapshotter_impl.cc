@@ -31,9 +31,7 @@ AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame)
 AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
 
 void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
-                                     bool exclude_offscreen,
                                      size_t max_node_count,
-                                     base::TimeDelta timeout,
                                      ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
@@ -44,7 +42,6 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
 
   BlinkAXTreeSource tree_source(render_frame_, ax_mode);
   tree_source.SetRoot(root);
-  tree_source.set_exclude_offscreen(exclude_offscreen);
   ScopedFreezeBlinkAXTreeSource freeze(&tree_source);
 
   // The serializer returns an ui::AXTreeUpdate, which can store a complete
@@ -54,8 +51,6 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
   BlinkAXTreeSerializer serializer(&tree_source);
   if (max_node_count)
     serializer.set_max_node_count(max_node_count);
-  if (!timeout.is_zero())
-    serializer.set_timeout(timeout);
   if (serializer.SerializeChanges(root, response))
     return;
 

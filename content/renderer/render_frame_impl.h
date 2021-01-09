@@ -433,7 +433,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void BlockRequests() override;
   void ResumeBlockedRequests() override;
   void SnapshotAccessibilityTree(
-      mojom::SnapshotAccessibilityTreeParamsPtr params,
+      uint32_t ax_mode,
       SnapshotAccessibilityTreeCallback callback) override;
   void GetSerializedHtmlWithLocalLinks(
       const base::flat_map<GURL, base::FilePath>& url_map,
