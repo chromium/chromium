@@ -41,6 +41,10 @@ class InflateTransformer final : public TransformStreamTransformer {
                TransformStreamDefaultController*,
                ExceptionState&);
 
+  void EnqueueBuffers(TransformStreamDefaultController*,
+                      HeapVector<Member<DOMUint8Array>, 1u> buffers,
+                      ExceptionState&);
+
   Member<ScriptState> script_state_;
 
   z_stream stream_;
