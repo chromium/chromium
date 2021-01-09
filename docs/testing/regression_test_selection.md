@@ -25,11 +25,16 @@ Test skipping happens at the GN level in
 [source_set](/build/config/BUILDCONFIG.gn) and [test](/testing/test.gni)
 GN targets.
 
-## Known failure mode
+## Known failure modes
 
-Consider a test file A that contains unit tests, as well as some variables
+There are not known to be many instances of these failure modes in the codebase.
+Those that are known are never excluded by our model.
+
+- **Shared state in test files**: Consider a test file A that contains unit tests, as well as some variables
 used in another file B. When our RTS strategy excludes A, but not B, a
 compilation error will occur.
+- **main() defined in test files**: A test file contains tests and the `main()` function for the entire suite.
+When it is excluded, the whole suite fails to compile.
 
 ## Design Docs
 
