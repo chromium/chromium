@@ -15,6 +15,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -109,12 +110,17 @@ bool ShouldSkipDefinition(const std::string& text) {
   return false;
 }
 
-bool IsPreferredLanguage(const std::string& detected_locale,
+bool IsPreferredLanguage(const std::string& detected_language,
                          const std::string& preferred_languages_string) {
   auto preferred_languages =
       base::SplitString(preferred_languages_string, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  return base::Contains(preferred_languages, detected_locale);
+
+  for (const std::string& locale : preferred_languages) {
+    if (l10n_util::GetLanguage(locale) == detected_language)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -191,17 +197,17 @@ void IntentGenerator::AnnotationCallback(
 
 void IntentGenerator::LanguageDetectorCallback(
     const QuickAnswersRequest& request,
-    base::Optional<std::string> detected_locale) {
+    base::Optional<std::string> detected_language) {
   language_detector_.reset();
 
   // Generate translation intent if the detected language is different to the
   // system language and is not one of the preferred languages.
-  if (detected_locale.has_value() &&
-      detected_locale.value() != request.context.device_properties.language &&
+  if (detected_language.has_value() &&
+      detected_language.value() != request.context.device_properties.language &&
       !IsPreferredLanguage(
-          detected_locale.value(),
+          detected_language.value(),
           request.context.device_properties.preferred_languages)) {
-    MaybeGenerateTranslationIntent(request, detected_locale.value());
+    MaybeGenerateTranslationIntent(request, detected_language.value());
     return;
   }
 
@@ -224,7 +230,7 @@ void IntentGenerator::LanguageDetectorCallback(
 
 void IntentGenerator::MaybeGenerateTranslationIntent(
     const QuickAnswersRequest& request,
-    const std::string& detected_locale) {
+    const std::string& detected_language) {
   DCHECK(complete_callback_);
 
   if (!features::IsQuickAnswersTranslationEnabled()) {
@@ -245,7 +251,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
 
   std::move(complete_callback_)
       .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
-                      detected_locale,
+                      detected_language,
                       request.context.device_properties.language));
 }
 

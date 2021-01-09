@@ -121,7 +121,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
   EXPECT_EQ("quick answers", intent_info_.intent_text);
 }
 
-TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
+TEST_F(IntentGeneratorTest, TranslationIntentPreferredLocale) {
   std::vector<TextLanguagePtr> languages;
   languages.push_back(DefaultLanguage());
   UseFakeServiceConnection({}, languages);
@@ -130,6 +130,25 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
   request.selected_text = "quick answers";
   request.context.device_properties.language = "es";
   request.context.device_properties.preferred_languages = "es,en,zh";
+  intent_generator_->GenerateIntent(request);
+
+  task_environment_.RunUntilIdle();
+
+  // Should not generate translation intent since the detected language is in
+  // the preferred languages list.
+  EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
+  EXPECT_EQ("quick answers", intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
+
+  QuickAnswersRequest request;
+  request.selected_text = "quick answers";
+  request.context.device_properties.language = "es";
+  request.context.device_properties.preferred_languages = "es-MX,en-US,zh-CN";
   intent_generator_->GenerateIntent(request);
 
   task_environment_.RunUntilIdle();
