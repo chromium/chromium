@@ -13,7 +13,11 @@ source_set("cec_private") {
     "cec_private_api.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//chromeos/dbus",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }
