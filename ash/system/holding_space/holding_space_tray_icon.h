@@ -43,9 +43,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // 4. Animate new items in.
   void UpdatePreviews(const std::vector<const HoldingSpaceItem*> items);
 
-  // Invoked when the system locale has changed.
-  void OnLocaleChanged();
-
   // Clears the icon.
   void Clear();
 
@@ -63,7 +60,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   class ResizeAnimation;
 
   // views::View:
-  base::string16 GetTooltipText(const gfx::Point& point) const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size CalculatePreferredSize() const override;
 

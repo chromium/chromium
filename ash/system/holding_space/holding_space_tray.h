@@ -58,6 +58,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   base::string16 GetAccessibleNameForTray() override;
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+  base::string16 GetTooltipText(const gfx::Point& point) const override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;

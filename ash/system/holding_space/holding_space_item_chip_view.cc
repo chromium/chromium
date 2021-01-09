@@ -172,6 +172,13 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
+views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  // Tooltips for this view are handled by `label_`, which will only show
+  // tooltips if the underlying text has been elided due to insufficient space.
+  return HitTestPoint(point) ? label_ : nullptr;
+}
+
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);

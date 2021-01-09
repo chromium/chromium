@@ -59,7 +59,6 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
       kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  icon->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   return icon;
 }
@@ -111,11 +110,18 @@ base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_A11Y_NAME);
 }
 
+views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  // Tooltip events should be handled top level, not by descendents.
+  return HitTestPoint(point) ? this : nullptr;
+}
+
+base::string16 HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
+  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
+}
+
 void HoldingSpaceTray::HandleLocaleChange() {
-  default_tray_icon_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
-  if (previews_tray_icon_)
-    previews_tray_icon_->OnLocaleChanged();
+  TooltipTextChanged();
 }
 
 void HoldingSpaceTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}

@@ -38,6 +38,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   class LabelMaskLayerOwner;
 
   // HoldingSpaceItemView:
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
   void OnPinVisiblityChanged(bool pin_visible) override;
 

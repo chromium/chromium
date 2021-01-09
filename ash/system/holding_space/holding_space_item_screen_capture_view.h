@@ -30,6 +30,11 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
   ~HoldingSpaceItemScreenCaptureView() override;
 
  private:
+  // HoldingSpaceItemView:
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+  base::string16 GetTooltipText(const gfx::Point& point) const override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
+
   void UpdateImage();
 
   // Overlays a play icon over `image_`.

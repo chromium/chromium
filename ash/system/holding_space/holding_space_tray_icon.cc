@@ -121,15 +121,6 @@ void HoldingSpaceTrayIcon::Clear() {
   removed_previews_.clear();
 }
 
-void HoldingSpaceTrayIcon::OnLocaleChanged() {
-  TooltipTextChanged();
-}
-
-base::string16 HoldingSpaceTrayIcon::GetTooltipText(
-    const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
-}
-
 int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
   // The parent for this view (`TrayContainer`) uses a `BoxLayout` for its
   // `LayoutManager`. When the shelf orientation is vertical, the `BoxLayout`

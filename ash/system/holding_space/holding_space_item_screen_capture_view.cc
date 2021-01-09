@@ -66,6 +66,24 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
 HoldingSpaceItemScreenCaptureView::~HoldingSpaceItemScreenCaptureView() =
     default;
 
+views::View* HoldingSpaceItemScreenCaptureView::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  // Tooltip events should be handled top level, not by descendents.
+  return HitTestPoint(point) ? this : nullptr;
+}
+
+base::string16 HoldingSpaceItemScreenCaptureView::GetTooltipText(
+    const gfx::Point& point) const {
+  return item()->text();
+}
+
+void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
+    const HoldingSpaceItem* item) {
+  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
+  if (this->item() == item)
+    TooltipTextChanged();
+}
+
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
   image_->SetImage(
       item()->image().GetImageSkia(kHoldingSpaceScreenCaptureSize));
