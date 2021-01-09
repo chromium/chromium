@@ -189,7 +189,8 @@ class FullRestoreServiceTest : public testing::Test {
 
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the restore button.
-TEST_F(FullRestoreServiceTest, CrashAndRestore) {
+// TODO(crbug.com/1046900): Fix this unit test.
+TEST_F(FullRestoreServiceTest, DISABLED_CrashAndRestore) {
   profile()->set_last_session_exited_cleanly(false);
   CreateFullRestoreServiceForTesting();
 
@@ -398,8 +399,9 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
-// notfication, and verify the restore flag when click the restore button.
-TEST_F(FullRestoreServiceTest, AskEveryTimeAndRestore) {
+// notification, and verify the restore flag when click the restore button.
+// TODO(crbug.com/1046900): Fix this unit test.
+TEST_F(FullRestoreServiceTest, DISABLED_AskEveryTimeAndRestore) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -474,7 +476,8 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 
 // If the restore option has been selected 3 times, show the set restore
 // notification.
-TEST_F(FullRestoreServiceTest, SetRestorePrefNotification) {
+// TODO(crbug.com/1046900): Fix this unit test.
+TEST_F(FullRestoreServiceTest, DISABLED_SetRestorePrefNotification) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -508,7 +511,8 @@ TEST_F(FullRestoreServiceTest, SetRestorePrefNotification) {
 
 // When |kRestoreSelectedCountPrefName| = 3, if the restore option is selected
 // again, |kRestoreSelectedCountPrefName| should not change.
-TEST_F(FullRestoreServiceTest, RestoreSelectedCount) {
+// TODO(crbug.com/1046900): Fix this unit test.
+TEST_F(FullRestoreServiceTest, DISABLED_RestoreSelectedCount) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
