@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['assert_additions.js', 'callback_helper.js', 'doc_utils.js']);
+GEN_INCLUDE(
+    ['assert_additions.js', 'callback_helper.js', 'common.js', 'doc_utils.js']);
 
 /**
  * Base test fixture for end to end tests (tests that need a full extension
@@ -167,18 +168,3 @@ E2ETestBase.prototype.isAsync = true;
  * No UI in the background context.
  */
 E2ETestBase.prototype.runAccessibilityChecks = false;
-
-/**
- * Similar to |TEST_F|. Generates a test for the given |testFixture|,
- * |testName|, and |testFunction|.
- * Used this variant when an |isAsync| fixture wants to temporarily mix in an
- * sync test.
- * @param {string} testFixture Fixture name.
- * @param {string} testName Test name.
- * @param {function} testFunction The test impl.
- */
-function SYNC_TEST_F(testFixture, testName, testFunction) {
-  TEST_F(testFixture, testName, function() {
-    this.newCallback(testFunction)();
-  });
-}

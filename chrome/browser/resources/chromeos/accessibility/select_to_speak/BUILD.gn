@@ -77,6 +77,7 @@ source_set("browser_tests") {
 js2gtest("select_to_speak_extjs_tests") {
   test_type = "extension"
   sources = [
+    # These are end-to-end tests.
     "paragraph_utils_overflow_test.js",
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",
