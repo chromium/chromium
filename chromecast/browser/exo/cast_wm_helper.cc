@@ -103,10 +103,9 @@ VSyncTimingManager& CastWMHelper::GetVSyncTimingManager() {
 
 void CastWMHelper::OnDragEntered(const ui::DropTargetEvent& event) {}
 
-aura::client::DragUpdateInfo CastWMHelper::OnDragUpdated(
-    const ui::DropTargetEvent& event) {
+int CastWMHelper::OnDragUpdated(const ui::DropTargetEvent& event) {
   NOTIMPLEMENTED();
-  return aura::client::DragUpdateInfo();
+  return 0;
 }
 
 void CastWMHelper::OnDragExited() {}

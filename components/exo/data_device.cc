@@ -12,10 +12,8 @@
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
-#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 
@@ -99,29 +97,15 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());
 }
 
-aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
-    const ui::DropTargetEvent& event) {
+int DataDevice::OnDragUpdated(const ui::DropTargetEvent& event) {
   if (!data_offer_)
-    return aura::client::DragUpdateInfo();
-
-  ui::EndpointType endpoint_type = ui::EndpointType::kDefault;
-  Surface* surface = GetEffectiveTargetForEvent(event);
-  if (surface) {
-    endpoint_type =
-        seat_->data_exchange_delegate()->GetDataTransferEndpointType(
-            surface->window());
-  }
-  aura::client::DragUpdateInfo drag_info(
-      ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
+    return ui::DragDropTypes::DRAG_NONE;
 
   delegate_->OnMotion(event.time_stamp(), event.location_f());
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
-  drag_info.drag_operation =
-      DndActionToDragOperation(data_offer_->get()->dnd_action());
-
-  return drag_info;
+  return DndActionToDragOperation(data_offer_->get()->dnd_action());
 }
 
 void DataDevice::OnDragExited() {

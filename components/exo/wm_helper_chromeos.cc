@@ -12,7 +12,6 @@
 #include "base/memory/singleton.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
@@ -118,21 +117,11 @@ void WMHelperChromeOS::OnDragEntered(const ui::DropTargetEvent& event) {
     observer.OnDragEntered(event);
 }
 
-aura::client::DragUpdateInfo WMHelperChromeOS::OnDragUpdated(
-    const ui::DropTargetEvent& event) {
-  aura::client::DragUpdateInfo drag_info(
-      ui::DragDropTypes::DRAG_NONE,
-      ui::DataTransferEndpoint(ui::EndpointType::kUnknownVm));
-
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    auto observer_drag_info = observer.OnDragUpdated(event);
-    drag_info.drag_operation =
-        drag_info.drag_operation | observer_drag_info.drag_operation;
-    if (observer_drag_info.data_endpoint.type() !=
-        drag_info.data_endpoint.type())
-      drag_info.data_endpoint = observer_drag_info.data_endpoint;
-  }
-  return drag_info;
+int WMHelperChromeOS::OnDragUpdated(const ui::DropTargetEvent& event) {
+  int valid_operation = ui::DragDropTypes::DRAG_NONE;
+  for (DragDropObserver& observer : drag_drop_observers_)
+    valid_operation = valid_operation | observer.OnDragUpdated(event);
+  return valid_operation;
 }
 
 void WMHelperChromeOS::OnDragExited() {

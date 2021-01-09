@@ -30,7 +30,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -257,15 +256,12 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
     EXPECT_EQ(window_, event.target());
     state_ = State::kDragEnteredInvoked;
   }
-  aura::client::DragUpdateInfo OnDragUpdated(
-      const ui::DropTargetEvent& event) override {
+  int OnDragUpdated(const ui::DropTargetEvent& event) override {
     EXPECT_TRUE(State::kDragEnteredInvoked == state_ ||
                 State::kDragUpdateInvoked == state_);
     EXPECT_EQ(window_, event.target());
     state_ = State::kDragUpdateInvoked;
-    return aura::client::DragUpdateInfo(
-        ui::DragDropTypes::DRAG_MOVE,
-        ui::DataTransferEndpoint(ui::EndpointType::kDefault));
+    return ui::DragDropTypes::DRAG_MOVE;
   }
   void OnDragExited() override { ADD_FAILURE(); }
   int OnPerformDrop(const ui::DropTargetEvent& event,
