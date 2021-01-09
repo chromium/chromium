@@ -23,6 +23,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -120,16 +121,14 @@ void LookalikeUrlService::SetClockForTesting(base::Clock* clock) {
 void LookalikeUrlService::OnFetchEngagedSites(
     EngagedSitesCallback callback,
     std::vector<site_engagement::mojom::SiteEngagementDetails> details) {
-  site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(profile_);
   engaged_sites_.clear();
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
     // Ignore sites with an engagement score below threshold.
-    if (!service->IsEngagementAtLeast(detail.origin,
-                                      blink::mojom::EngagementLevel::MEDIUM)) {
+    if (detail.total_score <
+        site_engagement::SiteEngagementScore::GetMediumEngagementBoundary()) {
       continue;
     }
     const DomainInfo domain_info = GetDomainInfo(detail.origin);
