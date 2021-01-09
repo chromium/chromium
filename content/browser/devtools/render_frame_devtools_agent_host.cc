@@ -564,6 +564,8 @@ void RenderFrameDevToolsAgentHost::UpdateFrameAlive() {
   render_frame_alive_ = frame_host_ && frame_host_->IsRenderFrameLive();
   if (render_frame_alive_ && render_frame_crashed_) {
     render_frame_crashed_ = false;
+    for (DevToolsSession* session : sessions())
+      session->ClearPendingMessages();
     for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
       inspector->TargetReloadedAfterCrash();
   }
