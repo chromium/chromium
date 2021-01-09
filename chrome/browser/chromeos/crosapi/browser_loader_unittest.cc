@@ -21,6 +21,10 @@ using update_client::UpdateClient;
 namespace crosapi {
 namespace {
 
+// Copied from browser_loader.cc
+constexpr char kLacrosComponentName[] = "lacros-dogfood-dev";
+constexpr char kLacrosComponentId[] = "ldobopbhiamakmncndpkeelenhdmgfhk";
+
 // Delegate for testing.
 class DelegateImpl : public BrowserLoader::Delegate {
  public:
@@ -52,9 +56,9 @@ TEST_F(BrowserLoaderTest, ShowUpdateNotification) {
   // Create dependencies for object under test.
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager =
       base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
-  component_manager->set_supported_components({"lacros-fishfood"});
+  component_manager->set_supported_components({kLacrosComponentName});
   component_manager->ResetComponentState(
-      "lacros-fishfood",
+      kLacrosComponentName,
       component_updater::FakeCrOSComponentManager::ComponentInfo(
           component_updater::CrOSComponentManager::Error::NONE,
           base::FilePath("/install/path"), base::FilePath("/mount/path")));
@@ -78,21 +82,20 @@ TEST_F(BrowserLoaderTest, ShowUpdateNotification) {
   EXPECT_EQ(0, delegate->set_lacros_update_available_);
 
   // Update check does not trigger an update notification.
-  constexpr char kLacrosFishfoodId[] = "ldobopbhiamakmncndpkeelenhdmgfhk";
   browser_loader.OnEvent(
       UpdateClient::Observer::Events::COMPONENT_CHECKING_FOR_UPDATES,
-      kLacrosFishfoodId);
+      kLacrosComponentId);
   EXPECT_EQ(0, delegate->set_lacros_update_available_);
 
   // Update download does not trigger an update notification.
   browser_loader.OnEvent(
       UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING,
-      kLacrosFishfoodId);
+      kLacrosComponentId);
   EXPECT_EQ(0, delegate->set_lacros_update_available_);
 
   // Update completion trigger the notification.
   browser_loader.OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
-                         kLacrosFishfoodId);
+                         kLacrosComponentId);
   EXPECT_EQ(1, delegate->set_lacros_update_available_);
 
   browser_part.ShutdownCrosComponentManager();
