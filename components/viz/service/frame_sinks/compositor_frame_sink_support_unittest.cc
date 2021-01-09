@@ -4,6 +4,8 @@
 
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -1505,4 +1507,32 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   EXPECT_EQ(sent_frames, 10);
   support->SetNeedsBeginFrame(false);
 }
+
+TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
+  FakeExternalBeginFrameSource begin_frame_source(0.f, false);
+  testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &mock_client, &manager_, kAnotherArbitraryFrameSinkId, /*is_root=*/true);
+  SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
+  support->SetBeginFrameSource(&begin_frame_source);
+  support->SetNeedsBeginFrame(true);
+  const base::TimeTicks frame_time;
+  const int64_t sequence_number = 1;
+
+  // ComposterFrameSink hasn't had a surface activate yet.
+  EXPECT_FALSE(support->last_activated_surface_id().is_valid());
+
+  BeginFrameArgs args = CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, sequence_number, frame_time);
+  EXPECT_FALSE(args.animate_only);
+  BeginFrameArgs args_animate_only = args;
+  args_animate_only.animate_only = true;
+  // Verify |animate_only| is toggled back to false before sending to client.
+  EXPECT_CALL(mock_client,
+              OnBeginFrame(testing::Field(&BeginFrameArgs::animate_only,
+                                          testing::IsFalse()),
+                           _));
+  begin_frame_source.TestOnBeginFrame(args_animate_only);
+}
+
 }  // namespace viz

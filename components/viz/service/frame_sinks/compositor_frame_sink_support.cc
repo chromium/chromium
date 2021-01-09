@@ -687,6 +687,10 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     last_begin_frame_args_ = args;
 
     BeginFrameArgs copy_args = args;
+    // Force full frame if surface not yet activated to ensure surface creation.
+    if (!last_activated_surface_id_.is_valid())
+      copy_args.animate_only = false;
+
     copy_args.trace_id = ComputeTraceId();
     TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
                            TRACE_ID_GLOBAL(copy_args.trace_id),

@@ -104,6 +104,8 @@
             {frameTimeTicks, screenshot: {format: 'png'}}))
         .result.screenshotData;
     // Advance virtual time a bit so that next frame timestamp is greater.
+    if (!screenshotData)
+      return null;
     this.virtualTimeBase_ += 0.01;
     const image = new Image();
     await new Promise(fulfill => {

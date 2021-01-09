@@ -33,12 +33,7 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
   DCHECK(!pending_frame_callback_) << "Got overlapping IssueExternalBeginFrame";
   original_source_id_ = args.frame_id.source_id;
 
-  BeginFrameArgs args_copy(args);
-  // Force full frame till we have first real draw.
-  if (!last_frame_acknowledged_)
-    args_copy.animate_only = false;
-  last_frame_acknowledged_ = false;
-  OnBeginFrame(args_copy);
+  OnBeginFrame(args);
 
   pending_frame_callback_ = std::move(callback);
 
@@ -105,10 +100,13 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
 
 void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
     const BeginFrameAck& ack) {
-  last_frame_acknowledged_ = true;
   if (!pending_frame_callback_)
     return;
   std::move(pending_frame_callback_).Run(ack);
+  // If there are pending copy output requests that have not been fulfilled,
+  // cancel them, as they won't be served till the next frame. This prevents
+  // the client for waiting for them indefinitely.
+  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDestroyed() {

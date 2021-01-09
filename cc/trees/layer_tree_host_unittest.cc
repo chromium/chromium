@@ -3744,15 +3744,17 @@ SINGLE_AND_MULTI_THREAD_TEST_F(
 // updates, i.e. abort commits after the paint stage and only request layer
 // tree updates for layout.
 //
-// The tests sends four Begin(Main)Frames in sequence: three animate_only
-// Begin(Main)Frames followed by a normal Begin(Main)Frame. The first three
-// should result in aborted commits, whereas the last one should complete the
+// The tests sends five Begin(Main)Frames in sequence: four animate_only
+// Begin(Main)Frames followed by a normal Begin(Main)Frame. The first frame
+// has animate_only force to false by CompositorFrameSinkSupport, since it
+// needs a complete frame to assure surface activation. Frames 2-4 should
+// result in aborted commits, whereas the last one should complete the
 // previously aborted commits.
 //
-// Between BeginMainFrames 2 and 3, the client also requests a new commit
-// (SetNeedsCommit), but not between BeginMainFrames 1 and 2. In multi-threaded
+// Between BeginMainFrames 3 and 4, the client also requests a new commit
+// (SetNeedsCommit), but not between BeginMainFrames 1-3. In multi-threaded
 // mode, ProxyMain will run the animate pipeline stage only for BeginMainFrames
-// 1 and 3, as no new commit was requested between 1 and 2.
+// 2 and 4, as no new commit was requested between 2 and 3.
 //
 // The test uses the full-pipeline mode to ensure that each BeginFrame also
 // incurs a BeginMainFrame.
@@ -3809,31 +3811,52 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
 
   void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
     ++sent_begin_main_frame_count_;
-    EXPECT_EQ(begin_frame_count_, sent_begin_main_frame_count_);
+    EXPECT_GE(begin_frame_count_, sent_begin_main_frame_count_);
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args) override {
+    EXPECT_EQ(args.animate_only,
+              (begin_frame_count_ >= 2 && begin_frame_count_ <= 4));
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_LE(sent_begin_main_frame_count_, begin_frame_count_);
     if (begin_frame_count_ < 3) {
-      if (begin_frame_count_ == 2) {
-        // Request another commit before sending the third BeginMainFrame.
-        PostSetNeedsCommitToMainThread();
-      }
-
       // Send another animation_only BeginFrame.
       PostIssueBeginFrame(true);
     } else if (begin_frame_count_ == 3) {
+      MainThreadTaskRunner()->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHostTestAnimateOnlyBeginFrames::
+                             SetNeedsCommitOnMainThread,
+                         base::Unretained(this)),
+          base::BindOnce(
+              &LayerTreeHostTestAnimateOnlyBeginFrames::PostIssueBeginFrame,
+              base::Unretained(this), true));
+    } else if (begin_frame_count_ == 4) {
       PostIssueBeginFrame(false);
     }
   }
 
+  void SetNeedsCommitOnMainThread() { layer_tree_host()->SetNeedsCommit(); }
+
   void UpdateLayerTreeHost() override { ++update_layer_tree_host_count_; }
 
-  void DidCommit() override {
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (begin_frame_count_ == 1)
+      host_impl->NotifyReadyToDraw();
+
     ++commit_count_;
 
+    // First commit is due to first frame having animate_only forced to false
+    // in ordser to create the surface.
+    if (commit_count_ == 1)
+      return;
+
     // Fourth BeginMainFrame should lead to commit.
-    EXPECT_EQ(4, begin_frame_count_);
-    EXPECT_EQ(4, sent_begin_main_frame_count_);
+    EXPECT_EQ(5, begin_frame_count_);
+    EXPECT_EQ(3, sent_begin_main_frame_count_);
 
     EndTest();
   }
@@ -3843,23 +3866,15 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
   }
 
   void AfterTest() override {
-    EXPECT_EQ(1, commit_count_);
-    EXPECT_EQ(4, begin_frame_count_);
-    EXPECT_EQ(4, sent_begin_main_frame_count_);
+    EXPECT_EQ(2, commit_count_);
+    EXPECT_EQ(5, begin_frame_count_);
+    EXPECT_EQ(3, sent_begin_main_frame_count_);
 
-    if (HasImplThread()) {
-      // ProxyMain aborts the second BeginMainFrame before running the animate
-      // pipeline stage, since no further updates were made since the first one.
-      // Thus, we expect not to be called for the second BeginMainFrame.
-      EXPECT_EQ(3, will_begin_main_frame_count_);
-      EXPECT_EQ(3, update_layer_tree_host_count_);
-    } else {
-      EXPECT_EQ(4, will_begin_main_frame_count_);
-      EXPECT_EQ(4, update_layer_tree_host_count_);
-    }
+    EXPECT_EQ(3, will_begin_main_frame_count_);
+    EXPECT_EQ(3, update_layer_tree_host_count_);
 
     // The final commit should not have been aborted.
-    EXPECT_EQ(1, ready_to_commit_count_);
+    EXPECT_EQ(2, ready_to_commit_count_);
   }
 
  protected:

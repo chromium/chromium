@@ -1,0 +1,4 @@
+Tests that screenshot right after viewport resize doesn't hang
+requested url: http://green.com/
+Screenshot size: 1024 x 1024
+rgba @(25,25) : 0,128,0,255
