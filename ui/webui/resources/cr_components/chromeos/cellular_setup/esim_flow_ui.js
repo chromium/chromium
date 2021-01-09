@@ -88,6 +88,13 @@ cr.define('cellular_setup', function() {
         type: String,
         value: '',
       },
+
+      /** @private */
+      confirmationCode_: {
+        type: String,
+        value: '',
+        observer: 'onConfirmationCodeUpdated_',
+      },
     },
 
     /**
@@ -162,6 +169,7 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
+      // TODO(crbug.com/1093185) Handle error during confirmation code page.
       this.showError_ = response.result !==
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
       if (response.result ===
@@ -224,11 +232,11 @@ cr.define('cellular_setup', function() {
             cancel: this.delegate.shouldShowCancelButton() ?
                 cellularSetup.ButtonState.SHOWN_AND_ENABLED :
                 cellularSetup.ButtonState.HIDDEN,
-            done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            next: cellularSetup.ButtonState.HIDDEN,
+            done: cellularSetup.ButtonState.HIDDEN,
+            // TODO(crbug.com/1093185) Add a "Confirm" button state.
+            next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
-            // TODO(crbug.com/1093185) Add a "Confirm" button state.
           };
           break;
         case ESimUiState.PROFILE_SELECTION:
@@ -285,6 +293,20 @@ cr.define('cellular_setup', function() {
       }
     },
 
+    /** @private */
+    onConfirmationCodeUpdated_() {
+      // TODO(crbug.com/1093185) Change this to updating a "Confirm" button's
+      // state.
+      if (this.confirmationCode_) {
+        this.set(
+            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+      } else {
+        this.set(
+            'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+      }
+    },
+
+    /** SubflowBehavior override */
     navigateForward() {
       switch (this.state_) {
         case ESimUiState.ACTIVATION_CODE_ENTRY:
@@ -297,10 +319,23 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.PROFILE_SELECTION:
           if (this.selectedProfile_) {
+            // Assume installing the profile doesn't require a confirmation
+            // code, send an empty string.
             this.selectedProfile_.installProfile('').then(
                 this.handleProfileInstallResponse_.bind(this));
           } else {
             this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+          }
+          break;
+        case ESimUiState.CONFIRMATION_CODE_ENTRY:
+          if (this.selectedProfile_) {
+            this.selectedProfile_.installProfile(this.confirmationCode_)
+                .then(this.handleProfileInstallResponse_.bind(this));
+          } else {
+            this.euicc_
+                .installProfileFromActivationCode(
+                    this.activationCode_, this.confirmationCode_)
+                .then(this.handleProfileInstallResponse_.bind(this));
           }
           break;
         default:
@@ -311,6 +346,7 @@ cr.define('cellular_setup', function() {
 
     /**
      * @returns {boolean} true if backward navigation was handled
+     * SubflowBehavior override
      */
     attemptBackwardNavigation() {
       // TODO(crbug.com/1093185): Handle state when camera is used

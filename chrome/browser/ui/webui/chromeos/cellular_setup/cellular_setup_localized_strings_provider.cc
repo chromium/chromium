@@ -69,7 +69,11 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"eidPopupTitle", IDS_CELLULAR_SETUP_EID_POPUP_TITLE},
     {"eidPopupDescription", IDS_CELLULAR_SETUP_EID_POPUP_DESCRIPTION},
     {"closeEidPopupButtonLabel",
-     IDS_CELLULAR_SETUP_CLOSE_EID_POPUP_BUTTON_LABEL}};
+     IDS_CELLULAR_SETUP_CLOSE_EID_POPUP_BUTTON_LABEL},
+    {"confirmationCodeMessage",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_MESSAGE},
+    {"confirmationCodeInput",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT}};  // namespace
 
 struct NamedBoolean {
   const char* name;

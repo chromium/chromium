@@ -21,6 +21,11 @@ Polymer({
       observer: 'onProfileChanged_',
     },
 
+    confirmationCode: {
+      type: String,
+      notify: true,
+    },
+
     /**
      * @type {?chromeos.cellularSetup.mojom.ESimProfileProperties}
      * @private
@@ -40,6 +45,18 @@ Polymer({
     this.profile.getProperties().then(response => {
       this.profileProperties_ = response.properties;
     });
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getMessage_() {
+    const profileName = this.getProfileName_();
+    if (!profileName) {
+      return '';
+    }
+    return this.i18n('confirmationCodeMessage', profileName);
   },
 
   /**

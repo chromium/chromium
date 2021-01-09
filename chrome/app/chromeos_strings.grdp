@@ -360,6 +360,12 @@
   <message name="IDS_CELLULAR_SETUP_CLOSE_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltip label for EID and QR code popup close button when viewing EID and QR code popup">
     Close EID and QR code popup
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_MESSAGE" desc="Message, prompting the user to enter the confirmation code to activate an eSIM profile.">
+    Please enter your confirmation code for <ph name="PROFILE_NAME">$1<ex>Google Fi</ex></ph>.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT" desc="Label for the input used to enter the confirmation code to activate an eSIM profile.">
+    Confirmation code
+  </message>
 
   <!-- Upgrade notifications -->
   <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the device must be restarted within two or more days.">
