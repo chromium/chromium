@@ -148,9 +148,6 @@ const char* ToTriggerSource(AssistantEntryPoint entry_point) {
       return kEntryPointProactiveSuggestions;
     case AssistantEntryPoint::kLauncherChip:
       return kEntryPointLauncherChip;
-    case AssistantEntryPoint::kBloom:
-      return kEntryPointUnspecified;  // TODO(jeroendh): Use Bloom specific
-                                      // entrypoint
   }
 }
 

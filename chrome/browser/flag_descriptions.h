@@ -88,9 +88,6 @@ extern const char kDetectFormSubmissionOnFormClearDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-extern const char kEnableBloomName[];
-extern const char kEnableBloomDescription[];
-
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 

@@ -62,8 +62,9 @@ enum class AssistantQuerySource {
   kQuickAnswers = 11,
   kLauncherChip = 12,
   kBetterOnboarding = 13,
-  kBloom = 14,
-  kMaxValue = kBloom,
+  // Deprecated, please do not use.
+  // kBloom = 14,
+  kMaxValue = kBetterOnboarding,
 };
 
 // Enumeration of possible Assistant interaction types.
@@ -127,8 +128,9 @@ enum class AssistantEntryPoint {
   kLauncherSearchBoxIcon = 9,
   kProactiveSuggestions = 10,
   kLauncherChip = 11,
-  kBloom = 12,
-  kMaxValue = kBloom,
+  // Deprecated, please do not reuse
+  // kBloom = 12,
+  kMaxValue = kLauncherChip,
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.

@@ -148,24 +148,6 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
   assistant_->StartTextInteraction(text, query_source, allow_tts);
 }
 
-void AssistantInteractionControllerImpl::StartBloomInteraction() {
-  // TODO(jeroendh): Test.
-  StopActiveInteraction(false);
-
-  AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kBloom);
-
-  OnInteractionStarted(AssistantInteractionMetadata(
-      AssistantInteractionType::kText, AssistantQuerySource::kBloom,
-      /*query=*/"processing query"));
-}
-
-void AssistantInteractionControllerImpl::ShowBloomResult(
-    const std::string& html) {
-  // TODO(jeroendh) ensure we're in a bloom interaction
-
-  OnHtmlResponse(html, /*fallback=*/"");
-}
-
 void AssistantInteractionControllerImpl::OnAssistantControllerConstructed() {
   AssistantUiController::Get()->GetModel()->AddObserver(this);
   assistant_controller_->view_delegate()->AddObserver(this);

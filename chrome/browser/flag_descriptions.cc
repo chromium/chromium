@@ -89,11 +89,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kEnableBloomName[] = "Enable Bloom Integration";
-const char kEnableBloomDescription[] =
-    "Enables native support for bloom, an experimental vertical knowledge "
-    "search feature.";
-
 const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
     "Enable Bluetooth Serial Port Profile in Serial API";
 const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =
