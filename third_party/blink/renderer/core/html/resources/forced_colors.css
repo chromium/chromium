@@ -157,7 +157,7 @@
   select:-internal-list-box:disabled option:hover {
     background-color: Canvas !important;
     -internal-forced-background-color: Canvas !important;
-    -internal-forced-color: GrayText !important;
+    color: GrayText !important;
   }
 
   /* option selected */
