@@ -5938,4 +5938,5 @@ crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js
 
 # Sheriff 2021-01-08
 crbug.com/1164459 [ Mac ] virtual/synchronous_html_parser/external/wpt/preload/download-resources.html [ Pass Timeout ]
+crbug.com/1164568 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Pass Failure ]
 
