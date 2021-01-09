@@ -21,6 +21,13 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
  public:
   MockChromeJsErrorReportProcessor();
 
+  // JsErrorReportProcessor:
+  void SendErrorReport(JavaScriptErrorReport error_report,
+                       base::OnceClosure completion_callback,
+                       content::BrowserContext* browser_context) override;
+
+  int send_count() const { return send_count_; }
+
   // Controls what is returned from GetCrashEndpoint() override.
   void SetCrashEndpoint(std::string crash_endpoint);
   // Controls what is returned from GetCrashEndpointStaging() override.
@@ -61,6 +68,8 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 
  private:
   ~MockChromeJsErrorReportProcessor() override;
+  // Number of times SendErrorReport has been called.
+  int send_count_ = 0;
   std::string crash_endpoint_;
   std::string crash_endpoint_staging_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

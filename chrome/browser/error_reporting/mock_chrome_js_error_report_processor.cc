@@ -6,11 +6,21 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() = default;
 
 MockChromeJsErrorReportProcessor::~MockChromeJsErrorReportProcessor() = default;
+
+void MockChromeJsErrorReportProcessor::SendErrorReport(
+    JavaScriptErrorReport error_report,
+    base::OnceClosure completion_callback,
+    content::BrowserContext* browser_context) {
+  ++send_count_;
+  ChromeJsErrorReportProcessor::SendErrorReport(
+      std::move(error_report), std::move(completion_callback), browser_context);
+}
 
 void MockChromeJsErrorReportProcessor::SetAsDefault() {
   LOG(INFO) << "MockChromeJsErrorReportProcessor installed as error processor";

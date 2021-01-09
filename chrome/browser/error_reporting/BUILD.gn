@@ -39,6 +39,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/common:constants",
+    "//components/crash/content/browser/error_reporting",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
   ]
 }
