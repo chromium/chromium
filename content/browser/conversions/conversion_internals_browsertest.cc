@@ -40,7 +40,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
   // Executing javascript in the WebUI requires using an isolated world in which
   // to execute the script because WebUI has a default CSP policy denying
   // "eval()", which is what EvalJs uses under the hood.
-  bool ExecJsInWebUI(std::string script) {
+  bool ExecJsInWebUI(const std::string& script) {
     return ExecJs(shell()->web_contents()->GetMainFrame(), script,
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */);
   }
@@ -311,6 +311,28 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_TRUE(
       ExecJsInWebUI("document.getElementById('send-reports').click();"));
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+                       MojoJsBindingsCorrectlyScoped) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+
+  const base::string16 passed_title = base::ASCIIToUTF16("passed");
+
+  {
+    TitleWatcher sent_title_watcher(shell()->web_contents(), passed_title);
+    EXPECT_TRUE(
+        ExecJsInWebUI("document.title = window.Mojo? 'passed' : 'failed';"));
+    EXPECT_EQ(passed_title, sent_title_watcher.WaitAndGetTitle());
+  }
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  {
+    TitleWatcher sent_title_watcher(shell()->web_contents(), passed_title);
+    EXPECT_TRUE(
+        ExecJsInWebUI("document.title = window.Mojo? 'failed' : 'passed';"));
+    EXPECT_EQ(passed_title, sent_title_watcher.WaitAndGetTitle());
+  }
 }
 
 }  // namespace content
