@@ -2925,7 +2925,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.EffectivePWAInstallationSuccess"
-    enum="BooleanSuccess" expires_after="2021-02-02">
+    enum="BooleanSuccess" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
@@ -2938,7 +2938,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchFailure"
-    enum="AndroidSmsFcmMessageType" expires_after="2021-06-06">
+    enum="AndroidSmsFcmMessageType" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2949,7 +2949,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchRetry"
-    enum="AndroidSmsFcmMessageType" expires_after="2021-05-16">
+    enum="AndroidSmsFcmMessageType" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2960,7 +2960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.FcmMessageDispatchSuccess"
-    enum="AndroidSmsFcmMessageType" expires_after="2021-06-06">
+    enum="AndroidSmsFcmMessageType" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2971,7 +2971,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2021-06-06">
+    enum="MultiDevice_FeatureState" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2982,7 +2982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.NumAttemptsForSuccessfulInstallation"
-    units="attempts" expires_after="2021-05-02">
+    units="attempts" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
@@ -2993,7 +2993,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.PWAInstallationResult"
-    enum="WebAppInstallResultCode" expires_after="2021-04-04">
+    enum="WebAppInstallResultCode" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -3004,7 +3004,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.PWAUninstallationResult" enum="BooleanSuccess"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -3015,7 +3015,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.ServiceWorkerLifetime" units="ms"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -3025,7 +3025,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.ServiceWorkerMessageDispatchStatus"
-    enum="BooleanSuccess" expires_after="2021-02-02">
+    enum="BooleanSuccess" expires_after="2022-02-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
