@@ -373,7 +373,7 @@ void AccelerometerFileReader::SetStatesWithInitializationResult(
       // If we haven't yet passed the timeout cutoff, try this again. This will
       // be scheduled at the same rate as reading.
       if (base::TimeTicks::Now() < initialization_timeout_) {
-        blocking_task_runner_->PostDelayedTask(
+        ui_task_runner_->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&AccelerometerFileReader::TryScheduleInitialize,
                            this),
