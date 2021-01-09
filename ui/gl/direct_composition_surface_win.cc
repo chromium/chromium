@@ -41,6 +41,8 @@ bool g_supports_overlays = false;
 bool g_decode_swap_chain_disabled = false;
 // Whether to force the nv12 overlay support.
 bool g_force_nv12_overlay_support = false;
+// Whether software overlays have been disabled.
+bool g_disable_sw_overlays = false;
 
 // The lock to guard g_overlay_caps_valid and g_supports_overlays.
 base::Lock& GetOverlayLock() {
@@ -56,6 +58,12 @@ bool SupportsOverlays() {
 void SetSupportsOverlays(bool support) {
   base::AutoLock auto_lock(GetOverlayLock());
   g_supports_overlays = support;
+}
+
+bool SupportsSoftwareOverlays() {
+  return base::FeatureList::IsEnabled(
+             features::kDirectCompositionSoftwareOverlays) &&
+         !g_disable_sw_overlays;
 }
 
 bool OverlayCapsValid() {
@@ -252,8 +260,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   base::UmaHistogramBoolean("GPU.DirectComposition.HardwareOverlaysSupported",
                             *supports_overlays);
 
-  if (*supports_overlays || !base::FeatureList::IsEnabled(
-                                features::kDirectCompositionSoftwareOverlays)) {
+  if (*supports_overlays || !SupportsSoftwareOverlays()) {
     return;
   }
 
@@ -464,6 +471,11 @@ void DirectCompositionSurfaceWin::DisableOverlays() {
 }
 
 // static
+void DirectCompositionSurfaceWin::DisableSoftwareOverlays() {
+  g_disable_sw_overlays = true;
+}
+
+// static
 void DirectCompositionSurfaceWin::InvalidateOverlayCaps() {
   SetOverlayCapsValid(false);
 }
@@ -473,9 +485,7 @@ bool DirectCompositionSurfaceWin::AreScaledOverlaysSupported() {
   UpdateOverlaySupport();
   if (g_overlay_format_used == DXGI_FORMAT_NV12) {
     return (g_nv12_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING) ||
-           (SupportsOverlays() &&
-            base::FeatureList::IsEnabled(
-                features::kDirectCompositionSoftwareOverlays));
+           (SupportsOverlays() && SupportsSoftwareOverlays());
   } else if (g_overlay_format_used == DXGI_FORMAT_YUY2) {
     return !!(g_yuy2_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
   } else {

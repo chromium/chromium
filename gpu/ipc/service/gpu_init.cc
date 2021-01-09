@@ -608,6 +608,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if defined(OS_WIN)
   if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
     gl::DirectCompositionSurfaceWin::DisableDecodeSwapChain();
+  if (gpu_feature_info_.IsWorkaroundEnabled(
+          DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS)) {
+    gl::DirectCompositionSurfaceWin::DisableSoftwareOverlays();
+  }
 #endif
 
   return true;

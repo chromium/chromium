@@ -3675,6 +3675,18 @@
       "features": [
         "disable_accelerated_vp9_decode"
       ]
+    },
+    {
+      "id": 364,
+      "cr_bugs": [1161215, 1160217],
+      "description": "Software overlays fail to work reliably on AMD devices",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disable_direct_composition_sw_video_overlays"
+      ]
     }
   ]
 }
