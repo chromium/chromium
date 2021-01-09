@@ -2183,6 +2183,7 @@ external/wpt/native-file-system/showSaveFilePicker-manual.https.html [ Skip ]
 
 # These tests require a physical device connected.
 external/wpt/webusb/usbDevice_claimInterface-manual.https.html [ Skip ]
+external/wpt/webusb/usbDevice_transferIn-manual.https.html [ Skip ]
 wpt_internal/hid/hidDevice_collections-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_loopback-manual.https.html [ Skip ]
 external/wpt/serial/serialPort_loopback_BreakError-manual.https.html [ Skip ]
