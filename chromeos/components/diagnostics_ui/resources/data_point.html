@@ -2,24 +2,27 @@
   .data-point {
     display: flex;
     flex-direction: column;
-    height: 45px;
+    height: 40px;
     justify-content: space-between;
+    margin: 12px 0;
   }
 
   .header {
     @apply --diagnostics-data-point-title-font;
-    color: var(--diagnostics-overview-text-color);
+    color: var(--diagnostics-data-point-title-color);
   }
 
   #infoIcon {
-    fill:  var(--google-grey-600);
-    height: 18px;
+    bottom: 1px;
+    fill:  var(--google-grey-700);
+    height: 20px;
     left: 4px;
-    width: 18px;
+    width: 20px;
   }
 
   .value {
     @apply --diagnostics-data-point-subtitle-font;
+    color: var(--diagnostics-data-point-subtitle-color);
   }
 </style>
 <div class="data-point">

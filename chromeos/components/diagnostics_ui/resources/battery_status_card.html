@@ -14,7 +14,8 @@
   <data-point slot="body" id="batteryHealth"
     header="[[i18n('batteryHealthLabel')]]"
     value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]"
-    tooltip-text="[[i18n('batteryHealthTooltipText')]]">
+    tooltip-text="[[i18n('batteryHealthTooltipText')]]"
+    class="data-point-margin-start">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
@@ -24,7 +25,8 @@
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNowLabel')]]"
     value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]"
-    tooltip-text="[[i18n('currentNowTooltipText')]]">
+    tooltip-text="[[i18n('currentNowTooltipText')]]"
+    class="data-point-margin-end">
   </data-point>
 
   <routine-section slot="routines" routines="[[routines_]]"

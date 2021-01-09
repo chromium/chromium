@@ -13,12 +13,20 @@
       background-color: var(--cros-bg-color);
     }
 
+    .data-point-margin-end {
+      margin-right: 20px;
+    }
+
+    .data-point-margin-start {
+      margin-left: 20px;
+    }
+
     .divider {
-      border-left: 1px solid var(--diagnostics-border-color);
-      height: 36px;
-      padding-inline-start: 20px;
+      border-left: 1px solid var(--google-grey-200);
+      height: 32px;
+      padding-inline: 16px;
       position: relative;
-      top: 12%;
+      top: 24%;
     }
 
     @media (min-width:600px) {
@@ -26,6 +34,7 @@
         --container-padding: 24px;
         --content-container-width: 552px;
         --chart-width: 452px;
+        --data-point-container-padding: 44px;
         }
     }
 
@@ -34,6 +43,7 @@
         --container-padding: 64px;
         --content-container-width: 640px;
         --chart-width: 540px;
+        --data-point-container-padding: 64px;
         }
     }
 
@@ -42,6 +52,7 @@
         --container-padding: 160px;
         --content-container-width: 640px;
         --chart-width: 540px;
+        --data-point-container-padding: 64px;
       }
     }
 
@@ -50,6 +61,7 @@
         --container-padding: 160px;
         --content-container-width: 680px;
         --chart-width: 580px;
+        --data-point-container-padding: 64px;
       }
     }
 
@@ -58,6 +70,7 @@
         --container-padding: 360px;
         --content-container-width: 720px;
         --chart-width: 620px;
+        --data-point-container-padding: 64px;
       }
     }
   </style>

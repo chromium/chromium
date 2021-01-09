@@ -14,14 +14,16 @@
     header="[[i18n('cpuUsageLabel')]]"
     value="[[getCurrentlyUsing_(cpuUsage_.percentUsageSystem,
         cpuUsage_.percentUsageUser)]]"
-    tooltip-text="[[getCpuUsageTooltipText_()]]">
+    tooltip-text="[[getCpuUsageTooltipText_()]]"
+    class="data-point-margin-start">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTempLabel')]]"
     value="[[getCpuTemp_(cpuUsage_.averageCpuTempCelsius)]]">
   </data-point>
   <div slot="body" class="divider"></div>
-  <data-point slot="body" id="cpuSpeed" header="[[i18n('cpuSpeedLabel')]]"
+  <data-point slot="body" id="cpuSpeed" class="data-point-margin-end"
+    header="[[i18n('cpuSpeedLabel')]]"
     value="[[getCpuSpeed_(cpuUsage_.scalingCurrentFrequencyKhz)]]">
   </data-point>
   <routine-section slot="routines" routines="[[routines_]]"
