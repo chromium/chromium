@@ -20,6 +20,12 @@
 #include <VersionHelpers.h>
 #endif
 
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#define ALLOW_PCSCAN 1
+#else
+#define ALLOW_PCSCAN 0
+#endif
+
 namespace base {
 
 struct Feature;
@@ -27,10 +33,13 @@ struct Feature;
 namespace features {
 
 extern const BASE_EXPORT Feature kPartitionAllocGigaCage;
+
+#if ALLOW_PCSCAN
 extern const BASE_EXPORT Feature kPartitionAllocPCScan;
+#endif  // ALLOW_PCSCAN
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern const BASE_EXPORT Feature kPartitionAllocPCScanBrowserOnly;
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 #if defined(PA_HAS_64_BITS_POINTERS) && defined(OS_WIN)
@@ -63,24 +72,6 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
   return FeatureList::IsEnabled(kPartitionAllocGigaCage);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
-
-ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
-#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-  return FeatureList::IsEnabled(kPartitionAllocPCScan);
-#else  // PA_HAS_64_BITS_POINTERS
-  return false;
-#endif
-}
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-ALWAYS_INLINE bool IsPartitionAllocPCScanBrowserOnlyEnabled() {
-#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-  return FeatureList::IsEnabled(kPartitionAllocPCScanBrowserOnly);
-#else  // PA_HAS_64_BITS_POINTERS
-  return false;
-#endif
-}
-#endif
 
 }  // namespace features
 }  // namespace base

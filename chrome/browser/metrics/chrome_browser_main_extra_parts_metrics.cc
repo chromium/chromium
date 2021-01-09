@@ -559,13 +559,23 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   );
 
 #if defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Records whether or not BackupRefPtr and/or PCScan is enabled.
+  // Records whether or not BackupRefPtr and/or PCScan is enabled. This is meant
+  // for a 3-way experiment with 2 binaries:
+  // - binary A: deployed to 66% users, with half of them having PCScan on and
+  //             half off (BackupRefPtr fully off)
+  // - binary B: deployed to 33% users, with BackupRefPtr on (PCSCan fully off)
+  //
+  // NOTE, deliberately don't use ALLOW_PCSCAN which depends on bitness. In the
+  // 32-bit case, PCScan is always disabled, but we'll deliberately misrepresent
+  // it as enabled here (and later ignored when analyzing results), in order to
+  // keep each population at 33%.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrAndPCScan",
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
       "BackupRefPtrEnabled"
 #else
-      base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocPCScanBrowserOnly)
           ? "PCScanEnabled"
           : "Disabled"
 #endif

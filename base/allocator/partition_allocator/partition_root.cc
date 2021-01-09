@@ -4,10 +4,10 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
@@ -25,10 +25,9 @@ template <bool thread_safe>
 typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
     PartitionOptions::PCScan opt) {
   using Root = PartitionRoot<thread_safe>;
-  // PCScan is currently only supported on 64-bit systems.
-  // Mark partitions non-scannable on 32-bit systems unconditionally, so that
-  // address space for quarantine bitmaps doesn't get reserved.
-#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  // Mark partitions non-scannable unconditionally when PCScan isn't allowed, so
+  // that address space for quarantine bitmaps doesn't get reserved.
+#if ALLOW_PCSCAN
   switch (opt) {
     case PartitionOptions::PCScan::kAlwaysDisabled:
       return Root::PCScanMode::kNonScannable;

@@ -278,10 +278,12 @@ void EnablePartitionAllocMemoryReclaimer() {
       AlignedAllocator());
 }
 
+#if ALLOW_PCSCAN
 void EnablePCScan() {
   Allocator()->EnablePCScan();
   AlignedAllocator()->EnablePCScan();
 }
+#endif
 
 #if defined(OS_WIN)
 // Call this as soon as possible during startup.
@@ -292,12 +294,6 @@ void ConfigurePartitionAlloc() {
 #endif  // defined(ARCH_CPU_X86)
 }
 #endif  // defined(OS_WIN)
-
-void EnablePCScanIfNeeded() {
-  if (!features::IsPartitionAllocPCScanEnabled())
-    return;
-  EnablePCScan();
-}
 
 }  // namespace allocator
 }  // namespace base

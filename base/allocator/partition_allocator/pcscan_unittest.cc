@@ -4,12 +4,14 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-#if defined(PA_HAS_64_BITS_POINTERS)
 
 #include "base/allocator/partition_allocator/pcscan.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if ALLOW_PCSCAN
 
 namespace base {
 namespace internal {
@@ -330,5 +332,5 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // ALLOW_PCSCAN
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

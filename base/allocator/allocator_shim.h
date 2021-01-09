@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -163,9 +164,8 @@ BASE_EXPORT void InitializeAllocatorShim();
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
 BASE_EXPORT void EnablePCScan();
-BASE_EXPORT void EnablePCScanIfNeeded();
 #endif
 
 }  // namespace allocator

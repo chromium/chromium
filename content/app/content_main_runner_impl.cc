@@ -240,16 +240,19 @@ void InitializeV8IfNeeded(const base::CommandLine& command_line,
 }
 
 void EnablePCScanForMallocPartitionsIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
   CHECK(base::FeatureList::GetInstance());
-  base::allocator::EnablePCScanIfNeeded();
+  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
+    base::allocator::EnablePCScan();
+  }
 #endif
 }
 
 void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
   CHECK(base::FeatureList::GetInstance());
-  if (base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocPCScanBrowserOnly)) {
     base::allocator::EnablePCScan();
   }
 #endif
