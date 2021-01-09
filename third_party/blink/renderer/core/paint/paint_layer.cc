@@ -1124,7 +1124,11 @@ const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
     PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
     GetLayoutObject().MapToVisualRectInAncestorSpace(
         GetLayoutObject().View(), mapping_rect, kUseGeometryMapper);
-    return EnclosingIntRect(mapping_rect);
+    // We use PixelSnappedIntRect here to match the behavior in
+    // CIU:: UpdateAncestorDependentCompositingInputs, even though the code
+    // in UnclippedAbsoluteBoundingBox and its equivalent in
+    // CIU::UpdateAncestorDependentCompositingInputs uses EnclosingIntRect.
+    return PixelSnappedIntRect(mapping_rect);
   } else {
     return GetAncestorDependentCompositingInputs()
         .clipped_absolute_bounding_box;

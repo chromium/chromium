@@ -2968,7 +2968,13 @@ TEST_P(PaintLayerOverlapTest,
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
   EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
+  // These values differ because CompositingOptimizationsEnabled takes into
+  // account transforms (the one one the .xform element), whereas
+  // CompositingOptimizationsDisabled (incorrectly) does not.
+  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled())
+    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
+  else
+    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(118, 118, 64, 64));
 }
 
 TEST_P(PaintLayerOverlapTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
