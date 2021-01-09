@@ -7950,7 +7950,8 @@
                 "chromeos",
                 "linux",
                 "ios",
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
