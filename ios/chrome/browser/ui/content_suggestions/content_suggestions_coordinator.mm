@@ -298,7 +298,7 @@
       changeDiscoverFeedHeaderVisibility:[self.contentSuggestionsVisible
                                                  value]];
   self.suggestionsViewController.contentSuggestionsEnabled =
-      prefs->FindPreference(prefs::kArticlesForYouEnabled);
+      contentSuggestionsEnabled;
   self.suggestionsViewController.handler = self;
   self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
 
