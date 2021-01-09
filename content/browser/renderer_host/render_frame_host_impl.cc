@@ -10308,7 +10308,7 @@ void RenderFrameHostImpl::PepperSetVolume(int32_t instance_id, double volume) {
 
 void RenderFrameHostImpl::OnCookiesAccessed(
     network::mojom::CookieAccessDetailsPtr details) {
-  EmitSameSiteCookiesDeprecationWarning(this, details);
+  EmitCookieWarningsAndMetrics(this, details);
 
   CookieAccessDetails allowed;
   CookieAccessDetails blocked;

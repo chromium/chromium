@@ -151,6 +151,24 @@ class NET_EXPORT CookieInclusionStatus {
     // TODO(chlily): Add metrics for how often and where this occurs.
     WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 8,
 
+    // The cookie was treated as SameParty. This is different from looking at
+    // whether the cookie has the SameParty attribute, since we may choose to
+    // ignore that attribute for one reason or another. E.g., we ignore the
+    // SameParty attribute if the site is not a member of a nontrivial
+    // First-Party Set.
+    WARN_TREATED_AS_SAMEPARTY = 9,
+
+    // The cookie was excluded solely for SameParty reasons (i.e. it was in
+    // cross-party context), but would have been included by SameSite. (This can
+    // only occur in cross-party, cross-site contexts, for cookies that are
+    // 'SameParty; SameSite=None'.)
+    WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE = 10,
+
+    // The cookie was included due to SameParty, even though it would have been
+    // excluded by SameSite. (This can only occur in same-party, cross-site
+    // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
+    WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };

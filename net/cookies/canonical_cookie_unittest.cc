@@ -3572,7 +3572,8 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameParty) {
             kCookieableSchemes),
         MatchesCookieAccessResult(
             CookieInclusionStatus::MakeFromReasonsForTesting(
-                {CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT}),
+                {CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT},
+                {CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY}),
             _, _, true));
   }
 

@@ -67,7 +67,7 @@ void SplitCookiesIntoAllowedAndBlocked(
   }
 }
 
-void EmitSameSiteCookiesDeprecationWarning(
+void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
   RenderFrameHostImpl* root_frame_host = rfh->GetMainFrame();
@@ -79,40 +79,61 @@ void EmitSameSiteCookiesDeprecationWarning(
   bool samesite_none_insecure_cookies = false;
   bool breaking_context_downgrade = false;
 
-  for (const net::CookieWithAccessResult& excluded_cookie :
+  bool same_party = false;
+  bool same_party_exclusion_overruled_samesite = false;
+  bool same_party_inclusion_overruled_samesite = false;
+
+  for (const net::CookieWithAccessResult& cookie :
        cookie_details->cookie_list) {
-    if (excluded_cookie.access_result.status.ShouldWarn()) {
+    if (cookie.access_result.status.ShouldWarn()) {
+      const net::CookieInclusionStatus& status = cookie.access_result.status;
       samesite_treated_as_lax_cookies =
           samesite_treated_as_lax_cookies ||
-          excluded_cookie.access_result.status.HasWarningReason(
+          status.HasWarningReason(
               net::CookieInclusionStatus::
                   WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT) ||
-          excluded_cookie.access_result.status.HasWarningReason(
+          status.HasWarningReason(
               net::CookieInclusionStatus::
                   WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
 
       samesite_none_insecure_cookies =
           samesite_none_insecure_cookies ||
-          excluded_cookie.access_result.status.HasWarningReason(
+          status.HasWarningReason(
               net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
 
       devtools_instrumentation::ReportSameSiteCookieIssue(
-          root_frame_host, excluded_cookie, cookie_details->url,
+          root_frame_host, cookie, cookie_details->url,
           cookie_details->site_for_cookies,
           cookie_details->type == CookieAccessDetails::Type::kRead
               ? blink::mojom::SameSiteCookieOperation::kReadCookie
               : blink::mojom::SameSiteCookieOperation::kSetCookie,
           cookie_details->devtools_request_id);
+
+      same_party = same_party ||
+                   status.HasWarningReason(
+                       net::CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY);
+
+      same_party_exclusion_overruled_samesite =
+          same_party_exclusion_overruled_samesite ||
+          status.HasWarningReason(
+              net::CookieInclusionStatus::
+                  WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE);
+
+      same_party_inclusion_overruled_samesite =
+          same_party_inclusion_overruled_samesite ||
+          status.HasWarningReason(
+              net::CookieInclusionStatus::
+                  WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE);
     }
 
     breaking_context_downgrade =
         breaking_context_downgrade ||
-        excluded_cookie.access_result.status.HasDowngradeWarning();
+        cookie.access_result.status.HasDowngradeWarning();
 
-    if (excluded_cookie.access_result.status.HasDowngradeWarning()) {
+    if (cookie.access_result.status.HasDowngradeWarning()) {
       // Unlike with UMA, do not record cookies that have no downgrade warning.
       RecordContextDowngradeUKM(rfh, cookie_details->type,
-                                excluded_cookie.access_result.status,
+                                cookie.access_result.status,
                                 cookie_details->url);
     }
   }
@@ -130,6 +151,23 @@ void EmitSameSiteCookiesDeprecationWarning(
   if (breaking_context_downgrade) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kSchemefulSameSiteContextDowngrade);
+  }
+
+  if (same_party) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kSamePartyCookieAttribute);
+  }
+
+  if (same_party_exclusion_overruled_samesite) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kSamePartyCookieExclusionOverruledSameSite);
+  }
+
+  if (same_party_inclusion_overruled_samesite) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kSamePartyCookieInclusionOverruledSameSite);
   }
 }
 

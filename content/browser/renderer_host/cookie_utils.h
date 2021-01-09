@@ -22,10 +22,10 @@ void SplitCookiesIntoAllowedAndBlocked(
     CookieAccessDetails* allowed,
     CookieAccessDetails* blocked);
 
-// Logs SameSite cookie warnings to DevTools Issues Panel and logs event to
-// UseCounters and UKM. Does not log to the JS console.
+// Logs cookie warnings to DevTools Issues Panel and logs events to UseCounters
+// and UKM. Does not log to the JS console.
 // TODO(crbug.com/977040): Remove when no longer needed.
-void EmitSameSiteCookiesDeprecationWarning(
+void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
     const network::mojom::CookieAccessDetailsPtr& cookie_details);
 
