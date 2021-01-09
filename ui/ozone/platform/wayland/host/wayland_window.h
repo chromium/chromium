@@ -177,6 +177,8 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(uint32_t dnd_action);
 
+  virtual base::Optional<std::vector<gfx::Rect>> GetWindowShape() const;
+
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
 
@@ -211,6 +213,9 @@ class WaylandWindow : public PlatformWindow,
 
   void set_ui_scale(int32_t ui_scale) { ui_scale_ = ui_scale; }
 
+  // Calls set_opaque_region for this window.
+  virtual void UpdateWindowMask();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetBufferScale);
 
@@ -225,6 +230,8 @@ class WaylandWindow : public PlatformWindow,
 
   // Additional initialization of derived classes.
   virtual bool OnInitialize(PlatformWindowInitProperties properties) = 0;
+
+  virtual void UpdateWindowShape();
 
   // WaylandWindowDragController might need to take ownership of the wayland
   // surface whether the window that originated the DND session gets destroyed

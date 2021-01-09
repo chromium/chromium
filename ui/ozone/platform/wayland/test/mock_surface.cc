@@ -28,7 +28,7 @@ void SetOpaqueRegion(wl_client* client,
 void SetInputRegion(wl_client* client,
                     wl_resource* resource,
                     wl_resource* region) {
-  GetUserDataAs<MockSurface>(resource)->SetInputRegion(region);
+  GetUserDataAs<MockSurface>(resource)->SetInputRegionImpl(region);
 }
 
 void Damage(wl_client* client,
@@ -103,12 +103,32 @@ MockSurface* MockSurface::FromResource(wl_resource* resource) {
 }
 
 void MockSurface::SetOpaqueRegionImpl(wl_resource* region) {
+  if (!region) {
+    opaque_region_ = gfx::Rect(-1, -1, 0, 0);
+    return;
+  }
   auto bounds = GetUserDataAs<TestRegion>(region)->getBounds();
   opaque_region_ =
       gfx::Rect(bounds.fLeft, bounds.fTop, bounds.fRight - bounds.fLeft,
                 bounds.fBottom - bounds.fTop);
 
   SetOpaqueRegion(region);
+}
+
+void MockSurface::SetInputRegionImpl(wl_resource* region) {
+  // It is unsafe to always treat |region| as a valid pointer.
+  // According to the protocol about wl_surface::set_input_region
+  // "A NULL wl_region cuases the input region to be set to infinite."
+  if (!region) {
+    input_region_ = gfx::Rect(-1, -1, 0, 0);
+    return;
+  }
+  auto bounds = GetUserDataAs<TestRegion>(region)->getBounds();
+  input_region_ =
+      gfx::Rect(bounds.fLeft, bounds.fTop, bounds.fRight - bounds.fLeft,
+                bounds.fBottom - bounds.fTop);
+
+  SetInputRegion(region);
 }
 
 void MockSurface::AttachNewBuffer(wl_resource* buffer_resource,

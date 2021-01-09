@@ -815,6 +815,51 @@ TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
+TEST_P(WaylandWindowTest, UpdateWindowRegion) {
+  wl::MockSurface* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // Change bounds.
+  const gfx::Rect initial_bounds = window_->GetBounds();
+  const gfx::Rect new_bounds = gfx::Rect(0, 0, initial_bounds.width() + 10,
+                                         initial_bounds.height() + 10);
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
+  window_->SetBounds(new_bounds);
+  Sync();
+  VerifyAndClearExpectations();
+  EXPECT_EQ(mock_surface->opaque_region(), new_bounds);
+  EXPECT_EQ(mock_surface->input_region(), new_bounds);
+
+  // Maximize.
+  ScopedWlArray states = InitializeWlArrayWithActivatedState();
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
+  const gfx::Rect maximized_bounds = gfx::Rect(0, 0, 1024, 768);
+  window_->Maximize();
+  AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED, states.get());
+  SendConfigureEvent(xdg_surface_, maximized_bounds.width(),
+                     maximized_bounds.height(), 1, states.get());
+  Sync();
+  VerifyAndClearExpectations();
+  EXPECT_EQ(mock_surface->opaque_region(), maximized_bounds);
+  EXPECT_EQ(mock_surface->input_region(), maximized_bounds);
+
+  // Restore.
+  const gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
+  window_->Restore();
+  // Reinitialize wl_array, which removes previous old states.
+  auto active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, 0, 0, 2, active.get());
+  Sync();
+  VerifyAndClearExpectations();
+
+  EXPECT_EQ(mock_surface->opaque_region(), restored_bounds);
+  EXPECT_EQ(mock_surface->input_region(), restored_bounds);
+}
+
 TEST_P(WaylandWindowTest, CanDispatchMouseEventDefault) {
   EXPECT_FALSE(window_->CanDispatchEvent(&test_mouse_event_));
 }

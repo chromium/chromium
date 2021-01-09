@@ -7,6 +7,7 @@
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -191,16 +192,47 @@ void WaylandSurface::SetOpaqueRegion(const gfx::Rect& region_px) {
   if (!root_window_ || !root_window_->IsOpaqueWindow())
     return;
 
-  wl::Object<wl_region> region(
-      wl_compositor_create_region(connection_->compositor()));
-  gfx::Rect region_dip =
-      gfx::ScaleToEnclosingRect(region_px, 1.f / buffer_scale_);
-  wl_region_add(region.get(), region_dip.x(), region_dip.y(),
-                region_dip.width(), region_dip.height());
-
-  wl_surface_set_opaque_region(surface_.get(), region.get());
+  wl_surface_set_opaque_region(surface_.get(),
+                               CreateAndAddRegion(region_px).get());
 
   connection_->ScheduleFlush();
+}
+
+void WaylandSurface::SetInputRegion(const gfx::Rect& region_px) {
+  // Don't set input region when use_native_frame is enabled.
+  if (!root_window_ || root_window_->ShouldUseNativeFrame())
+    return;
+
+  // Sets input region for input events to allow go through and
+  // for the compositor to ignore the parts of the input region that fall
+  // outside of the surface.
+  wl_surface_set_input_region(surface_.get(),
+                              CreateAndAddRegion(region_px).get());
+
+  connection_->ScheduleFlush();
+}
+
+wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
+    const gfx::Rect& region_px) {
+  DCHECK(root_window_);
+
+  wl::Object<wl_region> region(
+      wl_compositor_create_region(connection_->compositor()));
+
+  auto add_region = [&](const gfx::Rect& r) {
+    gfx::Rect region_dip = gfx::ScaleToEnclosingRect(r, 1.f / buffer_scale_);
+    wl_region_add(region.get(), region_dip.x(), region_dip.y(),
+                  region_dip.width(), region_dip.height());
+  };
+
+  if (root_window_->GetWindowShape().has_value()) {
+    std::vector<gfx::Rect> rectangles = root_window_->GetWindowShape().value();
+    for (const auto& rect : rectangles)
+      add_region(rect);
+  } else {
+    add_region(region_px);
+  }
+  return region;
 }
 
 void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {

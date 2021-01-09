@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -736,6 +737,20 @@ base::Optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
   return ToPixelRect(gfx::Rect(native_widget_delegate()->GetMaximumSize()))
       .size();
+}
+
+base::Optional<SkPath>
+DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShape(
+    const gfx::Size& size_in_pixels) {
+  if (GetWidget()->non_client_view()) {
+    SkPath window_mask;
+    // Some frame views define a custom (non-rectanguar) window mask.
+    // If so, use it to define the window shape. If not, fall through.
+    GetWidget()->non_client_view()->GetWindowMask(size_in_pixels, &window_mask);
+    if (!window_mask.isEmpty())
+      return window_mask;
+  }
+  return base::nullopt;
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {

@@ -191,7 +191,7 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
     return;
   bounds_px_ = bounds_px;
 
-  root_surface_->SetOpaqueRegion(gfx::Rect(bounds_px_.size()));
+  UpdateWindowMask();
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -393,6 +393,17 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
+
+base::Optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
+  return base::nullopt;
+}
+
+void WaylandWindow::UpdateWindowMask() {
+  UpdateWindowShape();
+  root_surface_->SetOpaqueRegion(bounds_px_);
+}
+
+void WaylandWindow::UpdateWindowShape() {}
 
 void WaylandWindow::OnDragEnter(const gfx::PointF& point,
                                 std::unique_ptr<OSExchangeData> data,

@@ -73,6 +73,21 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   }
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
+  base::Optional<SkPath> GetWindowMaskForWindowShape(
+      const gfx::Size& size_in_pixels) override {
+    SkPath window_mask;
+    int right = size_in_pixels.width();
+    int bottom = size_in_pixels.height();
+
+    window_mask.moveTo(0, 0);
+    window_mask.lineTo(0, bottom);
+    window_mask.lineTo(right, bottom);
+    window_mask.lineTo(right, 10);
+    window_mask.lineTo(right - 10, 10);
+    window_mask.lineTo(right - 10, 0);
+    window_mask.close();
+    return window_mask;
+  }
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
@@ -90,18 +105,6 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
   ~ShapedX11ExtensionDelegate() override = default;
 
   void OnLostMouseGrab() override {}
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {
-    int right = size.width();
-    int bottom = size.height();
-
-    window_mask->moveTo(0, 0);
-    window_mask->lineTo(0, bottom);
-    window_mask->lineTo(right, bottom);
-    window_mask->lineTo(right, 10);
-    window_mask->lineTo(right - 10, 10);
-    window_mask->lineTo(right - 10, 0);
-    window_mask->close();
-  }
 #if BUILDFLAG(USE_ATK)
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event,
                      bool transient) override {

@@ -7,7 +7,10 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -274,6 +277,19 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
       wl::TranslateBoundsToParentCoordinates(window->GetBounds(),
                                              parent_window->GetBounds()),
       1.0 / window->buffer_scale());
+}
+
+std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
+  SkRegion clip_region;
+  clip_region.setRect(path.getBounds().round());
+  SkRegion region;
+  region.setPath(path, clip_region);
+
+  std::vector<gfx::Rect> rects;
+  for (SkRegion::Iterator it(region); !it.done(); it.next())
+    rects.push_back(gfx::SkIRectToRect(it.rect()));
+
+  return rects;
 }
 
 }  // namespace wl

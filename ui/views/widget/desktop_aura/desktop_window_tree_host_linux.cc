@@ -339,17 +339,6 @@ void DesktopWindowTreeHostLinux::DestroyNonClientEventFilter() {
   non_client_window_event_filter_.reset();
 }
 
-void DesktopWindowTreeHostLinux::GetWindowMask(const gfx::Size& size,
-                                               SkPath* window_mask) {
-  DCHECK(window_mask);
-  Widget* widget = native_widget_delegate()->AsWidget();
-  if (widget->non_client_view()) {
-    // Some frame views define a custom (non-rectangular) window mask. If
-    // so, use it to define the window shape. If not, fall through.
-    widget->non_client_view()->GetWindowMask(size, window_mask);
-  }
-}
-
 void DesktopWindowTreeHostLinux::OnLostMouseGrab() {
   dispatcher()->OnHostLostMouseGrab();
 }

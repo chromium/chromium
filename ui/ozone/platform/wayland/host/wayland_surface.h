@@ -79,6 +79,13 @@ class WaylandSurface {
   // pixels.
   void SetOpaqueRegion(const gfx::Rect& region_px);
 
+  // Sets the input region on this surface in physical pixels.
+  // The input region indicates which parts of the surface accept pointer and
+  // touch input events. This is expected to be called from ToplevelWindow
+  // whenever the region that the surface span changes or window state changes
+  // when custom frame is used.
+  void SetInputRegion(const gfx::Rect& region_px);
+
   // Set the source rectangle of the associated wl_surface.
   // See:
   // https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml
@@ -98,6 +105,8 @@ class WaylandSurface {
   wl::Object<wl_subsurface> CreateSubsurface(WaylandSurface* parent);
 
  private:
+  wl::Object<wl_region> CreateAndAddRegion(const gfx::Rect& region_px);
+
   WaylandConnection* const connection_;
   WaylandWindow* root_window_ = nullptr;
   wl::Object<wl_surface> surface_;

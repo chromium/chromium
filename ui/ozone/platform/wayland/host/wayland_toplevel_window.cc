@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
@@ -58,6 +59,10 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   SetSizeConstraints();
   TriggerStateChanges();
   InitializeAuraShellSurface();
+  // This could be the proper time to update window mask using
+  // NonClientView::GetWindowMask, since |non_client_view| is not created yet
+  // during the call to WaylandWindow::Initialize().
+  UpdateWindowMask();
   return true;
 }
 
@@ -211,6 +216,8 @@ void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
   use_native_frame_ = use_native_frame;
   if (shell_toplevel_)
     SetDecorationMode();
+
+  UpdateWindowMask();
 }
 
 bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
@@ -220,6 +227,11 @@ bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
   return use_native_frame_ && const_cast<WaylandToplevelWindow*>(this)
                                   ->connection()
                                   ->xdg_decoration_manager_v1();
+}
+
+base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
+    const {
+  return window_shape_;
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
@@ -406,6 +418,25 @@ void WaylandToplevelWindow::SetDecorationMode() {
   } else {
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kClientSide);
+  }
+}
+
+void WaylandToplevelWindow::UpdateWindowMask() {
+  // TODO(http://crbug.com/1158733): When supporting PlatformWindow::SetShape,
+  // update window region with the given |shape|.
+  WaylandWindow::UpdateWindowMask();
+  root_surface()->SetInputRegion(GetBounds());
+}
+
+void WaylandToplevelWindow::UpdateWindowShape() {
+  // Create |window_shape_| using the window mask of PlatformWindowDelegate
+  // otherwise resets it.
+  base::Optional<SkPath> window_mask = delegate()->GetWindowMaskForWindowShape(
+      gfx::Size(GetBounds().width(), GetBounds().height()));
+  if (window_mask.has_value()) {
+    window_shape_ = wl::CreateRectsFromSkPath(window_mask.value());
+  } else {
+    window_shape_.reset();
   }
 }
 

@@ -38,7 +38,7 @@ class WaylandToplevelWindow : public WaylandWindow,
       int hittest,
       const gfx::Point& pointer_location_in_px) override;
 
-  // PlatformWindow
+  // PlatformWindow:
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
@@ -55,6 +55,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
 
+  // WaylandWindow overrides:
+  base::Optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+
  private:
   // WaylandWindow overrides:
   void HandleSurfaceConfigure(int32_t widht,
@@ -64,6 +67,11 @@ class WaylandToplevelWindow : public WaylandWindow,
                               bool is_activated) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
+  // Calls UpdateWindowShape, set_input_region and set_opaque_region
+  // for this toplevel window.
+  void UpdateWindowMask() override;
+  // Update the window shape using the window mask of PlatformWindowDelegate.
+  void UpdateWindowShape() override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -141,6 +149,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // When use_native_frame is true, server-side decoration is set,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
+
+  base::Optional<std::vector<gfx::Rect>> window_shape_;
 };
 
 }  // namespace ui

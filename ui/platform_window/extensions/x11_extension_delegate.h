@@ -12,12 +12,6 @@
 using AtkKeyEventStruct = struct _AtkKeyEventStruct;
 #endif
 
-class SkPath;
-
-namespace gfx {
-class Size;
-}
-
 namespace ui {
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
@@ -29,10 +23,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
   // has this technique. However, explicit grab is available only for popup
   // (menu) windows.
   virtual void OnLostMouseGrab() = 0;
-
-  // Returns a mask to be used to clip the window for the given
-  // size. This is used to create the non-rectangular window shape.
-  virtual void GetWindowMask(const gfx::Size& size, SkPath* window_mask) = 0;
 
 #if BUILDFLAG(USE_ATK)
   // Notifies an ATK key event to be processed. The transient parameter will be

@@ -14,6 +14,8 @@ class Rect;
 class Size;
 }  // namespace gfx
 
+class SkPath;
+
 namespace ui {
 
 class Event;
@@ -62,6 +64,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Requests size constraints for the PlatformWindow.
   virtual base::Optional<gfx::Size> GetMinimumSizeForWindow();
   virtual base::Optional<gfx::Size> GetMaximumSizeForWindow();
+
+  // Returns a mask to be used to clip the window for the given
+  // size. This is used to create the non-rectangular window shape.
+  virtual base::Optional<SkPath> GetWindowMaskForWindowShape(
+      const gfx::Size& size_in_pixels);
 
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
