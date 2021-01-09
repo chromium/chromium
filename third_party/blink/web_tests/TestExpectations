@@ -2042,9 +2042,6 @@ crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pendi
 # Need to support 'direction: rtl' for scroll snap
 crbug.com/1012173 external/wpt/css/css-scroll-snap/snap-after-initial-layout/direction-rtl.html [ Failure ]
 
-# Hit a DCHECK
-crbug.com/918664 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/block-size-with-min-or-max-content-table-1a.html [ Failure Pass ]
-
 # WebVTT is off because additional padding
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_completely_move_up.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_partially_move_down.html [ Failure ]
