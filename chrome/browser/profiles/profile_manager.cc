@@ -283,10 +283,10 @@ void NukeProfileFromDisk(const base::FilePath& profile_path) {
 }
 
 // Called after a deleted profile was checked and cleaned up.
-void ProfileCleanedUp(const base::Value* profile_path_value) {
+void ProfileCleanedUp(base::Value profile_path_value) {
   ListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                   prefs::kProfilesDeleted);
-  deleted_profiles->Remove(*profile_path_value, nullptr);
+  deleted_profiles->Remove(profile_path_value, nullptr);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1040,11 +1040,11 @@ void ProfileManager::CleanUpDeletedProfiles() {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
             base::BindOnce(&NukeProfileFromDisk, *profile_path),
-            base::BindOnce(&ProfileCleanedUp, &value));
+            base::BindOnce(&ProfileCleanedUp, value.Clone()));
       } else {
         // Everything is fine, the profile was removed on shutdown.
         content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&ProfileCleanedUp, &value));
+            FROM_HERE, base::BindOnce(&ProfileCleanedUp, value.Clone()));
       }
     } else {
       LOG(ERROR) << "Found invalid profile path in deleted_profiles: "
