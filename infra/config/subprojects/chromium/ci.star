@@ -134,7 +134,7 @@ consoles.console_view(
 consoles.console_view(
     name = "chromium.angle",
     ordering = {
-        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "LinuxOzone", "Mac", "Windows", "Perf"],
+        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "LinuxOzone", "Mac", "iOS", "Windows", "Perf"],
         "*builder*": ["Builder"],
         "Android": "*builder*",
         "AndroidVk": "*builder*",
@@ -142,6 +142,7 @@ consoles.console_view(
         "Linux": "*builder*",
         "LinuxOzone": "*builder*",
         "Mac": "*builder*",
+        "iOS": "*builder*",
         "Windows": "*builder*",
         "Perf": "*builder*",
     },
@@ -1326,6 +1327,24 @@ ci.angle_thin_tester(
         short_name = "x64",
     ),
     triggered_by = ["mac-angle-chromium-builder"],
+)
+
+ci.angle_mac_builder(
+    name = "ios-angle-builder",
+    xcode = xcode.x12a7209,
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "ios-angle-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|Intel|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["ios-angle-builder"],
 )
 
 ci.angle_windows_builder(

@@ -106,6 +106,22 @@
       "use_goma": true
     }
   },
+  "ios-angle-try-intel": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_run_ios_unittests_with_xctest": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
   "linux-angle-rel": {
     "gn_args": {
       "build_angle_gles1_conform_tests": true,

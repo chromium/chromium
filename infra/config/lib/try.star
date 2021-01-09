@@ -235,6 +235,33 @@ def chromium_angle_builder(*, name, **kwargs):
         **kwargs
     )
 
+def chromium_angle_pinned_builder(*, name, **kwargs):
+    return try_builder(
+        name = name,
+        builder_group = "tryserver.chromium.angle",
+        builderless = True,
+        executable = "recipe:angle_chromium_trybot",
+        goma_backend = builders.goma.backend.RBE_PROD,
+        service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
+def chromium_angle_mac_builder(*, name, **kwargs):
+    return chromium_angle_pinned_builder(
+        name = name,
+        cores = None,
+        ssd = None,
+        os = builders.os.MAC_ANY,
+        **kwargs
+    )
+
+def chromium_angle_ios_builder(*, name, **kwargs):
+    return chromium_angle_mac_builder(
+        name = name,
+        xcode = builders.xcode.x12a7209,
+        **kwargs
+    )
+
 def chromium_chromiumos_builder(*, name, **kwargs):
     return try_builder(
         name = name,
@@ -445,6 +472,8 @@ try_ = struct(
     chromium_builder = chromium_builder,
     chromium_android_builder = chromium_android_builder,
     chromium_angle_builder = chromium_angle_builder,
+    chromium_angle_ios_builder = chromium_angle_ios_builder,
+    chromium_angle_mac_builder = chromium_angle_mac_builder,
     chromium_chromiumos_builder = chromium_chromiumos_builder,
     chromium_dawn_builder = chromium_dawn_builder,
     chromium_linux_builder = chromium_linux_builder,

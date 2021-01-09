@@ -858,6 +858,115 @@
       "angle_unittests"
     ]
   },
+  "ios-angle-builder": {},
+  "ios-angle-intel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "angle_end2end_tests",
+          "--gtest_filter=-*Vulkan_SwiftShader*",
+          "--platform",
+          "iPhone X",
+          "--version",
+          "14.0",
+          "--bot-mode",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "12a7209",
+          "--xctest"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "angle_end2end_tests_iPhone X 14.0",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:796d2b92cff93fc2059623ce0a66284373ceea0a"
+            }
+          ],
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "gpu": "8086:0a2e",
+              "os": "Mac-10.15.5"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_12a7209",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "args": [
+          "angle_white_box_tests",
+          "--platform",
+          "iPhone X",
+          "--version",
+          "14.0",
+          "--bot-mode",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "12a7209",
+          "--xctest"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "angle_white_box_tests_iPhone X 14.0",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:796d2b92cff93fc2059623ce0a66284373ceea0a"
+            }
+          ],
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "gpu": "8086:0a2e",
+              "os": "Mac-10.15.5"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_12a7209",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "angle_white_box_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_white_box_tests/",
+        "use_isolated_scripts_api": true
+      }
+    ]
+  },
   "linux-angle-builder": {},
   "linux-angle-chromium-builder": {},
   "linux-angle-chromium-intel": {

@@ -6423,6 +6423,19 @@
       },
     },
 
+    'gpu_angle_ios_gtests': {
+      'gpu_angle_end2end_gtests': {
+        'variants': [
+          'SIM_IPHONE_X_14_0',
+        ],
+      },
+      'gpu_angle_white_box_gtests': {
+        'variants': [
+          'SIM_IPHONE_X_14_0',
+        ],
+      },
+    },
+
     # ios14-beta-sim runs sims only on 14.0+ since
     # ios13-beta-sim already runs 13.x and 12.4
     'ios14_beta_simulator_tests': {

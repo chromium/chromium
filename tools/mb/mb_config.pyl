@@ -144,6 +144,7 @@
       'android-angle-vk-arm-builder': 'angle_specific_android_vulkan_ndk_release_trybot',
       'android-angle-vk-arm64-builder': 'angle_specific_android_vulkan_ndk_release_trybot_arm64',
       'fuchsia-angle-builder': 'angle_specific_release_trybot_fuchsia',
+      'ios-angle-builder': 'angle_specific_release_trybot_ios',
       'linux-angle-builder': 'angle_specific_release_trybot',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot',
       'linux-ozone-angle-builder': 'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot',
@@ -857,6 +858,7 @@
       'android_angle_vk32_deqp_rel_ng': 'angle_deqp_android_vulkan_ndk_release_trybot',
       'android_angle_vk64_deqp_rel_ng': 'angle_deqp_android_vulkan_ndk_release_trybot_arm64',
       'fuchsia-angle-rel': 'gpu_fyi_tests_release_trybot_fuchsia',
+      'ios-angle-try-intel': 'angle_specific_release_trybot_ios',
       'linux-angle-rel': 'gpu_fyi_tests_release_trybot',
       'linux_angle_ozone_rel_ng': 'angle_ozone_linux_system_gbm_libdrm_release_trybot',
       'linux_angle_deqp_rel_ng': 'angle_deqp_release_trybot',
@@ -1518,6 +1520,10 @@
 
     'angle_specific_release_trybot_fuchsia': [
       'angle_specific_tests', 'shared_release_trybot', 'fuchsia',
+    ],
+
+    'angle_specific_release_trybot_ios': [
+      'angle_specific_tests', 'shared_release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_specific_release_trybot_x86': [

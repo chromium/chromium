@@ -1318,6 +1318,22 @@
           'angle_unittests',
         ],
       },
+      'ios-angle-builder': {},
+      'ios-angle-intel': {
+        'os_type': 'mac',
+        'mixins': [
+          'mac_mini_intel_gpu_stable',
+          'enable_resultdb',
+          'isolate_profile_data',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_12a7209',
+          'xctest',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_ios_gtests',
+        },
+      },
       'linux-angle-builder': {},
       'linux-angle-chromium-builder': {},
       'linux-angle-chromium-intel': {
