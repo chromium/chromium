@@ -12,6 +12,10 @@
 namespace ash {
 namespace {
 
+// Appearance.
+constexpr int kNumberOfChipsPerRow = 2;
+constexpr int kSpacing = 8;
+
 // Need a custom grid layout to facilitate removal of views from the grid,
 // which can change the number of rows required. views::GridLayout makes this
 // case difficult.
@@ -110,8 +114,8 @@ class SimpleGridLayout : public views::LayoutManagerBase {
 
 HoldingSpaceItemChipsContainer::HoldingSpaceItemChipsContainer() {
   SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kHoldingSpaceChipsPerRow, kHoldingSpaceColumnSpacing,
-      kHoldingSpaceRowSpacing));
+      kNumberOfChipsPerRow, /*column_spacing=*/kSpacing,
+      /*row_spacing=*/kSpacing));
 }
 
 HoldingSpaceItemChipsContainer::~HoldingSpaceItemChipsContainer() = default;

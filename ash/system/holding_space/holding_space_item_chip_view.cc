@@ -15,6 +15,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -22,6 +23,14 @@
 #include "ui/views/painter.h"
 
 namespace ash {
+
+// Appearance.
+constexpr int kChildSpacing = 8;
+constexpr int kLabelMaskGradientWidth = 16;
+constexpr gfx::Insets kLabelMargins(0, 0, 0, /*right=*/2);
+constexpr gfx::Insets kPadding(8, 8, 8, /*right=*/10);
+constexpr int kPreferredHeight = 40;
+constexpr int kPreferredWidth = 160;
 
 // CirclePainter ---------------------------------------------------------------
 
@@ -91,9 +100,8 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
     flags.setAntiAlias(false);
 
     gfx::Point gradient_end(size.width() - kHoldingSpaceIconSize, 0);
-    gfx::Point gradient_start(
-        gradient_end.x() - kHoldingSpaceChipLabelMaskGradientWidth,
-        gradient_end.y());
+    gfx::Point gradient_start(gradient_end.x() - kLabelMaskGradientWidth,
+                              gradient_end.y());
     flags.setShader(gfx::CreateGradientShader(
         gradient_start, gradient_end, SK_ColorBLACK, SK_ColorTRANSPARENT));
 
@@ -113,12 +121,11 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
     const HoldingSpaceItem* item)
     : HoldingSpaceItemView(delegate, item) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kHoldingSpaceChipPadding), kHoldingSpaceChipChildSpacing));
+      views::BoxLayout::Orientation::kHorizontal, kPadding, kChildSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  SetPreferredSize(gfx::Size(kHoldingSpaceChipWidth, kHoldingSpaceChipHeight));
+  SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 
   image_ = AddChildView(std::make_unique<RoundedImageView>(
       kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
@@ -145,6 +152,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   label_ = label_and_pin_button_container_->AddChildView(
       holding_space_util::CreateLabel(holding_space_util::LabelStyle::kChip));
+  label_->SetBorder(views::CreateEmptyBorder(kLabelMargins));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_->SetText(item->text());
