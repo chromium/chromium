@@ -248,6 +248,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -259,6 +260,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -269,6 +271,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -280,6 +283,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -648,6 +652,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -658,6 +663,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -723,6 +729,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -733,6 +740,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -764,6 +772,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -774,6 +783,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -783,6 +793,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
@@ -793,6 +804,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_allocator": "partition",
       "use_goma": true
     }
   },
