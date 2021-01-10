@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -22,11 +23,13 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -35,6 +38,7 @@
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
@@ -42,11 +46,13 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,6 +60,10 @@
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -79,6 +89,9 @@ ProfilePickerView* g_profile_picker_view = nullptr;
 constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
+
+// Padding of elements in the simple toolbar.
+constexpr gfx::Insets kToolbarPadding = gfx::Insets(8);
 
 constexpr base::TimeDelta kExtendedAccountInfoTimeout =
     base::TimeDelta::FromSeconds(10);
@@ -151,6 +164,28 @@ class ProfilePickerWidget : public views::Widget {
 
  private:
   ProfilePickerView* const profile_picker_view_;
+};
+
+class SimpleBackButton : public ToolbarButton {
+ public:
+  explicit SimpleBackButton(PressedCallback callback)
+      : ToolbarButton(std::move(callback)) {
+    SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                             ui::EF_MIDDLE_MOUSE_BUTTON);
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_BACK_BUTTON_LABEL));
+  }
+  SimpleBackButton(const SimpleBackButton&) = delete;
+  SimpleBackButton& operator=(const SimpleBackButton&) = delete;
+  ~SimpleBackButton() override = default;
+
+  // ToolbarButton:
+  void UpdateIcon() override {
+    const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
+    const gfx::VectorIcon* image =
+        touch_ui ? &kBackArrowTouchIcon : &vector_icons::kBackArrowIcon;
+    UpdateIconsWithStandardColors(*image);
+  }
 };
 
 }  // namespace
@@ -367,6 +402,16 @@ void ProfilePickerView::SwitchToSignIn(
     base::OnceCallback<void(bool)> switch_finished_callback) {
   profile_color_ = profile_color;
 
+  if (signed_in_profile_being_created_) {
+    // The profile is already created (the user went back and forth again). No
+    // need to create it again.
+    std::move(switch_finished_callback).Run(true);
+    // Do not load any url because the desired sign-in screen is still loaded in
+    // `new_profile_contents_`.
+    ShowScreen(new_profile_contents_.get(), GURL(), /*show_toolbar=*/true);
+    return;
+  }
+
   DCHECK(!switch_finished_callback_);
   switch_finished_callback_ = std::move(switch_finished_callback);
 
@@ -404,6 +449,10 @@ void ProfilePickerView::OnProfileForSigninCreated(
     return;
   }
 
+  // Apply the default theme to get consistent colors for toolbars (this matters
+  // for linux where the 'system' theme is used for new profiles).
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  theme_service->UseDefaultTheme();
   if (signin_util::IsForceSigninEnabled()) {
     // Show the embedded sign-in flow if the force signin is enabled.
     UserManagerProfileDialog::ShowForceSigninDialog(
@@ -436,11 +485,27 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // make sure the flow does not create multiple profiles simultaneously.
   signed_in_profile_being_created_ = profile;
 
-  // TODO(crbug.com/1126913): Build the simple toolbar with the back button.
+  // Build the toolbar. Do it as late as here because the elements depend on the
+  // ThemeProvider which is available only by signed_in_profile_being_created_.
+  const ui::ThemeProvider* tp = GetThemeProviderForProfileBeingCreated();
+  toolbar_->SetBackground(views::CreateSolidBackground(
+      tp->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+
+  auto back_button = std::make_unique<SimpleBackButton>(base::BindRepeating(
+      &ProfilePickerView::BackButtonPressed, base::Unretained(this)));
+  toolbar_->AddChildView(std::move(back_button));
+
+  // TODO(crbug.com/1126913): Build the read-only omnibox.
 
   new_profile_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(signed_in_profile_being_created_));
   new_profile_contents_->SetDelegate(this);
+
+  // Make sure the web contents used for sign-in has proper background (for dark
+  // mode).
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      new_profile_contents_.get(),
+      tp->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND));
 
   ShowScreen(new_profile_contents_.get(), GetSigninURL(),
              /*show_toolbar=*/true);
@@ -578,6 +643,11 @@ void ProfilePickerView::BuildLayout() {
                                    views::MaximumFlexSizeRule::kUnbounded));
 
   auto toolbar = std::make_unique<views::View>();
+  toolbar->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCollapseMargins(true)
+      .SetInteriorMargin(kToolbarPadding);
   toolbar->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -592,15 +662,33 @@ void ProfilePickerView::BuildLayout() {
 void ProfilePickerView::ShowScreen(content::WebContents* contents,
                                    const GURL& url,
                                    bool show_toolbar) {
-  contents->GetController().LoadURL(url, content::Referrer(),
-                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                    std::string());
+  if (!url.is_empty()) {
+    contents->GetController().LoadURL(url, content::Referrer(),
+                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                      std::string());
+  }
   web_view_->SetWebContents(contents);
   web_view_->RequestFocus();
 
   // Change visibility of the toolbar after swapping wc in `web_view_` to make
   // it easier for tests to detect changing of the screen.
   toolbar_->SetVisible(show_toolbar);
+}
+
+void ProfilePickerView::BackButtonPressed(const ui::Event& event) {
+  if (web_view_->GetWebContents() != new_profile_contents_.get()) {
+    return;
+  }
+
+  if (new_profile_contents_->GetController().CanGoBack()) {
+    new_profile_contents_->GetController().GoBack();
+    return;
+  }
+
+  // Move from sign-in back to the previous screen of profile creation.
+  // Do not load any url because the desired screen is still loaded in
+  // `system_profile_contents_`.
+  ShowScreen(system_profile_contents_.get(), GURL(), /*show_toolbar=*/false);
 }
 
 void ProfilePickerView::OnRefreshTokenUpdatedForAccount(

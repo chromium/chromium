@@ -108,10 +108,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Builds the views hieararchy.
   void BuildLayout();
 
-  // Shows a screen with `url` in `contents` and potentially `show_toolbar`.
+  // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
+  // `url` is empty, it only shows `contents` with its currently loaded url.
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
                   bool show_toolbar);
+
+  void BackButtonPressed(const ui::Event& event);
 
   // Helper functions to deal with the lack of extended account info.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
