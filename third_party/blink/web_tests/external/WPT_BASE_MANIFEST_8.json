@@ -413498,6 +413498,15 @@
      ]
     ],
     "textcontrols": {
+     "focus.html": [
+      "8c2e0b55914e765bb8b56154aa6638dd0d9f863f",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "selectionchange.tentative.html": [
       "adec8b31f3e096eb28ae0246164d637da10bd5ee",
       [
