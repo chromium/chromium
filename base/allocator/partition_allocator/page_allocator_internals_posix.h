@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -216,8 +217,11 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  PA_PCHECK(0 == HANDLE_EINTR(
-                     mprotect(address, length, GetAccessFlags(accessibility))));
+  const int ret =
+      HANDLE_EINTR(mprotect(address, length, GetAccessFlags(accessibility)));
+  if (ret == -1 && errno == ENOMEM)
+    OOM_CRASH(length);
+  PA_PCHECK(0 == ret);
 }
 
 void FreePagesInternal(void* address, size_t length) {
