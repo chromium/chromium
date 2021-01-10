@@ -383,7 +383,6 @@ void ChromeNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
 void ChromeNativeFileSystemPermissionContext::PerformAfterWriteChecks(
     std::unique_ptr<content::NativeFileSystemWriteItem> item,
     content::GlobalFrameRoutingId frame_id,
-
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
