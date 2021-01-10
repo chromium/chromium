@@ -972,8 +972,15 @@ HRESULT TSFTextStore::OnEndEdit(ITfContext* context,
   }
 
   composition_start_ = selection_.start();
-  if (has_composition_range_)
-    ResetCompositionState();
+  if (has_composition_range_) {
+    has_composition_range_ = false;
+    composition_range_.set_start(0);
+    composition_range_.set_end(0);
+    previous_composition_string_.clear();
+    previous_composition_start_ = 0;
+    previous_composition_selection_range_ = gfx::Range::InvalidRange();
+    previous_text_spans_.clear();
+  }
 
   return S_OK;
 }
