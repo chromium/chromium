@@ -31,6 +31,8 @@ base::StringPiece StatusToSuccessOrFailure(
   switch (status) {
     case mojom::TrustTokenOperationStatus::kOk:
     case mojom::TrustTokenOperationStatus::kAlreadyExists:
+    case mojom::TrustTokenOperationStatus::
+        kOperationSuccessfullyFulfilledLocally:
       return "Success";
     default:
       return "Failure";
@@ -54,9 +56,13 @@ const char kHistogramPartsSeparator[] = ".";
 
 }  // namespace
 
-void TrustTokenOperationMetricsRecorder::BeginBegin(
-    mojom::TrustTokenOperationType type) {
-  type_ = type;
+TrustTokenOperationMetricsRecorder::TrustTokenOperationMetricsRecorder(
+    mojom::TrustTokenOperationType type)
+    : type_(type) {}
+TrustTokenOperationMetricsRecorder::~TrustTokenOperationMetricsRecorder() =
+    default;
+
+void TrustTokenOperationMetricsRecorder::BeginBegin() {
   begin_start_ = base::TimeTicks::Now();
 }
 

@@ -7,9 +7,9 @@
 namespace network {
 
 OperationTimingRequestHelperWrapper::OperationTimingRequestHelperWrapper(
-    mojom::TrustTokenOperationType type,
+    std::unique_ptr<TrustTokenOperationMetricsRecorder> metrics_recorder,
     std::unique_ptr<TrustTokenRequestHelper> helper)
-    : type_(type), helper_(std::move(helper)) {}
+    : recorder_(std::move(metrics_recorder)), helper_(std::move(helper)) {}
 
 OperationTimingRequestHelperWrapper::~OperationTimingRequestHelperWrapper() =
     default;
@@ -17,7 +17,7 @@ OperationTimingRequestHelperWrapper::~OperationTimingRequestHelperWrapper() =
 void OperationTimingRequestHelperWrapper::Begin(
     net::URLRequest* request,
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
-  recorder_.BeginBegin(type_);
+  recorder_->BeginBegin();
   helper_->Begin(
       request, base::BindOnce(&OperationTimingRequestHelperWrapper::FinishBegin,
                               weak_factory_.GetWeakPtr(), std::move(done)));
@@ -26,7 +26,7 @@ void OperationTimingRequestHelperWrapper::Begin(
 void OperationTimingRequestHelperWrapper::Finalize(
     mojom::URLResponseHead* response,
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
-  recorder_.BeginFinalize();
+  recorder_->BeginFinalize();
   helper_->Finalize(
       response,
       base::BindOnce(&OperationTimingRequestHelperWrapper::FinishFinalize,
@@ -36,14 +36,14 @@ void OperationTimingRequestHelperWrapper::Finalize(
 void OperationTimingRequestHelperWrapper::FinishBegin(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     mojom::TrustTokenOperationStatus status) {
-  recorder_.FinishBegin(status);
+  recorder_->FinishBegin(status);
   std::move(done).Run(status);
 }
 
 void OperationTimingRequestHelperWrapper::FinishFinalize(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     mojom::TrustTokenOperationStatus status) {
-  recorder_.FinishFinalize(status);
+  recorder_->FinishFinalize(status);
   std::move(done).Run(status);
 }
 

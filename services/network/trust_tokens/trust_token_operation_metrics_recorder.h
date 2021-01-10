@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
 
 namespace network {
 
@@ -29,15 +30,16 @@ extern const char kTrustTokenBeginTimeHistogramNameBase[];
 // operation.
 class TrustTokenOperationMetricsRecorder final {
  public:
-  TrustTokenOperationMetricsRecorder() = default;
-  ~TrustTokenOperationMetricsRecorder() = default;
+  explicit TrustTokenOperationMetricsRecorder(
+      mojom::TrustTokenOperationType type);
+  ~TrustTokenOperationMetricsRecorder();
 
   TrustTokenOperationMetricsRecorder(
       const TrustTokenOperationMetricsRecorder&) = delete;
   TrustTokenOperationMetricsRecorder& operator=(
       const TrustTokenOperationMetricsRecorder&) = delete;
 
-  void BeginBegin(mojom::TrustTokenOperationType type);
+  void BeginBegin();
   void FinishBegin(mojom::TrustTokenOperationStatus status);
 
   void BeginFinalize();

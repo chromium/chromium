@@ -70,7 +70,6 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/sec_header_helpers.h"
 #include "services/network/throttling/scoped_throttling_token.h"
-#include "services/network/trust_tokens/operation_timing_request_helper_wrapper.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "url/origin.h"
 
@@ -879,8 +878,7 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
     return;
   }
 
-  trust_token_helper_ = std::make_unique<OperationTimingRequestHelperWrapper>(
-      type, status_or_helper.TakeOrCrash());
+  trust_token_helper_ = status_or_helper.TakeOrCrash();
   trust_token_helper_->Begin(
       url_request_.get(),
       base::BindOnce(&URLLoader::OnDoneBeginningTrustTokenOperation,
