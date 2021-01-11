@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_log.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
@@ -44,6 +45,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
                                  public base::trace_event::MemoryDumpProvider {
  public:
   VTVideoDecodeAccelerator(const GpuVideoDecodeGLClient& gl_client_,
+                           const gpu::GpuDriverBugWorkarounds& workarounds,
                            MediaLog* media_log);
 
   ~VTVideoDecodeAccelerator() override;
@@ -74,7 +76,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
               OSStatus status,
               CVImageBufferRef image_buffer);
 
-  static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles();
+  static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles(
+      const gpu::GpuDriverBugWorkarounds& workarounds);
 
  private:
   // Logged to UMA, so never reuse values. Make sure to update
@@ -213,6 +216,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // GPU thread state.
   //
   const GpuVideoDecodeGLClient gl_client_;
+  const gpu::GpuDriverBugWorkarounds workarounds_;
   MediaLog* media_log_;
 
   VideoDecodeAccelerator::Client* client_ = nullptr;

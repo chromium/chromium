@@ -488,8 +488,10 @@ bool VTVideoDecodeAccelerator::FrameOrder::operator()(
 
 VTVideoDecodeAccelerator::VTVideoDecodeAccelerator(
     const GpuVideoDecodeGLClient& gl_client,
+    const gpu::GpuDriverBugWorkarounds& workarounds,
     MediaLog* media_log)
     : gl_client_(gl_client),
+      workarounds_(workarounds),
       media_log_(media_log),
       gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       decoder_thread_("VTDecoderThread"),
@@ -601,7 +603,7 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
   }
 
   static const base::NoDestructor<VideoDecodeAccelerator::SupportedProfiles>
-      kActualSupportedProfiles(GetSupportedProfiles());
+      kActualSupportedProfiles(GetSupportedProfiles(workarounds_));
   if (std::find_if(kActualSupportedProfiles->begin(),
                    kActualSupportedProfiles->end(), [config](const auto& p) {
                      return p.profile == config.profile;
@@ -1706,7 +1708,8 @@ bool VTVideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
 
 // static
 VideoDecodeAccelerator::SupportedProfiles
-VTVideoDecodeAccelerator::GetSupportedProfiles() {
+VTVideoDecodeAccelerator::GetSupportedProfiles(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   SupportedProfiles profiles;
   if (!InitializeVideoToolbox())
     return profiles;
@@ -1714,6 +1717,8 @@ VTVideoDecodeAccelerator::GetSupportedProfiles() {
   for (const auto& supported_profile : kSupportedProfiles) {
     if (supported_profile == VP9PROFILE_PROFILE0 ||
         supported_profile == VP9PROFILE_PROFILE2) {
+      if (workarounds.disable_accelerated_vp9_decode)
+        continue;
       if (!base::mac::IsAtLeastOS11())
         continue;
       if (!base::FeatureList::IsEnabled(kVideoToolboxVp9Decoding))

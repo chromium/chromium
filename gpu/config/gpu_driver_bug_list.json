@@ -3656,6 +3656,22 @@
       "features": [
         "disable_accelerated_vp9_profile2_decode"
       ]
+    },
+    {
+      "id": 363,
+      "description": "VP9 decoding is too slow on Intel Broadwell, Skylake, and CherryTrail",
+      "cr_bugs": [616318, 1163111],
+      "os": {
+        "type": "macosx"
+      },
+      "intel_gpu_series": [
+        "broadwell",
+        "skylake",
+        "cherrytrail"
+      ],
+      "features": [
+        "disable_accelerated_vp9_decode"
+      ]
     }
   ]
 }
