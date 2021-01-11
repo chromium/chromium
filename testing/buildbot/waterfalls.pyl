@@ -4731,7 +4731,7 @@
           'win7_amd_r7_240',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_gtests',
+          'gtest_tests': 'gpu_fyi_win7_amd_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_win_debug_telemetry_tests',
         },
       },
@@ -4743,7 +4743,7 @@
           'win7_amd_r7_240',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_gtests',
+          'gtest_tests': 'gpu_fyi_win7_amd_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_win_nvidia_amd_release_telemetry_tests',
         },
       },

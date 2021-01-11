@@ -6070,6 +6070,19 @@
       'gpu_webgl2_conformance_validating_telemetry_tests',
     ],
 
+    'gpu_fyi_win7_amd_gtests': [
+      'gpu_angle_end2end_with_retry_gtests',
+      'gpu_angle_gles1_conformance_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+      'gpu_common_gtests_passthrough',
+      'gpu_desktop_specific_gtests',
+      'gpu_fyi_and_optional_non_linux_gtests',
+      'gpu_fyi_and_optional_win_specific_gtests',
+      'gpu_gles2_conform_gtests',
+      'gpu_swiftshader_gtests',
+    ],
+
     'gpu_fyi_win7_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_angle_gles1_conformance_gtests',
