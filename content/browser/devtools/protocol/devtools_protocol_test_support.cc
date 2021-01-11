@@ -245,8 +245,8 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
   if (root->GetInteger("id", &id)) {
     result_ids_.push_back(id);
     base::DictionaryValue* result;
-    ASSERT_TRUE(root->GetDictionary("result", &result));
-    result_.reset(result->DeepCopy());
+    bool have_result = root->GetDictionary("result", &result);
+    result_.reset(have_result ? result->DeepCopy() : nullptr);
     in_dispatch_ = false;
     if (id && id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
