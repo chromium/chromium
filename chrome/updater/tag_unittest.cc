@@ -16,49 +16,49 @@ using updater::tagging::TagArgs;
 // Builder pattern helper to construct the TagArgs struct.
 class TagArgsBuilder {
  public:
-  TagArgs&& Build() { return std::move(inner_); }
+  TagArgs Build() { return std::move(inner_); }
 
-  TagArgsBuilder& WithBundleName(const std::string bundle_name) {
+  TagArgsBuilder& WithBundleName(const std::string& bundle_name) {
     this->inner_.bundle_name = bundle_name;
     return *this;
   }
-  TagArgsBuilder& WithInstallationId(const std::string installation_id) {
+  TagArgsBuilder& WithInstallationId(const std::string& installation_id) {
     this->inner_.installation_id = installation_id;
     return *this;
   }
-  TagArgsBuilder& WithBrandCode(const std::string brand_code) {
+  TagArgsBuilder& WithBrandCode(const std::string& brand_code) {
     this->inner_.brand_code = brand_code;
     return *this;
   }
-  TagArgsBuilder& WithClientId(const std::string client_id) {
+  TagArgsBuilder& WithClientId(const std::string& client_id) {
     this->inner_.client_id = client_id;
     return *this;
   }
-  TagArgsBuilder& WithExperimentLabels(const std::string experiment_labels) {
+  TagArgsBuilder& WithExperimentLabels(const std::string& experiment_labels) {
     this->inner_.experiment_labels = experiment_labels;
     return *this;
   }
-  TagArgsBuilder& WithReferralId(const std::string referral_id) {
+  TagArgsBuilder& WithReferralId(const std::string& referral_id) {
     this->inner_.referral_id = referral_id;
     return *this;
   }
-  TagArgsBuilder& WithLanguage(const std::string language) {
+  TagArgsBuilder& WithLanguage(const std::string& language) {
     this->inner_.language = language;
     return *this;
   }
-  TagArgsBuilder& WithFlighting(const bool flighting) {
+  TagArgsBuilder& WithFlighting(bool flighting) {
     this->inner_.flighting = flighting;
     return *this;
   }
-  TagArgsBuilder& WithBrowserType(const TagArgs::BrowserType browser_type) {
+  TagArgsBuilder& WithBrowserType(TagArgs::BrowserType browser_type) {
     this->inner_.browser_type = browser_type;
     return *this;
   }
-  TagArgsBuilder& WithUsageStatsEnable(const bool usage_stats_enable) {
+  TagArgsBuilder& WithUsageStatsEnable(bool usage_stats_enable) {
     this->inner_.usage_stats_enable = usage_stats_enable;
     return *this;
   }
-  TagArgsBuilder& WithApp(AppArgs&& app) {
+  TagArgsBuilder& WithApp(AppArgs app) {
     this->inner_.apps.push_back(std::move(app));
     return *this;
   }
@@ -70,36 +70,36 @@ class TagArgsBuilder {
 // Builder pattern helper to construct the AppArgs struct.
 class AppArgsBuilder {
  public:
-  explicit AppArgsBuilder(const std::string app_id) : inner_(app_id) {}
+  explicit AppArgsBuilder(const std::string& app_id) : inner_(app_id) {}
 
-  AppArgs&& Build() { return std::move(inner_); }
+  AppArgs Build() { return std::move(inner_); }
 
-  AppArgsBuilder& WithAppName(const std::string app_name) {
+  AppArgsBuilder& WithAppName(const std::string& app_name) {
     this->inner_.app_name = app_name;
     return *this;
   }
-  AppArgsBuilder& WithNeedsAdmin(const AppArgs::NeedsAdmin needs_admin) {
+  AppArgsBuilder& WithNeedsAdmin(AppArgs::NeedsAdmin needs_admin) {
     this->inner_.needs_admin = needs_admin;
     return *this;
   }
-  AppArgsBuilder& WithAp(const std::string ap) {
+  AppArgsBuilder& WithAp(const std::string& ap) {
     this->inner_.ap = ap;
     return *this;
   }
   AppArgsBuilder& WithEncodedInstallerData(
-      const std::string encoded_installer_data) {
+      const std::string& encoded_installer_data) {
     this->inner_.encoded_installer_data = encoded_installer_data;
     return *this;
   }
-  AppArgsBuilder& WithInstallDataIndex(const std::string install_data_index) {
+  AppArgsBuilder& WithInstallDataIndex(const std::string& install_data_index) {
     this->inner_.install_data_index = install_data_index;
     return *this;
   }
-  AppArgsBuilder& WithExperimentLabels(const std::string experiment_labels) {
+  AppArgsBuilder& WithExperimentLabels(const std::string& experiment_labels) {
     this->inner_.experiment_labels = experiment_labels;
     return *this;
   }
-  AppArgsBuilder& WithUntrustedData(const std::string untrusted_data) {
+  AppArgsBuilder& WithUntrustedData(const std::string& untrusted_data) {
     this->inner_.untrusted_data = untrusted_data;
     return *this;
   }
