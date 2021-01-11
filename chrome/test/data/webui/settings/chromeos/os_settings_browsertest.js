@@ -845,8 +845,7 @@ var OSSettingsFingerprintListTest = class extends OSSettingsBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1121139): Re-enable flaky test.
-TEST_F('OSSettingsFingerprintListTest', 'DISABLED_AllJsTests', () => {
+TEST_F('OSSettingsFingerprintListTest', 'AllJsTests', () => {
   mocha.run();
 });
 
