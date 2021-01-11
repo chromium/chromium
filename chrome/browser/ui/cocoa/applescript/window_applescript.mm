@@ -79,8 +79,8 @@
   if ((self = [super init])) {
     // TODO(https://crbug.com/1144992): If crash fixed, investigate why browser
     // cannot be created here.
-    if (Browser::GetBrowserCreationStatusForProfile(aProfile) !=
-        Browser::BrowserCreationStatus::kOk) {
+    if (Browser::GetCreationStatusForProfile(aProfile) !=
+        Browser::CreationStatus::kOk) {
       NOTREACHED();
       [self release];
       return nil;

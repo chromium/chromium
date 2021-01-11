@@ -1611,8 +1611,8 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     wp_prefs->SetKey(kDevToolsApp, std::move(dev_tools_defaults));
   }
 
-  if (Browser::GetBrowserCreationStatusForProfile(profile_) !=
-      Browser::BrowserCreationStatus::kOk) {
+  if (Browser::GetCreationStatusForProfile(profile_) !=
+      Browser::CreationStatus::kOk) {
     return;
   }
   browser_ =

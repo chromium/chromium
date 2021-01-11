@@ -179,8 +179,8 @@ Browser* LaunchSystemWebApp(Profile* profile,
       return nullptr;
   }
 
-  if (Browser::GetBrowserCreationStatusForProfile(profile_for_launch) !=
-      Browser::BrowserCreationStatus::kOk) {
+  if (Browser::GetCreationStatusForProfile(profile_for_launch) !=
+      Browser::CreationStatus::kOk) {
     return nullptr;
   }
 

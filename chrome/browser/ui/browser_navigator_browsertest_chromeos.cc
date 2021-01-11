@@ -86,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, NavigateToOSSettings) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
-  EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
-            Browser::GetBrowserCreationStatusForProfile(
+  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
+            Browser::GetCreationStatusForProfile(
                 chromeos::ProfileHelper::GetSigninProfile()));
 }
 

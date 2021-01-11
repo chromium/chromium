@@ -941,8 +941,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   Profile* otr_profile =
       browser()->profile()->GetOffTheRecordProfile(otr_profile_id);
 
-  EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
-            Browser::GetBrowserCreationStatusForProfile(otr_profile));
+  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
+            Browser::GetCreationStatusForProfile(otr_profile));
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

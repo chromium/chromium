@@ -411,28 +411,26 @@ Browser::CreateParams Browser::CreateParams::CreateForDevTools(
 // Browser, Constructors, Creation, Showing:
 
 // static
-Browser::BrowserCreationStatus Browser::GetBrowserCreationStatusForProfile(
-    Profile* profile) {
+Browser::CreationStatus Browser::GetCreationStatusForProfile(Profile* profile) {
   if (!g_browser_process || g_browser_process->IsShuttingDown())
-    return BrowserCreationStatus::kErrorNoProcess;
+    return CreationStatus::kErrorNoProcess;
 
   if (!IncognitoModePrefs::CanOpenBrowser(profile) ||
       (profile->IsGuestSession() && !profile->IsOffTheRecord()) ||
       !profile->AllowsBrowserWindows() ||
       ProfileManager::IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
-    return BrowserCreationStatus::kErrorProfileUnsuitable;
+    return CreationStatus::kErrorProfileUnsuitable;
   }
 
   if (IsOnKioskSplashScreen())
-    return BrowserCreationStatus::kErrorLoadingKiosk;
+    return CreationStatus::kErrorLoadingKiosk;
 
-  return BrowserCreationStatus::kOk;
+  return CreationStatus::kOk;
 }
 
 // static
 Browser* Browser::Create(const CreateParams& params) {
-  CHECK_EQ(BrowserCreationStatus::kOk,
-           GetBrowserCreationStatusForProfile(params.profile));
+  CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
   return new Browser(params);
 }
 

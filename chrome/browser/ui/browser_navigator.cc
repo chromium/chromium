@@ -110,8 +110,8 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
 
-  if (!browser && Browser::GetBrowserCreationStatusForProfile(profile) ==
-                      Browser::BrowserCreationStatus::kOk) {
+  if (!browser && Browser::GetCreationStatusForProfile(profile) ==
+                      Browser::CreationStatus::kOk) {
     browser = Browser::Create(Browser::CreateParams(profile, user_gesture));
   }
   return browser;
@@ -169,8 +169,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     if (app_id) {
       std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
       Browser* browser = nullptr;
-      if (Browser::GetBrowserCreationStatusForProfile(profile) ==
-          Browser::BrowserCreationStatus::kOk) {
+      if (Browser::GetCreationStatusForProfile(profile) ==
+          Browser::CreationStatus::kOk) {
         browser = Browser::Create(Browser::CreateParams::CreateForApp(
             app_name,
             true,  // trusted_source. Installed PWAs are considered trusted.
@@ -237,8 +237,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         app_name = params.browser->app_name();
       }
 #endif
-      if (Browser::GetBrowserCreationStatusForProfile(profile) !=
-          Browser::BrowserCreationStatus::kOk) {
+      if (Browser::GetCreationStatusForProfile(profile) !=
+          Browser::CreationStatus::kOk) {
         return {nullptr, -1};
       }
       if (app_name.empty()) {
@@ -256,8 +256,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::NEW_WINDOW: {
       // Make a new normal browser window.
       Browser* browser = nullptr;
-      if (Browser::GetBrowserCreationStatusForProfile(profile) ==
-          Browser::BrowserCreationStatus::kOk) {
+      if (Browser::GetCreationStatusForProfile(profile) ==
+          Browser::CreationStatus::kOk) {
         browser = Browser::Create(
             Browser::CreateParams(profile, params.user_gesture));
       }

@@ -195,7 +195,7 @@ class Browser : public TabStripModelObserver,
   enum class WarnBeforeClosingResult { kOkToClose, kDoNotClose };
 
   // Represents the result of a browser creation request.
-  enum class BrowserCreationStatus {
+  enum class CreationStatus {
     kOk,
     kErrorNoProcess,
     kErrorProfileUnsuitable,
@@ -309,8 +309,7 @@ class Browser : public TabStripModelObserver,
   static Browser* Create(const CreateParams& params);
 
   // Returns whether a browser window can be created for the specified profile.
-  static BrowserCreationStatus GetBrowserCreationStatusForProfile(
-      Profile* profile);
+  static CreationStatus GetCreationStatusForProfile(Profile* profile);
 
   ~Browser() override;
 

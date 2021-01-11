@@ -140,8 +140,8 @@ WebAppLaunchManager::~WebAppLaunchManager() = default;
 
 content::WebContents* WebAppLaunchManager::OpenApplication(
     apps::AppLaunchParams&& params) {
-  if (Browser::GetBrowserCreationStatusForProfile(profile_) !=
-          Browser::BrowserCreationStatus::kOk ||
+  if (Browser::GetCreationStatusForProfile(profile_) !=
+          Browser::CreationStatus::kOk ||
       !provider_->registrar().IsInstalled(params.app_id)) {
     return nullptr;
   }
