@@ -578,10 +578,6 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #if defined(OS_ANDROID)
   UmaSessionStats::OnStartup();
 #endif
-
-#if defined(OS_MAC)
-  chrome::CacheChannelInfo();
-#endif
 }
 
 bool ChromeMainDelegate::ShouldCreateFeatureList() {
