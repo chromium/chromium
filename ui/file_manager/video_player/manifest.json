@@ -25,7 +25,6 @@
       "fileSystem": ["requestFileSystem", "write"]
     },
     "fullscreen",
-    "mediaPlayerPrivate",
     "metricsPrivate",
     "power",
     "storage",
