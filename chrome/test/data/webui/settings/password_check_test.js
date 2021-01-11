@@ -674,6 +674,26 @@ suite('PasswordsCheckSection', function() {
     expectFalse(icon.classList.contains('no-security-issues'));
   });
 
+  // Test that leaked password items have a strong CTA.
+  test('showStrongCtaOnLeaks', function() {
+    const password = makeCompromisedCredential('one.com', 'test6', 'LEAKED');
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+    const button = passwordCheckListItem.$$('#changePasswordButton');
+    assertTrue(button.classList.contains('action-button'));
+    const icon = passwordCheckListItem.$$('iron-icon');
+    assertFalse(icon.classList.contains('icon-weak-cta'));
+  });
+
+  // Tests that weak password items have a weak CTA.
+  test('showWeakCtaOnWeaksPasswords', function() {
+    const password = makeInsecureCredential('one.com', 'test7');
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+    const button = passwordCheckListItem.$$('#changePasswordButton');
+    assertFalse(button.classList.contains('action-button'));
+    const icon = passwordCheckListItem.$$('iron-icon');
+    assertTrue(icon.classList.contains('icon-weak-cta'));
+  });
+
   // Tests that the spinner is replaced with a warning on errors.
   test('showsInfoIconWhenFinishedWithErrors', async function() {
     passwordManager.data.checkStatus = makePasswordCheckStatus(

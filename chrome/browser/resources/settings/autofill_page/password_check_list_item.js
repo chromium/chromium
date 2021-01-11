@@ -59,7 +59,19 @@ Polymer({
     clickedChangePassword: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /** @private */
+    buttonClass_: {
+      type: String,
+      computed: 'computeButtonClass_(item.compromisedInfo)',
+    },
+
+    /** @private */
+    iconClass_: {
+      type: String,
+      computed: 'computeIconClass_(item.compromisedInfo)',
+    },
   },
 
   /**
@@ -136,6 +148,32 @@ Polymer({
    */
   computePasswordVisibility_() {
     return !!this.item.password;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeButtonClass_() {
+    if (this.item.compromisedInfo) {
+      // Strong CTA.
+      return 'action-button';
+    }
+    // Weak CTA.
+    return '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeIconClass_() {
+    if (this.item.compromisedInfo) {
+      // Strong CTA, white icon.
+      return '';
+    }
+    // Weak CTA, non-white-icon.
+    return 'icon-weak-cta';
   },
 
   /**
