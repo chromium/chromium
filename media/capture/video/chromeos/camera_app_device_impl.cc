@@ -295,7 +295,11 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
 }
 
 void CameraAppDeviceImpl::OnMojoConnectionError() {
-  std::move(cleanup_callback_).Run();
+  // Since it is the error handler of a receiver set, it might be triggered more
+  // than once.
+  if (!cleanup_callback_.is_null()) {
+    std::move(cleanup_callback_).Run();
+  }
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(

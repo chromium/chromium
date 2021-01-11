@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
@@ -69,8 +70,9 @@ media::CameraAppDeviceImpl* CameraAppDeviceBridgeImpl::CreateCameraAppDevice(
   auto device_info = camera_info_getter_.Run(device_id);
   auto device_impl = std::make_unique<media::CameraAppDeviceImpl>(
       device_id, std::move(device_info),
-      base::BindOnce(&CameraAppDeviceBridgeImpl::OnDeviceClosed,
-                     base::Unretained(this), device_id));
+      media::BindToCurrentLoop(
+          base::BindOnce(&CameraAppDeviceBridgeImpl::OnDeviceClosed,
+                         base::Unretained(this), device_id)));
   auto result = camera_app_devices_.emplace(device_id, std::move(device_impl));
   return result.first->second.get();
 }
