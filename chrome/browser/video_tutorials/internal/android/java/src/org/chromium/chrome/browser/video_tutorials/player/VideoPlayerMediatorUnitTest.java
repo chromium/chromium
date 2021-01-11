@@ -227,4 +227,22 @@ public class VideoPlayerMediatorUnitTest {
         Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.VOICE_SEARCH));
         Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(99));
     }
+
+    @Test
+    public void testVideoPlayerURL() {
+        String videoUrl = "https://example/video.mp4";
+        String posterUrl = "https://example/poster.png";
+        String animationUrl = "https://example/anim.gif";
+        String thumbnailUrl = "https://example/thumb.png";
+        String captionUrl = "https://example/caption.vtt";
+        String shareUrl = "https://example/share.mp4";
+        Tutorial testTutorial = new Tutorial(FeatureType.CHROME_INTRO, "title", videoUrl, posterUrl,
+                animationUrl, thumbnailUrl, captionUrl, shareUrl, 25);
+
+        assertThat(VideoPlayerURLBuilder.buildFromTutorial(testTutorial),
+                equalTo("chrome-untrusted://video-tutorials/"
+                        + "?video_url=https://example/video.mp4"
+                        + "&poster_url=https://example/poster.png"
+                        + "&caption_url=https://example/caption.vtt"));
+    }
 }
