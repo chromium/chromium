@@ -153,7 +153,7 @@ std::string DomainOptionsToString(
 std::string FlatUrlRuleToFilterlistString(const flat::UrlRule* flat_rule) {
   std::string out;
 
-  if (flat_rule->options() & url_pattern_index::flat::OptionFlag_IS_WHITELIST)
+  if (flat_rule->options() & url_pattern_index::flat::OptionFlag_IS_ALLOWLIST)
     out += "@@";
 
   out += AnchorToString(flat_rule->anchor_left());

@@ -96,10 +96,10 @@ enum RuleSemantics {
 
   // Matching subresource requests should be aborted, matching elements should
   // be hidden.
-  RULE_SEMANTICS_BLACKLIST = 1;
-  // If the rule matches, it suppresses any matching RULE_SEMANTICS_BLACKLIST
+  RULE_SEMANTICS_BLOCKLIST = 1;
+  // If the rule matches, it suppresses any matching RULE_SEMANTICS_BLOCKLIST
   // rule.
-  RULE_SEMANTICS_WHITELIST = 2;
+  RULE_SEMANTICS_ALLOWLIST = 2;
 }
 
 // The type of relation between the source of the requested subresource and that

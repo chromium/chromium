@@ -407,13 +407,13 @@ class ProtoToJSONRuleConverter {
     dnr_api::RuleActionType action_type = dnr_api::RULE_ACTION_TYPE_NONE;
 
     CHECK(!is_allow_all_requests_rule_ ||
-          input_rule_.semantics() == proto::RULE_SEMANTICS_WHITELIST);
+          input_rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST);
 
     switch (input_rule_.semantics()) {
-      case proto::RULE_SEMANTICS_BLACKLIST:
+      case proto::RULE_SEMANTICS_BLOCKLIST:
         action_type = dnr_api::RULE_ACTION_TYPE_BLOCK;
         break;
-      case proto::RULE_SEMANTICS_WHITELIST:
+      case proto::RULE_SEMANTICS_ALLOWLIST:
         if (is_allow_all_requests_rule_)
           action_type = dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS;
         else
