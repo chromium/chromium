@@ -612,7 +612,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI and IO threads.
   virtual std::string GetApplicationLocale();
 
-  // Returns the languages used in the Accept-Languages HTTP header.
+  // Returns a comma-separate list of language codes, in order of preference.
+  // The value is used to report the "sec-ch-lang" to sites, if requested.
+  // The legacy "accept-language" header is not affected by this setting (see
+  // |ConfigureNetworkContextParams()| below).
   // (Not called GetAcceptLanguages so it doesn't clash with win32).
   virtual std::string GetAcceptLangs(BrowserContext* context);
 
@@ -1500,6 +1503,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // CertVerifierCreationParams (|cert_verifier_creation_params|) for a
   // BrowserContext's StoragePartition. StoragePartition will use the
   // NetworkService to create a new NetworkContext using these params.
+  //
+  // By default the |network_context_params| is populated with |user_agent|
+  // based on the value returned by GetUserAgent(), and with a fixed legacy
+  // "accept-language" header value of "en-us,en".
   //
   // If the CertVerifierService is enabled, the CertVerifierCreationParams will
   // be used to create a new CertVerifierService, which will be passed to the
