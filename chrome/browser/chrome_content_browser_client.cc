@@ -60,7 +60,6 @@
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
@@ -89,6 +88,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #if !defined(OS_ANDROID)
 #include "chrome/browser/payments/payment_handler_navigation_throttle.h"
 #endif

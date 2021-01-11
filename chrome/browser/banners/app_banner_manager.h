@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/engagement/site_engagement_observer.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/installable/installable_logging.h"
 #include "components/webapps/installable/installable_params.h"
 #include "content/public/browser/media_player_id.h"

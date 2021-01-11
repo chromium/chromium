@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

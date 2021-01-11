@@ -4,9 +4,9 @@
 
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 namespace webapps {
 

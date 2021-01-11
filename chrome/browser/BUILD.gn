@@ -479,10 +479,6 @@ static_library("browser") {
     "engagement/important_sites_util.h",
     "engagement/site_engagement_helper.cc",
     "engagement/site_engagement_helper.h",
-    "engagement/site_engagement_observer.cc",
-    "engagement/site_engagement_observer.h",
-    "engagement/site_engagement_service.cc",
-    "engagement/site_engagement_service.h",
     "engagement/site_engagement_service_factory.cc",
     "engagement/site_engagement_service_factory.h",
     "enterprise/browser_management/browser_management_service.cc",
@@ -3028,8 +3024,6 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
       "download/download_crx_util_android.cc",
-      "engagement/site_engagement_service_android.cc",
-      "engagement/site_engagement_service_android.h",
       "enterprise/util/android_enterprise_info.cc",
       "enterprise/util/android_enterprise_info.h",
       "file_select_helper_contacts_android.cc",
@@ -3372,7 +3366,6 @@ static_library("browser") {
       "//chrome/browser/share",
     ]
 
-    deps += [ "//chrome/browser/engagement/android:jni_headers" ]
     deps -= [ "//components/storage_monitor" ]
 
     if (enable_supervised_users) {

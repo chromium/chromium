@@ -66,6 +66,7 @@ include_rules = [
   "+components/security_interstitials/content/android",
   "+components/signin/core/browser/android",
   "+components/signin/public/android",
+  "+components/site_engagement/content/android",
   "+components/spellcheck/browser",
   "+components/strictmode/android",
   "+components/subresource_filter/android",

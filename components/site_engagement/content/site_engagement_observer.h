@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_OBSERVER_H_
-#define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_OBSERVER_H_
+#ifndef COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_OBSERVER_H_
+#define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_OBSERVER_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -56,4 +56,4 @@ class SiteEngagementObserver {
 
 }  // namespace site_engagement
 
-#endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_OBSERVER_H_
+#endif  // COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_OBSERVER_H_

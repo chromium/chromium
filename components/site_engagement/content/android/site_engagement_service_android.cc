@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_service_android.h"
+#include "components/site_engagement/content/android/site_engagement_service_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/engagement/android/jni_headers/SiteEngagementService_jni.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "components/site_engagement/content/android/jni_headers/SiteEngagementService_jni.h"
 #include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "url/gurl.h"
 
 namespace site_engagement {

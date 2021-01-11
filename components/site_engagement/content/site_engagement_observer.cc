@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_observer.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
 
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 namespace site_engagement {
 

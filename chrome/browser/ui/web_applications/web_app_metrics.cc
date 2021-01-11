@@ -9,7 +9,6 @@
 #include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 

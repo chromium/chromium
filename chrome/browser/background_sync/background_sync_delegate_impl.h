@@ -8,8 +8,8 @@
 #include <set>
 
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_observer.h"
 #include "components/background_sync/background_sync_delegate.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
 #include "url/origin.h"
 
 class Profile;

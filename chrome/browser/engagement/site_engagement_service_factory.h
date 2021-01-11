@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 class Profile;
 

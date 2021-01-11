@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 #include <algorithm>
 #include <map>
@@ -23,7 +23,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_helper.h"
-#include "chrome/browser/engagement/site_engagement_observer.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -40,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
