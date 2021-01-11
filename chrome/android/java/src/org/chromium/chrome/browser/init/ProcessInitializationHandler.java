@@ -371,13 +371,13 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                ForcedSigninProcessor.start(null);
+                ForcedSigninProcessor.start();
                 AccountManagerFacadeProvider.getInstance().addObserver(
                         new AccountsChangeObserver() {
                             @Override
                             public void onAccountsChanged() {
                                 PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                                        () -> { ForcedSigninProcessor.start(null); });
+                                        () -> { ForcedSigninProcessor.start(); });
                             }
                         });
             }

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.childaccounts.ChildAccountService;
@@ -47,12 +45,12 @@ public final class ForcedSigninProcessor {
      * This is triggered once per Chrome Application lifetime and every time the Account state
      * changes with early exit if an account has already been signed in.
      */
-    public static void start(@Nullable final Runnable onComplete) {
+    public static void start() {
         ChildAccountService.checkChildAccountStatus(status -> {
             boolean hasChildAccount = ChildAccountStatus.isChild(status);
             AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
             if (hasChildAccount) {
-                processForcedSignIn(onComplete);
+                processForcedSignIn();
             }
         });
     }
@@ -61,17 +59,16 @@ public final class ForcedSigninProcessor {
      * Processes the fully automatic non-FRE-related forced sign-in.
      * This is used to enforce the environment for Android EDU and child accounts.
      */
-    private static void processForcedSignIn(@Nullable final Runnable onComplete) {
+    private static void processForcedSignIn() {
+        final Profile profile = Profile.getLastUsedRegularProfile();
         if (FirstRunUtils.canAllowSync()
-                && IdentityServicesProvider.get()
-                           .getIdentityManager(Profile.getLastUsedRegularProfile())
-                           .hasPrimaryAccount()) {
+                && IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
             // TODO(https://crbug.com/1044206): Remove this.
             ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         }
 
-        final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        final SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(profile);
         // By definition we have finished all the checks for first run.
         signinManager.onFirstRunCheckDone();
         if (!FirstRunUtils.canAllowSync() || !signinManager.isSignInAllowed()) {
@@ -90,17 +87,10 @@ public final class ForcedSigninProcessor {
                             // TODO(https://crbug.com/1044206): Remove this.
                             ProfileSyncService.get().setFirstSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            if (onComplete != null) {
-                                onComplete.run();
-                            }
                         }
 
                         @Override
-                        public void onSignInAborted() {
-                            if (onComplete != null) {
-                                onComplete.run();
-                            }
-                        }
+                        public void onSignInAborted() {}
                     });
         });
     }
