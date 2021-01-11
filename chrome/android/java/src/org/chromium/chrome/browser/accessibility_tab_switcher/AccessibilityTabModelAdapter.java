@@ -121,8 +121,10 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return mUndoneTabModel != null ? mUndoneTabModel.getTabAt(position).getId()
-                                       : Tab.INVALID_TAB_ID;
+        if (mUndoneTabModel != null && mUndoneTabModel.getTabAt(position) != null) {
+            return mUndoneTabModel.getTabAt(position).getId();
+        }
+        return Tab.INVALID_TAB_ID;
     }
 
     @Override
