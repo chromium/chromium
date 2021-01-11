@@ -4950,10 +4950,6 @@ crbug.com/980588 external/wpt/screen-orientation/lock-unlock-check.html [ Pass F
 # Sheriff 2019-07-18
 crbug.com/985232 [ Win7 ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/dynamic-imports-credentials.sub.html [ Pass Failure ]
 
-# Sheriff 2019-07-19
-crbug.com/985869 [ Linux ] http/tests/security/contentSecurityPolicy/object-src-no-url-allowed.html [ Pass Failure ]
-crbug.com/985869 [ Win7 ] http/tests/security/contentSecurityPolicy/object-src-no-url-allowed.html [ Pass Failure ]
-
 # Sheriff 2019-07-24
 crbug.com/986282 external/wpt/client-hints/accept-ch-lifetime.tentative.https.html [ Pass Failure ]
 
