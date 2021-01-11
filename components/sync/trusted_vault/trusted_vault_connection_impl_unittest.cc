@@ -75,6 +75,9 @@ class FakeTrustedVaultAccessTokenFetcher
   const base::Optional<std::string> access_token_;
 };
 
+// TODO(crbug.com/1113598): revisit this tests suite and determine what actually
+// should be tested on the Connection level and what should be done on lower
+// levels (DownloadKeysResponseHandler and RegisterAuthenticationFactorRequest).
 class TrustedVaultConnectionImplTest : public testing::Test {
  public:
   TrustedVaultConnectionImplTest()

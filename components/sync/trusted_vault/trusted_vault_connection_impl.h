@@ -38,7 +38,8 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const base::Optional<TrustedVaultKeyAndVersion>&
+          last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       RegisterAuthenticationFactorCallback callback) override;
 

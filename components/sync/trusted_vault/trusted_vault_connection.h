@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/optional.h"
 
 struct CoreAccountInfo;
 
@@ -66,12 +67,15 @@ class TrustedVaultConnection {
 
   // Asynchronously attempts to register the authentication factor on the
   // trusted vault server to allow further vault server API calls using this
-  // authentication factor. Calls |callback| upon completion, unless the
-  // returned object is destroyed earlier. Caller should hold returned request
-  // object until |callback| call or until request needs to be cancelled.
+  // authentication factor. If |last_trusted_vault_key_and_version| is
+  // base::nullopt, registration attempt with constant key will be made. Calls
+  // |callback| upon completion, unless the returned object is destroyed
+  // earlier. Caller should hold returned request object until |callback| call
+  // or until request needs to be cancelled.
   virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const base::Optional<TrustedVaultKeyAndVersion>&
+          last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
 
