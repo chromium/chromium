@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -49,24 +50,62 @@ namespace {
 
 // Chrome is pinned explicitly.
 const char* kDefaultPinnedApps[] = {
-    extension_misc::kFilesManagerAppId, extension_misc::kGmailAppId,
-    extension_misc::kGoogleDocAppId, extension_misc::kYoutubeAppId,
-    arc::kPlayStoreAppId};
+    extension_misc::kFilesManagerAppId,
+
+    extension_misc::kGmailAppId,
+    web_app::kGmailAppId,
+
+    extension_misc::kGoogleDocAppId,
+    web_app::kGoogleDocsAppId,
+
+    extension_misc::kYoutubeAppId,
+    web_app::kYoutubeAppId,
+
+    arc::kPlayStoreAppId,
+};
 
 const char* kDefaultPinnedApps7Apps[] = {
-    extension_misc::kFilesManagerAppId, extension_misc::kGmailAppId,
-    extension_misc::kGoogleDocAppId,    extension_misc::kGooglePhotosAppId,
-    extension_misc::kYoutubeAppId,      arc::kPlayStoreAppId};
+    extension_misc::kFilesManagerAppId,
 
-const char* kDefaultPinnedApps10Apps[] = {extension_misc::kFilesManagerAppId,
-                                          extension_misc::kGmailAppId,
-                                          extension_misc::kCalendarAppId,
-                                          extension_misc::kGoogleDocAppId,
-                                          extension_misc::kGoogleSheetsAppId,
-                                          extension_misc::kGoogleSlidesAppId,
-                                          extension_misc::kCameraAppId,
-                                          extension_misc::kGooglePhotosAppId,
-                                          arc::kPlayStoreAppId};
+    extension_misc::kGmailAppId,
+    web_app::kGmailAppId,
+
+    extension_misc::kGoogleDocAppId,
+    web_app::kGoogleDocsAppId,
+
+    extension_misc::kGooglePhotosAppId,
+
+    extension_misc::kYoutubeAppId,
+    web_app::kYoutubeAppId,
+
+    arc::kPlayStoreAppId,
+};
+
+const char* kDefaultPinnedApps10Apps[] = {
+    extension_misc::kFilesManagerAppId,
+
+    extension_misc::kGmailAppId,
+    web_app::kGmailAppId,
+
+    extension_misc::kCalendarAppId,
+    web_app::kGoogleCalendarAppId,
+
+    extension_misc::kGoogleDocAppId,
+    web_app::kGoogleDocsAppId,
+
+    extension_misc::kGoogleSheetsAppId,
+    web_app::kGoogleSheetsAppId,
+
+    extension_misc::kGoogleSlidesAppId,
+    web_app::kGoogleSlidesAppId,
+
+    extension_misc::kCameraAppId,
+    web_app::kCameraAppId,
+
+    extension_misc::kGooglePhotosAppId,
+
+    arc::kPlayStoreAppId,
+};
 
 const char* kTabletFormFactorDefaultPinnedApps[] = {
     extension_misc::kFilesManagerAppId, arc::kGmailAppId,
