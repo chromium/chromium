@@ -432,10 +432,6 @@ WebSocket::WebSocket(
       reassemble_short_messages_(base::FeatureList::IsEnabled(
           network::features::kWebSocketReassembleShortMessages)) {
   DCHECK(handshake_client_);
-  // If |require_network_isolation_key| is set on the URLRequestContext,
-  // |isolation_info| must not be empty.
-  DCHECK(!factory_->GetURLRequestContext()->require_network_isolation_key() ||
-         !isolation_info.IsEmpty());
   // |delay| should be zero if this connection is not throttled.
   DCHECK(pending_connection_tracker.has_value() || delay.is_zero());
   if (auth_handler_) {

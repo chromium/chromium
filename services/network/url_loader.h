@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // have the |obey_origin_policy| flag set.
   // |trust_token_helper_factory| must be non-null exactly when the request has
   // Trust Tokens parameters.
+  //
+  // TODO(mmenke): This parameter list is getting a bit excessive. Either pass
+  // in a struct, or just pass in a pointer to the NetworkContext or
+  // URLLoaderFactory directly.
   URLLoader(
       net::URLRequestContext* url_request_context,
       mojom::NetworkServiceClient* network_service_client,
@@ -120,6 +124,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojom::CrossOriginEmbedderPolicyReporter* reporter,
       uint32_t request_id,
       int keepalive_request_size,
+      bool require_network_isolation_key,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
       base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator,

@@ -461,6 +461,7 @@ URLLoader::URLLoader(
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
     uint32_t request_id,
     int keepalive_request_size,
+    bool require_network_isolation_key,
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
     base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator,
@@ -561,7 +562,7 @@ URLLoader::URLLoader(
                                    origin, origin, net::SiteForCookies()));
   }
 
-  if (url_request_context_->require_network_isolation_key())
+  if (require_network_isolation_key)
     DCHECK(!url_request_->isolation_info().IsEmpty());
 
   if (factory_params_->disable_secure_dns) {

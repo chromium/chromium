@@ -98,7 +98,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         std::move(client), /*reponse_body_use_tracker=*/base::nullopt,
         TRAFFIC_ANNOTATION_FOR_TESTS, &params,
         /*coep_reporter=*/nullptr, 0, /* request_id */
-        0 /* keepalive_request_size */, resource_scheduler_client_,
+        0 /* keepalive_request_size */,
+        false /* require_network_isolation_key */, resource_scheduler_client_,
         nullptr /* keepalive_statistics_recorder */,
         nullptr /* network_usage_accumulator */, nullptr /* header_client */,
         nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,

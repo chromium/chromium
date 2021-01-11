@@ -33,6 +33,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
+#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/monitor.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -42,6 +43,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
@@ -853,7 +855,7 @@ void NetworkContext::QueueReport(
     const net::NetworkIsolationKey& network_isolation_key,
     const base::Optional<std::string>& user_agent,
     base::Value body) {
-  if (url_request_context_->require_network_isolation_key())
+  if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
 
   DCHECK(body.is_dict());
@@ -885,7 +887,7 @@ void NetworkContext::QueueReport(
 void NetworkContext::QueueSignedExchangeReport(
     mojom::SignedExchangeReportPtr report,
     const net::NetworkIsolationKey& network_isolation_key) {
-  if (url_request_context_->require_network_isolation_key())
+  if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
 
   net::NetworkErrorLoggingService* logging_service =
@@ -1387,7 +1389,7 @@ void NetworkContext::VerifyCertForSignedExchange(
     const std::string& ocsp_result,
     const std::string& sct_list,
     VerifyCertForSignedExchangeCallback callback) {
-  if (url_request_context_->require_network_isolation_key())
+  if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
 
   int cert_verify_id = ++next_cert_verify_id_;
@@ -2193,8 +2195,29 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   auto result =
       URLRequestContextOwner(std::move(pref_service), builder.Build());
 
-  result.url_request_context->set_require_network_isolation_key(
-      params_->require_network_isolation_key);
+  require_network_isolation_key_ = params_->require_network_isolation_key;
+
+  // If `require_network_isolation_key_` is true, but the features that can
+  // trigger another URLRequest are not set to respect NetworkIsolationKeys,
+  // the URLRequests that they create might not have a NIK, so only set the
+  // corresponding value in the URLRequestContext to true at the URLRequest
+  // layer if all those features are set to respect NIK.
+  if (require_network_isolation_key_ &&
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionConnectionsByNetworkIsolationKey) &&
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionExpectCTStateByNetworkIsolationKey) &&
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionHttpServerPropertiesByNetworkIsolationKey) &&
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionNelAndReportingByNetworkIsolationKey) &&
+      base::FeatureList::IsEnabled(
+          net::features::kPartitionSSLSessionsByNetworkIsolationKey) &&
+      base::FeatureList::IsEnabled(
+          domain_reliability::features::
+              kPartitionDomainReliabilityByNetworkIsolationKey)) {
+    result.url_request_context->set_require_network_isolation_key(true);
+  }
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the

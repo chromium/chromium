@@ -48,6 +48,11 @@ void WebSocketFactory::CreateWebSocket(
     return;
   }
 
+  // If |require_network_isolation_key| is set, |isolation_info| must not be
+  // empty.
+  if (context_->require_network_isolation_key())
+    DCHECK(!isolation_info.IsEmpty());
+
   if (throttler_.HasTooManyPendingConnections(process_id)) {
     // Too many websockets!
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(

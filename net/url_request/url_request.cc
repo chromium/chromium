@@ -499,6 +499,9 @@ void URLRequest::Start() {
   if (status_ != OK)
     return;
 
+  if (context_->require_network_isolation_key())
+    DCHECK(!isolation_info_.IsEmpty());
+
   // Some values can be NULL, but the job factory must not be.
   DCHECK(context_->job_factory());
 

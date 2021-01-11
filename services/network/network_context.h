@@ -529,6 +529,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return &cors_origin_access_list_;
   }
 
+  bool require_network_isolation_key() const {
+    return require_network_isolation_key_;
+  }
+
  private:
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
@@ -757,6 +761,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Each network context holds its own WebBundleManager, which
   // manages the lifetiem of a WebBundleURLLoaderFactory object.
   WebBundleManager web_bundle_manager_;
+
+  // Whether all external consumers are expected to provide a non-empty
+  // NetworkIsolationKey with all requests. When set, enabled a variety of
+  // DCHECKs on APIs used by external callers.
+  bool require_network_isolation_key_ = false;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 
