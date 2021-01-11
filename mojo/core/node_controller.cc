@@ -21,7 +21,6 @@
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/configuration.h"
-#include "mojo/core/core.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -146,10 +145,8 @@ class ThreadDestructionObserver
 
 NodeController::~NodeController() = default;
 
-NodeController::NodeController(Core* core)
-    : core_(core),
-      name_(GetRandomNodeName()),
-      node_(new ports::Node(name_, this)) {
+NodeController::NodeController()
+    : name_(GetRandomNodeName()), node_(new ports::Node(name_, this)) {
   DVLOG(1) << "Initializing node " << name_;
 }
 
@@ -588,9 +585,16 @@ void NodeController::AddPeer(const ports::NodeName& name,
   }
 }
 
-void NodeController::DropPeer(const ports::NodeName& name,
+void NodeController::DropPeer(const ports::NodeName& node_name,
                               NodeChannel* channel) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
+  // NOTE: Either the `peers_` erasure or the `pending_invitations_` erasure
+  // below, if executed, may drop the last reference to the named NodeChannel
+  // and thus result in its deletion. The passed `node_name` argument may be
+  // owned by that same NodeChannel, so we make a copy of it here to avoid
+  // potentially unsafe references further below.
+  ports::NodeName name = node_name;
 
   {
     base::AutoLock lock(peers_lock_);

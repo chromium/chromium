@@ -52,11 +52,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   };
 
   // |core| owns and out-lives us.
-  explicit NodeController(Core* core);
+  NodeController();
   ~NodeController() override;
 
   const ports::NodeName& name() const { return name_; }
-  Core* core() const { return core_; }
   ports::Node* node() const { return node_.get(); }
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() const {
     return io_task_runner_;
@@ -135,6 +134,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
       base::span<const unsigned char> data);
   static void DeserializeMessageAsEventForFuzzer(Channel::MessagePtr message);
 
+  scoped_refptr<NodeChannel> GetBrokerChannel();
+
  private:
   friend Core;
 
@@ -176,7 +177,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   scoped_refptr<NodeChannel> GetPeerChannel(const ports::NodeName& name);
   scoped_refptr<NodeChannel> GetInviterChannel();
-  scoped_refptr<NodeChannel> GetBrokerChannel();
 
   void AddPeer(const ports::NodeName& name,
                scoped_refptr<NodeChannel> channel,
@@ -254,7 +254,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
   // These are safe to access from any thread as long as the Node is alive.
-  Core* const core_;
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -319,7 +318,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   AtomicFlag shutdown_callback_flag_;
 
   // All other fields below must only be accessed on the I/O thread, i.e., the
-  // thread on which core_->io_task_runner() runs tasks.
+  // thread on which `io_task_runner_` runs tasks.
 
   // Channels to invitees during handshake.
   NodeMap pending_invitations_;
