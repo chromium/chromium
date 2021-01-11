@@ -1186,7 +1186,8 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   }
   8%,
   92% {
-    animation-timing-function: var(--exit-easing);
+    /* exit-easing. We cannot use variable here (https://crbug.com/1066798) */
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
     bottom: 31px;
   }
 }
