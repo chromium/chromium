@@ -47,8 +47,6 @@ PrimaryAccountManager::~PrimaryAccountManager() {
 
 // static
 void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kGoogleServicesHostedDomain,
-                               std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastAccountId,
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
@@ -336,7 +334,6 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   }
 
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  client_->GetPrefs()->ClearPref(prefs::kGoogleServicesHostedDomain);
 
   // Revoke all tokens before sending signed_out notification, because there
   // may be components that don't listen for token service events when the

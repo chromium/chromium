@@ -88,7 +88,7 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
     service_.reset(new GAIAInfoUpdateService(
         identity_test_env_.identity_manager(),
         testing_profile_manager_.profile_attributes_storage(),
-        profile()->GetPath(), profile()->GetPrefs()));
+        profile()->GetPath()));
   }
 
   void TearDown() override {
@@ -166,9 +166,6 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
   EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -183,10 +180,6 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
-  EXPECT_TRUE(profile()
-                  ->GetPrefs()
-                  ->GetString(prefs::kGoogleServicesHostedDomain)
-                  .empty());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -229,9 +222,6 @@ TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
   EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
   EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
 
@@ -253,9 +243,6 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
   EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -272,10 +259,6 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
-  EXPECT_TRUE(profile()
-                  ->GetPrefs()
-                  ->GetString(prefs::kGoogleServicesHostedDomain)
-                  .empty());
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {

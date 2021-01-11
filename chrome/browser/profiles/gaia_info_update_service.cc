@@ -37,12 +37,10 @@
 GAIAInfoUpdateService::GAIAInfoUpdateService(
     signin::IdentityManager* identity_manager,
     ProfileAttributesStorage* profile_attributes_storage,
-    const base::FilePath& profile_path,
-    PrefService* profile_prefs)
+    const base::FilePath& profile_path)
     : identity_manager_(identity_manager),
       profile_attributes_storage_(profile_attributes_storage),
-      profile_path_(profile_path),
-      profile_prefs_(profile_prefs) {
+      profile_path_(profile_path) {
   identity_manager_->AddObserver(this);
 
   if (!ShouldUpdatePrimaryAccount()) {
@@ -94,11 +92,7 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   gaia_id_of_profile_attribute_entry_ = info.gaia;
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
   entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
-
   entry->SetHostedDomain(info.hosted_domain);
-  const base::string16 hosted_domain = base::UTF8ToUTF16(info.hosted_domain);
-  profile_prefs_->SetString(prefs::kGoogleServicesHostedDomain,
-                            base::UTF16ToUTF8(hosted_domain));
 
   if (info.picture_url == kNoPictureURLFound) {
     entry->SetGAIAPicture(std::string(), gfx::Image());
@@ -147,8 +141,6 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   entry->SetGAIAGivenName(base::string16());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
-  // Unset the cached URL.
-  profile_prefs_->ClearPref(prefs::kGoogleServicesHostedDomain);
 }
 
 void GAIAInfoUpdateService::Shutdown() {

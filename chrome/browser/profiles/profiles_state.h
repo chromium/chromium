@@ -92,10 +92,6 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
 bool IsProfileLocked(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// If the lock-enabled information for this profile is not up to date, starts
-// an update for the Gaia profile info.
-void UpdateIsProfileLockEnabledIfNeeded(Profile* profile);
-
 // Starts an update for a new version of the Gaia profile picture and other
 // profile info.
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile);

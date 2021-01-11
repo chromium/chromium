@@ -1413,12 +1413,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
 #endif
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // If the lock enabled algorithm changed, update this profile's lock status.
-  // This depends on services which shouldn't be initialized until
-  // DoFinalInitForServices.
-  profiles::UpdateIsProfileLockEnabledIfNeeded(profile);
-#endif
 
   // Activate data reduction proxy. This creates a request context and makes a
   // URL request to check if the data reduction proxy server is reachable.

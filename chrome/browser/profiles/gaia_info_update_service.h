@@ -26,8 +26,7 @@ class GAIAInfoUpdateService : public KeyedService,
  public:
   GAIAInfoUpdateService(signin::IdentityManager* identity_manager,
                         ProfileAttributesStorage* profile_attributes_storage,
-                        const base::FilePath& profile_path,
-                        PrefService* prefs);
+                        const base::FilePath& profile_path);
 
   ~GAIAInfoUpdateService() override;
 
@@ -58,7 +57,6 @@ class GAIAInfoUpdateService : public KeyedService,
   signin::IdentityManager* identity_manager_;
   ProfileAttributesStorage* profile_attributes_storage_;
   const base::FilePath profile_path_;
-  PrefService* profile_prefs_;
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.
   std::string gaia_id_of_profile_attribute_entry_;

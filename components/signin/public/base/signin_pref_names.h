@@ -20,7 +20,6 @@ extern const char kGaiaCookieChangedTime[];
 extern const char kGaiaCookiePeriodicReportTime[];
 extern const char kGoogleServicesAccountId[];
 extern const char kGoogleServicesConsentedToSync[];
-extern const char kGoogleServicesHostedDomain[];
 extern const char kGoogleServicesLastAccountId[];
 extern const char kGoogleServicesLastUsername[];
 extern const char kGoogleServicesSigninScopedDeviceId[];

@@ -347,21 +347,16 @@ bool IsLockAvailable(Profile* profile) {
     return false;
   }
 
-  std::string hosted_domain = profile->GetPrefs()->
-      GetString(prefs::kGoogleServicesHostedDomain);
-  // TODO(mlerman): After one release remove any hosted_domain reference to the
-  // pref, since all users will have this in the AccountTrackerService.
-  if (hosted_domain.empty()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-
-    base::Optional<AccountInfo> primary_account_info =
-        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-            identity_manager->GetPrimaryAccountInfo());
-
-    if (primary_account_info.has_value())
-      hosted_domain = primary_account_info.value().hosted_domain;
-  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager->HasPrimaryAccount())
+    return false;
+  base::Optional<AccountInfo> primary_account_info =
+      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+          identity_manager->GetPrimaryAccountInfo());
+  std::string hosted_domain = primary_account_info.has_value()
+                                  ? primary_account_info.value().hosted_domain
+                                  : "";
 
   // TODO(mlerman): Prohibit only users who authenticate using SAML. Until then,
   // prohibited users who use hosted domains (aside from google.com).

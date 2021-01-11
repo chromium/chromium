@@ -210,14 +210,6 @@ bool IsProfileLocked(const base::FilePath& profile_path) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void UpdateIsProfileLockEnabledIfNeeded(Profile* profile) {
-  if (!profile->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain).
-      empty())
-    return;
-
-  UpdateGaiaProfileInfoIfNeeded(profile);
-}
-
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
   DCHECK(profile);
 

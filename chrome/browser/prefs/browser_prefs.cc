@@ -523,6 +523,9 @@ const char kAssistantPrivacyInfoDismissedInLauncher[] =
 const char kAssistantQuickAnswersEnabled[] =
     "settings.voice_interaction.quick_answers.enabled";
 
+// Deprecated 01/2021
+const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -618,6 +621,8 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kAssistantQuickAnswersEnabled, true);
+
+  registry->RegisterStringPref(kGoogleServicesHostedDomain, std::string());
 }
 
 }  // namespace
@@ -1260,6 +1265,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2020
   profile_prefs->ClearPref(kAssistantQuickAnswersEnabled);
+
+  // Added 01/2021
+  profile_prefs->ClearPref(kGoogleServicesHostedDomain);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
