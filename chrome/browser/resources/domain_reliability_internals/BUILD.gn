@@ -5,13 +5,14 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [ ":domain_reliability_internals" ]
 }
 
 js_library("domain_reliability_internals") {
   deps = [
     "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
