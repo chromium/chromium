@@ -28,6 +28,12 @@ js_type_check("closure_compile_jsmodules") {
     ":empty_folder.m",
     ":file_list_selection_model.m",
     ":files_alert_dialog.m",
+    "table:table.m",
+    "table:table_column.m",
+    "table:table_column_model.m",
+    "table:table_header.m",
+    "table:table_list.m",
+    "table:table_splitter.m",
   ]
 }
 

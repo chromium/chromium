@@ -5,6 +5,13 @@
 /**
  * @fileoverview This is a table column model
  */
+
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {TableColumn} from './table_column.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 cr.define('cr.ui.table', function() {
   /** @type {number} */
   const MIMIMAL_WIDTH = 10;
@@ -13,7 +20,7 @@ cr.define('cr.ui.table', function() {
    * A table column model that wraps table columns array
    * This implementation supports widths in percents.
    */
-  class TableColumnModel extends cr.EventTarget {
+  /* #export */ class TableColumnModel extends cr.EventTarget {
     /**
      * @param {!Array<cr.ui.table.TableColumn>} tableColumns Array of table
      *     columns.
@@ -229,5 +236,6 @@ cr.define('cr.ui.table', function() {
     }
   }
 
+  // #cr_define_end
   return {TableColumnModel: TableColumnModel};
 });

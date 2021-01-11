@@ -3,12 +3,24 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/js/cr.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_library("table_column") {
   deps = [
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr:event_target",
   ]
+}
+
+js_library("table_column.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table_column.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("table") {
@@ -21,6 +33,23 @@ js_library("table") {
   ]
 }
 
+js_library("table.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table.m.js" ]
+  deps = [
+    ":table_column.m",
+    ":table_column_model.m",
+    ":table_header.m",
+    ":table_list.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("table_column_model") {
   deps = [
     ":table_column",
@@ -28,11 +57,32 @@ js_library("table_column_model") {
   ]
 }
 
+js_library("table_column_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table_column_model.m.js" ]
+  deps = [
+    ":table_column.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("table_header") {
   deps = [
     ":table_splitter",
     "//ui/webui/resources/js:cr",
   ]
+}
+
+js_library("table_header.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table_header.m.js" ]
+  deps = [
+    ":table_splitter.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("table_list") {
@@ -43,10 +93,45 @@ js_library("table_list") {
   ]
 }
 
+js_library("table_list.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table_list.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("table_splitter") {
   deps = [
     ":table_column_model",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr/ui:splitter",
   ]
+}
+
+js_library("table_splitter.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/table/table_splitter.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr/ui:splitter.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "table.js",
+    "table_column.js",
+    "table_column_model.js",
+    "table_header.js",
+    "table_list.js",
+    "table_splitter.js",
+  ]
+
+  namespace_rewrites = cr_namespace_rewrites + [ "cr.ui.table.Table|Table" ]
 }

@@ -6,13 +6,18 @@
  * @fileoverview This extends cr.ui.List for use in the table.
  */
 
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {Table} from './table.m.js';
+// #import {getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+
 cr.define('cr.ui.table', function() {
-  /** @const */ const List = cr.ui.List;
+  /* #ignore */ /** @const */ const List = cr.ui.List;
 
   /**
    * Creates a new table list element.
    */
-  class TableList extends cr.ui.List {
+  /* #export */ class TableList extends cr.ui.List {
     /**
      * @param {Object=} opt_propertyBag Optional properties.
      */
@@ -30,7 +35,10 @@ cr.define('cr.ui.table', function() {
     }
 
     static decorate(el) {
-      cr.ui.List.decorate(el);
+      if (cr.ui.List.decorate) {
+        cr.ui.List.decorate(el);
+      }
+
       el.__proto__ = TableList.prototype;
       el.className = 'list';
     }
@@ -202,8 +210,11 @@ cr.define('cr.ui.table', function() {
    * The table associated with the list.
    * @type {Element}
    */
-  cr.defineProperty(TableList, 'table');
+  TableList.prototype.table;
+  Object.defineProperty(
+      TableList.prototype, 'table', cr.getPropertyDescriptor('table'));
 
+  // #cr_define_end
   return {
     TableList: TableList,
   };

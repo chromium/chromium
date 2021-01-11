@@ -6,12 +6,16 @@
  * @fileoverview This implements a table header.
  */
 
+// #import {getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+// #import {TableSplitter} from './table_splitter.m.js';
+// #import {Table} from './table.m.js';
+
 cr.define('cr.ui.table', function() {
   /**
    * Creates a new table header.
    * @extends {HTMLDivElement}
    */
-  class TableHeader {
+  /* #export */ class TableHeader {
     constructor() {
       /** @private {cr.ui.Table} */
       this.table_ = null;
@@ -261,7 +265,9 @@ cr.define('cr.ui.table', function() {
    * The table associated with the header.
    * @type {Element}
    */
-  cr.defineProperty(TableHeader, 'table');
+  TableHeader.prototype.table;
+  Object.defineProperty(
+      TableHeader.prototype, 'table', cr.getPropertyDescriptor('table'));
 
   /**
    * Rectangular area around the splitters sensitive to touch events
@@ -269,5 +275,6 @@ cr.define('cr.ui.table', function() {
    */
   TableHeader.TOUCH_DRAG_AREA_WIDTH = 30;
 
+  // #cr_define_end
   return {TableHeader: TableHeader};
 });

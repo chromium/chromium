@@ -6,11 +6,16 @@
  * @fileoverview This is a table column representation
  */
 
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {getPropertyDescriptor, dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 cr.define('cr.ui.table', function() {
   /**
    * A table column that wraps column ids and settings.
    */
-  class TableColumn extends cr.EventTarget {
+  /* #export */ class TableColumn extends cr.EventTarget {
     /**
      * @param {string} id
      * @param {string} name
@@ -76,6 +81,14 @@ cr.define('cr.ui.table', function() {
       return this.visible_ ? this.width_ : 0;
     }
 
+    set width(value) {
+      const oldValue = this.width;
+      if (value !== oldValue) {
+        this.width_ = value;
+        cr.dispatchPropertyChange(this, 'width', value, oldValue);
+      }
+    }
+
     /**
      * The width of the column, disregarding visibility.  For hidden columns,
      * this would be the width of the column if it were to be made visible.
@@ -90,49 +103,61 @@ cr.define('cr.ui.table', function() {
    * The column id.
    * @type {string}
    */
-  cr.defineProperty(TableColumn, 'id');
+  TableColumn.prototype.id;
+  Object.defineProperty(
+      TableColumn.prototype, 'id', cr.getPropertyDescriptor('id'));
 
   /**
    * The column name
    * @type {string}
    */
-  cr.defineProperty(TableColumn, 'name');
-
-  /**
-   * The column width.
-   * @type {number}
-   */
-  cr.defineProperty(TableColumn, 'width');
+  TableColumn.prototype.name;
+  Object.defineProperty(
+      TableColumn.prototype, 'name', cr.getPropertyDescriptor('name'));
 
   /**
    * The column visibility.
    * @type {boolean}
    */
-  cr.defineProperty(TableColumn, 'visible');
+  TableColumn.prototype.visible;
+  Object.defineProperty(
+      TableColumn.prototype, 'visible', cr.getPropertyDescriptor('visible'));
 
   /**
    * True if the column is aligned to end.
    * @type {boolean}
    */
-  cr.defineProperty(TableColumn, 'endAlign');
+  TableColumn.prototype.endAlign;
+  Object.defineProperty(
+      TableColumn.prototype, 'endAlign', cr.getPropertyDescriptor('endAlign'));
 
   /**
    * The column render function.
    * @type {function(*, string, Element): HTMLElement}
    */
-  cr.defineProperty(TableColumn, 'renderFunction');
+  TableColumn.prototype.renderFunction;
+  Object.defineProperty(
+      TableColumn.prototype, 'renderFunction',
+      cr.getPropertyDescriptor('renderFunction'));
 
   /**
    * The column header render function.
    * @type {function(Element):Node}
    */
-  cr.defineProperty(TableColumn, 'headerRenderFunction');
+  TableColumn.prototype.headerRenderFunction;
+  Object.defineProperty(
+      TableColumn.prototype, 'headerRenderFunction',
+      cr.getPropertyDescriptor('headerRenderFunction'));
 
   /**
    * Default sorting order for the column ('asc' or 'desc').
    * @type {string}
    */
-  cr.defineProperty(TableColumn, 'defaultOrder');
+  TableColumn.prototype.defaultOrder;
+  Object.defineProperty(
+      TableColumn.prototype, 'defaultOrder',
+      cr.getPropertyDescriptor('defaultOrder'));
 
+  // #cr_define_end
   return {TableColumn: TableColumn};
 });
