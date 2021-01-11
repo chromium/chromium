@@ -17,7 +17,7 @@ ScriptState::ScriptState(v8::Local<v8::Context> context,
     : isolate_(context->GetIsolate()),
       context_(isolate_, context),
       world_(std::move(world)),
-      per_context_data_(std::make_unique<V8PerContextData>(context)),
+      per_context_data_(MakeGarbageCollected<V8PerContextData>(context)),
       reference_from_v8_context_(PERSISTENT_FROM_HERE, this) {
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
@@ -34,12 +34,17 @@ ScriptState::~ScriptState() {
   RendererResourceCoordinator::Get()->OnScriptStateDestroyed(this);
 }
 
+void ScriptState::Trace(Visitor* visitor) const {
+  visitor->Trace(per_context_data_);
+}
+
 void ScriptState::DetachGlobalObject() {
   DCHECK(!context_.IsEmpty());
   GetContext()->DetachGlobal();
 }
 
 void ScriptState::DisposePerContextData() {
+  per_context_data_->Dispose();
   per_context_data_ = nullptr;
   InstanceCounters::IncrementCounter(
       InstanceCounters::kDetachedScriptStateCounter);
