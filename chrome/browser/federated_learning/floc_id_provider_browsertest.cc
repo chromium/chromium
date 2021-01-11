@@ -10,20 +10,22 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/federated_learning/floc_event_logger.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/federated_learning/features/features.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/history/core/test/fake_web_history_service.h"
@@ -147,6 +149,31 @@ class MockFlocRemotePermissionService : public FlocRemotePermissionService {
   std::string replacement_port_;
 };
 
+// To intercept the request so as to handle it later.
+class MockFlocEventLogger : public FlocEventLogger {
+ public:
+  using FlocEventLogger::FlocEventLogger;
+  using FlocEventLogger::FlocEventLogger::Event;
+
+  ~MockFlocEventLogger() override = default;
+
+  void LogFlocComputedEvent(Event event) override {
+    events_.push_back(std::move(event));
+  }
+
+  size_t NumberOfLogAttemptsQueued() const { return events_.size(); }
+
+  void HandleLastRequest() {
+    ASSERT_LT(0u, events_.size());
+    CheckCanLogEvent(base::BindOnce(&FlocEventLogger::OnCanLogEventDecided,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    events_.back()));
+  }
+
+ private:
+  std::vector<Event> events_;
+};
+
 class FlocIdProviderWithCustomizedServicesBrowserTest
     : public FlocIdProviderBrowserTest {
  public:
@@ -188,8 +215,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
 
-    auto it = request.headers.find("Cookie");
-    if (it == request.headers.end() || it->second != "user_id=123") {
+    if (!ShouldAllowRemotePermission()) {
       response->set_code(net::HTTP_UNAUTHORIZED);
       return std::move(response);
     }
@@ -198,6 +224,8 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     response->set_content(std::string("[true, true, true]"));
     return std::move(response);
   }
+
+  virtual bool ShouldAllowRemotePermission() const { return true; }
 
   std::string InvokeInterestCohortJsApi(
       const content::ToRenderFrameHost& adapter) {
@@ -304,20 +332,13 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     return file_path;
   }
 
-  // Finish outstanding async queries for a full floc compute cycle to finish.
   void FinishOutstandingAsyncQueries() {
-    FinishOutstandingRemotePermissionQueries();
     FinishOutstandingHistoryQueries();
 
     if (base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation))
       FinishOutstandingSortingLshQueries();
-  }
 
-  // Turn on sync-history.
-  void InitializeHistorySync() {
-    sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
-    sync_service()->FireStateChanged();
-    FinishOutstandingAsyncQueries();
+    FinishOutstandingRemotePermissionQueries();
   }
 
   // Turn on sync-history, set up the sorting-lsh file, and trigger the
@@ -325,13 +346,9 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   void InitializeSortingLsh(
       const std::vector<std::pair<uint32_t, bool>>& sorting_lsh_entries,
       const base::Version& version) {
-    sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
-    sync_service()->FireStateChanged();
-
     g_browser_process->floc_sorting_lsh_clusters_service()
         ->OnSortingLshClustersFileReady(
             CreateSortingLshFile(sorting_lsh_entries), version);
-
     FinishOutstandingAsyncQueries();
   }
 
@@ -374,17 +391,17 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
         base::BindRepeating(&FlocIdProviderWithCustomizedServicesBrowserTest::
                                 CreateFlocRemotePermissionService,
                             base::Unretained(this)));
+
+    FlocIdProviderFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(&FlocIdProviderWithCustomizedServicesBrowserTest::
+                                CreateFlocIdProvider,
+                            base::Unretained(this)));
   }
 
   std::unique_ptr<KeyedService> CreateSyncService(
       content::BrowserContext* context) {
-    auto sync_service = std::make_unique<syncer::TestSyncService>();
-
-    syncer::ModelTypeSet types = syncer::ModelTypeSet::All();
-    types.Remove(syncer::HISTORY_DELETE_DIRECTIVES);
-    sync_service->SetActiveDataTypes(types);
-
-    return std::move(sync_service);
+    return std::make_unique<syncer::TestSyncService>();
   }
 
   std::unique_ptr<KeyedService> CreateUserEventService(
@@ -403,6 +420,47 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     return std::move(remote_permission_service);
   }
 
+  std::unique_ptr<KeyedService> CreateFlocIdProvider(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+
+    syncer::SyncService* sync_service =
+        ProfileSyncServiceFactory::GetForProfile(profile);
+
+    PrivacySandboxSettings* privacy_sandbox_settings =
+        PrivacySandboxSettingsFactory::GetForProfile(profile);
+
+    FlocRemotePermissionService* floc_remote_permission_service =
+        FlocRemotePermissionServiceFactory::GetForProfile(profile);
+
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::IMPLICIT_ACCESS);
+
+    syncer::UserEventService* user_event_service =
+        browser_sync::UserEventServiceFactory::GetForProfile(profile);
+
+    auto floc_event_logger = std::make_unique<MockFlocEventLogger>(
+        sync_service, floc_remote_permission_service, user_event_service);
+
+    // On ChromeOS, there can be more than one profile, but the tests will only
+    // be using the first one. So we fix the |floc_event_logger_| to the first
+    // one created.
+    if (!floc_event_logger_)
+      floc_event_logger_ = floc_event_logger.get();
+
+    // Before creating the floc id provider, add some initial history.
+    history::HistoryAddPageArgs add_page_args;
+    add_page_args.time = base::Time::Now();
+    add_page_args.floc_allowed = true;
+    add_page_args.url = GURL(base::StrCat({"https://www.initial-history.com"}));
+    history_service->AddPage(add_page_args);
+
+    return std::make_unique<FlocIdProviderImpl>(
+        profile->GetPrefs(), privacy_sandbox_settings, history_service,
+        std::move(floc_event_logger));
+  }
+
   void SetPermission(ContentSettingsType content_type,
                      const ContentSettingsPattern& primary_pattern,
                      ContentSetting setting) {
@@ -417,6 +475,9 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Owned by the floc id provider.
+  MockFlocEventLogger* floc_event_logger_ = nullptr;
+
   base::ScopedTempDir scoped_temp_dir_;
   int next_unique_file_suffix_ = 1;
 
@@ -424,20 +485,15 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
-                       FlocIdValue_OneNavigation) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
+                       FlocIdValue_ImmediateComputeOnStartUp) {
   ConfigureReplacementHostAndPortForRemotePermissionService();
 
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  InitializeHistorySync();
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
 
   // Expect that the FlocIdComputed user event is recorded.
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
@@ -445,64 +501,32 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       user_event_service()->GetRecordedUserEvents()[0];
   EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
             specifics.event_case());
-
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       specifics.floc_id_computed_event();
-  EXPECT_EQ(FlocId::SimHashHistory({test_host()}), event.floc_id());
-}
-
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
-                       CookieNotSent_RemotePermissionDenied) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), "/title1.html"));
-
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  InitializeHistorySync();
-
-  // Expect that the FlocIdComputed user event is recorded with sim-hash not
-  // set. The floc should also be invalid.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
-  const sync_pb::UserEventSpecifics& specifics =
-      user_event_service()->GetRecordedUserEvents()[0];
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            specifics.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
-      specifics.floc_id_computed_event();
-  EXPECT_FALSE(event.has_floc_id());
-
-  EXPECT_FALSE(GetFlocId().IsValid());
+  EXPECT_EQ(FlocId::SimHashHistory({"initial-history.com"}), event.floc_id());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        HistoryDeleteRecomputeFloc) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
   ConfigureReplacementHostAndPortForRemotePermissionService();
 
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  InitializeHistorySync();
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
 
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 
   ExpireHistoryBefore(base::Time::Now());
   FinishOutstandingAsyncQueries();
+  EXPECT_EQ(2u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
 
-  // Expect that the 2nd FlocIdComputed event should be due to history deletion.
+  // Expect that the 2nd FlocIdComputed event has a missing floc field, that
+  // implies invalidation due to history deletion.
   ASSERT_EQ(2u, user_event_service()->GetRecordedUserEvents().size());
 
   const sync_pb::UserEventSpecifics& specifics =
@@ -517,9 +541,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        InterestCohortAPI_FlocNotAvailable) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
-  ConfigureReplacementHostAndPortForRemotePermissionService();
+  ExpireHistoryBefore(base::Time::Now());
+  FinishOutstandingAsyncQueries();
 
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/title1.html"));
@@ -530,37 +556,26 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        InterestCohortAPI_MainFrame) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  std::string cookies_to_set = "/set-cookie?user_id=123";
   ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
-
-  InitializeHistorySync();
+      browser(), https_server_.GetURL(test_host(), "/title1.html"));
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(
-      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
-                    ".1.0"}),
-      InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ(base::StrCat({base::NumberToString(
+                              FlocId::SimHashHistory({"initial-history.com"})),
+                          ".1.0"}),
+            InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        InterestCohortAPI_SameOriginSubframe) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/iframe_blank.html"));
-
-  InitializeHistorySync();
 
   content::NavigateIframeToURL(
       web_contents(),
@@ -570,26 +585,19 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(
-      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
-                    ".1.0"}),
-      InvokeInterestCohortJsApi(child));
+  EXPECT_EQ(base::StrCat({base::NumberToString(
+                              FlocId::SimHashHistory({"initial-history.com"})),
+                          ".1.0"}),
+            InvokeInterestCohortJsApi(child));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        InterestCohortAPI_CrossOriginSubframe) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/iframe_blank.html"));
-
-  InitializeHistorySync();
 
   content::NavigateIframeToURL(web_contents(),
                                /*iframe_id=*/"test",
@@ -599,26 +607,19 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(
-      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
-                    ".1.0"}),
-      InvokeInterestCohortJsApi(child));
+  EXPECT_EQ(base::StrCat({base::NumberToString(
+                              FlocId::SimHashHistory({"initial-history.com"})),
+                          ".1.0"}),
+            InvokeInterestCohortJsApi(child));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
                        InterestCohortAPI_CookiesPermissionDisallow) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/iframe_blank.html"));
-
-  InitializeHistorySync();
 
   content::NavigateIframeToURL(web_contents(),
                                /*iframe_id=*/"test",
@@ -637,10 +638,31 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(
-      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
-                    ".1.0"}),
-      InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ(base::StrCat({base::NumberToString(
+                              FlocId::SimHashHistory({"initial-history.com"})),
+                          ".1.0"}),
+            InvokeInterestCohortJsApi(web_contents()));
+}
+
+class FlocIdProviderAutoDenyRemotePermissionBrowserTest
+    : public FlocIdProviderWithCustomizedServicesBrowserTest {
+ public:
+  bool ShouldAllowRemotePermission() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderAutoDenyRemotePermissionBrowserTest,
+                       CookieNotSent_RemotePermissionDenied_NoEventLogging) {
+  ConfigureReplacementHostAndPortForRemotePermissionService();
+
+  FinishOutstandingHistoryQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
+
+  // The event shouldn't have been recorded.
+  ASSERT_EQ(0u, user_event_service()->GetRecordedUserEvents().size());
 }
 
 class FlocIdProviderSortingLshEnabledBrowserTest
@@ -658,23 +680,15 @@ class FlocIdProviderSortingLshEnabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
                        SingleSortingLshCluster) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+  FinishOutstandingHistoryQueries();
 
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
-
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
+  // Initially the floc is invalid because the sorting-lsh file is not ready.
   EXPECT_FALSE(GetFlocId().IsValid());
 
   // All sim_hash will be encoded as 0 during sorting-lsh
   InitializeSortingLsh({{kMaxNumberOfBitsInFloc, false}}, base::Version("9.0"));
 
-  // Expect that the FlocIdComputed user event is recorded.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
+  EXPECT_TRUE(GetFlocId().IsValid());
 
   // Check that the original sim_hash is not 0.
   EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
@@ -685,55 +699,49 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
                        SortingLshBlocked) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
   ConfigureReplacementHostAndPortForRemotePermissionService();
 
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
-
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
+  FinishOutstandingHistoryQueries();
   EXPECT_FALSE(GetFlocId().IsValid());
 
   // All sim_hash will be encoded as 0 during sorting-lsh, and that result will
   // be blocked.
   InitializeSortingLsh({{kMaxNumberOfBitsInFloc, true}}, base::Version("2.0"));
 
-  // Expect that the FlocIdComputed user event is recorded.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
-
   // Check that the original sim_hash is not 0.
   EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
 
   // Expect that the final id is invalid because it was blocked.
   EXPECT_FALSE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
+
+  // Expect that the FlocIdComputed user event is recorded.
+  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
                        CorruptedSortingLSH) {
-  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
-
   ConfigureReplacementHostAndPortForRemotePermissionService();
 
-  std::string cookies_to_set = "/set-cookie?user_id=123";
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), cookies_to_set));
-
-  EXPECT_EQ(1u, GetHistoryUrls().size());
-
+  FinishOutstandingHistoryQueries();
   EXPECT_FALSE(GetFlocId().IsValid());
 
   // All sim_hash will be encoded as an invalid id.
   InitializeSortingLsh({}, base::Version("3"));
 
-  // Expect that the FlocIdComputed user event is recorded.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
-
   // Expect that the final id is invalid due to unexpected sorting-lsh file
   // format.
   EXPECT_FALSE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
+
+  // Expect that the FlocIdComputed user event is recorded.
+  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 }
 
 }  // namespace federated_learning

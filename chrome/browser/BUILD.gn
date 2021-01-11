@@ -512,6 +512,8 @@ static_library("browser") {
     "favicon/large_icon_service_factory.h",
     "feature_engagement/tracker_factory.cc",
     "feature_engagement/tracker_factory.h",
+    "federated_learning/floc_event_logger.cc",
+    "federated_learning/floc_event_logger.h",
     "federated_learning/floc_id_provider.h",
     "federated_learning/floc_id_provider_factory.cc",
     "federated_learning/floc_id_provider_factory.h",

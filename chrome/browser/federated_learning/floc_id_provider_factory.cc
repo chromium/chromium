@@ -5,6 +5,7 @@
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/federated_learning/floc_event_logger.h"
 #include "chrome/browser/federated_learning/floc_id_provider_impl.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
@@ -75,9 +76,11 @@ KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
   if (!user_event_service)
     return nullptr;
 
-  return new FlocIdProviderImpl(
-      profile->GetPrefs(), sync_service, privacy_sandbox_settings,
-      floc_remote_permission_service, history_service, user_event_service);
+  auto floc_event_logger = std::make_unique<FlocEventLogger>(
+      sync_service, floc_remote_permission_service, user_event_service);
+
+  return new FlocIdProviderImpl(profile->GetPrefs(), privacy_sandbox_settings,
+                                history_service, std::move(floc_event_logger));
 }
 
 }  // namespace federated_learning
