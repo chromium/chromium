@@ -16,6 +16,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_app",
     ":diagnostics_card",
     ":diagnostics_types",
+    ":diagnostics_utils",
     ":fake_data",
     ":fake_method_resolver",
     ":fake_observables",
@@ -89,6 +90,9 @@ js_library("diagnostics_card") {
 js_library("diagnostics_types") {
 }
 
+js_library("diagnostics_utils") {
+}
+
 js_library("fake_data") {
   deps = [ ":diagnostics_types" ]
 }
@@ -112,9 +116,11 @@ js_library("fake_system_routine_controller") {
 js_library("memory_card") {
   deps = [
     ":data_point",
+    ":diagnostics_utils",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

@@ -48,19 +48,6 @@ Polymer({
   },
 
   /**
-   * Returns the percentage of the current bar chart, rounded to the nearest
-   * whole number.
-   * @param {number} currentValue
-   * @param {number} maxValue
-   * @return {string} i18n string for the percentage value.
-   * @private
-   */
-  computePercentage_(currentValue, maxValue) {
-    return loadTimeData.getStringF(
-        'percentageLabel', Math.round(100 * currentValue / maxValue));
-  },
-
-  /**
    * Get adjusted value clamped to max value. paper-progress breaks for a while
    * when value is set higher than max in certain cases (e.g. due to fetching of
    * max being resolved later).

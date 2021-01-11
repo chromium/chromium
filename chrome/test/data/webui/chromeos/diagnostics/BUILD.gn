@@ -18,6 +18,7 @@ js_type_check("closure_compile") {
     ":diagnostics_app_test",
     ":diagnostics_app_unified_test",
     ":diagnostics_test_utils",
+    ":diagnostics_utils_test",
     ":fake_method_provider_test",
     ":fake_observables_test",
     ":fake_system_data_provider_test",
@@ -105,6 +106,13 @@ js_library("diagnostics_test_utils") {
   ]
 }
 
+js_library("diagnostics_utils_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_utils",
+  ]
+}
+
 js_library("fake_method_provider_test") {
   deps = [
     "../..:chai_assert",
@@ -141,6 +149,7 @@ js_library("memory_card_test") {
     "../..:chai_assert",
     "../..:test_util.m",
     "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_utils",
     "//chromeos/components/diagnostics_ui/resources:fake_data",
     "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
     "//chromeos/components/diagnostics_ui/resources:memory_card",

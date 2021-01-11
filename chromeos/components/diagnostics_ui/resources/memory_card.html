@@ -4,7 +4,8 @@
 <diagnostics-card hide-data-points="true">
   <div id="cardTitle" slot="title">[[i18n('memoryTitle')]]</div>
   <iron-icon slot="icon" icon="cr:add"></iron-icon>
-  <percent-bar-chart slot="left-panel" header="[[i18n('usedMemory')]]"
+  <percent-bar-chart slot="left-panel"
+    header="[[getAvailableMemory_(memoryUsage_)]]"
     value="[[getTotalUsedMemory_(memoryUsage_)]]"
     max="[[memoryUsage_.totalMemoryKib]]">
   </percent-bar-chart>

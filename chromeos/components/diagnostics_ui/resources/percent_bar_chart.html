@@ -1,7 +1,11 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  #barChartContainer > label {
+  #chartName {
     @apply --diagnostics-chart-title-font;
-    color: var(--diagnostics-overview-text-color);
+    color: var(--google-grey-700);
+    font-family: Roboto;
+    font-size: 13px;
+    line-height: 20px;
+    margin-top: 8px;
   }
 
   #headerIcon {
@@ -18,28 +22,20 @@
     width: 85%;
     --paper-progress-active-color: var(--google-blue-500);
     --paper-progress-container-color: var(--google-blue-100);
-    --paper-progress-height: 8px;
+    --paper-progress-height: 4px;
   }
-
-  #percentageLabel {
-    @apply --diagnostics-chart-label-font;
-    display: inline;
-    padding-left: 5px;
-  }
-
 </style>
 
 <div id="barChartContainer">
+  <div class="body">
+    <paper-progress id="barChart"
+      value="[[getAdjustedValue_(value, max)]]" max="[[max]]">
+    </paper-progress>
+  </div>
   <label id="chartName">
     <template is="dom-if" if="[[headerIcon.length]]">
       <iron-icon id="headerIcon" icon="[[headerIcon]]"></iron-icon>
     </template>
     [[header]]
   </label>
-  <div class="body">
-    <paper-progress id="barChart"
-      value="[[getAdjustedValue_(value, max)]]" max="[[max]]">
-    </paper-progress>
-    <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
-  </div>
 </div>

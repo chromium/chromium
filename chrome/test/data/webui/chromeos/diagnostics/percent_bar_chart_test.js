@@ -58,10 +58,6 @@ export function percentBarChartTestSuite() {
 
       assertEquals(
           header, percentBarChartElement.$$('#chartName').textContent.trim());
-      dx_utils.assertElementContainsText(
-          /** @type {!HTMLElement} */ (
-              percentBarChartElement.$$('#percentageLabel')),
-          `${percent}`);
 
       assertFalse(!!percentBarChartElement.$$('#headerIcon'));
     });

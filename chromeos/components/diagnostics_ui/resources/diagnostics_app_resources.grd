@@ -41,6 +41,7 @@
       <include name="IDR_DIAGNOSTICS_SYSTEM_ROUTINE_CONTROLLER_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_DIAGNOSTICS_TEXT_BADGE_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/text_badge.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_TYPES_JS" file="diagnostics_types.js" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_UTILS_JS" file="diagnostics_utils.js" type="BINDATA"/>
       <include name="IDR_D3_SRC_D3_MIN_JS" file="../../../../third_party/d3/src/d3.min.js" type="BINDATA" />
     </includes>
   </release>

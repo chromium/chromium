@@ -662,9 +662,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_SESSION_LOG_LABEL" desc="The label for the button that opens the session log for the diagnostics app.">
         Save Session log
       </message>
-      <message name="IDS_DIAGNOSTICS_USED_MEMORY_LABEL" desc="The label for the progress bar that displays the amount of used memory on a users' device." translateable="false">
-        Used memory
-      </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT" desc="The text for a battery's full charge capacity represented in milliamp hours.">
         <ph name="CHARGE_VALUE">$1<ex>6000</ex></ph>mAh Battery
       </message>
@@ -782,8 +779,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the CPU speed. GHz is an SI unit for gigahertz.">
         <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz / <ph name="MAX">$2<ex>1.9</ex></ph>GHz
       </message>
-      <message name="IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL" desc="The label for the total amount of memory on a device." translateable="false">
-        Total Memory
+      <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT" desc="The text that displays the amount of memory available on a users' device.">
+        <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available.
       </message>
 
       <!-- Quick Answers -->

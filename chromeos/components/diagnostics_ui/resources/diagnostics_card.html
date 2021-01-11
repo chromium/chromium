@@ -6,16 +6,21 @@
     padding: 4px 8px;
   }
   ::slotted([slot=icon]) {
-    background-color: rgba(var(--google-blue-refresh-500-rgb), .12);
+    background-color: var(--google-blue-50);
     border-radius: 50%;
     color: var(--google-blue-600);
+    height: 26px;
     left: 5px;
+    margin-left: 20px;
+    margin-right: 28px;
     padding: 2px;
     position: relative;
+    width: 20px;
   }
 
   ::slotted([slot=left-panel]) {
     flex: 1;
+    margin-bottom: 16px;
   }
 
   .card-container {
@@ -44,10 +49,6 @@
     padding-inline: var(--data-point-container-padding);
   }
 
-  .icon {
-    width: 10%;
-  }
-
   .routine-container {
     @apply --diagnostics-default-font;
   }
@@ -61,11 +62,7 @@
   .top-section {
     border-bottom: 1px solid var(--diagnostics-border-color);
     display: flex;
-    margin-bottom: 6px;
-    margin-top: 12px;
-    padding-bottom: 12px;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
+    margin-top: 16px;
   }
 </style>
 <div class="card-container">
@@ -75,9 +72,7 @@
   </div>
   <div class="card-wrapper">
     <div class="top-section">
-      <div class="icon">
-        <slot name="icon"></slot>
-      </div>
+      <slot name="icon"></slot>
       <slot name="left-panel"></slot>
     </div>
     <div id="body" class="data-points" hidden$="[[hideDataPoints]]">

@@ -70,6 +70,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"hideReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
       {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
       {"learnMoreShort", IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT},
+      {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
@@ -92,8 +93,6 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testRunningBadgeText", IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
-      {"totalMemory", IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL},
-      {"usedMemory", IDS_DIAGNOSTICS_USED_MEMORY_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     html_source->AddLocalizedString(str.name, str.id);
