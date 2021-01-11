@@ -744,7 +744,7 @@
       Bookmarks
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL" desc="The title of a statistic (autofill) shown inside a table below the warning text when attempting to remove a profile. A number is displayed next to it.">
-      Autofill form data
+      Autofill data
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING" desc="This is shown next to the loading statistics in the remove action menu. All occurrences of '...' will be eventually replaced by numbers when the statistics are loaded.">
       ...
