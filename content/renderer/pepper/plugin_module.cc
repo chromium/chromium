@@ -603,8 +603,13 @@ RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
     int plugin_child_id,
     bool is_external,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  scoped_refptr<PepperHungPluginFilter> hung_filter(new PepperHungPluginFilter(
-      path, render_frame->GetRoutingID(), plugin_child_id));
+  mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host;
+  render_frame->GetPepperHost()->BindHungDetectorHost(
+      hung_host.InitWithNewPipeAndPassReceiver(), plugin_child_id, path);
+  scoped_refptr<PepperHungPluginFilter> hung_filter(
+      new PepperHungPluginFilter());
+  hung_filter->BindHungDetectorHost(std::move(hung_host));
+
   std::unique_ptr<HostDispatcherWrapper> dispatcher(new HostDispatcherWrapper(
       this, peer_pid, plugin_child_id, permissions, is_external));
 

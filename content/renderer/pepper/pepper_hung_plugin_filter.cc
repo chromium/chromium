@@ -24,18 +24,21 @@ const int kBlockedHardThresholdSec = kHungThresholdSec * 1.5;
 
 }  // namespace
 
-PepperHungPluginFilter::PepperHungPluginFilter(
-    const base::FilePath& plugin_path,
-    int frame_routing_id,
-    int plugin_child_id)
-    : plugin_path_(plugin_path),
-      frame_routing_id_(frame_routing_id),
-      plugin_child_id_(plugin_child_id),
-      filter_(RenderThread::Get()->GetSyncMessageFilter()),
-      io_task_runner_(ChildProcess::current()->io_task_runner()),
-      pending_sync_message_count_(0),
-      hung_plugin_showing_(false),
-      timer_task_pending_(false) {
+PepperHungPluginFilter::PepperHungPluginFilter()
+    : io_task_runner_(ChildProcess::current()->io_task_runner()) {}
+
+void PepperHungPluginFilter::BindHungDetectorHost(
+    mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PepperHungPluginFilter::BindHungDetectorHostOnIOThread,
+                     this, std::move(hung_host)));
+}
+
+void PepperHungPluginFilter::BindHungDetectorHostOnIOThread(
+    mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  hung_host_.Bind(std::move(hung_host));
 }
 
 void PepperHungPluginFilter::BeginBlockOnSyncMessage() {
@@ -149,8 +152,14 @@ void PepperHungPluginFilter::OnHangTimer() {
 }
 
 void PepperHungPluginFilter::SendHungMessage(bool is_hung) {
-  filter_->Send(new FrameHostMsg_PepperPluginHung(
-      frame_routing_id_, plugin_child_id_, plugin_path_, is_hung));
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&PepperHungPluginFilter::SendHungMessage,
+                                  this, is_hung));
+    return;
+  }
+
+  hung_host_->PluginHung(is_hung);
 }
 
 }  // namespace content

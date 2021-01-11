@@ -266,6 +266,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public ui::AXActionHandlerBase,
 #if BUILDFLAG(ENABLE_PLUGINS)
       public mojom::PepperHost,
+      public mojom::PepperHungDetectorHost,
 #endif  //  BUILDFLAG(ENABLE_PLUGINS)
       public network::mojom::CookieAccessObserver {
  public:
@@ -2171,6 +2172,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
       mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
       override;
+  void BindHungDetectorHost(
+      mojo::PendingReceiver<mojom::PepperHungDetectorHost> hung_host,
+      int32_t plugin_child_id,
+      const base::FilePath& path) override;
+
+  // mojom::PepperHungDetectorHost overrides:
+  void PluginHung(bool is_hung) override;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   // Resets any waiting state of this RenderFrameHost that is no longer
@@ -3086,6 +3094,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::AssociatedReceiver<mojom::PepperHost> pepper_host_receiver_{this};
   std::map<int32_t, std::unique_ptr<PepperPluginInstanceHost>>
       pepper_instance_map_;
+  struct HungDetectorContext {
+    int32_t plugin_child_id;
+    const base::FilePath plugin_path;
+  };
+  mojo::ReceiverSet<mojom::PepperHungDetectorHost, HungDetectorContext>
+      pepper_hung_detectors_;
 #endif
 
   std::unique_ptr<KeepAliveHandleFactory> keep_alive_handle_factory_;

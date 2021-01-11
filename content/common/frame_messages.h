@@ -248,15 +248,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
 // Messages sent from the renderer to the browser.
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Sent to the browser when the renderer detects it is blocked on a pepper
-// plugin message for too long. This is also sent when it becomes unhung
-// (according to the value of is_hung). The browser can give the user the
-// option of killing the plugin.
-IPC_MESSAGE_ROUTED3(FrameHostMsg_PepperPluginHung,
-                    int /* plugin_child_id */,
-                    base::FilePath /* path */,
-                    bool /* is_hung */)
-
 // Return information about a plugin for the given URL and MIME
 // type. If there is no matching plugin, |found| is false.
 // |actual_mime_type| is the actual mime type supported by the

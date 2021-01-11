@@ -13,6 +13,23 @@ interface PepperHost {
   InstanceCreated(int32 instance_id,
                   pending_associated_remote<PepperPluginInstance> instance,
                   pending_associated_receiver<PepperPluginInstanceHost> host);
+
+  // Bind a PepperHungDetectorHost. The interface will be used to inform the
+  // browser that a renderer's plugin module has been blocked for too long.
+  BindHungDetectorHost(pending_receiver<PepperHungDetectorHost> host,
+             int32 plugin_child_id,
+             mojo_base.mojom.FilePath plugin_path);
+};
+
+// This interface is used on the renderer IO thread and is received on the
+// browser UI thread for determining an out of process pepper plugin container
+// has not responded to the renderer for too long.
+interface PepperHungDetectorHost {
+  // Sent to the browser when the renderer detects it is blocked on a pepper
+  // plugin message for too long. This is also sent when it becomes unhung
+  // (according to the value of is_hung). The browser can give the user the
+  // option of killing the plugin.
+  PluginHung(bool is_hung);
 };
 
 // Plugin instance specific messages. Implemented by the browser.

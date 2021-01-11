@@ -669,6 +669,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnPepperPluginCrashed(RenderFrameHostImpl* source,
                                      const base::FilePath& plugin_path,
                                      base::ProcessId plugin_pid) {}
+  virtual void OnPepperPluginHung(RenderFrameHostImpl* source,
+                                  int plugin_child_id,
+                                  const base::FilePath& path,
+                                  bool is_hung) {}
 #endif
 
  protected:

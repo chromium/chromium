@@ -9,8 +9,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "content/common/pepper_plugin.mojom.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_sync_message_filter.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/proxy/host_dispatcher.h"
 
 namespace content {
@@ -31,13 +34,12 @@ class PepperHungPluginFilter
     : public ppapi::proxy::HostDispatcher::SyncMessageStatusObserver,
       public IPC::MessageFilter {
  public:
-  // The |frame_routing_id| is the ID of the render_frame so that this class can
-  // send messages to the browser via that frame's route. The |plugin_child_id|
-  // is the ID in the browser process of the pepper plugin process host. We use
-  // this to identify the proper plugin process to terminate.
-  PepperHungPluginFilter(const base::FilePath& plugin_path,
-                         int frame_routing_id,
-                         int plugin_child_id);
+  PepperHungPluginFilter();
+
+  // The |hung_host| is the mojo channel to inform the browser about the new
+  // hung status.
+  void BindHungDetectorHost(
+      mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host);
 
   // SyncMessageStatusReceiver implementation.
   void BeginBlockOnSyncMessage() override;
@@ -52,6 +54,10 @@ class PepperHungPluginFilter
   ~PepperHungPluginFilter() override;
 
  private:
+  // Binds the mojo channel on the IO thread (where it will be used).
+  void BindHungDetectorHostOnIOThread(
+      mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host);
+
   // Makes sure that the hung timer is scheduled.
   void EnsureTimerScheduled();
 
@@ -74,16 +80,11 @@ class PepperHungPluginFilter
 
   base::Lock lock_;
 
-  base::FilePath plugin_path_;
-  int frame_routing_id_;
-  int plugin_child_id_;
-
-  // Used to post messages to the renderer <-> browser message channel from
-  // other threads without having to worry about the lifetime of that object.
-  // We don't actually use the "sync" feature of this filter.
-  scoped_refptr<IPC::SyncMessageFilter> filter_;
-
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+
+  // The channel back to the browser for informing it of the new status.
+  // This remote is bound and used on the IO thread.
+  mojo::Remote<mojom::PepperHungDetectorHost> hung_host_;
 
   // The time when we start being blocked on a sync message. If there are
   // nested ones, this is the time of the outermost one.
@@ -97,14 +98,14 @@ class PepperHungPluginFilter
   base::TimeTicks last_message_received_;
 
   // Number of nested sync messages that we're blocked on.
-  int pending_sync_message_count_;
+  int pending_sync_message_count_ = 0;
 
   // True when we've sent the "plugin is hung" message to the browser. We track
   // this so we know to look for it becoming unhung and send the corresponding
   // message to the browser.
-  bool hung_plugin_showing_;
+  bool hung_plugin_showing_ = false;
 
-  bool timer_task_pending_;
+  bool timer_task_pending_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PepperHungPluginFilter);
 };

@@ -785,7 +785,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnPepperPluginCrashed(RenderFrameHostImpl* source,
                              const base::FilePath& plugin_path,
                              base::ProcessId plugin_pid) override;
-#endif
+  void OnPepperPluginHung(RenderFrameHostImpl* source,
+                          int plugin_child_id,
+                          const base::FilePath& path,
+                          bool is_hung) override;
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
@@ -1516,12 +1520,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnUpdateZoomLimits(RenderViewHostImpl* source,
                           int minimum_percent,
                           int maximum_percent);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  void OnPepperPluginHung(RenderFrameHostImpl* source,
-                          int plugin_child_id,
-                          const base::FilePath& path,
-                          bool is_hung);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
   void OnShowValidationMessage(RenderViewHostImpl* source,
                                const gfx::Rect& anchor_in_root_view,
                                const base::string16& main_text,
