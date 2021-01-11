@@ -1359,6 +1359,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT" desc="The accessibility alert read by screen readers to alert the user that a window in overview mode is closing.">
         Window <ph name="WINDOW_TITILE">$1<ex>1</ex></ph> closed.
       </message>
+      <message name="IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST" desc="The text for the toast that appears when user tries to drag a visible on all desks window to a desk.">
+        Already assigned to all desks.
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">

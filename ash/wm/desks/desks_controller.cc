@@ -496,7 +496,6 @@ bool DesksController::MoveWindowFromActiveDeskTo(
     if (source == DesksMoveWindowFromActiveDeskSource::kDragAndDrop) {
       // Since a visible on all desks window is on all desks, prevent users from
       // moving them manually in overview.
-      // TODO(chinsenj): Add a UX indication for users.
       return false;
     } else if (source == DesksMoveWindowFromActiveDeskSource::kShortcut) {
       window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);

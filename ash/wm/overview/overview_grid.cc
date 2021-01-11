@@ -22,6 +22,8 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -56,6 +58,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -89,6 +92,12 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
     base::TimeDelta::FromMilliseconds(300);
+
+// Toast id for the toast that is displayed when a user tries to move a window
+// that is visible on all desks to another desk.
+constexpr char kMoveVisibleOnAllDesksWindowToastId[] =
+    "ash.wm.overview.move_visible_on_all_desks_window_toast";
+constexpr int kToastDurationMs = 2500;
 
 // Histogram names for overview enter/exit smoothness in clamshell,
 // tablet mode and splitview.
@@ -1358,10 +1367,25 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniView(
     OverviewItem* drag_item) {
   DCHECK(desks_util::ShouldDesksBarBeCreated());
 
+  aura::Window* const dragged_window = drag_item->GetWindow();
+  const bool dragged_window_is_visible_on_all_desks =
+      dragged_window &&
+      dragged_window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
   // End the drag for the DesksBarView.
   if (!IntersectsWithDesksBar(screen_location,
-                              /*update_desks_bar_drag_details=*/true,
+                              /*update_desks_bar_drag_details=*/
+                              !dragged_window_is_visible_on_all_desks,
                               /*for_drop=*/true)) {
+    return false;
+  }
+
+  if (dragged_window_is_visible_on_all_desks) {
+    // Show toast since items that are visible on all desks should not be able
+    // to be unassigned during overview.
+    Shell::Get()->toast_manager()->Show(ToastData(
+        kMoveVisibleOnAllDesksWindowToastId,
+        l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST),
+        kToastDurationMs, base::nullopt));
     return false;
   }
 
@@ -1370,7 +1394,6 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniView(
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
 
-    aura::Window* const dragged_window = drag_item->GetWindow();
     Desk* const target_desk = mini_view->desk();
     if (target_desk == desks_controller->active_desk())
       return false;

@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
@@ -77,6 +78,13 @@ void UnpauseOcclusionTracker() {
 bool GetVirtualDesksBarEnabled(OverviewItem* item) {
   return desks_util::ShouldDesksBarBeCreated() &&
          item->overview_grid()->IsDesksBarViewActive();
+}
+
+// Returns whether |item|'s window is visible on all desks.
+bool DraggedItemIsVisibleOnAllDesks(OverviewItem* item) {
+  aura::Window* const dragged_window = item->GetWindow();
+  return dragged_window &&
+         dragged_window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
 }
 
 // Returns the scaled-down size of the dragged item that should be used when
@@ -520,10 +528,12 @@ void OverviewWindowDragController::ContinueNormalDrag(
 
     if (desks_bar_data.shrink_bounds.Contains(location_in_screen)) {
       // Update the mini views borders by checking if |location_in_screen|
-      // intersects.
+      // intersects. Only update the borders if the dragged item is not visible
+      // on all desks.
       overview_grid->IntersectsWithDesksBar(
           gfx::ToRoundedPoint(location_in_screen),
-          /*update_desks_bar_drag_details=*/true, /*for_drop=*/false);
+          /*update_desks_bar_drag_details=*/
+          !DraggedItemIsVisibleOnAllDesks(item_), /*for_drop=*/false);
 
       float value = 0.f;
       if (centerpoint.y() < desks_bar_data.desks_bar_bounds.y() ||
