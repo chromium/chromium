@@ -40,7 +40,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void SetState(State new_state);
   State state() const { return state_; }
 
-  // Returns the Libassistant config that was passed to the last Start() call.
+  // Returns the Libassistant config that was passed to Initialize().
   std::string libassistant_config() { return libassistant_config_; }
 
   void Bind(mojo::PendingReceiver<libassistant::mojom::ServiceController>
@@ -57,7 +57,8 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void UnblockStartCalls();
 
   // mojom::ServiceController implementation:
-  void Start(const std::string& libassistant_config) override;
+  void Initialize(const std::string& libassistant_config) override;
+  void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer)

@@ -36,16 +36,28 @@ void ServiceController::SetInitializeCallback(InitializeCallback callback) {
   initialize_callback_ = std::move(callback);
 }
 
-void ServiceController::Start(const std::string& libassistant_config) {
-  if (state_ != ServiceState::kStopped)
+void ServiceController::Initialize(const std::string& libassistant_config) {
+  if (assistant_manager_ != nullptr) {
+    LOG(ERROR) << "Initialize() should only be called once.";
     return;
+  }
 
   assistant_manager_ =
       delegate_->CreateAssistantManager(platform_api_, libassistant_config);
   assistant_manager_internal_ =
       delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
-  libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
-      assistant_manager_.get(), assistant_manager_internal_);
+
+  for (auto& observer : assistant_manager_observers_) {
+    observer.OnAssistantManagerCreated(assistant_manager(),
+                                       assistant_manager_internal());
+  }
+}
+
+void ServiceController::Start() {
+  if (state_ != ServiceState::kStopped)
+    return;
+
+  DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
 
   if (initialize_callback_) {
     std::move(initialize_callback_)
@@ -54,10 +66,13 @@ void ServiceController::Start(const std::string& libassistant_config) {
 
   assistant_manager()->Start();
 
+  libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
+      assistant_manager_.get(), assistant_manager_internal_);
+
   SetStateAndInformObservers(ServiceState::kStarted);
 
   for (auto& observer : assistant_manager_observers_) {
-    observer.OnAssistantManagerCreated(assistant_manager(),
+    observer.OnAssistantManagerStarted(assistant_manager(),
                                        assistant_manager_internal());
   }
 }
@@ -93,8 +108,12 @@ void ServiceController::AddAndFireAssistantManagerObserver(
 
   assistant_manager_observers_.AddObserver(observer);
 
-  if (IsStarted()) {
+  if (IsInitialized()) {
     observer->OnAssistantManagerCreated(assistant_manager(),
+                                        assistant_manager_internal());
+  }
+  if (IsStarted()) {
+    observer->OnAssistantManagerStarted(assistant_manager(),
                                         assistant_manager_internal());
   }
 }
@@ -106,6 +125,10 @@ void ServiceController::RemoveAssistantManagerObserver(
 
 bool ServiceController::IsStarted() const {
   return state_ != mojom::ServiceState::kStopped;
+}
+
+bool ServiceController::IsInitialized() const {
+  return assistant_manager_ != nullptr;
 }
 
 assistant_client::AssistantManager* ServiceController::assistant_manager() {

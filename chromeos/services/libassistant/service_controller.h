@@ -62,7 +62,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void SetInitializeCallback(InitializeCallback callback);
 
   // mojom::ServiceController implementation:
-  void Start(const std::string& libassistant_config) override;
+  void Initialize(const std::string& libassistant_config) override;
+  void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
@@ -70,6 +71,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void AddAndFireAssistantManagerObserver(AssistantManagerObserver* observer);
   void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);
 
+  bool IsInitialized() const;
   bool IsStarted() const;
 
   // Will return nullptr if the service is stopped.

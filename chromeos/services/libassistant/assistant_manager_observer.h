@@ -25,12 +25,19 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantManagerObserver
   ~AssistantManagerObserver() override = default;
 
   // Called when the |AssistantManager| and |AssistantManagerInternal| have
-  // been created. The pointers are guaranteed to remain valid until after
+  // been created, but not started yet.
+  // The pointers are guaranteed to remain valid until after
   // OnDestroyingAssistantManager() is called.
   virtual void OnAssistantManagerCreated(
       assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal*
-          assistant_manager_internal) = 0;
+      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+
+  // Called when Start() has been called on the |AssistantManager|.
+  // The pointers are guaranteed to remain valid until after
+  // OnDestroyingAssistantManager() is called.
+  virtual void OnAssistantManagerStarted(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
 
   // Called just before the |AssistantManager| and |AssistantManagerInternal|
   // will be destroyed. They should not be used anymore after this has been
@@ -39,8 +46,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantManagerObserver
   // for the implementer's convenience).
   virtual void OnDestroyingAssistantManager(
       assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal*
-          assistant_manager_internal) = 0;
+      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
 };
 
 }  // namespace libassistant

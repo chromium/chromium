@@ -16,13 +16,18 @@ enum ServiceState {
 // Interface managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 interface ServiceController {
-  // Start the service. Can be called multiple times, and will be a noop if 
+
+  // Initialize the service. This must be called before Start() and before
+  // restarting the service (so between all Stop() and Start() calls).
+  // Will be a noop if the service is started or running.
+  // Note that calling Initialize() will not cause any change in the service
+  // state, as the service will remain in state |kStopped| until Start() is
+  // called.
+  Initialize(string libassistant_config);
+
+  // Start the service. Can be called multiple times, and will be a noop if
   // the service is already started or running.
-  // TODO(jeroendh): I feel the libassistant config is something internal to
-  // the mojom service, so we should not pass that in here. Instead, have
-  // setters on the |ServiceController| for the  fields that are non-static
-  // like the s3 server URI.
-  Start(string libassistant_config);
+  Start();
 
   // Stop the service. Will be a noop if the service is already stopped.
   Stop();

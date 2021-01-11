@@ -49,9 +49,11 @@ void FakeServiceController::UnblockStartCalls() {
   start_mutex_.unlock();
 }
 
-void FakeServiceController::Start(const std::string& libassistant_config) {
+void FakeServiceController::Initialize(const std::string& libassistant_config) {
   libassistant_config_ = libassistant_config;
+}
 
+void FakeServiceController::Start() {
   // Will block if |BlockStartCalls| was invoked.
   std::lock_guard<std::mutex> lock(start_mutex_);
 

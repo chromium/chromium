@@ -159,7 +159,8 @@ void ServiceControllerProxy::Start(
       assistant::features::IsMediaSessionIntegrationEnabled());
 
   // The mojom service will create the |AssistantManager|.
-  service_controller_remote_->Start(libassistant_config);
+  service_controller_remote_->Initialize(libassistant_config);
+  service_controller_remote_->Start();
 
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
