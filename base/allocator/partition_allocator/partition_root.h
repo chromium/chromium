@@ -864,7 +864,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
     void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
-    if (!slot_span->bucket->is_direct_mapped()) {
+    if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If we are holding the last reference to the allocation, it can be freed
@@ -926,14 +926,19 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
   //
   // Also the thread-unsafe variant doesn't have a use for a thread cache, so
   // make it statically known to the compiler.
-  if (thread_safe && with_thread_cache &&
-      !slot_span->bucket->is_direct_mapped()) {
+  //
+  // LIKELY: performance-sensitive thread-safe partitions have a thread cache,
+  // direct-mapped allocations are uncommon.
+  if (thread_safe &&
+      LIKELY(with_thread_cache && !slot_span->bucket->is_direct_mapped())) {
     PA_DCHECK(slot_span->bucket >= this->buckets &&
               slot_span->bucket <= &this->sentinel_bucket);
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
-    if (thread_cache && thread_cache->MaybePutInCache(ptr, bucket_index))
+    if (LIKELY(thread_cache &&
+               thread_cache->MaybePutInCache(ptr, bucket_index))) {
       return;
+    }
   }
 
   RawFree(ptr, slot_span);
@@ -1123,7 +1128,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.
-  if (thread_safe && with_thread_cache) {
+  //
+  // LIKELY: performance-sensitive partitions are either thread-unsafe or use
+  // the thread cache.
+  if (thread_safe && LIKELY(with_thread_cache)) {
     auto* tcache = internal::ThreadCache::Get();
     if (UNLIKELY(!tcache)) {
       // There is no per-thread ThreadCache allocated here yet, and this
@@ -1164,9 +1172,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     }
 #endif
-  }
 
-  if (!ret) {
+    // UNLIKELY: median hit rate in the thread cache is 95%, from metrics.
+    if (UNLIKELY(!ret)) {
+      ret = RawAlloc(buckets + bucket_index, flags, raw_size,
+                     &utilized_slot_size, &is_already_zeroed);
+    }
+  } else {
     ret = RawAlloc(buckets + bucket_index, flags, raw_size, &utilized_slot_size,
                    &is_already_zeroed);
   }
@@ -1223,7 +1235,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // Fill the region kUninitializedByte (on debug builds, if not requested to 0)
   // or 0 (if requested and not 0 already).
   bool zero_fill = flags & PartitionAllocZeroFill;
-  if (!zero_fill) {
+  // LIKELY: operator new() calls malloc(), not calloc().
+  if (LIKELY(!zero_fill)) {
 #if DCHECK_IS_ON()
     memset(ret, kUninitializedByte, usable_size);
 #endif
@@ -1232,7 +1245,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   }
 
   bool is_direct_mapped = raw_size > kMaxBucketed;
-  if (allow_extras && !is_direct_mapped) {
+  // LIKELY: Direct mapped allocations are large and rare.
+  if (allow_extras && LIKELY(!is_direct_mapped)) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
     new (internal::PartitionRefCountPointerNoDCheck(slot_start))
         internal::PartitionRefCount();
