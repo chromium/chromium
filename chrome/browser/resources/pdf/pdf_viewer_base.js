@@ -12,7 +12,7 @@ import {BrowserApi, ZoomBehavior} from './browser_api.js';
 import {FittingType, Point} from './constants.js';
 import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
 import {PDFMetrics, UserAction} from './metrics.js';
-import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
+import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
 import {DocumentDimensionsMessageData, MessageObject} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
@@ -318,8 +318,8 @@ export class PDFViewerBaseElement extends PolymerElement {
       if (this.lastViewportPosition) {
         this.viewport_.position = this.lastViewportPosition;
       }
-      this.paramsParser.getViewportFromUrlParams(
-          this.originalUrl, params => this.handleURLParams_(params));
+      this.paramsParser.getViewportFromUrlParams(this.originalUrl)
+          .then(this.handleURLParams_.bind(this));
       this.setLoadState(LoadState.SUCCESS);
       this.sendDocumentLoadedMessage();
       while (this.delayedScriptingMessages_.length > 0) {
@@ -497,7 +497,7 @@ export class PDFViewerBaseElement extends PolymerElement {
    * Handle open pdf parameters. This function updates the viewport as per
    * the parameters mentioned in the url while opening pdf. The order is
    * important as later actions can override the effects of previous actions.
-   * @param {Object} params The open params passed in the URL.
+   * @param {!OpenPdfParams} params The open params passed in the URL.
    * @private
    */
   handleURLParams_(params) {

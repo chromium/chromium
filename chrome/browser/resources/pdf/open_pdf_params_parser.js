@@ -11,11 +11,11 @@ import {Size} from './viewport.js';
  *   url: (string|undefined),
  *   zoom: (number|undefined),
  *   view: (!FittingType|undefined),
- *   viewPosition: (!Point|undefined),
+ *   viewPosition: (number|undefined),
  *   position: (!Object|undefined),
  * }}
  */
-let OpenPdfParams;
+export let OpenPdfParams;
 
 // Parses the open pdf parameters passed in the url to set initial viewport
 // settings for opening the pdf.
@@ -224,10 +224,9 @@ export class OpenPdfParamsParser {
    * See http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/
    * pdfs/pdf_open_parameters.pdf for details.
    * @param {string} url that needs to be parsed.
-   * @param {function(!OpenPdfParams)} callback function to be called with
-   *     viewport info.
+   * @return {!Promise<!OpenPdfParams>}
    */
-  getViewportFromUrlParams(url, callback) {
+  async getViewportFromUrlParams(url) {
     const params = {};
     params['url'] = url;
 
@@ -254,22 +253,23 @@ export class OpenPdfParamsParser {
     }
 
     if (params.page === undefined && urlParams.has('nameddest')) {
-      this.getNamedDestinationCallback_(
-              /** @type {string} */ (urlParams.get('nameddest')))
-          .then(data => {
-            if (data.pageNumber !== -1) {
-              params.page = data.pageNumber;
-            }
-            if (data.namedDestinationView) {
-              Object.assign(
-                  params,
-                  this.parseNameddestViewParam_(
-                      /** @type {string} */ (data.namedDestinationView)));
-            }
-            callback(params);
-          });
-    } else {
-      callback(params);
+      const data = await this.getNamedDestinationCallback_(
+          /** @type {string} */ (urlParams.get('nameddest')));
+
+      if (data.pageNumber !== -1) {
+        params.page = data.pageNumber;
+      }
+
+      if (data.namedDestinationView) {
+        Object.assign(
+            params,
+            this.parseNameddestViewParam_(
+                /** @type {string} */ (data.namedDestinationView)));
+      }
+
+      return params;
     }
+
+    return Promise.resolve(params);
   }
 }

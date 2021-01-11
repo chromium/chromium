@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {Viewport} from './viewport.js';
 
@@ -104,14 +103,6 @@ export class PdfNavigator {
 
     /** @private {!NavigatorDelegate} */
     this.navigatorDelegate_ = navigatorDelegate;
-
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
-  }
-
-  /** @return {!EventTarget} */
-  getEventTarget() {
-    return this.eventTarget_;
   }
 
   /**
@@ -120,10 +111,11 @@ export class PdfNavigator {
    * @param {string} urlString The URL to navigate to.
    * @param {!WindowOpenDisposition} disposition The window open
    *     disposition when navigating to the new URL.
+   * @return {!Promise<void>} When navigation has completed (used for testing).
    */
   navigate(urlString, disposition) {
     if (urlString.length === 0) {
-      return;
+      return Promise.resolve();
     }
 
     // If |urlFragment| starts with '#', then it's for the same URL with a
@@ -145,17 +137,19 @@ export class PdfNavigator {
     try {
       url = new URL(urlString);
     } catch (err) {
-      return;
+      return Promise.reject(err);
     }
 
     if (!this.isValidUrl_(url)) {
-      return;
+      return Promise.resolve();
     }
+
+    let whenDone = Promise.resolve();
 
     switch (disposition) {
       case WindowOpenDisposition.CURRENT_TAB:
-        this.paramsParser_.getViewportFromUrlParams(
-            url.href, this.onViewportReceived_.bind(this));
+        whenDone = this.paramsParser_.getViewportFromUrlParams(url.href).then(
+            this.onViewportReceived_.bind(this));
         break;
       case WindowOpenDisposition.NEW_BACKGROUND_TAB:
         this.navigatorDelegate_.navigateInNewTab(url.href, false);
@@ -169,15 +163,14 @@ export class PdfNavigator {
       case WindowOpenDisposition.SAVE_TO_DISK:
         // TODO(jaepark): Alt + left clicking a link in PDF should
         // download the link.
-        this.paramsParser_.getViewportFromUrlParams(
-            url.href, this.onViewportReceived_.bind(this));
+        whenDone = this.paramsParser_.getViewportFromUrlParams(url.href).then(
+            this.onViewportReceived_.bind(this));
         break;
       default:
         break;
     }
 
-    // Dispatch events for tests.
-    this.eventTarget_.dispatchEvent(new CustomEvent('navigate-for-testing'));
+    return whenDone;
   }
 
   /**
