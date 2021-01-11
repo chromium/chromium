@@ -801,8 +801,13 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
     return;
   }
 
-  // Unmark this profile ephemeral so that it is not deleted upon next startup.
-  entry->SetIsEphemeral(false);
+  if (!signed_in_profile_being_created_->GetPrefs()->GetBoolean(
+          prefs::kForceEphemeralProfiles)) {
+    // Unmark this profile ephemeral so that it isn't deleted upon next startup.
+    // Profiles should never be made non-ephemeral if ephemeral mode is forced
+    // by policy.
+    entry->SetIsEphemeral(false);
+  }
   entry->SetLocalProfileName(name_for_signed_in_profile_);
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
