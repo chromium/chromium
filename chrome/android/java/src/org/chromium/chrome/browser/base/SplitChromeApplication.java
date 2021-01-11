@@ -9,18 +9,16 @@ import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAM
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.SystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-
-import java.lang.reflect.Field;
 
 /**
  * Application class to use for Chrome when //chrome code is in an isolated split. This class will
@@ -101,7 +99,10 @@ public class SplitChromeApplication extends SplitCompatApplication {
             // chromeContext will have the same ClassLoader as the base context, so no need to
             // replace the ClassLoaders here.
             if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
-                replaceClassLoader(this, chromeContext.getClassLoader());
+                // Replace the application Context's ClassLoader with the chrome ClassLoader,
+                // because the application ClassLoader is expected to be able to access all chrome
+                // classes.
+                BundleUtils.replaceClassLoader(this, chromeContext.getClassLoader());
                 JNIUtils.setClassLoader(chromeContext.getClassLoader());
             }
         });
@@ -143,24 +144,9 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             return;
                         }
 
-                        replaceClassLoader(
+                        BundleUtils.replaceClassLoader(
                                 activity.getBaseContext(), activity.getClass().getClassLoader());
                     }
                 });
-    }
-
-    private static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
-        while (baseContext instanceof ContextWrapper) {
-            baseContext = ((ContextWrapper) baseContext).getBaseContext();
-        }
-
-        try {
-            // baseContext should now be an instance of ContextImpl.
-            Field classLoaderField = baseContext.getClass().getDeclaredField("mClassLoader");
-            classLoaderField.setAccessible(true);
-            classLoaderField.set(baseContext, classLoader);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Error setting ClassLoader.", e);
-        }
     }
 }
