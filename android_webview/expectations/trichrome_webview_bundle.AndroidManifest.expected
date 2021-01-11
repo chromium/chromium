@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <manifest
+    android:isolatedSplits="true"
     package="com.android.webview"
     platformBuildVersionCode="30"
     platformBuildVersionName="11"

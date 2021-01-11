@@ -9,7 +9,7 @@ declare_args() {
   webview_includes_weblayer = true
 
   # Whether WebLayer will be included as a DFM.
-  weblayer_in_split = android_channel != "stable"
+  weblayer_in_split = true
 }
 
 weblayer_product_config_java_package = "org.chromium.weblayer_private"
