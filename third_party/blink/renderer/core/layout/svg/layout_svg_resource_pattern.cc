@@ -60,6 +60,23 @@ void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
   MarkAllClientsForInvalidation(SVGResourceClient::kPaintInvalidation);
 }
 
+void LayoutSVGResourcePattern::WillBeDestroyed() {
+  NOT_DESTROYED();
+  To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
+  LayoutSVGResourcePaintServer::WillBeDestroyed();
+}
+
+void LayoutSVGResourcePattern::StyleDidChange(StyleDifference diff,
+                                              const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutSVGResourcePaintServer::StyleDidChange(diff, old_style);
+  if (old_style)
+    return;
+  // The resource has been attached, any linked <pattern> may need to
+  // re-evaluate its attributes.
+  To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
+}
+
 bool LayoutSVGResourcePattern::RemoveClientFromCache(
     SVGResourceClient& client) {
   NOT_DESTROYED();
