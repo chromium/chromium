@@ -267,13 +267,13 @@ void CredentialProviderService::OnGetPasswordStoreResults(
   }
 }
 
-void CredentialProviderService::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  RequestSyncAllCredentials();
-}
+void CredentialProviderService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  DCHECK_NE(signin::PrimaryAccountChangeEvent::Type::kNone,
+            event.GetEventTypeFor(signin::ConsentLevel::kSync))
+      << "ConsentLevel::kNotRequired is not yet supported on iOS. This code "
+         "needs to be updated when it is supported.";
 
-void CredentialProviderService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
   RequestSyncAllCredentials();
 }
 

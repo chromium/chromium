@@ -35,8 +35,8 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
                                ChromeBrowserState* browserState);
   ~SyncedSessionsObserverBridge() override;
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // Returns true if user is signed in.
   bool IsSignedIn();

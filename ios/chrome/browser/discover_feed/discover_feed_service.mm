@@ -46,12 +46,11 @@ void DiscoverFeedService::Shutdown() {
   }
 }
 
-void DiscoverFeedService::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  discover_feed_provider_->UpdateFeedForAccountChange();
-}
-
-void DiscoverFeedService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
+void DiscoverFeedService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  DCHECK_NE(signin::PrimaryAccountChangeEvent::Type::kNone,
+            event.GetEventTypeFor(signin::ConsentLevel::kSync))
+      << "ConsentLevel::kNotRequired is not yet supported on iOS. This code "
+         "needs to be updated when it is supported.";
   discover_feed_provider_->UpdateFeedForAccountChange();
 }

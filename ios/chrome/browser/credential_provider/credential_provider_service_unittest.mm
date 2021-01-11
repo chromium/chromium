@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/credential_provider/credential_provider_service.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -172,7 +173,15 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   ASSERT_TRUE(auth_service_->GetAuthenticatedIdentity());
   ASSERT_TRUE(auth_service_->IsAuthenticatedIdentityManaged());
 
-  credential_provider_service_->OnPrimaryAccountSet(CoreAccountInfo());
+  CoreAccountInfo account = CoreAccountInfo();
+  account.email = base::SysNSStringToUTF8(identity.userEmail);
+  account.gaia = base::SysNSStringToUTF8(identity.gaiaID);
+  credential_provider_service_->OnPrimaryAccountChanged(
+      signin::PrimaryAccountChangeEvent(
+          signin::PrimaryAccountChangeEvent::State(
+              CoreAccountInfo(), signin::ConsentLevel::kNotRequired),
+          signin::PrimaryAccountChangeEvent::State(
+              account, signin::ConsentLevel::kSync)));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -183,7 +192,13 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
 
   auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
                          /*force_clear_browsing_data=*/false, nil);
-  credential_provider_service_->OnPrimaryAccountCleared(CoreAccountInfo());
+
+  credential_provider_service_->OnPrimaryAccountChanged(
+      signin::PrimaryAccountChangeEvent(
+          signin::PrimaryAccountChangeEvent::State(account,
+                                                   signin::ConsentLevel::kSync),
+          signin::PrimaryAccountChangeEvent::State(
+              CoreAccountInfo(), signin::ConsentLevel::kNotRequired)));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
     base::RunLoop().RunUntilIdle();

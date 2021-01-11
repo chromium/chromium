@@ -77,12 +77,11 @@ void SigninBrowserStateInfoUpdater::OnErrorChanged() {
       index, signin_error_controller_->HasError());
 }
 
-void SigninBrowserStateInfoUpdater::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdateBrowserStateInfo();
-}
-
-void SigninBrowserStateInfoUpdater::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
+void SigninBrowserStateInfoUpdater::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  DCHECK_NE(signin::PrimaryAccountChangeEvent::Type::kNone,
+            event.GetEventTypeFor(signin::ConsentLevel::kSync))
+      << "ConsentLevel::kNotRequired is not yet supported on iOS. This code "
+         "needs to be updated when it is supported.";
   UpdateBrowserStateInfo();
 }

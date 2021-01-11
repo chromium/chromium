@@ -41,9 +41,20 @@ SyncedSessionsObserverBridge::~SyncedSessionsObserverBridge() {}
 
 #pragma mark - signin::IdentityManager::Observer
 
-void SyncedSessionsObserverBridge::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  [owner_ reloadSessions];
+void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      // Ignored.
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [owner_ reloadSessions];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED() << "ConsentLevel::kNotRequired is not yet supported on iOS. "
+                      "This code needs to be updated when it is supported.";
+      break;
+  }
 }
 
 #pragma mark - Signin and syncing status
