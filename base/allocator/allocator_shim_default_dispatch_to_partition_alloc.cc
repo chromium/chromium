@@ -8,6 +8,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
@@ -153,6 +154,34 @@ ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
 #endif  // defined(OS_WIN) && defined(ARCH_CPU_X86)
 }
 
+void* AllocateAlignedMemory(size_t alignment, size_t size) {
+  // Memory returned by the regular allocator *always* respects |kAlignment|,
+  // which is a power of two, and any valid alignment is also a power of two. So
+  // we can directly fulfill these requests with the main allocator.
+  //
+  // This has several advantages:
+  // - The thread cache is supported on the main partition
+  // - Reduced fragmentation
+  // - Better coverage for MiraclePtr variants requiring extras
+  //
+  // There are several call sites in Chromium where base::AlignedAlloc is called
+  // with a small alignment. Some may be due to overly-careful code, some are
+  // because the client code doesn't know the required alignment at compile
+  // time.
+  //
+  // Note that all "AlignedFree()" variants (_aligned_free() on Windows for
+  // instance) directly call PartitionFree(), so there is no risk of
+  // mismatch. (see below the default_dispatch definition).
+  if (alignment <= base::kAlignment) {
+    // This is mandated by |posix_memalign()| and friends, so should never fire.
+    PA_CHECK(base::bits::IsPowerOfTwo(alignment));
+    return Allocator()->AllocFlagsNoHooks(0, size);
+  }
+
+  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
+                                               alignment, size);
+}
+
 }  // namespace
 
 namespace base {
@@ -181,16 +210,14 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
-  return AlignedAllocator()->AlignedAllocFlags(
-      base::PartitionAllocNoHooks, alignment, MaybeAdjustSize(size));
+  return AllocateAlignedMemory(alignment, size);
 }
 
 void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             size_t size,
                             size_t alignment,
                             void* context) {
-  return AlignedAllocator()->AlignedAllocFlags(
-      base::PartitionAllocNoHooks, alignment, MaybeAdjustSize(size));
+  return AllocateAlignedMemory(alignment, size);
 }
 
 // aligned_realloc documentation is
