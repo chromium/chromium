@@ -75,8 +75,7 @@
     return;
   }
 
-  if ([self isCardNicknameManagementEnabled] &&
-      !autofill::CreditCard::IsNicknameValid(
+  if (!autofill::CreditCard::IsNicknameValid(
           base::SysNSStringToUTF16(cardNickname))) {
     [self.addCreditCardMediatorDelegate
         creditCardMediatorHasInvalidNickname:self];
@@ -237,18 +236,8 @@
 
 // Checks if a credit card has a valid |nickname|.
 - (BOOL)isValidCardNickname:(NSString*)cardNickname {
-  if ([self isCardNicknameManagementEnabled]) {
-    return autofill::CreditCard::IsNicknameValid(
-        base::SysNSStringToUTF16(cardNickname));
-  }
-
-  return YES;
-}
-
-// Returns whether card nickname managment feature is enabled.
-- (BOOL)isCardNicknameManagementEnabled {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableCardNicknameManagement);
+  return autofill::CreditCard::IsNicknameValid(
+      base::SysNSStringToUTF16(cardNickname));
 }
 
 @end

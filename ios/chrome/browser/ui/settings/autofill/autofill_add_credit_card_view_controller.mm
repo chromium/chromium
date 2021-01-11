@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -119,11 +118,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateCreditCardData];
 
   BOOL hasUserInput = self.cardHolderName.length || self.cardNumber.length ||
-                      self.expirationMonth.length || self.expirationYear.length;
-
-  if ([self isCardNicknameManagementEnabled]) {
-    hasUserInput = hasUserInput || self.cardNickname.length;
-  }
+                      self.expirationMonth.length ||
+                      self.expirationYear.length || self.cardNickname.length;
 
   return hasUserInput;
 }
@@ -139,30 +135,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillEditItem* expirationMonthItem = [self expirationMonthItem];
   AutofillEditItem* expirationYearItem = [self expirationYearItem];
 
-  if ([self isCardNicknameManagementEnabled]) {
-    [model addSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:cardNumberItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:expirationMonthItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:expirationYearItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:cardHolderNameItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:[self cardNicknameItem]
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-  } else {
-    [model addSectionWithIdentifier:SectionIdentifierName];
-    [model addItem:cardHolderNameItem
-        toSectionWithIdentifier:SectionIdentifierName];
-    [model addSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:cardNumberItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:expirationMonthItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-    [model addItem:expirationYearItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  [model addItem:cardNumberItem
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  [model addItem:expirationMonthItem
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  [model addItem:expirationYearItem
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  [model addItem:cardHolderNameItem
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  [model addItem:[self cardNicknameItem]
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -264,13 +247,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Updates credit card data properties with the text in TableView cells.
 - (void)updateCreditCardData {
-  // TODO: Remove section handling when flag is default and cleaned up.
-  NSInteger cardHolderNameSection = [self isCardNicknameManagementEnabled]
-                                        ? SectionIdentifierCreditCardDetails
-                                        : SectionIdentifierName;
-
-  self.cardHolderName = [self readTextFromItemtype:ItemTypeName
-                                 sectionIdentifier:cardHolderNameSection];
+  self.cardHolderName =
+      [self readTextFromItemtype:ItemTypeName
+               sectionIdentifier:SectionIdentifierCreditCardDetails];
 
   self.cardNumber =
       [self readTextFromItemtype:ItemTypeCardNumber
@@ -284,11 +263,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self readTextFromItemtype:ItemTypeExpirationYear
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  if ([self isCardNicknameManagementEnabled]) {
-    self.cardNickname =
-        [self readTextFromItemtype:ItemTypeCardNickname
-                 sectionIdentifier:SectionIdentifierCreditCardDetails];
-  }
+  self.cardNickname =
+      [self readTextFromItemtype:ItemTypeCardNickname
+               sectionIdentifier:SectionIdentifierCreditCardDetails];
 }
 
 // Reads and returns the data from the item with passed |itemType| and
@@ -411,12 +388,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            keyboardType:UIKeyboardTypeDefault
                          autofillUIType:AutofillUITypeUnknown];
   return cardNicknameItem;
-}
-
-// Returns whether card nickname managment feature is enabled.
-- (BOOL)isCardNicknameManagementEnabled {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableCardNicknameManagement);
 }
 
 @end
