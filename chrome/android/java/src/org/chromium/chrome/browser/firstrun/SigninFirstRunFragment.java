@@ -16,7 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SigninFragmentBase;
-import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -52,7 +52,7 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(numAccounts, 2));
         RecordUserAction.record("MobileFre.SignInShown");
         RecordUserAction.record("Signin_Signin_FromStartPage");
-        SigninManager.logSigninStartAccessPoint(SigninAccessPoint.START_PAGE);
+        SigninMetricsUtils.logSigninStartAccessPoint(SigninAccessPoint.START_PAGE);
     }
 
     @Override

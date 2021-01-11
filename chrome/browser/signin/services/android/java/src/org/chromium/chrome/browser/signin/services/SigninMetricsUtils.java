@@ -11,6 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
  * Util methods for signin metrics logging.
@@ -40,6 +41,17 @@ public class SigninMetricsUtils {
         RecordHistogram.recordExactLinearHistogram(histogram,
                 SigninPreferencesManager.getInstance().getAccountPickerBottomSheetShownCount(),
                 100);
+    }
+
+    /**
+     * Logs the access point when the user see the view of choosing account to sign in. Sign-in
+     * completion histogram is recorded by {@link SigninManager#signinAndEnableSync}.
+     *
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
+     */
+    public static void logSigninStartAccessPoint(@SigninAccessPoint int accessPoint) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
     }
 
     @VisibleForTesting

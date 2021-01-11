@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -118,7 +119,7 @@ public class SigninFragment extends SigninFragmentBase {
         mPromoAction =
                 getSigninArguments().getInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NONE);
 
-        SigninManager.logSigninStartAccessPoint(mSigninAccessPoint);
+        SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
         recordSigninStartedHistogramAccountInfo();
         recordSigninStartedUserAction();
     }
