@@ -73,9 +73,10 @@ public class NavigateParams {
 
         /**
          * Disables auto-reload for this navigation if the network is down and comes back later.
-         *          Auto-reload is enabled by default.
-         *
-         * @since 86
+         * Auto-reload is enabled by default. This is deprecated as of 88, instead use
+         * {@link Navigation#disableNetworkErrorAutoReload} which works for both embedder-initiated
+         * navigations and also user-initiated navigations (such as back or forward). Auto-reload
+         * is disabled if either method is called.
          */
         @NonNull
         public Builder disableNetworkErrorAutoReload() {

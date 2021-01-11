@@ -49,9 +49,17 @@ class NavigationImpl : public Navigation {
     safe_to_set_user_agent_ = value;
   }
 
+  void set_safe_to_disable_network_error_auto_reload(bool value) {
+    safe_to_disable_network_error_auto_reload_ = value;
+  }
+
   void set_was_stopped() { was_stopped_ = true; }
 
   bool set_user_agent_string_called() { return set_user_agent_string_called_; }
+
+  bool disable_network_error_auto_reload() {
+    return disable_network_error_auto_reload_;
+  }
 
   void SetParamsToLoadWhenSafe(
       std::unique_ptr<content::NavigationController::LoadURLParams> params);
@@ -79,6 +87,7 @@ class NavigationImpl : public Navigation {
       const base::android::JavaParamRef<jstring>& value);
   jboolean IsPageInitiated(JNIEnv* env) { return IsPageInitiated(); }
   jboolean IsReload(JNIEnv* env) { return IsReload(); }
+  jboolean DisableNetworkErrorAutoReload(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -102,6 +111,7 @@ class NavigationImpl : public Navigation {
   void SetRequestHeader(const std::string& name,
                         const std::string& value) override;
   void SetUserAgentString(const std::string& value) override;
+  void DisableNetworkErrorAutoReload() override;
   bool IsPageInitiated() override;
   bool IsReload() override;
 
@@ -127,6 +137,11 @@ class NavigationImpl : public Navigation {
 
   // Whether SetUserAgentString was called.
   bool set_user_agent_string_called_ = false;
+
+  // Whether DisableNetworkErrorAutoReload is allowed at this time.
+  bool safe_to_disable_network_error_auto_reload_ = false;
+
+  bool disable_network_error_auto_reload_ = false;
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;

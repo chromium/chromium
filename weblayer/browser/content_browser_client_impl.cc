@@ -657,11 +657,26 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
     content::NavigationHandle* handle) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
+  TabImpl* tab = TabImpl::FromWebContents(handle->GetWebContents());
+  NavigationControllerImpl* navigation_controller = nullptr;
+  if (tab) {
+    navigation_controller =
+        static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
+  }
   if (handle->IsInMainFrame()) {
     NavigationUIDataImpl* navigation_ui_data =
         static_cast<NavigationUIDataImpl*>(handle->GetNavigationUIData());
+
+    NavigationImpl* navigation_impl = nullptr;
+    if (navigation_controller) {
+      navigation_impl =
+          navigation_controller->GetNavigationImplFromHandle(handle);
+    }
+
     if ((!navigation_ui_data ||
          !navigation_ui_data->disable_network_error_auto_reload()) &&
+        (!navigation_impl ||
+         !navigation_impl->disable_network_error_auto_reload()) &&
         IsNetworkErrorAutoReloadEnabled()) {
       auto auto_reload_throttle =
           error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle);
@@ -684,11 +699,8 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
 
   // The next highest priority throttle *must* be this as it's responsible for
   // calling to NavigationController for certain events.
-  TabImpl* tab = TabImpl::FromWebContents(handle->GetWebContents());
   if (tab) {
-    auto throttle =
-        static_cast<NavigationControllerImpl*>(tab->GetNavigationController())
-            ->CreateNavigationThrottle(handle);
+    auto throttle = navigation_controller->CreateNavigationThrottle(handle);
     if (throttle)
       throttles.push_back(std::move(throttle));
   }

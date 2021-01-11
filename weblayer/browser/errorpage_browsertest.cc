@@ -72,9 +72,12 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
       WARN_UNUSED_RESULT {
     content::TestNavigationManager navigation(web_contents(), url);
     NavigationController::NavigateParams params;
-    params.disable_network_error_auto_reload =
-        disable_network_error_auto_reload;
-    shell()->tab()->GetNavigationController()->Navigate(url, params);
+    auto* navigation_controller = shell()->tab()->GetNavigationController();
+    std::unique_ptr<DisableAutoReload> disable_auto_reload;
+    if (disable_network_error_auto_reload)
+      disable_auto_reload =
+          std::make_unique<DisableAutoReload>(navigation_controller);
+    navigation_controller->Navigate(url, params);
     navigation.WaitForNavigationFinished();
     return navigation.was_successful();
   }
@@ -98,6 +101,23 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
   }
 
  private:
+  class DisableAutoReload : public NavigationObserver {
+   public:
+    explicit DisableAutoReload(NavigationController* controller)
+        : controller_(controller) {
+      controller_->AddObserver(this);
+    }
+    ~DisableAutoReload() override { controller_->RemoveObserver(this); }
+
+    // NavigationObserver implementation:
+    void NavigationStarted(Navigation* navigation) override {
+      navigation->DisableNetworkErrorAutoReload();
+    }
+
+   private:
+    NavigationController* controller_;
+  };
+
   base::test::ScopedFeatureList feature_list_;
 };
 

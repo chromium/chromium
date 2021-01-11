@@ -161,6 +161,13 @@ public final class NavigationImpl extends INavigation.Stub {
         return NavigationImplJni.get().isReload(mNativeNavigationImpl);
     }
 
+    @Override
+    public void disableNetworkErrorAutoReload() {
+        if (!NavigationImplJni.get().disableNetworkErrorAutoReload(mNativeNavigationImpl)) {
+            throw new IllegalStateException();
+        }
+    }
+
     private void throwIfNativeDestroyed() {
         if (mNativeNavigationImpl == 0) {
             throw new IllegalStateException("Using Navigation after native destroyed");
@@ -213,5 +220,6 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean setUserAgentString(long nativeNavigationImpl, String value);
         boolean isPageInitiated(long nativeNavigationImpl);
         boolean isReload(long nativeNavigationImpl);
+        boolean disableNetworkErrorAutoReload(long nativeNavigationImpl);
     }
 }
