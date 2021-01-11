@@ -386,6 +386,11 @@ node if true.
     return this.startContainerValue_;
   }
 
+  /** @return {!cursors.Cursor} */
+  get startCursor() {
+    return this.start_;
+  }
+
   /** @return {boolean} */
   hasCollapsedSelection() {
     return this.start_.equals(this.end_);

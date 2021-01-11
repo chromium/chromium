@@ -8,12 +8,18 @@
 
 goog.provide('IntentHandler');
 
+goog.require('constants');
 goog.require('editing.EditableLine');
+goog.require('Output');
 
 goog.scope(function() {
 const AutomationIntent = chrome.automation.AutomationIntent;
+const Dir = constants.Dir;
 const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
+const Movement = cursors.Movement;
+const Range = cursors.Range;
+const Unit = cursors.Unit;
 
 /**
  * A stateless class that turns intents into speech.
@@ -95,6 +101,26 @@ IntentHandler = class {
         cur.speakLine(prev);
         return true;
 
+      case IntentTextBoundaryType.WORD_END:
+      case IntentTextBoundaryType.WORD_START:
+        const pos = cur.startCursor;
+
+        // When movement goes to the end of a word, we actually want to describe
+        // the word itself; this is considered the previous word so impacts the
+        // movement type below. We can give further context e.g. by saying "end
+        // of word", if we chose to be more verbose.
+        const shouldMoveToPreviousWord =
+            intent.textBoundary === IntentTextBoundaryType.WORD_END;
+        const start = pos.move(
+            Unit.WORD,
+            shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
+            Dir.BACKWARD);
+        const end = pos.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
+        new Output()
+            .withSpeech(new Range(start, end), null, Output.EventType.NAVIGATE)
+            .go();
+        return true;
+
         // TODO: implement support.
       case IntentTextBoundaryType.FORMAT:
       case IntentTextBoundaryType.OBJECT:
@@ -108,8 +134,6 @@ IntentHandler = class {
       case IntentTextBoundaryType.SENTENCE_START:
       case IntentTextBoundaryType.SENTENCE_START_OR_END:
       case IntentTextBoundaryType.WEB_PAGE:
-      case IntentTextBoundaryType.WORD_END:
-      case IntentTextBoundaryType.WORD_START:
       case IntentTextBoundaryType.WORD_START_OR_END:
         break;
     }
