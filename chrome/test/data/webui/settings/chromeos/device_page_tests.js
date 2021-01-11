@@ -1048,6 +1048,7 @@ cr.define('device_page_tests', function() {
         MockInteractions.pressAndReleaseKeyOn(
             keyboardPage.$$('#repeatRateSlider').$$('cr-slider'), 39, [],
             'ArrowRight');
+        await test_util.flushTasks();
         expectEquals(1000, get('xkb_auto_repeat_delay_r2'));
         expectEquals(300, get('xkb_auto_repeat_interval_r2'));
 
