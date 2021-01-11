@@ -1027,16 +1027,22 @@ void NewTabPageHandler::QueryAutocomplete(const base::string16& input,
       autocomplete_controller_->AddObserver(emitter);
   }
 
-  if (time_of_first_autocomplete_query_.is_null() && !input.empty())
-    time_of_first_autocomplete_query_ = base::TimeTicks::Now();
+  // TODO(tommycli): We use the input being empty as a signal we are requesting
+  // on-focus suggestions. It would be nice if we had a more explicit signal.
+  bool is_on_focus = input.empty();
+
+  // Early exit if a query is already in progress for on focus inputs.
+  if (!autocomplete_controller_->done() && is_on_focus)
+    return;
+
+  if (time_user_first_modified_realbox_.is_null() && !is_on_focus)
+    time_user_first_modified_realbox_ = base::TimeTicks::Now();
 
   AutocompleteInput autocomplete_input(
       input, metrics::OmniboxEventProto::NTP_REALBOX,
       ChromeAutocompleteSchemeClassifier(profile_));
-  // TODO(tommycli): We use the input being empty as a signal we are requesting
-  // on-focus suggestions. It would be nice if we had a more explicit signal.
-  autocomplete_input.set_focus_type(input.empty() ? OmniboxFocusType::ON_FOCUS
-                                                  : OmniboxFocusType::DEFAULT);
+  autocomplete_input.set_focus_type(is_on_focus ? OmniboxFocusType::ON_FOCUS
+                                                : OmniboxFocusType::DEFAULT);
   autocomplete_input.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete);
 
@@ -1055,7 +1061,7 @@ void NewTabPageHandler::StopAutocomplete(bool clear_result) {
   autocomplete_controller_->Stop(clear_result);
 
   if (clear_result)
-    time_of_first_autocomplete_query_ = base::TimeTicks();
+    time_user_first_modified_realbox_ = base::TimeTicks();
 }
 
 void NewTabPageHandler::OpenAutocompleteMatch(
@@ -1085,7 +1091,7 @@ void NewTabPageHandler::OpenAutocompleteMatch(
 
   const auto now = base::TimeTicks::Now();
   base::TimeDelta elapsed_time_since_first_autocomplete_query =
-      now - time_of_first_autocomplete_query_;
+      now - time_user_first_modified_realbox_;
   autocomplete_controller_->UpdateMatchDestinationURLWithQueryFormulationTime(
       elapsed_time_since_first_autocomplete_query, &match);
 
@@ -1136,7 +1142,7 @@ void NewTabPageHandler::OpenAutocompleteMatch(
 
   base::TimeDelta default_time_delta = base::TimeDelta::FromMilliseconds(-1);
 
-  if (time_of_first_autocomplete_query_.is_null())
+  if (time_user_first_modified_realbox_.is_null())
     elapsed_time_since_first_autocomplete_query = default_time_delta;
 
   base::TimeDelta elapsed_time_since_last_change_to_default_match =

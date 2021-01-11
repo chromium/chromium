@@ -238,7 +238,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   FaviconCache favicon_cache_;
   BitmapFetcherService* bitmap_fetcher_service_;
   std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
-  base::TimeTicks time_of_first_autocomplete_query_;
+  base::TimeTicks time_user_first_modified_realbox_;
   content::WebContents* web_contents_;
   base::Time ntp_navigation_start_time_;
   NTPUserDataLogger logger_;
