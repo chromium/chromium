@@ -189,8 +189,7 @@ class FullRestoreServiceTest : public testing::Test {
 
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the restore button.
-// TODO(crbug.com/1046900): Fix this unit test.
-TEST_F(FullRestoreServiceTest, DISABLED_CrashAndRestore) {
+TEST_F(FullRestoreServiceTest, CrashAndRestore) {
   profile()->set_last_session_exited_cleanly(false);
   CreateFullRestoreServiceForTesting();
 
@@ -400,8 +399,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
 // notification, and verify the restore flag when click the restore button.
-// TODO(crbug.com/1046900): Fix this unit test.
-TEST_F(FullRestoreServiceTest, DISABLED_AskEveryTimeAndRestore) {
+TEST_F(FullRestoreServiceTest, AskEveryTimeAndRestore) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -476,8 +474,7 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 
 // If the restore option has been selected 3 times, show the set restore
 // notification.
-// TODO(crbug.com/1046900): Fix this unit test.
-TEST_F(FullRestoreServiceTest, DISABLED_SetRestorePrefNotification) {
+TEST_F(FullRestoreServiceTest, SetRestorePrefNotification) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -511,8 +508,7 @@ TEST_F(FullRestoreServiceTest, DISABLED_SetRestorePrefNotification) {
 
 // When |kRestoreSelectedCountPrefName| = 3, if the restore option is selected
 // again, |kRestoreSelectedCountPrefName| should not change.
-// TODO(crbug.com/1046900): Fix this unit test.
-TEST_F(FullRestoreServiceTest, DISABLED_RestoreSelectedCount) {
+TEST_F(FullRestoreServiceTest, RestoreSelectedCount) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));

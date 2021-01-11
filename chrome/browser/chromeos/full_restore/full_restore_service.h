@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace message_center {
+class Notification;
+}
+
 namespace chromeos {
 namespace full_restore {
 
@@ -56,8 +60,7 @@ class FullRestoreService : public KeyedService {
   // Show the restore notification on startup.
   void ShowRestoreNotification(const std::string& id);
 
-  void HandleRestoreNotificationClicked(const std::string& id,
-                                        base::Optional<int> button_index);
+  void HandleRestoreNotificationClicked(base::Optional<int> button_index);
 
   // Implement the restoration.
   void Restore();
@@ -73,6 +76,8 @@ class FullRestoreService : public KeyedService {
   std::unique_ptr<AppLaunchHandler> app_launch_handler_;
 
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
+
+  std::unique_ptr<message_center::Notification> notification_;
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

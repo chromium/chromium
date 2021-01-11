@@ -113,38 +113,37 @@ void FullRestoreService::ShowRestoreNotification(const std::string& id) {
   else
     message_id = IDS_SET_RESTORE_NOTIFICATION_MESSAGE;
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, id,
-          l10n_util::GetStringUTF16(title_id),
-          l10n_util::GetStringUTF16(message_id),
-          l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),
-          GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, id),
-          notification_data,
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(
-                  &FullRestoreService::HandleRestoreNotificationClicked,
-                  weak_ptr_factory_.GetWeakPtr(), id)),
-          kFullRestoreNotificationIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_priority(message_center::SYSTEM_PRIORITY);
+  notification_ = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id,
+      l10n_util::GetStringUTF16(title_id),
+      l10n_util::GetStringUTF16(message_id),
+      l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),
+      GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 id),
+      notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &FullRestoreService::HandleRestoreNotificationClicked,
+              weak_ptr_factory_.GetWeakPtr())),
+      kFullRestoreNotificationIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_->set_priority(message_center::SYSTEM_PRIORITY);
 
   auto* notification_display_service =
       NotificationDisplayService::GetForProfile(profile_);
   DCHECK(notification_display_service);
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        *notification,
+                                        *notification_,
                                         /*metadata=*/nullptr);
 }
 
 void FullRestoreService::HandleRestoreNotificationClicked(
-    const std::string& id,
     base::Optional<int> button_index) {
+  DCHECK(notification_);
   if (!is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, id);
+        NotificationHandler::Type::TRANSIENT, notification_->id());
   }
 
   if (!button_index.has_value() ||
@@ -153,7 +152,7 @@ void FullRestoreService::HandleRestoreNotificationClicked(
     return;
   }
 
-  if (id == kSetRestorePrefNotificationId) {
+  if (notification_->id() == kSetRestorePrefNotificationId) {
     // Show the 'On Startup' OS setting page.
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile_, chromeos::settings::mojom::kOnStartupSectionPath);
