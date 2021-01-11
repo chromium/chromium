@@ -376,6 +376,9 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
                        MAYBE_DontReloadInRenderProcessExit) {
+  // In the FileSystem variant of this test, blocking needs to be permitted to
+  // allow cleanup to work during the crash.
+  base::ScopedAllowBlockingForTesting scope;
   LoadPage(http_server_.GetURL("a.com", "/title1.html"));
 
   content::WebContents* web_contents = GetWebContents();
@@ -414,15 +417,12 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
           .Then(loop.QuitClosure()));
 
   // Crash the renderer.
-  {
-    base::ScopedAllowBlockingForTesting scope;
-    content::RenderProcessHost* process =
-        GetWebContents()->GetMainFrame()->GetProcess();
-    content::RenderProcessHostWatcher crash_observer(
-        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    process->Shutdown(0);
-    crash_observer.Wait();
-  }
+  content::RenderProcessHost* process =
+      GetWebContents()->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(0);
+  crash_observer.Wait();
 
   // The browser would have crashed before the loop exited if the callback was
   // not posted.
