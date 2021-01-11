@@ -66,10 +66,14 @@ void UnifiedConsentService::Shutdown() {
   sync_service_->RemoveObserver(this);
 }
 
-void UnifiedConsentService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  // By design, clearing the primary account disables URL-keyed data collection.
-  SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+void UnifiedConsentService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    // By design, clearing the primary account disables URL-keyed data
+    // collection.
+    SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  }
 }
 
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {

@@ -76,8 +76,8 @@ class UnifiedConsentService
   void Shutdown() override;
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   friend class UnifiedConsentServiceTest;
