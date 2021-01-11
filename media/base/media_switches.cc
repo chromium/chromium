@@ -498,6 +498,10 @@ const base::Feature kLiveCaption{"LiveCaption",
 const base::Feature kUseSodaForLiveCaption{"UseSodaForLiveCaption",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Live Caption runs system-wide on ChromeOS, as opposed to just in the browser.
+const base::Feature kLiveCaptionSystemWideOnChromeOS{
+    "LiveCaptionSystemWideOnChromeOS", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Prevents UrlProvisionFetcher from making a provisioning request. If
 // specified, any provisioning request made will not be sent to the provisioning
 // server, and the response will indicate a failure to communicate with the
