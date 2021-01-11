@@ -61,10 +61,10 @@ enum class MobileSessionOomShutdownHint {
   kMaxValue = SessionRestorationXte
 };
 
-// Values of the Stability.iOS.UTE.MobileSessionAppWillTerminateReceived
+// Values of the Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived
 // histogram. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
-enum class MobileSessionAppWillTerminateReceived {
+enum class MobileSessionAppWillTerminateWasReceived {
   // ApplicationWillTerminate notification was not received for this XTE.
   WasNotReceivedForXte = 0,
   // ApplicationWillTerminate notification was not received for this UTE.
@@ -143,18 +143,18 @@ MobileSessionAppState GetMobileSessionAppState(bool has_possible_explanation) {
 }
 
 // Returns value to record for
-// Stability.iOS.UTE.MobileSessionAppWillTerminateReceived histogram.
-MobileSessionAppWillTerminateReceived GetMobileSessionAppWillTerminateReceived(
-    bool has_possible_explanation) {
+// Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived histogram.
+MobileSessionAppWillTerminateWasReceived
+GetMobileSessionAppWillTerminateWasReceived(bool has_possible_explanation) {
   if (!PreviousSessionInfo.sharedInstance.applicationWillTerminateWasReceived) {
     return has_possible_explanation
-               ? MobileSessionAppWillTerminateReceived::WasNotReceivedForXte
-               : MobileSessionAppWillTerminateReceived::WasNotReceivedForUte;
+               ? MobileSessionAppWillTerminateWasReceived::WasNotReceivedForXte
+               : MobileSessionAppWillTerminateWasReceived::WasNotReceivedForUte;
   }
 
   return has_possible_explanation
-             ? MobileSessionAppWillTerminateReceived::WasReceivedForXte
-             : MobileSessionAppWillTerminateReceived::WasReceivedForUte;
+             ? MobileSessionAppWillTerminateWasReceived::WasReceivedForXte
+             : MobileSessionAppWillTerminateWasReceived::WasReceivedForUte;
 }
 
 // Logs |type| in the shutdown type histogram.
@@ -351,8 +351,8 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
 
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
         "Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived",
-        GetMobileSessionAppWillTerminateReceived(possible_explanation),
-        MobileSessionAppWillTerminateReceived::kMaxValue);
+        GetMobileSessionAppWillTerminateWasReceived(possible_explanation),
+        MobileSessionAppWillTerminateWasReceived::kMaxValue);
 
     if (!possible_explanation && EnableSyntheticCrashReportsForUte() &&
         GetApplicationContext()->GetLocalState()->GetBoolean(
