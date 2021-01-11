@@ -372,9 +372,7 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 
   source->AddBoolean("isEnterpriseManaged", webui::IsEnterpriseManaged());
 
-  bool cloud_print_deprecation_warnings_suppressed =
-      profile->GetPrefs()->GetBoolean(
-          prefs::kCloudPrintDeprecationWarningsSuppressed);
+  bool cloud_print_deprecation_warnings_suppressed = true;
   source->AddBoolean("cloudPrintDeprecationWarningsSuppressed",
                      cloud_print_deprecation_warnings_suppressed);
 
