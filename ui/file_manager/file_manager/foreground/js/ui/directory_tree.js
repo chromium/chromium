@@ -151,21 +151,6 @@ Object.freeze(DirectoryItemTreeBaseMethods);
  */
 directorytree.createRowElementContent = (id, label) => {
   return `
-    <paper-ripple fit class='recenteringTouch'></paper-ripple>
-    <span class='expand-icon'></span>
-    <span class='icon'></span>
-    <span class='label entry-name' id='${id}'>${label}</span>`;
-};
-
-/**
- * Create tree rowElement content: returns a string of HTML used to innerHTML
- * a tree item rowElement for FILES_NG_ENABLED case.
- * @param {string} id The tree rowElement label Id.
- * @param {string} label The tree rowElement label.
- * @return {string}
- */
-directorytree.createRowElementContentFilesNG = (id, label) => {
-  return `
     <div class='file-row'>
      <span class='expand-icon'></span>
      <span class='icon'></span>
@@ -174,19 +159,12 @@ directorytree.createRowElementContentFilesNG = (id, label) => {
 };
 
 /**
- * An optional rowElement depth (indent) style handler where undefined uses the
- * default cr.ui.TreeItem indent styling.
- * @type {function(!cr.ui.TreeItem,number)|undefined}
- */
-directorytree.styleRowElementDepth = undefined;
-
-/**
  * Custom tree row style handler: called when the item's |rowElement| should be
  * styled to indent |depth| in the tree for FILES_NG_ENABLED case.
  * @param {!cr.ui.TreeItem} item cr.ui.TreeItem.
  * @param {number} depth Indent depth (>=0).
  */
-directorytree.styleRowElementDepthFilesNG = (item, depth) => {
+directorytree.styleRowElementDepth = (item, depth) => {
   const fileRowElement = item.rowElement.firstElementChild;
 
   const indent = depth * 22;
@@ -196,13 +174,6 @@ directorytree.styleRowElementDepthFilesNG = (item, depth) => {
 
   fileRowElement.setAttribute('style', style);
 };
-
-/**
- * The iron-icon-set prefix for tree rows that have an .align-right-icon class
- * element added to the row (eject icon, AndroidAppItem launch icon).
- * @type {string}
- */
-directorytree.rightIconSetPrefix = 'files16';
 
 /**
  * A tree item has a tree row with a text label.
@@ -821,8 +792,7 @@ class DirectoryItem extends TreeItem {
 
     // Append eject iron-icon.
     const ironIcon = document.createElement('iron-icon');
-    const iconSet = directorytree.rightIconSetPrefix;
-    ironIcon.setAttribute('icon', `${iconSet}:eject`);
+    ironIcon.setAttribute('icon', `files20:eject`);
     ejectButton.appendChild(ironIcon);
 
     // Add the eject button as the last element of the tree row content.
@@ -830,9 +800,7 @@ class DirectoryItem extends TreeItem {
     label.parentElement.appendChild(ejectButton);
 
     // Ensure the eject icon shows when the directory tree is too narrow.
-    if (directorytree.FILES_NG_ENABLED) {
-      label.setAttribute('style', 'margin-inline-end: 2px; min-width: 0;');
-    }
+    label.setAttribute('style', 'margin-inline-end: 2px; min-width: 0;');
   }
 
   /**
@@ -1214,10 +1182,8 @@ class VolumeItem extends DirectoryItem {
         util.iconSetToCSSBackgroundImageValue(volumeInfo.iconSet);
     if (backgroundImage !== 'none') {
       icon.setAttribute('style', 'background-image: ' + backgroundImage);
-    } else if (directorytree.FILES_NG_ENABLED) {
-      if (VolumeManagerCommon.shouldProvideIcons(volumeInfo.volumeType)) {
-        icon.setAttribute('use-generic-provided-icon', '');
-      }
+    } else if (VolumeManagerCommon.shouldProvideIcons(volumeInfo.volumeType)) {
+      icon.setAttribute('use-generic-provided-icon', '');
     }
 
     icon.setAttribute('volume-type-icon', volumeInfo.volumeType);
@@ -1775,9 +1741,7 @@ class AndroidAppItem extends TreeItem {
       }
     }
 
-    if (directorytree.FILES_NG_ENABLED && !icon.hasAttribute('style')) {
-      icon.setAttribute('use-generic-provided-icon', '');
-    }
+    icon.setAttribute('use-generic-provided-icon', '');
 
     // Use aria-describedby attribute to let ChromeVox users know that the link
     // launches an external app window.
@@ -1789,8 +1753,7 @@ class AndroidAppItem extends TreeItem {
 
     // Append external-link iron-icon.
     const ironIcon = document.createElement('iron-icon');
-    const iconSet = directorytree.rightIconSetPrefix;
-    ironIcon.setAttribute('icon', `${iconSet}:external-link`);
+    ironIcon.setAttribute('icon', `files20:external-link`);
     externalLinkIcon.appendChild(ironIcon);
 
     // Add the external-link as the last element of the tree row content.
@@ -1798,9 +1761,7 @@ class AndroidAppItem extends TreeItem {
     label.parentElement.appendChild(externalLinkIcon);
 
     // Ensure the link icon shows when the directory tree is too narrow.
-    if (directorytree.FILES_NG_ENABLED) {
-      label.setAttribute('style', 'margin-inline-end: 2px; min-width: 0;');
-    }
+    label.setAttribute('style', 'margin-inline-end: 2px; min-width: 0;');
   }
 
   /**
@@ -2484,28 +2445,14 @@ DirectoryTree.decorate =
     (el, directoryModel, volumeManager, metadataModel, fileOperationManager,
      fakeEntriesVisible) => {
       el.__proto__ = DirectoryTree.prototype;
-
-      if (util.isFilesNg()) {
-        directorytree.FILES_NG_ENABLED = true;
-        directorytree.rightIconSetPrefix = 'files20';
-        directorytree.createRowElementContent =
-            directorytree.createRowElementContentFilesNG;
-        directorytree.styleRowElementDepth =
-            directorytree.styleRowElementDepthFilesNG;
-        el.setAttribute('files-ng', '');
-      } else {
-        el.removeAttribute('files-ng');
-      }
-
+      el.setAttribute('files-ng', '');
       Object.freeze(directorytree);
 
       /** @type {DirectoryTree} */ (el).decorateDirectoryTree(
           directoryModel, volumeManager, metadataModel, fileOperationManager,
           fakeEntriesVisible);
 
-      if (directorytree.FILES_NG_ENABLED) {
-        el.rowElementDepthStyleHandler = directorytree.styleRowElementDepth;
-      }
+      el.rowElementDepthStyleHandler = directorytree.styleRowElementDepth;
     };
 
 cr.defineProperty(DirectoryTree, 'contextMenuForSubitems', cr.PropertyKind.JS);
