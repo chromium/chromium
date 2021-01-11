@@ -119,6 +119,7 @@ void HoldingSpaceTrayIcon::Clear() {
   previews_update_weak_factory_.InvalidateWeakPtrs();
   previews_by_id_.clear();
   removed_previews_.clear();
+  SetPreferredSize(CalculatePreferredSize());
 }
 
 int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
