@@ -151,8 +151,7 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       region_model_ = model.get();
       if (chosen_country_index_ < countries_.size()) {
         model->LoadRegionData(countries_[chosen_country_index_].first,
-                              state()->GetRegionDataLoader(),
-                              /*timeout_ms=*/5000);
+                              state()->GetRegionDataLoader());
         if (!model->IsPendingRegionDataLoad()) {
           // If the data was already pre-loaded, the observer won't get notified
           // so we have to check for failure here.
