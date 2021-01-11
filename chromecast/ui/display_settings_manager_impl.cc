@@ -29,17 +29,6 @@ const float kMinApiBrightness = 0.0f;
 const float kMaxApiBrightness = 1.0f;
 const float kDefaultApiBrightness = kMaxApiBrightness;
 
-#if defined(USE_AURA)
-bool CheckDisplayStatus(const base::flat_map<int64_t, bool>& statuses) {
-  for (const auto& status : statuses) {
-    if (!status.second) {
-      return false;
-    }
-  }
-  return true;
-}
-#endif  // defined(USE_AURA)
-
 }  // namespace
 
 DisplaySettingsManagerImpl::DisplaySettingsManagerImpl(
@@ -109,15 +98,13 @@ void DisplaySettingsManagerImpl::AddReceiver(
 
 void DisplaySettingsManagerImpl::SetScreenPowerOn(PowerToggleCallback callback) {
 #if defined(USE_AURA)
-  display_configurator_->EnableDisplay(
-      base::BindOnce(&CheckDisplayStatus).Then(std::move(callback)));
+  display_configurator_->EnableDisplay(std::move(callback));
 #endif  // defined(USE_AURA)
 }
 
 void DisplaySettingsManagerImpl::SetScreenPowerOff(PowerToggleCallback callback) {
 #if defined(USE_AURA)
-  display_configurator_->DisableDisplay(
-      base::BindOnce(&CheckDisplayStatus).Then(std::move(callback)));
+  display_configurator_->DisableDisplay(std::move(callback));
 #endif  // defined(USE_AURA)
 }
 
