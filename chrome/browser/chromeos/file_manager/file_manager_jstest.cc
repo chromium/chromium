@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryContentsTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
-  RunTestURL("foreground/js/ui/directory_tree_unittest_gen.html");
+  RunTestURL("foreground/js/ui/directory_tree_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {

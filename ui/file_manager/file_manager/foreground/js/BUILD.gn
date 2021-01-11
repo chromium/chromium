@@ -31,8 +31,10 @@ js_type_check("closure_compile_jsmodules") {
     ":android_app_list_model.m",
     ":constants.m",
     ":crossover_search_utils.m",
+    ":dialog_type.m",
     ":directory_contents.m",
     ":directory_model.m",
+    ":directory_tree_naming_controller.m",
     ":drop_effect_and_label.m",
     ":empty_folder_controller.m",
     ":fake_android_app_list_model.m",
@@ -41,6 +43,7 @@ js_type_check("closure_compile_jsmodules") {
     ":folder_shortcuts_data_model.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
+    ":mock_navigation_list_model.m",
     ":navigation_list_model.m",
     ":thumbnail_loader.m",
   ]
@@ -264,6 +267,17 @@ js_library("mock_navigation_list_model") {
   deps = [ ":navigation_list_model" ]
 }
 
+js_library("mock_navigation_list_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_navigation_list_model.m.js" ]
+  deps = [
+    ":navigation_list_model.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("mock_thumbnail_loader") {
   testonly = true
   deps = [ ":thumbnail_loader" ]
@@ -346,6 +360,14 @@ js_library("dialog_action_controller") {
 }
 
 js_library("dialog_type") {
+}
+
+js_library("dialog_type.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/dialog_type.m.js",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("directory_contents") {
@@ -448,6 +470,20 @@ js_library("directory_tree_naming_controller") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js/cr/ui:dialogs",
   ]
+}
+
+js_library("directory_tree_naming_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/directory_tree_naming_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    "ui:directory_tree.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("drop_effect_and_label") {
@@ -1134,20 +1170,23 @@ js_test_gen_html("js_test_gen_html") {
 js_modulizer("modulize") {
   input_files = [
     "android_app_list_model.js",
-    "thumbnail_loader.js",
     "constants.js",
-    "directory_model.js",
-    "directory_contents.js",
-    "file_list_model.js",
-    "file_watcher.js",
     "crossover_search_utils.js",
-    "navigation_list_model.js",
-    "folder_shortcuts_data_model.js",
-    "mock_directory_model.js",
-    "fake_android_app_list_model.js",
-    "mock_folder_shortcut_data_model.js",
+    "dialog_type.js",
+    "directory_contents.js",
+    "directory_model.js",
+    "directory_tree_naming_controller.js",
     "drop_effect_and_label.js",
     "empty_folder_controller.js",
+    "fake_android_app_list_model.js",
+    "file_list_model.js",
+    "file_watcher.js",
+    "folder_shortcuts_data_model.js",
+    "mock_directory_model.js",
+    "mock_folder_shortcut_data_model.js",
+    "mock_navigation_list_model.js",
+    "navigation_list_model.js",
+    "thumbnail_loader.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

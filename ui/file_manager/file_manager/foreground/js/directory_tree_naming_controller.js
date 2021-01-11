@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Naming controller for directory tree.
  */
-class DirectoryTreeNamingController {
+/* #export */ class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!DirectoryTree} directoryTree
@@ -147,7 +154,8 @@ class DirectoryTreeNamingController {
     if (this.isRemovableRoot_) {
       // Validate new name.
       util.validateExternalDriveName(
-              newName, assert(this.volumeInfo_).diskFileSystemType)
+              newName,
+              assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType))
           .then(
               this.performExternalDriveRename_.bind(this, entry, newName),
               errorMessage => {

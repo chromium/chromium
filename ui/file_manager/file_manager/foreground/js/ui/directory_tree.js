@@ -2,6 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileOperationManager} from '../../../../externs/background/file_operation_manager.m.js';
+// #import {FileFilter} from '../directory_contents.m.js';
+// #import {MetadataModel} from '../metadata/metadata_model.m.js';
+// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// #import {DirectoryModel} from '../directory_model.m.js';
+// #import {VolumeInfo} from '../../../../externs/volume_info.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {FilesAppDirEntry} from '../../../../externs/files_app_entry_interfaces.m.js';
+// #import {NavigationModelItemType, NavigationSection, NavigationModelFakeItem, NavigationModelVolumeItem, NavigationModelShortcutItem, NavigationModelAndroidAppItem, NavigationListModel, NavigationModelItem} from '../navigation_list_model.m.js';
+// #import {FileType} from '../../../common/js/file_type.m.js';
+// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+// #import {constants} from '../constants.m.js';
+// #import {TreeItem, Tree} from 'chrome://resources/js/cr/ui/tree.m.js';
+// #import {VolumeManagerCommon} from '../../../../base/js/volume_manager_types.m.js';
+// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+// #import {metrics} from '../../../common/js/metrics.m.js';
+// #import {util, str} from '../../../common/js/util.m.js';
+// clang-format on
+
 // Namespace
 const directorytree = {};
 
@@ -178,7 +200,7 @@ directorytree.styleRowElementDepth = (item, depth) => {
 /**
  * A tree item has a tree row with a text label.
  */
-class TreeItem extends cr.ui.TreeItem {
+class FilesTreeItem extends cr.ui.TreeItem {
   /**
    * @param {string} label Label for this item.
    * @param {DirectoryTree} tree Tree that contains this item.
@@ -188,7 +210,7 @@ class TreeItem extends cr.ui.TreeItem {
 
     // Save the cr.ui.TreeItem label id before overwriting the prototype.
     const id = this.labelElement.id;
-    this.__proto__ = TreeItem.prototype;
+    this.__proto__ = FilesTreeItem.prototype;
 
     if (window.IN_TEST) {
       this.setAttribute('entry-label', label);
@@ -245,7 +267,7 @@ class TreeItem extends cr.ui.TreeItem {
  * An expandable directory in the tree. Each element represents one folder (sub
  * directory) or one volume (root directory).
  */
-class DirectoryItem extends TreeItem {
+/* #export */ class DirectoryItem extends FilesTreeItem {
   /**
    * @param {string} label Label for this item.
    * @param {DirectoryTree} tree Current tree, which contains this item.
@@ -820,7 +842,7 @@ class DirectoryItem extends TreeItem {
  * A subdirectory in the tree. Each element represents a directory that is not
  * a volume's root.
  */
-class SubDirectoryItem extends DirectoryItem {
+/* #export */ class SubDirectoryItem extends DirectoryItem {
   /**
    * @param {string} label Label for this item.
    * @param {DirectoryEntry} dirEntry DirectoryEntry of this item.
@@ -926,7 +948,7 @@ class SubDirectoryItem extends DirectoryItem {
 /**
  * A directory of entries. Each element represents an entry.
  */
-class EntryListItem extends DirectoryItem {
+/* #export */ class EntryListItem extends DirectoryItem {
   /**
    * @param {VolumeManagerCommon.RootType} rootType The root type to record.
    * @param {!NavigationModelFakeItem} modelItem NavigationModelItem of this
@@ -1182,18 +1204,22 @@ class VolumeItem extends DirectoryItem {
         util.iconSetToCSSBackgroundImageValue(volumeInfo.iconSet);
     if (backgroundImage !== 'none') {
       icon.setAttribute('style', 'background-image: ' + backgroundImage);
-    } else if (VolumeManagerCommon.shouldProvideIcons(volumeInfo.volumeType)) {
+    } else if (VolumeManagerCommon.shouldProvideIcons(
+                   assert(volumeInfo.volumeType))) {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    icon.setAttribute('volume-type-icon', volumeInfo.volumeType);
+    icon.setAttribute(
+        'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
 
     if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MEDIA_VIEW) {
       const subtype = VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
           volumeInfo.volumeId);
       icon.setAttribute('volume-subtype', subtype);
     } else {
-      icon.setAttribute('volume-subtype', volumeInfo.deviceType || '');
+      icon.setAttribute(
+          'volume-subtype',
+          /** @type {string} */ (volumeInfo.deviceType) || '');
     }
   }
 
@@ -1241,7 +1267,7 @@ class VolumeItem extends DirectoryItem {
  * A TreeItem which represents a Drive volume. Drive volume has fake entries
  * such as Shared Drives, Shared with me, and Offline in it.
  */
-class DriveVolumeItem extends VolumeItem {
+/* #export */ class DriveVolumeItem extends VolumeItem {
   /**
    * @param {!NavigationModelVolumeItem} modelItem NavigationModelItem of this
    *     volume.
@@ -1587,7 +1613,7 @@ class DriveVolumeItem extends VolumeItem {
  * A TreeItem which represents a shortcut for Drive folder.
  * Shortcut items are displayed as top-level children of DirectoryTree.
  */
-class ShortcutItem extends TreeItem {
+/* #export */ class ShortcutItem extends FilesTreeItem {
   /**
    * @param {!NavigationModelShortcutItem} modelItem NavigationModelItem of this
    *     volume.
@@ -1714,7 +1740,7 @@ class ShortcutItem extends TreeItem {
  * A TreeItem representing an Android picker app. These Android app items are
  * shown as top-level volume entries of the DirectoryTree.
  */
-class AndroidAppItem extends TreeItem {
+class AndroidAppItem extends FilesTreeItem {
   /**
    * @param {!NavigationModelAndroidAppItem} modelItem NavigationModelItem
    *     associated with this volume.
@@ -1790,7 +1816,7 @@ class AndroidAppItem extends TreeItem {
 /**
  * FakeItem is used by Recent and Linux files.
  */
-class FakeItem extends TreeItem {
+/* #export */ class FakeItem extends FilesTreeItem {
   /**
    * @param {!VolumeManagerCommon.RootType} rootType root type.
    * @param {!NavigationModelFakeItem} modelItem
@@ -1898,7 +1924,7 @@ class FakeItem extends TreeItem {
  * Tree of directories on the middle bar. This element is also the root of
  * items, in other words, this is the parent of the top-level items.
  */
-class DirectoryTree extends cr.ui.Tree {
+/* #export */ class DirectoryTree extends cr.ui.Tree {
   constructor() {
     super();
 
@@ -2455,9 +2481,23 @@ DirectoryTree.decorate =
       el.rowElementDepthStyleHandler = directorytree.styleRowElementDepth;
     };
 
-cr.defineProperty(DirectoryTree, 'contextMenuForSubitems', cr.PropertyKind.JS);
-cr.defineProperty(DirectoryTree, 'contextMenuForRootItems', cr.PropertyKind.JS);
-cr.defineProperty(DirectoryTree, 'disabledContextMenu', cr.PropertyKind.JS);
+/** @type {?cr.ui.Menu} */
+DirectoryTree.prototype.contextMenuForSubitems;
+Object.defineProperty(
+    DirectoryTree.prototype, 'contextMenuForSubitems',
+    cr.getPropertyDescriptor('contextMenuForSubitems', cr.PropertyKind.JS));
+
+/** @type {?cr.ui.Menu} */
+DirectoryTree.prototype.contextMenuForRootItems;
+Object.defineProperty(
+    DirectoryTree.prototype, 'contextMenuForRootItems',
+    cr.getPropertyDescriptor('contextMenuForRootItems', cr.PropertyKind.JS));
+
+/** @type {?cr.ui.Menu} */
+DirectoryTree.prototype.disabledContextMenu;
+Object.defineProperty(
+    DirectoryTree.prototype, 'disabledContextMenu',
+    cr.getPropertyDescriptor('disabledContextMenu', cr.PropertyKind.JS));
 
 /**
  * Creates a new DirectoryItem based on |modelItem|.
