@@ -675,22 +675,20 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
 
-  // Before bringing up the UI, make sure the launch mode is correct, and
-  // check for previous crashes.
-  BOOL startInIncognito =
-      [[NSUserDefaults standardUserDefaults] boolForKey:kIncognitoCurrentKey];
-  BOOL switchFromIncognito =
-      startInIncognito &&
-      !self.sceneState.appState.startupInformation.canLaunchInIncognito;
+  // Make sure the launch mode is correct and consistent with the mode used
+  // when the application was terminated. It is possible for the incognito
+  // UI to have been presented but with no tabs (e.g. the tab switcher was
+  // active and user closed the last tab). In that case, switch to regular
+  // UI. Also, if the app crashed, always switch back to regular UI.
+  const BOOL startInIncognito =
+      self.sceneState.incognitoContentVisible &&
+      !self.sceneState.appState.postCrashLaunch &&
+      !self.interfaceProvider.incognitoInterface.browser->GetWebStateList()
+           ->empty();
 
-  if (self.sceneState.appState.postCrashLaunch || switchFromIncognito) {
+  // If the application crashed, clear incognito state.
+  if (self.sceneState.appState.postCrashLaunch)
     [self clearIOSSpecificIncognitoData];
-    if (switchFromIncognito)
-      [self.browserViewWrangler
-          switchGlobalStateToMode:ApplicationMode::NORMAL];
-  }
-  if (switchFromIncognito)
-    startInIncognito = NO;
 
   [self createInitialUI:(startInIncognito ? ApplicationMode::INCOGNITO
                                           : ApplicationMode::NORMAL)];
@@ -737,8 +735,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   // Decide if the First Run UI needs to run.
   const bool firstRun = ShouldPresentFirstRunExperience();
-
-  [self.browserViewWrangler switchGlobalStateToMode:launchMode];
 
   Browser* browser;
   if (launchMode == ApplicationMode::INCOGNITO) {

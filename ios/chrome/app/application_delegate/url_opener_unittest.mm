@@ -64,10 +64,6 @@ enum class ExternalFilesLoadedInWebStateFeature {
 - (void)stopChromeMain {
 }
 
-- (BOOL)canLaunchInIncognito {
-  return NO;
-}
-
 - (NSDictionary*)launchOptions {
   return @{};
 }

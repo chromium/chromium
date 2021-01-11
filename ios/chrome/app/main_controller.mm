@@ -650,21 +650,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   _firstUserActionRecorder.reset();
 }
 
-- (BOOL)canLaunchInIncognito {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  if (![standardDefaults boolForKey:kIncognitoCurrentKey])
-    return NO;
-  // If the application crashed in incognito mode, don't stay in incognito
-  // mode, since the prompt to restore should happen in non-incognito
-  // context.
-  if ([self mustShowRestoreInfobar])
-    return NO;
-  // If there are no incognito tabs, then ensure the app starts in normal mode,
-  // since the UI isn't supposed to ever put the user in incognito mode without
-  // any incognito tabs.
-  return !(self.otrBrowser->GetWebStateList()->empty());
-}
-
 - (void)expireFirstUserActionRecorderAfterDelay:(NSTimeInterval)delay {
   [self performSelector:@selector(expireFirstUserActionRecorder)
              withObject:nil

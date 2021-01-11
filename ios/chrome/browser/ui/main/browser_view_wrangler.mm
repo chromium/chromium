@@ -221,11 +221,6 @@
   if (self.currentInterface) {
     // Tell the current BVC it moved to the background.
     [self.currentInterface setPrimary:NO];
-
-    // Data storage for the browser is always owned by the current BVC, so it
-    // must be updated when switching between BVCs.
-    [self changeStorageFromBrowserState:self.currentInterface.browserState
-                         toBrowserState:interface.browserState];
   }
 
   _currentInterface = interface;
@@ -290,27 +285,6 @@
   }
 
   _otrBrowser = std::move(otrBrowser);
-}
-
-#pragma mark - Mode Switching
-
-- (void)switchGlobalStateToMode:(ApplicationMode)mode {
-  // TODO(crbug.com/1048690): use scene-local storage in multiwindow.
-  const BOOL incognito = (mode == ApplicationMode::INCOGNITO);
-  // Write the state to disk of what is "active".
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  [standardDefaults setBool:incognito forKey:kIncognitoCurrentKey];
-  // Save critical state information for switching between normal and
-  // incognito.
-  [standardDefaults synchronize];
-}
-
-// Updates the local storage, cookie store, and sets the global state.
-- (void)changeStorageFromBrowserState:(ChromeBrowserState*)oldState
-                       toBrowserState:(ChromeBrowserState*)newState {
-  ApplicationMode mode = newState->IsOffTheRecord() ? ApplicationMode::INCOGNITO
-                                                    : ApplicationMode::NORMAL;
-  [self switchGlobalStateToMode:mode];
 }
 
 #pragma mark - Other public methods
