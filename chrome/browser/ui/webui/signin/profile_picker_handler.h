@@ -49,6 +49,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::ListValue* args);
   void HandleCreateProfile(const base::ListValue* args);
 
+  // |args| is unused.
+  void HandleRecordSignInPromoImpression(const base::ListValue* args);
+
   void OnLoadSigninFinished(bool success);
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(base::FilePath profile_path,

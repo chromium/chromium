@@ -215,6 +215,11 @@ void ProfilePickerHandler::RegisterMessages() {
       "setProfileName",
       base::BindRepeating(&ProfilePickerHandler::HandleSetProfileName,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordSignInPromoImpression",
+      base::BindRepeating(
+          &ProfilePickerHandler::HandleRecordSignInPromoImpression,
+          base::Unretained(this)));
 }
 
 void ProfilePickerHandler::OnJavascriptAllowed() {
@@ -452,6 +457,12 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
               // browser window if the Profile is not locked. Hence there is no
               // extension blocked.
       profile, Profile::CREATE_STATUS_INITIALIZED);
+}
+
+void ProfilePickerHandler::HandleRecordSignInPromoImpression(
+    const base::ListValue* /*args*/) {
+  signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
 }
 
 void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {

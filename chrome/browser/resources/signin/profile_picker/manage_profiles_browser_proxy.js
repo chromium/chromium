@@ -129,6 +129,9 @@ export class ManageProfilesBrowserProxy {
    * @param {string} profileName
    */
   setProfileName(profilePath, profileName) {}
+
+  /** Records impression of a sign-in promo to metrics. */
+  recordSignInPromoImpression() {}
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -194,6 +197,11 @@ export class ManageProfilesBrowserProxyImpl {
   /** @override */
   setProfileName(profilePath, profileName) {
     chrome.send('setProfileName', [profilePath, profileName]);
+  }
+
+  /** @override */
+  recordSignInPromoImpression() {
+    chrome.send('recordSignInPromoImpression');
   }
 }
 

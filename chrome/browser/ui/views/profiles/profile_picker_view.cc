@@ -464,11 +464,6 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // browser crashes before finishing the flow.
   entry->SetIsEphemeral(true);
 
-  // TODO(crbug.com/1126913): Record also that we show the sign-in promo
-  // (it has to be plumbed from js to profile_picker_handler.cc):
-  //   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-  //       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
-
   // Record that the sign in process starts (its end is recorded automatically
   // by the instance of DiceTurnSyncOnHelper constructed later on).
   signin_metrics::RecordSigninUserActionForAccessPoint(
