@@ -281,16 +281,11 @@ void SyncAuthManager::ConnectionClosed() {
 
 void SyncAuthManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
-      FALLTHROUGH;
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      UpdateSyncAccountIfNecessary();
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
   }
+  UpdateSyncAccountIfNecessary();
 }
 
 void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
@@ -402,11 +397,6 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
     // let's treat it as account state change.
     account_state_changed_callback_.Run();
   }
-}
-
-void SyncAuthManager::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  UpdateSyncAccountIfNecessary();
 }
 
 bool SyncAuthManager::IsRetryingAccessTokenFetchForTest() const {

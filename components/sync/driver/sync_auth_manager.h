@@ -112,8 +112,6 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
 
   // Test-only methods for inspecting/modifying internal state.
   bool IsRetryingAccessTokenFetchForTest() const;
