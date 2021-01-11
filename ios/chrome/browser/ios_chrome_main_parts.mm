@@ -79,12 +79,6 @@
 
 namespace {
 
-// If enabled local state file will have NSURLFileProtectionNone protection
-// level set for NSURLFileProtectionKey key. The purpose of this feature is to
-// understand if file protection interferes with "clean exit beacon" pref.
-const base::Feature kRemoveProtectionFromPrefFile{
-    "RemoveProtectionFromPrefFile", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Sets |level| value for NSURLFileProtectionKey key for the URL with given
 // |local_state_path|.
 void SetProtectionLevel(const base::FilePath& file_path, id level) {
@@ -213,15 +207,11 @@ void IOSChromeMainParts::PreCreateThreads() {
   metrics::EnableExpiryChecker(::kExpiredHistogramsHashes,
                                ::kNumExpiredHistograms);
 
+  // TODO(crbug.com/1164533): Remove code below some time after February 2021.
   NSString* const kRemoveProtectionFromPrefFileKey =
       @"RemoveProtectionFromPrefKey";
-  if (base::FeatureList::IsEnabled(kRemoveProtectionFromPrefFile)) {
-    SetProtectionLevel(local_state_path, NSURLFileProtectionNone);
-    [NSUserDefaults.standardUserDefaults
-        setBool:YES
-         forKey:kRemoveProtectionFromPrefFileKey];
-  } else if ([NSUserDefaults.standardUserDefaults
-                 boolForKey:kRemoveProtectionFromPrefFileKey]) {
+  if ([NSUserDefaults.standardUserDefaults
+          boolForKey:kRemoveProtectionFromPrefFileKey]) {
     // Restore default protection level when user is no longer in the
     // experimental group.
     SetProtectionLevel(local_state_path,
