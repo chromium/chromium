@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
+#include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/combobox_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -67,14 +68,17 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
   }
 
   void CreateTestLabInfo() {
-    test_feature_info_.emplace_back(LabInfo(
-        kFirstTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16("")));
+    test_feature_info_.emplace_back(
+        LabInfo(kFirstTestFeatureId, base::ASCIIToUTF16(""),
+                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
 
-    test_feature_info_.emplace_back(LabInfo(
-        kSecondTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16("")));
+    test_feature_info_.emplace_back(
+        LabInfo(kSecondTestFeatureId, base::ASCIIToUTF16(""),
+                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
 
-    test_feature_info_.emplace_back(LabInfo(
-        kThirdTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16("")));
+    test_feature_info_.emplace_back(
+        LabInfo(kThirdTestFeatureId, base::ASCIIToUTF16(""),
+                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
   }
 
   const std::vector<LabInfo>& GetTestLabInfo() { return test_feature_info_; }

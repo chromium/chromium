@@ -10,9 +10,11 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
@@ -179,7 +181,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);
-    if (IsFeatureSupportedOnPlatform(entry)) {
+    if (IsFeatureSupportedOnChannel(lab) &&
+        IsFeatureSupportedOnPlatform(entry)) {
       DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
       int default_index = GetIndexOfEnabledLabState(entry);
       menu_item_container_->AddChildView(
@@ -233,6 +236,10 @@ int ChromeLabsBubbleView::GetIndexOfEnabledLabState(
       return i;
   }
   return 0;
+}
+
+bool ChromeLabsBubbleView::IsFeatureSupportedOnChannel(const LabInfo& lab) {
+  return chrome::GetChannel() <= lab.allowed_channel;
 }
 
 // TODO(elainechien): ChromeOS specific logic for owner access only flags.

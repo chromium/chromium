@@ -7,21 +7,26 @@
 
 #include <vector>
 #include "base/strings/string16.h"
+#include "components/version_info/channel.h"
 
 // Currently there are differences in both visible name and visible description
 // between about_flags and what we want for Chrome Labs. We are coordinating to
-// match these. LabInfo struct can be removed after that.
+// match these. Visible name and visible description can be removed from this
+// struct after that.
 struct LabInfo {
   LabInfo(const std::string& internal_name,
           const base::string16& visible_name,
-          const base::string16& visible_description)
-      : internal_name(internal_name),
-        visible_name(visible_name),
-        visible_description(visible_description) {}
-
+          const base::string16& visible_description,
+          version_info::Channel allowed_channel);
+  LabInfo(const LabInfo& other);
+  ~LabInfo();
   std::string internal_name;
   base::string16 visible_name;
   base::string16 visible_description;
+  // Channels that are less stable than allowed_channel will also be
+  // considered allowed. ex) if BETA is specified, this feature will also be
+  // shown on CANARY and DEV.
+  version_info::Channel allowed_channel;
 };
 
 class ChromeLabsBubbleViewModel {

@@ -6,6 +6,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/flag_descriptions.h"
 
+LabInfo::LabInfo(const std::string& internal_name,
+                 const base::string16& visible_name,
+                 const base::string16& visible_description,
+                 version_info::Channel allowed_channel)
+    : internal_name(internal_name),
+      visible_name(visible_name),
+      visible_description(visible_description),
+      allowed_channel(allowed_channel) {}
+
+LabInfo::LabInfo(const LabInfo& other) = default;
+
+LabInfo::~LabInfo() = default;
+
 ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() {
   SetUpLabs();
 }
@@ -31,16 +44,18 @@ void ChromeLabsBubbleViewModel::SetUpLabs() {
   // Read Later.
   lab_info_.emplace_back(LabInfo(
       flag_descriptions::kReadLaterFlagId, base::ASCIIToUTF16("Reading List"),
-      base::ASCIIToUTF16(
-          "Right click on a tab or click the star to add tabs to a reading "
-          "list. Access from the Bookmarks bar.")));
+      base::ASCIIToUTF16("Right click on a tab or click the Bookmark icon to "
+                         "add tabs to a reading "
+                         "list. Access from the Bookmarks bar."),
+      version_info::Channel::BETA));
 
   // Tab Search.
   lab_info_.emplace_back(
       LabInfo(flag_descriptions::kEnableTabSearchFlagId,
               base::ASCIIToUTF16("Tab Search"),
               base::ASCIIToUTF16("Enable a popup bubble in Top Chrome UI to "
-                                 "search over currently open tabs.")));
+                                 "search over currently open tabs."),
+              version_info::Channel::BETA));
 }
 
 void ChromeLabsBubbleViewModel::SetLabInfoForTesting(
