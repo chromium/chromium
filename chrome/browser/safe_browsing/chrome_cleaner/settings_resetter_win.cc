@@ -85,11 +85,11 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
   friend class base::RefCounted<SettingsResetter>;
 
   // Resets settings for |profile| according to default values given by
-  // |master_settings|. Used as a callback for
+  // |main_settings|. Used as a callback for
   // DefaultSettingsFetcher::FetchDefaultSettings().
   void OnFetchCompleted(
       Profile* profile,
-      std::unique_ptr<BrandcodedDefaultSettings> master_settings);
+      std::unique_ptr<BrandcodedDefaultSettings> main_settings);
 
   // Removes the settings reset tag for |profile|. If there are no more
   // profiles to reset, invokes |done_callback_| and deletes this object.
@@ -146,7 +146,7 @@ void SettingsResetter::Run() {
 
 void SettingsResetter::OnFetchCompleted(
     Profile* profile,
-    std::unique_ptr<BrandcodedDefaultSettings> master_settings) {
+    std::unique_ptr<BrandcodedDefaultSettings> main_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static const ProfileResetter::ResettableFlags kSettingsToReset =
@@ -156,7 +156,7 @@ void SettingsResetter::OnFetchCompleted(
 
   profile_resetters_.push_back(delegate_->GetProfileResetter(profile));
   profile_resetters_.back()->Reset(
-      kSettingsToReset, std::move(master_settings),
+      kSettingsToReset, std::move(main_settings),
       base::BindOnce(&SettingsResetter::OnResetCompleted, this, profile));
 }
 
