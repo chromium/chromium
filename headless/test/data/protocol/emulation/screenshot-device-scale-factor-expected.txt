@@ -1,0 +1,4 @@
+Tests screenshot with overridden device scale factor
+requested url: http://example.com/
+Screenshot size: 200 x 200
+rgba @(175,175) 0,0,255,255
