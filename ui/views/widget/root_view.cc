@@ -76,6 +76,7 @@ class AnnounceTextView : public View {
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     node_data->role = ax::mojom::Role::kAlert;
     node_data->SetName(announce_text_);
+    node_data->AddState(ax::mojom::State::kInvisible);
   }
 
  private:
