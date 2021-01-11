@@ -40,7 +40,8 @@ table {
 .line-wrap {
     width: 100%;
     white-space: pre-wrap !important;
-    word-break: break-word;
+    word-break: normal;
+    overflow-wrap: anywhere;
 }
 
 .line-wrap-control {

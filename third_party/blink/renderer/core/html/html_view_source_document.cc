@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -57,8 +58,7 @@ class ViewSourceEventListener : public NativeEventListener {
       : table_(table), checkbox_(checkbox) {}
 
   void Invoke(ExecutionContext*, Event* event) override {
-    DCHECK(DynamicTo<MouseEvent>(event));
-    DCHECK_EQ(event->type(), event_type_names::kClick);
+    DCHECK_EQ(event->type(), event_type_names::kChange);
     table_->setAttribute(html_names::kClassAttr,
                          checkbox_->checked() ? "line-wrap" : "");
   }
@@ -108,28 +108,32 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   line_number_ = 0;
 
   // Create a checkbox to control line wrapping.
-  auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
-  label->setAttribute(html_names::kClassAttr, "line-wrap-control");
   auto* checkbox =
       MakeGarbageCollected<HTMLInputElement>(*this, CreateElementFlags());
   checkbox->setAttribute(html_names::kTypeAttr, "checkbox");
-  label->ParserAppendChild(checkbox);
+  checkbox->addEventListener(
+      event_type_names::kChange,
+      MakeGarbageCollected<ViewSourceEventListener>(table, checkbox),
+      /*use_capture=*/false);
+  auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
   label->ParserAppendChild(
       Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
                               IDS_VIEW_SOURCE_LINE_WRAP))));
+  label->setAttribute(html_names::kClassAttr, "line-wrap-control");
+  label->ParserAppendChild(checkbox);
+  // Add the checkbox to a form with autocomplete=off, to avoid form
+  // restoration from changing the value of the checkbox.
+  auto* form = MakeGarbageCollected<HTMLFormElement>(*this);
+  form->setAttribute(html_names::kAutocompleteAttr, "off");
+  form->ParserAppendChild(label);
   auto* tr = MakeGarbageCollected<HTMLTableRowElement>(*this);
   auto* td =
       MakeGarbageCollected<HTMLTableCellElement>(html_names::kTdTag, *this);
   td->setAttribute(html_names::kColspanAttr, "2");
   td->setAttribute(html_names::kClassAttr, "line-wrap-cell");
-  td->ParserAppendChild(label);
+  td->ParserAppendChild(form);
   tr->ParserAppendChild(td);
   tbody_->ParserAppendChild(tr);
-
-  auto* listener =
-      MakeGarbageCollected<ViewSourceEventListener>(table, checkbox);
-  checkbox->addEventListener(event_type_names::kClick, listener,
-                             /*use_capture=*/false);
 }
 
 void HTMLViewSourceDocument::AddSource(const String& source, HTMLToken& token) {
