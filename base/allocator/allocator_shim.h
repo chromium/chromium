@@ -162,6 +162,8 @@ BASE_EXPORT void InitializeAllocatorShim();
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
+
+BASE_EXPORT void ConfigurePartitionRefCountSupport(bool enable_ref_count);
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN

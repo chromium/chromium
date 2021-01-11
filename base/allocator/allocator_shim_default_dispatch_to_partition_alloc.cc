@@ -6,6 +6,7 @@
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -92,14 +93,19 @@ base::ThreadSafePartitionRoot* Allocator() {
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot({
     base::PartitionOptions::Alignment::kRegular,
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !DISABLE_REF_COUNT_IN_RENDERER
         base::PartitionOptions::ThreadCache::kEnabled,
 #else
         // Other tests, such as the ThreadCache tests create a thread cache, and
         // only one is supported at a time.
+        //
+        // Also, with DISABLE_REF_COUNT_IN_RENDERER, this partition is only
+        // temporary until we determine what type of process we're running in.
+        // Leave the ability to have a thread cache to the main partition.
         base::PartitionOptions::ThreadCache::kDisabled,
 #endif
-        base::PartitionOptions::PCScan::kDisabledByDefault
+        base::PartitionOptions::PCScan::kDisabledByDefault,
+        base::PartitionOptions::RefCount::kEnabled,
   });
   g_root_.store(new_root, std::memory_order_release);
 
@@ -305,6 +311,29 @@ void EnablePartitionAllocMemoryReclaimer() {
       AlignedAllocator());
 }
 
+alignas(base::ThreadSafePartitionRoot) uint8_t
+    g_allocator_buffer_for_ref_count_config[sizeof(
+        base::ThreadSafePartitionRoot)];
+
+void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
+  auto* current_root = g_root_.load(std::memory_order_acquire);
+  // We expect a number of heap allocations to be made before this function is
+  // called, which should force the `g_root` initialization.
+  PA_CHECK(current_root);
+  current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
+                            PartitionPurgeDiscardUnusedSystemPages);
+
+  auto* new_root = new (g_allocator_buffer_for_ref_count_config)
+      base::ThreadSafePartitionRoot({
+          base::PartitionOptions::Alignment::kRegular,
+          base::PartitionOptions::ThreadCache::kEnabled,
+          base::PartitionOptions::PCScan::kDisabledByDefault,
+          enable_ref_count ? base::PartitionOptions::RefCount::kEnabled
+                           : base::PartitionOptions::RefCount::kDisabled,
+      });
+  g_root_.store(new_root, std::memory_order_release);
+}
+
 #if ALLOW_PCSCAN
 void EnablePCScan() {
   Allocator()->EnablePCScan();
@@ -321,7 +350,6 @@ void ConfigurePartitionAlloc() {
 #endif  // defined(ARCH_CPU_X86)
 }
 #endif  // defined(OS_WIN)
-
 }  // namespace allocator
 }  // namespace base
 

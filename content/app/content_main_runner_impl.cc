@@ -17,6 +17,7 @@
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
@@ -255,6 +256,19 @@ void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
           base::features::kPartitionAllocPCScanBrowserOnly)) {
     base::allocator::EnablePCScan();
   }
+#endif
+}
+
+// This function should be executed as early as possible once we can get the
+// command line arguments and determine whether the process needs BRP support.
+// Until that moment, all heap allocations end up in a slower temporary
+// partition with no thread cache and cause heap fragmentation.
+//
+// Furthermore, since the function has to allocate a new partition, it must
+// only run once.
+void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DISABLE_REF_COUNT_IN_RENDERER
+  base::allocator::ConfigurePartitionRefCountSupport(enable_ref_count);
 #endif
 }
 
@@ -497,6 +511,9 @@ int RunZygote(ContentMainDelegate* delegate) {
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
+  // Must run as early as possible. See the definition comment.
+  ConfigurePartitionRefCountSupportIfNeeded(process_type !=
+                                            switches::kRendererProcess);
   ContentClientInitializer::Set(process_type, delegate);
 
   MainFunctionParams main_params(command_line);
@@ -551,6 +568,12 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
     {switches::kRendererProcess, RendererMain},
     {switches::kGpuProcess, GpuMain},
   };
+
+  if (process_type != switches::kZygoteProcess) {
+    // Must run as early as possible. See the definition comment.
+    ConfigurePartitionRefCountSupportIfNeeded(process_type !=
+                                              switches::kRendererProcess);
+  }
 
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name) {
@@ -911,6 +934,9 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
                        TRACE_EVENT_SCOPE_THREAD);
   if (is_browser_main_loop_started_)
     return -1;
+
+  // Must run as early as possible. See the definition comment.
+  ConfigurePartitionRefCountSupportIfNeeded(/* enable_ref_count = */ true);
 
   bool should_start_minimal_browser = start_minimal_browser;
   if (!mojo_ipc_support_) {
