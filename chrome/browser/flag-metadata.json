@@ -1067,7 +1067,7 @@
   },
   {
     "name": "dynamic-color-gamut",
-    "owners": [ "cblume", "khushalsagar", "ccameron" ],
+    "owners": [ "cblume", "ccameron" ],
     "expiry_milestone": 90
   },
   {
@@ -1760,7 +1760,7 @@
   },
   {
     "name": "enable-image-reader",
-    "owners": [ "vikassoni", "khushalsagar" ],
+    "owners": [ "vikassoni", "liberato" ],
     "expiry_milestone": 90
   },
   {
@@ -1993,12 +1993,12 @@
   },
   {
     "name": "enable-oop-rasterization",
-    "owners": [ "enne", "khushalsagar" ],
+    "owners": [ "sunnyps", "vasilyt" ],
     "expiry_milestone": 86
   },
   {
     "name": "enable-oop-rasterization-ddl",
-    "owners": [ "robertphillips", "khushalsagar" ],
+    "owners": [ "robertphillips", "penghuang" ],
     "expiry_milestone": 87
   },
   {
@@ -2242,7 +2242,7 @@
   },
   {
     "name": "enable-surface-control",
-    "owners": [ "vikassoni", "khushalsagar" ],
+    "owners": [ "vikassoni", "vasilyt" ],
     "expiry_milestone": 90
   },
   {
