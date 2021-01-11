@@ -288,6 +288,52 @@ class FrameSchedulerImplTest : public testing::Test {
     }
   }
 
+  // Helper for posting several tasks to specific queues. |task_descriptor| is a
+  // string with space delimited task identifiers. The first letter of each task
+  // identifier specifies the task queue:
+  // - 'L': Loading task queue
+  // - 'T': Throttleable task queue
+  // - 'P': Pausable task queue
+  // - 'U': Unpausable task queue
+  // - 'D': Deferrable task queue
+  void PostTestTasksToQueuesWithTrait(Vector<String>* run_order,
+                                      const String& task_descriptor) {
+    std::istringstream stream(task_descriptor.Utf8());
+    while (!stream.eof()) {
+      std::string task;
+      stream >> task;
+      switch (task[0]) {
+        case 'L':
+          LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                        String::FromUTF8(task)));
+          break;
+        case 'T':
+          ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                        String::FromUTF8(task)));
+          break;
+        case 'P':
+          PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                        String::FromUTF8(task)));
+          break;
+        case 'U':
+          UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                        String::FromUTF8(task)));
+          break;
+        case 'D':
+          DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                        String::FromUTF8(task)));
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+  }
+
   static void ResetForNavigation(FrameSchedulerImpl* frame_scheduler) {
     frame_scheduler->ResetForNavigation();
   }
@@ -487,10 +533,6 @@ class MockLifecycleObserver final : public FrameScheduler::Observer {
 
 void IncrementCounter(int* counter) {
   ++*counter;
-}
-
-void RecordQueueName(String name, Vector<String>* tasks) {
-  tasks->push_back(std::move(name));
 }
 
 // Simulate running a task of a particular length by fast forwarding the task
@@ -963,27 +1005,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
 
 TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
   Vector<String> tasks;
-  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     ThrottleableTaskQueue()->GetTaskQueue()->GetName(),
-                     &tasks));
-  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     DeferrableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     PausableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     UnpausableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
+  PostTestTasksToQueuesWithTrait(&tasks, "L1 T1 D1 P1 U1");
 
   page_scheduler_->SetKeepActive(true);  // say we have a Service Worker
   page_scheduler_->SetPageVisible(false);
@@ -992,30 +1014,19 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
   EXPECT_THAT(tasks, UnorderedElementsAre());
   base::RunLoop().RunUntilIdle();
   // Everything runs except throttleable tasks (timers)
-  EXPECT_THAT(tasks,
-              UnorderedElementsAre(
-                  String(LoadingTaskQueue()->GetTaskQueue()->GetName()),
-                  String(DeferrableTaskQueue()->GetTaskQueue()->GetName()),
-                  String(PausableTaskQueue()->GetTaskQueue()->GetName()),
-                  String(UnpausableTaskQueue()->GetTaskQueue()->GetName())));
+  EXPECT_THAT(tasks, UnorderedElementsAre("L1", "D1", "P1", "U1"));
 
   tasks.clear();
-  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
+  PostTestTasksToQueuesWithTrait(&tasks, "L1");
 
   EXPECT_THAT(tasks, UnorderedElementsAre());
   base::RunLoop().RunUntilIdle();
   // loading task runs
-  EXPECT_THAT(tasks, UnorderedElementsAre(String(
-                         LoadingTaskQueue()->GetTaskQueue()->GetName())));
+  EXPECT_THAT(tasks, UnorderedElementsAre("L1"));
 
   tasks.clear();
-  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordQueueName,
-                     LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
+  PostTestTasksToQueuesWithTrait(&tasks, "L1");
+
   // KeepActive is false when Service Worker stops.
   page_scheduler_->SetKeepActive(false);
   EXPECT_THAT(tasks, UnorderedElementsAre());
@@ -1027,8 +1038,7 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
   EXPECT_THAT(tasks, UnorderedElementsAre());
   base::RunLoop().RunUntilIdle();
   // loading task runs
-  EXPECT_THAT(tasks, UnorderedElementsAre(String(
-                         LoadingTaskQueue()->GetTaskQueue()->GetName())));
+  EXPECT_THAT(tasks, UnorderedElementsAre("L1"));
 }
 
 class FrameSchedulerImplTestWithUnfreezableLoading
