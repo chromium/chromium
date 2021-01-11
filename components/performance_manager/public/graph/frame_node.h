@@ -59,6 +59,7 @@ class FrameNode : public Node {
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
   using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
+  using WorkerNodeVisitor = base::RepeatingCallback<bool(const WorkerNode*)>;
 
   class ObserverDefaultImpl;
 
@@ -166,6 +167,16 @@ class FrameNode : public Node {
   // this frame's network requests.
   virtual const base::flat_set<const WorkerNode*> GetChildWorkerNodes()
       const = 0;
+
+  // Visits the child dedicated workers of this frame. The iteration is halted
+  // if the visitor returns false. Returns true if every call to the visitor
+  // returned true, false otherwise.
+  //
+  // The reason why we don't have a generic VisitChildWorkers method is that
+  // a service/shared worker may appear as a child of multiple other nodes
+  // and thus may be visited multiple times.
+  virtual bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const = 0;
 
   // Returns the current priority of the frame, and the reason for the frame
   // having that particular priority.

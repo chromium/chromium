@@ -132,6 +132,8 @@ struct RandomBitGenerator {
 WTF::String ConvertScope(WebMemoryAttribution::Scope scope) {
   using Scope = WebMemoryAttribution::Scope;
   switch (scope) {
+    case Scope::kDedicatedWorker:
+      return "DedicatedWorker";
     case Scope::kWindow:
       return "Window";
     case Scope::kCrossOriginAggregated:

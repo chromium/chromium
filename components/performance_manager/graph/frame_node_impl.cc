@@ -491,6 +491,18 @@ const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
   return children;
 }
 
+bool FrameNodeImpl::VisitChildDedicatedWorkers(
+    const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto* worker_node_impl : child_worker_nodes()) {
+    const WorkerNode* node = worker_node_impl;
+    if (node->GetWorkerType() == WorkerNode::WorkerType::kDedicated &&
+        !visitor.Run(node))
+      return false;
+  }
+  return true;
+}
+
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority_and_reason();

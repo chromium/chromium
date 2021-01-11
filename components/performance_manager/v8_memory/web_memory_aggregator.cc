@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "url/gurl.h"
@@ -34,6 +35,13 @@ bool ShouldFollowOpenerLink(const PageNode* page_node) {
 url::Origin GetOrigin(const FrameNode* frame_node) {
   return url::Origin::Create(frame_node->GetURL());
 }
+
+#if DCHECK_IS_ON()
+// Returns |worker_node|'s origin based on its current url.
+url::Origin GetOrigin(const WorkerNode* worker_node) {
+  return url::Origin::Create(worker_node->GetURL());
+}
+#endif
 
 // Returns the parent of |frame_node|, the opener if it has no parent, or
 // nullptr if it has neither.
@@ -69,6 +77,22 @@ const mojom::WebMemoryAttribution* GetAttributionFromBreakdown(
       const_cast<mojom::WebMemoryBreakdownEntry*>(breakdown);
   auto* mutable_attribution = GetAttributionFromBreakdown(mutable_breakdown);
   return const_cast<mojom::WebMemoryAttribution*>(mutable_attribution);
+}
+
+void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
+                    const V8DetailedMemoryExecutionContextData* data,
+                    bool is_same_process) {
+  if (!data) {
+    return;
+  }
+  if (!aggregation_point->memory) {
+    aggregation_point->memory = mojom::WebMemoryUsage::New();
+  }
+  // Ensure this frame is actually in the same process as the requesting
+  // frame. If not it should be considered to have 0 bytes.
+  // (https://github.com/WICG/performance-measure-memory/issues/20).
+  uint64_t bytes_used = is_same_process ? data->v8_bytes_used() : 0;
+  aggregation_point->memory->bytes += bytes_used;
 }
 
 }  // anonymous namespace
@@ -136,6 +160,48 @@ WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
   return NodeAggregationType::kCrossOriginAggregated;
 }
 
+WebMemoryAggregator::NodeAggregationType
+WebMemoryAggregator::FindNodeAggregationType(const WorkerNode* worker_node,
+                                             NodeAggregationType parent_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(1085129): Support service and shared workers.
+  DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
+  // A dedicated worker is guaranteed to have the same origin as its parent,
+  // which means that a dedicated worker cannot be a cross-origin aggregation
+  // point.
+#if DCHECK_IS_ON()
+  // TODO(1085129): The URL of a worker node is currently not available without
+  // PlzDedicatedWorker, which is disabled by default. Remove this guard once
+  // the URL is properly propagated to PM.
+  if (!worker_node->GetURL().is_empty()) {
+    auto worker_origin = GetOrigin(worker_node);
+    auto client_frames = worker_node->GetClientFrames();
+    DCHECK(std::all_of(client_frames.begin(), client_frames.end(),
+                       [worker_origin](const FrameNode* client) {
+                         return worker_origin.IsSameOriginWith(
+                             GetOrigin(client));
+                       }));
+    auto client_workers = worker_node->GetClientWorkers();
+    DCHECK(std::all_of(client_workers.begin(), client_workers.end(),
+                       [worker_origin](const WorkerNode* client) {
+                         return worker_origin.IsSameOriginWith(
+                             GetOrigin(client));
+                       }));
+  }
+#endif
+  switch (parent_type) {
+    case NodeAggregationType::kCrossOriginAggregationPoint:
+      return NodeAggregationType::kCrossOriginAggregated;
+    case NodeAggregationType::kCrossOriginAggregated:
+    case NodeAggregationType::kSameOriginAggregationPoint:
+      return parent_type;
+    case NodeAggregationType::kInvisible:
+      // Visitation stops at an invisible node and does not enter its children.
+      NOTREACHED();
+      return NodeAggregationType::kInvisible;
+  }
+}
+
 mojom::WebMemoryMeasurementPtr
 WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,7 +224,8 @@ bool WebMemoryAggregator::VisitFrame(
   // object the describes the breakdown since there is no extra information to
   // store about the aggregation point.
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
-  switch (FindNodeAggregationType(frame_node)) {
+  NodeAggregationType aggregation_type = FindNodeAggregationType(frame_node);
+  switch (aggregation_type) {
     case NodeAggregationType::kInvisible:
       // Ignore this node, continue iterating its siblings.
       return true;
@@ -212,21 +279,10 @@ bool WebMemoryAggregator::VisitFrame(
 
   // Now update the memory used in the chosen aggregation point.
   DCHECK(aggregation_point);
-  if (auto* frame_data =
-          V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node)) {
-    if (!aggregation_point->memory) {
-      aggregation_point->memory = mojom::WebMemoryUsage::New();
-    }
-
-    // Ensure this frame is actually in the same process as the requesting
-    // frame. If not it should be considered to have 0 bytes.
-    // (https://github.com/WICG/performance-measure-memory/issues/20).
-    uint64_t bytes_used = (frame_node->GetProcessNode() ==
-                           aggregation_start_node_->GetProcessNode())
-                              ? frame_data->v8_bytes_used()
-                              : 0;
-    aggregation_point->memory->bytes += bytes_used;
-  }
+  AddMemoryBytes(aggregation_point,
+                 V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node),
+                 frame_node->GetProcessNode() ==
+                     aggregation_start_node_->GetProcessNode());
 
   // Recurse into children and opened pages. This node's aggregation point
   // becomes the enclosing aggregation point for those nodes. Unretained is safe
@@ -234,9 +290,80 @@ bool WebMemoryAggregator::VisitFrame(
   frame_node->VisitOpenedPageNodes(
       base::BindRepeating(&WebMemoryAggregator::VisitOpenedPage,
                           base::Unretained(this), aggregation_point));
+  frame_node->VisitChildDedicatedWorkers(base::BindRepeating(
+      &WebMemoryAggregator::VisitWorker, base::Unretained(this),
+      aggregation_point, aggregation_type));
   return frame_node->VisitChildFrameNodes(
       base::BindRepeating(&WebMemoryAggregator::VisitFrame,
                           base::Unretained(this), aggregation_point));
+}
+
+namespace {
+
+AttributionScope AttributionScopeFromWorkerType(
+    WorkerNode::WorkerType worker_type) {
+  switch (worker_type) {
+    case WorkerNode::WorkerType::kDedicated:
+      return AttributionScope::kDedicatedWorker;
+    case WorkerNode::WorkerType::kShared:
+    case WorkerNode::WorkerType::kService:
+      // TODO(1085129): Support service and shared workers.
+      NOTREACHED();
+      return AttributionScope::kDedicatedWorker;
+  }
+}
+
+}  // anonymous namespace
+
+bool WebMemoryAggregator::VisitWorker(
+    mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
+    NodeAggregationType parent_aggregation_type,
+    const WorkerNode* worker_node) {
+  // TODO(1085129): Support service and shared workers.
+  DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(aggregation_result_);
+  // Aggregation starts from a frame node, so the enclosing aggregation point
+  // is guaranteed to exist.
+  DCHECK(enclosing_aggregation_point);
+  DCHECK(worker_node);
+
+  mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
+  NodeAggregationType aggregation_type =
+      FindNodeAggregationType(worker_node, parent_aggregation_type);
+  switch (aggregation_type) {
+    case NodeAggregationType::kSameOriginAggregationPoint:
+      // Create a new aggregation point with window scope. Since this node is
+      // same-origin to the start node, the start node can view its current
+      // url.
+      aggregation_point = internal::CreateBreakdownEntry(
+          AttributionScopeFromWorkerType(worker_node->GetWorkerType()),
+          worker_node->GetURL().spec(), aggregation_result_.get());
+      internal::CopyBreakdownAttribution(enclosing_aggregation_point,
+                                         aggregation_point);
+      break;
+    case NodeAggregationType::kCrossOriginAggregated:
+      // Update the enclosing aggregation point in-place.
+      aggregation_point = enclosing_aggregation_point;
+      break;
+
+    case NodeAggregationType::kInvisible:
+    case NodeAggregationType::kCrossOriginAggregationPoint:
+      NOTREACHED();
+      return true;
+  }
+
+  // Now update the memory used in the chosen aggregation point.
+  DCHECK(aggregation_point);
+  AddMemoryBytes(
+      aggregation_point,
+      V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node),
+      worker_node->GetProcessNode() ==
+          aggregation_start_node_->GetProcessNode());
+
+  return worker_node->VisitChildDedicatedWorkers(base::BindRepeating(
+      &WebMemoryAggregator::VisitWorker, base::Unretained(this),
+      aggregation_point, aggregation_type));
 }
 
 bool WebMemoryAggregator::VisitOpenedPage(

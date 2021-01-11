@@ -906,6 +906,14 @@ V8DetailedMemoryExecutionContextData::CreateForTesting(const FrameNode* node) {
   return &node_data->data_;
 }
 
+V8DetailedMemoryExecutionContextData*
+V8DetailedMemoryExecutionContextData::CreateForTesting(const WorkerNode* node) {
+  auto* node_data = ExecutionContextAttachedData::GetOrCreate(node);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(node_data->sequence_checker_);
+  node_data->data_available_ = true;
+  return &node_data->data_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // V8DetailedMemoryProcessData
 

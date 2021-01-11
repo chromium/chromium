@@ -16,6 +16,7 @@ namespace performance_manager {
 
 class FrameNode;
 class PageNode;
+class WorkerNode;
 
 namespace v8_memory {
 
@@ -65,6 +66,11 @@ class WebMemoryAggregator {
   // |frame_node| by following parent/child or opener links. This will always
   // be true if |frame_node| comes from a call to VisitFrame.
   NodeAggregationType FindNodeAggregationType(const FrameNode* frame_node);
+  // Returns the aggregation type of a dedicated worker node based on its
+  // parent's aggregation type.
+  NodeAggregationType FindNodeAggregationType(
+      const WorkerNode* worker_node,
+      NodeAggregationType parent_aggregation_type);
 
   // Performs the aggregation.
   mojom::WebMemoryMeasurementPtr AggregateMeasureMemoryResult();
@@ -76,6 +82,15 @@ class WebMemoryAggregator {
   // continue traversal.
   bool VisitFrame(mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
                   const FrameNode* frame_node);
+
+  // WorkerNodeVisitor that recursively adds |worker_node| and its children to
+  // the aggregation. |enclosing_aggregation_point| is the aggregation point
+  // that |worker_node|'s parent is in. Similarly |enclosing_aggregation_type|
+  // is the aggregation type of the parent.
+  // Always returns true to continue traversal.
+  bool VisitWorker(mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
+                   NodeAggregationType enclosing_aggregation_type,
+                   const WorkerNode* worker_node);
 
   // PageNodeVisitor that recursively adds |page_node|'s main frames and their
   // children to the aggregation. |enclosing_aggregation_point| is the

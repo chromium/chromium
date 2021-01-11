@@ -585,6 +585,60 @@ TEST_F(WebMemoryAggregatorTest, AggregateProvisionalWindowOpener) {
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
 }
 
+TEST_F(WebMemoryAggregatorTest, AggregateSameOriginWorker) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+  FrameNodeImpl* child_frame = AddFrameNode("https://example.com/iframe.html",
+                                            Bytes{5}, main_frame, "example-id");
+  WorkerNodeImpl* worker1 =
+      AddWorkerNode(WorkerNode::WorkerType::kDedicated,
+                    "https://example.com/worker1", Bytes{20}, child_frame);
+  WorkerNodeImpl* worker2 =
+      AddWorkerNode(WorkerNode::WorkerType::kDedicated,
+                    "https://example.com/worker2", Bytes{40}, worker1);
+
+  WebMemoryAggregator aggregator(main_frame);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(5, AttributionScope::kWindow,
+                              "https://example.com/iframe.html", "example-id"),
+      ExpectedMemoryBreakdown(20, AttributionScope::kDedicatedWorker,
+                              "https://example.com/worker1", "example-id"),
+      ExpectedMemoryBreakdown(40, AttributionScope::kDedicatedWorker,
+                              "https://example.com/worker2", "example-id"),
+  });
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  worker2->RemoveClientWorker(worker1);
+  worker1->RemoveClientFrame(child_frame);
+}
+
+TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginWorker) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+  FrameNodeImpl* child_frame = AddFrameNode("https://foo.com/iframe.html",
+                                            Bytes{5}, main_frame, "example-id");
+  WorkerNodeImpl* worker1 =
+      AddWorkerNode(WorkerNode::WorkerType::kDedicated,
+                    "https://foo.com/worker1", Bytes{20}, child_frame);
+  WorkerNodeImpl* worker2 =
+      AddWorkerNode(WorkerNode::WorkerType::kDedicated,
+                    "https://foo.com/worker2", Bytes{40}, worker1);
+
+  WebMemoryAggregator aggregator(main_frame);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(65, AttributionScope::kCrossOriginAggregated,
+                              base::nullopt, "example-id"),
+  });
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  worker2->RemoveClientWorker(worker1);
+  worker1->RemoveClientFrame(child_frame);
+}
+
 }  // namespace
 
 }  // namespace v8_memory

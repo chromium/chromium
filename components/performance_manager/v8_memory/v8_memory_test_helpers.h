@@ -291,6 +291,16 @@ class WebMemoryTestHarness : public GraphTestHarness {
                             id_attribute, src_attribute);
   }
 
+  WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
+                                std::string url,
+                                Bytes bytes,
+                                FrameNodeImpl* parent);
+
+  WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
+                                std::string url,
+                                Bytes bytes,
+                                WorkerNodeImpl* parent);
+
   ProcessNode* process_node() const { return process_.get(); }
 
  private:
@@ -305,11 +315,15 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                   ProcessNodeImpl* process,
                                   base::Optional<std::string> id_attribute,
                                   base::Optional<std::string> src_attribute);
+  WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
+                                    std::string url,
+                                    Bytes bytes);
   int GetNextUniqueId();
   TestNodeWrapper<ProcessNodeImpl> process_;
   TestNodeWrapper<ProcessNodeImpl> other_process_;
   std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
   std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+  std::vector<TestNodeWrapper<WorkerNodeImpl>> workers_;
   int next_unique_id_ = 0;
 };
 

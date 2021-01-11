@@ -97,6 +97,7 @@ class WorkerNodeImpl
   const base::flat_set<const FrameNode*> GetClientFrames() const override;
   const base::flat_set<const WorkerNode*> GetClientWorkers() const override;
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
+  bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.

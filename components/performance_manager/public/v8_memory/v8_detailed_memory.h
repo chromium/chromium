@@ -309,9 +309,10 @@ class V8DetailedMemoryExecutionContextData {
  private:
   friend class WebMemoryTestHarness;
 
-  // Creates frame data for the given node.
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const FrameNode* node);
+  static V8DetailedMemoryExecutionContextData* CreateForTesting(
+      const WorkerNode* node);
 
   uint64_t v8_bytes_used_ = 0;
 };

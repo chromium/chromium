@@ -197,6 +197,8 @@ class FrameNodeImpl
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
+  bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool IsAudible() const override;

@@ -48,6 +48,8 @@ using execution_context_priority::PriorityAndReason;
 // or a service worker is registered to handle their network requests.
 class WorkerNode : public Node {
  public:
+  using WorkerNodeVisitor = base::RepeatingCallback<bool(const WorkerNode*)>;
+
   // The different possible worker types.
   enum class WorkerType {
     kDedicated,
@@ -96,6 +98,16 @@ class WorkerNode : public Node {
   // - A service worker will become a child worker of every worker for which
   //   it handles network requests.
   virtual const base::flat_set<const WorkerNode*> GetChildWorkers() const = 0;
+
+  // Visits the child dedicated workers of this frame. The iteration is halted
+  // if the visitor returns false. Returns true if every call to the visitor
+  // returned true, false otherwise.
+  //
+  // The reason why we don't have a generic VisitChildWorkers method is that
+  // a service/shared worker may appear as a child of multiple other nodes
+  // and thus may be visited multiple times.
+  virtual bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const = 0;
 
   // Returns the current priority of the worker, and the reason for the worker
   // having that particular priority.
