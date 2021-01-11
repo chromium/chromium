@@ -52,8 +52,6 @@ void* AsyncId(AsyncTaskId* task) {
 void AsyncTaskCanceled(v8::Isolate* isolate, AsyncTaskId* task) {
   if (ThreadDebugger* debugger = ThreadDebugger::From(isolate))
     debugger->AsyncTaskCanceled(AsyncId(task));
-  TRACE_EVENT_FLOW_END0("devtools.timeline.async", "AsyncTask",
-                        TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)));
 }
 
 }  // namespace
@@ -94,14 +92,6 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                         ctx.event()->add_flow_ids(task->GetTraceId().value());
                       });
   }
-  if (recurring_) {
-    TRACE_EVENT_FLOW_STEP0("devtools.timeline.async", "AsyncTask",
-                           TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
-                           step ? step : "");
-  } else {
-    TRACE_EVENT_FLOW_END0("devtools.timeline.async", "AsyncTask",
-                          TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)));
-  }
   if (debugger_)
     debugger_->AsyncTaskStarted(AsyncId(task_));
 
@@ -127,9 +117,6 @@ AsyncTask::~AsyncTask() {
 void AsyncTaskScheduled(ExecutionContext* context,
                         const StringView& name,
                         AsyncTaskId* task) {
-  TRACE_EVENT_FLOW_BEGIN1("devtools.timeline.async", "AsyncTask",
-                          TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
-                          "data", inspector_async_task::Data(name));
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   task->SetTraceId(trace_id);
   TRACE_EVENT("blink", "AsyncTask Scheduled", [&](perfetto::EventContext ctx) {
