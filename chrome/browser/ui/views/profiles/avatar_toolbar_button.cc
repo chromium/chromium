@@ -193,7 +193,7 @@ void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
 }
 
 bool AvatarToolbarButton::IsParentHighlighted() const {
-  return parent_ && parent_->IsHighlighted();
+  return parent_ && parent_->GetHighlighted();
 }
 
 void AvatarToolbarButton::AddObserver(Observer* observer) {

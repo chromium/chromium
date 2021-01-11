@@ -41,6 +41,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -172,10 +173,6 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   SetHighlight(text, color);
 }
 
-const char* BrowserAppMenuButton::GetClassName() const {
-  return "BrowserAppMenuButton";
-}
-
 bool BrowserAppMenuButton::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
@@ -231,3 +228,6 @@ void BrowserAppMenuButton::OnTouchUiChanged() {
   UpdateColorsAndInsets();
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(BrowserAppMenuButton, AppMenuButton)
+END_METADATA

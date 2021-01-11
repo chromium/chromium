@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -31,6 +30,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
 
@@ -77,6 +77,8 @@ class ToolbarView : public views::AccessiblePaneView,
                     public ToolbarButtonProvider,
                     public BrowserRootView::DropTarget {
  public:
+  METADATA_HEADER(ToolbarView);
+
   // Types of display mode this toolbar can have.
   enum class DisplayMode {
     NORMAL,     // Normal toolbar with buttons, etc.
@@ -86,10 +88,9 @@ class ToolbarView : public views::AccessiblePaneView,
                 // needs to be displayed.
   };
 
-  // The view class name.
-  static const char kViewClassName[];
-
-  explicit ToolbarView(Browser* browser, BrowserView* browser_view);
+  ToolbarView(Browser* browser, BrowserView* browser_view);
+  ToolbarView(const ToolbarView&) = delete;
+  ToolbarView& operator=(const ToolbarView&) = delete;
   ~ToolbarView() override;
 
   // Create the contents of the Browser Toolbar.
@@ -118,7 +119,7 @@ class ToolbarView : public views::AccessiblePaneView,
   void SetPaneFocusAndFocusAppMenu();
 
   // Returns true if the app menu is focused.
-  bool IsAppMenuFocused();
+  bool GetAppMenuFocused() const;
 
   void ShowIntentPickerBubble(
       std::vector<IntentPickerBubbleView::AppInfo> app_info,
@@ -188,7 +189,6 @@ class ToolbarView : public views::AccessiblePaneView,
   gfx::Size GetMinimumSize() const override;
   void Layout() override;
   void OnThemeChanged() override;
-  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
@@ -297,8 +297,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Whether this toolbar has been initialized.
   bool initialized_ = false;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ToolbarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_

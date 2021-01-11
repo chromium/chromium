@@ -37,6 +37,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_constants.h"
 
 using views::LabelButtonBorder;
@@ -50,8 +51,6 @@ bool ToolbarActionView::Delegate::CanShowIconInToolbar() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
-
-const char ToolbarActionView::kClassName[] = "ToolbarActionView";
 
 ToolbarActionView::ToolbarActionView(
     ToolbarActionViewController* view_controller,
@@ -87,10 +86,6 @@ ToolbarActionView::ToolbarActionView(
 
 ToolbarActionView::~ToolbarActionView() {
   view_controller_->SetDelegate(nullptr);
-}
-
-const char* ToolbarActionView::GetClassName() const {
-  return kClassName;
 }
 
 gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {
@@ -320,3 +315,6 @@ void ToolbarActionView::ButtonPressed() {
                                                       ui::MENU_SOURCE_NONE);
   }
 }
+
+BEGIN_METADATA(ToolbarActionView, views::MenuButton)
+END_METADATA

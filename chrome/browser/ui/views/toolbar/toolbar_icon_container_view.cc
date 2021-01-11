@@ -20,12 +20,9 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
-
-// static
-const char ToolbarIconContainerView::kToolbarIconContainerViewClassName[] =
-    "ToolbarIconContainerView";
 
 ToolbarIconContainerView::RoundRectBorder::RoundRectBorder(views::View* parent)
     : parent_(parent) {
@@ -159,20 +156,45 @@ void ToolbarIconContainerView::RemoveObserver(const Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void ToolbarIconContainerView::OverrideIconColor(SkColor color) {
+void ToolbarIconContainerView::SetIconColor(SkColor color) {
+  if (icon_color_ == color)
+    return;
   icon_color_ = color;
   UpdateAllIcons();
+  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
 SkColor ToolbarIconContainerView::GetIconColor() const {
-  if (icon_color_)
-    return icon_color_.value();
-  return GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  return icon_color_.value_or(
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
 }
 
-bool ToolbarIconContainerView::IsHighlighted() {
-  return ShouldDisplayHighlight();
+bool ToolbarIconContainerView::GetHighlighted() const {
+  if (!uses_highlight_)
+    return false;
+
+  if (IsMouseHovered() && (!main_button_ || !main_button_->IsMouseHovered()))
+    return true;
+
+  // Focused, pressed or hovered children should trigger the highlight.
+  for (const views::View* child : children()) {
+    if (child == main_button_)
+      continue;
+    if (child->HasFocus())
+      return true;
+    const views::Button* button = views::Button::AsButton(child);
+    if (!button)
+      continue;
+    if (button->GetState() == views::Button::ButtonState::STATE_PRESSED ||
+        button->GetState() == views::Button::ButtonState::STATE_HOVERED) {
+      return true;
+    }
+    // The container should also be highlighted if a dialog is anchored to.
+    if (base::Contains(highlighted_buttons_, button))
+      return true;
+  }
+
+  return false;
 }
 
 void ToolbarIconContainerView::OnViewFocused(views::View* observed_view) {
@@ -198,42 +220,10 @@ void ToolbarIconContainerView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateHighlight();
 }
 
-const char* ToolbarIconContainerView::GetClassName() const {
-  return kToolbarIconContainerViewClassName;
-}
-
 void ToolbarIconContainerView::AddedToWidget() {
   // Add an observer to reset the animation if the browser window is restored,
   // preventing spurious animation. (See crbug.com/1106506)
   restore_observer_ = std::make_unique<WidgetRestoreObserver>(this);
-}
-
-bool ToolbarIconContainerView::ShouldDisplayHighlight() {
-  if (!uses_highlight_)
-    return false;
-
-  if (IsMouseHovered() && (!main_button_ || !main_button_->IsMouseHovered()))
-    return true;
-
-  // Focused, pressed or hovered children should trigger the highlight.
-  for (views::View* child : children()) {
-    if (child == main_button_)
-      continue;
-    if (child->HasFocus())
-      return true;
-    views::Button* button = views::Button::AsButton(child);
-    if (!button)
-      continue;
-    if (button->GetState() == views::Button::ButtonState::STATE_PRESSED ||
-        button->GetState() == views::Button::ButtonState::STATE_HOVERED) {
-      return true;
-    }
-    // The container should also be highlighted if a dialog is anchored to.
-    if (base::Contains(highlighted_buttons_, button))
-      return true;
-  }
-
-  return false;
 }
 
 void ToolbarIconContainerView::UpdateHighlight() {
@@ -241,7 +231,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
   {
     ui::ScopedLayerAnimationSettings settings(border_.layer()->GetAnimator());
-    border_.layer()->SetOpacity(ShouldDisplayHighlight() ? 1 : 0);
+    border_.layer()->SetOpacity(GetHighlighted() ? 1 : 0);
   }
 
   if (showing_before == (border_.layer()->GetTargetOpacity() == 1))
@@ -259,3 +249,8 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
 
   UpdateHighlight();
 }
+
+BEGIN_METADATA(ToolbarIconContainerView, views::View)
+ADD_PROPERTY_METADATA(SkColor, IconColor)
+ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
+END_METADATA

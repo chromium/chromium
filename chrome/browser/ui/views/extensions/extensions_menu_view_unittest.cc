@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -196,7 +197,7 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
   std::vector<ToolbarActionView*> result;
   for (views::View* child : extensions_container()->children()) {
     // Ensure we don't downcast the ExtensionsToolbarButton.
-    if (child->GetClassName() == ToolbarActionView::kClassName) {
+    if (views::IsViewClass<ToolbarActionView>(child)) {
       ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
 #if defined(OS_MAC)
       // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
@@ -533,7 +534,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   // Since the extension is removed it's no longer visible on the toolbar or in
   // the menu.
   for (views::View* child : extensions_container()->children())
-    EXPECT_NE(ToolbarActionView::kClassName, child->GetClassName());
+    EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
 }
 

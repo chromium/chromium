@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/view_utils.h"
 
 ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest(bool enable_flag) {
   if (enable_flag) {
@@ -80,7 +81,7 @@ std::vector<ToolbarActionView*>
 ExtensionsToolbarBrowserTest::GetToolbarActionViews() const {
   std::vector<ToolbarActionView*> views;
   for (auto* view : GetExtensionsToolbarContainer()->children()) {
-    if (view->GetClassName() == ToolbarActionView::kClassName)
+    if (views::IsViewClass<ToolbarActionView>(view))
       views.push_back(static_cast<ToolbarActionView*>(view));
   }
   return views;

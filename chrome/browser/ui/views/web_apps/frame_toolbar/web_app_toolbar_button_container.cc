@@ -178,7 +178,7 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);
   if (extensions_container_)
-    extensions_container_->OverrideIconColor(foreground_color_);
+    extensions_container_->SetIconColor(foreground_color_);
   page_action_icon_controller_->SetIconColor(foreground_color_);
   if (web_app_menu_button_)
     web_app_menu_button_->SetColor(foreground_color_);

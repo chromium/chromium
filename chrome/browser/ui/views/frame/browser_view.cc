@@ -1549,7 +1549,7 @@ void BrowserView::FocusAppMenu() {
   // location.
   //
   // Not used on the Mac, which has a normal menu bar.
-  if (toolbar_->IsAppMenuFocused()) {
+  if (toolbar_->GetAppMenuFocused()) {
     RestoreFocus();
   } else {
     DCHECK(!immersive_mode_controller_->IsEnabled());

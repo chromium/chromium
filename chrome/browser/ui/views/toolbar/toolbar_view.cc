@@ -83,6 +83,7 @@
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -142,9 +143,6 @@ const base::flat_map<int, int>& GetViewCommandMap() {
 }
 
 }  // namespace
-
-// static
-const char ToolbarView::kViewClassName[] = "ToolbarView";
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, public:
@@ -413,7 +411,7 @@ void ToolbarView::SetPaneFocusAndFocusAppMenu() {
     SetPaneFocus(app_menu_button_);
 }
 
-bool ToolbarView::IsAppMenuFocused() {
+bool ToolbarView::GetAppMenuFocused() const {
   return app_menu_button_ && app_menu_button_->HasFocus();
 }
 
@@ -633,10 +631,6 @@ void ToolbarView::OnThemeChanged() {
     LoadImages();
 
   SchedulePaint();
-}
-
-const char* ToolbarView::GetClassName() const {
-  return kViewClassName;
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -950,3 +944,7 @@ void ToolbarView::AppMenuButtonPressed(const ui::Event& event) {
                                  ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
                                  : views::MenuRunner::NO_FLAGS);
 }
+
+BEGIN_METADATA(ToolbarView, views::AccessiblePaneView)
+ADD_READONLY_PROPERTY_METADATA(bool, AppMenuFocused)
+END_METADATA

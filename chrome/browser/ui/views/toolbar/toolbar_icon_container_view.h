@@ -12,12 +12,15 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // A general view container for any type of toolbar icons.
 class ToolbarIconContainerView : public views::View,
                                  public views::ViewObserver {
  public:
+  METADATA_HEADER(ToolbarIconContainerView);
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnHighlightChanged() = 0;
@@ -41,16 +44,16 @@ class ToolbarIconContainerView : public views::View,
   void AddObserver(Observer* obs);
   void RemoveObserver(const Observer* obs);
 
-  void OverrideIconColor(SkColor icon_color);
+  void SetIconColor(SkColor icon_color);
   SkColor GetIconColor() const;
 
-  bool IsHighlighted();
+  bool GetHighlighted() const;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  bool uses_highlight() { return uses_highlight_; }
+  bool uses_highlight() const { return uses_highlight_; }
 
   // Provides access to the animating layout manager for subclasses.
   views::AnimatingLayoutManager* animating_layout_manager() {
@@ -67,8 +70,6 @@ class ToolbarIconContainerView : public views::View,
     return static_cast<views::FlexLayout*>(
         animating_layout_manager()->target_layout_manager());
   }
-
-  static const char kToolbarIconContainerViewClassName[];
 
  protected:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -100,10 +101,8 @@ class ToolbarIconContainerView : public views::View,
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  const char* GetClassName() const override;
   void AddedToWidget() override;
 
-  bool ShouldDisplayHighlight();
   void UpdateHighlight();
 
   // Called by |button| when its ink drop highlighted state changes.
@@ -123,7 +122,7 @@ class ToolbarIconContainerView : public views::View,
   // Points to the child buttons that we know are currently highlighted.
   // TODO(pbos): Consider observing buttons leaving our hierarchy and removing
   // them from this set.
-  std::set<views::Button*> highlighted_buttons_;
+  std::set<const views::Button*> highlighted_buttons_;
 
   RoundRectBorder border_{this};
 

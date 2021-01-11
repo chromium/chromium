@@ -98,7 +98,10 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
   }
 
   bool IsFocusedViewInsideBrowserToolbar() {
-    return IsFocusedViewInsideViewClass(ToolbarView::kViewClassName);
+    return IsFocusedViewInsideViewClass(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->GetClassName());
   }
 
   bool IsFocusedViewOnActionButtonInSadTab() {
