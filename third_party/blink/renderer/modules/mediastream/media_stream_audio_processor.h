@@ -122,7 +122,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
                            TestAgcEnableHybridAgc);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
-                           TestAgcEnableHybridAgcAvx2NotAllowed);
+                           TestAgcEnableHybridAgcSimdNotAllowed);
 
   // WebRtcPlayoutDataSource::Sink implementation.
   void OnPlayoutData(media::AudioBus* audio_bus,

@@ -613,8 +613,12 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
       agc2_properties->max_output_noise_level_dbfs =
           base::GetFieldTrialParamByFeatureAsInt(
               features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -50);
+      agc2_properties->sse2_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          features::kWebRtcHybridAgc, "sse2_allowed", true);
       agc2_properties->avx2_allowed = base::GetFieldTrialParamByFeatureAsBool(
           features::kWebRtcHybridAgc, "avx2_allowed", true);
+      agc2_properties->neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          features::kWebRtcHybridAgc, "neon_allowed", true);
     }
     blink::ConfigAutomaticGainControl(
         properties.goog_auto_gain_control,

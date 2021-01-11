@@ -434,7 +434,9 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
        {"gain_applier_speech_frames_threshold", "5"},
        {"max_gain_change_db_per_second", "4"},
        {"max_output_noise_level_dbfs", "-22"},
-       {"avx2_allowed", "true"}});
+       {"sse2_allowed", "true"},
+       {"avx2_allowed", "true"},
+       {"neon_allowed", "true"}});
 
   blink::AudioProcessingProperties properties;
   properties.goog_auto_gain_control = true;
@@ -475,13 +477,17 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
   EXPECT_EQ(adaptive_digital.gain_applier_adjacent_speech_frames_threshold, 5);
   EXPECT_FLOAT_EQ(adaptive_digital.max_gain_change_db_per_second, 4);
   EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs, -22);
+  EXPECT_TRUE(adaptive_digital.sse2_allowed);
   EXPECT_TRUE(adaptive_digital.avx2_allowed);
+  EXPECT_TRUE(adaptive_digital.neon_allowed);
 }
 
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcAvx2NotAllowed) {
+TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"avx2_allowed", "false"}});
+                                                  {{"sse2_allowed", "false"},
+                                                   {"avx2_allowed", "false"},
+                                                   {"neon_allowed", "false"}});
 
   blink::AudioProcessingProperties properties;
   properties.goog_auto_gain_control = true;
@@ -497,7 +503,9 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcAvx2NotAllowed) {
       audio_processor->GetAudioProcessingModuleConfig();
   ASSERT_TRUE(apm_config);
 
+  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.sse2_allowed);
   EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.avx2_allowed);
+  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.neon_allowed);
 }
 
 }  // namespace blink
