@@ -1234,7 +1234,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   bool is_direct_mapped = raw_size > kMaxBucketed;
   if (allow_extras && !is_direct_mapped) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-    new (internal::PartitionRefCountPointer(slot_start))
+    new (internal::PartitionRefCountPointerNoDCheck(slot_start))
         internal::PartitionRefCount();
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   }
