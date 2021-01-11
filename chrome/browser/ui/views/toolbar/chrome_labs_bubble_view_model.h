@@ -32,8 +32,6 @@ struct LabInfo {
 class ChromeLabsBubbleViewModel {
  public:
   ChromeLabsBubbleViewModel();
-  // |lab_info_| will have `lab_info`, and whatever SetUpLabs appends to it.
-  explicit ChromeLabsBubbleViewModel(const std::vector<LabInfo>& lab_info);
   ~ChromeLabsBubbleViewModel();
 
   const std::vector<LabInfo>& GetLabInfo() const;
