@@ -191,7 +191,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // updated in GetDeviceDescriptors() and queried in
   // GetCameraIdFromDeviceId().
   base::Lock device_id_to_camera_id_lock_;
-  std::map<std::string, int> device_id_to_camera_id_;
+  std::map<std::string, int> device_id_to_camera_id_
+      GUARDED_BY(device_id_to_camera_id_lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

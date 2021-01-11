@@ -87,11 +87,10 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   const base::RepeatingCallback<void(const std::string&)> send_log_message_cb_;
   bool has_received_decoded_frame_;
 
-  // Guards |decode_done_closure_| and |decoder_status_|.
-  mutable base::Lock lock_;
-
   // The closure of |decode_done_cb_| with bound parameters.
-  base::OnceClosure decode_done_closure_;
+  mutable base::Lock lock_;
+  STATUS decoder_status_ GUARDED_BY(lock_);
+  base::OnceClosure decode_done_closure_ GUARDED_BY(lock_);
 
   // Next id for input BitstreamBuffer.
   int32_t next_task_id_;
@@ -103,8 +102,6 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   // backed by this.
   base::UnsafeSharedMemoryRegion in_shared_region_;
   base::WritableSharedMemoryMapping in_shared_mapping_;
-
-  STATUS decoder_status_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

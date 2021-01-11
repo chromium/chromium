@@ -25,15 +25,16 @@ VideoCaptureJpegDecoderImpl::VideoCaptureJpegDecoderImpl(
       decode_done_cb_(std::move(decode_done_cb)),
       send_log_message_cb_(std::move(send_log_message_cb)),
       has_received_decoded_frame_(false),
+      decoder_status_(INIT_PENDING),
       next_task_id_(0),
-      task_id_(chromeos_camera::MjpegDecodeAccelerator::kInvalidTaskId),
-      decoder_status_(INIT_PENDING) {}
+      task_id_(chromeos_camera::MjpegDecodeAccelerator::kInvalidTaskId) {}
 
 VideoCaptureJpegDecoderImpl::~VideoCaptureJpegDecoderImpl() {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 }
 
 void VideoCaptureJpegDecoderImpl::Initialize() {
+  base::AutoLock lock(lock_);
   if (!IsVideoCaptureAcceleratedJpegDecodingEnabled()) {
     decoder_status_ = FAILED;
     RecordInitDecodeUMA_Locked();
@@ -236,6 +237,7 @@ bool VideoCaptureJpegDecoderImpl::IsDecoding_Locked() const {
 }
 
 void VideoCaptureJpegDecoderImpl::RecordInitDecodeUMA_Locked() {
+  lock_.AssertAcquired();
   UMA_HISTOGRAM_BOOLEAN("Media.VideoCaptureGpuJpegDecoder.InitDecodeSuccess",
                         decoder_status_ == INIT_PASSED);
 }
