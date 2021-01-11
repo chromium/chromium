@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_COUNTED_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_COUNTED_SET_H_
 
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 
 namespace blink {
@@ -14,11 +16,20 @@ template <typename Value,
           typename HashFunctions = typename DefaultHash<Value>::Hash,
           typename Traits = HashTraits<Value>>
 class HeapHashCountedSet final
-    : public HashCountedSet<Value, HashFunctions, Traits, HeapAllocator> {
-  IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
+    : public GarbageCollected<HeapHashCountedSet<Value, HashFunctions, Traits>>,
+      public HashCountedSet<Value, HashFunctions, Traits, HeapAllocator> {
   DISALLOW_NEW();
 
-  static void CheckType() {
+ public:
+  HeapHashCountedSet() = default;
+
+  void Trace(Visitor* visitor) const {
+    CheckType();
+    HashCountedSet<Value, HashFunctions, Traits, HeapAllocator>::Trace(visitor);
+  }
+
+ private:
+  static constexpr void CheckType() {
     static_assert(WTF::IsMemberOrWeakMemberType<Value>::value,
                   "HeapHashCountedSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapHashCountedSet>::value,
@@ -27,20 +38,7 @@ class HeapHashCountedSet final
                   "For counted sets without traceable elements, use "
                   "HashCountedSet<> instead of HeapHashCountedSet<>.");
   }
-
- public:
-  template <typename>
-  static void* AllocateObject(size_t size) {
-    return ThreadHeap::Allocate<
-        HeapHashCountedSet<Value, HashFunctions, Traits>>(size);
-  }
-
-  HeapHashCountedSet() { CheckType(); }
 };
-
-template <typename T, typename U, typename V>
-struct GCInfoTrait<HeapHashCountedSet<T, U, V>>
-    : public GCInfoTrait<HashCountedSet<T, U, V, HeapAllocator>> {};
 
 }  // namespace blink
 
