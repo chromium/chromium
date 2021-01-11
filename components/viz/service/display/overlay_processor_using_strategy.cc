@@ -326,9 +326,9 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
         // DRM/CDM HW overlay required:
         // This comparison is for correctness over performance reasons. Some
         // candidates must be an HW overlay to function. If both require an HW
-        // overlay we sort on the remaining criteria below.
-        if (a.candidate.requires_overlay ^ b.candidate.requires_overlay) {
-          return a.candidate.requires_overlay;
+        // overlay we leave them in order so the topmost one gets the overlay.
+        if (a.candidate.requires_overlay || b.candidate.requires_overlay) {
+          return a.candidate.requires_overlay && !b.candidate.requires_overlay;
         }
 
         // Opaque Power Metric:

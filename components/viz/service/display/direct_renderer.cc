@@ -26,6 +26,7 @@
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
@@ -687,6 +688,16 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     // We are not in a 3d sorting context, so we should draw the quad normally.
     SetScissorStateForQuad(quad, render_pass_scissor_in_draw_space,
                            render_pass_requires_scissor);
+
+    if (OverlayCandidate::RequiresOverlay(&quad)) {
+      // We cannot composite this quad properly, replace it with solid black.
+      SolidColorDrawQuad solid_black;
+      solid_black.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
+                         /*needs_blending=*/false, SK_ColorBLACK,
+                         /*force_anti_aliasing_off=*/true);
+      DoDrawQuad(&solid_black, nullptr);
+      continue;
+    }
 
     DoDrawQuad(&quad, nullptr);
   }

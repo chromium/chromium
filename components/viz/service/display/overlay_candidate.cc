@@ -305,6 +305,8 @@ bool OverlayCandidate::FromDrawQuadResource(
     OverlayCandidate* candidate) {
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return false;
+  if (quad->visible_rect.IsEmpty())
+    return false;
 
   candidate->format = resource_provider->GetBufferFormat(resource_id);
   candidate->color_space = resource_provider->GetColorSpace(resource_id);
