@@ -182,42 +182,95 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   PaintInsetBoxShadow(info, bounds, style);
 }
 
+namespace {
+
+inline FloatRect AreaCastingShadowInHole(const FloatRect& hole_rect,
+                                         const ShadowData& shadow) {
+  FloatRect bounds(hole_rect);
+  bounds.Inflate(shadow.Blur());
+
+  if (shadow.Spread() < 0)
+    bounds.Inflate(-shadow.Spread());
+
+  FloatRect offset_bounds = bounds;
+  offset_bounds.MoveBy(-shadow.Location());
+  return UnionRect(bounds, offset_bounds);
+}
+
+void AdjustInnerRectForSideClipping(FloatRect& inner_rect,
+                                    const ShadowData& shadow,
+                                    PhysicalBoxSides sides_to_include) {
+  if (!sides_to_include.left) {
+    float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
+    inner_rect.Move(-extend_by, 0);
+    inner_rect.SetWidth(inner_rect.Width() + extend_by);
+  }
+  if (!sides_to_include.top) {
+    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
+    inner_rect.Move(0, -extend_by);
+    inner_rect.SetHeight(inner_rect.Height() + extend_by);
+  }
+  if (!sides_to_include.right) {
+    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
+    inner_rect.SetWidth(inner_rect.Width() - shrink_by);
+  }
+  if (!sides_to_include.bottom) {
+    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
+    inner_rect.SetHeight(inner_rect.Height() - shrink_by);
+  }
+}
+
+}  // namespace
+
 void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
                                          const FloatRoundedRect& bounds,
                                          const ComputedStyle& style,
                                          PhysicalBoxSides sides_to_include) {
   GraphicsContext& context = info.context;
-  GraphicsContextStateSaver state_saver(context, false);
 
   const ShadowList* shadow_list = style.BoxShadow();
   for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
     const ShadowData& shadow = shadow_list->Shadows()[i];
     if (shadow.Style() != ShadowStyle::kInset)
       continue;
-
-    FloatSize shadow_offset(shadow.X(), shadow.Y());
-    float shadow_blur = shadow.Blur();
-    float shadow_spread = shadow.Spread();
-
-    if (shadow_offset.IsZero() && !shadow_blur && !shadow_spread)
+    if (!shadow.X() && !shadow.Y() && !shadow.Blur() && !shadow.Spread())
       continue;
 
     const Color& shadow_color = shadow.GetColor().Resolve(
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme());
 
-    // The inset shadow case.
-    GraphicsContext::Edges clipped_edges = GraphicsContext::kNoEdge;
-    if (!sides_to_include.top)
-      clipped_edges |= GraphicsContext::kTopEdge;
-    if (!sides_to_include.right)
-      clipped_edges |= GraphicsContext::kRightEdge;
-    if (!sides_to_include.bottom)
-      clipped_edges |= GraphicsContext::kBottomEdge;
-    if (!sides_to_include.left)
-      clipped_edges |= GraphicsContext::kLeftEdge;
-    context.DrawInnerShadow(bounds, shadow_color, shadow_offset, shadow_blur,
-                            shadow_spread, clipped_edges);
+    FloatRect inner_rect(bounds.Rect());
+    inner_rect.Inflate(-shadow.Spread());
+    if (inner_rect.IsEmpty()) {
+      context.FillRoundedRect(bounds, shadow_color);
+      continue;
+    }
+    AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
+
+    FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
+    GraphicsContextStateSaver state_saver(context);
+    if (bounds.IsRounded()) {
+      context.ClipRoundedRect(bounds);
+      if (shadow.Spread() < 0)
+        inner_rounded_rect.ExpandRadii(-shadow.Spread());
+      else
+        inner_rounded_rect.ShrinkRadii(shadow.Spread());
+    } else {
+      context.Clip(bounds.Rect());
+    }
+
+    DrawLooperBuilder draw_looper_builder;
+    draw_looper_builder.AddShadow(ToFloatSize(shadow.Location()), shadow.Blur(),
+                                  shadow_color,
+                                  DrawLooperBuilder::kShadowRespectsTransforms,
+                                  DrawLooperBuilder::kShadowIgnoresAlpha);
+    context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
+
+    Color fill_color(shadow_color.Red(), shadow_color.Green(),
+                     shadow_color.Blue());
+    FloatRect outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
+    context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color);
   }
 }
 

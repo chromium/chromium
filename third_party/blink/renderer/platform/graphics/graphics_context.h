@@ -215,6 +215,9 @@ class PLATFORM_EXPORT GraphicsContext {
   void FillDRRect(const FloatRoundedRect&,
                   const FloatRoundedRect&,
                   const Color&);
+  void FillRectWithRoundedHole(const FloatRect&,
+                               const FloatRoundedRect& rounded_hole_rect,
+                               const Color&);
 
   void StrokeRect(const FloatRect&, float line_width);
 
@@ -365,21 +368,6 @@ class PLATFORM_EXPORT GraphicsContext {
                      ColorScheme color_scheme);
   void DrawFocusRing(const Path&, float width, int offset, const Color&);
 
-  enum Edge {
-    kNoEdge = 0,
-    kTopEdge = 1 << 1,
-    kRightEdge = 1 << 2,
-    kBottomEdge = 1 << 3,
-    kLeftEdge = 1 << 4
-  };
-  typedef unsigned Edges;
-  void DrawInnerShadow(const FloatRoundedRect&,
-                       const Color& shadow_color,
-                       const FloatSize& shadow_offset,
-                       float shadow_blur,
-                       float shadow_spread,
-                       Edges clipped_edges = kNoEdge);
-
   const PaintFlags& FillFlags() const { return ImmutableState()->FillFlags(); }
   // If the length of the path to be stroked is known, pass it in for correct
   // dash or dot placement. Border painting uses a stroke thickness determined
@@ -504,10 +492,6 @@ class PLATFORM_EXPORT GraphicsContext {
       }
     }
   }
-
-  void FillRectWithRoundedHole(const FloatRect&,
-                               const FloatRoundedRect& rounded_hole_rect,
-                               const Color&);
 
   class DarkModeFlags;
 
