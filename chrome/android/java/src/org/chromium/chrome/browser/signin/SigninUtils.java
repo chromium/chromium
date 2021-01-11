@@ -31,11 +31,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -121,24 +119,5 @@ public class SigninUtils {
                 new AccountPickerDelegateImpl(windowAndroid, activity.getActivityTab(),
                         new WebSigninBridge.Factory(), continueUrl),
                 regularTabModel, incognitoTabCreator, HelpAndFeedbackLauncherImpl.getInstance());
-    }
-
-    /**
-     * Launches the {@link SigninActivity} if signin is allowed.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     * @return a boolean indicating if the SigninActivity is launched.
-     */
-    public static boolean startSigninActivityIfAllowed(
-            Context context, @SigninAccessPoint int accessPoint) {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        if (signinManager.isSignInAllowed()) {
-            SigninActivityLauncherImpl.get().launchActivity(context, accessPoint);
-            return true;
-        }
-        if (signinManager.isSigninDisabledByPolicy()) {
-            ManagedPreferencesUtils.showManagedByAdministratorToast(context);
-        }
-        return false;
     }
 }

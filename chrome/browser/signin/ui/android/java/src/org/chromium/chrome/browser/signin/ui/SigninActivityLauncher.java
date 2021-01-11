@@ -51,4 +51,12 @@ public interface SigninActivityLauncher {
      * @param accessPoint {@link SigninAccessPoint} enum value representing.
      */
     void launchActivity(Context context, @SigninAccessPoint int accessPoint);
+
+    /**
+     * Launches the {@link SigninActivity} if signin is allowed.
+     * @param context A {@link Context} object.
+     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     * @return a boolean indicating if the {@link SigninActivity} is launched.
+     */
+    boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint);
 }

@@ -10,7 +10,11 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -80,6 +84,26 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     @Override
     public void launchActivity(Context context, @SigninAccessPoint int accessPoint) {
         launchInternal(context, SigninFragment.createArguments(accessPoint));
+    }
+
+    /**
+     * Launches the {@link SigninActivity} if signin is allowed.
+     * @param context A {@link Context} object.
+     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     * @return a boolean indicating if the {@link SigninActivity} is launched.
+     */
+    @Override
+    public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        if (signinManager.isSignInAllowed()) {
+            launchActivity(context, accessPoint);
+            return true;
+        }
+        if (signinManager.isSigninDisabledByPolicy()) {
+            ManagedPreferencesUtils.showManagedByAdministratorToast(context);
+        }
+        return false;
     }
 
     private void launchInternal(Context context, Bundle fragmentArgs) {
