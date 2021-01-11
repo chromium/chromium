@@ -1547,6 +1547,29 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   }
 }
 
+// Returns true if we are printing which was initiated by the frame. We should
+// ignore clipping and scroll transform on contents. WebLocalFrameImpl will
+// issue artificial page clip for each page, and always print from the origin
+// of the contents for which no scroll offset should be applied.
+static bool IsPrintingRootLayoutView(const LayoutObject& object) {
+  if (!IsA<LayoutView>(object))
+    return false;
+
+  const auto& frame = *object.GetFrame();
+  if (!frame.GetDocument()->Printing())
+    return false;
+
+  const auto* parent_frame = frame.Tree().Parent();
+  // TODO(crbug.com/455764): The local frame may be not the root frame of
+  // printing when it's printing under a remote frame.
+  auto* parent_local_frame = DynamicTo<LocalFrame>(parent_frame);
+  if (!parent_local_frame)
+    return true;
+
+  // If the parent frame is printing, this frame should clip normally.
+  return !parent_local_frame->GetDocument()->Printing();
+}
+
 // TODO(wangxianzhu): Combine the logic by overriding LayoutBox::
 // ComputeOverflowClipAxes() in LayoutReplaced and subclasses and remove
 // this function.
@@ -1581,16 +1604,9 @@ static bool NeedsOverflowClip(const LayoutObject& object) {
       SVGLayoutSupport::IsOverflowHidden(object))
     return true;
 
-  if (!object.IsBox())
-    return false;
-
-  if (!To<LayoutBox>(object).ShouldClipOverflowAlongEitherAxis())
-    return false;
-
-  if (IsA<LayoutView>(object) && !object.GetFrame()->ClipsContent())
-    return false;
-
-  return true;
+  return object.IsBox() &&
+         To<LayoutBox>(object).ShouldClipOverflowAlongEitherAxis() &&
+         !IsPrintingRootLayoutView(object);
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
@@ -1719,6 +1735,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
 static bool CanOmitOverflowClip(const LayoutObject& object) {
   DCHECK(NeedsOverflowClip(object));
 
+  if (IsA<LayoutView>(object) && !object.GetFrame()->ClipsContent()) {
+    return true;
+  }
+
   // Some non-block boxes and SVG objects have special overflow rules.
   const auto* block = DynamicTo<LayoutBlock>(object);
   if (!block || object.IsSVG())
@@ -1747,15 +1767,14 @@ static bool CanOmitOverflowClip(const LayoutObject& object) {
   if (block->HasLayer() && block->Layer()->FirstChild())
     return false;
 
-  if (!clip_rect.Contains(block->PhysicalContentsVisualOverflowRect()))
+  // TODO(wangxianzhu): It's incorrect to test the physical clip_rect against
+  // the flipped ContentsVisualOverflowRect and LayoutOverflowRect.
+  if (!clip_rect.ToLayoutRect().Contains(block->ContentsVisualOverflowRect()))
     return false;
 
   // Content can scroll, and needs to be clipped, if the layout overflow extends
   // beyond the clip rect.
-  if (!clip_rect.Contains(block->PhysicalLayoutOverflowRect()))
-    return false;
-
-  return true;
+  return clip_rect.ToLayoutRect().Contains(block->LayoutOverflowRect());
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {

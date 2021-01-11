@@ -159,24 +159,8 @@ static bool ShouldRepaintSubsequence(
   return false;
 }
 
-static bool IsUnclippedLayoutView(const PaintLayer& layer) {
-  // If MainFrameClipsContent is false which means that WebPreferences::
-  // record_whole_document is true, we should not cull the scrolling contents
-  // of the main frame.
-  if (IsA<LayoutView>(layer.GetLayoutObject())) {
-    const auto* frame = layer.GetLayoutObject().GetFrame();
-    if (frame && frame->IsMainFrame() && !frame->ClipsContent())
-      return true;
-  }
-  return false;
-}
-
 static bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
                                       PaintLayerPaintingInfo& painting_info) {
-  bool is_printing = layer.GetLayoutObject().GetDocument().Printing();
-  if (IsUnclippedLayoutView(layer) && !is_printing)
-    return true;
-
   // Cull rects and clips can't be propagated across a filter which moves
   // pixels, since the input of the filter may be outside the cull rect /
   // clips yet still result in painted output.
@@ -188,7 +172,7 @@ static bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
       // TODO(crbug.com/1098995): For now we don't adjust cull rect for clips.
       // When we do, we need to check if we are painting under a real clip.
       // This won't be a problem when we use block fragments for printing.
-      !is_printing)
+      !layer.GetLayoutObject().GetDocument().Printing())
     return true;
 
   // Cull rect mapping doesn't work under perspective in some cases.
@@ -205,9 +189,24 @@ static bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
   if (layer.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
       // The reasons don't apply for printing though, because when we enter and
       // leaving printing mode, full invalidations occur.
-      !is_printing)
+      !layer.GetLayoutObject().GetDocument().Printing())
     return true;
 
+  return false;
+}
+
+static bool IsUnclippedLayoutView(const PaintLayer& layer) {
+  // If MainFrameClipsContent is false which means that WebPreferences::
+  // record_whole_document is true, we should not cull the scrolling contents
+  // of the main frame.
+  if (IsA<LayoutView>(layer.GetLayoutObject())) {
+    const auto* frame = layer.GetLayoutObject().GetFrame();
+    if (frame && frame->IsMainFrame() && !frame->ClipsContent())
+      return true;
+    // True regardless whether this is the main frame when painting a preview.
+    if (frame && frame->GetDocument()->IsPaintingPreview())
+      return true;
+  }
   return false;
 }
 
@@ -217,12 +216,14 @@ void PaintLayerPainter::AdjustForPaintProperties(
     PaintLayerFlags& paint_flags) {
   const auto& first_fragment = paint_layer_.GetLayoutObject().FirstFragment();
 
+  bool is_unclipped_layout_view = IsUnclippedLayoutView(paint_layer_);
   bool should_use_infinite_cull_rect =
+      is_unclipped_layout_view ||
       ShouldUseInfiniteCullRect(paint_layer_, painting_info);
   if (should_use_infinite_cull_rect) {
     painting_info.cull_rect = CullRect::Infinite();
     // Avoid clipping during CollectFragments.
-    if (IsUnclippedLayoutView(paint_layer_))
+    if (is_unclipped_layout_view)
       paint_flags |= kPaintLayerPaintingOverflowContents;
   }
 

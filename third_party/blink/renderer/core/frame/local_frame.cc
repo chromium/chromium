@@ -1992,9 +1992,6 @@ bool LocalFrame::ClipsContent() const {
   if (GetDocument()->IsPaintingPreview())
     return false;
 
-  if (ShouldUsePrintingLayout())
-    return false;
-
   if (IsMainFrame())
     return GetSettings()->GetMainFrameClipsContent();
   // By default clip to viewport.
