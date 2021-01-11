@@ -12,5 +12,7 @@ import java.util.concurrent.Executor;
 public interface ProxyControllerBoundaryInterface {
     void setProxyOverride(
             String[][] proxyRules, String[] bypassRules, Runnable listener, Executor executor);
+    void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
+            Executor executor, boolean reverseBypass);
     void clearProxyOverride(Runnable listener, Executor executor);
 }

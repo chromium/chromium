@@ -53,7 +53,8 @@ ScopedJavaLocalRef<jstring> JNI_AwProxyController_SetProxyOverride(
     const base::android::JavaParamRef<jobjectArray>& jproxy_urls,
     const base::android::JavaParamRef<jobjectArray>& jbypass_rules,
     const JavaParamRef<jobject>& listener,
-    const JavaParamRef<jobject>& executor) {
+    const JavaParamRef<jobject>& executor,
+    const jboolean reverse_bypass) {
   std::vector<std::string> url_schemes;
   base::android::AppendJavaStringArrayToStringVector(env, jurl_schemes,
                                                      &url_schemes);
@@ -72,7 +73,7 @@ ScopedJavaLocalRef<jstring> JNI_AwProxyController_SetProxyOverride(
                                                      &bypass_rules);
   std::string result;
   result = AwProxyConfigMonitor::GetInstance()->SetProxyOverride(
-      proxy_rules, bypass_rules,
+      proxy_rules, bypass_rules, reverse_bypass,
       base::BindOnce(&ProxyOverrideChanged,
                      ScopedJavaGlobalRef<jobject>(env, obj),
                      ScopedJavaGlobalRef<jobject>(env, listener),

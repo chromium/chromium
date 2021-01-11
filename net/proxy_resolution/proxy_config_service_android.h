@@ -103,6 +103,7 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
   std::string SetProxyOverride(
       const std::vector<ProxyOverrideRule>& proxy_rules,
       const std::vector<std::string>& bypass_rules,
+      const bool reverse_bypass,
       base::OnceClosure callback);
   void ClearProxyOverride(base::OnceClosure callback);
 

@@ -83,6 +83,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.WEB_MESSAGE_LISTENER,
                     Features.SET_SUPPORT_LIBRARY_VERSION + Features.DEV_SUFFIX,
                     Features.DOCUMENT_START_SCRIPT + Features.DEV_SUFFIX,
+                    Features.PROXY_OVERRIDE_REVERSE_BYPASS + Features.DEV_SUFFIX,
             };
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -141,7 +142,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.WEBVIEW_RENDERER_TERMINATE,
             ApiCall.ADD_DOCUMENT_START_SCRIPT,
             ApiCall.REMOVE_DOCUMENT_START_SCRIPT,
-            ApiCall.SET_SAFE_BROWSING_ALLOWLIST})
+            ApiCall.SET_SAFE_BROWSING_ALLOWLIST,
+            ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS})
     public @interface ApiCall {
         int ADD_WEB_MESSAGE_LISTENER = 0;
         int CLEAR_PROXY_OVERRIDE = 1;
@@ -198,7 +200,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int ADD_DOCUMENT_START_SCRIPT = 52;
         int REMOVE_DOCUMENT_START_SCRIPT = 53;
         int SET_SAFE_BROWSING_ALLOWLIST = 54;
-        int COUNT = 55;
+        int SET_PROXY_OVERRIDE_REVERSE_BYPASS = 55;
+        int COUNT = 56;
     }
     // clang-format on
 

@@ -135,6 +135,9 @@ public class Features {
     // ProxyController.clearProxyOverride
     public static final String PROXY_OVERRIDE = "PROXY_OVERRIDE:3";
 
+    // ProxyController.setProxyOverride
+    public static final String PROXY_OVERRIDE_REVERSE_BYPASS = "PROXY_OVERRIDE_REVERSE_BYPASS";
+
     // WebSettingsCompat.setWillSuppressErrorPage
     // WebSettingsCompat.getWillSuppressErrorPage
     public static final String SUPPRESS_ERROR_PAGE = "SUPPRESS_ERROR_PAGE";
