@@ -807,10 +807,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   // The UI should be stopped before the models they observe are stopped.
+  // SigninCoordinator teardown is performed by the |signinCompletion| on
+  // termination of async events, do not add additional teardown here.
   [self.signinCoordinator
       interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
                completion:nil];
-  self.signinCoordinator = nil;
 
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;

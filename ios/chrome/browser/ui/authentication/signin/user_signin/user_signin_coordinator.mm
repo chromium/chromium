@@ -197,6 +197,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     // be sent to |self.advancedSettingsSigninCoordinator|.
     DCHECK(!self.viewController);
     DCHECK(!self.mediator);
+    DCHECK(!self.unifiedConsentCoordinator);
     [self.advancedSettingsSigninCoordinator
         interruptWithAction:action
                  completion:^{
@@ -335,8 +336,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     case UserSigninIntentSignin:
     case UserSigninIntentUpgrade: {
       if (self.viewController.presentingViewController) {
-        [self.viewController dismissViewControllerAnimated:YES
-                                                completion:completion];
+        [self.viewController.presentingViewController
+            dismissViewControllerAnimated:YES
+                               completion:completion];
       } else {
         // When the user swipes to dismiss the view controller. The sequence is:
         //  * The user swipe the view controller
@@ -386,18 +388,36 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.mediator);
   DCHECK(self.viewController);
+
   [self.unifiedConsentCoordinator stop];
   self.unifiedConsentCoordinator = nil;
   self.mediator = nil;
   self.viewController = nil;
-  if (!settingsWasTapped || self.signinIntent == UserSigninIntentFirstRun) {
-    // For first run intent, the UserSigninCoordinator owner is reponsible to
-    // open the advanced settings sign-in.
-    [self runCompletionCallbackWithSigninResult:signinResult
-                                       identity:identity
-                     showAdvancedSettingsSignin:settingsWasTapped];
-    return;
+
+  switch (self.signinIntent) {
+    case UserSigninIntentFirstRun: {
+      // The UserSigninCoordinator owner is responsible for dismissing views and
+      // opening the advanced Settings for the first-run experience.
+      break;
+    }
+    case UserSigninIntentUpgrade:
+    case UserSigninIntentSignin: {
+      DCHECK(!self.viewController.presentingViewController);
+      if (settingsWasTapped) {
+        [self displayAdvancedSettings];
+        return;
+      }
+      break;
+    }
   }
+
+  [self runCompletionCallbackWithSigninResult:signinResult
+                                     identity:identity
+                   showAdvancedSettingsSignin:settingsWasTapped];
+}
+
+// Displays the Advanced Settings screen of the sign-in flow.
+- (void)displayAdvancedSettings {
   self.advancedSettingsSigninCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:
           self.baseViewController
@@ -530,14 +550,16 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     }
     case SigninCoordinatorInterruptActionDismissWithAnimation: {
       [self.mediator cancelAndDismissAuthenticationFlowAnimated:YES];
-      [self.viewController dismissViewControllerAnimated:YES
-                                              completion:runCompletionCallback];
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:runCompletionCallback];
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
       [self.mediator cancelAndDismissAuthenticationFlowAnimated:NO];
-      [self.viewController dismissViewControllerAnimated:NO
-                                              completion:runCompletionCallback];
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:NO
+                             completion:runCompletionCallback];
       break;
     }
   }
