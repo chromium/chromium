@@ -78,6 +78,8 @@ crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.
 crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.py>>test_sucess_input_non_interactable [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/switch_to_frame/switch.py>>test_frame_id_null [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/switch_to_parent_frame/switch.py>>test_switch_from_iframe [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/switch_to_window/switch.py>>test_element_not_found_after_tab_switch [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/element_click/click.py>>test_no_top_browsing_context [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/is_element_enabled/enabled.py>>test_no_top_browsing_context [ Failure ]
