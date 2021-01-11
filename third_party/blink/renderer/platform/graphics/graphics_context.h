@@ -348,15 +348,6 @@ class PLATFORM_EXPORT GraphicsContext {
   // not necessarily non-empty), even when the context is disabled.
   sk_sp<PaintRecord> EndRecording();
 
-  void SetShadow(const FloatSize& offset,
-                 float blur,
-                 const Color&,
-                 DrawLooperBuilder::ShadowTransformMode =
-                     DrawLooperBuilder::kShadowRespectsTransforms,
-                 DrawLooperBuilder::ShadowAlphaMode =
-                     DrawLooperBuilder::kShadowRespectsAlpha,
-                 ShadowMode = kDrawShadowAndForeground);
-
   void SetDrawLooper(sk_sp<SkDrawLooper>);
 
   void DrawFocusRing(const Vector<IntRect>&,

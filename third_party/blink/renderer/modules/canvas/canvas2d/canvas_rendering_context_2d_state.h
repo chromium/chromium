@@ -24,6 +24,12 @@ class CanvasStyle;
 class CSSValue;
 class Element;
 
+enum ShadowMode {
+  kDrawShadowAndForeground,
+  kDrawShadowOnly,
+  kDrawForegroundOnly
+};
+
 class CanvasRenderingContext2DState final
     : public GarbageCollected<CanvasRenderingContext2DState>,
       public FontSelectorClient {

@@ -223,32 +223,6 @@ DOMNodeId GraphicsContext::GetDOMNodeId() const {
   return dom_node_id_;
 }
 
-void GraphicsContext::SetShadow(
-    const FloatSize& offset,
-    float blur,
-    const Color& color,
-    DrawLooperBuilder::ShadowTransformMode shadow_transform_mode,
-    DrawLooperBuilder::ShadowAlphaMode shadow_alpha_mode,
-    ShadowMode shadow_mode) {
-  DrawLooperBuilder draw_looper_builder;
-  if (!color.Alpha()) {
-    // When shadow-only but there is no shadow, we use an empty draw looper
-    // to disable rendering of the source primitive.  When not shadow-only, we
-    // clear the looper.
-    SetDrawLooper(shadow_mode != kDrawShadowOnly
-                      ? nullptr
-                      : draw_looper_builder.DetachDrawLooper());
-    return;
-  }
-
-  draw_looper_builder.AddShadow(offset, blur, color, shadow_transform_mode,
-                                shadow_alpha_mode);
-  if (shadow_mode == kDrawShadowAndForeground) {
-    draw_looper_builder.AddUnmodifiedContent();
-  }
-  SetDrawLooper(draw_looper_builder.DetachDrawLooper());
-}
-
 void GraphicsContext::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
   MutableState()->SetDrawLooper(std::move(draw_looper));
 }

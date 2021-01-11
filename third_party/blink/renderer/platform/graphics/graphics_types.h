@@ -134,14 +134,6 @@ enum MailboxSyncMode {
   kOrderingBarrier,
 };
 
-// TODO(junov): crbug.com/453113 Relocate ShadowMode to
-// CanvasRenderingContext2DState.h once GraphicsContext no longer uses it.
-enum ShadowMode {
-  kDrawShadowAndForeground,
-  kDrawShadowOnly,
-  kDrawForegroundOnly
-};
-
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
 
 enum GradientSpreadMethod {
