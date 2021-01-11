@@ -11,6 +11,14 @@ namespace blink {
 
 constexpr wtf_size_t NGGridTrackCollectionBase::kInvalidRangeIndex;
 
+bool NGGridTrackCollectionBase::IsTrackWithinBounds(
+    wtf_size_t track_number) const {
+  DCHECK_NE(track_number, kInvalidRangeIndex);
+  wtf_size_t last_range_index = RangeCount() - 1;
+  return track_number <
+         RangeTrackNumber(last_range_index) + RangeTrackCount(last_range_index);
+}
+
 wtf_size_t NGGridTrackCollectionBase::RangeIndexFromTrackNumber(
     wtf_size_t track_number) const {
   wtf_size_t upper = RangeCount();
@@ -19,9 +27,7 @@ wtf_size_t NGGridTrackCollectionBase::RangeIndexFromTrackNumber(
   // We can't look for a range in a collection with no ranges.
   DCHECK_NE(upper, 0u);
   // We don't expect a |track_number| outside of the bounds of the collection.
-  DCHECK_NE(track_number, kInvalidRangeIndex);
-  DCHECK_LT(track_number,
-            RangeTrackNumber(upper - 1u) + RangeTrackCount(upper - 1u));
+  DCHECK(IsTrackWithinBounds(track_number));
 
   // Do a binary search on the tracks.
   wtf_size_t range = upper - lower;
