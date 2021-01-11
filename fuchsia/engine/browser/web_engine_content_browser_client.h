@@ -50,9 +50,11 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldEnableStrictSiteIsolation() final;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) final;
+  std::string GetApplicationLocale() final;
+  std::string GetAcceptLangs(content::BrowserContext* context) final;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationHandle* navigation_handle) override;
+      content::NavigationHandle* navigation_handle) final;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const network::ResourceRequest& request,
@@ -66,7 +68,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
       network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
+      final;
 
  private:
   fidl::InterfaceRequest<fuchsia::web::Context> request_;

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -23,6 +24,7 @@
 #include "fuchsia/engine/switches.h"
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace {
@@ -189,6 +191,10 @@ WebEngineBrowserContext::GetVideoDecodePerfHistory() {
   // Delegate to the base class for stateful VideoDecodePerfHistory DB
   // creation.
   return BrowserContext::GetVideoDecodePerfHistory();
+}
+
+std::string WebEngineBrowserContext::GetPreferredLanguages() const {
+  return net::HttpUtil::ExpandLanguageList(base::i18n::GetConfiguredLocale());
 }
 
 media::VideoDecodePerfHistory*
