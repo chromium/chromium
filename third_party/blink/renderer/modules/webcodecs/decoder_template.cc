@@ -269,9 +269,9 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
                                      gpu_factories_, logger_->log());
     if (!decoder_) {
-      Shutdown(logger_->MakeException(
-          "Configuration error: Could not create decoder.",
-          media::StatusCode::kDecoderCreationFailed));
+      Shutdown(
+          logger_->MakeException("Internal error: Could not create decoder.",
+                                 media::StatusCode::kDecoderCreationFailed));
       return false;
     }
 
@@ -468,7 +468,9 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    Shutdown(logger_->MakeException("Configuration error.", status));
+    Shutdown(logger_->MakeException(
+        "Internal error: failed to flush out frames from previous config.",
+        status));
     return;
   }
 
@@ -490,7 +492,13 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    Shutdown(logger_->MakeException("Decoder initialization error.", status));
+    std::string error_message = "Decoder initialization error.";
+    if (status.code() == media::StatusCode::kDecoderUnsupportedConfig) {
+      error_message =
+          "Unsupported configuration. Check isConfigSupported() prior to "
+          "calling configure().";
+    }
+    Shutdown(logger_->MakeException(error_message, status));
     return;
   }
 

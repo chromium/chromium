@@ -271,6 +271,7 @@ interface AudioContext : BaseAudioContext
     method resume
     method suspend
 interface AudioDecoder
+    static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
     getter state

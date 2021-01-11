@@ -14,6 +14,7 @@
 #include "media/base/supported_types.h"
 #include "media/base/waiting.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
@@ -26,6 +27,28 @@
 #include <vector>
 
 namespace blink {
+
+bool IsValidConfig(const AudioDecoderConfig& config,
+                   media::AudioType& out_audio_type,
+                   String& out_console_message) {
+  media::AudioCodec codec = media::kUnknownAudioCodec;
+  bool is_codec_ambiguous = true;
+  bool parse_succeeded = ParseAudioCodecString("", config.codec().Utf8(),
+                                               &is_codec_ambiguous, &codec);
+
+  if (!parse_succeeded) {
+    out_console_message = "Failed to parse codec string.";
+    return false;
+  }
+
+  if (is_codec_ambiguous) {
+    out_console_message = "Codec string is ambiguous.";
+    return false;
+  }
+
+  out_audio_type = {codec};
+  return true;
+}
 
 // static
 std::unique_ptr<AudioDecoderTraits::MediaDecoderType>
@@ -82,29 +105,30 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
 }
 
 // static
+ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
+                                              const AudioDecoderConfig* config,
+                                              ExceptionState& exception_state) {
+  media::AudioType audio_type;
+  String console_message;
+
+  if (!IsValidConfig(*config, audio_type, console_message)) {
+    exception_state.ThrowTypeError(console_message);
+    return ScriptPromise();
+  }
+
+  bool is_supported = media::IsSupportedAudioType(audio_type);
+  return ScriptPromise::Cast(script_state, ToV8(is_supported, script_state));
+}
+
+// static
 CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
     const ConfigType& config,
     MediaConfigType& out_media_config,
     String& out_console_message) {
-  media::AudioCodec codec = media::kUnknownAudioCodec;
-  bool is_codec_ambiguous = true;
-  bool parse_succeeded = ParseAudioCodecString("", config.codec().Utf8(),
-                                               &is_codec_ambiguous, &codec);
+  media::AudioType audio_type;
 
-  if (!parse_succeeded) {
-    out_console_message = "Failed to parse codec string.";
+  if (!IsValidConfig(config, audio_type, out_console_message))
     return CodecConfigEval::kInvalid;
-  }
-
-  if (is_codec_ambiguous) {
-    out_console_message = "Codec string is ambiguous.";
-    return CodecConfigEval::kInvalid;
-  }
-
-  if (!media::IsSupportedAudioType({codec})) {
-    out_console_message = "Configuration is not supported.";
-    return CodecConfigEval::kUnsupported;
-  }
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
@@ -131,8 +155,8 @@ CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
 
   // TODO(chcunningham): Add sample format to IDL.
   out_media_config.Initialize(
-      codec, media::kSampleFormatPlanarF32, channel_layout, config.sampleRate(),
-      extra_data, media::EncryptionScheme::kUnencrypted,
+      audio_type.codec, media::kSampleFormatPlanarF32, channel_layout,
+      config.sampleRate(), extra_data, media::EncryptionScheme::kUnencrypted,
       base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
 
   return CodecConfigEval::kSupported;

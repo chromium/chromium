@@ -12,7 +12,6 @@
 #include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
@@ -38,6 +37,7 @@ class AudioFrame;
 class EncodedAudioChunk;
 class ExceptionState;
 class AudioDecoderInit;
+class ScriptPromise;
 class V8AudioFrameOutputCallback;
 
 class MODULES_EXPORT AudioDecoderTraits {
@@ -76,6 +76,10 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   static AudioDecoder* Create(ScriptState*,
                               const AudioDecoderInit*,
                               ExceptionState&);
+
+  static ScriptPromise isConfigSupported(ScriptState*,
+                                         const AudioDecoderConfig*,
+                                         ExceptionState&);
 
   // For use by MediaSource and by ::MakeMediaConfig.
   static CodecConfigEval MakeMediaAudioDecoderConfig(
