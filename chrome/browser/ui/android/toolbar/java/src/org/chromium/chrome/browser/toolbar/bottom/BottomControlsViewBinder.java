@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

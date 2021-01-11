@@ -10,8 +10,10 @@ include_rules = [
 
 specific_include_rules = {
   'ToolbarManager.java': [
+    "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management",
     "+chrome/android/java/src/org/chromium/chrome/browser",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/browser/ui/android/toolbar",
   ],
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",

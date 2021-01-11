@@ -18,6 +18,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarAnimatingView.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabController.java",
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewResourceFrameLayout.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewSceneLayer.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
@@ -47,6 +52,7 @@ android_library("java") {
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.toolbar"
@@ -63,6 +69,7 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxxhdpi/btn_toolbar_home.png",
+    "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",

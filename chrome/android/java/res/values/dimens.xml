@@ -236,9 +236,6 @@
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>
 
-    <!-- Bottom controls dimensions -->
-    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
-
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>

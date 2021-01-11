@@ -18,6 +18,7 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -90,11 +91,14 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
@@ -183,7 +187,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private FindToolbarManager mFindToolbarManager;
 
     private LayoutManagerImpl mLayoutManager;
-    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
 
     private TabObserver mTabObserver;
     private BookmarkBridge.BookmarkModelObserver mBookmarksObserver;
@@ -252,6 +255,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
+
+    private TabGroupUi mTabGroupUi;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -350,7 +355,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mFullscreenManager = fullscreenManager;
         mActionBarDelegate = new ViewShiftingActionBarDelegate(activity.getSupportActionBar(),
                 controlContainer, activity.findViewById(R.id.action_bar_black_background));
-        mShareDelegateSupplier = shareDelegateSupplier;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mScrimCoordinator = scrimCoordinator;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -996,19 +1000,24 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Enable the bottom controls.
      */
     public void enableBottomControls() {
+        View root = ((ViewStub) mActivity.findViewById(R.id.bottom_controls_stub)).inflate();
+        mTabGroupUi = TabManagementModuleProvider.getDelegate().createTabGroupUi(
+                root.findViewById(R.id.bottom_container_slot), mAppThemeColorProvider,
+                mScrimCoordinator, mOmniboxFocusStateSupplier);
         mBottomControlsCoordinatorSupplier.set(
                 new BottomControlsCoordinator(mActivity, mWindowAndroid, mLayoutManager,
                         mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,
-                        mFullscreenManager, mActivity.findViewById(R.id.bottom_controls_stub),
-                        mAppThemeColorProvider, mShareDelegateSupplier, mScrimCoordinator,
-                        mOmniboxFocusStateSupplier, mOverlayPanelVisibilitySupplier));
+                        mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root,
+                        mAppThemeColorProvider, mTabGroupUi, mOverlayPanelVisibilitySupplier));
     }
 
     /**
-     * @return The coordinator for the bottom controls if it exists.
+     * TODO(https://crbug.com/1164216): Remove this getter in favor of extracting tab group
+     * feature details from ChromeTabbedActivity directly.
+     * @return The coordinator for the tab group UI if it exists.
      */
-    public BottomControlsCoordinator getBottomControlsCoordinator() {
-        return mBottomControlsCoordinatorSupplier.get();
+    public TabGroupUi getTabGroupUi() {
+        return mTabGroupUi;
     }
 
     /**
