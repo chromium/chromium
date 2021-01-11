@@ -87,6 +87,7 @@ suite('InfiniteListTest', () => {
   test('ScrollHeight', async () => {
     const tabItems = sampleTabItems(sampleSiteNames());
     await setupTest(tabItems);
+    await waitAfterNextRender(infiniteList);
 
     assertEquals(0, infiniteList.scrollTop);
 
