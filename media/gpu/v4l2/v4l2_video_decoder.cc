@@ -152,35 +152,25 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     SetState(State::kUninitialized);
   }
 
-  // Open V4L2 device.
-  VideoCodecProfile profile = config.profile();
-  uint32_t input_format_fourcc_stateless =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(profile, true);
-  if (!input_format_fourcc_stateless ||
-      !device_->Open(V4L2Device::Type::kDecoder,
-                     input_format_fourcc_stateless)) {
-    VLOGF(1) << "Failed to open device for profile: " << profile
-             << " fourcc: " << FourccToString(input_format_fourcc_stateless);
-    input_format_fourcc_stateless = 0;
-  } else {
-    VLOGF(1) << "Found V4L2 device capable of stateless decoding for "
-             << FourccToString(input_format_fourcc_stateless);
+  const VideoCodecProfile profile = config.profile();
+  constexpr bool kStateful = false;
+  constexpr bool kStateless = true;
+  base::Optional<std::pair<bool, uint32_t>> api_and_format;
+  // Try both kStateful and kStateless APIs via |fourcc| and select the first
+  // combination where Open()ing the |device_| works.
+  for (const auto api : {kStateful, kStateless}) {
+    const auto fourcc = V4L2Device::VideoCodecProfileToV4L2PixFmt(profile, api);
+    constexpr uint32_t kInvalidV4L2PixFmt = 0;
+    if (fourcc == kInvalidV4L2PixFmt ||
+        !device_->Open(V4L2Device::Type::kDecoder, fourcc)) {
+      continue;
+    }
+    api_and_format = std::make_pair(api, fourcc);
+    break;
   }
 
-  uint32_t input_format_fourcc_stateful =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(profile, false);
-  if (!input_format_fourcc_stateful ||
-      !device_->Open(V4L2Device::Type::kDecoder,
-                     input_format_fourcc_stateful)) {
-    VLOGF(1) << "Failed to open device for profile: " << profile
-             << " fourcc: " << FourccToString(input_format_fourcc_stateful);
-    input_format_fourcc_stateful = 0;
-  } else {
-    VLOGF(1) << "Found V4L2 device capable of stateful decoding for "
-             << FourccToString(input_format_fourcc_stateful);
-  }
-
-  if (!input_format_fourcc_stateless && !input_format_fourcc_stateful) {
+  if (!api_and_format.has_value()) {
+    VLOGF(1) << "No V4L2 API found for profile: " << GetProfileName(profile);
     std::move(init_cb).Run(StatusCode::kV4l2NoDecoder);
     return;
   }
@@ -206,19 +196,19 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  uint32_t input_format_fourcc;
-  if (input_format_fourcc_stateful) {
+  const auto preferred_api_and_format = api_and_format.value();
+  const uint32_t input_format_fourcc = preferred_api_and_format.second;
+  if (preferred_api_and_format.first == kStateful) {
+    VLOGF(1) << "Using a stateful API for profile: " << GetProfileName(profile)
+             << " and fourcc: " << FourccToString(input_format_fourcc);
     backend_ = std::make_unique<V4L2StatefulVideoDecoderBackend>(
         this, device_, profile, decoder_task_runner_);
-    input_format_fourcc = input_format_fourcc_stateful;
-  } else if (input_format_fourcc_stateless) {
+  } else {
+    DCHECK_EQ(preferred_api_and_format.first, kStateless);
+    VLOGF(1) << "Using a stateless API for profile: " << GetProfileName(profile)
+             << " and fourcc: " << FourccToString(input_format_fourcc);
     backend_ = std::make_unique<V4L2StatelessVideoDecoderBackend>(
         this, device_, profile, decoder_task_runner_);
-    input_format_fourcc = input_format_fourcc_stateless;
-  } else {
-    VLOGF(1) << "No backend capable of taking this profile.";
-    std::move(init_cb).Run(StatusCode::kV4l2FailedResourceAllocation);
-    return;
   }
 
   if (!backend_->Initialize()) {
@@ -227,7 +217,6 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Setup input format.
   if (!SetupInputFormat(input_format_fourcc)) {
     VLOGF(1) << "Failed to setup input format.";
     std::move(init_cb).Run(StatusCode::kV4l2BadFormat);
