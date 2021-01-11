@@ -941,14 +941,22 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
   }
 
   if (handled_should_show) {
+    // If the view that is currently handled should be shown, we immediately
+    // show it; if the other view should be shown as well, we make it invisible
+    // for the moment and start a cyclic animation that will show these two
+    // views alternatively.
     handled_view->SetVisible(true);
     if (other_should_show) {
       other_view->SetVisible(false);
       left_icon_->ScheduleAnimation(handled_view, other_view);
     }
   } else {
+    // If the view that is currently handled should now be invisible, we
+    // immediately hide it and we abort the cyclic animation if it was running.
+    // We also make the other view visible if needed, as its current state
+    // may depend on how long the animation has been running.
     left_icon_->AbortAnimationIfAny();
-    other_view->SetVisible(should_show_easy_unlock_);
+    other_view->SetVisible(other_should_show);
     handled_view->SetVisible(false);
   }
   password_row_->Layout();

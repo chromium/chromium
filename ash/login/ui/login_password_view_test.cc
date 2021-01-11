@@ -356,6 +356,12 @@ TEST_F(LoginPasswordViewTest, SwitchBetweenEasyUnlockAndCapsLock) {
                            base::string16() /*accessibility_label*/);
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // Hide the easy unlock icon, the capslock icon should be shown.
+  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+                           base::string16() /*accessibility_label*/);
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
 }
 
 // Verifies that the password textfield clears after a delay when the display
