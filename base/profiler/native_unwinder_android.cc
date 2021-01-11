@@ -127,10 +127,14 @@ NativeUnwinderAndroid::NativeUnwinderAndroid(
       process_memory_(process_memory),
       exclude_module_with_base_address_(exclude_module_with_base_address) {}
 
-NativeUnwinderAndroid::~NativeUnwinderAndroid() = default;
+NativeUnwinderAndroid::~NativeUnwinderAndroid() {
+  if (module_cache_)
+    module_cache_->UnregisterAuxiliaryModuleProvider(this);
+}
 
-void NativeUnwinderAndroid::AddInitialModules(ModuleCache* module_cache) {
-  AddInitialModulesFromMaps(*memory_regions_map_, module_cache);
+void NativeUnwinderAndroid::InitializeModules(ModuleCache* module_cache) {
+  module_cache_ = module_cache;
+  module_cache_->RegisterAuxiliaryModuleProvider(this);
 }
 
 bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
@@ -215,34 +219,14 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
   return UnwindResult::UNRECOGNIZED_FRAME;
 }
 
-// static
-void NativeUnwinderAndroid::AddInitialModulesFromMaps(
-    const unwindstack::Maps& memory_regions_map,
-    ModuleCache* module_cache) {
-  // The effect of this loop is to create modules for the executable regions in
-  // the memory map. Regions composing a mapped ELF file are handled specially
-  // however: for just one module extending from the ELF base address to the
-  // *last* executable region backed by the file is implicitly created by
-  // ModuleCache. This avoids duplicate module instances covering the same
-  // in-memory module in the case that a module has multiple mmapped executable
-  // regions.
-  for (const std::unique_ptr<unwindstack::MapInfo>& region :
-       memory_regions_map) {
-    if (!(region->flags & PROT_EXEC))
-      continue;
-
-    // Use the standard ModuleCache POSIX module representation for ELF files.
-    // This call returns the containing ELF module for the region, creating it
-    // if it doesn't exist.
-    if (module_cache->GetModuleForAddress(
-            static_cast<uintptr_t>(region->start))) {
-      continue;
-    }
-
-    // Non-ELF modules are represented with NonElfModule.
-    module_cache->AddCustomNativeModule(
-        std::make_unique<NonElfModule>(region.get()));
+std::unique_ptr<const ModuleCache::Module>
+NativeUnwinderAndroid::TryCreateModuleForAddress(uintptr_t address) {
+  unwindstack::MapInfo* map_info = memory_regions_map_->Find(address);
+  if (map_info == nullptr || !(map_info->flags & PROT_EXEC) ||
+      map_info->flags & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
+    return nullptr;
   }
+  return std::make_unique<NonElfModule>(map_info);
 }
 
 void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,

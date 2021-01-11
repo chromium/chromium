@@ -27,7 +27,8 @@ class UnwindStackMemoryAndroid : public unwindstack::Memory {
 };
 
 // Native unwinder implementation for Android, using libunwindstack.
-class NativeUnwinderAndroid : public Unwinder {
+class NativeUnwinderAndroid : public Unwinder,
+                              public ModuleCache::AuxiliaryModuleProvider {
  public:
   // Creates maps object from /proc/self/maps for use by NativeUnwinderAndroid.
   // Since this is an expensive call, the maps object should be re-used across
@@ -35,8 +36,9 @@ class NativeUnwinderAndroid : public Unwinder {
   static std::unique_ptr<unwindstack::Maps> CreateMaps();
   static std::unique_ptr<unwindstack::Memory> CreateProcessMemory();
 
-  // |exclude_module_with_base_address| is used to exclude a specific module
-  // and let another unwinder take control. TryUnwind() will exit with
+  // |memory_regions_map| and |process_memory| must outlive this unwinder.
+  // |exclude_module_with_base_address| is used to exclude a specific module and
+  // let another unwinder take control. TryUnwind() will exit with
   // UNRECOGNIZED_FRAME and CanUnwindFrom() will return false when a frame is
   // encountered in that module.
   NativeUnwinderAndroid(unwindstack::Maps* memory_regions_map,
@@ -48,24 +50,25 @@ class NativeUnwinderAndroid : public Unwinder {
   NativeUnwinderAndroid& operator=(const NativeUnwinderAndroid&) = delete;
 
   // Unwinder
-  void AddInitialModules(ModuleCache* module_cache) override;
+  void InitializeModules(ModuleCache* module_cache) override;
   bool CanUnwindFrom(const Frame& current_frame) const override;
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
                          ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override;
 
-  // Adds modules found from executable loaded memory regions to |module_cache|.
-  // Public for test access.
-  static void AddInitialModulesFromMaps(
-      const unwindstack::Maps& memory_regions_map,
-      ModuleCache* module_cache);
+  // ModuleCache::AuxiliaryModuleProvider
+  std::unique_ptr<const ModuleCache::Module> TryCreateModuleForAddress(
+      uintptr_t address) override;
 
  private:
   void EmitDexFrame(uintptr_t dex_pc,
                     ModuleCache* module_cache,
                     std::vector<Frame>* stack) const;
 
+  // InitializeModules() registers self as an AuxiliaryModuleProvider. A pointer
+  // to the ModuleCache is saved to unregister self in destructor.
+  ModuleCache* module_cache_ = nullptr;
   unwindstack::Maps* const memory_regions_map_;
   unwindstack::Memory* const process_memory_;
   const uintptr_t exclude_module_with_base_address_;

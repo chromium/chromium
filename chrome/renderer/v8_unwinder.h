@@ -22,7 +22,7 @@ class V8Unwinder : public base::Unwinder {
   V8Unwinder& operator=(const V8Unwinder&) = delete;
 
   // Unwinder:
-  void AddInitialModules(base::ModuleCache* module_cache) override;
+  void InitializeModules(base::ModuleCache* module_cache) override;
   void OnStackCapture() override;
   void UpdateModules(base::ModuleCache* module_cache) override;
   bool CanUnwindFrom(const base::Frame& current_frame) const override;

@@ -85,7 +85,7 @@ V8Unwinder::V8Unwinder(v8::Isolate* isolate)
 
 V8Unwinder::~V8Unwinder() = default;
 
-void V8Unwinder::AddInitialModules(base::ModuleCache* module_cache) {
+void V8Unwinder::InitializeModules(base::ModuleCache* module_cache) {
   // This function must be called only once.
   DCHECK(modules_.empty());
 
@@ -109,7 +109,7 @@ void V8Unwinder::OnStackCapture() {
 }
 
 // Update the modules based on what was recorded in |code_ranges_|. The singular
-// embedded code range was already added in in AddInitialModules(). It is
+// embedded code range was already added in in InitializeModules(). It is
 // preserved by the algorithm below, which is why kNonEmbedded is
 // unconditionally passed when creating new modules.
 void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {

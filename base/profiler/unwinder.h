@@ -36,9 +36,12 @@ class Unwinder {
  public:
   virtual ~Unwinder() = default;
 
-  // Invoked to allow the unwinder to add any modules it recognizes to the
-  // ModuleCache.
-  virtual void AddInitialModules(ModuleCache* module_cache) {}
+  // Invoked to allow the unwinder to add any modules it recognizes or register
+  // a module factory to the ModuleCache. This associates this Unwinder with
+  // |module_cache| for the remaining of its lifetime, which is reused in
+  // subsequent methods UpdateModules() and TryUnwinder(). Thus, |module_cache|
+  // must outlive this Unwinder.
+  virtual void InitializeModules(ModuleCache* module_cache) {}
 
   // Invoked at the time the stack is captured. IMPORTANT NOTE: this function is
   // invoked while the target thread is suspended. To avoid deadlock it must not

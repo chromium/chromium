@@ -411,5 +411,68 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
 }
 #endif
 
+// Module provider that always return a fake module of size 1 for a given
+// |address|.
+class MockModuleProvider : public ModuleCache::AuxiliaryModuleProvider {
+ public:
+  explicit MockModuleProvider(size_t module_size = 1)
+      : module_size_(module_size) {}
+
+  std::unique_ptr<const ModuleCache::Module> TryCreateModuleForAddress(
+      uintptr_t address) override {
+    return std::make_unique<FakeModule>(address, module_size_);
+  }
+
+ private:
+  size_t module_size_;
+};
+
+// Check that auxiliary provider can inject new modules when registered.
+TEST(ModuleCacheTest, RegisterAuxiliaryModuleProvider) {
+  ModuleCache cache;
+  EXPECT_EQ(nullptr, cache.GetModuleForAddress(1));
+
+  MockModuleProvider auxiliary_provider;
+  cache.RegisterAuxiliaryModuleProvider(&auxiliary_provider);
+  auto* module = cache.GetModuleForAddress(1);
+  EXPECT_NE(nullptr, module);
+  EXPECT_EQ(1U, module->GetBaseAddress());
+  cache.UnregisterAuxiliaryModuleProvider(&auxiliary_provider);
+
+  // Even when unregistered, the module remains in the cache.
+  EXPECT_EQ(module, cache.GetModuleForAddress(1));
+}
+
+// Check that ModuleCache's own module creator is used preferentially over
+// auxiliary provider if possible.
+MAYBE_TEST(ModuleCacheTest, NativeModuleOverAuxiliaryModuleProvider) {
+  ModuleCache cache;
+
+  MockModuleProvider auxiliary_provider(/*module_size=*/100);
+  cache.RegisterAuxiliaryModuleProvider(&auxiliary_provider);
+
+  const ModuleCache::Module* module =
+      cache.GetModuleForAddress(reinterpret_cast<uintptr_t>(&AFunctionForTest));
+  ASSERT_NE(nullptr, module);
+
+  // The module should be a native module, which will have size greater than 100
+  // bytes.
+  EXPECT_NE(100u, module->GetSize());
+  cache.UnregisterAuxiliaryModuleProvider(&auxiliary_provider);
+}
+
+// Check that auxiliary provider is no longer used after being unregistered.
+TEST(ModuleCacheTest, UnregisterAuxiliaryModuleProvider) {
+  ModuleCache cache;
+
+  EXPECT_EQ(nullptr, cache.GetModuleForAddress(1));
+
+  MockModuleProvider auxiliary_provider;
+  cache.RegisterAuxiliaryModuleProvider(&auxiliary_provider);
+  cache.UnregisterAuxiliaryModuleProvider(&auxiliary_provider);
+
+  EXPECT_EQ(nullptr, cache.GetModuleForAddress(1));
+}
+
 }  // namespace
 }  // namespace base
