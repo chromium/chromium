@@ -30,6 +30,12 @@ DataTransferEndpoint::DataTransferEndpoint(const DataTransferEndpoint& other) =
 DataTransferEndpoint::DataTransferEndpoint(DataTransferEndpoint&& other) =
     default;
 
+DataTransferEndpoint& DataTransferEndpoint::operator=(
+    const DataTransferEndpoint& other) = default;
+
+DataTransferEndpoint& DataTransferEndpoint::operator=(
+    DataTransferEndpoint&& other) = default;
+
 bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
   return origin_ == other.origin_ && type_ == other.type_;
 }

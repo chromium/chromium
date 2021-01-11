@@ -185,7 +185,7 @@ int DragDropController::StartDragAndDrop(
 
   drag_data_ = std::move(data);
   drag_operation_ = operation;
-  current_drag_actions_ = 0;
+  current_drag_info_ = aura::client::DragUpdateInfo();
 
   start_location_ = screen_location;
   current_location_ = screen_location;
@@ -432,7 +432,7 @@ gfx::LinearAnimation* DragDropController::CreateCancelAnimation(
 
 void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
-  int op = ui::DragDropTypes::DRAG_NONE;
+  aura::client::DragUpdateInfo drag_info;
   if (target != drag_window_) {
     if (drag_window_) {
       aura::client::DragDropDelegate* delegate =
@@ -463,25 +463,24 @@ void DragDropController::DragUpdate(aura::Window* target,
                             event.root_location_f(), drag_operation_);
       e.set_flags(event.flags());
       ui::Event::DispatcherApi(&e).set_target(target);
-      op = delegate->OnDragUpdated(e);
+      drag_info = delegate->OnDragUpdated(e);
       gfx::NativeCursor cursor = ui::mojom::CursorType::kNoDrop;
-      if (op & ui::DragDropTypes::DRAG_COPY)
+      if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
         cursor = ui::mojom::CursorType::kCopy;
-      else if (op & ui::DragDropTypes::DRAG_LINK)
+      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
         cursor = ui::mojom::CursorType::kAlias;
-      else if (op & ui::DragDropTypes::DRAG_MOVE)
+      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
         cursor = ui::mojom::CursorType::kGrabbing;
 
       Shell::Get()->cursor_manager()->SetCursor(cursor);
     }
   }
 
-  if (op != current_drag_actions_) {
-    current_drag_actions_ = op;
-
+  if (drag_info.drag_operation != current_drag_info_.drag_operation) {
     for (aura::client::DragDropClientObserver& observer : observers_)
-      observer.OnDragActionsChanged(op);
+      observer.OnDragActionsChanged(drag_info.drag_operation);
   }
+  current_drag_info_ = drag_info;
 
   gfx::Point root_location_in_screen = event.root_location();
   ::wm::ConvertPointToScreen(target->GetRootWindow(), &root_location_in_screen);
@@ -492,7 +491,7 @@ void DragDropController::DragUpdate(aura::Window* target,
   if (drag_image->GetVisible()) {
     current_location_ = root_location_in_screen;
     drag_image->SetScreenPosition(root_location_in_screen - drag_image_offset_);
-    drag_image->SetTouchDragOperation(op);
+    drag_image->SetTouchDragOperation(drag_info.drag_operation);
   }
 
   if (tab_drag_drop_delegate_) {

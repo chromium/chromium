@@ -166,7 +166,8 @@ TEST_F(DataDeviceTest, DataEventsDrop) {
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kEnter, events[1]);
 
-  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK, device_->OnDragUpdated(event));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kMotion, events[0]);
 
@@ -191,7 +192,8 @@ TEST_F(DataDeviceTest, DataEventsExit) {
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kEnter, events[1]);
 
-  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK, device_->OnDragUpdated(event));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kMotion, events[0]);
 
@@ -224,7 +226,8 @@ TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
 
   delegate_.DeleteDataOffer(false);
 
-  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, device_->OnDragUpdated(event));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE,
+            device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
   device_->OnPerformDrop(event);
@@ -242,7 +245,8 @@ TEST_F(DataDeviceTest, DataOfferNotFinished) {
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kEnter, events[1]);
 
-  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK, device_->OnDragUpdated(event));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kMotion, events[0]);
 
@@ -267,7 +271,8 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
   device_->OnDragEntered(event);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
-  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, device_->OnDragUpdated(event));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE,
+            device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
   device_->OnPerformDrop(event);

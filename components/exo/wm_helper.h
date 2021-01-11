@@ -52,7 +52,8 @@ class WMHelper : public aura::client::DragDropDelegate {
   class DragDropObserver {
    public:
     virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
-    virtual int OnDragUpdated(const ui::DropTargetEvent& event) = 0;
+    virtual aura::client::DragUpdateInfo OnDragUpdated(
+        const ui::DropTargetEvent& event) = 0;
     virtual void OnDragExited() = 0;
     virtual int OnPerformDrop(const ui::DropTargetEvent& event) = 0;
 
@@ -147,7 +148,8 @@ class WMHelper : public aura::client::DragDropDelegate {
 
   // Overridden from aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override = 0;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override = 0;
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override = 0;
   void OnDragExited() override = 0;
   int OnPerformDrop(const ui::DropTargetEvent& event,
                     std::unique_ptr<ui::OSExchangeData> data) override = 0;

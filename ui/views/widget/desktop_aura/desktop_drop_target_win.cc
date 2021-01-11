@@ -77,7 +77,7 @@ DWORD DesktopDropTargetWin::OnDragOver(IDataObject* data_object,
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
   if (delegate)
-    drag_operation = delegate->OnDragUpdated(*event);
+    drag_operation = delegate->OnDragUpdated(*event).drag_operation;
 
   return ui::DragDropTypes::DragOperationToDropEffect(drag_operation);
 }

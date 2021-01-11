@@ -237,8 +237,10 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
   int client_operation = ui::DragDropTypes::DRAG_NONE;
   std::unique_ptr<ui::DropTargetEvent> event =
       UpdateTargetAndCreateDropEvent(point, modifiers);
-  if (drag_drop_delegate_ && event)
-    client_operation = drag_drop_delegate_->OnDragUpdated(*event);
+  if (drag_drop_delegate_ && event) {
+    client_operation =
+        drag_drop_delegate_->OnDragUpdated(*event).drag_operation;
+  }
   return client_operation;
 }
 
