@@ -187,12 +187,12 @@ void RendererUpdater::OnSessionRestoreStateChanged(
 }
 #endif
 
-void RendererUpdater::OnPrimaryAccountSet(const CoreAccountInfo& account_info) {
-  UpdateAllRenderers();
-}
-
-void RendererUpdater::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
+void RendererUpdater::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    return;
+  }
   UpdateAllRenderers();
 }
 

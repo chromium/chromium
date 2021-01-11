@@ -65,10 +65,12 @@ class SignInTestObserver : public IdentityManager::Observer,
   }
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo&) override {
-    QuitIfConditionIsSatisfied();
-  }
-  void OnPrimaryAccountCleared(const CoreAccountInfo&) override {
+  void OnPrimaryAccountChanged(
+      const PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(ConsentLevel::kSync) ==
+        PrimaryAccountChangeEvent::Type::kNone) {
+      return;
+    }
     QuitIfConditionIsSatisfied();
   }
   void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo&) override {

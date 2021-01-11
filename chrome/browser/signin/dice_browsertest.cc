@@ -537,9 +537,12 @@ class DiceBrowserTest : public InProcessBrowserTest,
   }
 
   // signin::IdentityManager::Observer
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override {
-    RunClosureIfValid(std::move(on_primary_account_set_quit_closure_));
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      RunClosureIfValid(std::move(on_primary_account_set_quit_closure_));
+    }
   }
 
   void OnRefreshTokenUpdatedForAccount(

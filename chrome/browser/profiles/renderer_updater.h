@@ -61,8 +61,8 @@ class RendererUpdater : public KeyedService,
 #endif
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // Update all renderers due to a configuration change.
   void UpdateAllRenderers();
