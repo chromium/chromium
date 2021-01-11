@@ -3064,10 +3064,10 @@ enum WebFeature {
   kCrossOriginSubframeWithoutEmbeddingControl = 3742,
   kReadableStreamWithByteSource = 3743,
   kReadableStreamBYOBReader = 3744,
-  kEmbedElementWithoutTypeSrcChanged = 3745,
   kSamePartyCookieAttribute = 3746,
   kSamePartyCookieExclusionOverruledSameSite = 3747,
   kSamePartyCookieInclusionOverruledSameSite = 3748,
+  kEmbedElementWithoutTypeSrcChanged = 3749,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
