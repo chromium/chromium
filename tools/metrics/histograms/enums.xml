@@ -41067,6 +41067,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="HandleUpdateOrigins Invalid"/>
 </enum>
 
+<enum name="LaunchCause">
+  <int value="0" label="Other"/>
+</enum>
+
 <enum name="LauncherRankingItemType">
   <summary>
     The type of a result in the Chrome OS launcher, simplified to fewer

@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFact
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.PictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -329,6 +330,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Nullable
     private StartupTabPreloader mStartupTabPreloader;
+
+    private LaunchCauseMetrics mLaunchCauseMetrics;
 
     // TODO(972867): Pull MenuOrKeyboardActionController out of ChromeActivity.
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
@@ -727,6 +730,22 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mManualFillingComponent;
     }
 
+    /**
+     * TODO(mthiesse, https://crbug.com/1163961): Make this function abstract and have derived
+     * classes make their own.
+     * @return The {@link LaunchCauseMetrics} owned by this {@link ChromeActivity}.
+     */
+    protected LaunchCauseMetrics createLaunchCauseMetrics() {
+        return new LaunchCauseMetrics();
+    }
+
+    private LaunchCauseMetrics getLaunchCauseMetrics() {
+        if (mLaunchCauseMetrics == null) {
+            mLaunchCauseMetrics = createLaunchCauseMetrics();
+        }
+        return mLaunchCauseMetrics;
+    }
+
     @Override
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
@@ -922,6 +941,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.onResumeWithNative();
         markSessionResume();
         RecordUserAction.record("MobileComeToForeground");
+        getLaunchCauseMetrics().recordLaunchCause();
 
         Tab tab = getActivityTab();
         if (tab != null) {
