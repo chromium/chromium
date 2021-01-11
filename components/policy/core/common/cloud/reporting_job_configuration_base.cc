@@ -112,8 +112,9 @@ const char
         "chromeVersion";
 
 // static
-base::Value ReportingJobConfigurationBase::BrowserDictionaryBuilder::
-    BuildBrowserDictionary() {
+base::Value
+ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
+    bool include_device_info) {
   base::Value browser_dictionary{base::Value::Type::DICTIONARY};
 
   base::FilePath browser_id;
@@ -121,7 +122,9 @@ base::Value ReportingJobConfigurationBase::BrowserDictionaryBuilder::
     browser_dictionary.SetStringKey(kBrowserId, browser_id.value());
   }
 
-  browser_dictionary.SetStringKey(kMachineUser, GetOSUsername());
+  if (include_device_info)
+    browser_dictionary.SetStringKey(kMachineUser, GetOSUsername());
+
   browser_dictionary.SetStringKey(kChromeVersion,
                                   version_info::GetVersionNumber());
   return browser_dictionary;
@@ -265,6 +268,7 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     CloudPolicyClient* client,
     const std::string& server_url,
+    bool include_device_info,
     UploadCompleteCallback callback)
     : JobConfigurationBase(type,
                            DMAuth::FromDMToken(client->dm_token()),
@@ -274,20 +278,24 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
       callback_(std::move(callback)),
       server_url_(server_url) {
   DCHECK(GetAuth().has_dm_token());
-  InitializePayload(client);
+  InitializePayload(client, include_device_info);
 }
 
 ReportingJobConfigurationBase::~ReportingJobConfigurationBase() = default;
 
 void ReportingJobConfigurationBase::InitializePayload(
-    CloudPolicyClient* client) {
+    CloudPolicyClient* client,
+    bool include_device_info) {
   AddParameter("key", google_apis::GetAPIKey());
 
-  payload_.SetKey(DeviceDictionaryBuilder::kDeviceKey,
-                  DeviceDictionaryBuilder::BuildDeviceDictionary(
-                      client->dm_token(), client->client_id()));
-  payload_.SetKey(BrowserDictionaryBuilder::kBrowserKey,
-                  BrowserDictionaryBuilder::BuildBrowserDictionary());
+  if (include_device_info) {
+    payload_.SetKey(DeviceDictionaryBuilder::kDeviceKey,
+                    DeviceDictionaryBuilder::BuildDeviceDictionary(
+                        client->dm_token(), client->client_id()));
+  }
+  payload_.SetKey(
+      BrowserDictionaryBuilder::kBrowserKey,
+      BrowserDictionaryBuilder::BuildBrowserDictionary(include_device_info));
 }
 
 }  // namespace policy

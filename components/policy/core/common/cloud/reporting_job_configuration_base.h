@@ -81,7 +81,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     // Dictionary Key Name
     static const char kBrowserKey[];
 
-    static base::Value BuildBrowserDictionary();
+    static base::Value BuildBrowserDictionary(bool include_device_info);
 
     static std::string GetBrowserIdPath();
     static std::string GetUserAgentPath();
@@ -120,6 +120,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       CloudPolicyClient* client,
       const std::string& server_url,
+      bool include_device_info,
       UploadCompleteCallback callback);
   ~ReportingJobConfigurationBase() override;
 
@@ -150,8 +151,10 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   UploadCompleteCallback callback_;
 
  private:
-  // Initializes request payload.
-  void InitializePayload(CloudPolicyClient* client);
+  // Initializes request payload. If |include_device_info| is false, the
+  // "device" and "browser.machineUser" fields (see comment at the top of the
+  // file) are excluded from the payload.
+  void InitializePayload(CloudPolicyClient* client, bool include_device_info);
 
   const std::string server_url_;
 

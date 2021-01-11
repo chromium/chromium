@@ -1477,7 +1477,19 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
+
+class CloudPolicyClientUploadSecurityEventTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool include_device_info() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientUploadSecurityEventTest,
+                         testing::Bool());
+
+TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
@@ -1486,7 +1498,8 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
                      base::Unretained(&callback_observer_));
 
-  client_->UploadSecurityEventReport(nullptr, MakeDefaultRealtimeReport(),
+  client_->UploadSecurityEventReport(nullptr, include_device_info(),
+                                     MakeDefaultRealtimeReport(),
                                      std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
@@ -1498,33 +1511,54 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
   base::Optional<base::Value> payload = base::JSONReader::Read(job_payload_);
   ASSERT_TRUE(payload);
 
-  EXPECT_EQ(kDMToken, *payload->FindStringPath(
-                          ReportingJobConfigurationBase::
-                              DeviceDictionaryBuilder::GetDMTokenPath()));
-  EXPECT_EQ(client_id_, *payload->FindStringPath(
-                            ReportingJobConfigurationBase::
-                                DeviceDictionaryBuilder::GetClientIdPath()));
-  EXPECT_EQ(policy::GetOSUsername(),
-            *payload->FindStringPath(
-                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
-                    GetMachineUserPath()));
+  ASSERT_FALSE(policy::GetDeviceName().empty());
   EXPECT_EQ(version_info::GetVersionNumber(),
             *payload->FindStringPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetChromeVersionPath()));
-  EXPECT_EQ(policy::GetOSPlatform(),
-            *payload->FindStringPath(
-                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
-                    GetOSPlatformPath()));
-  EXPECT_EQ(policy::GetOSVersion(),
-            *payload->FindStringPath(
-                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
-                    GetOSVersionPath()));
-  EXPECT_FALSE(policy::GetDeviceName().empty());
-  EXPECT_EQ(
-      policy::GetDeviceName(),
-      *payload->FindStringPath(ReportingJobConfigurationBase::
-                                   DeviceDictionaryBuilder::GetNamePath()));
+
+  if (include_device_info()) {
+    EXPECT_EQ(kDMToken, *payload->FindStringPath(
+                            ReportingJobConfigurationBase::
+                                DeviceDictionaryBuilder::GetDMTokenPath()));
+    EXPECT_EQ(client_id_, *payload->FindStringPath(
+                              ReportingJobConfigurationBase::
+                                  DeviceDictionaryBuilder::GetClientIdPath()));
+    EXPECT_EQ(policy::GetOSUsername(),
+              *payload->FindStringPath(
+                  ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                      GetMachineUserPath()));
+    EXPECT_EQ(policy::GetOSPlatform(),
+              *payload->FindStringPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetOSPlatformPath()));
+    EXPECT_EQ(policy::GetOSVersion(),
+              *payload->FindStringPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetOSVersionPath()));
+    EXPECT_EQ(
+        policy::GetDeviceName(),
+        *payload->FindStringPath(ReportingJobConfigurationBase::
+                                     DeviceDictionaryBuilder::GetNamePath()));
+  } else {
+    EXPECT_FALSE(
+        payload->FindStringPath(ReportingJobConfigurationBase::
+                                    DeviceDictionaryBuilder::GetDMTokenPath()));
+    EXPECT_FALSE(payload->FindStringPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetClientIdPath()));
+    EXPECT_FALSE(payload->FindStringPath(
+        ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+            GetMachineUserPath()));
+    EXPECT_FALSE(payload->FindStringPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetOSPlatformPath()));
+    EXPECT_FALSE(payload->FindStringPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetOSVersionPath()));
+    EXPECT_FALSE(payload->FindStringPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath()));
+  }
 
   base::Value* events =
       payload->FindPath(RealtimeReportingJobConfiguration::kEventListKey);
@@ -1535,7 +1569,7 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
 TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
       client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
-      /*add_connector_url_params=*/false,
+      /*include_device_info*/ true, /*add_connector_url_params=*/false,
       RealtimeReportingJobConfiguration::UploadCompleteCallback());
 
   // Add one report to the config.

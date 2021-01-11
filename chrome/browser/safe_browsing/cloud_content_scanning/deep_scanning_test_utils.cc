@@ -53,8 +53,9 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
         if (!done_closure_.is_null())
@@ -82,8 +83,9 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
         if (!done_closure_.is_null())
@@ -112,8 +114,9 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
         if (!done_closure_.is_null())
@@ -144,13 +147,15 @@ void EventReportValidator::
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
       })
       .WillOnce([this, expected_dlp_verdict](
-                    content::BrowserContext* context, base::Value& report,
+                    content::BrowserContext* context, bool include_device_info,
+                    base::Value& report,
                     base::OnceCallback<void(bool)>& callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
         threat_type_ = base::nullopt;
@@ -184,13 +189,15 @@ void EventReportValidator::
   result_ = expected_result;
   dlp_verdict_ = expected_dlp_verdict;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
       })
       .WillOnce([this, expected_threat_type](
-                    content::BrowserContext* context, base::Value& report,
+                    content::BrowserContext* context, bool include_device_info,
+                    base::Value& report,
                     base::OnceCallback<void(bool)>& callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
         threat_type_ = expected_threat_type;
@@ -221,8 +228,9 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _))
-      .WillOnce([this](content::BrowserContext* context, base::Value& report,
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
         if (!done_closure_.is_null())
@@ -335,7 +343,7 @@ void EventReportValidator::ValidateField(
 }
 
 void EventReportValidator::ExpectNoReport() {
-  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _)).Times(0);
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(0);
 }
 
 void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {

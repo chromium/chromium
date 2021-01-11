@@ -596,6 +596,7 @@ void CloudPolicyClient::UploadChromeOsUserReport(
 
 void CloudPolicyClient::UploadSecurityEventReport(
     content::BrowserContext* context,
+    bool include_device_info,
     base::Value report,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -603,7 +604,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
   CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetReportingConnectorServerUrl(context),
-      add_connector_url_params_, std::move(callback));
+      include_device_info, add_connector_url_params_, std::move(callback));
 }
 
 void CloudPolicyClient::UploadEncryptedReport(
@@ -636,7 +637,8 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value report,
   app_install_report_request_job_ = CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
-      /* add_connector_url_params=*/false, std::move(callback));
+      /* include_device_info */ true, /* add_connector_url_params=*/false,
+      std::move(callback));
   DCHECK(app_install_report_request_job_);
 }
 
@@ -657,6 +659,7 @@ void CloudPolicyClient::UploadExtensionInstallReport(base::Value report,
   extension_install_report_request_job_ = CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
+      /* include_device_info */ true,
       /* add_connector_url_params=*/false, std::move(callback));
   DCHECK(extension_install_report_request_job_);
 }
@@ -702,11 +705,12 @@ void CloudPolicyClient::FetchRemoteCommands(
 DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
     base::Value report,
     const std::string& server_url,
+    bool include_device_info,
     bool add_connector_url_params,
     StatusCallback callback) {
   std::unique_ptr<RealtimeReportingJobConfiguration> config =
       std::make_unique<RealtimeReportingJobConfiguration>(
-          this, server_url, add_connector_url_params,
+          this, server_url, include_device_info, add_connector_url_params,
           base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

@@ -101,12 +101,14 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                     StatusCallback&));
 
   void UploadSecurityEventReport(content::BrowserContext* context,
+                                 bool include_device_info,
                                  base::Value value,
                                  StatusCallback callback) override {
-    UploadSecurityEventReport_(context, value, callback);
+    UploadSecurityEventReport_(context, include_device_info, value, callback);
   }
-  MOCK_METHOD3(UploadSecurityEventReport_,
+  MOCK_METHOD4(UploadSecurityEventReport_,
                void(content::BrowserContext* context,
+                    bool include_device_info,
                     base::Value&,
                     StatusCallback&));
 

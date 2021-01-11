@@ -1043,6 +1043,7 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
   auto* client = settings.per_profile ? profile_client_ : browser_client_;
   client->UploadSecurityEventReport(
       context_,
+      /* include_device_info */ !settings.per_profile,
       policy::RealtimeReportingJobConfiguration::BuildReport(
           std::move(event_list),
           reporting::GetContext(Profile::FromBrowserContext(context_))),

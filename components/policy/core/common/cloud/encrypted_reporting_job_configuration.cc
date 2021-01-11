@@ -31,6 +31,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
                                     client->GetURLLoaderFactory(),
                                     client,
                                     server_url,
+                                    /*include_device_info*/ true,
                                     std::move(complete_cb)) {
   // Merge it into the base class payload.
   payload_.MergeDictionary(&merging_payload);

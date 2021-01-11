@@ -42,12 +42,14 @@ base::Value RealtimeReportingJobConfiguration::BuildReport(
 RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     CloudPolicyClient* client,
     const std::string& server_url,
+    bool include_device_info,
     bool add_connector_url_params,
     UploadCompleteCallback callback)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_REAL_TIME_REPORT,
                                     client->GetURLLoaderFactory(),
                                     client,
                                     server_url,
+                                    include_device_info,
                                     std::move(callback)) {
   InitializePayloadInternal(client, add_connector_url_params);
 }
