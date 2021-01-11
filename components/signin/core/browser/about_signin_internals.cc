@@ -462,13 +462,8 @@ void AboutSigninInternals::OnUnblockReconcile() {
   NotifyObservers();
 }
 
-void AboutSigninInternals::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  NotifyObservers();
-}
-
-void AboutSigninInternals::OnPrimaryAccountCleared(
-    const CoreAccountInfo& primary_account_info) {
+void AboutSigninInternals::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   NotifyObservers();
 }
 
