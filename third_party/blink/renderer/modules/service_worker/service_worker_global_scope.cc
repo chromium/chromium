@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -47,6 +48,7 @@
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_fetch_context.h"
@@ -2406,6 +2408,18 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
         event_data->payment_options->request_shipping);
   }
 
+  // Count standardized payment method identifiers, such as "basic-card" or
+  // "tokenized-card". Omit counting the URL-based payment method identifiers,
+  // such as "https://bobpay.xyz".
+  if (std::any_of(
+          event_data->method_data.begin(), event_data->method_data.end(),
+          [](const payments::mojom::blink::PaymentMethodDataPtr& datum) {
+            return datum && !datum->supported_method.StartsWith("http");
+          })) {
+    UseCounter::Count(
+        this, WebFeature::kPaymentHandlerStandardizedPaymentMethodIdentifier);
+  }
+
   mojo::PendingRemote<payments::mojom::blink::PaymentHandlerHost>
       payment_handler_host = std::move(event_data->payment_handler_host);
   Event* event = PaymentRequestEvent::Create(
@@ -2413,8 +2427,7 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
       PaymentEventDataConversion::ToPaymentRequestEventInit(
           ScriptController()->GetScriptState(), std::move(event_data)),
       std::move(payment_handler_host), respond_with_observer,
-      wait_until_observer,
-      ExecutionContext::From(ScriptController()->GetScriptState()));
+      wait_until_observer, this);
 
   DispatchExtendableEventWithRespondWith(event, wait_until_observer,
                                          respond_with_observer);

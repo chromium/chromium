@@ -30823,6 +30823,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3747" label="SamePartyCookieExclusionOverruledSameSite"/>
   <int value="3748" label="SamePartyCookieInclusionOverruledSameSite"/>
   <int value="3749" label="EmbedElementWithoutTypeSrcChanged"/>
+  <int value="3750" label="PaymentHandlerStandardizedPaymentMethodIdentifier"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
