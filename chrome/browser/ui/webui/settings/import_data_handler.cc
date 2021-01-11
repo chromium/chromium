@@ -40,8 +40,7 @@ const char kImportStatusSucceeded[] = "succeeded";
 const char kImportStatusFailed[] = "failed";
 }  // namespace
 
-ImportDataHandler::ImportDataHandler()
-    : importer_host_(nullptr), import_did_succeed_(false) {
+ImportDataHandler::ImportDataHandler() : importer_host_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -115,6 +114,12 @@ void ImportDataHandler::HandleImportData(const base::ListValue* args) {
   const base::DictionaryValue* types = nullptr;
   CHECK(args->GetDictionary(1, &types));
 
+  if (!importer_list_loaded_ || browser_index < 0 ||
+      browser_index >= static_cast<int>(importer_list_->count())) {
+    // Prevent out-of-bounds access.
+    return;
+  }
+
   uint16_t selected_items = importer::NONE;
   if (*types->FindBoolKey(prefs::kImportDialogAutofillFormData))
     selected_items |= importer::AUTOFILL_FORM_DATA;
@@ -180,6 +185,7 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
 
 void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  importer_list_loaded_ = true;
 
   base::ListValue browser_profiles;
   for (size_t i = 0; i < importer_list_->count(); ++i) {

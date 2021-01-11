@@ -69,7 +69,8 @@ class ImportDataHandler : public SettingsPageUIHandler,
   // of deleting itself when import is complete.
   ExternalProcessImporterHost* importer_host_;  // weak
 
-  bool import_did_succeed_;
+  bool import_did_succeed_{false};
+  bool importer_list_loaded_{false};
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
