@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -27,6 +28,11 @@ constexpr int kSystemButtonMaxLabelWidthDp =
     kUserInfoBubbleWidth - 2 * kUserInfoBubbleExternalPadding -
     kSystemButtonIconSize - kSystemButtonImageLabelSpacing -
     2 * kSystemButtonBorderRadius;
+
+// Default base layer used for the bubble background, above which the system
+// label button lives.
+constexpr const AshColorProvider::BaseLayerType kBubbleLayerType =
+    AshColorProvider::BaseLayerType::kTransparent80;
 
 SkPath GetSystemButtonHighlightPath(const views::View* view) {
   gfx::Rect rect(view->GetLocalBounds());
@@ -108,8 +114,15 @@ void SystemLabelButton::SetAlertMode(bool alert_mode) {
       alert_mode ? AshColorProvider::ContentLayerType::kButtonLabelColorPrimary
                  : AshColorProvider::ContentLayerType::kButtonLabelColor));
 
+  // In default mode, this won't be the exact resulting color of the button as
+  // neither |background_color_| nor the color bubble below are fully opaque.
+  // Nevertheless, the result is visually satisfying and better than without
+  // applying any background color.
+  SkColor effective_background_color = color_utils::GetResultingPaintColor(
+      background_color_,
+      AshColorProvider::Get()->GetBaseLayerColor(kBubbleLayerType));
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(background_color_);
+      AshColorProvider::Get()->GetRippleAttributes(effective_background_color);
   SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);

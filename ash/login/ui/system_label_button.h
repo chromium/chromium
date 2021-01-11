@@ -11,6 +11,8 @@
 namespace ash {
 
 // SystemLabelButton provides styled buttons with label for the login screen.
+// It is assumed that it lives in a login bubble, with a defined background;
+// ripple effects may be inappropriate for a different usage.
 class ASH_EXPORT SystemLabelButton : public views::LabelButton {
  public:
   enum class DisplayType { DEFAULT, ALERT_NO_ICON, ALERT_WITH_ICON };
