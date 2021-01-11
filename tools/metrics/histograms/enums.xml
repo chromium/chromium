@@ -21831,6 +21831,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="File IO error"/>
   <int value="8" label="Dlp interruption"/>
   <int value="9" label="Low disk space"/>
+  <int value="10" label="HDCP interruption"/>
 </enum>
 
 <enum name="EnhancedBookmarkViewMode">

@@ -95,6 +95,20 @@ class ASH_EXPORT CaptureModeController
   // Called when the feedback button on the capture bar is pressed.
   void OpenFeedbackDialog();
 
+  // Sets the |protection_mask| that is currently set on the given |window|. If
+  // the |protection_mask| is |display::CONTENT_PROTECTION_METHOD_NONE|, then
+  // the window will no longer be tracked.
+  // Note that content protection (a.k.a. HDCP (High-bandwidth Digital Content
+  // Protection)) is different from DLP (Data Leak Prevention). The latter is
+  // enforced by admins and applies to both image and video capture, whereas
+  // the former is enforced by apps and content providers and is applied only to
+  // video capture.
+  void SetWindowProtectionMask(aura::Window* window, uint32_t protection_mask);
+
+  // If a video recording is in progress, it will end if so required by content
+  // protection.
+  void RefreshContentProtection();
+
   // recording::mojom::RecordingServiceClient:
   void OnMuxerOutput(const std::string& chunk) override;
   void OnRecordingEnded(bool success) override;
@@ -113,6 +127,10 @@ class ASH_EXPORT CaptureModeController
 
  private:
   friend class CaptureModeTestApi;
+
+  // Returns true if screen recording needs to be blocked due to protected
+  // content. |window| is the window being recorded or desired to be recorded.
+  bool ShouldBlockRecordingForContentProtection(aura::Window* window) const;
 
   // Used by user session change, and suspend events to end the capture mode
   // session if it's active, or stop the video recording if one is in progress.
@@ -275,6 +293,13 @@ class ASH_EXPORT CaptureModeController
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
+
+  // Tracks the windows that currently have content protection enabled, so that
+  // we prevent them from being video recorded. Each window is mapped to its
+  // cureently-set protection_mask. Windows in this map are only the ones that
+  // have protection masks other than |display::CONTENT_PROTECTION_METHOD_NONE|.
+  base::flat_map<aura::Window*, /*protection_mask*/ uint32_t>
+      protected_windows_;
 
   // If set, it will be called when either an image or video file is saved.
   base::OnceCallback<void(const base::FilePath&)> on_file_saved_callback_;

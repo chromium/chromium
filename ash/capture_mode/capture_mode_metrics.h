@@ -25,7 +25,8 @@ enum class EndRecordingReason {
   kFileIoError,
   kDlpInterruption,
   kLowDiskSpace,
-  kMaxValue = kLowDiskSpace,
+  kHdcpInterruption,
+  kMaxValue = kHdcpInterruption,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.

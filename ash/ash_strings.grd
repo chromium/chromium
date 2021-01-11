@@ -3161,6 +3161,9 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Capture Mode -->
+      <message name="IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE" desc="The text of the notification that informs the user the screen recording is blocked due to existence of protected content.">
+        Screen capture is not allowed while protected content is present
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled.">
         Screen capture is blocked
       </message>
