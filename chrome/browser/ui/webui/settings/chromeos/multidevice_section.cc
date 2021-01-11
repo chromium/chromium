@@ -553,13 +553,10 @@ void MultiDeviceSection::OnHostStatusChanged(
         host_status_with_device) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
-  updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
   if (IsOptedIn(host_status_with_device.first)) {
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
-    if (features::IsWifiSyncAndroidEnabled())
-      updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   } else {
     updater.AddSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   }
@@ -571,13 +568,16 @@ void MultiDeviceSection::OnFeatureStatesChanged(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetSmartLockOptionsSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
 
   if (feature_states_map.at(multidevice_setup::mojom::Feature::kSmartLock) ==
       multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
-  if (IsPhoneHubSupported())
+  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kPhoneHub))
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kWifiSync))
+    updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
 }
 
 void MultiDeviceSection::OnNearbySharingEnabledChanged() {
@@ -592,9 +592,10 @@ void MultiDeviceSection::OnNearbySharingEnabledChanged() {
   }
 }
 
-bool MultiDeviceSection::IsPhoneHubSupported() {
-  const FeatureState feature_state = multidevice_setup_client_->GetFeatureState(
-      multidevice_setup::mojom::Feature::kPhoneHub);
+bool MultiDeviceSection::IsFeatureSupported(
+    multidevice_setup::mojom::Feature feature) {
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(feature);
   return feature_state != FeatureState::kNotSupportedByPhone &&
          feature_state != FeatureState::kNotSupportedByChromebook;
 }

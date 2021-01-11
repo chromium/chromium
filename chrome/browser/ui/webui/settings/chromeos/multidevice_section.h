@@ -68,7 +68,7 @@ class MultiDeviceSection
   // Nearby Share enabled pref change observer.
   void OnNearbySharingEnabledChanged();
 
-  bool IsPhoneHubSupported();
+  bool IsFeatureSupported(multidevice_setup::mojom::Feature feature);
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   phonehub::PhoneHubManager* phone_hub_manager_;
