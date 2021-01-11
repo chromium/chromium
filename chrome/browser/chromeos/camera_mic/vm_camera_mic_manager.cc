@@ -302,6 +302,8 @@ void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
   rich_notification_data.pinned = true;
   rich_notification_data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
+  rich_notification_data.fullscreen_visibility =
+      message_center::FullscreenVisibility::OVER_USER;
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationId(vm, type),
