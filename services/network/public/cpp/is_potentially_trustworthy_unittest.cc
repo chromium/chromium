@@ -51,7 +51,6 @@ TEST(IsPotentiallyTrustworthy, Origin) {
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy("javascript:alert('blah')"));
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy("data:test/plain;blah"));
 
-  EXPECT_FALSE(IsOriginPotentiallyTrustworthy("custom-scheme://example.com"));
   EXPECT_TRUE(
       IsOriginPotentiallyTrustworthy("quic-transport://example.com/counter"));
 }
@@ -150,18 +149,39 @@ TEST(IsPotentiallyTrustworthy, Url) {
 
   EXPECT_TRUE(
       IsUrlPotentiallyTrustworthy("quic-transport://example.com/counter"));
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("custom-scheme://example.com"));
 }
 
+// Tests the trustworthiness of an URL and origin whose scheme was added to the
+// custom sets of standard and secure schemes. A scheme must be added to both
+// to be considered trustworthy.
 TEST(IsPotentiallyTrustworthy, CustomScheme) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddSecureScheme("custom-scheme");
+  const char* custom_scheme = "custom-scheme";
+  const char* custom_scheme_example = "custom-scheme://example.com";
 
-  // TODO(crbug.com/1159371): These tests should return true.
-  EXPECT_FALSE(IsOriginPotentiallyTrustworthy(
-      "custom-scheme://578223a1-8c13-17b3-84d5-eca045ae384a/fun.js"));
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
-      "custom-scheme://578223a1-8c13-17b3-84d5-eca045ae384a/fun.js"));
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
+
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddSecureScheme(custom_scheme);
+    EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
+    EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
+  }
+
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
+    EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
+    EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
+  }
+
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
+    url::AddSecureScheme(custom_scheme);
+    EXPECT_TRUE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
+    EXPECT_TRUE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
+  }
 }
 
 // Tests that were for the removed blink::network_utils::IsOriginSecure.

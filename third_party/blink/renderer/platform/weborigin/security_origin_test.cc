@@ -159,6 +159,8 @@ TEST_F(SecurityOriginTest, IsPotentiallyTrustworthy) {
       {false, false, "http://foobar.com"},
       {false, false, "http://foobar.com:443"},
       {false, false, "ws://foobar.com"},
+      // TODO(crbug.com/1163060): Test registration of secure schemes.
+      {false, false, "custom-scheme://example.com"},
 
       // Local files are considered trustworthy.
       {true, false, "file:///home/foobar/index.html"},
@@ -238,6 +240,7 @@ TEST_F(SecurityOriginTest, IsSecure) {
       {false,
        "filesystem:blob:https://example.com/"
        "578223a1-8c13-17b3-84d5-eca045ae384a"},
+      // TODO(crbug.com/1163060): Test registration of secure schemes.
       {false, "custom-scheme://example.com"},
       {true, "quic-transport://example.com/counter"},
       {false, ""},
@@ -249,12 +252,6 @@ TEST_F(SecurityOriginTest, IsSecure) {
         << "URL: '" << test.url << "'";
 
   EXPECT_FALSE(SecurityOrigin::IsSecure(NullURL()));
-}
-
-TEST_F(SecurityOriginTest, IsCustomSchemeSecure) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddSecureScheme("custom-scheme");
-  EXPECT_TRUE(SecurityOrigin::IsSecure(KURL("custom-scheme://example.com")));
 }
 
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
