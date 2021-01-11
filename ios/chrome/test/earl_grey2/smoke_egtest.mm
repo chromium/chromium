@@ -5,6 +5,7 @@
 #import <TestLib/EarlGreyImpl/EarlGrey.h>
 #import <UIKit/UIKit.h>
 
+#import "base/ios/ios_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -291,7 +292,19 @@
 }
 
 // Tests backgrounding app and moving app back through AppLaunchManager.
-- (void)testAppLaunchManagerBackgroundAndForegroundApp {
+// TODO:(crbug.com/1164446): Re-enable this test on simulators.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
+  FLAKY_testAppLaunchManagerBackgroundAndForegroundApp
+#else
+#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
+  testAppLaunchManagerBackgroundAndForegroundApp
+#endif
+- (void)FLAKY_testAppLaunchManagerBackgroundAndForegroundApp {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 12 and lower.");
+  }
+
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGrey waitForMainTabCount:2];
