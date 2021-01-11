@@ -74,7 +74,7 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
   if (!offset.o)
     return false;
 
-  if (rule.semantics() == proto::RULE_SEMANTICS_BLOCKLIST) {
+  if (rule.semantics() == proto::RULE_SEMANTICS_BLACKLIST) {
     blocklist_.IndexUrlRule(offset);
   } else {
     const auto* flat_rule = flatbuffers::GetTemporaryPointer(builder_, offset);
@@ -150,7 +150,7 @@ LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
   if (!rule)
     return LoadPolicy::ALLOW;
 
-  return rule->options() & url_pattern_index::flat::OptionFlag_IS_ALLOWLIST
+  return rule->options() & url_pattern_index::flat::OptionFlag_IS_WHITELIST
              ? LoadPolicy::EXPLICITLY_ALLOW
              : LoadPolicy::DISALLOW;
 }
