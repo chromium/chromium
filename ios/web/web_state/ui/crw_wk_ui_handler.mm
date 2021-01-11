@@ -210,8 +210,8 @@
   web::ContextMenuParams params;
   params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
 
-  delegate->ContextMenuConfiguration(self.webStateImpl, params,
-                                     completionHandler);
+  delegate->ContextMenuConfiguration(
+      self.webStateImpl, params, /*preview_provider=*/nil, completionHandler);
 }
 
 #endif  // End of >iOS13 deprecated block.

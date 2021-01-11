@@ -524,6 +524,8 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 
 - (void)webState:(web::WebState*)webState
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                      previewProvider:
+                          (UIContextMenuContentPreviewProvider)previewProvider
                     completionHandler:
                         (void (^)(UIContextMenuConfiguration*))completionHandler
     API_AVAILABLE(ios(13.0)) {

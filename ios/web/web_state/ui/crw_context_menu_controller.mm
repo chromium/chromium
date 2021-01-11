@@ -146,13 +146,16 @@ const CGFloat kJavaScriptTimeout = 1;
   // delegate's methods.
   [interaction.view addSubview:self.highlightView];
   [interaction.view addSubview:self.dismissView];
+  self.highlightView.center = location;
+  self.dismissView.center = location;
 
   self.params.location = [self.webView convertPoint:location
                                            fromView:interaction.view];
 
   __block UIContextMenuConfiguration* configuration;
   self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, self.params, ^(UIContextMenuConfiguration* conf) {
+      self.webState, self.params, /*preview_provider=*/nil,
+      ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });
 
