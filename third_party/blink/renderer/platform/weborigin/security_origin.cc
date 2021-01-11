@@ -36,6 +36,7 @@
 
 #include "base/i18n/uchar.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -119,7 +120,7 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
     // A temporary exception is made for non-standard local schemes.
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove the local scheme exception.
-    if (SchemeRegistry::ShouldTreatURLSchemeAsLocal(relevant_url.Protocol()))
+    if (base::Contains(url::GetLocalSchemes(), relevant_url.Protocol().Ascii()))
       return false;
 
     // Otherwise, treat non-standard origins as opaque, unless the Android
@@ -301,12 +302,13 @@ String SecurityOrigin::RegistrableDomain() const {
 }
 
 bool SecurityOrigin::IsSecure(const KURL& url) {
-  if (SchemeRegistry::ShouldTreatURLSchemeAsSecure(url.Protocol()))
+  if (base::Contains(url::GetSecureSchemes(), url.Protocol().Ascii()))
     return true;
 
   // URLs that wrap inner URLs are secure if those inner URLs are secure.
-  if (ShouldUseInnerURL(url) && SchemeRegistry::ShouldTreatURLSchemeAsSecure(
-                                    ExtractInnerURL(url).Protocol()))
+  if (ShouldUseInnerURL(url) &&
+      base::Contains(url::GetSecureSchemes(),
+                     ExtractInnerURL(url).Protocol().Ascii()))
     return true;
 
   return SecurityPolicy::IsOriginTrustworthySafelisted(
@@ -416,7 +418,7 @@ bool SecurityOrigin::CanDisplay(const KURL& url) const {
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
 
-  if (SchemeRegistry::ShouldTreatURLSchemeAsLocal(protocol)) {
+  if (base::Contains(url::GetLocalSchemes(), protocol.Ascii())) {
     return CanLoadLocalResources() ||
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
@@ -443,7 +445,7 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
 
   // 3. If origin’s scheme is either "https" or "wss", return "Potentially
   //    Trustworthy".
-  // This is handled by the ShouldTreatURLSchemeAsSecure() call below.
+  // This is handled by the url::GetSecureSchemes() call below.
 
   // 4. If origin’s host component matches one of the CIDR notations 127.0.0.0/8
   //    or ::1/128 [RFC4632], return "Potentially Trustworthy".
@@ -460,7 +462,7 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   //    authenticated, return "Potentially Trustworthy".
   //    Note: See §7.1 Packaged Applications for detail here.
   //
-  if (SchemeRegistry::ShouldTreatURLSchemeAsSecure(protocol_) || IsLocal())
+  if (base::Contains(url::GetSecureSchemes(), protocol_.Ascii()) || IsLocal())
     return true;
 
   // 8. If origin has been configured as a trustworthy origin, return
@@ -500,7 +502,7 @@ void SecurityOrigin::BlockLocalAccessFromLocalOrigin() {
 }
 
 bool SecurityOrigin::IsLocal() const {
-  return SchemeRegistry::ShouldTreatURLSchemeAsLocal(protocol_);
+  return base::Contains(url::GetLocalSchemes(), protocol_.Ascii());
 }
 
 bool SecurityOrigin::IsLocalhost() const {

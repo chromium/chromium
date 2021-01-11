@@ -174,28 +174,40 @@ TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
 
   // A unique origin does not bypass secure context checks unless it
   // is also potentially trustworthy.
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
-  SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
-      "very-special-scheme");
-  NavigateTo(KURL("very-special-scheme://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_FALSE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
+    SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
+        "very-special-scheme");
+    NavigateTo(KURL("very-special-scheme://example.test"),
+               {{http_names::kContentSecurityPolicy, "sandbox"}});
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_FALSE(GetFrame()
+                     .DomWindow()
+                     ->GetSecurityOrigin()
+                     ->IsPotentiallyTrustworthy());
+  }
 
-  SchemeRegistry::RegisterURLSchemeAsSecure("very-special-scheme");
-  NavigateTo(KURL("very-special-scheme://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_TRUE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
+    url::AddSecureScheme("very-special-scheme");
+    NavigateTo(KURL("very-special-scheme://example.test"),
+               {{http_names::kContentSecurityPolicy, "sandbox"}});
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_TRUE(GetFrame()
+                    .DomWindow()
+                    ->GetSecurityOrigin()
+                    ->IsPotentiallyTrustworthy());
 
-  NavigateTo(KURL("https://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_TRUE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+    NavigateTo(KURL("https://example.test"),
+               {{http_names::kContentSecurityPolicy, "sandbox"}});
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_TRUE(GetFrame()
+                    .DomWindow()
+                    ->GetSecurityOrigin()
+                    ->IsPotentiallyTrustworthy());
+  }
 }
 
 // Tests ExecutionContext::GetContentSecurityPolicyForCurrentWorld().

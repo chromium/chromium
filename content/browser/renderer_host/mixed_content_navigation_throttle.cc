@@ -36,7 +36,6 @@ namespace content {
 
 namespace {
 
-// Should return the same value as SchemeRegistry::shouldTreatURLSchemeAsSecure.
 bool IsSecureScheme(const std::string& scheme) {
   return base::Contains(url::GetSecureSchemes(), scheme);
 }

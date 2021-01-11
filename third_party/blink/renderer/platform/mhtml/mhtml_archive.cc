@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
@@ -284,7 +285,7 @@ bool MHTMLArchive::CanLoadArchive(const KURL& url) {
   // MHTML pages can only be loaded from local URLs, http/https URLs, and
   // content URLs(Android specific).  The latter is now allowed due to full
   // sandboxing enforcement on MHTML pages.
-  if (SchemeRegistry::ShouldTreatURLSchemeAsLocal(url.Protocol()))
+  if (base::Contains(url::GetLocalSchemes(), url.Protocol().Ascii()))
     return true;
   if (url.ProtocolIsInHTTPFamily())
     return true;

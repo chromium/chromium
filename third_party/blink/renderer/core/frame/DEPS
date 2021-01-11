@@ -25,6 +25,9 @@ specific_include_rules = {
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
+  "mhtml_archive_test\.cc": [
+    "+services/network/public/cpp/is_potentially_trustworthy.h",
+  ],
   "remote_frame_view\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",

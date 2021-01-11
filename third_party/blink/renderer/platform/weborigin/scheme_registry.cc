@@ -69,10 +69,6 @@ class URLSchemesRegistry final {
         service_worker_schemes({"http", "https"}),
         fetch_api_schemes({"http", "https"}),
         allowed_in_referrer_schemes({"http", "https"}) {
-    for (auto& scheme : url::GetLocalSchemes())
-      local_schemes.insert(scheme.c_str());
-    for (auto& scheme : url::GetSecureSchemes())
-      secure_schemes.insert(scheme.c_str());
     for (auto& scheme : url::GetNoAccessSchemes())
       schemes_with_unique_origins.insert(scheme.c_str());
     for (auto& scheme : url::GetCorsEnabledSchemes())
@@ -94,9 +90,7 @@ class URLSchemesRegistry final {
   //   initialization.
   //   Particularly, Strings inside them shouldn't be copied, as it modifies
   //   reference counts of StringImpls (IsolatedCopy() should be taken instead).
-  URLSchemesSet local_schemes;
   URLSchemesSet display_isolated_url_schemes;
-  URLSchemesSet secure_schemes;
   URLSchemesSet schemes_with_unique_origins;
   URLSchemesSet empty_document_schemes;
   URLSchemesSet schemes_forbidden_from_domain_relaxation;
@@ -136,18 +130,6 @@ URLSchemesRegistry& GetMutableURLSchemesRegistry() {
 
 }  // namespace
 
-void SchemeRegistry::RegisterURLSchemeAsLocal(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
-  GetMutableURLSchemesRegistry().local_schemes.insert(scheme);
-}
-
-bool SchemeRegistry::ShouldTreatURLSchemeAsLocal(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
-    return false;
-  return GetURLSchemesRegistry().local_schemes.Contains(scheme);
-}
-
 bool SchemeRegistry::ShouldTreatURLSchemeAsNoAccess(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
   if (scheme.IsEmpty())
@@ -172,18 +154,6 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsRestrictingMixedContent(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return scheme == "https";
-}
-
-void SchemeRegistry::RegisterURLSchemeAsSecure(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
-  GetMutableURLSchemesRegistry().secure_schemes.insert(scheme);
-}
-
-bool SchemeRegistry::ShouldTreatURLSchemeAsSecure(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
-    return false;
-  return GetURLSchemesRegistry().secure_schemes.Contains(scheme);
 }
 
 bool SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(const String& scheme) {

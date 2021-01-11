@@ -163,7 +163,6 @@ TEST_F(SecurityOriginTest, IsPotentiallyTrustworthy) {
       {false, false, "http://foobar.com"},
       {false, false, "http://foobar.com:443"},
       {false, false, "ws://foobar.com"},
-      // TODO(crbug.com/1163060): Test registration of secure schemes.
       {false, false, "custom-scheme://example.com"},
 
       // Local files are considered trustworthy.
@@ -258,7 +257,6 @@ TEST_F(SecurityOriginTest, IsSecure) {
       {false,
        "filesystem:blob:https://example.com/"
        "578223a1-8c13-17b3-84d5-eca045ae384a"},
-      // TODO(crbug.com/1163060): Test registration of secure schemes.
       {false, "custom-scheme://example.com"},
       {true, "quic-transport://example.com/counter"},
       {false, ""},
@@ -270,6 +268,48 @@ TEST_F(SecurityOriginTest, IsSecure) {
         << "URL: '" << test.url << "'";
 
   EXPECT_FALSE(SecurityOrigin::IsSecure(NullURL()));
+}
+
+// Tests the trustworthiness of an URL and origin whose scheme was added to the
+// custom sets of standard and secure schemes. A scheme must be added to both
+// to be considered trustworthy.
+TEST_F(SecurityOriginTest, CustomScheme) {
+  const char* custom_scheme = "custom-scheme";
+  const char* custom_scheme_example = "custom-scheme://example.com";
+  KURL url = KURL(custom_scheme_example);
+  {
+    EXPECT_FALSE(SecurityOrigin::IsSecure(url));
+    scoped_refptr<const SecurityOrigin> origin =
+        SecurityOrigin::CreateFromString(custom_scheme_example);
+    EXPECT_FALSE(origin->IsPotentiallyTrustworthy());
+  }
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddSecureScheme(custom_scheme);
+    // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure always consider
+    // non-standard schemes as insecure?
+    EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+    scoped_refptr<const SecurityOrigin> origin =
+        SecurityOrigin::CreateFromString(custom_scheme_example);
+    EXPECT_FALSE(origin->IsPotentiallyTrustworthy());
+  }
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
+    EXPECT_FALSE(SecurityOrigin::IsSecure(url));
+    scoped_refptr<const SecurityOrigin> origin =
+        SecurityOrigin::CreateFromString(custom_scheme_example);
+    EXPECT_FALSE(origin->IsPotentiallyTrustworthy());
+  }
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
+    url::AddSecureScheme(custom_scheme);
+    EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+    scoped_refptr<const SecurityOrigin> origin =
+        SecurityOrigin::CreateFromString(custom_scheme_example);
+    EXPECT_TRUE(origin->IsPotentiallyTrustworthy());
+  }
 }
 
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
@@ -706,7 +746,6 @@ TEST_F(SecurityOriginTest, CanonicalizeHost) {
 TEST_F(SecurityOriginTest, UrlOriginConversions) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddLocalScheme("nonstandard-but-local");
-  SchemeRegistry::RegisterURLSchemeAsLocal("nonstandard-but-local");
   struct TestCases {
     const char* const url;
     const char* const scheme;

@@ -49,16 +49,7 @@ class PLATFORM_EXPORT SchemeRegistry {
   STATIC_ONLY(SchemeRegistry);
 
  public:
-  static void RegisterURLSchemeAsLocal(const String&);
-  static bool ShouldTreatURLSchemeAsLocal(const String&);
-
   static bool ShouldTreatURLSchemeAsRestrictingMixedContent(const String&);
-
-  // Subresources transported by secure schemes do not trigger mixed content
-  // warnings. For example, https and data are secure schemes because they
-  // cannot be corrupted by active network attackers.
-  static void RegisterURLSchemeAsSecure(const String&);
-  static bool ShouldTreatURLSchemeAsSecure(const String&);
 
   static bool ShouldTreatURLSchemeAsNoAccess(const String&);
 

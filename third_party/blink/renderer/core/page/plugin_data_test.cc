@@ -39,7 +39,6 @@ TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
   // Create a scheme that's local but nonstandard, as in bug 862282.
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddLocalScheme("nonstandard-862282");
-  SchemeRegistry::RegisterURLSchemeAsLocal("nonstandard-862282");
 
   MockPluginRegistry mock_plugin_registry;
   mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
