@@ -8,6 +8,7 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/webapps/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/webapps/android/add_to_homescreen_params.h"
 #endif
 
 namespace webapps {
@@ -95,6 +97,13 @@ void ChromeWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
       feature_engagement::TrackerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   tracker->NotifyEvent(feature_engagement::events::kPwaInstallMenuSelected);
+}
+
+void ChromeWebappsClient::InstallWebApk(content::WebContents* web_contents,
+                                        const AddToHomescreenParams& params) {
+  WebApkInstallService::Get(web_contents->GetBrowserContext())
+      ->InstallAsync(web_contents, *(params.shortcut_info), params.primary_icon,
+                     params.has_maskable_primary_icon, params.install_source);
 }
 #endif
 

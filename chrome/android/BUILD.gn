@@ -716,7 +716,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/android/webapk/webapk_install_service.h",
     "//chrome/browser/android/webapk/webapk_installer.h",
     "//chrome/browser/android/webapk/webapk_types.h",
-    "//chrome/browser/android/webapps/add_to_homescreen_params.h",
     "//chrome/browser/banners/app_banner_settings_helper.h",
     "//chrome/browser/download/android/download_open_source.h",
     "//chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h",

@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
+import org.chromium.components.webapps.addtohomescreen.AppType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 

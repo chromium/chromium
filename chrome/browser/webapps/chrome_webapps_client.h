@@ -31,6 +31,8 @@ class ChromeWebappsClient : public WebappsClient {
   bool CanShowAppBanners(content::WebContents* web_contents) override;
   void OnWebApkInstallInitiatedFromAppMenu(
       content::WebContents* web_contents) override;
+  void InstallWebApk(content::WebContents* web_contents,
+                     const AddToHomescreenParams& params) override;
 #endif
 
  private:

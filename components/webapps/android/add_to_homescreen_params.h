@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_PARAMS_H_
-#define CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_PARAMS_H_
+#ifndef COMPONENTS_WEBAPPS_ANDROID_ADD_TO_HOMESCREEN_PARAMS_H_
+#define COMPONENTS_WEBAPPS_ANDROID_ADD_TO_HOMESCREEN_PARAMS_H_
 
 #include <memory>
 #include <string>
@@ -19,7 +19,7 @@ struct ShortcutInfo;
 struct AddToHomescreenParams {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
-  //  org.chromium.chrome.browser.webapps.addtohomescreen)
+  //  org.chromium.components.webapps.addtohomescreen)
   enum class AppType {
     NATIVE,
     WEBAPK,
@@ -40,4 +40,4 @@ struct AddToHomescreenParams {
 
 }  // namespace webapps
 
-#endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_PARAMS_H_
+#endif  // COMPONENTS_WEBAPPS_ANDROID_ADD_TO_HOMESCREEN_PARAMS_H_

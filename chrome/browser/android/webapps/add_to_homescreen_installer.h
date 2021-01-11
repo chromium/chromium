@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_INSTALLER_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/android/webapps/add_to_homescreen_params.h"
+#include "components/webapps/android/add_to_homescreen_params.h"
 
 namespace content {
 class WebContents;

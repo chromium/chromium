@@ -35,7 +35,10 @@ generate_jni("webapps_jni_headers") {
 }
 
 java_cpp_enum("webapps_java_enums_srcjar") {
-  sources = [ "shortcut_info.h" ]
+  sources = [
+    "add_to_homescreen_params.h",
+    "shortcut_info.h",
+  ]
 }
 
 android_resources("java_resources") {

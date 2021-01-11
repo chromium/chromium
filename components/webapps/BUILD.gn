@@ -36,6 +36,8 @@ source_set("webapps") {
 
   if (is_android) {
     sources += [
+      "android/add_to_homescreen_params.cc",
+      "android/add_to_homescreen_params.h",
       "android/features.cc",
       "android/features.h",
       "android/installable/installable_ambient_badge_infobar.cc",

@@ -22,6 +22,7 @@ namespace webapps {
 
 enum class InstallTrigger;
 enum class WebappInstallSource;
+struct AddToHomescreenParams;
 
 // Interface to be implemented by the embedder (such as Chrome or WebLayer) to
 // expose embedder specific logic.
@@ -53,6 +54,9 @@ class WebappsClient {
 
   virtual void OnWebApkInstallInitiatedFromAppMenu(
       content::WebContents* web_contents) = 0;
+
+  virtual void InstallWebApk(content::WebContents* web_contents,
+                             const AddToHomescreenParams& params) = 0;
 #endif
 };
 

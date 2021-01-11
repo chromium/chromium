@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.banners.AppData;
 import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
 import org.chromium.chrome.browser.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.WebappsIconUtils;
+import org.chromium.components.webapps.addtohomescreen.AppType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;

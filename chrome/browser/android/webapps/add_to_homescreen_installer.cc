@@ -10,7 +10,7 @@
 #include "chrome/android/chrome_jni_headers/AddToHomescreenInstaller_jni.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "components/webapps/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 
 namespace webapps {
@@ -32,7 +32,7 @@ void AddToHomescreenInstaller::Install(
       InstallOrOpenNativeApp(web_contents, params, event_callback);
       break;
     case AddToHomescreenParams::AppType::WEBAPK:
-      InstallWebApk(web_contents, params);
+      WebappsClient::Get()->InstallWebApk(web_contents, params);
       break;
     case AddToHomescreenParams::AppType::SHORTCUT:
       InstallShortcut(web_contents, params);
@@ -60,15 +60,6 @@ void AddToHomescreenInstaller::InstallOrOpenNativeApp(
   event_callback.Run(was_successful ? Event::NATIVE_INSTALL_OR_OPEN_SUCCEEDED
                                     : Event::NATIVE_INSTALL_OR_OPEN_FAILED,
                      params);
-}
-
-// static
-void AddToHomescreenInstaller::InstallWebApk(
-    content::WebContents* web_contents,
-    const AddToHomescreenParams& params) {
-  WebApkInstallService::Get(web_contents->GetBrowserContext())
-      ->InstallAsync(web_contents, *(params.shortcut_info), params.primary_icon,
-                     params.has_maskable_primary_icon, params.install_source);
 }
 
 // static
