@@ -460,9 +460,15 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
       options.android_manifest)
 
   if extra_manifest:
-    _, _, extra_app_nodes = manifest_utils.ParseManifest(extra_manifest)
-    for node in extra_app_nodes:
+    _, extra_manifest_node, extra_app_node = manifest_utils.ParseManifest(
+        extra_manifest)
+    for node in extra_app_node:
       app_node.append(node)
+    for node in extra_manifest_node:
+      # DFM manifests have a bunch of tags we don't care about inside
+      # <manifest>, so only take <queries>.
+      if node.tag == 'queries':
+        manifest_node.append(node)
 
   manifest_utils.AssertUsesSdk(manifest_node, options.min_sdk_version,
                                options.target_sdk_version)
