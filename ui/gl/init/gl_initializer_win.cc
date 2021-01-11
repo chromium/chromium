@@ -17,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
-#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -45,7 +44,7 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
   return true;
 }
 
-bool InitializeStaticEGLInternal(GLImplementation implementation) {
+bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
     return false;
@@ -67,6 +66,9 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
 #endif
   } else {
     gles_path = module_path;
+#if BUILDFLAG(USE_STATIC_ANGLE)
+    NOTREACHED();
+#endif
   }
 
   // Load libglesv2.dll before libegl.dll because the latter is dependent on
@@ -103,8 +105,26 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   SetGLGetProcAddressProc(get_proc_address);
   AddGLNativeLibrary(egl_library);
   AddGLNativeLibrary(gles_library);
-  SetGLImplementation(implementation);
 
+  return true;
+}
+
+bool InitializeStaticEGLInternal(GLImplementation implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  if (implementation == kGLImplementationEGLANGLE) {
+    // Use ANGLE if it is requested and it is statically linked
+    if (!InitializeStaticANGLEEGL())
+      return false;
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation)) {
+    return false;
+  }
+#else
+  if (!InitializeStaticEGLInternalFromLibrary(implementation)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
+
+  SetGLImplementation(implementation);
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
 

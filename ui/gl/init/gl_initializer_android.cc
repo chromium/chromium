@@ -9,30 +9,16 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
-
-#if BUILDFLAG(USE_STATIC_ANGLE)
-#include <EGL/egl.h>
-#endif  // BUILDFLAG(USE_STATIC_ANGLE)
+#include "ui/gl/init/gl_initializer.h"
 
 namespace gl {
 namespace init {
 
 namespace {
-
-#if BUILDFLAG(USE_STATIC_ANGLE)
-bool InitializeStaticANGLEEGLInternal() {
-#pragma push_macro("eglGetProcAddress")
-#undef eglGetProcAddress
-  SetGLGetProcAddressProc(&eglGetProcAddress);
-#pragma pop_macro("eglGetProcAddress")
-  return true;
-}
-#endif  // BUILDFLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticNativeEGLInternal() {
   base::NativeLibrary gles_library = LoadLibraryAndPrintError("libGLESv2.so");
@@ -68,7 +54,7 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
   // Use ANGLE if it is requested and it is statically linked
   if (implementation == kGLImplementationEGLANGLE) {
-    initialized = InitializeStaticANGLEEGLInternal();
+    initialized = InitializeStaticANGLEEGL();
   }
 #endif  // BUILDFLAG(USE_STATIC_ANGLE)
 

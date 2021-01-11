@@ -8,7 +8,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
-  # False by default, enabling currently supported only on Android
   use_static_angle = is_android
 
   # Should EGL support be compiled?

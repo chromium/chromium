@@ -31,15 +31,16 @@ component("init") {
 
   public_deps = [ "//ui/gl" ]
 
+  if (use_static_angle) {
+    sources += [ "gl_initializer_angle.cc" ]
+    deps += [ "//third_party/angle:libEGL_static" ]
+  }
+
   if (is_android) {
     sources += [
       "gl_factory_android.cc",
       "gl_initializer_android.cc",
     ]
-
-    if (use_static_angle) {
-      deps += [ "//third_party/angle:libEGL_static" ]
-    }
   } else if (is_win && !use_ozone) {
     sources += [
       "gl_factory_win.cc",
