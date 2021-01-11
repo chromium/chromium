@@ -6985,7 +6985,8 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
 }
 
 bool RenderFrameHostImpl::IsFocused() {
-  if (!GetRenderWidgetHost()->is_focused() || !frame_tree_->GetFocusedFrame())
+  if (!GetMainFrame()->GetRenderWidgetHost()->is_focused() ||
+      !frame_tree_->GetFocusedFrame())
     return false;
 
   RenderFrameHostImpl* focused_rfh =
