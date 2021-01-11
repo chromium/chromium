@@ -154,6 +154,32 @@ class PredictionModelDownloadManagerTest : public testing::Test {
         switches::kDisableModelDownloadVerificationForTesting);
   }
 
+  // Retries until the path has been deleted or until all handles to |path| have
+  // been closed. Returns whether |path| has been deleted.
+  //
+  // See crbug/1156112#c1 for suggested mitigation steps.
+  bool HasPathBeenDeleted(const base::FilePath& path) {
+    while (true) {
+      RunUntilIdle();
+
+      bool path_exists = base::PathExists(path);
+      if (!path_exists)
+        return true;
+
+      base::File::Error file_error = base::File::GetLastFileError();
+      // In the event this does not fix the flake, log the error so we know what
+      // it is.
+      // TODO(crbug/1156112): Remove this log once the flake has been resolved.
+      DLOG(ERROR) << "Path Exists Error: " << file_error;
+
+      if (file_error != base::File::FILE_ERROR_ACCESS_DENIED)
+        return !path_exists;
+
+      // Retry if the last file error is access denied since it's likely that
+      // the file is in the process of being deleted.
+    }
+  }
+
  private:
   void WriteFileForStatus(PredictionModelDownloadFileStatus status) {
     if (status == PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles ||
@@ -383,7 +409,7 @@ TEST_F(PredictionModelDownloadManagerTest, UnverifiedFileShouldDeleteTempFile) {
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kUnverifiedFile)));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager."
@@ -403,7 +429,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles)));
 
   histogram_tester.ExpectUniqueSample(
@@ -426,7 +452,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile)));
 
   histogram_tester.ExpectUniqueSample(
@@ -449,7 +475,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo)));
 
   histogram_tester.ExpectUniqueSample(
@@ -471,7 +497,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::
           kVerfiedCrxWithValidModelInfoNoModelFile)));
 
@@ -506,7 +532,7 @@ TEST_F(
           .value(),
       FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123.tflite"));
   // Downloaded file should still be deleted.
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles)));
 
   histogram_tester.ExpectUniqueSample(
