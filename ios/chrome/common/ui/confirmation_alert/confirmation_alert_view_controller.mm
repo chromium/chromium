@@ -26,6 +26,8 @@ NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier =
     @"kConfirmationAlertPrimaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier =
     @"kConfirmationAlertSecondaryActionAccessibilityIdentifier";
+NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
+    @"kConfirmationAlertTertiaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertBarPrimaryActionAccessibilityIdentifier =
     @"kConfirmationAlertBarPrimaryActionAccessibilityIdentifier";
 
@@ -33,6 +35,7 @@ namespace {
 
 constexpr CGFloat kButtonVerticalInsets = 17;
 constexpr CGFloat kPrimaryButtonCornerRadius = 13;
+constexpr CGFloat kScrollViewBottomInsets = 20;
 constexpr CGFloat kStackViewSpacing = 8;
 constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
 constexpr CGFloat kGeneratedImagePadding = 20;
@@ -50,6 +53,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // collection changes.
 @property(nonatomic, strong) UIButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
+@property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UIToolbar* topToolbar;
 @property(nonatomic, strong) NSArray* regularHeightToolbarItems;
 @property(nonatomic, strong) NSArray* compactHeightToolbarItems;
@@ -63,7 +67,8 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     NSLayoutConstraint* regularHeightScrollViewBottomVerticalConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* compactHeightScrollViewBottomVerticalConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* buttonBottomVerticalConstraint;
+@property(nonatomic, strong)
+    NSLayoutConstraint* buttonStackViewBottomVerticalConstraint;
 @end
 
 @implementation ConfirmationAlertViewController
@@ -125,9 +130,12 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   centerYConstraint.priority = heightConstraint.priority - 1;
   centerYConstraint.active = YES;
 
-  // Constraint the content of the scroll view to the size of the stack view.
-  // This defines the content area.
-  AddSameConstraints(self.stackView, scrollView);
+  // Constraint the content of the scroll view to the size of the stack view
+  // with some bottom margin space in between the two. This defines the content
+  // area.
+  AddSameConstraintsWithInsets(
+      self.stackView, scrollView,
+      ChromeDirectionalEdgeInsetsMake(0, 0, kScrollViewBottomInsets, 0));
 
   // Disable horizontal scrolling and constraint the content size to the scroll
   // view size.
@@ -147,65 +155,44 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                                          multiplier:kSafeAreaMultiplier],
   ];
 
-  if (self.primaryActionAvailable) {
-    UIButton* primaryActionButton = [self createPrimaryActionButton];
-    [self.view addSubview:primaryActionButton];
-
-    // Primary Action Button constraints.
-    self.buttonBottomVerticalConstraint = [primaryActionButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
-    [NSLayoutConstraint activateConstraints:@[
-      [primaryActionButton.leadingAnchor
-          constraintEqualToAnchor:scrollView.leadingAnchor],
-      [primaryActionButton.trailingAnchor
-          constraintEqualToAnchor:scrollView.trailingAnchor],
-    ]];
-
-    self.primaryActionButton = primaryActionButton;
-  }
-
-  if (self.secondaryActionAvailable) {
-    UIButton* secondaryActionButton = [self createSecondaryActionButton];
-    [self.view addSubview:secondaryActionButton];
-
-    // Secondary Action Button constraints.
-    self.buttonBottomVerticalConstraint = [secondaryActionButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
-    [NSLayoutConstraint activateConstraints:@[
-      [secondaryActionButton.leadingAnchor
-          constraintEqualToAnchor:scrollView.leadingAnchor],
-      [secondaryActionButton.trailingAnchor
-          constraintEqualToAnchor:scrollView.trailingAnchor]
-    ]];
-
-    self.secondaryActionButton = secondaryActionButton;
-  }
-
-  // The bottom anchor for the scroll view. It will be updated to the button top
-  // anchor if it exists.
+  // The bottom anchor for the scroll view.
   NSLayoutYAxisAnchor* scrollViewBottomAnchor =
       self.view.safeAreaLayoutGuide.bottomAnchor;
+  BOOL hasActionButton = self.primaryActionAvailable ||
+                         self.secondaryActionAvailable ||
+                         self.tertiaryActionAvailable;
+  if (hasActionButton) {
+    UIStackView* actionStackView = [[UIStackView alloc] init];
+    actionStackView.alignment = UIStackViewAlignmentFill;
+    actionStackView.axis = UILayoutConstraintAxisVertical;
+    actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (self.primaryActionAvailable || self.secondaryActionAvailable) {
-    // Set the ScrollView bottom anchor to the top anchor of the highest
-    // positioned button. It is always |primaryActionButton| if it is there,
-    // |secondaryActionButton| otherwise.
-    scrollViewBottomAnchor = self.primaryActionButton
-                                 ? self.primaryActionButton.topAnchor
-                                 : self.secondaryActionButton.topAnchor;
-    // Add |buttonBottomVerticalConstraint|. It is always the
-    // |secondaryActionButton|'s bottom anchor if it is there,
-    // |primaryActionButton|'s otherwise.
-    self.buttonBottomVerticalConstraint.active = YES;
-
-    if (self.primaryActionAvailable && self.secondaryActionAvailable) {
-      // If both buttons are there, then |primaryActionButton| needs to be
-      // constrainted to the top of |secondaryActionButton|.
-      [NSLayoutConstraint activateConstraints:@[
-        [self.primaryActionButton.bottomAnchor
-            constraintEqualToAnchor:self.secondaryActionButton.topAnchor]
-      ]];
+    if (self.primaryActionAvailable) {
+      self.primaryActionButton = [self createPrimaryActionButton];
+      [actionStackView addArrangedSubview:self.primaryActionButton];
     }
+
+    if (self.secondaryActionAvailable) {
+      self.secondaryActionButton = [self createSecondaryActionButton];
+      [actionStackView addArrangedSubview:self.secondaryActionButton];
+    }
+
+    if (self.tertiaryActionAvailable) {
+      self.tertiaryActionButton = [self createTertiaryButton];
+      [actionStackView addArrangedSubview:self.tertiaryActionButton];
+    }
+
+    [self.view addSubview:actionStackView];
+    self.buttonStackViewBottomVerticalConstraint = [actionStackView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    [NSLayoutConstraint activateConstraints:@[
+      [actionStackView.leadingAnchor
+          constraintEqualToAnchor:scrollView.leadingAnchor],
+      [actionStackView.trailingAnchor
+          constraintEqualToAnchor:scrollView.trailingAnchor],
+      self.buttonStackViewBottomVerticalConstraint
+    ]];
+    scrollViewBottomAnchor = actionStackView.topAnchor;
   }
 
   self.regularHeightScrollViewBottomVerticalConstraint =
@@ -289,10 +276,11 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   CGFloat marginValue =
       self.view.layoutMargins.left - self.view.safeAreaInsets.left;
   if (!self.secondaryActionAvailable) {
-    // Do not add margin badding between the bottom button and the containing
-    // view if there is a secondary action button to allow for more spacing
-    // between the content and buttons.
-    self.buttonBottomVerticalConstraint.constant = -marginValue;
+    // Do not add margin padding between the bottom button and the containing
+    // view if the primary button is the bottom button to allow for more visual
+    // spacing between the content and the button. The secondary button has a
+    // transparent background so the visual spacing already exists.
+    self.buttonStackViewBottomVerticalConstraint.constant = -marginValue;
   }
   if (self.traitCollection.horizontalSizeClass ==
       UIUserInterfaceSizeClassCompact) {
@@ -378,6 +366,15 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 - (void)didTapSecondaryActionButton {
   DCHECK(self.secondaryActionAvailable);
   [self.actionHandler confirmationAlertSecondaryAction];
+}
+
+- (void)didTapTertiaryActionButton {
+  DCHECK(self.tertiaryActionAvailable);
+  if (![self.actionHandler
+          respondsToSelector:@selector(confirmationAlertTertiaryAction)]) {
+    return;
+  }
+  [self.actionHandler confirmationAlertTertiaryAction];
 }
 
 // Helper to create the top toolbar.
@@ -609,6 +606,39 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 #endif  // defined(__IPHONE_13_4)
 
   return secondaryActionButton;
+}
+
+- (UIButton*)createTertiaryButton {
+  DCHECK(self.tertiaryActionAvailable);
+  UIButton* tertiaryActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [tertiaryActionButton addTarget:self
+                           action:@selector(didTapTertiaryActionButton)
+                 forControlEvents:UIControlEventTouchUpInside];
+  [tertiaryActionButton setTitle:self.tertiaryActionString
+                        forState:UIControlStateNormal];
+  tertiaryActionButton.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
+  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
+  [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
+  tertiaryActionButton.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  tertiaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
+  tertiaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+  tertiaryActionButton.accessibilityIdentifier =
+      kConfirmationAlertTertiaryActionAccessibilityIdentifier;
+
+#if defined(__IPHONE_13_4)
+  if (@available(iOS 13.4, *)) {
+    if (self.pointerInteractionEnabled) {
+      tertiaryActionButton.pointerInteractionEnabled = YES;
+      tertiaryActionButton.pointerStyleProvider =
+          CreateOpaqueButtonPointerStyleProvider();
+    }
+  }
+#endif  // defined(__IPHONE_13_4)
+
+  return tertiaryActionButton;
 }
 
 @end

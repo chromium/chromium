@@ -12,6 +12,7 @@ extern NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertTitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier;
+extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 extern NSString* const
     kConfirmationAlertBarPrimaryActionAccessibilityIdentifier;
 
@@ -20,6 +21,11 @@ extern NSString* const
 // A view controller useful to show modal alerts and confirmations. The main
 // content consists in a big image, a title, and a subtitle which are contained
 // in a scroll view for cases when the content doesn't fit in the screen.
+// The view controller can have up to three action buttons, which are position
+// in the bottom. They are arranged, from top to bottom,
+// |primaryActionAvailable|, |secondaryActionAvailable|,
+// |tertiaryActionAvailable|. Setting those properties to YES will make those
+// buttons be added to the view controller.
 @interface ConfirmationAlertViewController : UIViewController
 
 // The headline below the image. Must be set before the view is loaded.
@@ -44,6 +50,13 @@ extern NSString* const
 
 // The text for the secondary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* secondaryActionString;
+
+// Controls if there is a tertiary action in the view. Must be set before the
+// view is loaded.
+@property(nonatomic) BOOL tertiaryActionAvailable;
+
+// The text for the tertiary action. Must be set before the view is loaded.
+@property(nonatomic, copy) NSString* tertiaryActionString;
 
 // The image. Must be set before the view is loaded.
 @property(nonatomic, strong) UIImage* image;

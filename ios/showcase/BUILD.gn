@@ -30,6 +30,7 @@ group("features") {
     "//ios/showcase/bubble",
     "//ios/showcase/content_suggestions",
     "//ios/showcase/credential_provider",
+    "//ios/showcase/default_browser",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",
@@ -76,6 +77,7 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
     "//ios/showcase/content_suggestions:eg2_tests",
     "//ios/showcase/core:eg2_tests",
     "//ios/showcase/credential_provider:eg2_tests",
+    "//ios/showcase/default_browser:eg2_tests",
     "//ios/showcase/infobars:eg2_tests",
     "//ios/showcase/text_badge_view:eg2_tests",
   ]

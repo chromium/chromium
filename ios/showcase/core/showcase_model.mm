@@ -167,6 +167,12 @@
       showcase::kClassForInstantiationKey : @"SCIncognitoReauthViewController",
       showcase::kUseCaseKey : @"Incognito Reauth Blocker",
     },
+    @{
+      showcase::kClassForDisplayKey : @"DefaultBrowserPromoViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCDefaultBrowserFullscreenPromoCoordinator",
+      showcase::kUseCaseKey : @"Default Browser Fullscreen Promo UI",
+    },
   ];
 }
 
