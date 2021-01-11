@@ -1956,15 +1956,15 @@ crbug.com/669083 http/tests/security/frameNavigation/xss-DENIED-top-navigation-w
 # 3) site isolation is enabled without also enabling
 #    IsolatedCodeCache (tests disabled by the test expectation below).
 http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
-# ----------------------- origin isolation ------------------------------
-# Origin isolation web platform tests are for the opt-in Origin Isolation
-# feature at https://github.com/WICG/origin-isolation. It doesn't make sense to
-# test that feature when web-platform.test domains are being forced into
-# origin-isolation mode. Note that since we also want coverage of this feature
-# with site isolation enabled, we use a different virtual test suite than
-# not-site-per-process, named no-auto-wpt-origin-isolation.
-external/wpt/origin-isolation/* [ Skip ]
-virtual/no-auto-wpt-origin-isolation/external/wpt/origin-isolation/* [ Pass ]
+# ----------------------- origin-keyed agent clusters --------------------
+# Origin-keyed agent clusters web platform tests are for the feature at
+# https://html.spec.whatwg.org/#origin-keyed-agent-clusters. It doesn't make
+# sense to test that feature when web-platform.test domains are being forced
+# into origin-isolation mode. Note that since we also want coverage of this
+# feature with site isolation enabled, we use a different virtual test suite
+# than not-site-per-process, named no-auto-wpt-origin-isolation.
+external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
+virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Pass ]
 # ==== Tests incompatible with the default WPT Origin Isolation end here ==^^
 
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally fail on Win7,

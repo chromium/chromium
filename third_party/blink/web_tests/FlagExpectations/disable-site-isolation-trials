@@ -25,5 +25,5 @@ crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]
 
-# Opt-in origin isolation is intentionally disabled with --disable-site-isolation-trials.
-virtual/no-auto-wpt-origin-isolation/external/wpt/origin-isolation/* [ Skip ]
+# Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
+virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
