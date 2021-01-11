@@ -1365,6 +1365,8 @@ bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
         !engine->safe_for_autoreplace(),
         // Prefer engines created by Play API.
         engine->created_from_play_api(),
+        // Favor prepopulated engines over other auto-generated engines.
+        engine->prepopulate_id() > 0,
         // More recently modified engines or created engines win.
         engine->last_modified(), engine->date_created(),
         // TODO(tommycli): This should be a tie-breaker than provides a total

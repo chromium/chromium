@@ -459,7 +459,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest, AddOmniboxExtensionKeyword);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest, ExtensionsWithSameKeywords);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest,
-                           CheckEnginesWithSameKeywords);
+                           KeywordConflictNonReplaceableEngines);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest, LastVisitedTimeUpdate);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest,
                            RepairPrepopulatedSearchEngines);
