@@ -241,6 +241,16 @@ const char* PageSwitcher::GetClassName() const {
   return "PageSwitcher";
 }
 
+void PageSwitcher::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (!buttons_)
+    return;
+  for (auto* child : buttons_->children()) {
+    if (child->GetVisible())
+      child->SchedulePaint();
+  }
+}
+
 void PageSwitcher::OnButtonPressed(views::Button* sender,
                                    const ui::Event& event) {
   if (!model_ || ignore_button_press_)

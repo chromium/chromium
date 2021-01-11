@@ -38,6 +38,7 @@ class PageSwitcher : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   void set_ignore_button_press(bool ignore) { ignore_button_press_ = ignore; }
   void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
