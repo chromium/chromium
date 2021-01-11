@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -699,8 +698,6 @@ class CORE_EXPORT LocalFrame final
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& window_controls_overlay_rect) override;
 
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;
@@ -738,16 +735,6 @@ class CORE_EXPORT LocalFrame final
 
   WebURLLoader::DeferType GetLoadDeferType();
   bool IsLoadDeferred();
-
-  // For PWAs with display_overrides, these getters are information about the
-  // titlebar bounds sent over from the browser via UpdateWindowControlsOverlay
-  // in LocalMainFrame that are needed to persist the lifetime of the frame.
-  bool IsWindowControlsOverlayVisible() const {
-    return is_window_controls_overlay_visible_;
-  }
-  DOMRect* GetWindowControlsOverlayRect() const {
-    return window_controls_overlay_rect_;
-  }
 
  private:
   friend class FrameNavigationDisabler;
@@ -983,9 +970,6 @@ class CORE_EXPORT LocalFrame final
   TransientAllowFullscreen transient_allow_fullscreen_;
 
   std::unique_ptr<PolicyContainer> policy_container_;
-
-  bool is_window_controls_overlay_visible_ = false;
-  Member<DOMRect> window_controls_overlay_rect_ = DOMRect::Create(0, 0, 0, 0);
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

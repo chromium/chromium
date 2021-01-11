@@ -513,7 +513,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(text_fragment_selector_generator_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
-  visitor->Trace(window_controls_overlay_rect_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -2759,14 +2758,6 @@ void LocalFrame::UpdateBrowserControlsState(
 
   GetWidgetForLocalRoot()->UpdateBrowserControlsState(constraints, current,
                                                       animate);
-}
-
-void LocalFrame::UpdateWindowControlsOverlay(
-    const gfx::Rect& window_controls_overlay_rect) {
-  const auto& rect = window_controls_overlay_rect;
-  window_controls_overlay_rect_ =
-      DOMRect::Create(rect.x(), rect.y(), rect.width(), rect.height());
-  is_window_controls_overlay_visible_ = !rect.IsEmpty();
 }
 
 void LocalFrame::RequestFullscreenVideoElement() {

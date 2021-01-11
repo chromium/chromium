@@ -810,10 +810,5 @@
               "scrollingcoordinator/plugin-with-wheel-handler.html",
               "scrollingcoordinator/non-fast-scrollable-region-nested.html"],
     "args": ["--enable-features=WheelEventRegions"]
-  },
-  {
-    "prefix": "web-app-window-controls-overlay",
-    "bases": ["external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.html"],
-    "args": [ "--enable-features=WebAppWindowControlsOverlay"]
   }
 ]
