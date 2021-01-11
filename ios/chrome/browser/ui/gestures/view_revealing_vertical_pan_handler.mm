@@ -9,6 +9,7 @@
 #include "base/numerics/ranges.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -435,7 +436,7 @@ const CGFloat kAnimationDuration = 0.25f;
       // starts dragging from the top.
       CGFloat contentOffsetY =
           scrollView.contentOffset.y + scrollView.contentInset.top;
-      if (contentOffsetY != 0) {
+      if (!AreCGFloatsEqual(contentOffsetY, 0.0)) {
         return;
       }
       break;
