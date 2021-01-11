@@ -4749,6 +4749,8 @@ domain Network
       optional CookieSameSite sameSite
       # Cookie Priority
       experimental CookiePriority priority
+      # True if cookie is SameParty.
+      experimental boolean sameParty
 
   # Types of reasons why a cookie may not be stored from a response.
   experimental type SetCookieBlockedReason extends string

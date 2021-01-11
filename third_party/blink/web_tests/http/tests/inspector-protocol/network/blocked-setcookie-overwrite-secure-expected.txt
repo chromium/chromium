@@ -11,6 +11,7 @@ set-cookie that would overwrite secure cookie blocked set-cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             secure : false
             session : true
             size : 9

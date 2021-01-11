@@ -12,6 +12,7 @@ ResponseReceivedExtraInfo blocked cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             secure : true
             session : true
             size : 9
@@ -32,6 +33,7 @@ RequestWillBeSentExtraInfo blocked cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             secure : true
             session : true
             size : 9

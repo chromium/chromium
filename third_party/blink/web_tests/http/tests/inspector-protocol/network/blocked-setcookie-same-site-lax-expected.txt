@@ -12,6 +12,7 @@ Javascript initiated subresource blocked set-cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             sameSite : Lax
             secure : false
             session : true

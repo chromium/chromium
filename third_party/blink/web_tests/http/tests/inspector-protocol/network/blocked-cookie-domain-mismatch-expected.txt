@@ -12,6 +12,7 @@ requestWillBeSentExtraInfo blocked cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             secure : false
             session : true
             size : 9

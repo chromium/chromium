@@ -155,6 +155,7 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetSecure(cookie.IsSecure())
           .SetSession(!cookie.IsPersistent())
           .SetPriority(cp)
+          .SetSameParty(cookie.IsSameParty())
           .Build();
 
   switch (cookie.SameSite()) {
