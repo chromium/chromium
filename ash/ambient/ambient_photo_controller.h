@@ -58,8 +58,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void StartScreenUpdate();
   void StopScreenUpdate();
 
-  void ScheduleFetchBackupImages();
-
   AmbientBackendModel* ambient_backend_model() {
     return &ambient_backend_model_;
   }
@@ -68,7 +66,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
     return photo_refresh_timer_;
   }
 
-  const base::OneShotTimer& backup_photo_refresh_timer_for_testing() const {
+  base::OneShotTimer& backup_photo_refresh_timer_for_testing() {
     return backup_photo_refresh_timer_;
   }
 
@@ -78,10 +76,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Clear cache when Settings changes.
   void ClearCache();
 
-  void InitCache();
-
  private:
   friend class AmbientAshTestBase;
+  friend class AmbientPhotoControllerTest;
 
   void FetchTopics();
 
@@ -90,6 +87,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void ScheduleFetchTopics(bool backoff);
 
   void ScheduleRefreshImage();
+
+  void ScheduleFetchBackupImages();
 
   // Download backup cache images.
   void FetchBackupImages();

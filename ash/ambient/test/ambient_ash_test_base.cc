@@ -185,10 +185,6 @@ void AmbientAshTestBase::SetUp() {
   ambient_controller()->set_backend_controller_for_testing(nullptr);
   ambient_controller()->set_backend_controller_for_testing(
       std::make_unique<FakeAmbientBackendControllerImpl>());
-  photo_controller()->set_photo_cache_for_testing(
-      std::make_unique<TestAmbientPhotoCacheImpl>());
-  photo_controller()->set_backup_photo_cache_for_testing(
-      std::make_unique<TestAmbientPhotoCacheImpl>());
   token_controller()->SetTokenUsageBufferForTesting(
       base::TimeDelta::FromSeconds(30));
   SetAmbientModeEnabled(true);
@@ -202,6 +198,14 @@ void AmbientAshTestBase::TearDown() {
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       ambient::prefs::kAmbientModeEnabled, enabled);
+
+  if (enabled) {
+    photo_controller()->set_photo_cache_for_testing(
+        std::make_unique<TestAmbientPhotoCacheImpl>());
+    photo_controller()->set_backup_photo_cache_for_testing(
+        std::make_unique<TestAmbientPhotoCacheImpl>());
+    photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
+  }
 }
 
 void AmbientAshTestBase::ShowAmbientScreen() {
