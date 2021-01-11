@@ -523,7 +523,7 @@
       'Mac10.13 Tests (dbg)': {
         # https://crbug.com/1152770
         'args': [
-          '--test-launcher-jobs=1',
+          '--test-launcher-jobs=2',
         ],
         'swarming': {
           'shards': 20,

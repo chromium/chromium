@@ -5654,7 +5654,7 @@
       },
       {
         "args": [
-          "--test-launcher-jobs=1"
+          "--test-launcher-jobs=2"
         ],
         "merge": {
           "args": [],
