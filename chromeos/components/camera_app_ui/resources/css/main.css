@@ -1609,6 +1609,7 @@ body.photo.scan-barcode .barcode-scan-box {
   left: 50%;
   max-width: min(80%, var(--chip-max-width));
   opacity: 1;
+  pointer-events: auto;
   position: absolute;
   /* Avoid collision with scan-box and preview-box */
   top: max(8px, min(10%, 33.33% - var(--text-line-height) -
