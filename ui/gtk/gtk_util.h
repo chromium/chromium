@@ -26,17 +26,11 @@ namespace base {
 class CommandLine;
 }
 
-namespace color_utils {
-struct HSL;
-}
-
 namespace ui {
 class KeyEvent;
 }
 
 namespace gtk {
-
-extern const color_utils::HSL kDefaultTintFrameIncognito;
 
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
 

@@ -932,19 +932,14 @@ void GtkUi::UpdateColors() {
     const std::string header_selector_inactive = header_selector + ":backdrop";
     const SkColor frame_color =
         SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
-    const SkColor frame_color_incognito =
-        color_utils::HSLShift(frame_color, kDefaultTintFrameIncognito);
     const SkColor frame_color_inactive =
         SkColorSetA(GetBgColor(header_selector_inactive), SK_AlphaOPAQUE);
-    const SkColor frame_color_incognito_inactive =
-        color_utils::HSLShift(frame_color_inactive, kDefaultTintFrameIncognito);
 
     color_map[ThemeProperties::COLOR_FRAME_ACTIVE] = frame_color;
     color_map[ThemeProperties::COLOR_FRAME_INACTIVE] = frame_color_inactive;
-    color_map[ThemeProperties::COLOR_FRAME_ACTIVE_INCOGNITO] =
-        frame_color_incognito;
+    color_map[ThemeProperties::COLOR_FRAME_ACTIVE_INCOGNITO] = frame_color;
     color_map[ThemeProperties::COLOR_FRAME_INACTIVE_INCOGNITO] =
-        frame_color_incognito_inactive;
+        frame_color_inactive;
 
     // Compose the window color on the frame color to ensure the resulting tab
     // color is opaque.
@@ -969,20 +964,12 @@ void GtkUi::UpdateColors() {
         background_tab_text_color;
     color_map[ThemeProperties::
                   COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO] =
-        color_utils::BlendForMinContrast(
-            color_utils::HSLShift(background_tab_text_color,
-                                  kDefaultTintFrameIncognito),
-            frame_color_incognito)
-            .color;
+        background_tab_text_color;
     color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE] =
         background_tab_text_color_inactive;
     color_map[ThemeProperties::
                   COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO] =
-        color_utils::BlendForMinContrast(
-            color_utils::HSLShift(background_tab_text_color_inactive,
-                                  kDefaultTintFrameIncognito),
-            frame_color_incognito_inactive)
-            .color;
+        background_tab_text_color_inactive;
 
     color_map[ThemeProperties::COLOR_OMNIBOX_TEXT] =
         native_theme_->GetSystemColor(

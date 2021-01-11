@@ -172,7 +172,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // Distinguishes between active (foreground) and inactive
     // (background) window frame styles.
     bool is_active;
-    bool incognito;
     // True when Chromium renders the titlebar.  False when the window
     // manager renders the titlebar.
     bool use_custom_frame;

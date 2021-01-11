@@ -105,7 +105,6 @@ void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
   ui::NativeTheme::ExtraParams params;
   params.frame_top_area.use_custom_frame = use_custom_frame_;
   params.frame_top_area.is_active = is_active_;
-  params.frame_top_area.incognito = incognito_;
   params.frame_top_area.default_background_color = frame_color_;
   native_theme->Paint(canvas->sk_canvas(), ui::NativeTheme::kFrameTopArea,
                       ui::NativeTheme::kNormal,

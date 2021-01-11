@@ -116,11 +116,6 @@ int GetKeyEventProperty(const ui::KeyEvent& key_event,
 
 namespace gtk {
 
-// TODO(thomasanderson): ThemeService has a whole interface just for reading
-// default constants. Figure out what to do with that more long term; for now,
-// just copy the constant itself here.
-const color_utils::HSL kDefaultTintFrameIncognito = {-1, 0.2f, 0.35f};
-
 void GtkInitFromCommandLine(const base::CommandLine& command_line) {
   CommonInitFromCommandLine(command_line);
 }

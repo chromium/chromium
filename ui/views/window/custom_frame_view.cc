@@ -192,7 +192,6 @@ void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
   frame_background_->set_frame_color(GetFrameColor());
   frame_background_->set_use_custom_frame(true);
   frame_background_->set_is_active(ShouldPaintAsActive());
-  frame_background_->set_incognito(false);
   const gfx::ImageSkia frame_image = GetFrameImage();
   frame_background_->set_theme_image(frame_image);
   frame_background_->set_top_area_height(frame_image.height());

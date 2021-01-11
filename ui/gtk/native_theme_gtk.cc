@@ -9,7 +9,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_util.h"
 
@@ -711,13 +710,7 @@ void NativeThemeGtk::PaintFrameTopArea(
 
   SkBitmap bitmap =
       GetWidgetBitmap(rect.size(), context, BG_RENDER_RECURSIVE, false);
-
-  if (frame_top_area.incognito) {
-    bitmap = SkBitmapOperations::CreateHSLShiftedBitmap(
-        bitmap, kDefaultTintFrameIncognito);
-    bitmap.setImmutable();
-  }
-
+  bitmap.setImmutable();
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
                     rect.x(), rect.y());
 }
