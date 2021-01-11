@@ -60,10 +60,11 @@ bool FieldTrialParamAssociator::GetFieldTrialParamsWithoutFallback(
   AutoLock scoped_lock(lock_);
 
   const FieldTrialRefKey key(trial_name, group_name);
-  if (!Contains(field_trial_params_, key))
+  auto it = field_trial_params_.find(key);
+  if (it == field_trial_params_.end())
     return false;
 
-  *params = field_trial_params_[key];
+  *params = it->second;
   return true;
 }
 
