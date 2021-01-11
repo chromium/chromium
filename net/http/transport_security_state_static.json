@@ -75,7 +75,6 @@
         "GlobalSignRootCA_R2"
       ],
       "bad_static_spki_hashes": [
-        "GlobalSignRootCA",
         "GlobalSignExtendedValidationCA",
         "GlobalSignExtendedValidationCA_G2",
         "GlobalSignExtendedValidationCA_SHA256_G2"
