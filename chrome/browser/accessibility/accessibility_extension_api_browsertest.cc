@@ -17,7 +17,16 @@
 
 namespace extensions {
 
-using AccessibilityPrivateApiTest = ExtensionApiTest;
+class AccessibilityPrivateApiTest : public ExtensionApiTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kSelectToSpeakNavigationControl);
+    ExtensionApiTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
   ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",

@@ -117,7 +117,7 @@ bool IsAriaElementReflectionEnabled() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kSelectToSpeakNavigationControl{
-    "SelectToSpeakNavigationControl", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SelectToSpeakNavigationControl", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsSelectToSpeakNavigationControlEnabled() {
   return base::FeatureList::IsEnabled(
