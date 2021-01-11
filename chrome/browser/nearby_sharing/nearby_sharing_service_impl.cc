@@ -153,36 +153,6 @@ bool IsOutOfStorage(base::FilePath file_path,
   return free_space < storage_required;
 }
 
-bool DoAttachmentsExceedThreshold(const ShareTarget& share_target,
-                                  int64_t threshold) {
-  for (const auto& attachment : share_target.text_attachments) {
-    if (attachment.size() > threshold)
-      return false;
-
-    threshold -= attachment.size();
-  }
-
-  for (const auto& attachment : share_target.file_attachments) {
-    if (attachment.size() > threshold)
-      return false;
-
-    threshold -= attachment.size();
-  }
-
-  return true;
-}
-
-DataUsage CheckFileSizeForDataUsagePreference(DataUsage client_preference,
-                                              const ShareTarget& share_target) {
-  if (client_preference == DataUsage::kOffline)
-    return client_preference;
-
-  if (DoAttachmentsExceedThreshold(share_target, kOnlineFileSizeLimitBytes))
-    return DataUsage::kOffline;
-
-  return client_preference;
-}
-
 int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
   crypto::RandBytes(&payload_id, sizeof(payload_id));
@@ -2266,16 +2236,13 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   base::Optional<std::vector<uint8_t>> bluetooth_mac_address =
       GetBluetoothMacAddress(share_target);
 
-  DataUsage adjusted_data_usage = CheckFileSizeForDataUsagePreference(
-      settings_.GetDataUsage(), share_target);
-
   // For metrics.
   cancelled_share_target_ids_.clear();
 
   // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
       std::move(endpoint_info), *info->endpoint_id(),
-      std::move(bluetooth_mac_address), adjusted_data_usage,
+      std::move(bluetooth_mac_address), settings_.GetDataUsage(),
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingConnection,
                      weak_ptr_factory_.GetWeakPtr(), share_target,
                      base::TimeTicks::Now()));

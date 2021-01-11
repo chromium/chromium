@@ -41,15 +41,39 @@ bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
       net::NetworkChangeNotifier::GetConnectionType();
 
   // Verify that this network has an internet connection.
-  if (connection_type == net::NetworkChangeNotifier::CONNECTION_NONE)
+  if (connection_type == net::NetworkChangeNotifier::CONNECTION_NONE) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Do not use WebRTC; no internet connection.";
     return false;
+  }
 
   // If the user wants to limit WebRTC, then only use it on unmetered networks.
-  if (data_usage == DataUsage::kWifiOnly)
-    return !net::NetworkChangeNotifier::IsConnectionCellular(connection_type);
+  if (data_usage == DataUsage::kWifiOnly &&
+      net::NetworkChangeNotifier::IsConnectionCellular(connection_type)) {
+    NS_LOG(VERBOSE) << __func__ << ": Do not use WebRTC with " << data_usage
+                    << " and a cellular conneciton.";
+    return false;
+  }
 
   // We're online, the user hasn't disabled WebRTC, let's use it!
   return true;
+}
+
+std::string MediumSelectionToString(
+    const location::nearby::connections::mojom::MediumSelection& mediums) {
+  std::stringstream ss;
+  ss << "{";
+  if (mediums.bluetooth)
+    ss << "bluetooth ";
+  if (mediums.ble)
+    ss << "ble ";
+  if (mediums.web_rtc)
+    ss << "webrtc ";
+  if (mediums.wifi_lan)
+    ss << "wifilan ";
+  ss << "}";
+
+  return ss.str();
 }
 
 }  // namespace
@@ -92,6 +116,10 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
       /*bluetooth=*/is_high_power, /*ble=*/use_ble,
       ShouldEnableWebRtc(data_usage, power_level),
       /*wifi_lan=*/is_high_power && kIsWifiLanSupported);
+  NS_LOG(VERBOSE) << __func__ << ": "
+                  << "is_high_power=" << (is_high_power ? "yes" : "no")
+                  << ", data_usage=" << data_usage << ", allowed_mediums="
+                  << MediumSelectionToString(*allowed_mediums);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
   connection_lifecycle_listeners_.Add(
@@ -142,6 +170,9 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
       /*ble=*/true,
       /*webrtc=*/ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
       /*wifi_lan=*/kIsWifiLanSupported);
+  NS_LOG(VERBOSE) << __func__ << ": "
+                  << "data_usage=" << data_usage << ", allowed_mediums="
+                  << MediumSelectionToString(*allowed_mediums);
 
   discovery_listener_ = listener;
   nearby_connections_->StartDiscovery(
@@ -188,6 +219,9 @@ void NearbyConnectionsManagerImpl::Connect(
       /*bluetooth=*/true,
       /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
       /*wifi_lan=*/kIsWifiLanSupported);
+  NS_LOG(VERBOSE) << __func__ << ": "
+                  << "data_usage=" << data_usage << ", allowed_mediums="
+                  << MediumSelectionToString(*allowed_mediums);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
   connection_lifecycle_listeners_.Add(
