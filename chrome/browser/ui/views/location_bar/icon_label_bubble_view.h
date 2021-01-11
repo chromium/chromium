@@ -20,6 +20,7 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
@@ -41,6 +42,8 @@ class ImageView;
 class IconLabelBubbleView : public views::InkDropObserver,
                             public views::LabelButton {
  public:
+  METADATA_HEADER(IconLabelBubbleView);
+
   static constexpr int kTrailingPaddingPreMd = 2;
 
   class Delegate {
@@ -172,10 +175,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // the animation is set to fully shown or fully hidden.
   void ResetSlideAnimation(bool show);
 
-  // Returns true iff the slide animation has started, has not ended and is
-  // currently paused.
-  bool is_animation_paused() const { return is_animation_paused_; }
-
   // Slide animation for label.
   gfx::SlideAnimation slide_animation_{this};
 
@@ -217,9 +216,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Padding after the separator. If this separator is shown, this includes the
   // separator width.
   int GetEndPaddingWithSeparator() const;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // Disables highlights and calls Show on the slide animation, should not be
   // called directly, use AnimateIn() instead, which handles label visibility.

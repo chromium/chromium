@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -16,6 +15,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class OmniboxView;
@@ -37,6 +37,8 @@ class BubbleDialogDelegate;
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {
  public:
+  METADATA_HEADER(PageActionIconView);
+
   class Delegate {
    public:
     // Gets the opacity to use for the ink highlight.
@@ -56,15 +58,18 @@ class PageActionIconView : public IconLabelBubbleView {
     virtual const OmniboxView* GetOmniboxView() const;
   };
 
+  PageActionIconView(const PageActionIconView&) = delete;
+  PageActionIconView& operator=(const PageActionIconView&) = delete;
   ~PageActionIconView() override;
 
   // Updates the color of the icon, this must be set before the icon is drawn.
   void SetIconColor(SkColor icon_color);
+  SkColor GetIconColor() const;
 
   // Sets the active state of the icon. An active icon will be displayed in a
   // "call to action" color.
   void SetActive(bool active);
-  bool active() const { return active_; }
+  bool GetActive() const;
 
   // Hide the icon on user input in progress and invokes UpdateImpl().
   void Update();
@@ -135,7 +140,6 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // IconLabelBubbleView:
   void OnTouchUiChanged() override;
-  const char* GetClassName() const override;
 
   // Updates the icon image after some state has changed.
   virtual void UpdateIconImage();
@@ -181,8 +185,6 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // The loading indicator, showing a throbber animation on top of the icon.
   PageActionIconLoadingIndicatorView* loading_indicator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

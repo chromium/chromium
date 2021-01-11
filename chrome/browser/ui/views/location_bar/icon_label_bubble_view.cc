@@ -30,6 +30,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -439,10 +440,6 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
   return end_padding;
 }
 
-const char* IconLabelBubbleView::GetClassName() const {
-  return "IconLabelBubbleView";
-}
-
 void IconLabelBubbleView::SetUpForAnimation() {
   SetInkDropMode(InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -566,3 +563,12 @@ void IconLabelBubbleView::UpdateBorder() {
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
 }
+
+BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)
+ADD_READONLY_PROPERTY_METADATA(SkColor, ForegroundColor)
+ADD_READONLY_PROPERTY_METADATA(double, AnimationValue)
+ADD_READONLY_PROPERTY_METADATA(int, InternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, ExtraInternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, WidthBetweenIconAndSeparator)
+ADD_READONLY_PROPERTY_METADATA(int, EndPaddingWithSeparator)
+END_METADATA

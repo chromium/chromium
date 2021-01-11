@@ -126,12 +126,12 @@ void ReaderModeIconView::UpdateImpl() {
 }
 
 const gfx::VectorIcon& ReaderModeIconView::GetVectorIcon() const {
-  return active() ? kReaderModeIcon : kReaderModeDisabledIcon;
+  return GetActive() ? kReaderModeIcon : kReaderModeDisabledIcon;
 }
 
 base::string16 ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(active() ? IDS_EXIT_DISTILLED_PAGE
-                                            : IDS_DISTILL_PAGE);
+  return l10n_util::GetStringUTF16(GetActive() ? IDS_EXIT_DISTILLED_PAGE
+                                               : IDS_DISTILL_PAGE);
 }
 
 const char* ReaderModeIconView::GetClassName() const {
@@ -146,7 +146,7 @@ views::BubbleDialogDelegate* ReaderModeIconView::GetBubble() const {
 
 void ReaderModeIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  if (active()) {
+  if (GetActive()) {
     dom_distiller::UMAHelper::RecordReaderModeExit(
         dom_distiller::UMAHelper::ReaderModeEntryPoint::kOmniboxIcon);
   } else {

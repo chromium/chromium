@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
 
   // The page should not initiall be bookmarked.
   EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 
   ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
   static_cast<views::View*>(star_icon)->OnMouseReleased(released_event);
 
   EXPECT_TRUE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_TRUE(star_icon->active());
+  EXPECT_TRUE(star_icon->GetActive());
 }
 
 // Verify that clicking the bookmark star a second time hides the bookmark
@@ -176,13 +176,13 @@ IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
 
   // The page should not initially be bookmarked.
   EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 
   OpenStarViewMenu(star_icon);
 
   // The page should not be bookmarked when the menu is opened.
   EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 
   StarMenuModel* menu_model = star_icon->menu_model_for_test();
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
   menu_model->ActivatedAt(bookmark_command_index);
 
   EXPECT_TRUE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_TRUE(star_icon->active());
+  EXPECT_TRUE(star_icon->GetActive());
 }
 
 // Verifies clicking the Read Later button in the StarView's menu saves the page
@@ -212,13 +212,13 @@ IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
 
   // The page should not initially be in model.
   EXPECT_EQ(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 
   OpenStarViewMenu(star_icon);
 
   // The page should not be bookmarked when the menu is opened.
   EXPECT_EQ(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 
   StarMenuModel* menu_model = star_icon->menu_model_for_test();
 
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
   menu_model->ActivatedAt(read_later_command_index);
 
   EXPECT_NE(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->active());
+  EXPECT_FALSE(star_icon->GetActive());
 }
 
 }  // namespace

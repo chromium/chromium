@@ -24,6 +24,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 
 float PageActionIconView::Delegate::GetPageActionInkDropVisibleOpacity() const {
@@ -181,13 +182,16 @@ void PageActionIconView::OnTouchUiChanged() {
   IconLabelBubbleView::OnTouchUiChanged();
 }
 
-const char* PageActionIconView::GetClassName() const {
-  return "PageActionIconView";
-}
-
 void PageActionIconView::SetIconColor(SkColor icon_color) {
+  if (icon_color_ == icon_color)
+    return;
   icon_color_ = icon_color;
   UpdateIconImage();
+  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
+}
+
+SkColor PageActionIconView::GetIconColor() const {
+  return icon_color_;
 }
 
 void PageActionIconView::SetActive(bool active) {
@@ -195,6 +199,11 @@ void PageActionIconView::SetActive(bool active) {
     return;
   active_ = active;
   UpdateIconImage();
+  OnPropertyChanged(&active_, views::kPropertyEffectsNone);
+}
+
+bool PageActionIconView::GetActive() const {
+  return active_;
 }
 
 void PageActionIconView::Update() {
@@ -247,3 +256,8 @@ void PageActionIconView::UpdateBorder() {
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
 }
+
+BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)
+ADD_PROPERTY_METADATA(SkColor, IconColor)
+ADD_PROPERTY_METADATA(bool, Active)
+END_METADATA

@@ -77,7 +77,7 @@ void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
     menu_model_ = std::make_unique<StarMenuModel>(
-        this, active(), chrome::CanMoveActiveTabToReadLater(browser_),
+        this, GetActive(), chrome::CanMoveActiveTabToReadLater(browser_),
         chrome::IsCurrentTabUnreadInReadLater(browser_));
     menu_runner_ = std::make_unique<views::MenuRunner>(
         menu_model_.get(),
@@ -95,12 +95,12 @@ views::BubbleDialogDelegate* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-  return active() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
+  return GetActive() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
 }
 
 base::string16 StarView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(active() ? IDS_TOOLTIP_STARRED
-                                            : IDS_TOOLTIP_STAR);
+  return l10n_util::GetStringUTF16(GetActive() ? IDS_TOOLTIP_STARRED
+                                               : IDS_TOOLTIP_STAR);
 }
 
 const char* StarView::GetClassName() const {

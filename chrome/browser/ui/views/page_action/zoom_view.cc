@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                    PageActionIconView::Delegate* page_action_icon_delegate)
@@ -113,6 +114,5 @@ base::string16 ZoomView::GetTextForTooltipAndAccessibleName() const {
                                     base::FormatPercent(current_zoom_percent_));
 }
 
-const char* ZoomView::GetClassName() const {
-  return "ZoomView";
-}
+BEGIN_METADATA(ZoomView, PageActionIconView)
+END_METADATA
