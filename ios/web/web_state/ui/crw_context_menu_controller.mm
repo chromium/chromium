@@ -5,6 +5,9 @@
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 
 #import "ios/web/public/ui/context_menu_params.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate.h"
+#import "ios/web/web_state/context_menu_params_utils.h"
 #import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,6 +25,12 @@ const CGFloat kJavaScriptTimeout = 1;
 // The context menu responsible for the interaction.
 @property(nonatomic, strong) UIContextMenuInteraction* contextMenu;
 
+// Views used to do the highlight/dismiss animation. Those view are empty and
+// are used to override the default animation which is to focus the whole
+// WebView (as the interaction is used on the whole WebView).
+@property(nonatomic, strong, readonly) UIView* highlightView;
+@property(nonatomic, strong, readonly) UIView* dismissView;
+
 @property(nonatomic, strong) WKWebView* webView;
 
 @property(nonatomic, assign) web::WebState* webState;
@@ -31,6 +40,9 @@ const CGFloat kJavaScriptTimeout = 1;
 @end
 
 @implementation CRWContextMenuController
+
+@synthesize highlightView = _highlightView;
+@synthesize dismissView = _dismissView;
 
 - (instancetype)initWithWebView:(WKWebView*)webView
                        webState:(web::WebState*)webState {
@@ -48,6 +60,28 @@ const CGFloat kJavaScriptTimeout = 1;
                                                      webState:webState];
   }
   return self;
+}
+
+#pragma mark - Property
+
+- (UIView*)highlightView {
+  if (!_highlightView) {
+    // If the views have a CGRectZero size, it is not taken into account.
+    CGRect rectSizedOne = CGRectMake(0, 0, 1, 1);
+    _highlightView = [[UIView alloc] initWithFrame:rectSizedOne];
+    _highlightView.backgroundColor = UIColor.clearColor;
+  }
+  return _highlightView;
+}
+
+- (UIView*)dismissView {
+  if (!_dismissView) {
+    // If the views have a CGRectZero size, it is not taken into account.
+    CGRect rectSizedOne = CGRectMake(0, 0, 1, 1);
+    _dismissView = [[UIView alloc] initWithFrame:rectSizedOne];
+    _dismissView.backgroundColor = UIColor.clearColor;
+  }
+  return _dismissView;
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -105,12 +139,38 @@ const CGFloat kJavaScriptTimeout = 1;
 
   isRunLoopComplete = YES;
 
+  if (!web::CanShowContextMenuForParams(self.params))
+    return nil;
+
+  // Adding the highlight/dismiss view here so they can be used in the
+  // delegate's methods.
+  [interaction.view addSubview:self.highlightView];
+  [interaction.view addSubview:self.dismissView];
+
   self.params.location = [self.webView convertPoint:location
                                            fromView:interaction.view];
 
-  // TODO(crbug.com/1140387): Present the context menu with the params.
+  __block UIContextMenuConfiguration* configuration;
+  self.webState->GetDelegate()->ContextMenuConfiguration(
+      self.webState, self.params, ^(UIContextMenuConfiguration* conf) {
+        configuration = conf;
+      });
 
-  return nil;
+  return configuration;
+}
+
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+    previewForHighlightingMenuWithConfiguration:
+        (UIContextMenuConfiguration*)configuration {
+  return [[UITargetedPreview alloc] initWithView:self.highlightView];
+}
+
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+    previewForDismissingMenuWithConfiguration:
+        (UIContextMenuConfiguration*)configuration {
+  return [[UITargetedPreview alloc] initWithView:self.dismissView];
 }
 
 @end
