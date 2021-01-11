@@ -97,11 +97,14 @@ class BatteryView : public views::View {
 
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetImage(delegate->GetBatteryImage());
-    label_ = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(delegate->GetLabelIdForBatteryLevel())));
-    label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
-    TrayPopupUtils::SetLabelFontList(label_,
-                                     TrayPopupUtils::FontStyle::kSmallTitle);
+
+    if (delegate->IsBatteryLevelLow()) {
+      label_ = AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
+      label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
+      TrayPopupUtils::SetLabelFontList(label_,
+                                       TrayPopupUtils::FontStyle::kSmallTitle);
+    }
   }
 
  private:

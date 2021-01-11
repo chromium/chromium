@@ -22,8 +22,8 @@ class ASH_EXPORT StylusBatteryDelegate
   ~StylusBatteryDelegate() override;
 
   SkColor GetColorForBatteryLevel() const;
-  int GetLabelIdForBatteryLevel() const;
   gfx::ImageSkia GetBatteryImage() const;
+  bool IsBatteryLevelLow() const;
 
   base::Optional<uint8_t> battery_level() const { return battery_level_; }
 

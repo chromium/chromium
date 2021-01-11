@@ -15,10 +15,8 @@
 
 namespace ash {
 namespace {
-// Battery percentage thresholds to used to label the battery level
-// as Hi, Med or Low.
+// Battery percentage threshold used to label the battery level as Low.
 constexpr int kStylusLowBatteryThreshold = 24;
-constexpr int kStylusMediumBatteryThreshold = 71;
 }  // namespace
 
 StylusBatteryDelegate::StylusBatteryDelegate() {
@@ -34,17 +32,7 @@ SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
         AshColorProvider::ContentLayerType::kIconColorAlert);
   }
   return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPositive);
-}
-
-int StylusBatteryDelegate::GetLabelIdForBatteryLevel() const {
-  if (battery_level_ <= kStylusLowBatteryThreshold) {
-    return IDS_ASH_STYLUS_BATTERY_LOW_LABEL;
-  }
-  if (battery_level_ <= kStylusMediumBatteryThreshold) {
-    return IDS_ASH_STYLUS_BATTERY_MED_LABEL;
-  }
-  return IDS_ASH_STYLUS_BATTERY_HI_LABEL;
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
 }
 
 gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
@@ -56,6 +44,10 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
 
   return PowerStatus::GetBatteryImage(info, kUnifiedTrayIconSize, icon_bg_color,
                                       icon_fg_color);
+}
+
+bool StylusBatteryDelegate::IsBatteryLevelLow() const {
+  return battery_level_ <= kStylusLowBatteryThreshold;
 }
 
 void StylusBatteryDelegate::OnAddingBattery(
