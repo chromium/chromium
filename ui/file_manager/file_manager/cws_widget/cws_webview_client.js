@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class CWSContainerClient extends cr.EventTarget {
+// clang-format off
+// #import {CWSWidgetContainerPlatformDelegate} from './cws_widget_container_platform_delegate.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
+/* #export */ class CWSContainerClient extends cr.EventTarget {
   /**
    * @param {WebView} webView Web View tag.
    * @param {number} width Width of the CWS widget.

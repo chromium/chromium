@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class CWSWidgetContainerErrorDialog extends cr.ui.dialogs.BaseDialog {
+// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+/* #export */ class CWSWidgetContainerErrorDialog extends
+    cr.ui.dialogs.BaseDialog {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.
    */
   constructor(parentNode) {
     super(parentNode);
 
-    if (util.isFilesNg()) {
-      this.container.classList.add('files-ng');
-    }
+    this.container.classList.add('files-ng');
   }
 
   /**

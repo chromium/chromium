@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 /**
- * CWSWidgetContainer contains a Chrome Web Store widget that displays list of
- * apps that satisfy certain constraints (e.g. fileHandler apps that can handle
- * files with specific file extension or MIME type) and enables the user to
- * install apps directly from it.
- * CWSWidgetContainer implements client side of the widget, which handles
- * widget loading and app installation.
+ * @fileoverview CWSWidgetContainer contains a Chrome Web Store widget that
+ * displays list of apps that satisfy certain constraints (e.g. fileHandler apps
+ * that can handle files with specific file extension or MIME type) and enables
+ * the user to install apps directly from it. CWSWidgetContainer implements
+ * client side of the widget, which handles widget loading and app installation.
  */
+
+// clang-format off
+// #import {CWSWidgetContainerMetricsImpl, CWSWidgetContainerPlatformDelegate} from './cws_widget_container_platform_delegate.m.js';
+// #import {AppInstaller} from './app_installer.m.js';
+// #import {CWSContainerClient} from './cws_webview_client.m.js';
+// #import {CWSWidgetContainerErrorDialog} from './cws_widget_container_error_dialog.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
 
 /**
  * The width of the widget (in pixels)
@@ -43,7 +50,7 @@ const CWS_WIDGET_ORIGIN = 'https://clients5.google.com';
 /**
  * Creates the widget container element in DOM tree.
  */
-class CWSWidgetContainer {
+/* #export */ class CWSWidgetContainer {
   /**
    *
    * @param {!HTMLDocument} document The document to contain this container.
