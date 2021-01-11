@@ -284,8 +284,6 @@
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
 
-      'Linux remote_run Builder': 'release_bot',
-      'Linux remote_run Tester': 'release_bot',
       'Linux Viz': 'release_trybot',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',

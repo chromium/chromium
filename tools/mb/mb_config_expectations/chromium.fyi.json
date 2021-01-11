@@ -130,20 +130,6 @@
       "use_goma": true
     }
   },
-  "Linux remote_run Builder": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Linux remote_run Tester": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "Mac Builder Next": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

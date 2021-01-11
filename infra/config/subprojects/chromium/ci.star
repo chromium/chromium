@@ -217,7 +217,6 @@ consoles.console_view(
             "infra",
             "linux",
             "recipe",
-            "remote_run",
             "site_isolation",
             "network",
             "viz",
@@ -2730,21 +2729,6 @@ ci.fyi_builder(
     console_view_entry = consoles.console_view_entry(
         category = "viz",
     ),
-)
-
-ci.fyi_builder(
-    name = "Linux remote_run Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "remote_run",
-    ),
-)
-
-ci.fyi_builder(
-    name = "Linux remote_run Tester",
-    console_view_entry = consoles.console_view_entry(
-        category = "remote_run",
-    ),
-    triggered_by = ["Linux remote_run Builder"],
 )
 
 ci.fyi_builder(
