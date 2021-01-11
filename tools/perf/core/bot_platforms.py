@@ -444,6 +444,8 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop')])
+_LACROS_EVE_FYI_BENCHMARK_CONFIGS = PerfSuite(['loading.desktop'
+                                               ]).Abridge(['loading.desktop'])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
@@ -564,6 +566,12 @@ CHROMEOS_KEVIN_PERF_FYI = PerfPlatform('chromeos-kevin-perf-fyi',
                                        4,
                                        'chromeos',
                                        is_fyi=True)
+LACROS_EVE_PERF_FYI = PerfPlatform('lacros-eve-perf-fyi',
+                                   '',
+                                   _LACROS_EVE_FYI_BENCHMARK_CONFIGS,
+                                   1,
+                                   'chromeos',
+                                   is_fyi=True)
 LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               '',
                               _LINUX_PERF_FYI_BENCHMARK_CONFIGS,

@@ -264,6 +264,30 @@ FYI_BUILDERS = {
             'device_type': 'kevin',
         },
     },
+    'lacros-eve-perf-fyi': {
+        'tests': [
+            {
+                'isolate':
+                'performance_test_suite',
+                'extra_args': [
+                    # The magic hostname that resolves to a CrOS device in the test lab
+                    '--remote=variable_chromeos_device_hostname',
+                ],
+            },
+        ],
+        'platform':
+        'lacros',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests',
+            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # chromium_swarming recipe_module ignore this dimension.
+            'gpu': None,
+            'os': 'ChromeOS',
+            'device_type': 'eve',
+        },
+    },
 }
 
 # These configurations are taken from chromium_perf.py in
@@ -1157,6 +1181,8 @@ def generate_telemetry_args(tester_config, platform):
     browser_name = tester_config['platform']
   elif tester_config['platform'] == 'chromeos':
     browser_name = 'cros-chrome'
+  elif tester_config['platform'] == 'lacros':
+    browser_name = 'lacros-chrome'
   elif (tester_config['platform'] == 'win'
     and tester_config['target_bits'] == 64):
     browser_name = 'release_x64'
