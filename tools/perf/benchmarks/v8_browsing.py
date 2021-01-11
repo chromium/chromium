@@ -66,6 +66,7 @@ def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
       'expectedQueueingTimeMetric',
       'gcMetric',
       'memoryMetric',
+      'pcscanMetric',
       'reportedByPageMetric',
       'umaMetric',
       'wasmMetric',
