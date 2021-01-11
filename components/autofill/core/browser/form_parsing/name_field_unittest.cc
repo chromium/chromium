@@ -567,4 +567,23 @@ TEST_F(NameFieldTest, NotAddressName) {
   ASSERT_EQ(nullptr, field_.get());
 }
 
+// Tests that contact name is classified as full name.
+TEST_F(NameFieldTest, ContactNameFull) {
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = base::UTF8ToUTF16("Контактное лицо");
+  field.name = base::UTF8ToUTF16("contact person");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId name = list_.back()->unique_renderer_id;
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+  ASSERT_NE(nullptr, field_.get());
+  field_->AddClassificationsForTesting(&field_candidates_map_);
+  ASSERT_TRUE(field_candidates_map_.find(name) != field_candidates_map_.end());
+  EXPECT_EQ(NAME_FULL, field_candidates_map_[name].BestHeuristicType());
+}
+
 }  // namespace autofill

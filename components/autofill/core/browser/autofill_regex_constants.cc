@@ -334,13 +334,14 @@ const char kNameIgnoredRe[] =
     "|(?:사용자.?)?아이디|사용자.?ID";  // ko-KR
 const char kNameRe[] =
     "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name"
-    "|name.*first.*last|firstandlastname"
+    "|name.*first.*last|firstandlastname|contact.?(name|person)"
     "|nombre.*y.*apellidos"                    // es
     "|^nom(?![a-zA-Z])"                        // fr-FR
     "|お名前|氏名"                             // ja-JP
     "|^nome"                                   // pt-BR, pt-PT
     "|نام.*نام.*خانوادگی"                      // fa
     "|姓名"                                    // zh-CN
+    "|контактное.?лицо"                        // ru
     "|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
     "|성명"                                    // ko-KR
     "|nama.?(lengkap|penerima|kamu)";          // id
