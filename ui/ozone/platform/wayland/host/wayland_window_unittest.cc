@@ -476,12 +476,11 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
 
-  // The state must not be changed to the fullscreen before the surface is
-  // activated.
+  // The state gets changed to maximize and the delegate notified.
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window->root_surface()->GetSurfaceId());
   EXPECT_FALSE(mock_surface->xdg_surface());
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(0);
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
 
   window_->Maximize();
   // The state of the window must already be fullscreen one.
@@ -489,8 +488,9 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 
   Sync();
 
-  // Once the surface will be activated, the window state gets updated.
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
+  // Window show state should be already up to date, so delegate is not
+  // notified.
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(0);
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
   // Activate the surface.
@@ -528,6 +528,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
       .Times(1);
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
                                                normal_bounds.height()));
+
+  Sync();
 
   // Now, set to fullscreen.
   AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN, states.get());

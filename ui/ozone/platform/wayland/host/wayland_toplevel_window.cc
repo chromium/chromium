@@ -241,6 +241,7 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
                                                    bool is_activated) {
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
+  PlatformWindowState old_state = state_;
   if (state_ == PlatformWindowState::kMinimized && !is_activated) {
     state_ = PlatformWindowState::kMinimized;
   } else if (is_fullscreen) {
@@ -252,6 +253,8 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
   }
 
   const bool is_normal = state_ == PlatformWindowState::kNormal;
+
+  const bool did_window_show_state_change = old_state != state_;
 
   // Update state before notifying delegate.
   const bool did_active_change = is_active_ != is_activated;
@@ -288,8 +291,10 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
   SetOrResetRestoredBounds();
   ApplyPendingBounds();
 
-  // Notify the delegate about the latest state set.
-  delegate()->OnWindowStateChanged(state_);
+  if (did_window_show_state_change) {
+    previous_state_ = old_state;
+    delegate()->OnWindowStateChanged(state_);
+  }
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
@@ -360,6 +365,8 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   } else if (state_ == PlatformWindowState::kNormal) {
     shell_toplevel_->UnSetMaximized();
   }
+
+  delegate()->OnWindowStateChanged(state_);
 
   connection()->ScheduleFlush();
 }
