@@ -135,7 +135,7 @@
 
 <div id="profileCardContainer">
   <cr-button on-click="onProfileClick_"
-      aria-label="[[profileState.localProfileName]]">
+      aria-label="[[i18n('profileCardButtonLabel', profileState.localProfileName)]]">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
       <div id="iconContainer" hidden="[[!profileState.isManaged]]">
