@@ -104,7 +104,10 @@ class TabSearchStory(page.Page):
     tab.WaitForDocumentReadyStateToBeComplete()
 
     # Send key navigation to Tab Search bubble.
+    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
+                                    'used_js_heap_size_begin')
     self.InteractWithPage(action_runner)
+    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY % 'used_js_heap_size_end')
 
   def InteractWithPage(self, action_runner):
     self.ScrollTabs(action_runner)
@@ -293,4 +296,9 @@ window.__webui_startMeasuringFrameTime('%s')
 
 STOP_MEASURING_FRAME_TIME = '''
 window.__webui_stopMeasuringFrameTime()
+'''
+
+MEASURE_JS_MEMORY = '''
+performance.mark(
+    `%s:${performance.memory.usedJSHeapSize}:benchmark_value`);
 '''
