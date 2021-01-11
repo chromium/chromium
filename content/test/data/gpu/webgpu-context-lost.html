@@ -18,14 +18,9 @@
     }
 
     async function init(canvas, color) {
-      let adapter = null;
-
-      try {
-        adapter = await navigator.gpu.requestAdapter();
-      } catch (err) {
-        // TODO: remove try and catch here once we no longer expect rejections here.
-        // According to the spec, rejection should only happen when invalid stuff is passed in.
-        console.warn("request adapter failed:", err);
+      let adapter = await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        console.warn('Failed to get WebGPU adapter');
       }
 
       let device = await adapter.requestDevice();

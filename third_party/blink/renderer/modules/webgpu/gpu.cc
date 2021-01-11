@@ -184,8 +184,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
       // Failed to create context provider, won't be able to request adapter
       // TODO(crbug.com/973017): Collect GPU info and surface context creation
       // error.
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Fail to request GPUAdapter"));
+      resolver->Resolve(v8::Null(script_state->GetIsolate()));
       return promise;
     } else {
       // Make a new DawnControlClientHolder with the context provider we just
@@ -209,8 +208,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
           WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(options),
                     WrapPersistent(resolver)))) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Fail to request GPUAdapter"));
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }
 
   return promise;
