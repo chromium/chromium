@@ -438,14 +438,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
-                mControlsVisibilityDelegate, mActivity,
+                mControlsVisibilityDelegate, mWindowAndroid,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
                 isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider,
                 R.id.menu_button_wrapper);
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
-                appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mActivity,
+                appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mWindowAndroid,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,

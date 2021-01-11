@@ -27,6 +27,10 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Unit tests for ToolbarAppMenuManager.
@@ -59,6 +63,10 @@ public class MenuButtonCoordinatorTest {
     ThemeColorProvider mThemeColorProvider;
     @Mock
     Resources mResources;
+    @Mock
+    private WindowAndroid mWindowAndroid;
+    @Mock
+    private KeyboardVisibilityDelegate mKeyboardDelegate;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -84,9 +92,11 @@ public class MenuButtonCoordinatorTest {
         doReturn(10)
                 .when(mResources)
                 .getDimensionPixelSize(org.chromium.chrome.R.dimen.toolbar_url_focus_translation_x);
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
-                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
+                mControlsVisibilityDelegate, mWindowAndroid, mFocusFunction, mRequestRenderRunnable,
                 true,
                 () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
     }
