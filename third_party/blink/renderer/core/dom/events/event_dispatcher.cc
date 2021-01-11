@@ -60,14 +60,11 @@ Event* CreateEvent(const AtomicString& event_type,
                    SimulatedClickCreationScope creation_scope) {
   DCHECK(event_type == event_type_names::kClick ||
          event_type == event_type_names::kMousedown ||
-         event_type == event_type_names::kMouseup ||
-         event_type == event_type_names::kMouseover);
+         event_type == event_type_names::kMouseup);
   if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
       event_type == event_type_names::kClick) {
-    // TODO (crbug.com/1150979) Figure out if we can fire pointer events
-    // instead of mousedown/mouseup/mouseover or if we need to fire both pointer
-    // events and mouse events at the same time. The mouse events are used for
-    // accessibility.
+    // TODO(crbug.com/1150979): Should we also fire pointer events for
+    // mousedown/mouseup events?  These mouse events are used for accessibility.
     return PointerEvent::Create(event_type_names::kClick,
                                 node.GetDocument().domWindow(),
                                 underlying_event, creation_scope);
@@ -121,12 +118,6 @@ void EventDispatcher::DispatchSimulatedClick(
     return;
 
   nodes_dispatching_simulated_clicks->insert(&node);
-
-  if (mouse_event_options == kSendMouseOverUpDownEvents) {
-    EventDispatcher(node, *CreateEvent(event_type_names::kMouseover, node,
-                                       underlying_event, creation_scope))
-        .Dispatch();
-  }
 
   Element* element = DynamicTo<Element>(node);
   if (mouse_event_options != kSendNoEvents) {

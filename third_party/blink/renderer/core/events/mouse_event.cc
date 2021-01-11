@@ -132,7 +132,6 @@ void MouseEvent::PopulateMouseEventInit(
     const AtomicString& event_type,
     AbstractView* view,
     const Event* underlying_event,
-    SimulatedClickCreationScope creation_scope,
     MouseEventInit* initializer) {
   WebInputEvent::Modifiers modifiers = WebInputEvent::kNoModifiers;
   if (const UIEventWithKeyState* key_state_event =
@@ -163,7 +162,7 @@ MouseEvent* MouseEvent::Create(const AtomicString& event_type,
                                SimulatedClickCreationScope creation_scope) {
   MouseEventInit* initializer = MouseEventInit::Create();
   MouseEvent::PopulateMouseEventInit(event_type, view, underlying_event,
-                                     creation_scope, initializer);
+                                     initializer);
   SyntheticEventType synthetic_type = kPositionless;
   if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
     synthetic_type = kRealOrIndistinguishable;
@@ -268,8 +267,6 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     initializer->setMovementY(web_pointer_properties.movement_y);
   }
 }
-
-MouseEvent::~MouseEvent() = default;
 
 uint16_t MouseEvent::WebInputEventModifiersToButtons(unsigned modifiers) {
   uint16_t buttons = 0;

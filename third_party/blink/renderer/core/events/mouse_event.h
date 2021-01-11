@@ -75,18 +75,14 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   static void PopulateMouseEventInit(const AtomicString& event_type,
                                      AbstractView* view,
                                      const Event* underlying_event,
-                                     SimulatedClickCreationScope creation_scope,
                                      MouseEventInit* initializer);
 
   MouseEvent(const AtomicString& type,
              const MouseEventInit*,
-             base::TimeTicks platform_time_stamp,
+             base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
              SyntheticEventType = kRealOrIndistinguishable,
              WebMenuSourceType = kMenuSourceNone);
-  MouseEvent(const AtomicString& type, const MouseEventInit* init)
-      : MouseEvent(type, init, base::TimeTicks::Now()) {}
   MouseEvent();
-  ~MouseEvent() override;
 
   static uint16_t WebInputEventModifiersToButtons(unsigned modifiers);
   static void SetCoordinatesFromWebPointerProperties(

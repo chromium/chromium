@@ -23,11 +23,7 @@
 
 namespace blink {
 
-enum SimulatedClickMouseEventOptions {
-  kSendNoEvents,
-  kSendMouseUpDownEvents,
-  kSendMouseOverUpDownEvents
-};
+enum SimulatedClickMouseEventOptions { kSendNoEvents, kSendMouseUpDownEvents };
 
 enum class SimulatedClickCreationScope { kFromScript, kFromUserAgent };
 

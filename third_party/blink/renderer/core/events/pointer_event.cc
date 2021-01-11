@@ -19,7 +19,7 @@ PointerEvent* PointerEvent::Create(const AtomicString& event_type,
                                    SimulatedClickCreationScope creation_scope) {
   PointerEventInit* initializer = PointerEventInit::Create();
   MouseEvent::PopulateMouseEventInit(event_type, view, underlying_event,
-                                     creation_scope, initializer);
+                                     initializer);
   base::TimeTicks timestamp = underlying_event
                                   ? underlying_event->PlatformTimeStamp()
                                   : base::TimeTicks::Now();
@@ -28,11 +28,10 @@ PointerEvent* PointerEvent::Create(const AtomicString& event_type,
     synthetic_type = kRealOrIndistinguishable;
   }
   PointerEvent* created_event = MakeGarbageCollected<PointerEvent>(
-      event_type, initializer, timestamp, synthetic_type, kMenuSourceNone);
+      event_type, initializer, timestamp, synthetic_type);
   created_event->SetTrusted(creation_scope ==
                             SimulatedClickCreationScope::kFromUserAgent);
   created_event->SetUnderlyingEvent(underlying_event);
-
   if (synthetic_type == kRealOrIndistinguishable) {
     auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
     created_event->InitCoordinates(mouse_event->client_location_.X(),
