@@ -257,7 +257,7 @@ void TextRecordsManager::RemoveVisibleRecord(const LayoutObject& object) {
 }
 
 void TextRecordsManager::CleanUpLargestTextPaint() {
-  ltp_manager_.reset();
+  ltp_manager_.Clear();
 }
 
 void TextRecordsManager::RemoveInvisibleRecord(const LayoutObject& object) {
@@ -370,9 +370,10 @@ base::WeakPtr<TextRecord> LargestTextPaintManager::FindLargestPaintCandidate() {
 
 TextRecordsManager::TextRecordsManager(
     LocalFrameView* frame_view,
-    PaintTimingDetector* paint_timing_detector) {
-  ltp_manager_.emplace(frame_view, paint_timing_detector);
-}
+    PaintTimingDetector* paint_timing_detector)
+    : ltp_manager_(MakeGarbageCollected<LargestTextPaintManager>(
+          frame_view,
+          paint_timing_detector)) {}
 
 void TextRecordsManager::Trace(Visitor* visitor) const {
   visitor->Trace(text_element_timing_);

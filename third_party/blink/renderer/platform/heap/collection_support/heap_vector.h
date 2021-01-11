@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -12,11 +13,49 @@
 namespace blink {
 
 template <typename T, wtf_size_t inlineCapacity = 0>
-class HeapVector final : public Vector<T, inlineCapacity, HeapAllocator> {
-  IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
+class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
+                         public Vector<T, inlineCapacity, HeapAllocator> {
   DISALLOW_NEW();
 
-  static void CheckType() {
+ public:
+  HeapVector() = default;
+
+  explicit HeapVector(wtf_size_t size)
+      : Vector<T, inlineCapacity, HeapAllocator>(size) {}
+
+  HeapVector(wtf_size_t size, const T& val)
+      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {}
+
+  template <wtf_size_t otherCapacity>
+  HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
+      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+
+  HeapVector(const HeapVector& other)
+      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+
+  HeapVector& operator=(const HeapVector& other) {
+    Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
+    return *this;
+  }
+
+  HeapVector(HeapVector&& other) noexcept
+      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {}
+
+  HeapVector& operator=(HeapVector&& other) noexcept {
+    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
+    return *this;
+  }
+
+  HeapVector(std::initializer_list<T> elements)
+      : Vector<T, inlineCapacity, HeapAllocator>(elements) {}
+
+  void Trace(Visitor* visitor) const {
+    CheckType();
+    Vector<T, inlineCapacity, HeapAllocator>::Trace(visitor);
+  }
+
+ private:
+  static constexpr void CheckType() {
     static_assert(
         std::is_trivially_destructible<HeapVector>::value || inlineCapacity,
         "HeapVector must be trivially destructible.");
@@ -27,60 +66,6 @@ class HeapVector final : public Vector<T, inlineCapacity, HeapAllocator> {
                   "Weak types are not allowed in HeapVector.");
     static_assert(WTF::IsTraceableInCollectionTrait<VectorTraits<T>>::value,
                   "Type must be traceable in collection");
-  }
-
- public:
-  template <typename>
-  static void* AllocateObject(size_t size) {
-    // On-heap HeapVectors generally should not have inline capacity, but it is
-    // hard to avoid when using a type alias. Hence we only disallow the
-    // VectorTraits<T>::kNeedsDestruction case for now.
-    static_assert(inlineCapacity == 0 || !VectorTraits<T>::kNeedsDestruction,
-                  "on-heap HeapVector<> should not have an inline capacity");
-    return ThreadHeap::Allocate<HeapVector<T, inlineCapacity>>(size);
-  }
-
-  HeapVector() { CheckType(); }
-
-  explicit HeapVector(wtf_size_t size)
-      : Vector<T, inlineCapacity, HeapAllocator>(size) {
-    CheckType();
-  }
-
-  HeapVector(wtf_size_t size, const T& val)
-      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {
-    CheckType();
-  }
-
-  template <wtf_size_t otherCapacity>
-  HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {
-    CheckType();
-  }
-
-  HeapVector(const HeapVector& other)
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {
-    CheckType();
-  }
-
-  HeapVector& operator=(const HeapVector& other) {
-    Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
-    return *this;
-  }
-
-  HeapVector(HeapVector&& other) noexcept
-      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {
-    CheckType();
-  }
-
-  HeapVector& operator=(HeapVector&& other) noexcept {
-    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
-    return *this;
-  }
-
-  HeapVector(std::initializer_list<T> elements)
-      : Vector<T, inlineCapacity, HeapAllocator>(elements) {
-    CheckType();
   }
 };
 

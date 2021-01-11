@@ -47,8 +47,8 @@ class TextRecord : public base::SupportsWeakPtr<TextRecord> {
   base::TimeTicks paint_time = base::TimeTicks();
 };
 
-class CORE_EXPORT LargestTextPaintManager {
-  DISALLOW_NEW();
+class CORE_EXPORT LargestTextPaintManager final
+    : public GarbageCollected<LargestTextPaintManager> {
   using TextRecordSetComparator = bool (*)(const base::WeakPtr<TextRecord>&,
                                            const base::WeakPtr<TextRecord>&);
   using TextRecordSet =
@@ -173,9 +173,7 @@ class CORE_EXPORT TextRecordsManager {
   // candidate.
   void ReportLargestIgnoredText();
 
-  inline bool IsRecordingLargestTextPaint() const {
-    return ltp_manager_.has_value();
-  }
+  inline bool IsRecordingLargestTextPaint() const { return ltp_manager_; }
 
   void Trace(Visitor*) const;
 
@@ -198,7 +196,7 @@ class CORE_EXPORT TextRecordsManager {
   // LCP computations, even if the size of the text itself is not 0. They are
   // considered invisible objects by Largest Contentful Paint.
   Deque<std::unique_ptr<TextRecord>> size_zero_texts_queued_for_paint_time_;
-  base::Optional<LargestTextPaintManager> ltp_manager_;
+  Member<LargestTextPaintManager> ltp_manager_;
   Member<TextElementTiming> text_element_timing_;
 };
 

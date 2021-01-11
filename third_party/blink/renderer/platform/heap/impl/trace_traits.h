@@ -186,22 +186,6 @@ struct TraceTrait<std::pair<T, U>> {
   }
 };
 
-// While using base::Optional<T> with garbage-collected types is generally
-// disallowed by the OptionalGarbageCollected check in blink_gc_plugin,
-// garbage-collected containers such as HeapVector are allowed and need to be
-// traced.
-template <typename T>
-struct TraceTrait<base::Optional<T>> {
-  STATIC_ONLY(TraceTrait);
-
- public:
-  static void Trace(Visitor* visitor, const base::Optional<T>* optional) {
-    if (*optional != base::nullopt) {
-      TraceIfNeeded<T>::Trace(visitor, optional->value());
-    }
-  }
-};
-
 // Helper for processing ephemerons represented as KeyValuePair. Reorders
 // parameters if needed so that KeyType is always weak.
 template <typename _KeyType,

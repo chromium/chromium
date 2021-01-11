@@ -440,7 +440,6 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
   visitor->Trace(callback_manager_);
-  visitor->Trace(visualizer_);
 }
 
 void PaintTimingCallbackManagerImpl::

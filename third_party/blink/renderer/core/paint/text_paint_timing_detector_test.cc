@@ -73,7 +73,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
         .GetTextPaintTimingDetector();
   }
 
-  base::Optional<LargestTextPaintManager>& GetLargestTextPaintManager() {
+  LargestTextPaintManager* GetLargestTextPaintManager() {
     return GetTextPaintTimingDetector()->records_manager_.ltp_manager_;
   }
 

@@ -65,15 +65,6 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
  private:                                   \
   friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
-#define IS_GARBAGE_COLLECTED_CONTAINER_TYPE()         \
-  IS_GARBAGE_COLLECTED_TYPE();                        \
-                                                      \
- public:                                              \
-  using IsGarbageCollectedCollectionTypeMarker = int; \
-                                                      \
- private:                                             \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
 #if defined(__clang__)
 #define ANNOTATE_STACK_ALLOCATED \
   __attribute__((annotate("blink_stack_allocated")))
