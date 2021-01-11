@@ -260,9 +260,25 @@ void ClipboardHistoryControllerImpl::ShowMenu(
   accelerator_target_->OnMenuShown();
 
   // The first menu item should be selected as default after the clipboard
-  // history menu shows.
-  context_menu_->SelectMenuItemWithCommandId(
-      ClipboardHistoryUtil::kFirstItemCommandId);
+  // history menu shows. Note that the menu item is selected asynchronously
+  // to avoid the interference from synthesized mouse events.
+  menu_task_timer_.Start(
+      FROM_HERE, base::TimeDelta(),
+      base::BindOnce(
+          [](const base::WeakPtr<ClipboardHistoryControllerImpl>&
+                 controller_weak_ptr) {
+            if (!controller_weak_ptr)
+              return;
+
+            controller_weak_ptr->context_menu_->SelectMenuItemWithCommandId(
+                ClipboardHistoryUtil::kFirstItemCommandId);
+            if (controller_weak_ptr->initial_item_selected_callback_for_test_) {
+              controller_weak_ptr->initial_item_selected_callback_for_test_
+                  .Run();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+
   for (auto& observer : observers_)
     observer.OnClipboardHistoryMenuShown();
 }
@@ -567,14 +583,15 @@ void ClipboardHistoryControllerImpl::OnMenuClosed() {
 
   // Reset `context_menu_` in the asynchronous way. Because the menu may be
   // accessed after `OnMenuClosed()` is called.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](const base::WeakPtr<ClipboardHistoryControllerImpl>&
-                            controller_weak_ptr) {
-                       if (controller_weak_ptr)
-                         controller_weak_ptr->context_menu_.reset();
-                     },
-                     weak_ptr_factory_.GetWeakPtr()));
+  menu_task_timer_.Start(
+      FROM_HERE, base::TimeDelta(),
+      base::BindOnce(
+          [](const base::WeakPtr<ClipboardHistoryControllerImpl>&
+                 controller_weak_ptr) {
+            if (controller_weak_ptr)
+              controller_weak_ptr->context_menu_.reset();
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace ash

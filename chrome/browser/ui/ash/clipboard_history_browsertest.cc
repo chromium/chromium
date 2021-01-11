@@ -158,8 +158,15 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     run_loop.Run();
   }
 
-  void ShowContextMenuViaAccelerator() {
+  void ShowContextMenuViaAccelerator(bool wait_for_selection) {
     PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+    if (!wait_for_selection)
+      return;
+
+    base::RunLoop run_loop;
+    GetClipboardHistoryController()
+        ->set_initial_item_selected_callback_for_test(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   const views::MenuItemView* GetMenuItemViewForIndex(int index) const {
@@ -268,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   SetClipboardText("B");
   SetClipboardText("C");
 
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
 
@@ -319,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   SetClipboardText("A");
   SetClipboardText("B");
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
 
   // Verify the default state right after the menu shows.
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -393,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   LoginUser(account_id1_);
 
   SetClipboardText("A");
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
 
   // Verify the default state right after the menu shows.
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -427,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // No clipboard data. So the clipboard history menu should not show.
   ASSERT_TRUE(GetClipboardItems().empty());
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
   SetClipboardText("test");
@@ -435,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   const gfx::Point mouse_location =
       ash::Shell::Get()->GetPrimaryRootWindow()->bounds().CenterPoint();
   GetEventGenerator()->MoveMouseTo(mouse_location);
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
 
   // Verifies that the menu is anchored at the cursor's location.
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -459,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   SetClipboardText("C");
 
   // Show the menu.
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
 
@@ -485,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Trigger the accelerator of opening the clipboard history menu. No menu
   // shows because of the empty history data.
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
@@ -637,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        VerifyResponseToGestures) {
   SetClipboardText("A");
   SetClipboardText("B");
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Tap at the second menu item view. Verify that "A" is pasted.
@@ -655,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        DeleteButtonShowAfterLongPress) {
   SetClipboardText("A");
   SetClipboardText("B");
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   ash::ClipboardHistoryItemView* second_item_view =
@@ -690,9 +697,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   SetClipboardText("B");
   SetClipboardText("C");
 
-  // Verify we can paste the first history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 3);
@@ -707,10 +712,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   textfield_->SetText(base::string16());
   EXPECT_TRUE(textfield_->GetText().empty());
 
-  // Verify we can paste the first history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify we can paste the first history item via the COMMAND+V shortcut.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
@@ -719,9 +724,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   textfield_->SetText(base::string16());
   EXPECT_TRUE(textfield_->GetText().empty());
 
-  // Verify we can paste the first history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
@@ -735,9 +738,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
 
   EXPECT_TRUE(textfield_->GetText().empty());
 
-  // Verify we can paste the last history item via the COMMAND+V shortcut.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
@@ -757,8 +758,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
 
   // Verify we can traverse clipboard history and paste the first history item
   // while holding down the COMMAND key.
-  Press(ui::KeyboardCode::VKEY_COMMAND);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
@@ -770,8 +770,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
 
   // Verify we can traverse clipboard history and paste the last history item
   // while holding down the COMMAND key.
-  Press(ui::KeyboardCode::VKEY_COMMAND);
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
@@ -854,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
   SetClipboardTextWithInaccessibleSrc("B");
   EXPECT_TRUE(VerifyClipboardTextData({"B", "A"}));
 
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Verify that the text is pasted into `textfield_` after the mouse click at
@@ -874,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
   // Re-show the multipaste menu since the menu is closed after the previous
   // mouse click.
   ASSERT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  ShowContextMenuViaAccelerator();
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
 
   // Move mouse to `inaccessible_menu_item_view` then click the left button.
   const views::MenuItemView* inaccessible_menu_item_view =

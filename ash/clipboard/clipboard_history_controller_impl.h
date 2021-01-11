@@ -12,9 +12,11 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/timer/timer.h"
 
 namespace gfx {
 class Rect;
@@ -69,6 +71,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   ClipboardHistoryMenuModelAdapter* context_menu_for_test() {
     return context_menu_.get();
+  }
+
+  void set_initial_item_selected_callback_for_test(
+      base::RepeatingClosure new_callback) {
+    initial_item_selected_callback_for_test_ = new_callback;
   }
 
  private:
@@ -140,6 +147,15 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Whether a paste is currently being performed.
   bool currently_pasting_ = false;
+
+  // Used to post asynchronous tasks when opening or closing the clipboard
+  // history menu. Note that those tasks have data races between each other.
+  // The timer can guarantee that at most one task is alive.
+  base::OneShotTimer menu_task_timer_;
+
+  // Called when the first item view is selected after the clipboard history
+  // menu opens.
+  base::RepeatingClosure initial_item_selected_callback_for_test_;
 
   base::WeakPtrFactory<ClipboardHistoryControllerImpl> weak_ptr_factory_{this};
 };
