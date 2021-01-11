@@ -39,7 +39,7 @@
 
       function evaluateF2() {
         SourcesTestRunner.waitUntilPaused(pausedInF2);
-        TestRunner.evaluateInPageWithTimeout('f2()');
+        setTimeout(() => TestRunner.evaluateInPageAnonymously('f2()'), 1);
       }
 
 

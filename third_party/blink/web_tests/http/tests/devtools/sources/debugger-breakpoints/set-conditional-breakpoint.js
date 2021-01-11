@@ -22,7 +22,8 @@
         SourcesTestRunner
             .createNewBreakpoint(currentSourceFrame, 13, 'true', true)
             .then(() => SourcesTestRunner.waitBreakpointSidebarPane())
-            .then(() => SourcesTestRunner.runTestFunction());
+            .then(() => setTimeout(() =>
+                SourcesTestRunner.runTestFunction(), 1));
       }
 
       async function didPause(callFrames) {
