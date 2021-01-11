@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class NGTableNode;
+
 // Table size distribution algorithms.
 class CORE_EXPORT NGTableAlgorithmHelpers {
  public:
@@ -24,17 +26,18 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
     return current_column + 1;
   }
 
-  // Flex/grid containing blocks need Table minmax size to be computed without
-  // using percentages.
-  // |containing_block_expects_minmax_without_percentages| is used to do
-  // this.
+  // Flex/grid/table-cell containing blocks require that the table min/max
+  // sizes be computed without percentages. |allow_column_percentages| is used
+  // to change this behaviour.
+  //
   // |undistributable_space| is size of space not occupied by cells
   // (borders, border spacing).
   static MinMaxSizes ComputeGridInlineMinMax(
+      const NGTableNode& node,
       const NGTableTypes::Columns& column_constraints,
       LayoutUnit undistributable_space,
       bool is_fixed_layout,
-      bool containing_block_expects_minmax_without_percentages,
+      bool allow_column_percentages,
       bool skip_collapsed_columns);
 
   static void DistributeColspanCellsToColumns(

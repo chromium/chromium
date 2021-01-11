@@ -27,6 +27,16 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
 
   LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
                                     const NGBoxStrut& border_padding) const;
+
+  // Tables are special in that their max intrinsic-size can be "infinite"
+  // (they should consume as much space as possible). However a lot of layout
+  // modes (flex/grid) don't deal well with "infinite" max intrinsic-size, so
+  // we disable this behaviour whenever we are an arbitrary descendant of one
+  // of these layout modes.
+  //
+  // TODO(layout-dev): This isn't ideal, as we may have a fixed inline-size
+  // parent where an "infinite" size would be fine.
+  bool AllowColumnPercentages() const;
 };
 
 template <>

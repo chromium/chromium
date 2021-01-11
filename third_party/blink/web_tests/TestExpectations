@@ -4954,8 +4954,6 @@ crbug.com/1157626 virtual/layout_ng_table/external/wpt/css/css-tables/visibility
 
 # Works in main table patch, needs percentage sizing fix.
 crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
-crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/percent-width-ignored-001.tentative.html [ Failure ]
-crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/percent-width-ignored-003.tentative.html [ Failure ]
 
 # Sheriff 2019-08-14
 crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Pass Failure ]

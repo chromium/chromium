@@ -31,14 +31,6 @@ namespace blink {
 
 namespace {
 
-// TODO(atotic, ikilpatrick)
-// Copy of ShouldScaleColumnsForParent from table_layout_algorithm_auto.cc
-// The real fix would be for containers to understand that
-// Table max really means: max should be trimmed to available inline size.
-bool ShouldIgnorePercentagesForMinMax(const LayoutBox& table) {
-  return false;
-}
-
 NGTableTypes::Caption ComputeCaptionConstraint(
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children) {
@@ -99,7 +91,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
 
 // standard: https://www.w3.org/TR/css-tables-3/#computing-the-table-width
 LayoutUnit ComputeAssignableTableInlineSize(
-    const NGBlockNode& table,
+    const NGTableNode& table,
     const NGConstraintSpace& space,
     const NGTableTypes::Columns& column_constraints,
     const NGTableTypes::Caption& caption_constraint,
@@ -113,8 +105,8 @@ LayoutUnit ComputeAssignableTableInlineSize(
 
   const MinMaxSizes grid_min_max =
       NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-          column_constraints, undistributable_space, is_fixed_layout,
-          /* containing_block_expects_minmax_without_percentages */ false,
+          table, column_constraints, undistributable_space, is_fixed_layout,
+          /* allow_column_percentages */ true,
           /* skip_collapsed_columns */ false);
 
   // Standard: "used width of the table".
@@ -499,12 +491,11 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesInput& input) const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(Node().GetLayoutBox());
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   // Tables need autosizer.
   base::Optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
-    text_autosizer.emplace(layout_table);
+    text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
@@ -523,8 +514,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
 
   const MinMaxSizes grid_min_max =
       NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-          *column_constraints, undistributable_space, is_fixed_layout,
-          ShouldIgnorePercentagesForMinMax(*layout_table),
+          Node(), *column_constraints, undistributable_space, is_fixed_layout,
+          /* allow_column_percentages */ false,
           /* skip_collapsed_columns */ true);
 
   MinMaxSizes min_max{

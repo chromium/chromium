@@ -46,4 +46,21 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
                                                         border_padding);
 }
 
+bool NGTableNode::AllowColumnPercentages() const {
+  // TODO(layout-dev): This function breaks the rule of "no tree-walks".
+  // However for this specific case it adds a lot of overhead for little gain.
+  // In the future, we could have a bit on a LayoutObject which indicates if we
+  // should allow column percentages, and maintain this when adding/removing
+  // from the tree.
+  const LayoutBlock* block = box_->ContainingBlock();
+  while (!block->IsLayoutView()) {
+    if (block->IsTableCell() || block->IsFlexibleBoxIncludingNG() ||
+        block->IsLayoutGrid())
+      return false;
+
+    block = block->ContainingBlock();
+  }
+  return true;
+}
+
 }  // namespace blink

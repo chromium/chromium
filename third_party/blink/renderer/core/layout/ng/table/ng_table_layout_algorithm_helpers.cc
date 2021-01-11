@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 
 namespace blink {
 
@@ -823,12 +824,13 @@ void DistributeExcessBlockSizeToRows(
 }  // namespace
 
 MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
+    const NGTableNode& node,
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
-    bool containing_block_expects_minmax_without_percentages,
+    bool allow_column_percentages,
     bool skip_collapsed_columns) {
-  MinMaxSizes minmax;
+  MinMaxSizes min_max;
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-width
   // Compute standard GRID_MIN/GRID_MAX. They are sum of column_constraints.
   //
@@ -847,9 +849,9 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
   // T% * MINSUM + M = MINSUM.
 
   // Minimum total size estimate based on column's min_inline_size and percent.
-  LayoutUnit percent_maxsize_estimate;
+  LayoutUnit percent_max_size_estimate;
   // Sum of max_inline_sizes of non-percentage columns.
-  LayoutUnit non_percent_maxsize_sum;
+  LayoutUnit non_percent_max_size_sum;
   float percent_sum = 0;
   for (const NGTableTypes::Column& column : column_constraints.data) {
     if (skip_collapsed_columns && column.is_collapsed)
@@ -858,50 +860,50 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       // In fixed layout, constrained cells minimum inline size is their
       // maximum.
       if (is_fixed_layout && column.IsFixed()) {
-        minmax.min_size += *column.max_inline_size;
+        min_max.min_size += *column.max_inline_size;
       } else {
-        minmax.min_size += *column.min_inline_size;
+        min_max.min_size += *column.min_inline_size;
       }
       if (column.percent && *column.percent > 0) {
         if (*column.max_inline_size > LayoutUnit()) {
           LayoutUnit estimate = LayoutUnit(
               100 / *column.percent *
               (*column.max_inline_size - column.percent_border_padding));
-          percent_maxsize_estimate =
-              std::max(percent_maxsize_estimate, estimate);
+          percent_max_size_estimate =
+              std::max(percent_max_size_estimate, estimate);
         }
       } else {
-        non_percent_maxsize_sum += *column.max_inline_size;
+        non_percent_max_size_sum += *column.max_inline_size;
       }
     }
     if (column.max_inline_size)
-      minmax.max_size += *column.max_inline_size;
+      min_max.max_size += *column.max_inline_size;
     if (column.percent)
       percent_sum += *column.percent;
   }
   DCHECK_LE(percent_sum, 100.0f);
 
-  // Table max inline size constraint can be computed from:
-  // total column percentage combined with max_inline_size of nonpercent
-  // columns.
-  if (percent_sum > 0 && !containing_block_expects_minmax_without_percentages) {
+  // Table max inline size constraint can be computed from the total column
+  // percentage combined with max_inline_size of non-percent columns.
+  if (percent_sum > 0 &&
+      (allow_column_percentages || node.AllowColumnPercentages())) {
     LayoutUnit size_from_percent_and_fixed;
     DCHECK_GE(percent_sum, 0.0f);
-    if (non_percent_maxsize_sum != LayoutUnit()) {
+    if (non_percent_max_size_sum != LayoutUnit()) {
       if (percent_sum == 100.0f) {
         size_from_percent_and_fixed = NGTableTypes::kTableMaxInlineSize;
       } else {
         size_from_percent_and_fixed =
-            LayoutUnit((100 / (100 - percent_sum)) * non_percent_maxsize_sum);
+            LayoutUnit((100 / (100 - percent_sum)) * non_percent_max_size_sum);
       }
     }
-    minmax.max_size = std::max(minmax.max_size, size_from_percent_and_fixed);
-    minmax.max_size = std::max(minmax.max_size, percent_maxsize_estimate);
+    min_max.max_size = std::max(min_max.max_size, size_from_percent_and_fixed);
+    min_max.max_size = std::max(min_max.max_size, percent_max_size_estimate);
   }
 
-  minmax.max_size = std::max(minmax.min_size, minmax.max_size);
-  minmax += undistributable_space;
-  return minmax;
+  min_max.max_size = std::max(min_max.min_size, min_max.max_size);
+  min_max += undistributable_space;
+  return min_max;
 }
 
 void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
