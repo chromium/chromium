@@ -3687,6 +3687,18 @@
       "features": [
         "disable_direct_composition_sw_video_overlays"
       ]
+    },
+    {
+      "id": 365,
+      "description": "Context lost recovery often fails on Adreno with SkiaRenderer GL.",
+      "cr_bugs": [1079161],
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": "Adreno.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
     }
   ]
 }
