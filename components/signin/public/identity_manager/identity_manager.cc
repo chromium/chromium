@@ -503,13 +503,20 @@ void IdentityManager::OnPrimaryAccountChanged(
     observer.OnPrimaryAccountChanged(event_details);
 
 #if defined(OS_ANDROID)
-  if (!java_identity_manager_)
-    return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_IdentityManager_onPrimaryAccountChanged(
-      env, java_identity_manager_,
-      ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
+  if (java_identity_manager_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_IdentityManager_onPrimaryAccountChanged(
+        env, java_identity_manager_,
+        ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
+  }
 #endif
+
+  if (event_details.GetEventTypeFor(ConsentLevel::kSync) ==
+      PrimaryAccountChangeEvent::Type::kCleared) {
+    for (auto& observer : observer_list_) {
+      observer.AfterSyncPrimaryAccountCleared();
+    }
+  }
 }
 
 void IdentityManager::FirePrimaryAccountSet(
@@ -536,10 +543,6 @@ void IdentityManager::FirePrimaryAccountCleared(
       event_details.GetPreviousState().primary_account;
   DCHECK(!HasPrimaryAccount());
   DCHECK(!account_info.IsEmpty());
-  for (auto& observer : observer_list_) {
-    observer.BeforePrimaryAccountCleared(account_info);
-  }
-
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountCleared(account_info);
   }

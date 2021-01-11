@@ -36,8 +36,7 @@ class SigninManager : public KeyedService,
   base::Optional<CoreAccountInfo> ComputeUnconsentedPrimaryAccountInfo() const;
 
   // signin::IdentityManager::Observer implementation.
-  void BeforePrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void AfterSyncPrimaryAccountCleared() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(

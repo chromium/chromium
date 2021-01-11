@@ -104,8 +104,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
 }
 
 // signin::IdentityManager::Observer implementation.
-void SigninManager::BeforePrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
+void SigninManager::AfterSyncPrimaryAccountCleared() {
   // This is needed for the case where the user chooses to start syncing
   // with an account that is different from the unconsented primary account
   // (not the first in cookies) but then cancels. In that case, the tokens stay

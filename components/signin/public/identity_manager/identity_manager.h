@@ -94,12 +94,12 @@ class IdentityManager : public KeyedService,
         const CoreAccountInfo& previous_primary_account_info) {}
 
     // TODO(crbug.com/1046746): Move to |SigninClient|.
-    // Called Before notifying all the observers of |OnPrimaryAccountCleared|.
-    // |OnPrimaryAccountCleared| should be used instead in general.This function
-    // should be used carefully, as the value of the unconsented primary account
-    // is not properly defined when it is run and can be changed meanwhile.
-    virtual void BeforePrimaryAccountCleared(
-        const CoreAccountInfo& previous_primary_account_info) {}
+    // Called After notifying all the observers of |OnPrimaryAccountChanged|
+    // if the sync primary account was cleared.
+    //
+    // Note: This function is only intended to be used by the signin code.
+    // General observers should use |OnPrimaryAccountChanged|.
+    virtual void AfterSyncPrimaryAccountCleared() {}
 
     // When the unconsented primary account (see ./README.md) of the user
     // changes, this callback gets called with the new account as
