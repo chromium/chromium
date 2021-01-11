@@ -1916,11 +1916,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-native-context-menus",
-    "owners": [ "seblalancette" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "enable-native-notifications",
     "owners": [ "peter", "finnur", "knollr" ],
     "expiry_milestone": 90

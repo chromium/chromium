@@ -169,10 +169,6 @@ extern const char kEnableIncognitoModeAvailabilityIOSDescription[];
 extern const char kEnableIOSManagedSettingsUIName[];
 extern const char kEnableIOSManagedSettingsUIDescription[];
 
-// Title and description for the flag to enable new context menus for native UI.
-extern const char kEnableNativeContextMenusName[];
-extern const char kEnableNativeContextMenusDescription[];
-
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];

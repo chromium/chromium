@@ -31,9 +31,6 @@ extern const base::Feature kForceUnstackedTabstrip;
 // features in tests works.
 extern const base::Feature kTestFeature;
 
-// Feature flag that enables the native UI Context Menus (not for Web content).
-extern const base::Feature kEnableNativeContextMenus;
-
 // Feature flag to enable showing a different UI when the setting is managed by
 // an enterprise policy.
 extern const base::Feature kEnableIOSManagedSettingsUI;

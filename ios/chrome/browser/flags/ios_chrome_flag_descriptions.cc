@@ -194,12 +194,6 @@ const char kEnableIOSManagedSettingsUIDescription[] =
     "Enable showing a different UI when the setting is managed by an "
     "enterprise policy on iOS.";
 
-const char kEnableNativeContextMenusName[] =
-    "Enable Context Menus in Native UI";
-const char kEnableNativeContextMenusDescription[] =
-    "Enables the new iOS 13 context menus on various pieces of UI in native "
-    "Chrome (e.g. History, Bookmarks).";
-
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
