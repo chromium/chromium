@@ -4,14 +4,20 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/flags_ui/feature_entry_macros.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+
+namespace {
+const char kFirstTestFeatureId[] = "feature-1";
+}  // namespace
 
 class ChromeLabsButtonTest : public TestWithBrowserView {
  public:
@@ -28,6 +34,22 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   ChromeLabsButton* labs_button =
       browser_view()->toolbar()->chrome_labs_button();
   EXPECT_FALSE(ChromeLabsBubbleView::IsShowing());
+
+  // Explicitly set up the feature flags and LabInfo for the button instead of
+  // relying on ChromeLabsBubbleViewModel::SetUpLabs().
+  const base::Feature kTestFeature1{"FeatureName1",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
+  std::vector<flags_ui::FeatureEntry> entries = {
+      {kFirstTestFeatureId, "", "", flags_ui::FlagsState::GetCurrentPlatform(),
+       FEATURE_VALUE_TYPE(kTestFeature1)}};
+  about_flags::testing::SetFeatureEntries(entries);
+
+  std::vector<LabInfo> test_feature_info = {
+      {kFirstTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16("")}};
+
+  labs_button->SetLabInfoForTesting(test_feature_info);
+
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(labs_button);
