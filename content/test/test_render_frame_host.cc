@@ -346,7 +346,7 @@ void TestRenderFrameHost::PrepareForCommit() {
                            /* was_fetched_via_cache=*/false,
                            /* is_signed_exchange_inner_response=*/false,
                            net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
-                           base::nullopt, nullptr);
+                           base::nullopt, nullptr, {} /* dns_aliases */);
 }
 
 void TestRenderFrameHost::PrepareForCommitDeprecatedForNavigationSimulator(
@@ -355,10 +355,11 @@ void TestRenderFrameHost::PrepareForCommitDeprecatedForNavigationSimulator(
     bool is_signed_exchange_inner_response,
     net::HttpResponseInfo::ConnectionInfo connection_info,
     base::Optional<net::SSLInfo> ssl_info,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    const std::vector<std::string>& dns_aliases) {
   PrepareForCommitInternal(remote_endpoint, was_fetched_via_cache,
                            is_signed_exchange_inner_response, connection_info,
-                           ssl_info, response_headers);
+                           ssl_info, response_headers, dns_aliases);
 }
 
 void TestRenderFrameHost::PrepareForCommitInternal(
@@ -367,7 +368,8 @@ void TestRenderFrameHost::PrepareForCommitInternal(
     bool is_signed_exchange_inner_response,
     net::HttpResponseInfo::ConnectionInfo connection_info,
     base::Optional<net::SSLInfo> ssl_info,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    const std::vector<std::string>& dns_aliases) {
   NavigationRequest* request = frame_tree_node_->navigation_request();
   CHECK(request);
   bool have_to_make_network_request =
@@ -412,6 +414,7 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   response->headers = response_headers;
   response->parsed_headers =
       network::PopulateParsedHeaders(response->headers, request->GetURL());
+  response->dns_aliases = dns_aliases;
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.
   url_loader->CallOnResponseStarted(std::move(response));

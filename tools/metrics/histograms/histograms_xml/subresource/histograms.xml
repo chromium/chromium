@@ -32,6 +32,87 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceFilter.CnameAlias.Browser.HadAliases"
+    units="BooleanHadAliases" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given NavigationRequest has a nonempty vector of
+    CNAME aliases. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled.
+    Recorded in a method called in the SubframeNavigationFilteringThrottle's
+    destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.InvalidCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of invalid CNAME aliases seen for a NavigationRequest by
+    the SubframeNavigationFilteringThrottle. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.ListLength"
+    units="length" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the lengths of each CNAME aliases vector passed to the
+    SubframeNavigationFilteringThrottle, not including empty alias vectors. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.RedundantCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen by the
+    SubframeNavigationFilteringThrottle that match the host of the requested
+    URL. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kWouldDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceFilter.CnameAlias.Renderer.HadAliases"
     units="BooleanHadAliases" expires_after="2021-06-18">
   <owner>cammie@chromium.org</owner>

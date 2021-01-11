@@ -527,7 +527,7 @@ void NavigationSimulatorImpl::ReadyToCommit() {
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             remote_endpoint_, was_fetched_via_cache_,
             is_signed_exchange_inner_response_, http_connection_info_,
-            ssl_info_, response_headers_);
+            ssl_info_, response_headers_, response_dns_aliases_);
   }
 
   // Synchronous failure can cause the navigation to finish here.
@@ -947,6 +947,11 @@ void NavigationSimulatorImpl::SetResolveErrorInfo(
 
 void NavigationSimulatorImpl::SetSSLInfo(const net::SSLInfo& ssl_info) {
   ssl_info_ = ssl_info;
+}
+
+void NavigationSimulatorImpl::SetResponseDnsAliases(
+    std::vector<std::string> aliases) {
+  response_dns_aliases_ = std::move(aliases);
 }
 
 NavigationThrottle::ThrottleCheckResult

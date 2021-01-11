@@ -21,7 +21,45 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
+namespace features {
+
+// Enables or disables performing SubresourceFilter checks from the Browser
+// against any aliases for the requested URL found from DNS CNAME records.
+const base::Feature kSendCnameAliasesToSubresourceFilterFromBrowser{
+    "SendCnameAliasesToSubresourceFilterFromBrowser",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace features
+
 namespace subresource_filter {
+
+namespace {
+
+void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
+  bool has_aliases = info.list_length > 0;
+
+  UMA_HISTOGRAM_BOOLEAN("SubresourceFilter.CnameAlias.Browser.HadAliases",
+                        has_aliases);
+
+  if (has_aliases) {
+    UMA_HISTOGRAM_COUNTS_1000("SubresourceFilter.CnameAlias.Browser.ListLength",
+                              info.list_length);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount",
+        info.was_ad_tagged_based_on_alias_count);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount",
+        info.was_blocked_based_on_alias_count);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Browser.InvalidCount",
+        info.invalid_count);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Browser.RedundantCount",
+        info.redundant_count);
+  }
+}
+
+}  // namespace
 
 SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
     content::NavigationHandle* handle,
@@ -29,6 +67,8 @@ SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
     Delegate* delegate)
     : content::NavigationThrottle(handle),
       parent_frame_filter_(parent_frame_filter),
+      alias_check_enabled_(base::FeatureList::IsEnabled(
+          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
       delegate_(delegate) {
   DCHECK(!handle->IsInMainFrame());
   DCHECK(parent_frame_filter_);
@@ -57,6 +97,9 @@ SubframeNavigationFilteringThrottle::~SubframeNavigationFilteringThrottle() {
           base::TimeDelta::FromSeconds(10), 50);
       break;
   }
+
+  if (alias_check_enabled_)
+    LogCnameAliasMetrics(alias_info_);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -73,13 +116,48 @@ content::NavigationThrottle::ThrottleCheckResult
 SubframeNavigationFilteringThrottle::WillProcessResponse() {
   DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
 
-  // Load policy notifications should go out by WillProcessResponse,
-  // defer if we are still performing any ruleset checks. If we are here,
-  // and there are outstanding load policy calculations, we are in dry run
-  // mode.
+  if (alias_check_enabled_) {
+    alias_info_.list_length = navigation_handle()->GetDnsAliases().size();
+
+    std::vector<GURL> alias_urls;
+    const GURL& base_url = navigation_handle()->GetURL();
+
+    for (const auto& alias : navigation_handle()->GetDnsAliases()) {
+      if (alias == navigation_handle()->GetURL().host_piece()) {
+        alias_info_.redundant_count++;
+        continue;
+      }
+
+      GURL::Replacements replacements;
+      replacements.SetHostStr(alias);
+      GURL alias_url = base_url.ReplaceComponents(replacements);
+
+      if (!alias_url.is_valid()) {
+        alias_info_.invalid_count++;
+        continue;
+      }
+
+      alias_urls.push_back(alias_url);
+    }
+
+    if (!alias_urls.empty()) {
+      pending_load_policy_calculations_++;
+      parent_frame_filter_->GetLoadPolicyForSubdocumentURLs(
+          alias_urls, base::BindOnce(&SubframeNavigationFilteringThrottle::
+                                         OnCalculatedLoadPoliciesFromAliasUrls,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
+  // Load policy notifications should go out by WillProcessResponse, unless
+  // we received CNAME aliases in the response and alias checking is enabled.
+  // Defer if we are still performing any ruleset checks. If we are here,
+  // and there are outstanding load policy calculations, we are either in dry
+  // run mode or checking aliases.
   if (pending_load_policy_calculations_ > 0) {
-    DCHECK((parent_frame_filter_->activation_state().activation_level ==
-            mojom::ActivationLevel::kDryRun));
+    DCHECK(parent_frame_filter_->activation_state().activation_level ==
+               mojom::ActivationLevel::kDryRun ||
+           alias_info_.list_length > 0);
     DeferStart(DeferStage::kWillProcessResponse);
     return DEFER;
   }
@@ -144,45 +222,43 @@ void SubframeNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   if (defer_stage_ == DeferStage::kNotDeferring)
     return;
 
-  // When we are deferred, callback is not responsible for handling navigation
-  // if there are still outstanding load policy calculations.
-  if (pending_load_policy_calculations_ > 0) {
-    // We defer waiting for each load policy calculations when the embedder
-    // document has activation enabled.
-    DCHECK(parent_frame_filter_->activation_state().activation_level !=
-           mojom::ActivationLevel::kEnabled);
-    return;
-  }
-
-  // If we are deferred and there are no pending load policy calculations,
-  // handle the deferred navigation.
   DCHECK(defer_stage_ == DeferStage::kWillProcessResponse ||
          defer_stage_ == DeferStage::kWillStartOrRedirectRequest);
-  DCHECK(!last_defer_timestamp_.is_null());
-  bool deferring_response = defer_stage_ == DeferStage::kWillProcessResponse;
-  total_defer_time_ += base::TimeTicks::Now() - last_defer_timestamp_;
-  defer_stage_ = DeferStage::kNotDeferring;
-  if (deferring_response) {
-    NotifyLoadPolicy();
-    Resume();
+
+  // If we have an activation enabled and `load_policy_` is DISALLOW, we need
+  // to cancel the navigation.
+  if (parent_frame_filter_->activation_state().activation_level ==
+          mojom::ActivationLevel::kEnabled &&
+      load_policy_ == LoadPolicy::DISALLOW) {
+    CancelNavigation();
     return;
   }
 
-  // Otherwise, we deferred at start/redirect time. Either cancel navigation
-  // or resume here according to load policy.
-  if (load_policy_ == LoadPolicy::DISALLOW) {
-    HandleDisallowedLoad();
-
-    // Because the navigation will be canceled, this is the last LoadPolicy that
-    // will be calculated.
-    NotifyLoadPolicy();
-    CancelDeferredNavigation(BLOCK_REQUEST_AND_COLLAPSE);
+  // If there are still pending load calculations, then don't resume.
+  if (pending_load_policy_calculations_ > 0)
     return;
+
+  ResumeNavigation();
+}
+
+void SubframeNavigationFilteringThrottle::OnCalculatedLoadPoliciesFromAliasUrls(
+    std::vector<LoadPolicy> policies) {
+  // We deferred to check aliases in WillProcessResponse.
+  DCHECK(defer_stage_ == DeferStage::kWillProcessResponse);
+  DCHECK(!policies.empty());
+
+  LoadPolicy most_restricive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
+
+  for (LoadPolicy policy : policies) {
+    most_restricive_alias_policy =
+        MoreRestrictiveLoadPolicy(most_restricive_alias_policy, policy);
+    if (policy == LoadPolicy::WOULD_DISALLOW)
+      alias_info_.was_ad_tagged_based_on_alias_count++;
+    else if (policy == LoadPolicy::DISALLOW)
+      alias_info_.was_blocked_based_on_alias_count++;
   }
 
-  // We will calculate another LoadPolicy for this navigation, so do not notify
-  // the manager yet.
-  Resume();
+  OnCalculatedLoadPolicy(most_restricive_alias_policy);
 }
 
 void SubframeNavigationFilteringThrottle::DeferStart(DeferStage stage) {
@@ -211,6 +287,42 @@ void SubframeNavigationFilteringThrottle::NotifyLoadPolicy() const {
 
   observer_manager->NotifySubframeNavigationEvaluated(
       navigation_handle(), load_policy_, is_ad_subframe);
+}
+
+void SubframeNavigationFilteringThrottle::UpdateDeferInfo() {
+  DCHECK(defer_stage_ != DeferStage::kNotDeferring);
+  DCHECK(!last_defer_timestamp_.is_null());
+  total_defer_time_ += base::TimeTicks::Now() - last_defer_timestamp_;
+  defer_stage_ = DeferStage::kNotDeferring;
+}
+
+void SubframeNavigationFilteringThrottle::CancelNavigation() {
+  bool defer_stage_was_will_process_response =
+      defer_stage_ == DeferStage::kWillProcessResponse;
+
+  UpdateDeferInfo();
+  HandleDisallowedLoad();
+  NotifyLoadPolicy();
+
+  if (defer_stage_was_will_process_response)
+    CancelDeferredNavigation(CANCEL);
+  else
+    CancelDeferredNavigation(BLOCK_REQUEST_AND_COLLAPSE);
+}
+
+void SubframeNavigationFilteringThrottle::ResumeNavigation() {
+  // There are no more pending load calculations. We can toggle back to not
+  // being deferred.
+  bool defer_stage_was_will_process_response =
+      defer_stage_ == DeferStage::kWillProcessResponse;
+  UpdateDeferInfo();
+
+  // If the defer stage was WillProcessResponse, then this is the last
+  // LoadPolicy that we will calculate.
+  if (defer_stage_was_will_process_response)
+    NotifyLoadPolicy();
+
+  Resume();
 }
 
 }  // namespace subresource_filter

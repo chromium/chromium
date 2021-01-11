@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle_timing.h"
@@ -384,6 +385,11 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
   virtual const base::Optional<url::Origin>& GetInitiatorOrigin() = 0;
+
+  // Retrieves any DNS aliases for the requested URL. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  virtual const std::vector<std::string>& GetDnsAliases() = 0;
 
   // Whether the new document will be hosted in the same process as the current
   // document or not. Set only when the navigation commits.

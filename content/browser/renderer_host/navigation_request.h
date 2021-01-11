@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -323,6 +325,7 @@ class CONTENT_EXPORT NavigationRequest
       override;
   int GetInitiatorProcessID() override;
   const base::Optional<url::Origin>& GetInitiatorOrigin() override;
+  const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() override;
   int GetNavigationEntryOffset() override;

@@ -77,6 +77,14 @@ class TestRulesetCreator {
       base::StringPiece suffix,
       TestRuleset* test_unindexed_ruleset);
 
+  // Creates both the indexed and unindexed versions of a testing ruleset that
+  // consists of filtering rules that disallow subresource loads from URLs
+  // containing any of the given `substrings`. Enclose call in
+  // ASSERT_NO_FATAL_FAILURE to detect errors.
+  void CreateRulesetToDisallowURLWithSubstrings(
+      std::vector<base::StringPiece> substrings,
+      TestRulesetPair* test_ruleset_pair);
+
   // Similar to CreateRulesetToDisallowURLsWithPathSuffix, but the resulting
   // ruleset consists of |num_of_suffixes| rules, each of them disallowing URLs
   // with suffixes of the form |suffix|_k, 0 <= k < |num_of_suffixes|.

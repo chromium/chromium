@@ -62,6 +62,11 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
     }
   }
 
+  void RunBlockingTasks() {
+    if (blocking_task_runner_->HasPendingTask())
+      blocking_task_runner_->RunPendingTasks();
+  }
+
   VerifiedRulesetDealer::Handle* dealer_handle() {
     return dealer_handle_.get();
   }
@@ -132,6 +137,67 @@ class LoadPolicyCallbackReceiver {
   LoadPolicy last_load_policy_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadPolicyCallbackReceiver);
+};
+
+class MultiLoadPolicyCallbackReceiver {
+ public:
+  MultiLoadPolicyCallbackReceiver() = default;
+  MultiLoadPolicyCallbackReceiver(
+      const MultiLoadPolicyCallbackReceiver& other) = delete;
+  MultiLoadPolicyCallbackReceiver& operator=(
+      const MultiLoadPolicyCallbackReceiver& other) = delete;
+  ~MultiLoadPolicyCallbackReceiver() = default;
+
+  AsyncDocumentSubresourceFilter::MultiLoadPolicyCallback GetCallback() {
+    return base::BindOnce(&MultiLoadPolicyCallbackReceiver::Callback,
+                          base::Unretained(this));
+  }
+
+  int explicitly_allow_count() const { return explicitly_allow_count_; }
+
+  int allow_count() const { return allow_count_; }
+
+  int would_disallow_count() const { return would_disallow_count_; }
+
+  int disallow_count() const { return disallow_count_; }
+
+  void SetQuitClosure(base::OnceClosure quit_closure) {
+    DCHECK(quit_closure);
+    quit_closure_ = std::move(quit_closure);
+  }
+
+ private:
+  void Callback(std::vector<LoadPolicy> policies) {
+    for (const auto& load_policy : policies) {
+      switch (load_policy) {
+        case LoadPolicy::EXPLICITLY_ALLOW:
+          explicitly_allow_count_++;
+          break;
+        case LoadPolicy::ALLOW:
+          allow_count_++;
+          break;
+        case LoadPolicy::WOULD_DISALLOW:
+          would_disallow_count_++;
+          break;
+        case LoadPolicy::DISALLOW:
+          disallow_count_++;
+      }
+    }
+
+    Quit();
+  }
+
+  void Quit() {
+    DCHECK(!quit_closure_.is_null());
+    std::move(quit_closure_).Run();
+  }
+
+  base::OnceClosure quit_closure_;
+
+  int explicitly_allow_count_ = 0;
+  int allow_count_ = 0;
+  int would_disallow_count_ = 0;
+  int disallow_count_ = 0;
 };
 
 }  // namespace
@@ -235,6 +301,118 @@ TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocument) {
   RunUntilIdle();
   load_policy_1.ExpectReceivedOnce(LoadPolicy::ALLOW);
   load_policy_2.ExpectReceivedOnce(LoadPolicy::DISALLOW);
+}
+
+TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocumentURLs) {
+  const struct {
+    mojom::ActivationLevel activation_level;
+    std::vector<GURL> urls;
+    int explicitly_allow_count;
+    int allow_count;
+    int would_disallow_count;
+    int disallow_count;
+  } kTestCases[] = {{mojom::ActivationLevel::kEnabled,
+                     {},
+                     0 /* explicitly_allow_count */,
+                     0 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kDryRun,
+                     {},
+                     0 /* explicitly_allow_count */,
+                     0 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kEnabled,
+                     {GURL("http://alias1.com/allowed.html"),
+                      GURL("http://alias2.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     1 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     1 /* disallow_count */},
+                    {mojom::ActivationLevel::kDryRun,
+                     {GURL("http://alias1.com/allowed.html"),
+                      GURL("http://alias2.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     1 /* allow_count */,
+                     1 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kEnabled,
+                     {GURL("http://example.alias1.com/allowed.html"),
+                      GURL("http://example.alias2.com/allowed.html")},
+                     0 /* explicitly_allow_count */,
+                     2 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kDryRun,
+                     {GURL("http://example.alias1.com/allowed.html"),
+                      GURL("http://example.alias2.com/allowed.html")},
+                     0 /* explicitly_allow_count */,
+                     2 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kEnabled,
+                     {GURL("http://example.alias1.com/disallowed.html"),
+                      GURL("http://example.alias2.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     0 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     2 /* disallow_count */},
+                    {mojom::ActivationLevel::kDryRun,
+                     {GURL("http://example.alias1.com/disallowed.html"),
+                      GURL("http://example.alias2.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     0 /* allow_count */,
+                     2 /* would_disallow_count */,
+                     0 /* disallow_count */},
+                    {mojom::ActivationLevel::kEnabled,
+                     {GURL("http://test.alias1.com/disallowed.html"),
+                      GURL("http://test.alias2.com/allowed.html"),
+                      GURL("http://test.alias3.com/disallowed.html"),
+                      GURL("http://test.alias4.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     1 /* allow_count */,
+                     0 /* would_disallow_count */,
+                     3 /* disallow_count */},
+                    {mojom::ActivationLevel::kDryRun,
+                     {GURL("http://test.alias1.com/disallowed.html"),
+                      GURL("http://test.alias2.com/allowed.html"),
+                      GURL("http://test.alias3.com/disallowed.html"),
+                      GURL("http://test.alias4.com/disallowed.html")},
+                     0 /* explicitly_allow_count */,
+                     1 /* allow_count */,
+                     3 /* would_disallow_count */,
+                     0 /* disallow_count */}};
+
+  for (const auto& test : kTestCases) {
+    dealer_handle()->TryOpenAndSetRulesetFile(
+        ruleset().path, /*expected_checksum=*/0, base::DoNothing());
+    auto ruleset_handle = CreateRulesetHandle();
+
+    AsyncDocumentSubresourceFilter::InitializationParams params(
+        GURL("http://example.com"), test.activation_level,
+        false /* measure_performance */);
+
+    testing::TestActivationStateCallbackReceiver activation_state;
+    auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
+        ruleset_handle.get(), std::move(params),
+        activation_state.GetCallback());
+
+    base::RunLoop run_loop;
+    MultiLoadPolicyCallbackReceiver load_policy;
+    load_policy.SetQuitClosure(run_loop.QuitClosure());
+    filter->GetLoadPolicyForSubdocumentURLs(test.urls,
+                                            load_policy.GetCallback());
+
+    RunBlockingTasks();
+    run_loop.Run();
+
+    EXPECT_EQ(test.explicitly_allow_count,
+              load_policy.explicitly_allow_count());
+    EXPECT_EQ(test.allow_count, load_policy.allow_count());
+    EXPECT_EQ(test.would_disallow_count, load_policy.would_disallow_count());
+    EXPECT_EQ(test.disallow_count, load_policy.disallow_count());
+  }
 }
 
 TEST_F(AsyncDocumentSubresourceFilterTest, FirstDisallowedLoadIsReported) {

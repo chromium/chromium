@@ -5,7 +5,11 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -129,6 +133,11 @@ class MockNavigationHandle : public NavigationHandle {
   int GetInitiatorProcessID() override { return initiator_process_id_; }
   const base::Optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
+  }
+  const std::vector<std::string>& GetDnsAliases() override {
+    static const base::NoDestructor<std::vector<std::string>>
+        emptyvector_result;
+    return *emptyvector_result;
   }
   MOCK_METHOD(void,
               RegisterThrottleForTesting,

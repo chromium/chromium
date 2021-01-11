@@ -94,6 +94,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetResolveErrorInfo(
       const net::ResolveErrorInfo& resolve_error_info) override;
   void SetSSLInfo(const net::SSLInfo& ssl_info) override;
+  void SetResponseDnsAliases(std::vector<std::string> aliases) override;
 
   NavigationThrottle::ThrottleCheckResult GetLastThrottleCheckResult() override;
   NavigationRequest* GetNavigationHandle() override;
@@ -295,6 +296,12 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   base::Optional<url::Origin> origin_;
   base::Optional<Impression> impression_;
   int64_t post_id_ = -1;
+
+  // Any DNS aliases, as read from CNAME records, for the request URL that
+  // would be in the network::mojom::URLResponseHead. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  std::vector<std::string> response_dns_aliases_;
 
   bool auto_advance_ = true;
   bool drop_unload_ack_ = false;

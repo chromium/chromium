@@ -4,7 +4,9 @@
 
 #include "content/browser/renderer_host/navigation_request.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -4982,6 +4984,11 @@ int NavigationRequest::GetInitiatorProcessID() {
 
 const base::Optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
   return common_params().initiator_origin;
+}
+
+const std::vector<std::string>& NavigationRequest::GetDnsAliases() {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return response_head_ ? response_head_->dns_aliases : *emptyvector_result;
 }
 
 bool NavigationRequest::IsSameProcess() {

@@ -305,6 +305,12 @@ class NavigationSimulator {
   // Commit().
   virtual void SetSSLInfo(const net::SSLInfo& ssl_info) = 0;
 
+  // Sets the DNS aliases to be received in the URLResponseHead. The aliases
+  // are what would be read from DNS CNAME records, and the alias chain should
+  // be preserved in reverse order, from canonical name (i.e. address record
+  // name) through to query name. This method should be called before Commit().
+  virtual void SetResponseDnsAliases(std::vector<std::string> aliases) = 0;
+
   // --------------------------------------------------------------------------
 
   // Gets the last throttle check result computed by the navigation throttles.

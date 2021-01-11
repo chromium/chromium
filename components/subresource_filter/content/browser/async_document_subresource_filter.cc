@@ -162,6 +162,20 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
       std::move(result_callback));
 }
 
+void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
+    const std::vector<GURL>& urls,
+    MultiLoadPolicyCallback result_callback) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+
+  // TODO(pkalinnikov): Think about avoiding copying of |urls| if they are
+  // too big and won't be allowed anyway (e.g. data: URI).
+  base::PostTaskAndReplyWithResult(
+      task_runner_, FROM_HERE,
+      base::BindOnce(&AsyncDocumentSubresourceFilter::Core::GetLoadPolicies,
+                     base::Unretained(core_.get()), urls),
+      std::move(result_callback));
+}
+
 void AsyncDocumentSubresourceFilter::ReportDisallowedLoad() {
   if (!first_disallowed_load_callback_.is_null())
     std::move(first_disallowed_load_callback_).Run();
@@ -204,6 +218,19 @@ AsyncDocumentSubresourceFilter::Core::Core() {
 
 AsyncDocumentSubresourceFilter::Core::~Core() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
+}
+
+std::vector<LoadPolicy> AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
+    const std::vector<GURL>& urls) {
+  std::vector<LoadPolicy> policies;
+  for (const auto& url : urls) {
+    auto policy =
+        filter() ? filter()->GetLoadPolicy(
+                       url, url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT)
+                 : LoadPolicy::ALLOW;
+    policies.push_back(policy);
+  }
+  return policies;
 }
 
 void AsyncDocumentSubresourceFilter::Core::SetActivationState(

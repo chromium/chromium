@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/navigation_request.h"
+
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -17,6 +21,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -551,6 +556,56 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
             ->policy_container_host()
             ->referrer_policy());
   }
+}
+
+TEST_F(NavigationRequestTest, DnsAliasesCanBeAccessed) {
+  // Create simulated NavigationRequest for the URL, which has aliases.
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  std::vector<std::string> dns_aliases({"alias1", "alias2"});
+  navigation->SetResponseDnsAliases(std::move(dns_aliases));
+
+  // Start the navigation.
+  navigation->Start();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Commit the navigation.
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->ReadyToCommit();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Verify that the aliases are accessible from the NavigationRequest.
+  EXPECT_THAT(navigation->GetNavigationHandle()->GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2"));
+}
+
+TEST_F(NavigationRequestTest, NoDnsAliases) {
+  // Create simulated NavigationRequest for the URL, which does not
+  // have aliases. (Note the empty alias list.)
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  std::vector<std::string> dns_aliases;
+  navigation->SetResponseDnsAliases(std::move(dns_aliases));
+
+  // Start the navigation.
+  navigation->Start();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Commit the navigation.
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->ReadyToCommit();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Verify that there are no aliases in the NavigationRequest.
+  EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
 }
 
 }  // namespace content
