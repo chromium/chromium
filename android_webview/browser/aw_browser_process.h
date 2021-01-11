@@ -7,6 +7,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 
+#include "android_webview/browser/aw_apk_type.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
@@ -73,6 +74,7 @@ class AwBrowserProcess {
   void PreMainMessageLoopRun();
 
   static void TriggerMinidumpUploading();
+  static ApkType GetApkType();
 
  private:
   void CreateSafeBrowsingUIManager();

@@ -212,6 +212,12 @@ void AwBrowserProcess::TriggerMinidumpUploading() {
       base::android::AttachCurrentThread());
 }
 
+// static
+ApkType AwBrowserProcess::GetApkType() {
+  return static_cast<ApkType>(
+      Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));
+}
+
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& processName) {

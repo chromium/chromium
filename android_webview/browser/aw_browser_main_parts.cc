@@ -136,11 +136,29 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
+  static constexpr char kWebViewApkTypeTrial[] = "WebViewApkType";
+  ApkType apk_type = AwBrowserProcess::GetApkType();
+  std::string apk_type_string;
+  switch (apk_type) {
+    case ApkType::TRICHROME:
+      apk_type_string = "Trichrome";
+      break;
+    case ApkType::MONOCHROME:
+      apk_type_string = "Monochrome";
+      break;
+    case ApkType::STANDALONE:
+      apk_type_string = "Standalone";
+      break;
+  }
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, kWebViewApkTypeTrial, apk_type_string);
+
   // If isolated splits are enabled at build time, Monochrome and Trichrome will
   // have a different bundle layout, so measure N+ even though isolated splits
   // are only supported by Android in O+.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
+  if (apk_type == ApkType::MONOCHROME &&
+      base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_NOUGAT) {
     static constexpr char kIsolatedSplitsTrial[] = "IsolatedSplitsSynthetic";
     AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         metrics, kIsolatedSplitsTrial,

@@ -31,6 +31,7 @@ import android.webkit.WebViewProvider;
 
 import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
+import org.chromium.android_webview.ApkType;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
@@ -258,6 +259,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 packageInfo = WebViewFactory.getLoadedPackageInfo();
             }
             AwBrowserProcess.setWebViewPackageName(packageInfo.packageName);
+            AwBrowserProcess.initializeApkType(packageInfo.applicationInfo);
 
             mAwInit = createAwInit();
             mWebViewDelegate = webViewDelegate;
@@ -288,7 +290,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
             int packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && !isTrichrome(packageInfo.applicationInfo)
+                    && AwBrowserProcess.getApkType() != ApkType.TRICHROME
                     && packageId > SHARED_LIBRARY_MAX_ID) {
                 throw new RuntimeException("Package ID too high for WebView: " + packageId);
             }
@@ -411,13 +413,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             throw new IllegalArgumentException(
                     "WebView cannot be used with device protected storage");
         }
-    }
-
-    /**
-     * Determines whether this is Trichrome WebView by checking if any shared library files exist.
-     */
-    private static boolean isTrichrome(ApplicationInfo info) {
-        return info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0;
     }
 
     /**

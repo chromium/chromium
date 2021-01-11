@@ -7,6 +7,7 @@ import("//components/spellcheck/spellcheck_build_features.gni")
 
 java_cpp_enum("browser_enums") {
   sources = [
+    "aw_apk_type.h",
     "aw_renderer_priority.h",
     "aw_settings.h",
     "permission/aw_permission_request.h",
@@ -19,6 +20,7 @@ source_set("browser") {
   sources = [
     "android_protocol_handler.cc",
     "android_protocol_handler.h",
+    "aw_apk_type.h",
     "aw_autofill_client.cc",
     "aw_autofill_client.h",
     "aw_browser_context.cc",

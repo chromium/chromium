@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ApplicationInfo;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -56,6 +57,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +79,7 @@ public final class AwBrowserProcess {
             PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
     private static String sWebViewPackageName;
+    private static @ApkType int sApkType;
 
     /**
      * Loads the native library, and performs basic static construction of objects needed
@@ -169,6 +172,27 @@ public final class AwBrowserProcess {
     public static String getWebViewPackageName() {
         if (sWebViewPackageName == null) return ""; // May be null in testing.
         return sWebViewPackageName;
+    }
+
+    public static void initializeApkType(ApplicationInfo info) {
+        if (info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0) {
+            // Only Trichrome uses shared library files.
+            sApkType = ApkType.TRICHROME;
+        } else if (info.className.toLowerCase(Locale.ROOT).contains("monochrome")) {
+            // Only Monochrome has "monochrome" in the application class name.
+            sApkType = ApkType.MONOCHROME;
+        } else {
+            // Everything else must be standalone.
+            sApkType = ApkType.STANDALONE;
+        }
+    }
+
+    /**
+     * Returns the WebView APK type.
+     */
+    @CalledByNative
+    public static @ApkType int getApkType() {
+        return sApkType;
     }
 
     /**
