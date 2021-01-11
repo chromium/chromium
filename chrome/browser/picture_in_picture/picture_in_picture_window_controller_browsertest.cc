@@ -55,7 +55,6 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_observer.h"
-#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
@@ -225,31 +224,6 @@ class PictureInPictureWindowControllerBrowserTest
     for (views::View* control : controls)
       ASSERT_EQ(IsOverlayWindowControlVisible(control), expected_visible);
   }
-
-  class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
-   public:
-    explicit WidgetBoundsChangeWaiter(views::Widget* widget)
-        : widget_(widget), initial_bounds_(widget->GetWindowBoundsInScreen()) {
-      widget_->AddObserver(this);
-    }
-
-    ~WidgetBoundsChangeWaiter() final { widget_->RemoveObserver(this); }
-
-    void OnWidgetBoundsChanged(views::Widget* widget, const gfx::Rect&) final {
-      run_loop_.Quit();
-    }
-
-    void Wait() {
-      if (widget_->GetWindowBoundsInScreen() != initial_bounds_)
-        return;
-      run_loop_.Run();
-    }
-
-   private:
-    views::Widget* widget_;
-    gfx::Rect initial_bounds_;
-    base::RunLoop run_loop_;
-  };
 
   void MoveMouseOverOverlayWindow() {
     auto* const window = GetOverlayWindow();
@@ -1326,66 +1300,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
           FILE_PATH_LITERAL("media/picture-in-picture/iframe-size.html")));
   ui_test_utils::NavigateToURL(browser(), another_page_url);
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-}
-
-// Tests that when a new surface id is sent to the Picture-in-Picture window, it
-// doesn't move back to its default position.
-// TODO(crbug.com/1146047): Test is flaky on Linux.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SurfaceIdChangeDoesNotMoveWindow DISABLED_SurfaceIdChangeDoesNotMoveWindow
-#else
-#define MAYBE_SurfaceIdChangeDoesNotMoveWindow SurfaceIdChangeDoesNotMoveWindow
-#endif
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       MAYBE_SurfaceIdChangeDoesNotMoveWindow) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_NE(GetOverlayWindow(), nullptr);
-  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
-
-  const auto max_size = GetOverlayWindow()->GetMaximumSize();
-  const int side_length = std::min(max_size.width(), max_size.height());
-
-  // Move and resize the window to the top left corner and wait for ack.
-  {
-    WidgetBoundsChangeWaiter waiter(GetOverlayWindow());
-
-    GetOverlayWindow()->SetBounds(gfx::Rect(0, 0, side_length, side_length));
-
-    waiter.Wait();
-  }
-
-  // Wait for signal that the window was resized.
-  base::string16 expected_title = base::ASCIIToUTF16("resized");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-
-  // Simulate a new surface layer and a change in aspect ratio then wait for
-  // ack.
-  {
-    WidgetBoundsChangeWaiter waiter(GetOverlayWindow());
-
-    GetOverlayWindow()->SetSurfaceId(viz::SurfaceId(
-        viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(9, base::UnguessableToken::Create())));
-    GetOverlayWindow()->UpdateVideoSize(
-        gfx::Size(side_length / 2, side_length / 4));
-
-    waiter.Wait();
-  }
-
-  // The position should be closer to the (0, 0) than the default one (bottom
-  // right corner). This will be reflected by checking that the position is
-  // below (100, 100).
-  EXPECT_LT(GetOverlayWindow()->GetBounds().x(), 100);
-  EXPECT_LT(GetOverlayWindow()->GetBounds().y(), 100);
 }
 
 // Tests that the Picture-in-Picture state is properly updated when the window
