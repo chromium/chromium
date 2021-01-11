@@ -167,13 +167,14 @@ const CGFloat kAnimationDuration = 0.25f;
   }
   [self willAnimateViewReveal];
   [self.animator stopAnimation:YES];
+
+  __weak ViewRevealingVerticalPanHandler* weakSelf = self;
   self.animator = [[UIViewPropertyAnimator alloc]
       initWithDuration:kAnimationDuration
           dampingRatio:1
             animations:^() {
-              [self animateToNextViewRevealState];
+              [weakSelf animateToNextViewRevealState];
             }];
-  __weak ViewRevealingVerticalPanHandler* weakSelf = self;
   [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
     if (!weakSelf.animator.reversed) {
       weakSelf.currentState = weakSelf.nextState;
