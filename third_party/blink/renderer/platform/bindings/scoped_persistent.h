@@ -51,12 +51,6 @@ class ScopedPersistent {
   ScopedPersistent(v8::Isolate* isolate, v8::Local<T> handle)
       : handle_(isolate, handle) {}
 
-  ScopedPersistent(v8::Isolate* isolate, v8::MaybeLocal<T> maybe) {
-    v8::Local<T> local;
-    if (maybe.ToLocal(&local))
-      handle_.Reset(isolate, local);
-  }
-
   ~ScopedPersistent() { Clear(); }
 
   ALWAYS_INLINE v8::Local<T> NewLocal(v8::Isolate* isolate) const {
