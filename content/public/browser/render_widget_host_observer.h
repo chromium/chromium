@@ -26,7 +26,7 @@ class CONTENT_EXPORT RenderWidgetHostObserver : public base::CheckedObserver {
   virtual void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {}
 
  protected:
-  ~RenderWidgetHostObserver() override = default;
+  ~RenderWidgetHostObserver() override;
 };
 
 }  // namespace content
