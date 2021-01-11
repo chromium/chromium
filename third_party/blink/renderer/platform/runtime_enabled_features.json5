@@ -2185,7 +2185,7 @@
     },
     {
       name: "WebNFC",
-      status: "experimental",
+      status: {"Android": "stable", "default": "test"},
     },
     {
       name: "WebOTP",
