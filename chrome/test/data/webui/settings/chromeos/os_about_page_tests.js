@@ -492,6 +492,43 @@ cr.define('settings_about_page', function() {
       page.$.help.click();
       return aboutBrowserProxy.whenCalled('openOsHelpPage');
     });
+
+    test('LaunchDiagnostics', async function() {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+        diagnosticsAppEnabled: true,
+      });
+
+      await initNewPage();
+      Polymer.dom.flush();
+
+      assertTrue(!!page.$.diagnostics);
+      page.$.diagnostics.click();
+      await aboutBrowserProxy.whenCalled('openDiagnostics');
+    });
+
+    test('Deep link to diagnostics', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+        diagnosticsAppEnabled: true,
+      });
+
+      await initNewPage();
+      Polymer.dom.flush();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1707');  // Setting::kDiagnostics
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ABOUT_ABOUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('#diagnostics').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Diagnostics should be focused for settingId=1707.');
+    });
   });
 
   suite('DetailedBuildInfoTest', function() {

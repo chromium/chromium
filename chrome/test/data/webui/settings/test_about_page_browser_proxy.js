@@ -71,6 +71,9 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy {
   openOsHelpPage() {}
 
   /** @override */
+  openDiagnostics() {}
+
+  /** @override */
   requestUpdate() {}
 
   /** @override */

@@ -164,6 +164,8 @@ void ShowConnectivityDiagnosticsApp(Profile* profile);
 
 void ShowScanningApp(Profile* profile,
                      chromeos::scanning::ScanAppEntryPoint entry_point);
+
+void ShowDiagnosticsApp(Profile* profile);
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

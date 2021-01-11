@@ -194,6 +194,9 @@ cr.define('settings', function() {
     // </if>
 
     // <if expr="chromeos">
+    /** Opens the diagnostics page. */
+    openDiagnostics() {}
+
     /** Opens the OS help page. */
     openOsHelpPage() {}
 
@@ -307,6 +310,11 @@ cr.define('settings', function() {
     // </if>
 
     // <if expr="chromeos">
+    /** @override */
+    openDiagnostics() {
+      chrome.send('openDiagnostics');
+    }
+
     /** @override */
     openOsHelpPage() {
       chrome.send('openOsHelpPage');

@@ -154,6 +154,8 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void HandleOpenDiagnostics(const base::ListValue* args);
+
   void HandleGetRegulatoryInfo(const base::ListValue* args);
 
   // Callback for when the directory with the regulatory label image and alt

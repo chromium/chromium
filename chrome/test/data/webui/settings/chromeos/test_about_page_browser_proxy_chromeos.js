@@ -23,6 +23,7 @@
       'getEndOfLifeInfo',
       'launchReleaseNotes',
       'openOsHelpPage',
+      'openDiagnostics',
       'refreshTPMFirmwareUpdateStatus',
       'setChannel',
     ]);
@@ -188,6 +189,11 @@
   /** @override */
   openOsHelpPage() {
     this.methodCalled('openOsHelpPage');
+  }
+
+  /** @override */
+  openDiagnostics() {
+    this.methodCalled('openDiagnostics');
   }
 
   /** @override */

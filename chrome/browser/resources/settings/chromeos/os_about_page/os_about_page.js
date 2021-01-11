@@ -114,6 +114,14 @@ Polymer({
           'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
     },
 
+    /** @private */
+    showDiagnosticsApp_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('diagnosticsAppEnabled');
+      }
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -168,6 +176,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kGetHelpWithChromeOs,
         chromeos.settings.mojom.Setting.kReportAnIssue,
         chromeos.settings.mojom.Setting.kTermsOfService,
+        chromeos.settings.mojom.Setting.kDiagnostics,
       ]),
     },
   },
@@ -298,6 +307,13 @@ Polymer({
   /** @private */
   onHelpClick_() {
     this.aboutBrowserProxy_.openOsHelpPage();
+  },
+
+  /** @private */
+  onDiagnosticsClick_() {
+    assert(this.showDiagnosticsApp_);
+    this.aboutBrowserProxy_.openDiagnostics();
+    settings.recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
   },
 
   /** @private */

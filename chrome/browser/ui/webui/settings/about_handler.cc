@@ -280,6 +280,10 @@ void AboutHandler::RegisterMessages() {
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
+      "openDiagnostics",
+      base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
@@ -420,6 +424,11 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
+  DCHECK(args->empty());
+  chrome::ShowDiagnosticsApp(profile_);
+}
+
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
   std::string callback_id;

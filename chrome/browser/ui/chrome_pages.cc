@@ -473,6 +473,14 @@ void ShowScanningApp(Profile* profile,
   chromeos::scanning::RecordScanAppEntryPoint(entry_point);
 }
 
+void ShowDiagnosticsApp(Profile* profile) {
+  // TODO(joonbug): Add entry point tracking
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
+
+  LaunchSystemWebApp(profile, web_app::SystemAppType::DIAGNOSTICS,
+                     GURL(chrome::kChromeUIDiagnosticsAppURL));
+}
+
 GURL GetOSSettingsUrl(const std::string& sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
