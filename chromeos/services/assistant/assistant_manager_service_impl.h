@@ -63,6 +63,7 @@ class AssistantMediaSession;
 class AssistantDeviceSettingsDelegate;
 class AssistantManagerServiceDelegate;
 class AssistantProxy;
+class AudioInputHost;
 class CrosPlatformApi;
 class ServiceContext;
 class ServiceControllerProxy;
@@ -220,7 +221,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   assistant_client::AssistantManager* assistant_manager();
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
-  CrosPlatformApi* platform_api() { return platform_api_.get(); }
+  void SetMicState(bool mic_open);
 
   // assistant_client::MediaManager::Listener overrides:
   void OnPlaybackStateChange(
@@ -313,6 +314,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;
+  std::unique_ptr<AudioInputHost> audio_input_host_;
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
   mojo::Remote<media_session::mojom::MediaController> media_controller_;

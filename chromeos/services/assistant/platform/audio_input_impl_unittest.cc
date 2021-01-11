@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/services/assistant/platform/audio_input_host.h"
+#include "chromeos/services/assistant/platform/audio_input_host_impl.h"
 #include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
@@ -101,9 +101,10 @@ class AudioInputImplTest : public testing::Test,
     audio_input_impl_ = std::make_unique<AudioInputImpl>(
         &audio_stream_factory_delegate_, "fake-device-id");
 
-    audio_input_host_ = std::make_unique<AudioInputHost>(
-        audio_input_impl_.get(), cras_audio_handler_.Get(),
-        FakePowerManagerClient::Get(), "initial-locale");
+    audio_input_host_ = std::make_unique<AudioInputHostImpl>(
+        cras_audio_handler_.Get(), FakePowerManagerClient::Get(),
+        "initial-locale");
+    audio_input_host_->Initialize(audio_input_impl_.get());
     audio_input_host_->SetDeviceId("initial-device-id");
 
     audio_input_impl_->AddObserver(this);
@@ -152,7 +153,7 @@ class AudioInputImplTest : public testing::Test,
   DefaultAudioStreamFactoryDelegate audio_stream_factory_delegate_;
   ScopedCrasAudioHandler cras_audio_handler_;
   std::unique_ptr<AudioInputImpl> audio_input_impl_;
-  std::unique_ptr<AudioInputHost> audio_input_host_;
+  std::unique_ptr<AudioInputHostImpl> audio_input_host_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioInputImplTest);
 };
