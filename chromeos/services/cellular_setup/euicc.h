@@ -37,6 +37,7 @@ class Euicc : public mojom::Euicc {
       const std::string& confirmation_code,
       InstallProfileFromActivationCodeCallback callback) override;
   void RequestPendingProfiles(RequestPendingProfilesCallback callback) override;
+  void GetEidQRCode(GetEidQRCodeCallback callback) override;
 
   // Updates list of eSIM profiles for this euicc from D-Bus.
   void UpdateProfileList();

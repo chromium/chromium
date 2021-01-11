@@ -56,6 +56,17 @@ struct ESimProfileProperties {
   string activation_code;
 };
 
+// Represents a QRCode image.
+struct QRCode {
+  // Width and height (which are equal) of the generated QR Code image in
+  // number of tiles.
+  uint8 size;
+  // QRCode image data. This is an array of bytes representing tiles in the
+  // QRCode in row major order. Values can be 0 or 1 where 1 indicates that
+  // the corresponding tile should be filled.
+  array<uint8> data;
+};
+
 // ESimManagerObserver is implemented by any module that
 // needs to observe changes to the eSIM module.
 interface ESimManagerObserver {
@@ -114,6 +125,10 @@ interface Euicc {
   InstallProfileFromActivationCode(string activation_code,
                                    string confirmation_code) =>
     (ProfileInstallResult result, pending_remote<ESimProfile>? profile);
+
+  // Returns a QR Code image representing the EID of this Euicc. A null value is
+  // returned if the QR Code could not be generated.
+  GetEidQRCode() => (QRCode? qr_code);
 };
 
 // ESimProfile interface represents and eSIM profile and provides operations

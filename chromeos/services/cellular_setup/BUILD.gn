@@ -43,6 +43,7 @@ static_library("esim_manager") {
     "//chromeos/dbus/hermes",
     "//chromeos/services/cellular_setup/public/mojom",
     "//components/device_event_log",
+    "//components/qr_code_generator",
     "//dbus",
   ]
 }

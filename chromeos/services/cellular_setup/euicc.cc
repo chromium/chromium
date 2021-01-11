@@ -4,14 +4,25 @@
 
 #include "chromeos/services/cellular_setup/euicc.h"
 
+#include <cstdint>
 #include <memory>
 
+#include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace {
+
+// Prefix for EID when encoded in QR Code.
+const char kEidQrCodePrefix[] = "EID:";
+
+}  // namespace
 
 namespace chromeos {
 namespace cellular_setup {
@@ -76,6 +87,35 @@ void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
       path_,
       base::BindOnce(&Euicc::OnRequestPendingEventsResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
+  // Format EID to string that should be encoded in the QRCode.
+  std::string qr_code_string =
+      base::StrCat({kEidQrCodePrefix, properties_->eid});
+  QRCodeGenerator qr_generator;
+  base::Optional<QRCodeGenerator::GeneratedCode> qr_data =
+      qr_generator.Generate(base::as_bytes(
+          base::make_span(qr_code_string.data(), qr_code_string.size())));
+  if (!qr_data || qr_data->data.data() == nullptr ||
+      qr_data->data.size() == 0) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Data returned from QRCodeGenerator consist of bytes that represents
+  // tiles. Least significant bit of each byte is set if the tile should be
+  // filled. Other bit positions indicate QR Code structure and are not required
+  // for rendering. Convert this data to 0 or 1 values for simpler UI side
+  // rendering.
+  for (uint8_t& qr_data_byte : qr_data->data) {
+    qr_data_byte &= 1;
+  }
+
+  mojom::QRCodePtr qr_code = mojom::QRCode::New();
+  qr_code->size = qr_data->qr_size;
+  qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
+  std::move(callback).Run(std::move(qr_code));
 }
 
 void Euicc::UpdateProfileList() {

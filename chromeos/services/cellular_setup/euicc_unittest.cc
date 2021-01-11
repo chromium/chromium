@@ -150,5 +150,24 @@ TEST_F(EuiccTest, RequestPendingProfiles) {
             RequestPendingProfiles(euicc));
 }
 
+TEST_F(EuiccTest, GetEidQRCode) {
+  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
+  ASSERT_TRUE(euicc.is_bound());
+
+  mojom::QRCodePtr qr_code_result;
+  base::RunLoop run_loop;
+  euicc->GetEidQRCode(base::BindOnce(
+      [](mojom::QRCodePtr* out, base::OnceClosure quit_closure,
+         mojom::QRCodePtr properties) {
+        *out = std::move(properties);
+        std::move(quit_closure).Run();
+      },
+      &qr_code_result, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_FALSE(qr_code_result.is_null());
+  EXPECT_LT(0, qr_code_result->size);
+}
+
 }  // namespace cellular_setup
 }  // namespace chromeos
