@@ -90,7 +90,9 @@ bool HasNoBrowser(content::WebContents* web_contents) {
 
 bool GuestOptionAvailable() {
   return Profile::IsEphemeralGuestProfileEnabled() &&
-         !ProfileManager::GuestProfileExists();
+         !ProfileManager::GuestProfileExists() &&
+         g_browser_process->local_state()->GetBoolean(
+             prefs::kBrowserGuestModeEnabled);
 }
 
 }  // namespace

@@ -141,12 +141,16 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
       callback_(std::move(callback)) {
   if (use_guest_profile) {
     DCHECK(Profile::IsEphemeralGuestProfileEnabled());
-    DCHECK(!ProfileManager::GuestProfileExists());
-    g_browser_process->profile_manager()->CreateProfileAsync(
-        ProfileManager::GetGuestProfilePath(),
-        base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
-                            weak_pointer_factory_.GetWeakPtr()),
-        base::string16(), std::string());
+    // Make sure the callback is not called synchronously.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProfileManager::CreateProfileAsync,
+                       base::Unretained(g_browser_process->profile_manager()),
+                       ProfileManager::GetGuestProfilePath(),
+                       base::BindRepeating(
+                           &DiceSignedInProfileCreator::OnNewProfileCreated,
+                           weak_pointer_factory_.GetWeakPtr()),
+                       base::string16(), std::string()));
   } else {
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
