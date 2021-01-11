@@ -52743,7 +52743,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-001.html": [
-      "33036d99d33bfc767eee8c3946b0299d9807515d",
+      "0322f5171014e162ee0870574166e78624602fab",
       [
        null,
        [
@@ -52756,7 +52756,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-002.html": [
-      "b5fa72b33297990a89cfbc45229eaf0fabf746ba",
+      "0138a3a41db6775eadbbde28d43a09c2481de48a",
       [
        null,
        [
@@ -52769,7 +52769,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-003.html": [
-      "c8e1b6f3cbbcecf7053ed0dcbdb2ca04a677f078",
+      "b37bfad7b73c553cc15648f610a2ce8b3365a5e9",
       [
        null,
        [
@@ -52782,7 +52782,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-004.html": [
-      "86ffa50d269c6c98d3b6b51c8d730ada91a6717f",
+      "f2e4aa97309b2b016160b6c8918a7a520402f979",
       [
        null,
        [
@@ -52795,7 +52795,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-005.html": [
-      "3917db44daf06a906382349418dc3d2989c810af",
+      "a87a074d6c31f5db8ea5468ced35603f061cc323",
       [
        null,
        [
@@ -52808,7 +52808,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-006.html": [
-      "7d1803e4183751562f53c294c865a2750d8b8a5d",
+      "d724ad013729d3343cdf675f4d216cc9a9a62c70",
       [
        null,
        [
@@ -52821,7 +52821,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-007.html": [
-      "a6e68a08e102473b40cd91492baf3bf24088377e",
+      "0e6988c3ff470b66e76193b646bbec55096717a4",
       [
        null,
        [
@@ -52834,7 +52834,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-008.html": [
-      "0c1405dd30fb13ff698637a758e254a72057442e",
+      "98c7764569919918e65a5e4abdcb9ac696b613d4",
       [
        null,
        [
@@ -52847,7 +52847,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-009.html": [
-      "88b8d4886698a1cd3be8024020f39aedf5ac885d",
+      "4db33effbf68a75de3964db66fb6a7618c4233fd",
       [
        null,
        [
@@ -52860,7 +52860,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-010.html": [
-      "708b13400b8da2d42e8a5457a4cb341cc3210f6c",
+      "5ae87e703ded3c28db9c4b90d148a20365050127",
       [
        null,
        [
@@ -52873,7 +52873,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-011.html": [
-      "93350899950a11631484564027cad7d458f8f39b",
+      "17e8908e3762440666fa4d2fc863ddd0b1b5e072",
       [
        null,
        [
@@ -52886,7 +52886,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-012.html": [
-      "349d059b7a77f9b70046d99bc4a5e26c7c298bad",
+      "4e59979db2e701bf83e6eb8935b376fc903af6f4",
       [
        null,
        [
@@ -52899,7 +52899,7 @@
       ]
      ],
      "out-of-flow-in-multicolumn-013.html": [
-      "3bf06dfc1a779e3034122987a456fb33b2feb36e",
+      "6580a65b5004cb51f7a2aeb22c0bc291d1caadf7",
       [
        null,
        [
@@ -166393,6 +166393,21 @@
     }
    },
    "svg": {
+    "animations": {
+     "use-animate-display-none-symbol.html": [
+      "6ae10ca8739dbedcc148bf7b398437131519d62b",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "coordinate-systems": {
      "abspos.html": [
       "fb37bbe7f3ae4a61d1c216970c8a263673aed0dc",
@@ -315225,14 +315240,14 @@
       ]
      ],
      "focus-in-focus-event-001.html": [
-      "2f9a3dde5783f09c102b6fd74aaa7f2950cfdcd3",
+      "01562733e40b1a69471a04c2a6836dafd98cf492",
       [
        null,
        {}
       ]
      ],
      "focus-in-focusin-event-001.html": [
-      "e18401fcf37747f96334bba996dd307f5b71d44e",
+      "633f4df87e560d077dc5ea158a0bf66226c3340e",
       [
        null,
        {}
