@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_MAP_H_
 
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -15,16 +17,30 @@ template <typename KeyArg,
           typename HashArg = typename DefaultHash<KeyArg>::Hash,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>>
-class HeapHashMap final : public HashMap<KeyArg,
+class HeapHashMap final : public GarbageCollected<HeapHashMap<KeyArg,
+                                                              MappedArg,
+                                                              HashArg,
+                                                              KeyTraitsArg,
+                                                              MappedTraitsArg>>,
+                          public HashMap<KeyArg,
                                          MappedArg,
                                          HashArg,
                                          KeyTraitsArg,
                                          MappedTraitsArg,
                                          HeapAllocator> {
-  IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
 
-  static void CheckType() {
+ public:
+  HeapHashMap() = default;
+
+  void Trace(Visitor* visitor) const {
+    CheckType();
+    HashMap<KeyArg, MappedArg, HashArg, KeyTraitsArg, MappedTraitsArg,
+            HeapAllocator>::Trace(visitor);
+  }
+
+ private:
+  static constexpr void CheckType() {
     static_assert(std::is_trivially_destructible<HeapHashMap>::value,
                   "HeapHashMap must be trivially destructible.");
     static_assert(
@@ -43,21 +59,7 @@ class HeapHashMap final : public HashMap<KeyArg,
                   "TraceWrapperV8Reference and "
                   "non-traceable types as values.");
   }
-
- public:
-  template <typename>
-  static void* AllocateObject(size_t size) {
-    return ThreadHeap::Allocate<
-        HeapHashMap<KeyArg, MappedArg, HashArg, KeyTraitsArg, MappedTraitsArg>>(
-        size);
-  }
-
-  HeapHashMap() { CheckType(); }
 };
-
-template <typename T, typename U, typename V, typename W, typename X>
-struct GCInfoTrait<HeapHashMap<T, U, V, W, X>>
-    : public GCInfoTrait<HashMap<T, U, V, W, X, HeapAllocator>> {};
 
 }  // namespace blink
 
