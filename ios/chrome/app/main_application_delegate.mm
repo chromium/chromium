@@ -326,12 +326,10 @@ const int kMainIntentCheckDelay = 1;
             base::RecordAction(
                 base::UserMetricsAction("IOSOpenByMainIntent"));
           }
-
-          [_appState
-              applicationWillEnterForeground:UIApplication.sharedApplication
-                             metricsMediator:_metricsMediator
-                                memoryHelper:_memoryHelper];
         });
+    [_appState applicationWillEnterForeground:UIApplication.sharedApplication
+                              metricsMediator:_metricsMediator
+                                 memoryHelper:_memoryHelper];
   }
 }
 
