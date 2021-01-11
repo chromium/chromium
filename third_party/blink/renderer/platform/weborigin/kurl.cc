@@ -176,10 +176,6 @@ const KURL& BlankURL() {
   return blank_url;
 }
 
-bool KURL::IsAboutBlankURL() const {
-  return *this == BlankURL();
-}
-
 const KURL& SrcdocURL() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_srcdoc_url, ());
   KURL& srcdoc_url = *static_srcdoc_url;
@@ -188,8 +184,29 @@ const KURL& SrcdocURL() {
   return srcdoc_url;
 }
 
+bool KURL::IsAboutURL(const char* allowed_path) const {
+  if (!ProtocolIsAbout())
+    return false;
+
+  // Using `is_nonempty` for `host` and `is_valid` for `username` and `password`
+  // to replicate how GURL::IsAboutURL (and GURL::has_host vs
+  // GURL::has_username) works.
+  if (parsed_.host.is_nonempty() || parsed_.username.is_valid() ||
+      parsed_.password.is_valid() || HasPort()) {
+    return false;
+  }
+
+  String path = GetPath();
+  StringUTF8Adaptor path_utf8(path);
+  return GURL::IsAboutPath(path_utf8.AsStringPiece(), allowed_path);
+}
+
+bool KURL::IsAboutBlankURL() const {
+  return IsAboutURL(url::kAboutBlankPath);
+}
+
 bool KURL::IsAboutSrcdocURL() const {
-  return *this == SrcdocURL();
+  return IsAboutURL(url::kAboutSrcdocPath);
 }
 
 const KURL& NullURL() {

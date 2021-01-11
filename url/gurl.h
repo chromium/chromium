@@ -434,6 +434,10 @@ class COMPONENT_EXPORT(URL) GURL {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL.
+  static bool IsAboutPath(base::StringPiece actual_path,
+                          base::StringPiece allowed_path);
+
  private:
   // Variant of the string parsing constructor that allows the caller to elect
   // retain trailing whitespace, if any, on the passed URL spec, but only if

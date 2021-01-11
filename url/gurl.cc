@@ -485,17 +485,23 @@ bool GURL::IsAboutUrl(base::StringPiece allowed_path) const {
   if (has_host() || has_username() || has_password() || has_port())
     return false;
 
-  if (!base::StartsWith(path_piece(), allowed_path))
+  return IsAboutPath(path_piece(), allowed_path);
+}
+
+// static
+bool GURL::IsAboutPath(base::StringPiece actual_path,
+                       base::StringPiece allowed_path) {
+  if (!base::StartsWith(actual_path, allowed_path))
     return false;
 
-  if (path_piece().size() == allowed_path.size()) {
-    DCHECK_EQ(path_piece(), allowed_path);
+  if (actual_path.size() == allowed_path.size()) {
+    DCHECK_EQ(actual_path, allowed_path);
     return true;
   }
 
-  if ((path_piece().size() == allowed_path.size() + 1) &&
-      path_piece().back() == '/') {
-    DCHECK_EQ(path_piece(), allowed_path.as_string() + '/');
+  if ((actual_path.size() == allowed_path.size() + 1) &&
+      actual_path.back() == '/') {
+    DCHECK_EQ(actual_path, allowed_path.as_string() + '/');
     return true;
   }
 

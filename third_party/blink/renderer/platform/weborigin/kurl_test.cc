@@ -778,6 +778,20 @@ TEST(KURLTest, LastPathComponent) {
   EXPECT_EQ(String(), invalid_utf8.LastPathComponent());
 }
 
+TEST(KURLTest, IsAboutBlankURL) {
+  EXPECT_TRUE(BlankURL().IsAboutBlankURL());
+
+  EXPECT_TRUE(KURL("about:blank").IsAboutBlankURL());
+  EXPECT_TRUE(KURL("about:blank#ref").IsAboutBlankURL());
+  EXPECT_TRUE(KURL("about:blank?query=123").IsAboutBlankURL());
+}
+
+TEST(KURLTest, IsAboutSrcdocURL) {
+  EXPECT_TRUE(KURL("about:srcdoc").IsAboutSrcdocURL());
+  EXPECT_TRUE(KURL("about:srcdoc#ref").IsAboutSrcdocURL());
+  EXPECT_TRUE(KURL("about:srcdoc?query=123").IsAboutSrcdocURL());
+}
+
 TEST(KURLTest, IsHierarchical) {
   // Note that it's debatable whether "filesystem" URLs are or hierarchical.
   // They're currently registered in the url lib as standard; but the parsed

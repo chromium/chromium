@@ -884,29 +884,55 @@ TEST(GURLTest, PathForNonStandardURLs) {
 }
 
 TEST(GURLTest, IsAboutBlank) {
+  // See https://tools.ietf.org/html/rfc6694 which explicitly allows
+  // `about-query` and `about-fragment` parts in about: URLs.
   const std::string kAboutBlankUrls[] = {"about:blank", "about:blank?foo",
                                          "about:blank/#foo",
                                          "about:blank?foo#foo"};
   for (const auto& url : kAboutBlankUrls)
     EXPECT_TRUE(GURL(url).IsAboutBlank()) << url;
 
-  const std::string kNotAboutBlankUrls[] = {
-      "http:blank",      "about:blan",          "about://blank",
-      "about:blank/foo", "about://:8000/blank", "about://foo:foo@/blank",
-      "foo@about:blank", "foo:bar@about:blank", "about:blank:8000",
-      "about:blANk"};
+  const std::string kNotAboutBlankUrls[] = {"",
+                                            "about",
+                                            "about:",
+                                            "about:blanky",
+                                            "about:blan",
+                                            "about:about:blank:",
+                                            "data:blank",
+                                            "http:blank",
+                                            "about://blank",
+                                            "about:blank/foo",
+                                            "about://:8000/blank",
+                                            "about://foo:foo@/blank",
+                                            "foo@about:blank",
+                                            "foo:bar@about:blank",
+                                            "about:blank:8000",
+                                            "about:blANk"};
   for (const auto& url : kNotAboutBlankUrls)
     EXPECT_FALSE(GURL(url).IsAboutBlank()) << url;
 }
 
 TEST(GURLTest, IsAboutSrcdoc) {
+  // See https://tools.ietf.org/html/rfc6694 which explicitly allows
+  // `about-query` and `about-fragment` parts in about: URLs.
+  //
+  // `about:srcdoc` is defined in
+  // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#about:srcdoc
+  // which refers to rfc6694 for details.
   const std::string kAboutSrcdocUrls[] = {
       "about:srcdoc", "about:srcdoc/", "about:srcdoc?foo", "about:srcdoc/#foo",
       "about:srcdoc?foo#foo"};
   for (const auto& url : kAboutSrcdocUrls)
     EXPECT_TRUE(GURL(url).IsAboutSrcdoc()) << url;
 
-  const std::string kNotAboutSrcdocUrls[] = {"http:srcdoc",
+  const std::string kNotAboutSrcdocUrls[] = {"",
+                                             "about",
+                                             "about:",
+                                             "about:srcdocx",
+                                             "about:srcdo",
+                                             "about:about:srcdoc:",
+                                             "data:srcdoc",
+                                             "http:srcdoc",
                                              "about:srcdo",
                                              "about://srcdoc",
                                              "about://srcdoc\\",

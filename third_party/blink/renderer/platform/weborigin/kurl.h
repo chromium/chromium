@@ -245,6 +245,8 @@ class PLATFORM_EXPORT KURL {
             const String& relative,
             const WTF::TextEncoding* query_encoding);
 
+  bool IsAboutURL(const char* allowed_path) const;
+
   StringView ComponentStringView(const url::Component&) const;
   String ComponentString(const url::Component&) const;
   StringView StringViewForInvalidComponent() const;
