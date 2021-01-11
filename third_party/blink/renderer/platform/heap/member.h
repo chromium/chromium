@@ -14,6 +14,15 @@
 #include "third_party/blink/renderer/platform/heap/impl/member.h"
 #endif  // !USE_V8_OILPAN
 
+namespace blink {
+
+template <typename T>
+inline void swap(Member<T>& a, Member<T>& b) {
+  a.Swap(b);
+}
+
+}  // namespace blink
+
 namespace WTF {
 
 template <typename T>
