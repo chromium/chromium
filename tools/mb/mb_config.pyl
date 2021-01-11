@@ -1521,7 +1521,7 @@
     ],
 
     'angle_specific_release_trybot_ios': [
-      'angle_specific_tests', 'shared_release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
+      'angle_specific_tests', 'release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_specific_release_trybot_x86': [

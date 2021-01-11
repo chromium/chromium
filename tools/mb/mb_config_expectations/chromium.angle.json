@@ -96,7 +96,7 @@
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_run_ios_unittests_with_xctest": true,
-      "is_component_build": true,
+      "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
