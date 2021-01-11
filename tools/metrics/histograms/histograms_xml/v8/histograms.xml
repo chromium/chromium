@@ -916,8 +916,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeNonConcurrentTotalTime"
-    units="microseconds" expires_after="2020-12-31">
-  <owner>bmeurer@chromium.org</owner>
+    units="microseconds" expires_after="2021-05-09">
+  <owner>neis@chromium.org</owner>
+  <owner>mvstanton@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
     Total time from starting optimizing to installing the code object. Recorded
