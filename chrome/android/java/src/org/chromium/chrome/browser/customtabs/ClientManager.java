@@ -30,6 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
@@ -272,6 +273,9 @@ class ClientManager {
         }
     }
 
+    // TODO(crbug.com/1164866): Inject the Factory/Supplier.
+    private final OriginVerifier.Factory mOriginVerifierFactory = new OriginVerifier.Factory();
+
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
     private final SparseBooleanArray mUidHasCalledWarmup = new SparseBooleanArray();
@@ -477,8 +481,10 @@ class ClientManager {
             }
         };
 
-        params.originVerifier = new OriginVerifier(params.getPackageName(), relation,
-                /* webContents= */ null, /* externalAuthUtils= */ null);
+        params.originVerifier = mOriginVerifierFactory.create(params.getPackageName(), relation,
+                /* webContents= */ null, /* externalAuthUtils= */ null,
+                new BrowserServicesMetrics.OriginVerifierMetricsListener());
+
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS

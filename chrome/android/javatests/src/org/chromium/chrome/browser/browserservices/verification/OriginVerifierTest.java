@@ -61,6 +61,8 @@ public class OriginVerifierTest {
             "19:75:B2:F1:71:77:BC:89:A5:DF:F3:1F:9E:64:A6:CA:E2:81:A5"
             + ":3D:C1:D1:D5:9B:1D:14:7F:E1:C8:2A:FA:00";
 
+    private final OriginVerifier.Factory mFactory = new OriginVerifier.Factory();
+
     private Origin mHttpsOrigin;
     private Origin mHttpOrigin;
     private TestExternalAuthUtils mExternalAuthUtils;
@@ -103,9 +105,9 @@ public class OriginVerifierTest {
         mHttpsOrigin = Origin.create("https://www.example.com");
         mHttpOrigin = Origin.create("http://www.android.com");
 
-        mHandleAllUrlsVerifier = new OriginVerifier(PACKAGE_NAME,
+        mHandleAllUrlsVerifier = mFactory.create(PACKAGE_NAME,
                 CustomTabsService.RELATION_HANDLE_ALL_URLS, new MockWebContents(), null);
-        mUseAsOriginVerifier = new OriginVerifier(PACKAGE_NAME,
+        mUseAsOriginVerifier = mFactory.create(PACKAGE_NAME,
                 CustomTabsService.RELATION_USE_AS_ORIGIN, /* webContents= */ null, null);
         mVerificationResultSemaphore = new Semaphore(0);
 
@@ -191,7 +193,7 @@ public class OriginVerifierTest {
     @Test
     @SmallTest
     public void testVerificationBypass() throws InterruptedException {
-        OriginVerifier verifier = new OriginVerifier(
+        OriginVerifier verifier = mFactory.create(
                 PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, mExternalAuthUtils);
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,

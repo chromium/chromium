@@ -6,50 +6,30 @@ package org.chromium.chrome.browser.browserservices;
 
 import android.os.SystemClock;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.metrics.RecordHistogram;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 
 /**
  * Class to contain metrics recording constants and behaviour for Browser Services.
  */
 public class BrowserServicesMetrics {
-    @IntDef({VerificationResult.ONLINE_SUCCESS, VerificationResult.ONLINE_FAILURE,
-            VerificationResult.OFFLINE_SUCCESS, VerificationResult.OFFLINE_FAILURE,
-            VerificationResult.HTTPS_FAILURE, VerificationResult.REQUEST_FAILURE,
-            VerificationResult.CACHED_SUCCESS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface VerificationResult {
-        // Don't reuse values or reorder values. If you add something new, change NUM_ENTRIES as
-        // well.
-        int ONLINE_SUCCESS = 0;
-        int ONLINE_FAILURE = 1;
-        int OFFLINE_SUCCESS = 2;
-        int OFFLINE_FAILURE = 3;
-        int HTTPS_FAILURE = 4;
-        int REQUEST_FAILURE = 5;
-        int CACHED_SUCCESS = 6;
-        int NUM_ENTRIES = 7;
-    }
+    /** Implementation of {@link OriginVerifier.MetricsListener}. */
+    public static class OriginVerifierMetricsListener implements OriginVerifier.MetricsListener {
+        @Override
+        public void recordVerificationResult(@OriginVerifier.VerificationResult int result) {
+            RecordHistogram.recordEnumeratedHistogram("BrowserServices.VerificationResult", result,
+                    OriginVerifier.VerificationResult.NUM_ENTRIES);
+        }
 
-    /**
-     * Records the verification result for Trusted Web Activity verification.
-     */
-    public static void recordVerificationResult(@VerificationResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "BrowserServices.VerificationResult", result, VerificationResult.NUM_ENTRIES);
-    }
-
-    public static void recordVerificationTime(long duration, boolean online) {
-        if (online) {
-            RecordHistogram.recordTimesHistogram(
-                    "BrowserServices.VerificationTime.Online", duration);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "BrowserServices.VerificationTime.Offline", duration);
+        @Override
+        public void recordVerificationTime(long duration, boolean online) {
+            if (online) {
+                RecordHistogram.recordTimesHistogram(
+                        "BrowserServices.VerificationTime.Online", duration);
+            } else {
+                RecordHistogram.recordTimesHistogram(
+                        "BrowserServices.VerificationTime.Offline", duration);
+            }
         }
     }
 

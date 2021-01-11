@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -27,7 +28,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.Origin;
@@ -39,6 +39,8 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -81,6 +83,7 @@ public class OriginVerifier {
     private long mNativeOriginVerifier;
     private final Map<Origin, Set<OriginVerificationListener>> mListeners = new HashMap<>();
     private long mVerificationStartTime;
+    private final MetricsListener mMetricsListener;
     @Nullable
     private WebContents mWebContents;
     @Nullable
@@ -93,6 +96,38 @@ public class OriginVerifier {
     private static final AtomicReference<Set<String>> sVerificationOverrides =
             new AtomicReference<>();
 
+    @IntDef({VerificationResult.ONLINE_SUCCESS, VerificationResult.ONLINE_FAILURE,
+            VerificationResult.OFFLINE_SUCCESS, VerificationResult.OFFLINE_FAILURE,
+            VerificationResult.HTTPS_FAILURE, VerificationResult.REQUEST_FAILURE,
+            VerificationResult.CACHED_SUCCESS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VerificationResult {
+        // Don't reuse values or reorder values. If you add something new, change NUM_ENTRIES as
+        // well.
+        int ONLINE_SUCCESS = 0;
+        int ONLINE_FAILURE = 1;
+        int OFFLINE_SUCCESS = 2;
+        int OFFLINE_FAILURE = 3;
+        int HTTPS_FAILURE = 4;
+        int REQUEST_FAILURE = 5;
+        int CACHED_SUCCESS = 6;
+        int NUM_ENTRIES = 7;
+    }
+
+    /**
+     * Interface for recording metrics.
+     */
+    public interface MetricsListener {
+        /** Called with the result of every verification attempt. */
+        default void recordVerificationResult(@VerificationResult int result) {}
+
+        /**
+         * Records the time verification takes. This is not recorded for HTTPS_FAILURE,
+         * HTTPS_FAILURE or CACHED_SUCCESS.
+         */
+        default void recordVerificationTime(long duration, boolean online) {}
+    }
+
     /**
      * Factory that can be injected by Dagger.
      */
@@ -102,8 +137,16 @@ public class OriginVerifier {
         public Factory() {}
 
         public OriginVerifier create(String packageName, @Relation int relation,
+                @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
+                MetricsListener metricsListener) {
+            return new OriginVerifier(
+                    packageName, relation, webContents, externalAuthUtils, metricsListener);
+        }
+
+        public OriginVerifier create(String packageName, @Relation int relation,
                 @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
-            return new OriginVerifier(packageName, relation, webContents, externalAuthUtils);
+            return create(packageName, relation, webContents, externalAuthUtils,
+                    new MetricsListener() {});
         }
     }
 
@@ -225,12 +268,14 @@ public class OriginVerifier {
      *         verification. Can be null.
      */
     public OriginVerifier(String packageName, @Relation int relation,
-            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
+            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
+            MetricsListener metricsListener) {
         mPackageName = packageName;
         mSignatureFingerprint = getCertificateSHA256FingerprintForPackage(mPackageName);
         mRelation = relation;
         mWebContents = webContents;
         mExternalAuthUtils = externalAuthUtils;
+        mMetricsListener = metricsListener;
     }
 
     /**
@@ -266,8 +311,7 @@ public class OriginVerifier {
         if (TextUtils.isEmpty(scheme)
                 || !UrlConstants.HTTPS_SCHEME.equals(scheme.toLowerCase(Locale.US))) {
             Log.i(TAG, "Verification failed for %s as not https.", origin);
-            BrowserServicesMetrics.recordVerificationResult(
-                    BrowserServicesMetrics.VerificationResult.HTTPS_FAILURE);
+            mMetricsListener.recordVerificationResult(VerificationResult.HTTPS_FAILURE);
             PostTask.runOrPostTask(
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, null));
             return;
@@ -318,8 +362,7 @@ public class OriginVerifier {
                 OriginVerifierJni.get().verifyOrigin(mNativeOriginVerifier, OriginVerifier.this,
                         mPackageName, mSignatureFingerprint, origin.toString(), relationship);
         if (!requestSent) {
-            BrowserServicesMetrics.recordVerificationResult(
-                    BrowserServicesMetrics.VerificationResult.REQUEST_FAILURE);
+            mMetricsListener.recordVerificationResult(VerificationResult.REQUEST_FAILURE);
             PostTask.runOrPostTask(
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, false));
         }
@@ -414,13 +457,11 @@ public class OriginVerifier {
         Origin origin = Origin.createOrThrow(originAsString);
         switch (result) {
             case RelationshipCheckResult.SUCCESS:
-                BrowserServicesMetrics.recordVerificationResult(
-                        BrowserServicesMetrics.VerificationResult.ONLINE_SUCCESS);
+                mMetricsListener.recordVerificationResult(VerificationResult.ONLINE_SUCCESS);
                 originVerified(origin, true, true);
                 break;
             case RelationshipCheckResult.FAILURE:
-                BrowserServicesMetrics.recordVerificationResult(
-                        BrowserServicesMetrics.VerificationResult.ONLINE_FAILURE);
+                mMetricsListener.recordVerificationResult(VerificationResult.ONLINE_FAILURE);
                 originVerified(origin, false, true);
                 break;
             case RelationshipCheckResult.NO_CONNECTION:
@@ -459,7 +500,7 @@ public class OriginVerifier {
 
         if (online != null) {
             long duration = SystemClock.uptimeMillis() - mVerificationStartTime;
-            BrowserServicesMetrics.recordVerificationTime(duration, online);
+            mMetricsListener.recordVerificationTime(duration, online);
         }
 
         cleanUp();
@@ -486,9 +527,9 @@ public class OriginVerifier {
             boolean verified = VerificationResultStore.isRelationshipSaved(
                     new Relationship(mPackageName, mSignatureFingerprint, origin, mRelation));
 
-            BrowserServicesMetrics.recordVerificationResult(verified
-                            ? BrowserServicesMetrics.VerificationResult.OFFLINE_SUCCESS
-                            : BrowserServicesMetrics.VerificationResult.OFFLINE_FAILURE);
+            mMetricsListener.recordVerificationResult(verified
+                            ? VerificationResult.OFFLINE_SUCCESS
+                            : VerificationResult.OFFLINE_FAILURE);
 
             originVerified(origin, verified, false);
         }
