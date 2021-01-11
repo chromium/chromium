@@ -23,13 +23,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
-#include "device/fido/features.h"
+#include "device/fido/filter.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/error_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 
 #if defined(OS_WIN)
+#include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // defined(OS_WIN)
 
@@ -200,8 +201,10 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   }
 
   // If the origin is blocked, reject attestation.
-  if (device::DoesMatchWebAuthAttestationBlockedDomains(
-          url::Origin::Create(origin_url))) {
+  if (device::fido_filter::Evaluate(
+          device::fido_filter::Operation::MAKE_CREDENTIAL, origin.Serialize(),
+          /*device=*/base::nullopt, /*id=*/base::nullopt) ==
+      device::fido_filter::Action::NO_ATTESTATION) {
     return RespondNow(OneArgument(base::Value(false)));
   }
 

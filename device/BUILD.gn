@@ -168,6 +168,7 @@ test("device_unittests") {
       "fido/fido_device_discovery_unittest.cc",
       "fido/fido_parsing_utils_unittest.cc",
       "fido/fido_request_handler_unittest.cc",
+      "fido/filter_unittest.cc",
       "fido/get_assertion_handler_unittest.cc",
       "fido/get_assertion_task_unittest.cc",
       "fido/hid/fido_hid_message_unittest.cc",

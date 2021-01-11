@@ -17,6 +17,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
 
 #if defined(OS_WIN)
@@ -391,6 +392,35 @@ void MakeCredentialRequestHandler::DispatchRequest(
     return;
   }
 
+  const std::string authenticator_name = authenticator->GetDisplayName();
+  switch (fido_filter::Evaluate(
+      fido_filter::Operation::MAKE_CREDENTIAL, request_.rp.id,
+      authenticator_name,
+      std::pair<fido_filter::IDType, base::span<const uint8_t>>(
+          fido_filter::IDType::USER_ID, request_.user.id))) {
+    case fido_filter::Action::ALLOW:
+      break;
+    case fido_filter::Action::NO_ATTESTATION:
+      suppress_attestation_ = true;
+      break;
+    case fido_filter::Action::BLOCK:
+      FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name;
+      return;
+  }
+
+  for (const auto& cred : request_.exclude_list) {
+    if (fido_filter::Evaluate(
+            fido_filter::Operation::MAKE_CREDENTIAL, request_.rp.id,
+            authenticator_name,
+            std::pair<fido_filter::IDType, base::span<const uint8_t>>(
+                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+        fido_filter::Action::BLOCK) {
+      FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
+                      << " for credential ID " << base::HexEncode(cred.id());
+      return;
+    }
+  }
+
   std::unique_ptr<CtapMakeCredentialRequest> request(
       new CtapMakeCredentialRequest(request_));
   SpecializeRequestForAuthenticator(request.get(), authenticator);
@@ -624,6 +654,7 @@ void MakeCredentialRequestHandler::HandleResponse(
       return;
     }
     CancelActiveAuthenticators(authenticator->GetId());
+    response->attestation_should_be_filtered = suppress_attestation_;
     std::move(completion_callback_)
         .Run(WinCtapDeviceResponseCodeToMakeCredentialStatus(status),
              std::move(*response), authenticator);
@@ -712,6 +743,7 @@ void MakeCredentialRequestHandler::HandleResponse(
         *authenticator->AuthenticatorTransport());
   }
 
+  response->attestation_should_be_filtered = suppress_attestation_;
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kSuccess, std::move(*response), authenticator);
 }

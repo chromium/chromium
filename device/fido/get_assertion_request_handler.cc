@@ -23,6 +23,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/filter.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
@@ -339,6 +340,28 @@ void GetAssertionRequestHandler::DispatchRequest(
                     << authenticator->GetDisplayName()
                     << " because no longer waiting for touch";
     return;
+  }
+
+  const std::string authenticator_name = authenticator->GetDisplayName();
+
+  if (fido_filter::Evaluate(fido_filter::Operation::GET_ASSERTION,
+                            request_.rp_id, authenticator_name,
+                            base::nullopt) == fido_filter::Action::BLOCK) {
+    FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name;
+    return;
+  }
+
+  for (const auto& cred : request_.allow_list) {
+    if (fido_filter::Evaluate(
+            fido_filter::Operation::GET_ASSERTION, request_.rp_id,
+            authenticator_name,
+            std::pair<fido_filter::IDType, base::span<const uint8_t>>(
+                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+        fido_filter::Action::BLOCK) {
+      FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
+                      << " for credential ID " << base::HexEncode(cred.id());
+      return;
+    }
   }
 
   CtapGetAssertionRequest request =

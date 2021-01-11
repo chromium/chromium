@@ -155,6 +155,8 @@ component("fido") {
       "fido_task.cc",
       "fido_task.h",
       "fido_types.h",
+      "filter.cc",
+      "filter.h",
       "get_assertion_request_handler.cc",
       "get_assertion_request_handler.h",
       "get_assertion_task.cc",

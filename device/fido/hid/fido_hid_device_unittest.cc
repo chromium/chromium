@@ -120,6 +120,8 @@ device::mojom::HidDeviceInfoPtr TestHidDevice() {
   c_info->usage = device::mojom::HidUsageAndPage::New(1, 0xf1d0);
   auto hid_device = device::mojom::HidDeviceInfo::New();
   hid_device->guid = "A";
+  hid_device->vendor_id = 0x1234;
+  hid_device->product_id = 0x5678;
   hid_device->product_name = "Test Fido device";
   hid_device->serial_number = "123FIDO";
   hid_device->bus_type = device::mojom::HidBusType::kHIDBusTypeUSB;
@@ -227,26 +229,35 @@ class FidoHidDeviceTest : public ::testing::Test {
   }
 
  protected:
+  std::unique_ptr<FidoHidDevice> GetMockDevice() {
+    FidoDeviceEnumerateCallbackReceiver receiver(hid_manager_.get());
+
+    auto hid_device = TestHidDevice();
+    fake_hid_manager_->AddDevice(std::move(hid_device));
+    hid_manager_->GetDevices(receiver.callback());
+    receiver.WaitForCallback();
+
+    std::vector<std::unique_ptr<FidoHidDevice>> u2f_devices =
+        receiver.TakeReturnedDevicesFiltered();
+
+    CHECK_EQ(static_cast<size_t>(1), u2f_devices.size());
+    return std::move(u2f_devices.front());
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Remote<device::mojom::HidManager> hid_manager_;
   std::unique_ptr<FakeFidoHidManager> fake_hid_manager_;
 };
 
+TEST_F(FidoHidDeviceTest, DisplayName) {
+  // If this format changes then beware of any configured filters (see filter.h)
+  // that might be matching against these names.
+  CHECK_EQ(GetMockDevice()->GetDisplayName(), "usb-1234:5678");
+}
+
 TEST_F(FidoHidDeviceTest, TestDeviceError) {
-  // Setup and enumerate mock device.
-  FidoDeviceEnumerateCallbackReceiver receiver(hid_manager_.get());
-
-  auto hid_device = TestHidDevice();
-  fake_hid_manager_->AddDevice(std::move(hid_device));
-  hid_manager_->GetDevices(receiver.callback());
-  receiver.WaitForCallback();
-
-  std::vector<std::unique_ptr<FidoHidDevice>> u2f_devices =
-      receiver.TakeReturnedDevicesFiltered();
-
-  ASSERT_EQ(static_cast<size_t>(1), u2f_devices.size());
-  auto& device = u2f_devices.front();
+  std::unique_ptr<FidoHidDevice> device = GetMockDevice();
 
   // Mock connection where writes always fail.
   FakeFidoHidConnection::mock_connection_error_ = true;

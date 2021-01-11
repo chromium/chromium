@@ -47,6 +47,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/filter.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/public_key.h"
@@ -828,6 +829,24 @@ void AuthenticatorCommon::MakeCredential(
   options->relying_party.id = std::move(*rp_id);
   request_delegate_->SetRelyingPartyId(relying_party_id_);
 
+  device::fido_filter::MaybeInitialize();
+  switch (device::fido_filter::Evaluate(
+      device::fido_filter::Operation::MAKE_CREDENTIAL, relying_party_id_,
+      /*device=*/base::nullopt,
+      /*id=*/base::nullopt)) {
+    case device::fido_filter::Action::ALLOW:
+      break;
+    case device::fido_filter::Action::NO_ATTESTATION:
+      // This will be handled by the request handler.
+      break;
+    case device::fido_filter::Action::BLOCK:
+      InvokeCallbackAndCleanup(
+          std::move(callback),
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+          Focus::kDontCheck);
+      return;
+  }
+
   base::Optional<std::string> appid_exclude;
   if (options->appid_exclude) {
     appid_exclude =
@@ -1095,6 +1114,17 @@ void AuthenticatorCommon::GetAssertion(
           : device::SerializeCollectedClientDataToJson(
                 client_data::kGetType, caller_origin_.Serialize(),
                 options->challenge, is_cross_origin);
+
+  device::fido_filter::MaybeInitialize();
+  if (device::fido_filter::Evaluate(
+          device::fido_filter::Operation::GET_ASSERTION, relying_party_id_,
+          /*device=*/base::nullopt,
+          /*id=*/base::nullopt) == device::fido_filter::Action::BLOCK) {
+    InvokeCallbackAndCleanup(
+        std::move(callback),
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
 
   // Cryptotoken requests should be proxied without UI.
   if (origin_is_crypto_token_extension || disable_ui_)
@@ -1395,7 +1425,7 @@ void AuthenticatorCommon::OnRegisterResponse(
 
       // cryptotoken checks the attestation blocklist itself.
       if (!origin_is_crypto_token_extension &&
-          device::DoesMatchWebAuthAttestationBlockedDomains(caller_origin_) &&
+          response_data->attestation_should_be_filtered &&
           !request_delegate_->ShouldPermitIndividualAttestation(
               relying_party_id_)) {
         attestation_erasure =

@@ -96,6 +96,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // but the authenticator may have created one anyway.
   base::Optional<bool> is_resident_key;
 
+  // attestation_should_be_filtered is true iff a filter indicated that the
+  // attestation should not be returned. This is acted upon by
+  // |AuthenticatorCommon| based on enterprise policy.
+  bool attestation_should_be_filtered = false;
+
  private:
   AttestationObject attestation_object_;
 

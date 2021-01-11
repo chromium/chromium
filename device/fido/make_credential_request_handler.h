@@ -194,6 +194,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
+  bool suppress_attestation_ = false;
   CtapMakeCredentialRequest request_;
   base::Optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
   const Options options_;
