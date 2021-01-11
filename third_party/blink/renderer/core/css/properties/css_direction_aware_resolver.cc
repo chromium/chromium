@@ -17,7 +17,7 @@ using PhysicalMapping = CSSDirectionAwareResolver::PhysicalMapping<size>;
 
 enum PhysicalAxis { kPhysicalAxisX, kPhysicalAxisY };
 enum PhysicalBoxSide { kTopSide, kRightSide, kBottomSide, kLeftSide };
-enum PhiscalRadiusCorner {
+enum PhysicalBoxCorner {
   kTopLeftCorner,
   kTopRightCorner,
   kBottomRightCorner,
