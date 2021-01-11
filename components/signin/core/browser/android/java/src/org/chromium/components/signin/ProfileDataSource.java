@@ -8,10 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
-import java.util.Map;
-
 /**
- * Observable source of profile data for accounts on device. Must be used from UI thread only.
+ * Observable source of profile data for accounts on device.
  */
 public interface ProfileDataSource {
     /**
@@ -78,16 +76,6 @@ public interface ProfileDataSource {
          * Removes the profile data of a given accountEmail.
          */
         void removeProfileData(String accountEmail);
-    }
-
-    /**
-     * Gets ProfileData for all accounts. There must be at least one active observer when this
-     * method is invoked (see {@link #addObserver}).
-     * @return unmodifiable map of ProfileData for all accounts (keyed by account name).
-     * TODO(crbug/1136452): Remove this method after removing the downstream implementation.
-     */
-    default Map<String, ProfileData> getProfileDataMap() {
-        return null;
     }
 
     /**
