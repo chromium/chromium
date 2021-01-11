@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
@@ -28,6 +29,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
@@ -51,9 +53,6 @@ constexpr gfx::RoundedCornersF kCornerRadii(kBubbleCornerRadius);
 
 // The blur radius for the bubble background.
 constexpr int kBubbleBlurRadius = 80;
-
-// The alpha component of the bubble background.
-constexpr float kBubbleBackgroundAlpha = 0.8f;
 
 // The size of the managed icon.
 constexpr int kManagedIconSize = 20;
@@ -85,8 +84,11 @@ constexpr char kClipboardPluginVmToastId[] = "clipboard_dlp_block_plugin_vm";
 // The duration of the clipboard toast.
 constexpr int kToastDurationMs = 2500;
 
-// The font of the text used in the bubble.
-constexpr char kTextFont[] = "Roboto, 13px";
+// The font name of the text used in the bubble.
+constexpr char kTextFontName[] = "Roboto";
+
+// The font size of the text used in the bubble.
+constexpr int kTextFontSize = 13;
 
 // The height of the dismiss button.
 constexpr int kButtonHeight = 32;
@@ -108,15 +110,25 @@ class DismissButton : public views::LabelButton {
     const base::string16 button_label(l10n_util::GetStringUTF16(
         IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON));
     SetText(button_label);
-    label()->SetFontList(gfx::FontList(kTextFont));
-    SetTextColor(ButtonState::STATE_NORMAL, gfx::kGoogleBlue800);
+
+    const gfx::FontList font_list = GetFontList();
+    label()->SetFontList(font_list);
+
+    SetTextColor(
+        ButtonState::STATE_NORMAL,
+        ash::ColorProvider::Get()->GetContentLayerColor(
+            ash::ColorProvider::ContentLayerType::kButtonLabelColorBlue));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    SetSize({gfx::GetStringWidth(button_label, gfx::FontList(kTextFont)) +
-                 2 * kButtonPadding,
+    SetSize({gfx::GetStringWidth(button_label, font_list) + 2 * kButtonPadding,
              kButtonHeight});
   }
 
   int GetLabelWidth() { return label()->bounds().width(); }
+
+  gfx::FontList GetFontList() {
+    return gfx::FontList({kTextFontName}, gfx::Font::NORMAL, kTextFontSize,
+                         gfx::Font::Weight::MEDIUM);
+  }
 
   DismissButton(const DismissButton&) = delete;
   DismissButton& operator=(const DismissButton&) = delete;
@@ -128,17 +140,17 @@ class DismissButton : public views::LabelButton {
 class ClipboardBubbleView : public views::View {
  public:
   explicit ClipboardBubbleView(const base::string16& text) {
-    // TODO(crbug.com/1150740): Change colors in case of dark mode.
-
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(
-        SkColorSetA(SK_ColorWHITE, SK_AlphaOPAQUE * kBubbleBackgroundAlpha));
+    ash::ColorProvider* color_provider = ash::ColorProvider::Get();
+    layer()->SetColor(color_provider->GetBaseLayerColor(
+        ash::ColorProvider::BaseLayerType::kTransparent80));
     if (ash::features::IsBackgroundBlurEnabled())
       layer()->SetBackgroundBlur(kBubbleBlurRadius);
     layer()->SetRoundedCornerRadius(kCornerRadii);
 
     // Add the managed icon.
-    SkColor icon_color = SK_ColorGRAY;
+    SkColor icon_color = color_provider->GetContentLayerColor(
+        ash::ColorProvider::ContentLayerType::kIconColorPrimary);
     clipboard_icon_ = AddChildView(std::make_unique<views::ImageView>());
     clipboard_icon_->SetPaintToLayer();
     clipboard_icon_->layer()->SetFillsBoundsOpaquely(false);
@@ -157,8 +169,11 @@ class ClipboardBubbleView : public views::View {
     // Set the styling of the text.
     // TODO(crbug.com/1150741): Handle RTL.
     label_->SetText(text);
-    label_->SetFontList(gfx::FontList("Roboto, 13px"));
-    label_->SetEnabledColor(SK_ColorBLACK);
+    label_->SetFontList(gfx::FontList({kTextFontName}, gfx::Font::NORMAL,
+                                      kTextFontSize,
+                                      gfx::Font::Weight::NORMAL));
+    label_->SetEnabledColor(color_provider->GetContentLayerColor(
+        ash::ColorProvider::ContentLayerType::kTextColorPrimary));
     label_->SetLineHeight(kLineHeight);
     label_->SetMultiLine(true);
     label_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
