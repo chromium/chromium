@@ -123,4 +123,9 @@ TEST_F(ServerSocketTest, TestAccept_Error) {
   EXPECT_FALSE(fake_bluetooth_server_socket_->HasAcceptArgs());
 }
 
+TEST_F(ServerSocketTest, TestDisconnect) {
+  server_socket_->Disconnect(base::DoNothing());
+  EXPECT_TRUE(fake_bluetooth_server_socket_->called_disconnect());
+}
+
 }  // namespace bluetooth

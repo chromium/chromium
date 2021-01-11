@@ -92,8 +92,9 @@ interface DiscoverySession {
 };
 
 // Represents an open connection to a remote device. Releasing it will destroy
-// the underlying connection, but callers should prefer to let a call to
-// Disconnect() to finish first.
+// the underlying connection, but if callers want to try again soon, they should
+// call Disconnect() first and wait for completion to ensure that the resource
+// has been completely released.
 // Note: Methods which are declared [Sync] are for use by
 // //chrome/services/sharing/nearby; all other usage of their synchronous
 // signatures is strongly discouraged.
@@ -107,7 +108,9 @@ interface Socket {
 };
 
 // Represents a pending connecting from a remote device. Releasing it will
-// stop listening for an incoming connection.
+// stop listening for an incoming connection, but if callers want to start
+// listening again soon, they should call Disconnect() first and wait for
+// completion to ensure that the resource has been completely released.
 // Note: Methods which are declared [Sync] are for use by
 // //chrome/services/sharing/nearby; all other usage of their synchronous
 // signatures is strongly discouraged.
@@ -116,6 +119,13 @@ interface ServerSocket {
   // goes wrong, the returned |result| will be null.
   [Sync]
   Accept() => (AcceptConnectionResult? result);
+
+  // Use to gracefully close the underlying resource before destroying. The
+  // reply callback can be used to synchronize an attempt to re-initialize
+  // a server socket; attempting to listen on the same server socket on this
+  // device may fail with a busy error until the reply callback is invoked.
+  [Sync]
+  Disconnect() => ();
 };
 
 // Handles requests to either query Bluetooth adapter capabilities or state, or

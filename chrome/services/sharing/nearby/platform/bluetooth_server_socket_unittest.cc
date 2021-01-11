@@ -65,6 +65,9 @@ class FakeServerSocket : public bluetooth::mojom::ServerSocket {
   void Accept(AcceptCallback callback) override {
     std::move(callback).Run(std::move(accept_connection_result_));
   }
+  void Disconnect(DisconnectCallback callback) override {
+    std::move(callback).Run();
+  }
 
   bluetooth::mojom::AcceptConnectionResultPtr accept_connection_result_;
   base::OnceClosure on_destroy_callback_;

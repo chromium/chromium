@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 
+#include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
@@ -19,7 +20,9 @@ BluetoothServerSocket::BluetoothServerSocket(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       server_socket_(std::move(server_socket), task_runner_) {}
 
-BluetoothServerSocket::~BluetoothServerSocket() = default;
+BluetoothServerSocket::~BluetoothServerSocket() {
+  Close();
+}
 
 std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
   bluetooth::mojom::AcceptConnectionResultPtr result;
@@ -35,7 +38,14 @@ std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
 }
 
 Exception BluetoothServerSocket::Close() {
-  server_socket_.reset();
+  if (server_socket_) {
+    if (server_socket_->Disconnect()) {
+      VLOG(1) << "Successfully tore down Nearby Bluetooth server socket.";
+    } else {
+      LOG(ERROR) << "Failed to tear down Nearby Bluetooth server socket.";
+    }
+    server_socket_.reset();
+  }
   return {Exception::kSuccess};
 }
 

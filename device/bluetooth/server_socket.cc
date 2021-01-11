@@ -36,6 +36,11 @@ void ServerSocket::Accept(AcceptCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), copyable_callback));
 }
 
+void ServerSocket::Disconnect(DisconnectCallback callback) {
+  DCHECK(server_socket_);
+  server_socket_->Disconnect(std::move(callback));
+}
+
 void ServerSocket::OnAccept(
     AcceptCallback callback,
     const device::BluetoothDevice* device,

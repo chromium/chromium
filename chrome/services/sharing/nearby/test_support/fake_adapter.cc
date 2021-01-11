@@ -72,6 +72,9 @@ class FakeServerSocket : public mojom::ServerSocket {
   void Accept(AcceptCallback callback) override {
     std::move(callback).Run(/*result=*/nullptr);
   }
+  void Disconnect(DisconnectCallback callback) override {
+    std::move(callback).Run();
+  }
 };
 
 }  // namespace
