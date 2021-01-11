@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -207,6 +208,36 @@ public class CustomTabActivityIncognitoTest {
         launchIncognitoCustomTab(intent);
         Espresso.onView(withId(R.id.incognito_cct_logo_image_view))
                 .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void toolbarHasNonPrimaryIncognitoProfile_ForIncognitoCCT() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        launchIncognitoCustomTab(intent);
+
+        CustomTabToolbar customTabToolbar =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
+            assertTrue(profile.isOffTheRecord());
+            assertFalse(profile.isPrimaryOTRProfile());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void toolbarHasRegularProfile_ForRegularCCT() {
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getContext(), "about:blank");
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabToolbar customTabToolbar =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
+            assertFalse(profile.isOffTheRecord());
+        });
     }
 
     @Test
