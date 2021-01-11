@@ -62,13 +62,6 @@ class SpellcheckService : public KeyedService,
     BDICT_CORRUPTED,
   };
 
-  // Dictionary format used for loading an external dictionary.
-  enum DictionaryFormat {
-    DICT_HUNSPELL,
-    DICT_TEXT,
-    DICT_UNKNOWN,
-  };
-
   // A dictionary that can be used for spellcheck.
   struct Dictionary {
     // The shortest unambiguous identifier for a language from
@@ -140,17 +133,6 @@ class SpellcheckService : public KeyedService,
   // Returns whether spellchecking is enabled in preferences and if there are
   // dictionaries available.
   bool IsSpellcheckEnabled() const;
-
-  // Load a dictionary from a given path. Format specifies how the dictionary
-  // is stored. Return value is true if successful.
-  bool LoadExternalDictionary(std::string language,
-                              std::string locale,
-                              std::string path,
-                              DictionaryFormat format);
-
-  // Unload a dictionary. The path is given to identify the dictionary.
-  // Return value is true if successful.
-  bool UnloadExternalDictionary(const std::string& /* path */);
 
   // NotificationProfile implementation.
   void Observe(int type,

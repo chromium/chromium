@@ -137,11 +137,6 @@ const char kSharedModuleLegacyAllowlist[] = "whitelist";
 const char kShortName[] = "short_name";
 const char kSignature[] = "signature";
 const char kSockets[] = "sockets";
-const char kSpellcheck[] = "spellcheck";
-const char kSpellcheckDictionaryFormat[] = "dictionary_format";
-const char kSpellcheckDictionaryLanguage[] = "dictionary_language";
-const char kSpellcheckDictionaryLocale[] = "dictionary_locale";
-const char kSpellcheckDictionaryPath[] = "dictionary_path";
 const char kStorageManagedSchema[] = "storage.managed_schema";
 const char kSuggestedKey[] = "suggested_key";
 const char kSystemIndicator[] = "system_indicator";
@@ -594,16 +589,6 @@ const char kInvalidShortName[] =
     "Invalid value for 'short_name'.";
 const char kInvalidSignature[] =
     "Value 'signature' is missing or invalid.";
-const char kInvalidSpellcheck[] =
-    "Invalid value for 'spellcheck'.";
-const char kInvalidSpellcheckDictionaryFormat[] =
-    "Invalid value for spellcheck dictionary format.";
-const char kInvalidSpellcheckDictionaryLanguage[] =
-    "Invalid value for spellcheck dictionary language.";
-const char kInvalidSpellcheckDictionaryLocale[] =
-    "Invalid value for spellcheck dictionary locale.";
-const char kInvalidSpellcheckDictionaryPath[] =
-    "Invalid value for spellcheck dictionary path.";
 const char kInvalidStartupOverrideURL[] =
     "Invalid value for overriding startup URL: '[*]'.";
 const char kInvalidSystemIndicator[] =

@@ -527,18 +527,6 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
          (!hunspell_dictionaries_.empty() || enable_if_uninitialized);
 }
 
-bool SpellcheckService::LoadExternalDictionary(std::string language,
-                                               std::string locale,
-                                               std::string path,
-                                               DictionaryFormat format) {
-  return false;
-}
-
-bool SpellcheckService::UnloadExternalDictionary(
-    const std::string& /* path */) {
-  return false;
-}
-
 void SpellcheckService::Observe(int type,
                                 const content::NotificationSource& source,
                                 const content::NotificationDetails& details) {

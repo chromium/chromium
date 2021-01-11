@@ -223,8 +223,8 @@ const char* const kSafeManifestEntries[] = {
     // Network access.
     emk::kSockets,
 
-    // Just provides dictionaries, no access to content.
-    emk::kSpellcheck,
+    // Deprecated manifest key.
+    // "spellcheck",
 
     // (Note: Using string literal since extensions::manifest_keys only has
     // constants for sub-keys.)

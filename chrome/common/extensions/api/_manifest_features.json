@@ -213,10 +213,6 @@
     "channel": "stable",
     "extension_types": "all"
   },
-  "spellcheck": {
-    "channel": "dev",
-    "extension_types": ["extension"]
-  },
   "storage": {
     "channel": "stable",
     "extension_types": [

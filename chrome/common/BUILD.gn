@@ -261,8 +261,6 @@ static_library("common") {
       "extensions/api/omnibox/omnibox_handler.h",
       "extensions/api/speech/tts_engine_manifest_handler.cc",
       "extensions/api/speech/tts_engine_manifest_handler.h",
-      "extensions/api/spellcheck/spellcheck_handler.cc",
-      "extensions/api/spellcheck/spellcheck_handler.h",
       "extensions/api/storage/storage_schema_manifest_handler.cc",
       "extensions/api/storage/storage_schema_manifest_handler.h",
       "extensions/api/system_indicator/system_indicator_handler.cc",

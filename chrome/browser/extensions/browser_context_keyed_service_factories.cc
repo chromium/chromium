@@ -49,7 +49,6 @@
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/common/buildflags.h"
-#include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_api.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -65,10 +64,6 @@
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
 #include "chrome/browser/extensions/api/mdns/mdns_api.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-#include "chrome/browser/extensions/api/spellcheck/spellcheck_api.h"
 #endif
 
 #if BUILDFLAG(ENABLE_AUTOFILL_ASSISTANT_API)
@@ -130,9 +125,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
   extensions::SignedInDevicesManager::GetFactoryInstance();
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-  extensions::SpellcheckAPI::GetFactoryInstance();
-#endif
   extensions::SystemIndicatorManagerFactory::GetInstance();
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
