@@ -81,6 +81,28 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
     ReportPartitionAllocThreadCacheStats(main_thread_cache_dump,
                                          main_thread_stats);
   }
+
+  // Not reported in UMA, detailed dumps only.
+  if (detailed) {
+    SimplePartitionStatsDumper aligned_allocator_dumper;
+    internal::PartitionAllocMalloc::AlignedAllocator()->DumpStats(
+        "malloc/aligned", !detailed /* is_light_dump */,
+        &aligned_allocator_dumper);
+    // These should be included in the overall figure, so using a child dump.
+    auto* aligned_allocator_dump = pmd->CreateAllocatorDump("malloc/aligned");
+    // See
+    // //base/allocator/allocator_shim_default_dispatch_to_partition_alloc.cc
+    // for the sum of the aligned and regular partitions.
+    aligned_allocator_dump->AddScalar(
+        "virtual_size", MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_mmapped_bytes);
+    aligned_allocator_dump->AddScalar(
+        MemoryAllocatorDump::kNameSize, MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_resident_bytes);
+    aligned_allocator_dump->AddScalar(
+        "allocated_size", MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_active_bytes);
+  }
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
