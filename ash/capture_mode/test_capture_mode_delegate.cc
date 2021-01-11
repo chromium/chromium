@@ -121,4 +121,6 @@ TestCaptureModeDelegate::LaunchRecordingService() {
 void TestCaptureModeDelegate::BindAudioStreamFactory(
     mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {}
 
+void TestCaptureModeDelegate::OnSessionStateChanged(bool started) {}
+
 }  // namespace ash

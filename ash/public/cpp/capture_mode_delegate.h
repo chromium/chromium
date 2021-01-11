@@ -85,6 +85,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Binds the given audio StreamFactory |receiver| to the audio service.
   virtual void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) = 0;
+
+  // Called when a capture mode session starts or stops.
+  virtual void OnSessionStateChanged(bool started) = 0;
 };
 
 }  // namespace ash

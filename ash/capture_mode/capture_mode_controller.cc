@@ -345,12 +345,17 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
           kResetCaptureRegionDuration) {
     SetUserCaptureRegion(gfx::Rect(), /*by_user=*/false);
   }
+
+  delegate_->OnSessionStateChanged(/*started=*/true);
+
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
 }
 
 void CaptureModeController::Stop() {
   DCHECK(IsActive());
   capture_mode_session_.reset();
+
+  delegate_->OnSessionStateChanged(/*started=*/false);
 }
 
 void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,

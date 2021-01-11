@@ -252,4 +252,13 @@ PaginationModel* ShellTestApi::GetAppListPaginationModel() {
   return view->GetAppsPaginationModel();
 }
 
+void ShellTestApi::ShowContextMenu() {
+  Shell::GetPrimaryRootWindowController()->ShowContextMenu(
+      gfx::Point(1, 1), ui::MENU_SOURCE_MOUSE);
+}
+
+bool ShellTestApi::IsContextMenuShown() const {
+  return Shell::GetPrimaryRootWindowController()->IsContextMenuShown();
+}
+
 }  // namespace ash

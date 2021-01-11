@@ -305,6 +305,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // The current focused fine tune position. This changes as user tabs while a
   // in capture region mode.
   FineTunePosition focused_fine_tune_position_ = FineTunePosition::kNone;
+
+  // The window which had input capture prior to entering the session. It may be
+  // null if no such window existed.
+  aura::Window* input_capture_window_ = nullptr;
 };
 
 }  // namespace ash

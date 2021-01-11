@@ -20,6 +20,7 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/round_rect_painter.h"
+#include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -235,6 +236,10 @@ internal::RootView* MenuHost::CreateRootView() {
 void MenuHost::OnMouseCaptureLost() {
   if (destroying_ || ignore_capture_lost_)
     return;
+
+  if (!ViewsDelegate::GetInstance()->ShouldCloseMenuIfMouseCaptureLost())
+    return;
+
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
   if (menu_controller && !menu_controller->drag_in_progress())

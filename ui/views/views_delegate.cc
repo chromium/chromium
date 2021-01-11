@@ -73,6 +73,10 @@ ViewsDelegate::ProcessAcceleratorWhileMenuShowing(
   return ProcessMenuAcceleratorResult::LEAVE_MENU_OPEN;
 }
 
+bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
+  return true;
+}
+
 #if defined(OS_WIN)
 HICON ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;

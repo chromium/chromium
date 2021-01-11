@@ -125,6 +125,10 @@ class VIEWS_EXPORT ViewsDelegate {
   virtual ProcessMenuAcceleratorResult ProcessAcceleratorWhileMenuShowing(
       const ui::Accelerator& accelerator);
 
+  // If a menu is showing and its window loses mouse capture, it will close if
+  // this returns true.
+  virtual bool ShouldCloseMenuIfMouseCaptureLost() const;
+
 #if defined(OS_WIN)
   // Retrieves the default window icon to use for windows if none is specified.
   virtual HICON GetDefaultWindowIcon() const;

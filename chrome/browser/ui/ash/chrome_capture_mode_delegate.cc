@@ -173,3 +173,7 @@ void ChromeCaptureModeDelegate::BindAudioStreamFactory(
     mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
   content::GetAudioService().BindStreamFactory(std::move(receiver));
 }
+
+void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
+  is_session_active_ = started;
+}

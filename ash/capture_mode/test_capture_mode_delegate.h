@@ -41,6 +41,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       override;
   void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+  void OnSessionStateChanged(bool started) override;
 
  private:
   std::unique_ptr<FakeRecordingService> fake_service_;

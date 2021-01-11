@@ -116,6 +116,14 @@ class ASH_EXPORT ShellTestApi {
   // It returns nullptr when app-list is not shown.
   PaginationModel* GetAppListPaginationModel();
 
+  // Shows the context menu associated with the primary root window at point (1,
+  // 1).
+  void ShowContextMenu();
+
+  // Returns true if the context menu associated with the primary root window is
+  // shown.
+  bool IsContextMenuShown() const;
+
  private:
   Shell* shell_;  // not owned
 

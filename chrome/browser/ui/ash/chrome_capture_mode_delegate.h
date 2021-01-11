@@ -20,6 +20,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   static ChromeCaptureModeDelegate* Get();
 
+  bool is_session_active() const { return is_session_active_; }
+
   // Sets |is_screen_capture_locked_| to the given |locked|, and interrupts any
   // on going video capture.
   void SetIsScreenCaptureLocked(bool locked);
@@ -47,6 +49,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       override;
   void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+  void OnSessionStateChanged(bool started) override;
 
  private:
   // Used to temporarily disable capture mode in certain cases for which neither
@@ -60,6 +63,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // locked.
   // This is only non-null during recording.
   base::OnceClosure interrupt_video_recording_callback_;
+
+  // True when a capture mode session is currently active.
+  bool is_session_active_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_

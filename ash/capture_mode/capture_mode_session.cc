@@ -23,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_util.h"
@@ -445,12 +446,28 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
 
   UpdateRootWindowDimmers();
 
+  // A context menu may have input capture when entering a session. Remove
+  // capture from it, otherwise subsequent mouse events will cause it to close,
+  // and then we won't be able to take a screenshot of the menu. Store it so we
+  // can return capture to it when exiting the session.
+  auto* capture_client = aura::client::GetCaptureClient(current_root_);
+  input_capture_window_ = capture_client->GetCaptureWindow();
+  if (input_capture_window_) {
+    capture_client->ReleaseCapture(input_capture_window_);
+    input_capture_window_->AddObserver(this);
+  }
+
   TabletModeController::Get()->AddObserver(this);
   current_root_->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 }
 
 CaptureModeSession::~CaptureModeSession() {
+  if (input_capture_window_) {
+    input_capture_window_->RemoveObserver(this);
+    aura::client::GetCaptureClient(current_root_)
+        ->SetCapture(input_capture_window_);
+  }
   display::Screen::GetScreen()->RemoveObserver(this);
   current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);
@@ -655,6 +672,11 @@ void CaptureModeSession::OnTabletModeEnded() {
 }
 
 void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
+  if (window == input_capture_window_) {
+    input_capture_window_->RemoveObserver(this);
+    input_capture_window_ = nullptr;
+    return;
+  }
   DCHECK_EQ(current_root_, window);
   MaybeChangeRoot(Shell::GetPrimaryRootWindow());
 }
