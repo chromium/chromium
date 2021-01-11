@@ -18,6 +18,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantClient_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
+#include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -50,34 +51,6 @@ namespace {
 // A direct action that corresponds to pressing the close or cancel button on
 // the UI.
 const char* const kCancelActionName = "cancel";
-
-// Fills a map from two Java arrays of strings of the same length.
-void FillStringMapFromJava(JNIEnv* env,
-                           const JavaRef<jobjectArray>& names,
-                           const JavaRef<jobjectArray>& values,
-                           std::map<std::string, std::string>* parameters) {
-  std::vector<std::string> names_vector;
-  base::android::AppendJavaStringArrayToStringVector(env, names, &names_vector);
-  std::vector<std::string> values_vector;
-  base::android::AppendJavaStringArrayToStringVector(env, values,
-                                                     &values_vector);
-  DCHECK_EQ(names_vector.size(), values_vector.size());
-  for (size_t i = 0; i < names_vector.size(); ++i) {
-    parameters->insert(std::make_pair(names_vector[i], values_vector[i]));
-  }
-}
-
-std::unique_ptr<TriggerContextImpl> CreateTriggerContext(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jexperiment_ids,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values) {
-  std::map<std::string, std::string> parameters;
-  FillStringMapFromJava(env, jparameter_names, jparameter_values, &parameters);
-  return std::make_unique<TriggerContextImpl>(
-      std::move(parameters),
-      base::android::ConvertJavaStringToUTF8(env, jexperiment_ids));
-}
 
 }  // namespace
 
@@ -144,7 +117,7 @@ bool ClientAndroid::Start(JNIEnv* env,
   }
 
   GURL initial_url(base::android::ConvertJavaStringToUTF8(env, jinitial_url));
-  auto trigger_context = CreateTriggerContext(
+  auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, jexperiment_ids, jparameter_names, jparameter_values);
   trigger_context->SetCCT(jis_cct);
   trigger_context->SetOnboardingShown(jonboarding_shown);
@@ -156,9 +129,9 @@ bool ClientAndroid::Start(JNIEnv* env,
   if (VLOG_IS_ON(2)) {
     std::string experiment_ids =
         base::android::ConvertJavaStringToUTF8(env, jexperiment_ids);
-    std::map<std::string, std::string> parameters;
-    FillStringMapFromJava(env, jparameter_names, jparameter_values,
-                          &parameters);
+    std::map<std::string, std::string> parameters =
+        ui_controller_android_utils::CreateStringMapFromJava(
+            env, jparameter_names, jparameter_values);
 
     DVLOG(2) << "Starting autofill assistant with parameters:";
     DVLOG(2) << "\tinitial_url: " << initial_url;
@@ -183,8 +156,8 @@ void ClientAndroid::StartTriggerScript(
   trigger_script_bridge_.StartTriggerScript(
       web_contents_, jdelegate,
       GURL(base::android::ConvertJavaStringToUTF8(env, jinitial_url)),
-      CreateTriggerContext(env, jexperiment_ids, jparameter_names,
-                           jparameter_values),
+      ui_controller_android_utils::CreateTriggerContext(
+          env, jexperiment_ids, jparameter_names, jparameter_values),
       jservice_request_sender);
 }
 
@@ -250,8 +223,8 @@ void ClientAndroid::FetchWebsiteActions(
 
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   controller_->Track(
-      CreateTriggerContext(env, jexperiment_ids, jparameter_names,
-                           jparameter_values),
+      ui_controller_android_utils::CreateTriggerContext(
+          env, jexperiment_ids, jparameter_names, jparameter_values),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -368,7 +341,7 @@ bool ClientAndroid::PerformDirectAction(
 
   int action_index = FindDirectAction(action_name);
 
-  auto trigger_context = CreateTriggerContext(
+  auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, jexperiment_ids, jparameter_names, jparameter_values);
   trigger_context->SetDirectAction(true);
 
