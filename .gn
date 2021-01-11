@@ -128,7 +128,6 @@ no_check_targets = [
   "//extensions/browser/api/test:*",  # 1 error
   "//extensions/browser/api/usb:*",  # 12 errors
   "//extensions/browser/api/virtual_keyboard_private:*",  # 2 errors
-  "//extensions/browser/api/vpn_provider:*",  # 13 errors
   "//extensions/browser/api/web_request:*",  # 37 errors
   "//extensions/browser/api/webcam_private:*",  # 8 errors
   "//extensions/browser/api:*",  # 7 errors

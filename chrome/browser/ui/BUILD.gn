@@ -2719,6 +2719,7 @@ static_library("ui") {
       "//components/services/app_service/public/cpp:instance_update",
       "//components/session_manager/core",
       "//components/user_manager",
+      "//extensions/browser/api/vpn_provider",
       "//google_apis/drive",
       "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",
