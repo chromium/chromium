@@ -32,8 +32,9 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     @Override
     @Nullable
     public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+        // TODO(crbug.com/1159879): Set PageTransition.AUTO_BOOKMARK here.
         boolean result = ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                loadUrlParams.getUrl(), PageTransition.AUTO_BOOKMARK,
+                loadUrlParams.getUrl(), PageTransition.AUTO_TOPLEVEL,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
                 mParentTabSupplier.get());
         assert result;
@@ -42,7 +43,8 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
 
     @Override
     public void navigateToHelpPage() {
+        // TODO(crbug.com/1159879): Set PageTransition.AUTO_BOOKMARK here.
         openUrl(WindowOpenDisposition.CURRENT_TAB,
-                new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
+                new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_TOPLEVEL));
     }
 }

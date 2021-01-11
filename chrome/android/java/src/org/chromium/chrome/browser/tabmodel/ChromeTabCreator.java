@@ -141,7 +141,8 @@ public class ChromeTabCreator extends TabCreator {
 
             // Sanitize the url.
             loadUrlParams.setUrl(url.getValidSpecOrEmpty());
-            loadUrlParams.setTransitionType(getTransitionType(type, intent));
+            loadUrlParams.setTransitionType(
+                    getTransitionType(type, intent, loadUrlParams.getTransitionType()));
 
             // Check if the tab is being created asynchronously.
             int assignedTabId = intent == null ? Tab.INVALID_TAB_ID : IntentUtils.safeGetIntExtra(
@@ -427,20 +428,24 @@ public class ChromeTabCreator extends TabCreator {
     }
 
     /**
-     * @param type Type of the tab launch.
+     * @param tabLaunchType Type of the tab launch.
      * @param intent The intent causing the tab launch.
+     * @param originalTransitionType The original transition type.
      * @return The page transition type constant.
      */
-    private int getTransitionType(@TabLaunchType int type, Intent intent) {
+    private int getTransitionType(@TabLaunchType int tabLaunchType, Intent intent,
+            @PageTransition int originalTransitionType) {
         int transition = PageTransition.LINK;
-        switch (type) {
+        switch (tabLaunchType) {
+            case TabLaunchType.FROM_START_SURFACE:
+                transition = originalTransitionType;
+                break;
             case TabLaunchType.FROM_EXTERNAL_APP:
             case TabLaunchType.FROM_BROWSER_ACTIONS:
                 transition = PageTransition.LINK | PageTransition.FROM_API;
                 break;
             case TabLaunchType.FROM_CHROME_UI:
             case TabLaunchType.FROM_STARTUP:
-            case TabLaunchType.FROM_START_SURFACE:
             case TabLaunchType.FROM_LAUNCHER_SHORTCUT:
             case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
                 transition = PageTransition.AUTO_TOPLEVEL;
