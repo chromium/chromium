@@ -23,7 +23,11 @@ group("closure_compile") {
 
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
-  deps = [ ":file_list_selection_model.m" ]
+  deps = [
+    ":empty_folder.m",
+    ":file_list_selection_model.m",
+    ":files_alert_dialog.m",
+  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -220,6 +224,13 @@ js_library("empty_folder") {
   deps = [ "//ui/webui/resources/js:util" ]
 }
 
+js_library("empty_folder.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/empty_folder.m.js" ]
+  deps = [ "//ui/webui/resources/js:util.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("file_grid") {
   deps = [
     ":drag_selector",
@@ -392,6 +403,16 @@ js_unittest("file_tap_handler_unittest") {
 js_library("files_alert_dialog") {
   visibility += [ "//ui/file_manager/gallery/*" ]
   deps = [ "//ui/webui/resources/js/cr/ui:dialogs" ]
+}
+
+js_library("files_alert_dialog.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/files_alert_dialog.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 # TODO(tapted): Move this into //ui/file_manager/base.
@@ -577,7 +598,11 @@ js_test_gen_html("js_test_gen_html") {
 }
 
 js_modulizer("modulize") {
-  input_files = [ "file_list_selection_model.js" ]
+  input_files = [
+    "empty_folder.js",
+    "file_list_selection_model.js",
+    "files_alert_dialog.js",
+  ]
 
   namespace_rewrites = cr_namespace_rewrites
 }

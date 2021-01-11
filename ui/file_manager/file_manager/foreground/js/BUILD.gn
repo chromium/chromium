@@ -33,6 +33,8 @@ js_type_check("closure_compile_jsmodules") {
     ":crossover_search_utils.m",
     ":directory_contents.m",
     ":directory_model.m",
+    ":drop_effect_and_label.m",
+    ":empty_folder_controller.m",
     ":fake_android_app_list_model.m",
     ":file_list_model.m",
     ":file_watcher.m",
@@ -451,6 +453,12 @@ js_library("directory_tree_naming_controller") {
 js_library("drop_effect_and_label") {
 }
 
+js_library("drop_effect_and_label.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/drop_effect_and_label.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("elements_importer") {
 }
 
@@ -460,6 +468,21 @@ js_library("empty_folder_controller") {
     ":file_list_model",
     "ui:empty_folder",
   ]
+}
+
+js_library("empty_folder_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/empty_folder_controller.m.js" ]
+  deps = [
+    ":constants.m",
+    ":directory_model.m",
+    ":file_list_model.m",
+    "ui:empty_folder.m",
+    "ui:files_alert_dialog.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_list_model") {
@@ -1123,6 +1146,8 @@ js_modulizer("modulize") {
     "mock_directory_model.js",
     "fake_android_app_list_model.js",
     "mock_folder_shortcut_data_model.js",
+    "drop_effect_and_label.js",
+    "empty_folder_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
