@@ -129,8 +129,10 @@ OobeTypes.SecurityTokenPinDialogErrorType = {
  * @typedef {{
  *   codeType: OobeTypes.SecurityTokenPinDialogType,
  *   enableUserInput: boolean,
- *   errorLabel: OobeTypes.SecurityTokenPinDialogErrorType,
  *   attemptsLeft: number,
+ *   hasError: boolean,
+ *   formattedError: string,
+ *   formattedAttemptsLeft: string,
  * }}
  */
 OobeTypes.SecurityTokenPinDialogParameters;

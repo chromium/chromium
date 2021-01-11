@@ -13,6 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
+#include "base/i18n/message_formatter.h"
+#include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -65,6 +67,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/components/security_token_pin/constants.h"
+#include "chromeos/components/security_token_pin/error_generator.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/constants/devicetype.h"
@@ -270,8 +273,17 @@ base::Value MakeSecurityTokenPinDialogParameters(
   base::Value params(base::Value::Type::DICTIONARY);
   params.SetIntKey("codeType", static_cast<int>(code_type));
   params.SetBoolKey("enableUserInput", enable_user_input);
-  params.SetIntKey("errorLabel", static_cast<int>(error_label));
   params.SetIntKey("attemptsLeft", attempts_left);
+  params.SetBoolKey("hasError",
+                    error_label != security_token_pin::ErrorLabel::kNone);
+  params.SetStringKey(
+      "formattedError",
+      GenerateErrorMessage(error_label, attempts_left, enable_user_input));
+  params.SetStringKey(
+      "formattedAttemptsLeft",
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_ATTEMPTS_LEFT),
+          attempts_left));
   return params;
 }
 
