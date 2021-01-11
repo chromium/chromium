@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 
 using testing::ElementsAre;
@@ -25,6 +26,66 @@ TEST_P(InlineTextBoxPainterTest, LineBreak) {
   UpdateAllLifecyclePhasesForTest();
   // 0: view background, 1: A, 2: <br>, 3: B, 4: <br>, 5: C
   EXPECT_EQ(6u, ContentDisplayItems().size());
+}
+
+class InlineTextBoxPainterNonNGTest : public PaintControllerPaintTest,
+                                      public ScopedLayoutNGForTest {
+ public:
+  InlineTextBoxPainterNonNGTest() : ScopedLayoutNGForTest(false) {}
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(InlineTextBoxPainterNonNGTest);
+
+TEST_P(InlineTextBoxPainterNonNGTest, RecordedSelectionAll) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+  SetBodyInnerHTML("<span>A<br>B<br>C</span>");
+
+  GetDocument().GetFrame()->Selection().SetHandleVisibleForTesting();
+  GetDocument().GetFrame()->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  EXPECT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks.begin()->layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks.begin()->layer_selection_data->end.has_value());
+  PaintedSelectionBound start =
+      chunks.begin()->layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, IntPoint(8, 8));
+  EXPECT_EQ(start.edge_end, IntPoint(8, 9));
+
+  PaintedSelectionBound end = chunks.begin()->layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, IntPoint(9, 10));
+  EXPECT_EQ(end.edge_end, IntPoint(9, 11));
+}
+
+TEST_P(InlineTextBoxPainterNonNGTest, RecordedSelectionMultiline) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+      SelectionSample::SetSelectionText(
+          GetDocument().body(),
+          "<div style='white-space:pre'>f^oo\nbar\nb|az</div>"));
+  GetDocument().GetFrame()->Selection().SetHandleVisibleForTesting();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  EXPECT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks.begin()->layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks.begin()->layer_selection_data->end.has_value());
+  PaintedSelectionBound start =
+      chunks.begin()->layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, IntPoint(8, 8));
+  EXPECT_EQ(start.edge_end, IntPoint(8, 9));
+
+  PaintedSelectionBound end = chunks.begin()->layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, IntPoint(9, 10));
+  EXPECT_EQ(end.edge_end, IntPoint(9, 11));
 }
 
 }  // namespace blink

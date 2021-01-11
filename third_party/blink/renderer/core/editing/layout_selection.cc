@@ -30,9 +30,11 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
@@ -708,40 +710,34 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
   }
 }
 
-SelectionState LayoutSelection::ComputeSelectionStateForCursor(
-    const NGInlineCursorPosition& position) const {
-  if (!position)
-    return SelectionState::kNone;
-
-  DCHECK(position.IsText());
-
-  // Selection on ellipsis is not supported.
-  if (position.IsEllipsis())
-    return SelectionState::kNone;
-
-  const NGTextOffset offset = position.TextOffset();
-  const unsigned start_offset = offset.start;
-  const unsigned end_offset = offset.end;
-  // Determine the state of the overall selection, relative to the LayoutObject
-  // associated with the current cursor position. This state will allow us know
-  // which offset comparisons are valid, and determine if the selection
-  // endpoints fall within the current cursor position.
-  switch (GetSelectionStateFor(position)) {
+// Given |state| that describes the provided offsets relationship to the
+// |paint_range_| (and thus which comparisons are valid), returns a
+// SelectionState that reflects where the endpoints of the selection fall,
+// relative to the range expressed by the offsets.
+SelectionState LayoutSelection::ComputeSelectionStateFromOffsets(
+    SelectionState state,
+    unsigned start_offset,
+    unsigned end_offset) const {
+  switch (state) {
     case SelectionState::kStart: {
-      const unsigned start_in_block = paint_range_->start_offset.value();
+      const unsigned start_in_block =
+          paint_range_->start_offset.value_or(start_offset);
       return start_offset <= start_in_block && start_in_block <= end_offset
                  ? SelectionState::kStart
                  : SelectionState::kNone;
     }
     case SelectionState::kEnd: {
-      const unsigned end_in_block = paint_range_->end_offset.value();
+      const unsigned end_in_block =
+          paint_range_->end_offset.value_or(end_offset);
       return start_offset <= end_in_block && end_in_block <= end_offset
                  ? SelectionState::kEnd
                  : SelectionState::kNone;
     }
     case SelectionState::kStartAndEnd: {
-      const unsigned start_in_block = paint_range_->start_offset.value();
-      const unsigned end_in_block = paint_range_->end_offset.value();
+      const unsigned start_in_block =
+          paint_range_->start_offset.value_or(start_offset);
+      const unsigned end_in_block =
+          paint_range_->end_offset.value_or(end_offset);
       const bool is_start_in_current_cursor =
           start_offset <= start_in_block && start_in_block <= end_offset;
       const bool is_end_in_current_cursor =
@@ -761,6 +757,42 @@ SelectionState LayoutSelection::ComputeSelectionStateForCursor(
     default:
       return SelectionState::kNone;
   }
+}
+
+SelectionState LayoutSelection::ComputeSelectionStateForCursor(
+    const NGInlineCursorPosition& position) const {
+  if (!position)
+    return SelectionState::kNone;
+
+  DCHECK(position.IsText());
+
+  // Selection on ellipsis is not supported.
+  if (position.IsEllipsis())
+    return SelectionState::kNone;
+
+  const NGTextOffset offset = position.TextOffset();
+  const unsigned start_offset = offset.start;
+  const unsigned end_offset = offset.end;
+  // Determine the state of the overall selection, relative to the LayoutObject
+  // associated with the current cursor position. This state will allow us know
+  // which offset comparisons are valid, and determine if the selection
+  // endpoints fall within the current cursor position.
+  SelectionState state = GetSelectionStateFor(position);
+  return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
+}
+
+SelectionState LayoutSelection::ComputeSelectionStateForInlineTextBox(
+    const InlineTextBox& text_box) const {
+  AssertIsValid();
+  unsigned start_offset = static_cast<unsigned>(text_box.CaretMinOffset());
+  unsigned end_offset = static_cast<unsigned>(text_box.CaretMaxOffset());
+  // Determine the state of the overall selection, relative to the
+  // InlineTextBox. This state will allow us know which offset comparisons are
+  // valid, and determine if the selection endpoints fall within InlineTextBox.
+  const LayoutText* text = To<LayoutText>(
+      LineLayoutAPIShim::ConstLayoutObjectFrom(text_box.GetLineLayoutItem()));
+  SelectionState state = GetSelectionStateFor(*text);
+  return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
 }
 
 static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(

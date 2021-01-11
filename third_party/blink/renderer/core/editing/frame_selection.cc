@@ -1293,6 +1293,11 @@ SelectionState FrameSelection::ComputeLayoutSelectionStateForCursor(
   return layout_selection_->ComputeSelectionStateForCursor(position);
 }
 
+SelectionState FrameSelection::ComputeLayoutSelectionStateForInlineTextBox(
+    const InlineTextBox& text_box) const {
+  return layout_selection_->ComputeSelectionStateForInlineTextBox(text_box);
+}
+
 bool FrameSelection::IsDirectional() const {
   return is_directional_;
 }

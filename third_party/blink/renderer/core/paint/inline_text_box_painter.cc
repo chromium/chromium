@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -153,18 +154,6 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   physical_overflow.Move(paint_offset);
   IntRect visual_rect = EnclosingIntRect(physical_overflow);
 
-  // The text clip phase already has a DrawingRecorder. Text clips are initiated
-  // only in BoxPainter::PaintFillLayer, which is already within a
-  // DrawingRecorder.
-  base::Optional<DrawingRecorder> recorder;
-  if (paint_info.phase != PaintPhase::kTextClip) {
-    if (DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, inline_text_box_, paint_info.phase))
-      return;
-    recorder.emplace(paint_info.context, inline_text_box_, paint_info.phase,
-                     visual_rect);
-  }
-
   GraphicsContext& context = paint_info.context;
   PhysicalOffset box_origin =
       inline_text_box_.PhysicalLocation() + paint_offset;
@@ -181,6 +170,35 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   PhysicalRect box_rect(box_origin,
                         PhysicalSize(inline_text_box_.LogicalWidth(),
                                      inline_text_box_.LogicalHeight()));
+
+  base::Optional<SelectionBoundsRecorder> selection_recorder;
+  if (have_selection && paint_info.phase == PaintPhase::kForeground &&
+      !is_printing) {
+    const FrameSelection& frame_selection =
+        InlineLayoutObject().GetFrame()->Selection();
+    SelectionState selection_state =
+        frame_selection.ComputeLayoutSelectionStateForInlineTextBox(
+            inline_text_box_);
+    if (SelectionBoundsRecorder::ShouldRecordSelection(frame_selection,
+                                                       selection_state)) {
+      PhysicalRect selection_rect =
+          GetSelectionRect<InlineTextBoxPainter::PaintOptions::kNormal>(
+              context, box_rect, style_to_use, style_to_use.GetFont());
+      selection_recorder.emplace(selection_state, selection_rect,
+                                 context.GetPaintController());
+    }
+  }
+
+  // The text clip phase already has a DrawingRecorder. Text clips are initiated
+  // only in BoxPainter::PaintFillLayer, which is already within a
+  // DrawingRecorder.
+  base::Optional<DrawingRecorder> recorder;
+  if (paint_info.phase != PaintPhase::kTextClip) {
+    if (DrawingRecorder::UseCachedDrawingIfPossible(context, inline_text_box_,
+                                                    paint_info.phase))
+      return;
+    recorder.emplace(context, inline_text_box_, paint_info.phase, visual_rect);
+  }
 
   unsigned length = inline_text_box_.Len();
   const String& layout_item_string =
