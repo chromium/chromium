@@ -133,7 +133,9 @@ MediaSource::MediaSource(ExecutionContext* context)
       active_source_buffers_(
           MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
                                                  async_event_queue_.Get())),
-      live_seekable_range_(MakeGarbageCollected<TimeRanges>()) {
+      has_live_seekable_range_(false),
+      live_seekable_range_start_(0.0),
+      live_seekable_range_end_(0.0) {
   DVLOG(1) << __func__ << " this=" << this;
 
   DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() ||
@@ -667,11 +669,13 @@ void MediaSource::AssertAttachmentsMutexHeldIfCrossThreadForDebugging() const {
 
 void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
-  {
-    MutexLocker lock(attachment_link_lock_);
-    visitor->Trace(attachment_tracer_);
-    visitor->Trace(live_seekable_range_);
-  }
+
+  // |attachment_tracer_| is only set when this object is owned by the main
+  // thread and is possibly involved in a SameThreadMediaSourceAttachment.
+  // Therefore, it is thread-safe to access it here without taking the
+  // |attachment_link_lock_|.
+  visitor->Trace(TS_UNCHECKED_READ(attachment_tracer_));
+
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
   EventTargetWithInlineData::Trace(visitor);
@@ -800,29 +804,26 @@ WebTimeRanges MediaSource::SeekableInternal(
 
     {
       // If cross-thread, protect against concurrent usage of
-      // |live_seekable_range_|, since that member is updated without taking the
+      // |*live_seekable_range*|, since those are updated without taking the
       // attachment's internal |attachment_state_lock_|.
       MutexLocker lock(attachment_link_lock_);
 
       // 1. If live seekable range is not empty:
-      if (live_seekable_range_->length() != 0) {
+      if (has_live_seekable_range_) {
         // 1.1. Let union ranges be the union of live seekable range and the
         //      HTMLMediaElement.buffered attribute.
         // 1.2. Return a single range with a start time equal to the
         //      earliest start time in union ranges and an end time equal to
         //      the highest end time in union ranges and abort these steps.
         if (buffered.empty()) {
-          ranges.emplace_back(
-              live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-              live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+          ranges.emplace_back(live_seekable_range_start_,
+                              live_seekable_range_end_);
           return ranges;
         }
 
         ranges.emplace_back(
-            std::min(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-                     buffered.front().start),
-            std::max(live_seekable_range_->end(0, ASSERT_NO_EXCEPTION),
-                     buffered.back().end));
+            std::min(live_seekable_range_start_, buffered.front().start),
+            std::max(live_seekable_range_end_, buffered.back().end));
         return ranges;
       }
     }
@@ -1089,10 +1090,12 @@ void MediaSource::setLiveSeekableRange(double start,
     // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
     // we don't need to take the full attachment exclusive
     // |attachment_state_lock_| so long as we
-    // fully protect access to |live_seekable_range_| read/write with
+    // fully protect access to |*live_seekable_range*| read/write with
     // |attachment_link_lock_|.
     MutexLocker lock(attachment_link_lock_);
-    live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
+    has_live_seekable_range_ = true;
+    live_seekable_range_start_ = start;
+    live_seekable_range_end_ = end;
   }
 }
 
@@ -1116,12 +1119,15 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
     // If we are cross-thread, then main thread could be running
     // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
     // we don't need to take the full attachment exclusive
-    // |attachment_state_lock_|so long as we
-    // fully protect access to |live_seekable_range_| read/write with
+    // |attachment_state_lock_| so long as we
+    // fully protect access to |*live_seekable_range*| read/write with
     // |attachment_link_lock_|.
     MutexLocker lock(attachment_link_lock_);
-    if (live_seekable_range_->length() != 0)
-      live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
+    if (has_live_seekable_range_) {
+      has_live_seekable_range_ = false;
+      live_seekable_range_start_ = 0.0;
+      live_seekable_range_end_ = 0.0;
+    }
   }
 }
 
