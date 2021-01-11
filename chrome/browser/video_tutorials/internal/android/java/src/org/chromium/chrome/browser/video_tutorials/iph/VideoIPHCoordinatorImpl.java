@@ -84,7 +84,8 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
                 ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
         if (useAnimatedGifUrl) {
             mImageFetcher.fetchGif(params, gifImage -> {
-                BaseGifDrawable baseGifDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
+                BaseGifDrawable baseGifDrawable =
+                        gifImage == null ? null : new BaseGifDrawable(gifImage, Config.ARGB_8888);
                 consumer.onResult(baseGifDrawable);
             });
         } else {
