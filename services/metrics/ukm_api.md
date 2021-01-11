@@ -238,7 +238,7 @@ void OnGoatTeleported() {
   ...
   ukm::builders::Goat_Teleported(source_id)
       .SetDuration(duration.InMilliseconds())
-      .SetType(goat_type)
+      .SetGoatType(goat_type)
       .Record(ukm_recorder);
 }
 ```
