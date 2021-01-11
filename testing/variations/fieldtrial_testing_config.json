@@ -5819,6 +5819,7 @@
                 {
                     "name": "EnabledWithoutStartupDelay",
                     "params": {
+                        "skip_in_background": "true",
                         "startup_delay_ms": "0"
                     },
                     "enable_features": [
@@ -6410,22 +6411,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReportSaveDataSavings"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ResourceLoadingHints": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2",
-                    "enable_features": [
-                        "ResourceLoadingHints"
                     ]
                 }
             ]
