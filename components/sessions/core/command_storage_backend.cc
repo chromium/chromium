@@ -132,9 +132,7 @@ class SessionFileReader {
   bool ReadToMarker();
 
   // Reads a single command, returning it. A return value of null indicates
-  // either there are no commands, or there was an error. Use errored_ to
-  // distinguish the two. If null is returned, and there is no error, it means
-  // the end of file was successfully reached.
+  // either there are no commands, or there was an error.
   std::unique_ptr<sessions::SessionCommand> ReadCommand();
 
   // Decrypts a previously encrypted command. Returns the new command on
@@ -149,14 +147,10 @@ class SessionFileReader {
 
   // Shifts the unused portion of buffer_ to the beginning and fills the
   // remaining portion with data from the file. Returns false if the buffer
-  // couldn't be filled. A return value of false only signals an error if
-  // errored_ is set to true.
+  // couldn't be filled or there was an error reading the file.
   bool FillBuffer();
 
   bool is_header_valid_ = false;
-
-  // Whether an error condition has been detected.
-  bool errored_ = false;
 
   // As we read from the file, data goes here.
   std::string buffer_;
@@ -193,14 +187,12 @@ SessionFileReader::Read() {
 
   std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands;
   for (std::unique_ptr<sessions::SessionCommand> command = ReadCommand();
-       command && !errored_; command = ReadCommand()) {
+       command; command = ReadCommand()) {
     if (command->id() != kInitialStateMarkerCommandId)
       read_commands.push_back(std::move(command));
   }
-  // TODO(sky): remove `errored_`. It basically means there is an error reading,
-  // but I think we should continue in this case.
-  if (errored_)
-    return {};
+  // Even if there was an error the commands are returned. The hope is at least
+  // some portion of the previous session is restored.
   return read_commands;
 }
 
@@ -228,7 +220,7 @@ bool SessionFileReader::ReadToMarker() {
   // It's expected this is only called if the marker is supported.
   DCHECK(IsHeaderValid() && SupportsMarker());
   for (std::unique_ptr<sessions::SessionCommand> command = ReadCommand();
-       command && !errored_; command = ReadCommand()) {
+       command; command = ReadCommand()) {
     if (command->id() == kInitialStateMarkerCommandId)
       return true;
   }
@@ -337,7 +329,7 @@ bool SessionFileReader::FillBuffer() {
   int read_count =
       file_->ReadAtCurrentPos(&(buffer_[available_count_]), to_read);
   if (read_count < 0) {
-    errored_ = true;
+    // TODO(sky): communicate/log an error here.
     return false;
   }
   if (read_count == 0)
