@@ -33,7 +33,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.Animate.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
     expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -432,8 +432,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.CompositingAssignments.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -451,8 +451,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.CompositingCommit.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.CompositingCommit.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -474,8 +474,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.CompositingInputs.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.CompositingInputs.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -591,7 +591,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Image codec inferred during decode.</summary>
 </histogram>
 
-<histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"
+<histogram base="true" name="Blink.DisplayLockIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2021-06-06">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -843,8 +843,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.ForcedStyleAndLayout.UpdateTime" units="microseconds"
-    expires_after="2021-05-23">
+<histogram base="true" name="Blink.ForcedStyleAndLayout.UpdateTime"
+    units="microseconds" expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -861,8 +861,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.HandleInputEvents.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -879,8 +879,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.HitTestDocumentUpdate.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1089,8 +1089,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImplCompositorCommit.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1117,8 +1117,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records if a GestureScrollBegin is for cursor control.</summary>
 </histogram>
 
-<histogram name="Blink.IntersectionObservation.UpdateTime" units="microseconds"
-    expires_after="2021-05-23">
+<histogram base="true" name="Blink.IntersectionObservation.UpdateTime"
+    units="microseconds" expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1136,7 +1136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"
+<histogram base="true" name="Blink.JavascriptIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2021-06-06">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1195,7 +1195,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.Layout.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
     expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1249,7 +1249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"
+<histogram base="true" name="Blink.LazyLoadIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2021-06-06">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1513,7 +1513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.MainFrame.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
     expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1546,7 +1546,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.MediaIntersectionObserver.UpdateTime"
+<histogram base="true" name="Blink.MediaIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2021-06-06">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1700,7 +1700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.Paint.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.Paint.UpdateTime" units="microseconds"
     expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1718,7 +1718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.PrePaint.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
     expires_after="2021-06-27">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -1843,8 +1843,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.ScrollingCoordinator.UpdateTime" units="microseconds"
-    expires_after="M88">
+<histogram base="true" name="Blink.ScrollingCoordinator.UpdateTime"
+    units="microseconds" expires_after="M88">
   <obsolete>
     Merged into Blink.CompositingCommit.UpdateTime in http://crrev.com/815947 in
     M88.
@@ -2030,7 +2030,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.Style.UpdateTime" units="microseconds"
+<histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
     expires_after="2021-05-23">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
@@ -2393,8 +2393,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.WaitForCommit.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+<histogram base="true" name="Blink.WaitForCommit.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
