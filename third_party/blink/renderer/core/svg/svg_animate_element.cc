@@ -425,8 +425,7 @@ bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   return true;
 }
 
-SMILAnimationValue SVGAnimateElement::CreateAnimationValue(
-    bool needs_underlying_value) const {
+SMILAnimationValue SVGAnimateElement::CreateAnimationValue() const {
   DCHECK(targetElement());
   SMILAnimationValue animation_value;
   if (IsAnimatingSVGDom()) {
@@ -441,9 +440,7 @@ SMILAnimationValue SVGAnimateElement::CreateAnimationValue(
 
     // CSS properties animation code-path.
     String base_value =
-        needs_underlying_value
-            ? ComputeCSSPropertyValue(targetElement(), css_property_id_)
-            : g_empty_string;
+        ComputeCSSPropertyValue(targetElement(), css_property_id_);
     animation_value.property_value = CreatePropertyForAnimation(base_value);
   }
   return animation_value;

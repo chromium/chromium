@@ -61,8 +61,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   bool HasValidAnimation() const override;
 
-  SMILAnimationValue CreateAnimationValue(
-      bool needs_underlying_value) const final;
+  SMILAnimationValue CreateAnimationValue() const final;
   void ClearAnimationValue() final;
 
   bool CalculateToAtEndOfDurationValue(

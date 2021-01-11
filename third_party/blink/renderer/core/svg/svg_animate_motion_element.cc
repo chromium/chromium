@@ -153,8 +153,7 @@ static bool ParsePoint(const String& string, FloatPoint& point) {
   });
 }
 
-SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue(
-    bool needs_underlying_value) const {
+SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue() const {
   DCHECK(targetElement());
   DCHECK(TargetCanHaveMotionTransform(*targetElement()));
   return SMILAnimationValue();
