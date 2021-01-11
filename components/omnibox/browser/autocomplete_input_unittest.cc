@@ -384,6 +384,10 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
       {ASCIIToUTF16("example.com"), GURL("https://example.com"), true},
       // Non-URL inputs shouldn't be upgraded.
       {ASCIIToUTF16("example query"), GURL(), false},
+      // IP addresses shouldn't be upgraded.
+      {ASCIIToUTF16("127.0.0.1"), GURL("http://127.0.0.1"), false},
+      // Non-unique hostnames shouldn't be upgraded.
+      {ASCIIToUTF16("site.test"), GURL("http://site.test"), false},
       // Fully typed URLs shouldn't be upgraded.
       {ASCIIToUTF16("http://example.com"), GURL("http://example.com"), false},
       {ASCIIToUTF16("HTTP://EXAMPLE.COM"), GURL("http://example.com"), false},

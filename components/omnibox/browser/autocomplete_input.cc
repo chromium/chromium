@@ -153,7 +153,9 @@ void AutocompleteInput::Init(
   if (should_use_https_as_default_scheme_ &&
       type_ == metrics::OmniboxInputType::URL &&
       scheme_ == base::ASCIIToUTF16(url::kHttpScheme) &&
-      !base::StartsWith(text_, scheme_, base::CompareCase::INSENSITIVE_ASCII)) {
+      !base::StartsWith(text_, scheme_, base::CompareCase::INSENSITIVE_ASCII) &&
+      !url::HostIsIPAddress(base::UTF16ToUTF8(text)) &&
+      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text))) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
     // intranet hosts which we don't to upgrade to HTTPS so we only check the

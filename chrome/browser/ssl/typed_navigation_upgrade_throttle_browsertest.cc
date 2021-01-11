@@ -48,13 +48,22 @@ const char* const kSiteWithSlowHttpsOverHttp =
 const char* const kSiteWithNetError = "https://site-with-net-error.com";
 const char* const kSiteWithNetErrorOverHttp = "http://site-with-net-error.com";
 
+// Site (likely on an intranet) that contains a non-registerable or
+// non-assignable domain name (eg: a gTLD that has not been assigned by IANA)
+// that therefore is unlikely to support HTTPS.
+const char* const kNonUniqueHostname1 = "http://testpage";
+const char* const kNonUniqueHostname2 = "http://site.test";
+
 const char kNetErrorHistogram[] = "Net.ErrorPageCounts";
 
 enum class NavigationExpectation {
   // Test should expect a successful navigation to HTTPS.
   kExpectHttps,
   // Test should expect a fallback navigation to HTTP.
-  kExpectHttp
+  kExpectHttp,
+  // Test should expect a search query navigation. This happens when the user
+  // enters a non-URL query such as "testpage".
+  kExpectSearch
 };
 
 std::string GetURLWithoutScheme(const GURL& url) {
@@ -142,7 +151,10 @@ class TypedNavigationUpgradeThrottleBrowserTest
         params->url_request.url == GURL(kSiteWithGoodHttps) ||
         params->url_request.url == GURL(kSiteWithBadHttpsOverHttp) ||
         params->url_request.url == GURL(kSiteWithSlowHttpsOverHttp) ||
-        params->url_request.url == GURL(kSiteWithNetErrorOverHttp)) {
+        params->url_request.url == GURL(kSiteWithNetErrorOverHttp) ||
+        params->url_request.url == GURL(kNonUniqueHostname1) ||
+        params->url_request.url == GURL(kNonUniqueHostname2) ||
+        params->url_request.url == GURL("http://127.0.0.1")) {
       std::string headers =
           "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
       std::string body = "<html><title>Success</title>Hello world</html>";
@@ -182,43 +194,78 @@ class TypedNavigationUpgradeThrottleBrowserTest
     omnibox()->OnAfterPossibleChange(true);
   }
 
+  // Type |hostname| in the URL bar and hit enter. The navigation shouldn't be
+  // upgraded to HTTPS. Expect a search query to be issued if
+  // |expect_search_query| is true. Otherwise, the final URL will be an HTTP
+  // URL.
+  void TypeUrlAndExceptNoUpgrade(const std::string& hostname,
+                                 bool expect_search_query) {
+    base::HistogramTester histograms;
+    TypeUrlAndCheckNavigation(hostname, histograms,
+                              expect_search_query
+                                  ? NavigationExpectation::kExpectSearch
+                                  : NavigationExpectation::kExpectHttp,
+                              1);
+    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                                0);
+  }
+
+  // Type |hostname| in the URL bar and hit enter. The navigation should
+  // initially be upgraded to HTTPS but then fall back to HTTP because the HTTPS
+  // URL wasn't available (e.g. had an SSL or net error).
+  void TypeUrlAndExpectHttpFallback(const std::string& hostname,
+                                    const base::HistogramTester& histograms) {
+    // There should be two navigations: One for the initial HTTPS
+    // navigation (which will be cancelled because of the timeout, or SSL or net
+    // errors) and one for the fallback HTTP navigation (which will succeed).
+    TypeUrlAndCheckNavigation(hostname, histograms,
+                              NavigationExpectation::kExpectHttp, 2);
+  }
+
+  // Type |hostname| in the URL bar and hit enter. The navigation should
+  // be upgraded to HTTPS and the HTTPS URL should successfully load.
+  void TypeUrlAndExpectHttps(const std::string& hostname,
+                             const base::HistogramTester& histograms) {
+    TypeUrlAndCheckNavigation(hostname, histograms,
+                              NavigationExpectation::kExpectHttps, 1);
+  }
+
   void TypeUrlAndCheckNavigation(const std::string& hostname,
                                  const base::HistogramTester& histograms,
-                                 NavigationExpectation expectation) {
+                                 NavigationExpectation expectation,
+                                 size_t num_expected_navigations) {
     const GURL http_url(std::string("http://") + hostname);
     const GURL https_url(std::string("https://") + hostname);
     SetOmniboxText(hostname);
+    PressEnterAndWaitForNavigations(num_expected_navigations);
 
-    // Wait for navigations.
-    // - If the expectation is to successfully load the HTTPS URL, there should
-    // be a single navigation.
-    // - Otherwise, there should be two navigations: One for the initial HTTPS
-    // navigation (which will be cancelled because of the timeout, or SSL or net
-    // errors) and one for the fallback HTTP navigation (which will succeed).
-    PressEnterAndWaitForNavigations(
-        expectation == NavigationExpectation::kExpectHttps ? 1 : 2);
-
+    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    const GURL expected_url = expectation == NavigationExpectation::kExpectHttps
-                                  ? https_url
-                                  : http_url;
-    EXPECT_EQ(expected_url, contents->GetLastCommittedURL());
+    if (expectation != NavigationExpectation::kExpectSearch) {
+      const GURL expected_url =
+          expectation == NavigationExpectation::kExpectHttps ? https_url
+                                                             : http_url;
+      EXPECT_EQ(expected_url, contents->GetLastCommittedURL());
+
+      // Should have either the HTTP or the HTTPS URL in history, but not both.
+      if (expectation == NavigationExpectation::kExpectHttp) {
+        EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
+        EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+      } else {
+        EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
+        EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+      }
+    } else {
+      // The user entered a search query.
+      EXPECT_EQ("www.google.com", contents->GetLastCommittedURL().host());
+      EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+    }
 
     // Should never hit an error page.
     histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                 0);
     histograms.ExpectTotalCount(kNetErrorHistogram, 0);
-
-    // Should have either the HTTP or the HTTPS URL in history, but not both.
-    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-    if (expectation == NavigationExpectation::kExpectHttp) {
-      EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
-      EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
-    } else {
-      EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
-      EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
-    }
   }
 
   void PressEnterAndWaitForNavigations(size_t num_navigations) {
@@ -328,19 +375,48 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
     return;
   }
   base::HistogramTester histograms;
-  const GURL url(kSiteWithHttp);
+  const GURL http_url(kSiteWithHttp);
 
   // Type "test-site.com".
-  SetOmniboxText(GetURLWithoutScheme(url));
+  SetOmniboxText(GetURLWithoutScheme(http_url));
   PressEnterAndWaitForNavigations(1);
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(url, contents->GetLastCommittedURL());
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               0);
+}
+
+// Test the case when the user types a search keyword. The keyword may or may
+// not be a non-unique hostname. The navigation should always result in a
+// search and we should never upgrade it to https.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       SearchQuery_ShouldNotUpgrade) {
+  TypeUrlAndExceptNoUpgrade("testpage", /*expect_search_query=*/true);
+}
+
+// Same as SearchQuery_ShouldNotUpgrade but with two words. This is a definite
+// search query, and can never be a hostname.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       SearchQuery_TwoWords_ShouldNotUpgrade) {
+  TypeUrlAndExceptNoUpgrade("test page", /*expect_search_query=*/true);
+}
+
+// Test the case when the user types a non-unique hostname. We shouldn't upgrade
+// it to https.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade) {
+  TypeUrlAndExceptNoUpgrade("site.test", /*expect_search_query=*/false);
+}
+
+// Test the case when the user types an IP address. We shouldn't upgrade it to
+// https.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       IPAddressTypedWithoutScheme_ShouldNotUpgrade) {
+  TypeUrlAndExceptNoUpgrade("127.0.0.1", /*expect_search_query=*/false);
 }
 
 // If the feature is enabled, typing a URL in the omnibox without a scheme
@@ -356,8 +432,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Type "site-with-good-https.com".
   const GURL url(kSiteWithGoodHttps);
-  TypeUrlAndCheckNavigation(url.host(), histograms,
-                            NavigationExpectation::kExpectHttps);
+  TypeUrlAndExpectHttps(url.host(), histograms);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -375,8 +450,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // without going through the upgrade.
   // Type "site-with-good-https.com".
   SetOmniboxText(url.host());
-  TypeUrlAndCheckNavigation(url.host(), histograms,
-                            NavigationExpectation::kExpectHttps);
+  TypeUrlAndExpectHttps(url.host(), histograms);
 
   // Since the throttle wasn't involved in the second navigation, histogram
   // values shouldn't change.
@@ -407,8 +481,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Type "site-with-bad-https.com".
   const GURL url(kSiteWithBadHttps);
-  TypeUrlAndCheckNavigation(url.host(), histograms,
-                            NavigationExpectation::kExpectHttp);
+  TypeUrlAndExpectHttpFallback(url.host(), histograms);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -436,10 +509,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   }
   base::HistogramTester histograms;
   // Type "site-with-net-error.com".
-  const GURL https_url(kSiteWithNetError);
   const GURL http_url(kSiteWithNetErrorOverHttp);
-  TypeUrlAndCheckNavigation(http_url.host(), histograms,
-                            NavigationExpectation::kExpectHttp);
+  TypeUrlAndExpectHttpFallback(http_url.host(), histograms);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -452,10 +523,6 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
-
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-  EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
-  EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
 
   // TODO(meacer): Try again and check that the histogram counts doubled. Doing
   // that currently fails on lacros because this time the navigation never gets
@@ -488,8 +555,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
 
   // Type "site-with-slow-https.com".
   const GURL url(kSiteWithSlowHttps);
-  TypeUrlAndCheckNavigation(url.host(), histograms,
-                            NavigationExpectation::kExpectHttp);
+  TypeUrlAndExpectHttpFallback(url.host(), histograms);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
