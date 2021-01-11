@@ -31,6 +31,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
 
 namespace {
@@ -244,7 +246,8 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
 
 std::unique_ptr<SearchPrefetchURLLoader>
 SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
-    const GURL& navigation_url) {
+    const network::ResourceRequest& tentative_resource_request) {
+  const GURL& navigation_url = tentative_resource_request.url;
   SearchPrefetchServingReasonRecorder recorder;
 
   auto* template_url_service =
@@ -307,6 +310,34 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 
   if (iter->second->current_status() == SearchPrefetchStatus::kRequestFailed) {
     recorder.reason_ = SearchPrefetchServingReason::kRequestFailed;
+    return nullptr;
+  }
+
+  // POST requests are not supported since they are non-idempotent. Only support
+  // GET.
+  if (tentative_resource_request.method !=
+      net::HttpRequestHeaders::kGetMethod) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    return nullptr;
+  }
+
+  // If the client requests disabling, bypassing, or validating cache, don't
+  // return a prefetch.
+  // These are used mostly for reloads and dev tools.
+  if (tentative_resource_request.load_flags & net::LOAD_BYPASS_CACHE ||
+      tentative_resource_request.load_flags & net::LOAD_DISABLE_CACHE ||
+      tentative_resource_request.load_flags & net::LOAD_VALIDATE_CACHE) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    return nullptr;
+  }
+
+  // Link clicks should not be served with a prefetch due to results page nth
+  // page matching the URL pattern of the DSE.
+  if (ui::PageTransitionCoreTypeIs(
+          static_cast<ui::PageTransition>(
+              tentative_resource_request.transition_type),
+          ui::PAGE_TRANSITION_LINK)) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
     return nullptr;
   }
 

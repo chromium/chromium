@@ -26,6 +26,10 @@ class PrefRegistrySimple;
 class Profile;
 class SearchPrefetchURLLoader;
 
+namespace network {
+struct ResourceRequest;
+}
+
 // Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchEligibilityReason {
   // The prefetch was started.
@@ -70,7 +74,9 @@ enum class SearchPrefetchServingReason {
   kRequestFailed = 7,
   // The request wasn't served unexpectantly.
   kNotServedOtherReason = 8,
-  kMaxValue = kNotServedOtherReason,
+  // The navigation was a POST request, reload or link navigation.
+  kPostReloadOrLink = 9,
+  kMaxValue = kPostReloadOrLink,
 };
 
 class SearchPrefetchService : public KeyedService,
@@ -107,7 +113,7 @@ class SearchPrefetchService : public KeyedService,
 
   // Takes the response from this object if |url| matches a prefetched URL.
   std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromMemoryCache(
-      const GURL& navigation_url);
+      const network::ResourceRequest& tentative_resource_request);
 
   // Creates a cache loader to serve a cache only response with fallback to
   // network fetch.

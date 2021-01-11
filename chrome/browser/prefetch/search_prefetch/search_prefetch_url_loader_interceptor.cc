@@ -57,8 +57,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   if (!service)
     return nullptr;
 
-  auto loader = service->TakePrefetchResponseFromMemoryCache(
-      tentative_resource_request.url);
+  auto loader =
+      service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (loader)
     return loader;
   if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
