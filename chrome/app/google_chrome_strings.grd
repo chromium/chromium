@@ -1217,6 +1217,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
           Ask when Chrome opens
         </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
+          Customize your Chrome profile
+        </message>
       </if>
 
       <!-- Rosetta installation for protected media -->

@@ -758,9 +758,6 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
       Not now
     </message>
-    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
-      Customize your profile
-    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL" desc="Accessibility label for edit avatar button when the pencil icon is focused that is not rendered.">
       Customize avatar
     </message>
@@ -780,7 +777,7 @@
       Cancel
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME" desc="Name of the input to configure the profile name in the profile customization window.">
-      Example: Work, Personal, Kids, or a name
+      Add a name or a label like Work, Personal, or Kids
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT" desc="Text of a box creating a desktop shortcut for the profile.">
       Create a desktop shortcut
