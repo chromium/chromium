@@ -17,6 +17,22 @@ extern NSString* const kLastHTTPURLOpenTime;
 // past expired logs that have happened too far in the past.
 void LogLikelyInterestedDefaultBrowserUserActivity();
 
+// Logs the timestamp of a user tap on the "Remind Me Later" button in the
+// Fullscreen Promo.
+void LogRemindMeLaterPromoActionInteraction();
+
+// Returns true if the user has tapped on the "Remind Me Later" button and the
+// delay time threshold has been met.
+bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
+
+// Returns true if the user is in the group that will be shown the Remind Me
+// Later button in the fullscreen promo.
+bool IsInRemindMeLaterGroup();
+
+// Returns true if the user is in the group that will be shown a modified
+// description and "Learn More" text.
+bool IsInModifiedStringsGroup();
+
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
 bool HasUserInteractedWithFullscreenPromoBefore();

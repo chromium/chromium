@@ -784,12 +784,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // the categorization of potentially interested users or if the user is
     // signed in. Do not show if it is determined that Chrome is already the
     // default browser or if the user has already seen the promo UI.
+    // If the user was in the experiment group that showed the Remind Me Later
+    // button and tapped on it, then show the promo again if now is the right
+    // time.
     BOOL isEligibleUser = IsLikelyInterestedDefaultBrowserUser() ||
                           ios::GetChromeBrowserProvider()
                               ->GetChromeIdentityService()
                               ->HasIdentities();
-    if (!IsChromeLikelyDefaultBrowser() &&
-        !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) {
+    if ((!IsChromeLikelyDefaultBrowser() &&
+         !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) ||
+        ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
       self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
     }
   }

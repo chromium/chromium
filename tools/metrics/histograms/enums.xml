@@ -39351,6 +39351,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="IOSDefaultBrowserFullscreenPromoAction">
   <int value="0" label="Action Button"/>
   <int value="1" label="Cancel"/>
+  <int value="2" label="Remind Me Later"/>
 </enum>
 
 <enum name="IOSDeviceThermalState">
