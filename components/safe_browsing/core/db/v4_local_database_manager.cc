@@ -35,6 +35,13 @@ using CommandLineSwitchAndThreatType = std::pair<std::string, ThreatType>;
 // The expiration time of the full hash stored in the artificial database.
 const int64_t kFullHashExpiryTimeInMinutes = 60;
 
+// The number of bytes in a full hash entry.
+const int64_t kBytesPerFullHashEntry = 32;
+
+// The minimum number of entries in the allowlist. If the actual size is
+// smaller than this number, the allowlist is considered as unavailable.
+const int kHighConfidenceAllowlistMinimumEntryCount = 100;
+
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
 
@@ -418,14 +425,19 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllStoresAvailable",
                         all_stores_available);
-  if (!enabled_ || !CanCheckUrl(url) ||
-      (!all_stores_available &&
-       artificially_marked_store_and_hash_prefixes_.empty())) {
+  bool is_artificial_prefix_empty =
+      artificially_marked_store_and_hash_prefixes_.empty();
+  bool is_allowlist_too_small =
+      IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
+                      kHighConfidenceAllowlistMinimumEntryCount);
+  if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
+      !CanCheckUrl(url) ||
+      (!all_stores_available && is_artificial_prefix_empty)) {
     // NOTE(vakh): If Safe Browsing isn't enabled yet, or if the URL isn't a
-    // navigation URL, or if the allowlist isn't ready yet, return MATCH.
-    // The full URL check won't be performed, but hash-based check will still
-    // be done. If any artificial matches are present, consider the allowlist
-    // as ready.
+    // navigation URL, or if the allowlist isn't ready yet, or if the allowlist
+    // is too small, return MATCH. The full URL check won't be performed, but
+    // hash-based check will still be done. If any artificial matches are
+    // present, consider the allowlist as ready.
     return AsyncMatch::MATCH;
   }
 
@@ -1028,6 +1040,20 @@ bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
       "SafeBrowsing.V4LocalDatabaseManager.AreAllStoresAvailableNow", result,
       StoreAvailabilityResult::COUNT);
   return (result == StoreAvailabilityResult::AVAILABLE);
+}
+
+int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
+                                                   int bytes_per_entry) const {
+  if (!enabled_ || !v4_database_) {
+    return 0;
+  }
+  return v4_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
+}
+
+bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
+                                             int bytes_per_entry,
+                                             int min_entry_count) const {
+  return GetStoreEntryCount(store, bytes_per_entry) < min_entry_count;
 }
 
 bool V4LocalDatabaseManager::AreAnyStoresAvailableNow(

@@ -297,6 +297,15 @@ bool V4Database::IsStoreAvailable(const ListIdentifier& identifier) const {
          store_pair->second->HasValidData();
 }
 
+int64_t V4Database::GetStoreSizeInBytes(
+    const ListIdentifier& identifier) const {
+  const auto& store_pair = store_map_->find(identifier);
+  if (store_pair == store_map_->end()) {
+    return 0;
+  }
+  return store_pair->second->file_size();
+}
+
 void V4Database::RecordFileSizeHistograms() {
   int64_t db_size = 0;
   for (const auto& store_map_iter : *store_map_) {

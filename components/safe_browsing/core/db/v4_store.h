@@ -193,6 +193,8 @@ class V4Store {
 
   const base::FilePath& store_path() const { return store_path_; }
 
+  int64_t file_size() const { return file_size_; }
+
   void ApplyUpdate(std::unique_ptr<ListUpdateResponse> response,
                    const scoped_refptr<base::SingleThreadTaskRunner>& runner,
                    UpdatedStoreReadyCallback callback);

@@ -329,6 +329,16 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // these stores.
   bool AreAllStoresAvailableNow(const StoresToCheck& stores_to_check) const;
 
+  // Return the number of entries in the store. If the database isn't enabled or
+  // the database is not found, return 0.
+  int64_t GetStoreEntryCount(const ListIdentifier& store,
+                             int bytes_per_entry) const;
+
+  // Return whether the size of the store is smaller than expected.
+  bool IsStoreTooSmall(const ListIdentifier& store,
+                       int bytes_per_entry,
+                       int min_entry_count) const;
+
   // Return true if we're enabled and have loaded real data for any of
   // these stores.
   bool AreAnyStoresAvailableNow(const StoresToCheck& stores_to_check) const;

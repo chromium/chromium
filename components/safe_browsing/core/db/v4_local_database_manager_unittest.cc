@@ -44,6 +44,8 @@ FullHash HashForUrl(const GURL& url) {
   return full_hashes[0];
 }
 
+const int kDefaultStoreFileSizeInBytes = 320000;
+
 // Use this if you want GetFullHashes() to always return prescribed results.
 class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
  public:
@@ -108,7 +110,8 @@ class FakeV4Database : public V4Database {
       std::unique_ptr<StoreMap> store_map,
       const StoreAndHashPrefixes& store_and_hash_prefixes,
       NewDatabaseReadyCallback new_db_callback,
-      bool stores_available) {
+      bool stores_available,
+      int64_t store_file_size) {
     // Mimics V4Database::Create
     const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner =
         base::ThreadTaskRunnerHandle::Get();
@@ -117,7 +120,7 @@ class FakeV4Database : public V4Database {
         base::BindOnce(&FakeV4Database::CreateOnTaskRunner, db_task_runner,
                        std::move(store_map), store_and_hash_prefixes,
                        callback_task_runner, std::move(new_db_callback),
-                       stores_available));
+                       stores_available, store_file_size));
   }
 
   // V4Database implementation
@@ -134,6 +137,11 @@ class FakeV4Database : public V4Database {
         store_and_hash_prefixes->push_back(stored_sahp);
       }
     }
+  }
+
+  // V4Database implementation
+  int64_t GetStoreSizeInBytes(const ListIdentifier& store) const override {
+    return store_file_size_;
   }
 
   bool AreAllStoresAvailable(
@@ -153,11 +161,12 @@ class FakeV4Database : public V4Database {
       const StoreAndHashPrefixes& store_and_hash_prefixes,
       const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner,
       NewDatabaseReadyCallback new_db_callback,
-      bool stores_available) {
+      bool stores_available,
+      int64_t store_file_size) {
     // Mimics the semantics of V4Database::CreateOnTaskRunner
-    std::unique_ptr<FakeV4Database> fake_v4_database(
-        new FakeV4Database(db_task_runner, std::move(store_map),
-                           store_and_hash_prefixes, stores_available));
+    std::unique_ptr<FakeV4Database> fake_v4_database(new FakeV4Database(
+        db_task_runner, std::move(store_map), store_and_hash_prefixes,
+        stores_available, store_file_size));
     callback_task_runner->PostTask(FROM_HERE,
                                    base::BindOnce(std::move(new_db_callback),
                                                   std::move(fake_v4_database)));
@@ -166,13 +175,16 @@ class FakeV4Database : public V4Database {
   FakeV4Database(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
                  std::unique_ptr<StoreMap> store_map,
                  const StoreAndHashPrefixes& store_and_hash_prefixes,
-                 bool stores_available)
+                 bool stores_available,
+                 int64_t store_file_size)
       : V4Database(db_task_runner, std::move(store_map)),
         store_and_hash_prefixes_(store_and_hash_prefixes),
-        stores_available_(stores_available) {}
+        stores_available_(stores_available),
+        store_file_size_(store_file_size) {}
 
   const StoreAndHashPrefixes store_and_hash_prefixes_;
   const bool stores_available_;
+  int64_t store_file_size_;
 };
 
 // TODO(nparker): This might be simpler with a mock and EXPECT calls.
@@ -371,8 +383,10 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_->PopulateArtificialDatabase();
   }
 
-  void ReplaceV4Database(const StoreAndHashPrefixes& store_and_hash_prefixes,
-                         bool stores_available = false) {
+  void ReplaceV4Database(
+      const StoreAndHashPrefixes& store_and_hash_prefixes,
+      bool stores_available = false,
+      int64_t store_file_size = kDefaultStoreFileSizeInBytes) {
     // Disable the V4LocalDatabaseManager first so that if the callback to
     // verify checksum has been scheduled, then it doesn't do anything when it
     // is called back.
@@ -387,9 +401,9 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     NewDatabaseReadyCallback db_ready_callback =
         base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForChecks,
                        base::Unretained(v4_local_database_manager_.get()));
-    FakeV4Database::Create(task_runner_, std::make_unique<StoreMap>(),
-                           store_and_hash_prefixes,
-                           std::move(db_ready_callback), stores_available);
+    FakeV4Database::Create(
+        task_runner_, std::make_unique<StoreMap>(), store_and_hash_prefixes,
+        std::move(db_ready_callback), stores_available, store_file_size);
     WaitForTasksOnTaskRunner();
   }
 
@@ -664,7 +678,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 10000);
 
   // Setup the allowlist client to verify the callback.
   TestAllowlistClient client(
@@ -706,7 +721,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback.
   TestAllowlistClient client(
@@ -745,7 +761,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
@@ -777,7 +794,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   // Add a full hash that won't match the URL we check.
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
@@ -804,7 +822,39 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
 
   // Setup local database as unavailable.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false,
+                    /* store_file_size= */ 100000);
+
+  // Setup the allowlist client to verify the callback isn't called.
+  TestAllowlistClient client(
+      /* match_expected= */ false,
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
+
+  const GURL url_check("https://example.com/safe");
+  EXPECT_EQ(AsyncMatch::MATCH,
+            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+                url_check, &client));
+
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(client.callback_called());
+}
+
+// When allowlist is available but the size is too small, all URLS should be
+// considered MATCH.
+TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({safe_browsing::kRealTimeUrlLookupEnabled}, {});
+
+  // Setup to receive full-hash misses. We won't make URL requests.
+  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+
+  // Setup the size of the allowlist to be smaller than the threshold. (10
+  // entries)
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 32 * 10);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
