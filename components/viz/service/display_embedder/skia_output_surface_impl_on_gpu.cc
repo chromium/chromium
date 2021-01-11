@@ -769,9 +769,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   bool is_downscale_or_identity_in_both_dimensions =
       request->scale_to().x() <= request->scale_from().x() &&
       request->scale_to().y() <= request->scale_from().y();
-  SkFilterQuality filter_quality = is_downscale_or_identity_in_both_dimensions
-                                       ? kMedium_SkFilterQuality
-                                       : kHigh_SkFilterQuality;
+  SkSurface::RescaleMode rescale_mode =
+      is_downscale_or_identity_in_both_dimensions
+          ? SkSurface::RescaleMode::kRepeatedLinear
+          : SkSurface::RescaleMode::kRepeatedCubic;
 
   // Compute |source_selection| as a workaround to support |result_selection|
   // with Skia readback. |result_selection| is a clip rect specified in the
@@ -808,7 +809,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     surface->asyncRescaleAndReadPixelsYUV420(
         kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
         {geometry.result_selection.width(), geometry.result_selection.height()},
-        SkSurface::RescaleGamma::kSrc, filter_quality, &OnYUVReadbackDone,
+        SkSurface::RescaleGamma::kSrc, rescale_mode, &OnYUVReadbackDone,
         context.release());
   } else if (request->result_format() ==
              CopyOutputRequest::ResultFormat::RGBA_BITMAP) {
@@ -834,7 +835,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     // ReadbackCompleted is called immediately.
     num_readbacks_pending_++;
     surface->asyncRescaleAndReadPixels(
-        dst_info, src_rect, SkSurface::RescaleGamma::kSrc, filter_quality,
+        dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
         &OnRGBAReadbackDone, context.release());
   } else if (request->result_format() ==
              CopyOutputRequest::ResultFormat::RGBA_TEXTURE) {
@@ -878,7 +879,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
 
     SkPaint paint;
-    paint.setFilterQuality(filter_quality);
+    paint.setFilterQuality(is_downscale_or_identity_in_both_dimensions
+                               ? kMedium_SkFilterQuality
+                               : kHigh_SkFilterQuality);
     dest_canvas->clipRect(
         SkRect::MakeXYWH(0, 0, src_rect.width(), src_rect.height()));
     surface->draw(dest_canvas, -src_rect.x(), -src_rect.y(), &paint);

@@ -169,7 +169,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     sk_image->asyncRescaleAndReadPixelsYUV420(
         kRec709_SkYUVColorSpace, sk_color_space, src_rect,
         {source->width(), source->height()}, SkImage::RescaleGamma::kSrc,
-        kHigh_SkFilterQuality, &OnYUVReadbackDone, &result);
+        SkImage::RescaleMode::kRepeatedCubic, &OnYUVReadbackDone, &result);
     GrDirectContext* gr_context =
         source->BitmapImage()->ContextProvider()->GetGrContext();
     DCHECK(gr_context);
