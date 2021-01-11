@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "ui/compositor/compositor_export.h"
 
@@ -37,7 +38,7 @@ class COMPOSITOR_EXPORT AnimationThroughputReporter {
  public:
   using ReportCallback = base::RepeatingCallback<void(
       const cc::FrameSequenceMetrics::CustomReportData&)>;
-  AnimationThroughputReporter(LayerAnimator* animator,
+  AnimationThroughputReporter(scoped_refptr<LayerAnimator> animator,
                               ReportCallback report_callback);
   AnimationThroughputReporter(const AnimationThroughputReporter&) = delete;
   AnimationThroughputReporter& operator=(const AnimationThroughputReporter&) =
@@ -57,7 +58,7 @@ class COMPOSITOR_EXPORT AnimationThroughputReporter {
   // List here to access LayerAnimation's private |anmation_| member.
   static bool IsAnimatorAttachedToTimeline(LayerAnimator* animator);
 
-  LayerAnimator* const animator_;
+  scoped_refptr<LayerAnimator> animator_;
   std::unique_ptr<AnimationTracker> animation_tracker_;
 };
 
