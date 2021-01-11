@@ -58,15 +58,13 @@ different platforms.
 A `symbol_level = 0` `is_debug = false` `use_lld = true` build produces
 a mostly-working Chromium.app, but there are open issues and missing features:
 
-- LLD-built Chromium.app has crashy renderer processes
-  ([bug](https://crbug.com/1162712))
 - LLD does not yet have any ARM support
   - relocations are missing
     ([in-progress patch](https://reviews.llvm.org/D88629))
   - ad-hoc code signing is missing
-- LLD likely produces bad debug info, and LLD-linked binaries likely don't
-  yet work in a debugger
-- LLD-linked base\_unittests fails some unwind-related tests
+- LLD produces bad debug info, and LLD-linked binaries don't yet show C++
+  source code in a debugger ([bug](https://llvm.org/PR48714)]
+- LLD doesn't produce unwind info, so code relying on exceptions doesn't work
   ([bug](https://llvm.org/PR48389))
 - We haven't tried actually running any other binaries, so chances are many
   other tests fail
