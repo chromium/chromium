@@ -85,10 +85,9 @@ NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareLocalDeviceDataManagerImpl::
                                       OnDownloadDeviceDataRequested,
-                                  base::Unretained(this)))) {
-  DCHECK(!default_device_name.empty());
-  if (GetDeviceName().empty())
-    SetDeviceName(default_device_name);
+                                  base::Unretained(this)))),
+      default_device_name_(default_device_name) {
+  DCHECK(!default_device_name_.empty());
 }
 
 NearbyShareLocalDeviceDataManagerImpl::
@@ -109,7 +108,9 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetId() {
 }
 
 std::string NearbyShareLocalDeviceDataManagerImpl::GetDeviceName() const {
-  return pref_service_->GetString(prefs::kNearbySharingDeviceNamePrefName);
+  std::string device_name =
+      pref_service_->GetString(prefs::kNearbySharingDeviceNamePrefName);
+  return device_name.empty() ? default_device_name_ : device_name;
 }
 
 base::Optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetFullName()

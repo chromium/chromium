@@ -89,6 +89,7 @@ class NearbyShareLocalDeviceDataManagerImpl
   PrefService* pref_service_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<NearbyShareScheduler> download_device_data_scheduler_;
+  std::string default_device_name_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_IMPL_H_
