@@ -275,6 +275,14 @@ public class ChipView extends LinearLayout {
     }
 
     /**
+     * Returns the {@link RectProvider} that contains the start icon for the chip view.
+     * @return A {@link RectProvider}
+     */
+    public RectProvider getStartIconViewRect() {
+        return new ViewRectProvider(mStartIcon);
+    }
+
+    /**
      * Sets the correct tinting on the Chip's image view.
      * @param tintWithTextColor If true then the image view will be tinted with the primary text
      *      color. If not, the tint will be cleared.

@@ -362,6 +362,33 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
+    public void testDismissesPaymentOfferEducationBubbleOnFilling() {
+        String itemTag = "Cashback linked";
+        AutofillBarItem itemWithIPH = new AutofillBarItem(
+                new AutofillSuggestion("Johnathan", "Smith", itemTag, R.drawable.ic_offer_tag_green,
+                        false, 70000, false, false, false),
+                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
+
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(VISIBLE, true);
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createTabs()});
+        });
+
+        onViewWaiting(withText("Johnathan"));
+        waitForHelpBubble(withText(itemTag));
+        onView(withText("Johnathan")).perform(click());
+
+        assertThat(tracker.wasDismissed(), is(true));
+        assertThat(tracker.getLastEmittedEvent(),
+                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
+    }
+
+    @Test
+    @MediumTest
     public void testNotifiesAboutPartiallyVisibleSuggestions() throws InterruptedException {
         // Ensure that the callback isn't triggered while all items are visible:
         AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);

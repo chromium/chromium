@@ -57,14 +57,26 @@ class KeyboardAccessoryModernViewBinder {
 
         @Override
         protected void bind(AutofillBarItem item, ChipView chipView) {
+            int iconId = item.getSuggestion().getIconId();
             if (item.getFeatureForIPH() != null) {
-                showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH);
+                if (item.getFeatureForIPH().equals(
+                            FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
+                        && iconId != 0) {
+                    if (iconId != 0) {
+                        showHelpBubble(item.getFeatureForIPH(), chipView.getStartIconViewRect(),
+                                mRootViewForIPH, item.getSuggestion().getItemTag());
+                    } else {
+                        showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH,
+                                item.getSuggestion().getItemTag());
+                    }
+                } else {
+                    showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH, null);
+                }
             }
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
             chipView.getSecondaryTextView().setVisibility(
                     item.getSuggestion().getSublabel().isEmpty() ? View.GONE : View.VISIBLE);
-            int iconId = item.getSuggestion().getIconId();
             chipView.setIcon(iconId != 0 ? iconId : ChipView.INVALID_ICON_ID, false);
             KeyboardAccessoryData.Action action = item.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
