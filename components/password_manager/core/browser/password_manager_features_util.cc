@@ -327,9 +327,17 @@ PasswordForm::Store GetDefaultPasswordStore(
           .GetDefaultStore();
   // If none of the early-outs above triggered, then we *can* save to the
   // account store in principle (though the user might not have opted in to that
-  // yet). In this case, default to the account store.
-  if (default_store == PasswordForm::Store::kNotSet)
-    return PasswordForm::Store::kAccountStore;
+  // yet).
+  if (default_store == PasswordForm::Store::kNotSet) {
+    // If the user hasn't made a choice about the default store yet, retrieve it
+    // from a feature param.
+    bool save_to_profile_store = base::GetFieldTrialParamByFeatureAsBool(
+        features::kEnablePasswordsAccountStorage,
+        features::kSaveToProfileStoreByDefault,
+        features::kSaveToProfileStoreByDefaultDefaultValue);
+    return save_to_profile_store ? PasswordForm::Store::kProfileStore
+                                 : PasswordForm::Store::kAccountStore;
+  }
   return default_store;
 }
 

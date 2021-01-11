@@ -57,9 +57,11 @@ extern const char
     kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[];
 extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 
-// |kEnablePasswordAccountStorage| variations.
+// |kEnablePasswordsAccountStorage| variations.
 extern const char kMaxMoveToAccountOffersForNonOptedInUser[];
 extern const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue;
+extern const char kSaveToProfileStoreByDefault[];
+extern const bool kSaveToProfileStoreByDefaultDefaultValue;
 
 }  // namespace features
 

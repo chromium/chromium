@@ -2497,6 +2497,16 @@ constexpr FeatureEntry::FeatureVariation
          kPlatformProvidedTrustTokenIssuance,
          base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
+const FeatureEntry::FeatureParam kPasswordsAccountStorage_ProfileStore[] = {
+    {password_manager::features::kSaveToProfileStoreByDefault, "true"},
+};
+
+const FeatureEntry::FeatureVariation kPasswordsAccountStorageVariations[] = {
+    {"(save to profile store by default)",
+     kPasswordsAccountStorage_ProfileStore,
+     base::size(kPasswordsAccountStorage_ProfileStore), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5996,8 +6006,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePasswordsAccountStorageName,
      flag_descriptions::kEnablePasswordsAccountStorageDescription,
      kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEnablePasswordsAccountStorage)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kEnablePasswordsAccountStorage,
+         kPasswordsAccountStorageVariations,
+         "ButterForPasswords")},
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)

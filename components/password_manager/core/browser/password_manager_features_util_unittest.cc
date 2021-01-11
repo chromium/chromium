@@ -258,6 +258,39 @@ TEST(PasswordFeatureManagerUtil, AccountStoragePerAccountSettings) {
             PasswordForm::Store::kProfileStore);
 }
 
+TEST(PasswordFeatureManagerUtil, SaveToProfileStoreByDefaultParam) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kEnablePasswordsAccountStorage,
+      {{features::kSaveToProfileStoreByDefault, "true"}});
+
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterDictionaryPref(
+      prefs::kAccountStoragePerAccountSettings);
+
+  CoreAccountInfo account;
+  account.email = "name@account.com";
+  account.gaia = "name";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  // SyncService is running in transport mode.
+  syncer::TestSyncService sync_service;
+  sync_service.SetAuthenticatedAccountInfo(account);
+  sync_service.SetIsAuthenticatedAccountPrimary(false);
+  sync_service.SetDisableReasons({});
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_FALSE(sync_service.IsSyncFeatureEnabled());
+
+  // By default, the user is not opted in. Since the
+  // |kSaveToProfileStoreByDefault| parameter is set, the default store should
+  // be the *profile* one. The opt-in for the account store should still show
+  // up, though.
+  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
+  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
+            PasswordForm::Store::kProfileStore);
+}
+
 TEST(PasswordFeatureManagerUtil, AccountStorageKeepSettingsOnlyForUsers) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
