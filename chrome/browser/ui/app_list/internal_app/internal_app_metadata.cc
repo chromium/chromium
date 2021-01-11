@@ -69,24 +69,7 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
             /*searchable=*/false,
             /*show_in_launcher=*/false, apps::BuiltInAppName::kContinueReading,
             /*searchable_string_resource_id=*/0}});
-
-  static base::NoDestructor<std::vector<InternalApp>> internal_app_list;
-  internal_app_list->clear();
-  internal_app_list->insert(internal_app_list->begin(),
-                            internal_app_list_static->begin(),
-                            internal_app_list_static->end());
-
-  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
-    internal_app_list->push_back(
-        {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,
-         IDR_SETTINGS_LOGO_192,
-         /*recommendable=*/true,
-         /*searchable=*/true,
-         /*show_in_launcher=*/true, apps::BuiltInAppName::kSettings,
-         /*searchable_string_resource_id=*/0});
-  }
-
-  return *internal_app_list;
+  return *internal_app_list_static;
 }
 
 }  // namespace

@@ -18,10 +18,13 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
@@ -277,6 +280,22 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
   KioskSessionInitializedWaiter().Wait();
 
   ExpectKeyboardConfig();
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
+  SetOnline(true);
+  PrepareAppLaunch();
+  LaunchApp();
+  KioskSessionInitializedWaiter().Wait();
+
+  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+
+  settings_manager->ShowOSSettings(
+      profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+
+  Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
+  ASSERT_TRUE(settings_browser);
 }
 
 }  // namespace chromeos

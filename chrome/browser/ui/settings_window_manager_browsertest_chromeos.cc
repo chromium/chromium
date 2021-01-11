@@ -187,17 +187,3 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   chrome::ShowSettingsSubPage(browser(), chrome::kAutofillSubPage);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
-
-IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, KioskMode) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kForceAppMode);
-
-  // Open settings window.
-  settings_manager_->ShowOSSettings(browser()->profile());
-  Browser* settings_browser =
-      settings_manager_->FindBrowserForProfile(browser()->profile());
-  ASSERT_TRUE(settings_browser);
-
-  // In kiosk mode, browser should be created, but it should not be a system web
-  // app.
-  EXPECT_EQ(settings_browser->app_controller(), nullptr);
-}
