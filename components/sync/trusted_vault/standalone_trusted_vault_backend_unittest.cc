@@ -42,14 +42,6 @@ MATCHER_P(KeyMaterialEq, expected, "") {
   return key_material_as_bytes == expected;
 }
 
-// TODO(crbug.com/1102340): leave only Optional* version of this matcher once
-// TrustedVaultConnection::DownloadKeys() accept optional key.
-MATCHER_P2(TrustedVaultKeyAndVersionEq, expected_key, expected_version, "") {
-  const TrustedVaultKeyAndVersion& key_and_version = arg;
-  return key_and_version.key == expected_key &&
-         key_and_version.version == expected_version;
-}
-
 MATCHER_P2(OptionalTrustedVaultKeyAndVersionEq,
            expected_key,
            expected_version,
@@ -83,14 +75,14 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                const SecureBoxPublicKey& authentication_factor_public_key,
                RegisterAuthenticationFactorCallback callback),
               (override));
-  MOCK_METHOD(
-      std::unique_ptr<Request>,
-      DownloadKeys,
-      (const CoreAccountInfo& account_info,
-       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
-       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-       DownloadKeysCallback callback),
-      (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadKeys,
+              (const CoreAccountInfo& account_info,
+               const base::Optional<TrustedVaultKeyAndVersion>&
+                   last_trusted_vault_key_and_version,
+               std::unique_ptr<SecureBoxKeyPair> device_key_pair,
+               DownloadKeysCallback callback),
+              (override));
 };
 
 class StandaloneTrustedVaultBackendTest : public testing::Test {
@@ -515,10 +507,11 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
   TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
   EXPECT_CALL(*connection(),
               DownloadKeys(Eq(account_info),
-                           TrustedVaultKeyAndVersionEq(kInitialVaultKey,
-                                                       kInitialLastKeyVersion),
+                           OptionalTrustedVaultKeyAndVersionEq(
+                               kInitialVaultKey, kInitialLastKeyVersion),
                            _, _))
-      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+      .WillOnce([&](const CoreAccountInfo&,
+                    const base::Optional<TrustedVaultKeyAndVersion>&,
                     std::unique_ptr<SecureBoxKeyPair> key_pair,
                     TrustedVaultConnection::DownloadKeysCallback callback) {
         device_key_pair = std::move(key_pair);
@@ -562,7 +555,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
   ON_CALL(*connection(), DownloadKeys(_, _, _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+          [&](const CoreAccountInfo&,
+              const base::Optional<TrustedVaultKeyAndVersion>&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadKeysCallback callback) {
             download_keys_callback = std::move(callback);

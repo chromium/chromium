@@ -146,7 +146,8 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
-    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+    const base::Optional<TrustedVaultKeyAndVersion>&
+        last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
     : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
       device_key_pair_(std::move(device_key_pair)) {
@@ -186,15 +187,25 @@ DownloadKeysResponseHandler::ProcessResponse(
 
   std::vector<ExtractedSharedKey> extracted_keys = ExtractAndSortSharedKeys(
       *current_member, device_key_pair_->private_key());
-  if (extracted_keys.empty() ||
-      !IsValidKeyChain(extracted_keys, last_trusted_vault_key_and_version_)) {
+  if (extracted_keys.empty()) {
+    // |current_member| doesn't have any keys, should be treated as not
+    // registered member.
+    return ProcessedResponse(
+        /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+  }
+
+  if (last_trusted_vault_key_and_version_.has_value() &&
+      !IsValidKeyChain(extracted_keys, *last_trusted_vault_key_and_version_)) {
+    // Data corresponding to |current_member| is corrupted or
+    // |last_trusted_vault_key_and_version_| is too old.
     return ProcessedResponse(
         /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
   }
 
   std::vector<std::vector<uint8_t>> new_keys;
   for (const ExtractedSharedKey& key : extracted_keys) {
-    if (key.version >= last_trusted_vault_key_and_version_.version) {
+    if (!last_trusted_vault_key_and_version_.has_value() ||
+        key.version >= last_trusted_vault_key_and_version_->version) {
       // Don't include previous keys into the result, because they weren't
       // validated using |last_trusted_vault_key_and_version| and client should
       // be already aware of them.

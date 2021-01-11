@@ -78,7 +78,8 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadKeys(
     const CoreAccountInfo& account_info,
-    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+    const base::Optional<TrustedVaultKeyAndVersion>&
+        last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadKeysCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(

@@ -475,6 +475,30 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMember) {
               Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
 }
 
+// Test scenario, when no trusted vault keys available on the current device
+// (e.g. device was registered with constant key). In this case new keys
+// shouldn't be validated.
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyLastKnownKey) {
+  // This test uses custom parameters for the handler ctor, so create new
+  // handler instead of using one from the fixture.
+  DownloadKeysResponseHandler handler(base::nullopt, MakeTestKeyPair());
+
+  const int kLastKeyVersion = 123;
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler.ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateListSecurityDomainsResponseWithSingleSyncMember(
+              /*trusted_vault_keys=*/{kTrustedVaultKey1},
+              /*trusted_vault_keys_versions=*/{kLastKeyVersion},
+              /*signing_keys=*/{{}}));
+
+  EXPECT_THAT(processed_response.status,
+              Eq(TrustedVaultRequestStatus::kSuccess));
+  EXPECT_THAT(processed_response.keys, ElementsAre(kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.last_key_version, Eq(kLastKeyVersion));
+}
+
 }  // namespace
 
 }  // namespace syncer
