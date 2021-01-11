@@ -93,7 +93,8 @@
     </cr-button>
 
     <div class="action-buttons"
-        hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
+        hidden$="[[!shouldShowGaiaButtons_(enableGaiaActionButtons_,
+                                           currentView_)]]">
       <gaia-action-buttons authenticator="[[authExtHost_]]">
       </gaia-action-buttons>
     </div>

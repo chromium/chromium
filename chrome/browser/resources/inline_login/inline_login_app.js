@@ -111,7 +111,10 @@ Polymer({
    */
   isLoginPrimaryAccount_: false,
 
-  /** @private {boolean} */
+  /**
+   * TODO(crbug.com/1164862): cleanup this flag, since it's enabled by default.
+   * @private {boolean}
+   */
   enableGaiaActionButtons_: false,
 
   /** @override */
