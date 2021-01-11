@@ -69,6 +69,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"dischargeTestResultText", IDS_DISCHARGE_TEST_RESULT},
       {"hideReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
       {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
+      {"learnMoreShort", IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},

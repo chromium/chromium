@@ -13,10 +13,10 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
-import {getRoutineType} from './routine_result_entry.js';
+import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
 import {BadgeType} from './text_badge.js';
 
 /**
@@ -85,6 +85,18 @@ Polymer({
       value: true,
     },
 
+    /** @type {boolean} */
+    isPowerRoutine: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {?PowerRoutineResult} */
+    powerRoutineResult_: {
+      type: Object,
+      value: null,
+    },
+
     /** @type {string} */
     runTestsButtonText: {
       type: String,
@@ -122,13 +134,17 @@ Polymer({
                     'routineNameText', getRoutineType(status.routine));
 
                 if (status.result &&
-                    status.result.simpleResult !==
+                    getSimpleResult(status.result) !==
                         chromeos.diagnostics.mojom.StandardRoutineResult
                             .kTestPassed) {
                   this.hasTestFailure_ = true;
                 }
 
                 resultListElem.onStatusUpdate.call(resultListElem, status);
+
+                if (status.result && status.result.powerResult) {
+                  this.powerRoutineResult_ = status.result.powerResult;
+                }
               })
           .then(() => {
             this.executionStatus_ = ExecutionProgress.kCompleted;
@@ -160,7 +176,19 @@ Polymer({
   },
 
   /** @protected */
-  isResultAndStatusHidden_() {
+  isResultButtonHidden_() {
+    return this.isPowerRoutine ||
+        this.executionStatus_ === ExecutionProgress.kNotStarted;
+  },
+
+  /** @protected */
+  isLearnMoreHidden_() {
+    return this.isPowerRoutine === false ||
+        this.executionStatus_ !== ExecutionProgress.kCompleted;
+  },
+
+  /** @protected */
+  isStatusHidden_() {
     return this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
@@ -196,8 +224,27 @@ Polymer({
     if (this.executionStatus_ === ExecutionProgress.kRunning) {
       return this.currentTestName_;
     }
-    return loadTimeData.getString(
-        this.hasTestFailure_ ? 'testFailure' : 'testSuccess');
+
+    if (this.hasTestFailure_) {
+      return loadTimeData.getString('testFailure');
+    }
+
+    if (this.isPowerRoutine === false || this.powerRoutineResult_ === null) {
+      return loadTimeData.getString('testSuccess');
+    }
+
+    const stringId =
+        this.routines.includes(
+            chromeos.diagnostics.mojom.RoutineType.kBatteryCharge) ?
+        'chargeTestResultText' :
+        'dischargeTestResultText';
+    const percentText = loadTimeData.getStringF(
+        'percentageLabel', this.powerRoutineResult_.percentChange.toFixed(2));
+    return loadTimeData.getStringF(
+        stringId,
+        percentText,
+        this.powerRoutineResult_.timeElapsedSeconds
+    );
   },
 
   /** @override */

@@ -1,10 +1,15 @@
 <style include="diagnostics-shared">
-.learn-more-button {
-  background-color: rgba(var(--google-blue-600), .06);
-  border-radius: 5x;
-  height: 40px;
-  padding: 5px 10px;
-}
+  .learn-more-button {
+    background-color: rgba(var(--google-blue-600), .06);
+    border-radius: 5x;
+    height: 40px;
+    padding: 5px 10px;
+  }
+
+  #learnMoreText {
+    color: var(--google-blue-600);
+    cursor: pointer;
+  }
 </style>
 
 <div id="routineSection">
@@ -13,15 +18,19 @@
     [[runTestsButtonText]]
   </cr-button>
   <cr-button id="toggleReportButton" class="action-button" on-click="onToggleReportClicked_"
-      hidden="[[isResultAndStatusHidden_(executionStatus_)]]">
+      hidden="[[isResultButtonHidden_(executionStatus_)]]">
     [[getReportToggleButtonText_(isReportListHidden_)]]
   </cr-button>
   <text-badge id="testStatusBadge" badge-type="[[getBadgeType_(executionStatus_)]]"
-      hidden="[[isResultAndStatusHidden_(executionStatus_)]]"
+      hidden="[[isStatusHidden_(executionStatus_)]]"
       value="[[getBadgeText_(executionStatus_)]]">
   </text-badge>
-  <span id="testStatusText" hidden$="[[isResultAndStatusHidden_(executionStatus_)]]">
+  <span id="testStatusText" hidden$="[[isStatusHidden_(executionStatus_)]]">
     [[getTextStatus_(executionStatus_, currentTestName_)]]
+  </span>
+  <span id="learnMoreText" hidden$="[[isLearnMoreHidden_(executionStatus_)]]"
+      on-click="onLearnMoreClicked_">
+    [[i18n('learnMoreShort')]]
   </span>
   <routine-result-list id="resultList" hidden="[[isReportListHidden_]]"></routine-result-list>
   <cr-button id="learnMoreButton" class="learn-more-button" on-click="onLearnMoreClicked_"

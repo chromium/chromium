@@ -43,6 +43,30 @@ export function getRoutineType(routineType) {
 }
 
 /**
+ * @param {!RoutineResult} result
+ * @return {?StandardRoutineResult}
+ */
+export function getSimpleResult(result) {
+  if (!result) {
+    return null;
+  }
+
+  if (result.hasOwnProperty('simpleResult')) {
+    // Ideally we would just return assert(result.simpleResult) but enum
+    // value 0 fails assert.
+    return /** @type {!StandardRoutineResult} */ (result.simpleResult);
+  }
+
+  if (result.hasOwnProperty('powerResult')) {
+    return /** @type {!StandardRoutineResult} */ (
+        result.powerResult.simpleResult);
+  }
+
+  assertNotReached();
+  return null;
+}
+
+/**
  * @fileoverview
  * 'routine-result-entry' shows the status of a single test routine.
  */
@@ -74,27 +98,6 @@ Polymer({
   },
 
   /**
-   * @param {!RoutineResult} result
-   * @return {!StandardRoutineResult}
-   */
-  getSimpleResult_(result) {
-    assert(result);
-
-    if (result.hasOwnProperty('simpleResult')) {
-      // Ideally we would just return assert(result.simpleResult) but enum
-      // value 0 fails assert.
-      return /** @type {!StandardRoutineResult} */ (result.simpleResult);
-    }
-
-    if (result.hasOwnProperty('powerResult')) {
-      return /** @type {!StandardRoutineResult} */ (
-          result.powerResult.simpleResult);
-    }
-
-    assertNotReached();
-  },
-
-  /**
    * @protected
    */
   getBadgeText_() {
@@ -103,7 +106,7 @@ Polymer({
     }
 
     if (this.item.result &&
-        this.getSimpleResult_(this.item.result) ===
+        getSimpleResult(this.item.result) ===
             chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
       return loadTimeData.getString('testSucceededBadgeText');
     }
@@ -120,7 +123,7 @@ Polymer({
     }
 
     if (this.item.result &&
-        this.getSimpleResult_(this.item.result) ===
+        getSimpleResult(this.item.result) ===
             chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
       return BadgeType.SUCCESS;
     }

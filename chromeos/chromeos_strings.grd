@@ -683,6 +683,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run.">
         Learn more in the Help Center
       </message>
+      <message name="IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT" desc="The label for the text link that leads to a help support article to learn more about the test routines being run.">
+        Learn more
+      </message>
       <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version.">
         (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
       </message>
@@ -723,10 +726,10 @@ Try tapping the mic to ask me anything.
         Memory
       </message>
       <message name="IDS_CHARGE_TEST_RESULT" desc="The result text for charging routine.">
-        Charged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
+        Charged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$2<ex>10</ex></ph> seconds.
       </message>
       <message name="IDS_DISCHARGE_TEST_RESULT" desc="The result text for discharging routine.">
-        Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
+        Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$2<ex>10</ex></ph> seconds.
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_FAILURE_TEXT" desc="The text displayed when a test fails.">
         Test failed

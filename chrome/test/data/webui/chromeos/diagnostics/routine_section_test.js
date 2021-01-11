@@ -64,6 +64,13 @@ export function routineSectionTestSuite() {
     routineSectionElement.routines = routines;
     routineSectionElement.isTestRunning = false;
 
+    if (routines.length === 1 && [
+          chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge,
+          chromeos.diagnostics.mojom.RoutineType.kBatteryCharge
+        ].includes(routines[0])) {
+      routineSectionElement.isPowerRoutine = true;
+    }
+
     return flushTasks();
   }
 
@@ -217,6 +224,27 @@ export function routineSectionTestSuite() {
           assertTrue(getResultList().hidden);
           assertTrue(getLearnMoreButton().hidden);
           assertFalse(getToggleTestReportButton().hidden);
+        });
+  });
+
+  test('PowerResultListToggleButton', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+    ];
+
+    // TODO(joonbug): Use visibility assert over testing .hidden attr.
+    return initializeRoutineSection(routines)
+        .then(() => {
+          // Hidden by default.
+          assertTrue(getResultList().hidden);
+          assertTrue(getToggleTestReportButton().hidden);
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Report is hidden by default and so is toggle button.
+          assertTrue(getResultList().hidden);
+          assertTrue(getToggleTestReportButton().hidden);
         });
   });
 
