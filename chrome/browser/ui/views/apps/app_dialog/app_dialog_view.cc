@@ -17,7 +17,7 @@ AppDialogView::AppDialogView(const gfx::ImageSkia& image)
   SetIcon(image);
   SetShowIcon(true);
   SetShowCloseButton(false);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
