@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -230,19 +231,19 @@ public class DownloadUtils {
      * Issues a request to the {@link DownloadManagerService} associated to check for externally
      * removed downloads.
      * See {@link DownloadManagerService#checkForExternallyRemovedDownloads}.
-     * @param isOffTheRecord  Whether to check downloads for the off the record profile.
+     * @param profileKey  The {@link ProfileKey} to check downloads of the given profile.
      */
-    public static void checkForExternallyRemovedDownloads(boolean isOffTheRecord) {
+    public static void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
             return;
         }
 
-        if (isOffTheRecord) {
+        if (profileKey.isOffTheRecord()) {
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                    true);
+                    profileKey);
         }
         DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                false);
+                ProfileKey.getLastUsedRegularProfileKey());
         RecordUserAction.record(
                 "Android.DownloadManager.CheckForExternallyRemovedItems");
     }

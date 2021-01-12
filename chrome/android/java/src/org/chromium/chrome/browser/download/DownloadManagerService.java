@@ -40,10 +40,12 @@ import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDow
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -402,7 +404,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             DownloadNotificationService.clearResumptionAttemptLeft();
 
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                    /*isOffTheRecord=*/false);
+                    ProfileKey.getLastUsedRegularProfileKey());
             mActivityLaunched = true;
         }
     }
@@ -973,9 +975,10 @@ public class DownloadManagerService implements DownloadController.Observer,
         // Downloads started from incognito mode should not be resumed in reduced mode.
         if (!ProfileManager.isInitialized() && item.getDownloadInfo().isOffTheRecord()) return;
 
+        OTRProfileID otrProfileID = item.getDownloadInfo().getOTRProfileId();
         DownloadManagerServiceJni.get().resumeDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, item.getId(),
-                getProfileKey(item.getDownloadInfo().isOffTheRecord()), hasUserGesture);
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), hasUserGesture);
     }
 
     /**
@@ -987,21 +990,23 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     // TODO(shaktisahu): Add retry to offline content provider or route it from resume call.
     public void retryDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
+        OTRProfileID otrProfileID = item.getDownloadInfo().getOTRProfileId();
         DownloadManagerServiceJni.get().retryDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, item.getId(),
-                getProfileKey(item.getDownloadInfo().isOffTheRecord()), hasUserGesture);
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), hasUserGesture);
     }
 
     /**
      * Called to cancel a download.
      * @param id The {@link ContentId} of the download to cancel.
-     * @param isOffTheRecord Whether the download is off the record.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
     @Override
-    public void cancelDownload(ContentId id, boolean isOffTheRecord) {
+    public void cancelDownload(ContentId id, OTRProfileID otrProfileID) {
         DownloadManagerServiceJni.get().cancelDownload(getNativeDownloadManagerService(),
-                DownloadManagerService.this, id.id, getProfileKey(isOffTheRecord));
+                DownloadManagerService.this, id.id,
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
         if (progress != null) {
             DownloadInfo info =
@@ -1011,7 +1016,8 @@ public class DownloadManagerService implements DownloadController.Observer,
             removeDownloadProgress(id.id);
         } else {
             mDownloadNotifier.notifyDownloadCanceled(id);
-            DownloadInfoBarController infoBarController = getInfoBarController(isOffTheRecord);
+            DownloadInfoBarController infoBarController =
+                    getInfoBarController(otrProfileID != null);
             if (infoBarController != null) infoBarController.onDownloadItemRemoved(id);
         }
     }
@@ -1019,13 +1025,14 @@ public class DownloadManagerService implements DownloadController.Observer,
     /**
      * Called to pause a download.
      * @param id The {@link ContentId} of the download to pause.
-     * @param isOffTheRecord Whether the download is off the record.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
     @Override
-    public void pauseDownload(ContentId id, boolean isOffTheRecord) {
+    public void pauseDownload(ContentId id, OTRProfileID otrProfileID) {
         DownloadManagerServiceJni.get().pauseDownload(getNativeDownloadManagerService(),
-                DownloadManagerService.this, id.id, getProfileKey(isOffTheRecord));
+                DownloadManagerService.this, id.id,
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
         // Calling pause will stop listening to the download item. Update its progress now.
         // If download is already completed, canceled or failed, there is no need to update the
@@ -1048,14 +1055,15 @@ public class DownloadManagerService implements DownloadController.Observer,
     /**
      * Removes a download from the list.
      * @param downloadGuid GUID of the download.
-     * @param isOffTheRecord Whether the download is off the record.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param externallyRemoved If the file is externally removed by other applications.
      */
     public void removeDownload(
-            final String downloadGuid, boolean isOffTheRecord, boolean externallyRemoved) {
+            final String downloadGuid, OTRProfileID otrProfileID, boolean externallyRemoved) {
         mHandler.post(() -> {
             DownloadManagerServiceJni.get().removeDownload(getNativeDownloadManagerService(),
-                    DownloadManagerService.this, downloadGuid, getProfileKey(isOffTheRecord));
+                    DownloadManagerService.this, downloadGuid,
+                    IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
             removeDownloadProgress(downloadGuid);
         });
 
@@ -1367,9 +1375,10 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     // Deprecated after new download backend.
     public void renameDownload(ContentId id, String name,
-            Callback<Integer /*RenameResult*/> callback, boolean isOffTheRecord) {
+            Callback<Integer /*RenameResult*/> callback, OTRProfileID otrProfileID) {
         DownloadManagerServiceJni.get().renameDownload(getNativeDownloadManagerService(),
-                DownloadManagerService.this, id.id, name, callback, getProfileKey(isOffTheRecord));
+                DownloadManagerService.this, id.id, name, callback,
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
     }
 
     /**
@@ -1416,12 +1425,11 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /**
      * Checks if the files associated with any downloads have been removed by an external action.
-     * @param isOffTheRecord Whether or not to check downloads for the off the record profile.
+     * @param profileKey The {@link ProfileKey} to check the downloads for the the given profile.
      */
-    public void checkForExternallyRemovedDownloads(boolean isOffTheRecord) {
+    public void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
         DownloadManagerServiceJni.get().checkForExternallyRemovedDownloads(
-                getNativeDownloadManagerService(), DownloadManagerService.this,
-                getProfileKey(isOffTheRecord));
+                getNativeDownloadManagerService(), DownloadManagerService.this, profileKey);
     }
 
     // Deprecated after new download backend.

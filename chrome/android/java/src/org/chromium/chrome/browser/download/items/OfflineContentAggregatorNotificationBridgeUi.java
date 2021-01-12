@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.DownloadServiceDelegate;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -105,12 +106,12 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     // DownloadServiceDelegate implementation.
     @Override
-    public void cancelDownload(ContentId id, boolean isOffTheRecord) {
+    public void cancelDownload(ContentId id, OTRProfileID otrProfileID) {
         mProvider.cancelDownload(id);
     }
 
     @Override
-    public void pauseDownload(ContentId id, boolean isOffTheRecord) {
+    public void pauseDownload(ContentId id, OTRProfileID otrProfileID) {
         mProvider.pauseDownload(id);
     }
 

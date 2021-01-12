@@ -326,7 +326,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 OfflineContentAggregatorFactory.get().removeItem(mDownloadInfo.getContentId());
             } else {
                 DownloadManagerService.getDownloadManagerService().removeDownload(
-                        mDownloadInfo.getDownloadGuid(), mDownloadInfo.isOffTheRecord(),
+                        mDownloadInfo.getDownloadGuid(), mDownloadInfo.getOTRProfileId(),
                         false /* externallyRemoved */);
             }
 

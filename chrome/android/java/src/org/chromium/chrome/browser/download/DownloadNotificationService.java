@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -717,7 +718,12 @@ public class DownloadNotificationService {
             if (cancelActualDownload) {
                 DownloadServiceDelegate delegate = getServiceDelegate(id);
                 DownloadMetrics.recordDownloadCancel(DownloadMetrics.CancelFrom.CANCEL_SHUTDOWN);
-                delegate.cancelDownload(id, true);
+                // TODO(crbug.com/1164379): Pass OTRProfileID of the current OTR profile to cancel
+                // non-primary OTR downloads.
+                OTRProfileID otrProfileID = Profile.getLastUsedRegularProfile()
+                                                    .getPrimaryOTRProfile()
+                                                    .getOTRProfileID();
+                delegate.cancelDownload(id, otrProfileID);
                 delegate.destroyServiceDelegate();
             }
         }

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObser
 import org.chromium.chrome.browser.download.DownloadMetrics;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -130,7 +131,7 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     @Override
     public void removeItem(OfflineItem item) {
         DownloadManagerService.getDownloadManagerService().removeDownload(
-                item.id.id, item.isOffTheRecord, item.externallyRemoved);
+                item.id.id, OTRProfileID.deserialize(item.otrProfileId), item.externallyRemoved);
         FileDeletionQueue.get().delete(item.filePath);
     }
 
@@ -138,13 +139,13 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     public void cancelDownload(OfflineItem item) {
         DownloadMetrics.recordDownloadCancel(DownloadMetrics.CancelFrom.CANCEL_DOWNLOAD_HOME);
         DownloadManagerService.getDownloadManagerService().cancelDownload(
-                item.id, item.isOffTheRecord);
+                item.id, OTRProfileID.deserialize(item.otrProfileId));
     }
 
     @Override
     public void pauseDownload(OfflineItem item) {
         DownloadManagerService.getDownloadManagerService().pauseDownload(
-                item.id, item.isOffTheRecord);
+                item.id, OTRProfileID.deserialize(item.otrProfileId));
     }
 
     @Override
@@ -200,7 +201,7 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     public void renameItem(
             OfflineItem item, String name, Callback</*RenameResult*/ Integer> callback) {
         DownloadManagerService.getDownloadManagerService().renameDownload(
-                item.id, name, callback, item.isOffTheRecord);
+                item.id, name, callback, OTRProfileID.deserialize(item.otrProfileId));
     }
 
     @Override
