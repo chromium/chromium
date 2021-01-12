@@ -72,7 +72,7 @@ base::Optional<WebImpression> GetImpression(
 
   bool impression_data_is_valid = false;
   uint64_t impression_data =
-      impression_data_string.ToUInt64Strict(&impression_data_is_valid);
+      impression_data_string.HexToUInt64Strict(&impression_data_is_valid);
 
   // Provide a default of 0 if the impression data was not valid.
   impression_data = impression_data_is_valid ? impression_data : 0UL;

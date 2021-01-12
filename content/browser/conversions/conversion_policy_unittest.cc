@@ -51,9 +51,9 @@ TEST_F(ConversionPolicyTest, HighEntropyConversionData_StrippedToLowerBits) {
 TEST_F(ConversionPolicyTest, SanitizeHighEntropyImpressionData_Unchanged) {
   uint64_t impression_data = 256LU;
 
-  // The policy should not alter the impression data, and return the base 10
+  // The policy should not alter the impression data, and return the hexadecimal
   // representation.
-  EXPECT_EQ("256",
+  EXPECT_EQ("100",
             ConversionPolicy().GetSanitizedImpressionData(impression_data));
 }
 

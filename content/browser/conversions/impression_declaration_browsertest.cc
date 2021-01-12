@@ -245,12 +245,12 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
       web_contents(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  // The provided data underflows an unsigned 64 bit int, and should be handled
+  // The provided data overflows an unsigned 64 bit int, and should be handled
   // properly.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag("link",
                         "page_with_conversion_redirect.html",
-                        "-1" /* impression data */,
+                        "FFFFFFFFFFFFFFFFFFFFFF" /* impression data */,
                         "https://a.com" /* conversion_destination */);)"));
   EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
 
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   content::UntrustworthyContextMenuParams params =
       context_menu_filter->get_params();
   EXPECT_TRUE(params.impression);
-  EXPECT_EQ(10UL, params.impression->impression_data);
+  EXPECT_EQ(16UL, params.impression->impression_data);
   EXPECT_EQ(url::Origin::Create(GURL("https://dest.com")),
             params.impression->conversion_destination);
 }

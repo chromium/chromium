@@ -685,9 +685,6 @@ bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
 
 bool ConversionStorageSql::InitializeSchema() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1163599): Convert impression data and conversion
-  // data fields to integers.
-  //
   // TODO(johnidel, csharrison): Many impressions will share a target origin and
   // a reporting origin, so it makes sense to make a "shared string" table for
   // these to save disk / memory. However, this complicates the schema a lot, so
