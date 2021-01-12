@@ -201,7 +201,6 @@ class ClipboardOzone::AsyncClipboardOzone {
   void PerformRequestAndWaitForResult(ClipboardBuffer buffer,
                                       Request* request) {
     DCHECK(request);
-    DCHECK(!abort_timer_.IsRunning());
     DCHECK(!pending_request_);
 
     pending_request_ = request;
@@ -228,14 +227,10 @@ class ClipboardOzone::AsyncClipboardOzone {
     request->finish_closure = run_loop.QuitClosure();
 
     // Set a timeout timer after which the request will be aborted.
-    abort_timer_.Start(FROM_HERE, kRequestTimeout, this,
-                       &AsyncClipboardOzone::AbortStalledRequest);
+    base::OneShotTimer abort_timer;
+    abort_timer.Start(FROM_HERE, kRequestTimeout, this,
+                      &AsyncClipboardOzone::CompleteRequest);
     run_loop.Run();
-  }
-
-  void AbortStalledRequest() {
-    if (pending_request_ && pending_request_->finish_closure)
-      std::move(pending_request_->finish_closure).Run();
   }
 
   void DispatchReadRequest(ClipboardBuffer buffer, Request* request) {
@@ -275,7 +270,7 @@ class ClipboardOzone::AsyncClipboardOzone {
   void CompleteRequest() {
     if (!pending_request_)
       return;
-    abort_timer_.Stop();
+
     if (pending_request_->finish_closure)
       std::move(pending_request_->finish_closure).Run();
     pending_request_ = nullptr;
@@ -294,9 +289,6 @@ class ClipboardOzone::AsyncClipboardOzone {
 
   // A current pending request being processed.
   Request* pending_request_ = nullptr;
-
-  // Aborts |pending_request| after Request::timeout.
-  base::RepeatingTimer abort_timer_;
 
   // Provides communication to a system clipboard under ozone level.
   PlatformClipboard* const platform_clipboard_ = nullptr;
