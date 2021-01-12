@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MountMetricsTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
-  RunTestURL("foreground/js/ui/multi_menu_unittest_gen.html");
+  RunTestURL("foreground/js/ui/multi_menu_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {

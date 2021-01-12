@@ -28,6 +28,8 @@ js_type_check("closure_compile_jsmodules") {
     ":empty_folder.m",
     ":file_list_selection_model.m",
     ":files_alert_dialog.m",
+    ":multi_menu.m",
+    ":multi_menu_button.m",
     "table:table.m",
     "table:table_column.m",
     "table:table_column_model.m",
@@ -534,6 +536,20 @@ js_library("multi_menu") {
   externs_list = [ "$externs_path/pending.js" ]
 }
 
+js_library("multi_menu.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/multi_menu.m.js" ]
+
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("multi_menu_button") {
   deps = [
     # TODO(files-ng): remove util dep when the files-ng flag is removed.
@@ -547,13 +563,32 @@ js_library("multi_menu_button") {
   externs_list = [ "$externs_path/pending.js" ]
 }
 
-js_unittest("multi_menu_unittest") {
+js_library("multi_menu_button.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/multi_menu_button.m.js" ]
   deps = [
-    ":multi_menu",
-    ":multi_menu_button",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":multi_menu.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_button.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+    "//ui/webui/resources/js/cr/ui:position_util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("multi_menu_unittest.m") {
+  deps = [
+    ":multi_menu_button.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
   ]
 }
 
@@ -619,6 +654,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":directory_tree_unittest.m",
     ":file_list_selection_model_unittest.m",
+    ":multi_menu_unittest.m",
   ]
   js_module = true
 
@@ -641,7 +677,6 @@ js_test_gen_html("js_test_gen_html") {
     ":file_table_unittest",
     ":file_tap_handler_unittest",
     ":install_linux_package_dialog_unittest",
-    ":multi_menu_unittest",
   ]
 }
 
@@ -651,7 +686,10 @@ js_modulizer("modulize") {
     "empty_folder.js",
     "file_list_selection_model.js",
     "files_alert_dialog.js",
+    "multi_menu.js",
+    "multi_menu_button.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
+  namespace_rewrites += [ "cr.ui.MultiMenu|MultiMenu" ]
 }
