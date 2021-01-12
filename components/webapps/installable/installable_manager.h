@@ -90,9 +90,6 @@ class InstallableManager
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            ManagerBeginsInEmptyState);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest, ManagerInIncognito);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest, CheckWebapp);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
-                           CheckLazyServiceWorkerPassesWhenWaiting);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            CheckLazyServiceWorkerNoFetchHandlerFails);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
@@ -101,6 +98,8 @@ class InstallableManager
                            CheckLazyServiceWorkerPassesWhenWaiting);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
                            CheckWebapp);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
+                           CheckNotOfflineCapableStartUrl);
 
   using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
