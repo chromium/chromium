@@ -374,8 +374,13 @@ class Executive(object):
             env=env,
             close_fds=self._should_close_fds())
 
+        def on_command_timeout():
+            _log.error('Error: Command timed out after %s seconds',
+                       timeout_seconds)
+            process.kill()
+
         if timeout_seconds:
-            timer = threading.Timer(timeout_seconds, process.kill)
+            timer = threading.Timer(timeout_seconds, on_command_timeout)
             timer.start()
 
         output = process.communicate(string_to_communicate)[0]

@@ -333,14 +333,14 @@ class WPTManifest(object):
         wpt_exec_path = PathFinder(port.host.filesystem).path_from_blink_tools(
             'blinkpy', 'third_party', 'wpt', 'wpt', 'wpt')
         cmd = [
-            port.python3_command(), wpt_exec_path, 'manifest', '--no-download',
-            '--tests-root', dest_path
+            port.python3_command(), wpt_exec_path, 'manifest', '-v',
+            '--no-download', '--tests-root', dest_path
         ]
 
         # ScriptError will be raised if the command fails.
         output = port.host.executive.run_command(
             cmd,
-            timeout_seconds=300,
+            timeout_seconds=600,
             # This will also include stderr in the exception message.
             return_stderr=True)
         if output:
