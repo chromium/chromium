@@ -25,6 +25,7 @@
   .name {
     color: var(--cr-primary-text-color);
     padding-inline-end: 12px;
+    vertical-align: top;
   }
 
   .value {
@@ -34,6 +35,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  #keywords {
+    white-space: normal;
   }
 </style>
 <cr-dialog show-on-attach>
@@ -68,7 +73,9 @@
       </tr>
       <tr>
         <td class="name">$i18n{propertiesKeywords}</td>
-        <td class="value" id="keywords">-</td>
+        <td class="value" id="keywords">
+          [[getOrPlaceholder_(documentMetadata.keywords)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesCreated}</td>

@@ -30,8 +30,8 @@ enum class PdfVersion {
 // dictionary (see section 14.3.3 "Document Information Dictionary" of the ISO
 // 32000-1 standard), as well as other properties about the file.
 // TODO(crbug.com/93619): Finish adding information dictionary fields like
-// `keywords`, `creation_date`, and `mod_date`. Also add fields like
-// `size_bytes` and `is_encrypted`.
+// `creation_date` and `mod_date`. Also add fields like `size_bytes` and
+// `is_encrypted`.
 struct DocumentMetadata {
   DocumentMetadata();
   DocumentMetadata(const DocumentMetadata&) = delete;
@@ -52,6 +52,9 @@ struct DocumentMetadata {
 
   // The document's subject.
   std::string subject;
+
+  // The document's keywords.
+  std::string keywords;
 
   // The name of the application that created the original document.
   std::string creator;

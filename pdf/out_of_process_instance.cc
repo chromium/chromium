@@ -136,6 +136,7 @@ constexpr char kJSLinearized[] = "linearized";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSAuthor[] = "author";
 constexpr char kJSSubject[] = "subject";
+constexpr char kJSKeywords[] = "keywords";
 constexpr char kJSCreator[] = "creator";
 constexpr char kJSProducer[] = "producer";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
@@ -2441,6 +2442,11 @@ void OutOfProcessInstance::SendMetadata() {
 
   if (!document_metadata.subject.empty())
     metadata_data.Set(pp::Var(kJSSubject), pp::Var(document_metadata.subject));
+
+  if (!document_metadata.keywords.empty()) {
+    metadata_data.Set(pp::Var(kJSKeywords),
+                      pp::Var(document_metadata.keywords));
+  }
 
   if (!document_metadata.creator.empty())
     metadata_data.Set(pp::Var(kJSCreator), pp::Var(document_metadata.creator));

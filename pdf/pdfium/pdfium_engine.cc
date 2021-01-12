@@ -3957,6 +3957,7 @@ void PDFiumEngine::LoadDocumentMetadata() {
   doc_metadata_.title = GetTrimmedMetadataByField("Title");
   doc_metadata_.author = GetTrimmedMetadataByField("Author");
   doc_metadata_.subject = GetTrimmedMetadataByField("Subject");
+  doc_metadata_.keywords = GetTrimmedMetadataByField("Keywords");
   doc_metadata_.creator = GetTrimmedMetadataByField("Creator");
   doc_metadata_.producer = GetTrimmedMetadataByField("Producer");
 }
