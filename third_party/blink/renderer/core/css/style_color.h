@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 
-#include "third_party/blink/public/common/css/color_scheme.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -74,7 +74,7 @@ class CORE_EXPORT StyleColor {
   // TODO(1081945):  Once CSSSystemColorComputeToSelf is enabled, we can remove
   // |is_forced_color|.
   Color Resolve(Color current_color,
-                ColorScheme color_scheme,
+                mojom::blink::ColorScheme color_scheme,
                 bool is_forced_color = false) const;
 
   // Resolve and override the resolved color's alpha channel as specified by
@@ -82,7 +82,7 @@ class CORE_EXPORT StyleColor {
   // TODO(1081945):  Once CSSSystemColorComputeToSelf is enabled, we can remove
   // |is_forced_color|.
   Color ResolveWithAlpha(Color current_color,
-                         ColorScheme color_scheme,
+                         mojom::blink::ColorScheme color_scheme,
                          int alpha,
                          bool is_forced_color = false) const;
 
@@ -90,7 +90,8 @@ class CORE_EXPORT StyleColor {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
   }
 
-  static Color ColorFromKeyword(CSSValueID, ColorScheme color_scheme);
+  static Color ColorFromKeyword(CSSValueID,
+                                mojom::blink::ColorScheme color_scheme);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColor(CSSValueID);
 

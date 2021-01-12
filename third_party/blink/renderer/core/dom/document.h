@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
@@ -992,7 +993,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                       int margin_height,
                                       mojom::blink::ScrollbarMode,
                                       bool is_display_none,
-                                      ColorScheme color_scheme);
+                                      mojom::blink::ColorScheme color_scheme);
 
   String title() const { return title_; }
   void setTitle(const String&);

@@ -41,13 +41,13 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   String ExtraQuirksStyleSheet() override;
 
   Color PlatformActiveSelectionBackgroundColor(
-      ColorScheme color_scheme) const override;
+      mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformInactiveSelectionBackgroundColor(
-      ColorScheme color_scheme) const override;
+      mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformActiveSelectionForegroundColor(
-      ColorScheme color_scheme) const override;
+      mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformInactiveSelectionForegroundColor(
-      ColorScheme color_scheme) const override;
+      mojom::blink::ColorScheme color_scheme) const override;
 
   IntSize SliderTickSize() const override;
   int SliderTickOffsetFromTrackCenter() const override;

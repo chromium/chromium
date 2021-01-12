@@ -356,7 +356,8 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
     bool in_forced_colors_mode =
         popup_client_->OwnerElement().GetDocument().InForcedColorsMode();
     page_->GetSettings().SetPreferredColorScheme(
-        style->UsedColorScheme() == ColorScheme::kDark && !in_forced_colors_mode
+        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark &&
+                !in_forced_colors_mode
             ? mojom::blink::PreferredColorScheme::kDark
             : mojom::blink::PreferredColorScheme::kLight);
   }

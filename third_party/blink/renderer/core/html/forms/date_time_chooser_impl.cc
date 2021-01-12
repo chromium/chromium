@@ -218,8 +218,8 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
     AddProperty("otherDateLabel", other_date_label_string, data);
 
     const ComputedStyle* style = OwnerElement().GetComputedStyle();
-    ColorScheme color_scheme =
-        style ? style->UsedColorScheme() : ColorScheme::kLight;
+    mojom::blink::ColorScheme color_scheme =
+        style ? style->UsedColorScheme() : mojom::blink::ColorScheme::kLight;
 
     AddProperty("suggestionHighlightColor",
                 LayoutTheme::GetTheme()

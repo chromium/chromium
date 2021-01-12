@@ -14,7 +14,7 @@ class LayoutThemeWin final : public LayoutThemeDefault {
   static scoped_refptr<LayoutTheme> Create();
 
   Color SystemColor(CSSValueID css_value_id,
-                    ColorScheme color_scheme) const override;
+                    mojom::blink::ColorScheme color_scheme) const override;
 };
 
 }  // namespace blink

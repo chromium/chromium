@@ -84,11 +84,11 @@ ui::NativeTheme::State NativeThemeState(blink::WebThemeEngine::State state) {
 }
 
 ui::NativeTheme::ColorScheme NativeColorScheme(
-    blink::ColorScheme color_scheme) {
+    blink::mojom::ColorScheme color_scheme) {
   switch (color_scheme) {
-    case blink::ColorScheme::kLight:
+    case blink::mojom::ColorScheme::kLight:
       return ui::NativeTheme::ColorScheme::kLight;
-    case blink::ColorScheme::kDark:
+    case blink::mojom::ColorScheme::kDark:
       return ui::NativeTheme::ColorScheme::kDark;
   }
 }

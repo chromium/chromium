@@ -71,7 +71,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(VerticalScrollbar, Scrollbar*());
   MOCK_CONST_METHOD0(ScrollbarsHiddenIfOverlay, bool());
   MOCK_METHOD0(ScheduleAnimation, bool());
-  MOCK_CONST_METHOD0(UsedColorScheme, ColorScheme());
+  MOCK_CONST_METHOD0(UsedColorScheme, mojom::blink::ColorScheme());
 
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ScrollbarsCanBeActive() const override { return true; }

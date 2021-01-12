@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_OWNER_H_
 
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
@@ -56,7 +57,9 @@ class CORE_EXPORT RemoteFrameOwner final
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
   bool IsDisplayNone() const override { return is_display_none_; }
-  ColorScheme GetColorScheme() const override { return color_scheme_; }
+  mojom::blink::ColorScheme GetColorScheme() const override {
+    return color_scheme_;
+  }
   AtomicString RequiredCsp() const override { return required_csp_; }
   bool ShouldLazyLoadChildren() const final;
 
@@ -78,7 +81,7 @@ class CORE_EXPORT RemoteFrameOwner final
   void SetIsDisplayNone(bool is_display_none) {
     is_display_none_ = is_display_none;
   }
-  void SetColorScheme(ColorScheme color_scheme) {
+  void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     color_scheme_ = color_scheme;
   }
   void SetRequiredCsp(const WebString& required_csp) {
@@ -102,7 +105,7 @@ class CORE_EXPORT RemoteFrameOwner final
   bool allow_fullscreen_;
   bool allow_payment_request_;
   bool is_display_none_;
-  ColorScheme color_scheme_;
+  mojom::blink::ColorScheme color_scheme_;
   bool needs_occlusion_tracking_;
   WebString required_csp_;
   const mojom::blink::FrameOwnerElementType frame_owner_element_type_;

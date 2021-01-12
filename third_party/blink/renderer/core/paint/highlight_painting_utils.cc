@@ -35,7 +35,7 @@ bool NodeIsReplaced(Node* node) {
 }
 
 Color ForcedSystemForegroundColor(PseudoId pseudo_id,
-                                  ColorScheme color_scheme) {
+                                  mojom::blink::ColorScheme color_scheme) {
   CSSValueID keyword = CSSValueID::kHighlighttext;
   switch (pseudo_id) {
     case kPseudoIdTargetText:
@@ -53,7 +53,7 @@ Color ForcedSystemForegroundColor(PseudoId pseudo_id,
 }
 
 Color ForcedSystemBackgroundColor(PseudoId pseudo_id,
-                                  ColorScheme color_scheme) {
+                                  mojom::blink::ColorScheme color_scheme) {
   CSSValueID keyword = CSSValueID::kHighlight;
   switch (pseudo_id) {
     case kPseudoIdTargetText:
@@ -174,7 +174,7 @@ Color HighlightColor(const Document& document,
   scoped_refptr<const ComputedStyle> pseudo_style =
       HighlightPseudoStyle(node, pseudo);
 
-  ColorScheme color_scheme = style.UsedColorScheme();
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   if (pseudo_style) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
@@ -200,7 +200,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
       return Color::kTransparent;
   }
 
-  ColorScheme color_scheme = style.UsedColorScheme();
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   if (scoped_refptr<const ComputedStyle> pseudo_style =
           HighlightPseudoStyle(node, pseudo)) {
     if (!document.InForcedColorsMode() ||

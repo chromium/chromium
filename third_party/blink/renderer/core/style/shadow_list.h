@@ -67,7 +67,7 @@ class ShadowList : public RefCounted<ShadowList> {
 
   sk_sp<SkDrawLooper> CreateDrawLooper(DrawLooperBuilder::ShadowAlphaMode,
                                        const Color& current_color,
-                                       ColorScheme color_scheme,
+                                       mojom::blink::ColorScheme color_scheme,
                                        bool is_horizontal = true) const;
 
  private:
