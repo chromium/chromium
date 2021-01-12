@@ -22,6 +22,7 @@ class D3D11VideoDecoderClient {
       base::RepeatingCallback<void(ComD3D11VideoDecoder)>;
 
   virtual D3D11PictureBuffer* GetPicture() = 0;
+  virtual void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) = 0;
   virtual bool OutputResult(const CodecPicture* picture,
                             D3D11PictureBuffer* picture_buffer) = 0;
 

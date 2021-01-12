@@ -453,7 +453,7 @@ void D3D11VideoDecoder::ReceivePictureBufferFromClient(
   // We may decode into this buffer again.
   // Note that |buffer| might no longer be in |picture_buffers_| if we've
   // replaced them.  That's okay.
-  buffer->set_in_client_use(false);
+  buffer->remove_client_use();
 
   // Also re-start decoding in case it was waiting for more pictures.
   DoDecode();
@@ -784,13 +784,20 @@ D3D11PictureBuffer* D3D11VideoDecoder::GetPicture() {
   return nullptr;
 }
 
+void D3D11VideoDecoder::UpdateTimestamp(D3D11PictureBuffer* picture_buffer) {
+  // A picture is being reused with a different timestamp; since we've already
+  // generated a VideoFrame from the previous picture buffer, we can just stamp
+  // the new timestamp directly onto the buffer.
+  picture_buffer->timestamp_ = current_timestamp_;
+}
+
 bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                      D3D11PictureBuffer* picture_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(texture_selector_);
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::OutputResult");
 
-  picture_buffer->set_in_client_use(true);
+  picture_buffer->add_client_use();
 
   // Note: The pixel format doesn't matter.
   gfx::Rect visible_rect = picture->visible_rect();

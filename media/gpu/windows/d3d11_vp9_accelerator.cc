@@ -61,7 +61,7 @@ scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
   D3D11PictureBuffer* picture_buffer = client_->GetPicture();
   if (!picture_buffer)
     return nullptr;
-  return base::MakeRefCounted<D3D11VP9Picture>(picture_buffer);
+  return base::MakeRefCounted<D3D11VP9Picture>(picture_buffer, client_);
 }
 
 bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
