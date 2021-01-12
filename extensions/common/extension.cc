@@ -215,6 +215,8 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     return nullptr;
   }
 
+  extension->guid_ = base::GUID::GenerateRandomV4();
+
   return extension;
 }
 
@@ -396,6 +398,16 @@ void Extension::SetManifestData(const std::string& key,
                                 std::unique_ptr<Extension::ManifestData> data) {
   DCHECK(!finished_parsing_manifest_ && thread_checker_.CalledOnValidThread());
   manifest_data_[key] = std::move(data);
+}
+
+void Extension::SetGUID(const ExtensionGuid& guid) {
+  guid_ = base::GUID::ParseLowercase(guid);
+  DCHECK(guid_.is_valid());
+}
+
+const ExtensionGuid& Extension::guid() const {
+  DCHECK(guid_.is_valid());
+  return guid_.AsLowercaseString();
 }
 
 Manifest::Location Extension::location() const {

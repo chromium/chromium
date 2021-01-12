@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/extension_messages.h"
+
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/extensions_api_permissions.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -83,6 +84,7 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
 
   ExtensionMsg_Loaded_Params params_in(extension.get(), true, base::nullopt);
   EXPECT_EQ(extension->id(), params_in.id);
+  EXPECT_EQ(extension->guid(), params_in.guid);
 
   {
     // First, test just converting back to an extension.
@@ -122,6 +124,9 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
     EXPECT_TRUE(error.empty());
     ASSERT_TRUE(extension_out);
     CompareExtension(*extension, *extension_out);
+
+    // Check for guid in converted extension.
+    EXPECT_EQ(extension->guid(), extension_out->guid());
   }
 }
 

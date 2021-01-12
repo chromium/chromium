@@ -79,7 +79,8 @@ ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
           extension->permissions_data()->UsesDefaultPolicyHostRestrictions()),
       id(extension->id()),
       worker_activation_sequence(worker_activation_sequence),
-      creation_flags(extension->creation_flags()) {
+      creation_flags(extension->creation_flags()),
+      guid(extension->guid()) {
   if (include_tab_permissions) {
     for (const auto& pair :
          extension->permissions_data()->tab_specific_permissions()) {
@@ -117,6 +118,7 @@ scoped_refptr<Extension> ExtensionMsg_Loaded_Params::ConvertToExtension(
       permissions_data->UpdateTabSpecificPermissions(
           pair.first, *pair.second.ToPermissionSet());
     }
+    extension->SetGUID(guid);
   }
   return extension;
 }
@@ -332,6 +334,7 @@ void ParamTraits<ExtensionMsg_Loaded_Params>::Write(base::Pickle* m,
   WriteParam(m, p.policy_allowed_hosts);
   WriteParam(m, p.uses_default_policy_blocked_allowed_hosts);
   WriteParam(m, p.worker_activation_sequence);
+  WriteParam(m, p.guid);
 }
 
 bool ParamTraits<ExtensionMsg_Loaded_Params>::Read(const base::Pickle* m,
@@ -347,7 +350,8 @@ bool ParamTraits<ExtensionMsg_Loaded_Params>::Read(const base::Pickle* m,
          ReadParam(m, iter, &p->policy_blocked_hosts) &&
          ReadParam(m, iter, &p->policy_allowed_hosts) &&
          ReadParam(m, iter, &p->uses_default_policy_blocked_allowed_hosts) &&
-         ReadParam(m, iter, &p->worker_activation_sequence);
+         ReadParam(m, iter, &p->worker_activation_sequence) &&
+         ReadParam(m, iter, &p->guid);
 }
 
 void ParamTraits<ExtensionMsg_Loaded_Params>::Log(const param_type& p,

@@ -13,11 +13,13 @@
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/version.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/hashed_extension_id.h"
@@ -254,6 +256,11 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   void SetManifestData(const std::string& key,
                        std::unique_ptr<ManifestData> data);
 
+  // Sets the GUID for this extension. Note: this should *only* be used when
+  // duplicating an existing extension; otherwise, the GUID will be
+  // appropriately set during creation (ensuring uniqueness).
+  void SetGUID(const ExtensionGuid& guid);
+
   // Accessors:
 
   const base::FilePath& path() const { return path_; }
@@ -262,6 +269,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   Manifest::Location location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;
+  const ExtensionGuid& guid() const;
   const base::Version& version() const { return version_; }
   const std::string& version_name() const { return version_name_; }
   std::string VersionString() const;
@@ -465,6 +473,10 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
 
   // The flags that were passed to InitFromValue.
   int creation_flags_;
+
+  // A dynamic ID that can be used when referencing extension resources via URL
+  // instead of an extension ID.
+  base::GUID guid_;
 
   DISALLOW_COPY_AND_ASSIGN(Extension);
 };

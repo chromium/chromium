@@ -30,6 +30,7 @@
 #include "extensions/common/draggable_region.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_guid.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/host_id.h"
 #include "extensions/common/message_bundle.h"
@@ -405,6 +406,9 @@ struct ExtensionMsg_Loaded_Params {
 
   // Send creation flags so extension is initialized identically.
   int creation_flags;
+
+  // Reuse the extension guid when creating the extension in the renderer.
+  extensions::ExtensionGuid guid;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionMsg_Loaded_Params);
