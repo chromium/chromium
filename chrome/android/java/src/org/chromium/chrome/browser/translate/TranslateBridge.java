@@ -81,6 +81,14 @@ public class TranslateBridge {
         return TranslateBridgeJni.get().getTargetLanguage();
     }
 
+    /**
+     * Set the default target language the Translate Service will use.
+     * @param String targetLanguage Language code of new target language.
+     */
+    public static void setDefaultTargetLanguage(String targetLanguage) {
+        TranslateBridgeJni.get().setDefaultTargetLanguage(targetLanguage);
+    }
+
     /** @return whether the given string is blocked for translation. */
     public static boolean isBlockedLanguage(String language) {
         return TranslateBridgeJni.get().isBlockedLanguage(language);
@@ -224,6 +232,7 @@ public class TranslateBridge {
         String getOriginalLanguage(WebContents webContents);
         String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
+        void setDefaultTargetLanguage(String targetLanguage);
         boolean isBlockedLanguage(String language);
         void getModelLanguages(LinkedHashSet<String> set);
         void resetAcceptLanguages(String defaultLocale);

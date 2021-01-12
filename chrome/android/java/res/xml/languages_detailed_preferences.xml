@@ -4,16 +4,47 @@
      found in the LICENSE file. -->
 
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.chrome.browser.language.settings.DetailedLanguageListPreference
-        android:key="preferred_languages"
-        android:layout="@layout/languages_preference"
-        android:widgetLayout="@layout/accept_languages_list" />
+    <PreferenceCategory
+        android:key="app_language_section"
+        android:order="1">
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="translate_switch"
-        android:summaryOn="@string/languages_offer_translate_switch"
-        android:summaryOff="@string/languages_offer_translate_switch" />
+        <org.chromium.chrome.browser.language.settings.LanguageItemPickerPreference
+            android:key="app_language_preference" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+      android:key="content_langauges_section"
+      android:title="@string/languages_content_title"
+      android:order="2"
+      app:allowDividerAbove="true">
+
+        <org.chromium.chrome.browser.language.settings.LanguageListPreference
+            android:key="content_languages_preference"
+            android:layout="@layout/languages_preference"
+            android:widgetLayout="@layout/accept_languages_list" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="translation_settings_section"
+        android:order="3"
+        android:title="@string/languages_settings_title"
+        app:initialExpandedChildrenCount="1">
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="translate_switch"
+            android:summaryOn="@string/languages_send_translate_switch"
+            android:summaryOff="@string/languages_send_translate_switch" />
+
+        <org.chromium.chrome.browser.language.settings.LanguageItemPickerPreference
+            android:key="translate_settings_target_language"
+            android:title="@string/languages_settings_target"
+            app:allowDividerBelow="false" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

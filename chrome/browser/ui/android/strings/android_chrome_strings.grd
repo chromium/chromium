@@ -1187,12 +1187,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGES_ITEM_OPTION_OFFER_TO_TRANSLATE" desc="Option in language item menu. User can click the 'Offer to translate' option to toggle whether they want Chrome to translate pages in this language. [CHAR-LIMIT=32]">
         Offer to translate
       </message>
-      <message name="IDS_LANGUAGES_SET_APPLICATION_LANGUAGE_PROMPT" desc="Option in language item menu. User can click the 'App Language' option to toggle whether or not the Chrome user interface should be displayed in this language. [CHAR-LIMIT=32]">
-        Use as Chrome’s language
-      </message>
-      <message name="IDS_LANGUAGES_SET_AS_APPLICATION_LANGUAGE" desc="Toast to display after selecting language to use for Chrome's user interface.">
-        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> will use <ph name="language">%2$s<ex>Hindi</ex></ph> on restart.
-      </message>
       <message name="IDS_LANGUAGES_EXPLICIT_ASK_TITLE" desc="Title of the dialog that explicitly asks the user which languages they can read.">
         What languages do you read?
       </message>

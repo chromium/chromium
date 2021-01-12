@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.ArrayList;
@@ -35,7 +36,14 @@ import java.util.Locale;
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
 public class AddLanguageFragment extends Fragment {
-    static final String INTENT_NEW_ACCEPT_LANGUAGE = "AddLanguageFragment.NewLanguage";
+    // Intent key to pass selected language code from AddLanguageFragment.
+    static final String INTENT_SELECTED_LANGUAGE = "AddLanguageFragment.SelectedLanguages";
+    // Intent key to receive type of languages to populate fragment with.
+    static final String INTENT_LANGUAGE_OPTIONS = "AddLanguageFragment.LanguageOptions";
+    // Intent keys to select language options to use.
+    static final int LANGUAGE_OPTIONS_ACCEPT_LANGUAGES = 0; // Default
+    static final int LANGUAGE_OPTIONS_UI_LANGUAGES = 1;
+    static final int LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES = 2;
 
     /**
      * A host to launch AddLanguageFragment and receive the result.
@@ -97,7 +105,11 @@ public class AddLanguageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.add_language);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
+            getActivity().setTitle(R.string.languages_select);
+        } else {
+            getActivity().setTitle(R.string.add_language);
+        }
         setHasOptionsMenu(true);
         LanguagesManager.recordImpression(
                 LanguagesManager.LanguageSettingsPageType.PAGE_ADD_LANGUAGE);
@@ -117,10 +129,20 @@ public class AddLanguageFragment extends Fragment {
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        mFullLanguageList = LanguagesManager.getInstance().getLanguageItemsExcludingUserAccept();
+        int languageOption = getActivity().getIntent().getIntExtra(
+                INTENT_LANGUAGE_OPTIONS, LANGUAGE_OPTIONS_ACCEPT_LANGUAGES);
+        if (languageOption == LANGUAGE_OPTIONS_UI_LANGUAGES) {
+            mFullLanguageList = LanguagesManager.getInstance().getAvailableUiLanguageItems();
+            mFullLanguageList.add(0, LanguageItem.makeSystemDefaultLanguageItem());
+        } else if (languageOption == LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES) {
+            mFullLanguageList = LanguagesManager.getInstance().getTranslateLanguageItems();
+        } else {
+            mFullLanguageList =
+                    LanguagesManager.getInstance().getLanguageItemsExcludingUserAccept();
+        }
         mItemClickListener = item -> {
             Intent intent = new Intent();
-            intent.putExtra(INTENT_NEW_ACCEPT_LANGUAGE, item.getCode());
+            intent.putExtra(INTENT_SELECTED_LANGUAGE, item.getCode());
             activity.setResult(Activity.RESULT_OK, intent);
             activity.finish();
         };

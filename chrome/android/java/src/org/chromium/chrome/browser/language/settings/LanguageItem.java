@@ -4,6 +4,15 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import android.text.TextUtils;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+
+import java.util.Locale;
+
 /**
  * Simple object representing the language item.
  */
@@ -31,7 +40,11 @@ public class LanguageItem {
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;
         mSupportTranslate = supportTranslate;
-        mSupportAppUI = AvailableUiLanguages.isAvailable(mCode);
+        if (TextUtils.equals(code, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
+            mSupportAppUI = true; // system language is a supported UI language
+        } else {
+            mSupportAppUI = AvailableUiLanguages.isAvailable(mCode);
+        }
     }
 
     /**
@@ -67,5 +80,19 @@ public class LanguageItem {
      */
     public boolean isUISupported() {
         return mSupportAppUI;
+    }
+
+    /**
+     * Create a LanguageItem representing the system default language.
+     * @return LanguageItem
+     */
+    public static LanguageItem makeSystemDefaultLanguageItem() {
+        String displayName = ContextUtils.getApplicationContext().getResources().getString(
+                R.string.default_lang_subtitle);
+        String nativeName =
+                GlobalAppLocaleController.getInstance().getOriginalSystemLocale().getDisplayName(
+                        Locale.getDefault());
+        return new LanguageItem(
+                AppLocaleUtils.SYSTEM_LANGUAGE_VALUE, displayName, nativeName, true);
     }
 }

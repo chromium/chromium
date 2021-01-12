@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.language.settings;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 
@@ -121,6 +122,43 @@ public class LanguagesManager {
             if (!codes.contains(item.getCode())) results.add(item);
         }
         return results;
+    }
+
+    /**
+     * Get a list of LanguageItems that can be Chrome UI languages.
+     * @return List of LanguageItems.
+     */
+    public List<LanguageItem> getAvailableUiLanguageItems() {
+        List<LanguageItem> results = new ArrayList<>();
+        for (LanguageItem item : mLanguagesMap.values()) {
+            if (item.isUISupported()) results.add(item);
+        }
+        return results;
+    }
+
+    /**
+     * Get a list of LanguageItems that are translatable.
+     * @return List of LanguageItems.
+     */
+    public List<LanguageItem> getTranslateLanguageItems() {
+        List<LanguageItem> results = new ArrayList<>();
+        for (LanguageItem item : mLanguagesMap.values()) {
+            if (item.isSupported()) results.add(item);
+        }
+        return results;
+    }
+
+    /**
+     * Get a LanguageItem given the iso639 locale code (e.g. en-US).  If no direct match is found
+     * only the language is checked. If there is still no match null is returned.
+     * @return LanguageItem or null if none found
+     */
+    public LanguageItem getLanguageItem(String localeCode) {
+        LanguageItem result = mLanguagesMap.get(localeCode);
+        if (result != null) return result;
+
+        String baseLanguage = LocaleUtils.toLanguage(localeCode);
+        return mLanguagesMap.get(baseLanguage);
     }
 
     /**

@@ -30,6 +30,9 @@ public class AppLocaleUtils {
 
     private static final String TAG = "AppLocale";
 
+    // Value of AppLocale preference when the system language is used.
+    public static final String SYSTEM_LANGUAGE_VALUE = null;
+
     /**
      * Return true if languageName is the same as the current application override
      * language stored preference.
@@ -45,7 +48,7 @@ public class AppLocaleUtils {
      */
     public static String getAppLanguagePref() {
         return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, SYSTEM_LANGUAGE_VALUE);
     }
 
     /**
@@ -58,7 +61,7 @@ public class AppLocaleUtils {
     @SuppressWarnings("DefaultSharedPreferencesCheck")
     protected static String getAppLanguagePrefStartUp(Context base) {
         return PreferenceManager.getDefaultSharedPreferences(base).getString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, SYSTEM_LANGUAGE_VALUE);
     }
 
     /**
@@ -69,7 +72,7 @@ public class AppLocaleUtils {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
         if (BundleUtils.isBundle()) {
-            ensureLaguageSplitInstalled(languageName);
+            ensureLanguageSplitInstalled(languageName);
         }
     }
 
@@ -89,14 +92,14 @@ public class AppLocaleUtils {
     }
 
     /**
-     * For bundle builds ensure that the language split for languageName is download.
+     * For bundle builds ensure that the language split for languageName is downloaded.
      */
-    private static void ensureLaguageSplitInstalled(String languageName) {
+    private static void ensureLanguageSplitInstalled(String languageName) {
         SplitInstallManager splitInstallManager =
                 SplitInstallManagerFactory.create(ContextUtils.getApplicationContext());
 
         // TODO(perrier): check if languageName is already installed. https://crbug.com/1103806
-        if (languageName != null) {
+        if (!TextUtils.equals(languageName, SYSTEM_LANGUAGE_VALUE)) {
             SplitInstallRequest installRequest =
                     SplitInstallRequest.newBuilder()
                             .addLanguage(Locale.forLanguageTag(languageName))

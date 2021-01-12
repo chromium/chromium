@@ -184,6 +184,16 @@ JNI_TranslateBridge_GetTargetLanguage(JNIEnv* env) {
   return j_target_language;
 }
 
+// Set the default target language to translate into for this user.
+static void JNI_TranslateBridge_SetDefaultTargetLanguage(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_target_language) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
+  std::string target_language(ConvertJavaStringToUTF8(env, j_target_language));
+  translate_prefs->SetRecentTargetLanguage(target_language);
+}
+
 // Determines whether the given language is blocked for translation.
 static jboolean JNI_TranslateBridge_IsBlockedLanguage(
     JNIEnv* env,
