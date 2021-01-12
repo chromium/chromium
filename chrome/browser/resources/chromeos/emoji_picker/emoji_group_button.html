@@ -1,0 +1,21 @@
+<style>
+  button {
+    background-color: transparent;
+    border: 5px solid transparent;
+    padding: 0;
+    width: 36px;
+  }
+
+  button:hover {
+    color: red;
+  }
+
+  .active {
+    border-bottom: 5px solid blue;
+    color: blue;
+  }
+</style>
+
+<button class$="[[_className(active)]]" on-click="handleClick">
+  <iron-icon icon="[[icon]]"></iron-icon>
+</button>

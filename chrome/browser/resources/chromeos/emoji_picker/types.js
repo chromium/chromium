@@ -16,3 +16,10 @@ export let EmojiGroup;
  * @typedef {Array<EmojiGroup>} EmojiData
  */
 export let EmojiData;
+
+/**
+ * @typedef {!CustomEvent<{group: string}>} GroupButtonEvent
+ */
+export let GroupButtonEvent;
+
+export const GROUP_BUTTON_EVENT = 'group-button';
