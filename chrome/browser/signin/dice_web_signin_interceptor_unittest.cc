@@ -493,11 +493,12 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineRepeatedly) {
   account_info.hosted_domain = "example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-  // Decline the interception three times.
+  const int kMaxProfileCreationDeclinedCount = 2;
+  // Decline the interception kMaxProfileCreationDeclinedCount times.
   DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters = {
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
       account_info, primary_account_info, SkColor()};
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
                     web_contents(), MatchBubbleParameters(expected_parameters),
@@ -514,7 +515,7 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineRepeatedly) {
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise, i + 1);
   }
 
-  // Fourth time the interception is not shown again.
+  // Next time the interception is not shown again.
   MaybeIntercept(account_info.account_id);
   EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
   histogram_tester.ExpectBucketCount(
@@ -544,7 +545,8 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineRepeatedly) {
   MaybeIntercept(account_info.account_id);
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kInterceptEnterprise, 4);
+      SigninInterceptionHeuristicOutcome::kInterceptEnterprise,
+      kMaxProfileCreationDeclinedCount + 1);
   EXPECT_EQ(interceptor()->is_interception_in_progress(), true);
 }
 

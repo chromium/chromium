@@ -553,8 +553,8 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
       kProfileCreationInterceptionDeclinedPref);
   base::Optional<int> declined_count =
       pref_data->FindIntKey(GetPersistentEmailHash(email));
-  // Check if the user declined 3 times.
-  constexpr int kMaxProfileCreationDeclinedCount = 3;
+  // Check if the user declined 2 times.
+  constexpr int kMaxProfileCreationDeclinedCount = 2;
   return declined_count &&
          declined_count.value() >= kMaxProfileCreationDeclinedCount;
 }

@@ -294,7 +294,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // cannot be reversed.
   void RecordProfileCreationDeclined(const std::string& email);
 
-  // Checks if the user previously declined 3 times creating a new profile for
+  // Checks if the user previously declined 2 times creating a new profile for
   // this account.
   bool HasUserDeclinedProfileCreation(const std::string& email) const;
 
