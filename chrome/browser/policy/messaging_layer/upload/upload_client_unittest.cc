@@ -242,7 +242,6 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     records->push_back(encrypted_record);
   }
 
-  TestCallbackWaiterWithCounter waiter(kExpectedCallTimes);
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(
@@ -260,15 +259,16 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   client->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
+  TestCallbackWaiter waiter;
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
-      .WillRepeatedly(WithArgs<0, 2>(Invoke(
+      .WillOnce(WithArgs<0, 2>(Invoke(
           [&waiter](base::Value request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
                 .Run(ValueFromSucceededSequencingInfo(std::move(request)));
             base::ThreadPool::PostTask(
                 FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                base::BindOnce(&TestCallbackWaiterWithCounter::Signal,
+                base::BindOnce(&TestCallbackWaiter::Signal,
                                base::Unretained(&waiter)));
           })));
 

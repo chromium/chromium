@@ -74,7 +74,7 @@ class RecordHandlerImpl::ReportUploader
 
   void OnStart() override;
 
-  void StartUpload(const EncryptedRecord& encrypted_record);
+  void StartUpload();
   void OnUploadComplete(base::Optional<base::Value> response);
   void HandleFailedUpload();
   void HandleSuccessfulUpload();
@@ -159,26 +159,27 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     return;
   }
 
-  // We'll be popping records off the back.
-  std::reverse(records_->begin(), records_->end());
-
-  StartUpload(records_->back());
+  StartUpload();
 }
 
-void RecordHandlerImpl::ReportUploader::StartUpload(
-    const EncryptedRecord& encrypted_record) {
+void RecordHandlerImpl::ReportUploader::StartUpload() {
   auto response_cb =
       base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
                      base::Unretained(this));
 
-  auto request_result =
-      UploadEncryptedReportingRequestBuilder(need_encryption_key_)
-          .AddRecord(encrypted_record)
-          .Build();
+  UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
+  for (const auto& record : *records_) {
+    request_builder.AddRecord(record);
+  }
+  auto request_result = request_builder.Build();
   if (!request_result.has_value()) {
     std::move(response_cb).Run(base::nullopt);
     return;
   }
+
+  // Records have been captured in the request, safe to clear the vector.
+  records_->clear();
+
   base::Value request = std::move(request_result.value());
 
   base::PostTask(
@@ -208,18 +209,12 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
 }
 
 void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
-  Status data_loss = Status(
-      error::DATA_LOSS,
-      base::StrCat({"Record failed uploaded: ",
-                    records_->back().sequencing_information().DebugString()}));
-  LOG(ERROR) << data_loss;
-
   if (highest_sequencing_information_.has_value()) {
     Complete(std::move(highest_sequencing_information_.value()));
     return;
   }
 
-  Complete(data_loss);
+  Complete(Status(error::INTERNAL, "Unable to upload any records"));
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
@@ -275,7 +270,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
     }
   }
 
-  // Check if the previous record was unprocessable on the server.
+  // Check if a record was unprocessable on the server.
   const base::Value* failed_uploaded_record = last_response_.FindDictPath(
       "firstFailedUploadedRecord.failedUploadedRecord");
   if (failed_uploaded_record != nullptr) {
@@ -289,20 +284,15 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
     auto gap_record_result =
         HandleFailedUploadedSequencingInformation(*failed_uploaded_record);
     if (gap_record_result.has_value()) {
-      gap_record_ = std::move(gap_record_result.value());
       LOG(ERROR) << "Data Loss. Record was unprocessable by the server: "
                  << *failed_uploaded_record;
-      StartUpload(gap_record_);
-      return;
+      records_->push_back(std::move(gap_record_result.value()));
     }
   }
 
-  // Pop the last record that was processed.
-  records_->pop_back();
-
   if (!records_->empty()) {
     // Upload the next record but do not request encryption key again.
-    StartUpload(records_->back());
+    StartUpload();
     return;
   }
 
