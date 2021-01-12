@@ -686,12 +686,17 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 
   // Srcdoc subframes need to inherit their origin from their parent frame.
   if (navigation_request->GetURL().IsAboutSrcdoc()) {
-    // Srcdoc navigations in main frames are blocked before this function is
-    // called. This should guarantee existence of a parent here.
     RenderFrameHostImpl* parent =
         navigation_request->frame_tree_node()->parent();
-    DCHECK(parent);
-    return parent->GetLastCommittedOrigin();
+
+    // The `parent` may be missing if a renderer executes `location =
+    // "about:srcdoc` instead of embedding an <iframe srcdoc="..."></iframe>
+    // element.  Such case should use an error page with an opaque, unique
+    // origin.
+    //
+    // See also NavigationBrowserTest.BlockedSrcDoc* tests.
+    DCHECK(parent || navigation_request->GetNetErrorCode() != net::OK);
+    return parent ? parent->GetLastCommittedOrigin() : url::Origin();
   }
 
   // In cases not covered above, URLLoaderFactory should be associated with the
@@ -4512,7 +4517,11 @@ bool NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
 }
 
 url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
+  // The origin to commit is not known until we get the final network response.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+
+  if (IsSameDocument() || IsServedFromBackForwardCache())
+    return GetRenderFrameHost()->GetLastCommittedOrigin();
 
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
@@ -4527,15 +4536,20 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // This flag also prevents script from reading from or writing to the
   // document.cookie IDL attribute, and blocks access to localStorage.
   // ```
-  const bool use_opaque_origin = (sandbox_flags_to_commit_.value() &
-                                  network::mojom::WebSandboxFlags::kOrigin) ==
-                                 network::mojom::WebSandboxFlags::kOrigin;
+  bool use_opaque_origin = (sandbox_flags_to_commit_.value() &
+                            network::mojom::WebSandboxFlags::kOrigin) ==
+                           network::mojom::WebSandboxFlags::kOrigin;
+  // TODO(https://crbug.com/1158370): Move special-casing error pages into
+  // ComputeSandboxFlagsToCommit (and renderer-side origin calculations) so that
+  // the most strict sandbox flags are applied.
+  if (GetNetErrorCode() != net::OK)
+    use_opaque_origin = true;
   if (use_opaque_origin)
     origin = origin.DeriveNewOpaqueOrigin();
 
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.
-  DCHECK(!IsMhtmlOrSubframe() || use_opaque_origin);
+  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
 
   // https://crbug.com/1041376) of the origin that will be committed because of
   // |this| NavigationRequest.

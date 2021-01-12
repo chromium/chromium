@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -61,6 +62,7 @@
 #include "content/test/test_render_widget_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
@@ -2805,7 +2807,14 @@ TEST_P(RenderFrameHostManagerTest, CanCommitOrigin) {
   for (const auto& test_case : cases) {
     auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
         GURL(test_case.url), contents());
-    navigation->set_origin(url::Origin::Create(GURL(test_case.origin)));
+    url::Origin origin = url::Origin::Create(GURL(test_case.origin));
+    navigation->set_origin(origin);
+    if (origin.opaque()) {
+      auto response_headers =
+          base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
+      response_headers->SetHeader("Content-Security-Policy", "sandbox");
+      navigation->SetResponseHeaders(response_headers);
+    }
     navigation->ReadyToCommit();
 
     int expected_bad_msg_count =

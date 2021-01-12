@@ -825,23 +825,25 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     NavigationRequest* navigation_request,
     const mojom::DidCommitProvisionalLoadParams& params) {
   DCHECK(navigation_request);
+  DCHECK(!navigation_request->IsSameDocument());
+  DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
   // Ignore for now cases where the NavigationRequest is in an unexpectedly
-  // early state.  See also the NavigationRequestBrowserTest.VerifySameDocument
-  // test.
+  // early state. Triggered by the following tests:
+  // NavigationBrowserTest.OpenerNavigation_DownloadPolicy,
+  // WebContentsImplBrowserTest.NewNamedWindow.
   if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
     return;
 
-  // Ignore for now opaque |renderer_side_origin| origins.  This effectively
-  // ignores the following scenarios:
-  // - error frames (i.e. navigation_request->GetNetErrorCode() != net::OK;
-  //   see also the NavigationBrowserTest.FailedNavigation test)
-  // - sandboxed frames (see also https://crbug.com/1145139#c5)
-  // - comparison of precursor origins
+  // Check if both the renderer and browser expect an opaque origin. This
+  // effectively ignores the following:
+  // - precursor origins
   // - TODO(https://crbug.com/1041376): mismatched nonces (even if precursor
   //   origins would have matched)
   const url::Origin& renderer_side_origin = params.origin;
-  if (renderer_side_origin.opaque())
+  url::Origin browser_side_origin =
+      navigation_request->GetOriginForURLLoaderFactory();
+  if (renderer_side_origin.opaque() && browser_side_origin.opaque())
     return;
 
   // Ignore about:blank navigations, because browser-side calculated the origin
@@ -852,9 +854,8 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (navigation_request->GetURL().IsAboutBlank())
     return;
 
-  url::Origin browser_side_origin =
-      navigation_request->GetOriginForURLLoaderFactory();
-  DCHECK_EQ(browser_side_origin, renderer_side_origin);
+  DCHECK_EQ(browser_side_origin, renderer_side_origin)
+      << "; navigation_request->GetURL() = " << navigation_request->GetURL();
 }
 
 }  // namespace
@@ -7399,36 +7400,30 @@ void RenderFrameHostImpl::
   // |coep_reporter_receiver| is optional.
   DCHECK(out_trust_token_redemption_policy);
 
-  bool have_successful_request =
-      navigation_request && navigation_request->GetNetErrorCode() == net::OK;
-  bool have_failed_request =
-      navigation_request && navigation_request->GetNetErrorCode() != net::OK;
   CrossOriginEmbedderPolicyReporter* coep_reporter = nullptr;
 
-  if (have_successful_request) {
+  if (navigation_request) {
     // Return values based on the |navigation_request|.
     *out_main_world_origin = navigation_request->GetOriginForURLLoaderFactory();
-    *out_isolation_info = navigation_request->isolation_info_for_subresources();
     *out_client_security_state = navigation_request->BuildClientSecurityState();
-    coep_reporter = navigation_request->coep_reporter();
-    *out_trust_token_redemption_policy =
-        DetermineWhetherToForbidTrustTokenRedemption(
-            GetParent(), navigation_request->commit_params(),
-            *out_main_world_origin);
-  } else if (have_failed_request) {
-    // Some return values should always be the same for error pages.  Some
-    // return values may be based on the |navigation_request|.
 
-    // Error page will commit in an opaque origin.
-    // TODO(lukasza): https://crbug.com/888079: Use this origin when sending the
-    // commit IPC and setting |last_committed_origin_|.
-    url::Origin error_page_origin = url::Origin();
-    *out_main_world_origin = error_page_origin;
-    *out_isolation_info = net::IsolationInfo::CreateTransient();
-    *out_client_security_state = navigation_request->BuildClientSecurityState();
-    coep_reporter = nullptr;
-    *out_trust_token_redemption_policy =
-        network::mojom::TrustTokenRedemptionPolicy::kForbid;
+    // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
+    // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
+    // and/or |coep_reporter| methods).
+    if (navigation_request->GetNetErrorCode() == net::OK) {
+      *out_isolation_info =
+          navigation_request->isolation_info_for_subresources();
+      coep_reporter = navigation_request->coep_reporter();
+      *out_trust_token_redemption_policy =
+          DetermineWhetherToForbidTrustTokenRedemption(
+              GetParent(), navigation_request->commit_params(),
+              *out_main_world_origin);
+    } else {
+      *out_isolation_info = net::IsolationInfo::CreateTransient();
+      coep_reporter = nullptr;
+      *out_trust_token_redemption_policy =
+          network::mojom::TrustTokenRedemptionPolicy::kForbid;
+    }
   } else {
     // Use properties of the last committed navigation.
     *out_main_world_origin = last_committed_origin_;
@@ -8781,8 +8776,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   DCHECK(navigation_request);
   DCHECK(navigation_request->IsNavigationStarted());
-  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
-      navigation_request.get(), *params);
   VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
       navigation_request.get(), *params, same_document_params.Clone());
 
@@ -8969,6 +8962,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
     //
     // This should be fixed and the DCHECK restored.
   }
+
+  // TODO(https://crbug.com/888079): The origin computed from the browser must
+  // match the one reported from the renderer process.
+  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(navigation_request,
+                                                             params);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {
