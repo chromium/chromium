@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -159,9 +160,9 @@ class RepeatableQueriesService : public KeyedService {
   bool IsQueryDeleted(const base::string16& query);
   void MarkQueryAsDeleted(const base::string16& query);
 
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
-  TemplateURLService* template_url_service_;
+  CheckedPtr<TemplateURLService> template_url_service_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

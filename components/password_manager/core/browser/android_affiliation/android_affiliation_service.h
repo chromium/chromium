@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -157,7 +158,7 @@ class AndroidAffiliationService : public KeyedService {
   // The backend, owned by this AndroidAffiliationService instance, but living
   // on the DB thread. It will be deleted asynchronously during shutdown on the
   // DB thread, so it will outlive |this| along with all its in-flight tasks.
-  AffiliationBackend* backend_;
+  CheckedPtr<AffiliationBackend> backend_;
 
   // TaskRunner to be used to run the |backend_|.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

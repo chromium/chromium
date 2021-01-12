@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
 #include "chrome/common/webui_url_constants.h"
@@ -64,7 +65,7 @@ class SanitizedImageSourceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  MockImageDecoder* mock_image_decoder_;
+  CheckedPtr<MockImageDecoder> mock_image_decoder_;
   std::unique_ptr<SanitizedImageSource> sanitized_image_source_;
 };
 

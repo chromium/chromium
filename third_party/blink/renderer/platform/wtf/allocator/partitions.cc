@@ -78,7 +78,8 @@ bool Partitions::InitializeOnce() {
   fast_malloc_allocator->init(
       {base::PartitionOptions::Alignment::kRegular,
        base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::PCScan::kDisabledByDefault});
+       base::PartitionOptions::PCScan::kDisabledByDefault,
+       base::PartitionOptions::RefCount::kDisabled});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -90,16 +91,18 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  array_buffer_allocator->init(
-      {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::PCScan::kAlwaysDisabled});
+  array_buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
+                                base::PartitionOptions::ThreadCache::kDisabled,
+                                base::PartitionOptions::PCScan::kAlwaysDisabled,
+                                base::PartitionOptions::RefCount::kDisabled});
   buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
                           base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::PCScan::kDisabledByDefault});
+                          base::PartitionOptions::PCScan::kDisabledByDefault,
+                          base::PartitionOptions::RefCount::kDisabled});
   layout_allocator->init({base::PartitionOptions::Alignment::kRegular,
                           base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::PCScan::kAlwaysDisabled});
+                          base::PartitionOptions::PCScan::kAlwaysDisabled,
+                          base::PartitionOptions::RefCount::kDisabled});
 
   array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();

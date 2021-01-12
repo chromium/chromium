@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_APP_H_
 #define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_APP_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/payments/content/payment_app.h"
 
 #include <stdint.h>
@@ -96,7 +97,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
   // Used only for comparison with the RenderFrameHost pointer in
   // RenderFrameDeleted() method.
-  const content::RenderFrameHost* const
+  const CheckedPtr<const content::RenderFrameHost>
       authenticator_render_frame_host_pointer_do_not_dereference_;
 
   const std::string effective_relying_party_identity_;

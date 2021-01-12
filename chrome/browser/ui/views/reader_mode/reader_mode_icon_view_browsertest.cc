@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 
 #include "base/test/scoped_feature_list.h"
@@ -58,7 +59,7 @@ class ReaderModeIconViewBrowserTest : public InProcessBrowserTest {
     return https_server_secure_.get();
   }
 
-  PageActionIconView* reader_mode_icon_;
+  CheckedPtr<PageActionIconView> reader_mode_icon_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_secure_;
 
  private:

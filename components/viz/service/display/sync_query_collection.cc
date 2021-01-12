@@ -5,6 +5,7 @@
 #include "components/viz/service/display/sync_query_collection.h"
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/container_util.h"
 #include "components/viz/service/display/resource_fence.h"
@@ -96,7 +97,7 @@ class SyncQuery {
     DISALLOW_COPY_AND_ASSIGN(Fence);
   };
 
-  gpu::gles2::GLES2Interface* gl_;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
   unsigned query_id_;
   bool is_pending_;
   base::WeakPtrFactory<SyncQuery> weak_ptr_factory_{this};

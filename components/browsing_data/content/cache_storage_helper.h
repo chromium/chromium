@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/public/browser/cache_storage_context.h"
@@ -49,7 +50,7 @@ class CacheStorageHelper
   virtual ~CacheStorageHelper();
 
   // Owned by the profile.
-  content::CacheStorageContext* cache_storage_context_;
+  CheckedPtr<content::CacheStorageContext> cache_storage_context_;
 
  private:
   friend class base::RefCountedThreadSafe<CacheStorageHelper>;

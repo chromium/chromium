@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -357,7 +358,7 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
  private:
   void StartAsync() { NotifyHeadersComplete(); }
 
-  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  CheckedPtr<scoped_refptr<net::IOBuffer>> simulated_cache_dest_;
   bool use_text_plain_;
   base::WeakPtrFactory<URLRequestSimulatedCacheJob> weak_factory_{this};
 
@@ -379,7 +380,7 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
   }
 
  private:
-  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  CheckedPtr<scoped_refptr<net::IOBuffer>> simulated_cache_dest_;
   bool use_text_plain_;
   DISALLOW_COPY_AND_ASSIGN(SimulatedCacheInterceptor);
 };
@@ -897,7 +898,7 @@ class URLLoaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
-  net::TestNetworkDelegate*
+  CheckedPtr<net::TestNetworkDelegate>
       unowned_test_network_delegate_;  // owned by |context_|
   std::unique_ptr<net::URLRequestContext> context_;
   ResourceScheduler resource_scheduler_;
@@ -3500,7 +3501,7 @@ class MockNetworkContextClient : public TestNetworkContextClient {
   std::string provider_name_;
   std::vector<uint16_t> algorithm_preferences_;
   int on_certificate_requested_counter_ = 0;
-  mojo::Remote<mojom::URLLoader>* url_loader_remote_ = nullptr;
+  CheckedPtr<mojo::Remote<mojom::URLLoader>> url_loader_remote_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MockNetworkContextClient);
 };
@@ -5678,7 +5679,7 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
 
   SyncOrAsync operation_synchrony_;
 
-  bool* begin_done_flag_;
+  CheckedPtr<bool> begin_done_flag_;
 };
 
 class NoopTrustTokenKeyCommitmentGetter : public TrustTokenKeyCommitmentGetter {

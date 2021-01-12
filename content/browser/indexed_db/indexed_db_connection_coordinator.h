@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
@@ -96,7 +97,7 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   class OpenRequest;
   class DeleteRequest;
 
-  IndexedDBDatabase* db_;
+  CheckedPtr<IndexedDBDatabase> db_;
 
   TasksAvailableCallback tasks_available_callback_;
 

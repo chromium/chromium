@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
@@ -75,7 +76,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   mojo::Remote<app_management::mojom::Page> page_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

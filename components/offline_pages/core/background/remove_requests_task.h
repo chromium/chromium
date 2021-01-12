@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/save_page_request.h"
@@ -35,7 +36,7 @@ class RemoveRequestsTask : public Task {
   void CompleteWithResult(UpdateRequestsResult result);
 
   // Store that this task updates.
-  RequestQueueStore* store_;
+  CheckedPtr<RequestQueueStore> store_;
   // Request IDs to be updated.
   std::vector<int64_t> request_ids_;
   // Callback to complete the task.

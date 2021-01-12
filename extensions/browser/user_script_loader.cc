@@ -412,7 +412,7 @@ void UserScriptLoader::OnScriptsLoaded(
   // TODO(hanxi): Remove the NOTIFICATION_USER_SCRIPTS_UPDATED.
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<base::ReadOnlySharedMemoryRegion>(&shared_memory_));
   for (auto& observer : observers_)
     observer.OnScriptsLoaded(this, browser_context_);

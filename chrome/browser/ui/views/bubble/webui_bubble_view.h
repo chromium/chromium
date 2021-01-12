@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -69,7 +70,7 @@ class WebUIBubbleView : public views::WebView,
  private:
   // |host_| does not always have to be set. The WebUIBubbleView can be cached
   // and running in the background without a host being present.
-  Host* host_ = nullptr;
+  CheckedPtr<Host> host_ = nullptr;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

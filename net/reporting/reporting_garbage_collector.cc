@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -77,7 +78,7 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
     context_->AddCacheObserver(this);
   }
 
-  ReportingContext* context_;
+  CheckedPtr<ReportingContext> context_;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_ACCOUNT_STORAGE_AUTH_HELPER_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -64,9 +65,10 @@ class AccountStorageAuthHelper {
           reauth_callback,
       signin::ReauthResult result);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
-  password_manager::PasswordFeatureManager* const password_feature_manager_;
+  const CheckedPtr<password_manager::PasswordFeatureManager>
+      password_feature_manager_;
 
   base::RepeatingCallback<SigninViewController*()>
       signin_view_controller_getter_;

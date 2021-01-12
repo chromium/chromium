@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -176,8 +177,8 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void OnReleaseMailbox(GLuint shared_texture_id,
                         base::OnceCallback<void()> release_mailbox);
 
-  gles2::GLES2Interface* gl_;
-  ContextSupport* context_support_;
+  CheckedPtr<gles2::GLES2Interface> gl_;
+  CheckedPtr<ContextSupport> context_support_;
   std::unique_ptr<GLHelper> gl_helper_;
   base::WeakPtrFactory<RasterImplementationGLES> weak_ptr_factory_{this};
 

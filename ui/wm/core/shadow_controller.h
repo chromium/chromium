@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/wm/core/wm_core_export.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -57,7 +58,7 @@ class WM_CORE_EXPORT ShadowController : public ActivationChangeObserver {
  private:
   class Impl;
 
-  ActivationClient* activation_client_;
+  CheckedPtr<ActivationClient> activation_client_;
 
   scoped_refptr<Impl> impl_;
 

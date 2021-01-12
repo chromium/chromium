@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -230,7 +231,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   VideoEncoderClientState encoder_client_state_;
 
   // The video being encoded, owned by the video encoder test environment.
-  const Video* video_ = nullptr;
+  CheckedPtr<const Video> video_ = nullptr;
   // Helper used to align data and create frames from the raw video stream.
   std::unique_ptr<media::test::AlignedDataHelper> aligned_data_helper_;
 
@@ -256,7 +257,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   VideoEncoderStats current_stats_ GUARDED_BY(stats_lock_);
   mutable base::Lock stats_lock_;
 
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   SEQUENCE_CHECKER(test_sequence_checker_);
   SEQUENCE_CHECKER(encoder_client_sequence_checker_);

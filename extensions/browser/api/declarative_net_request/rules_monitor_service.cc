@@ -291,7 +291,7 @@ RulesMonitorService::RulesMonitorService(
   // extension load) on the presence of certain extension prefs. These may still
   // be remaining from an earlier install on which the feature was available.
   if (IsAPIAvailable())
-    registry_observer_.Add(extension_registry_);
+    registry_observer_.Add(extension_registry_.get());
 }
 
 RulesMonitorService::~RulesMonitorService() = default;

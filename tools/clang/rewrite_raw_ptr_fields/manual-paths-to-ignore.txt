@@ -35,7 +35,23 @@ sandbox/win/sandbox_poc/pocdll
 android_webview/public/
 
 # Exclude dependences of checked_ptr.h
+base/bind.h
 base/logging.h
+base/threading/thread_collision_warner.h
+base/synchronization/lock_impl.h
+base/bind_internal.h
+base/debug/crash_logging.h
+base/memory/shared_memory_mapping.h
+base/callback.h
+base/synchronization/lock.h
+base/threading/hang_watcher.h
+base/threading/simple_thread.h
+base/containers/vector_buffer.h
+base/containers/circular_deque.h
+base/feature_list.h
+base/metrics/persistent_memory_allocator.h
+
+chrome/install_static
 
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,

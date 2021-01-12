@@ -102,9 +102,10 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
   GpuVideoDecodeGLClient gl_client;
   if (hasGLContext) {
     gl_client.get_context = base::BindRepeating(
-        &FrameRenderer::GetGLContext, base::Unretained(frame_renderer_));
-    gl_client.make_context_current = base::BindRepeating(
-        &FrameRenderer::AcquireGLContext, base::Unretained(frame_renderer_));
+        &FrameRenderer::GetGLContext, base::Unretained(frame_renderer_.get()));
+    gl_client.make_context_current =
+        base::BindRepeating(&FrameRenderer::AcquireGLContext,
+                            base::Unretained(frame_renderer_.get()));
     gl_client.bind_image = base::BindRepeating(
         [](uint32_t, uint32_t, const scoped_refptr<gl::GLImage>&, bool) {
           return true;

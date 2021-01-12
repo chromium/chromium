@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -418,10 +419,10 @@ class TrackerImplTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TrackerImpl> tracker_;
-  TestTrackerInMemoryEventStore* event_store_;
-  TestTrackerAvailabilityModel* availability_model_;
-  TestTrackerDisplayLockController* display_lock_controller_;
-  Configuration* configuration_;
+  CheckedPtr<TestTrackerInMemoryEventStore> event_store_;
+  CheckedPtr<TestTrackerAvailabilityModel> availability_model_;
+  CheckedPtr<TestTrackerDisplayLockController> display_lock_controller_;
+  CheckedPtr<Configuration> configuration_;
   base::HistogramTester histogram_tester_;
 
  private:

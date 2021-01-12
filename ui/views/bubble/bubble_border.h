@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -275,7 +276,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
-  BubbleBorder* border_;
+  CheckedPtr<BubbleBorder> border_;
 
   DISALLOW_COPY_AND_ASSIGN(BubbleBackground);
 };

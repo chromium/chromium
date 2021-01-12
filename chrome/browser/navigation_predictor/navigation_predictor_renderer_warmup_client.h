@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/tick_clock.h"
@@ -90,7 +91,7 @@ class NavigationPredictorRendererWarmupClient
   // calling |DoRendererWarmpup| if |counterfactual_| is false.
   void RecordMetricsAndMaybeDoWarmup(content::WebContents* web_contents);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Whether we are in a counterfactual experiment and so the renderer warmup
   // should not be done.
@@ -113,7 +114,7 @@ class NavigationPredictorRendererWarmupClient
   const double prediction_crosss_origin_threshold_;
 
   // The tick clock used within this class.
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // The timestamp of the last renderer warmup.
   base::TimeTicks last_warmup_time_;

@@ -6,6 +6,7 @@
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -137,7 +138,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   ~PdfViewWebPlugin() override;
 
   blink::WebPluginParams initial_params_;
-  blink::WebPluginContainer* container_ = nullptr;
+  CheckedPtr<blink::WebPluginContainer> container_ = nullptr;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 
 class PrefRegistrySimple;
@@ -88,7 +89,7 @@ class StabilityMetricsHelper {
   // Increments a 64-bit Integer pref value specified by |path|.
   void IncrementLongPrefsValue(const char* path);
 
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(StabilityMetricsHelper);
 };

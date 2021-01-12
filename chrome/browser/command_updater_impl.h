@@ -9,8 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "chrome/browser/command_updater.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
+#include "chrome/browser/command_updater.h"
 #include "ui/base/window_open_disposition.h"
 
 class CommandObserver;
@@ -59,7 +60,7 @@ class CommandUpdaterImpl : public CommandUpdater {
   Command* GetCommand(int id, bool create);
 
   // The delegate is responsible for executing commands.
-  CommandUpdaterDelegate* delegate_;
+  CheckedPtr<CommandUpdaterDelegate> delegate_;
 
   // This is a map of command IDs to states and observer lists
   std::unordered_map<int, std::unique_ptr<Command>> commands_;

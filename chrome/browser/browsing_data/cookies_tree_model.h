@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -134,17 +135,17 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
 
     NodeType node_type;
     url::Origin origin;
-    const net::CanonicalCookie* cookie = nullptr;
+    CheckedPtr<const net::CanonicalCookie> cookie = nullptr;
     // Used for AppCache, Database (WebSQL), IndexedDB, Service Worker, and
     // Cache Storage node types.
-    const content::StorageUsageInfo* usage_info = nullptr;
-    const browsing_data::FileSystemHelper::FileSystemInfo* file_system_info =
-        nullptr;
-    const BrowsingDataQuotaHelper::QuotaInfo* quota_info = nullptr;
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
+    CheckedPtr<const content::StorageUsageInfo> usage_info = nullptr;
+    CheckedPtr<const browsing_data::FileSystemHelper::FileSystemInfo>
+        file_system_info = nullptr;
+    CheckedPtr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
+    CheckedPtr<const browsing_data::SharedWorkerHelper::SharedWorkerInfo>
         shared_worker_info = nullptr;
-    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license_info =
-        nullptr;
+    CheckedPtr<const BrowsingDataMediaLicenseHelper::MediaLicenseInfo>
+        media_license_info = nullptr;
   };
 
   CookieTreeNode() {}
@@ -200,7 +201,7 @@ class CookieTreeRootNode : public CookieTreeNode {
   DetailedInfo GetDetailedInfo() const override;
 
  private:
-  CookiesTreeModel* model_;
+  CheckedPtr<CookiesTreeModel> model_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieTreeRootNode);
 };
@@ -253,18 +254,18 @@ class CookieTreeHostNode : public CookieTreeNode {
   // the COOKIES node to add children. Checking each child and interrogating
   // them to see if they are a COOKIES, APPCACHES, DATABASES etc node seems
   // less preferable than storing an extra pointer per origin.
-  CookieTreeCookiesNode* cookies_child_ = nullptr;
-  CookieTreeDatabasesNode* databases_child_ = nullptr;
-  CookieTreeLocalStoragesNode* local_storages_child_ = nullptr;
-  CookieTreeSessionStoragesNode* session_storages_child_ = nullptr;
-  CookieTreeAppCachesNode* appcaches_child_ = nullptr;
-  CookieTreeIndexedDBsNode* indexed_dbs_child_ = nullptr;
-  CookieTreeFileSystemsNode* file_systems_child_ = nullptr;
-  CookieTreeQuotaNode* quota_child_ = nullptr;
-  CookieTreeServiceWorkersNode* service_workers_child_ = nullptr;
-  CookieTreeSharedWorkersNode* shared_workers_child_ = nullptr;
-  CookieTreeCacheStoragesNode* cache_storages_child_ = nullptr;
-  CookieTreeMediaLicensesNode* media_licenses_child_ = nullptr;
+  CheckedPtr<CookieTreeCookiesNode> cookies_child_ = nullptr;
+  CheckedPtr<CookieTreeDatabasesNode> databases_child_ = nullptr;
+  CheckedPtr<CookieTreeLocalStoragesNode> local_storages_child_ = nullptr;
+  CheckedPtr<CookieTreeSessionStoragesNode> session_storages_child_ = nullptr;
+  CheckedPtr<CookieTreeAppCachesNode> appcaches_child_ = nullptr;
+  CheckedPtr<CookieTreeIndexedDBsNode> indexed_dbs_child_ = nullptr;
+  CheckedPtr<CookieTreeFileSystemsNode> file_systems_child_ = nullptr;
+  CheckedPtr<CookieTreeQuotaNode> quota_child_ = nullptr;
+  CheckedPtr<CookieTreeServiceWorkersNode> service_workers_child_ = nullptr;
+  CheckedPtr<CookieTreeSharedWorkersNode> shared_workers_child_ = nullptr;
+  CheckedPtr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
+  CheckedPtr<CookieTreeMediaLicensesNode> media_licenses_child_ = nullptr;
 
   // The URL for which this node was initially created.
   GURL url_;
@@ -318,8 +319,8 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
     void StartBatchUpdate();
 
    private:
-    CookiesTreeModel* model_;
-    CookieTreeNode* node_;
+    CheckedPtr<CookiesTreeModel> model_;
+    CheckedPtr<CookieTreeNode> node_;
     bool batch_in_progress_ = false;
   };
 
@@ -466,7 +467,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // specifically of the type CookiesTreeModel::Observer.
   base::ObserverList<Observer>::Unchecked cookies_observer_list_;
 
-  AccessContextAuditService* access_context_audit_service_ = nullptr;
+  CheckedPtr<AccessContextAuditService> access_context_audit_service_ = nullptr;
 
   // Keeps track of how many batches the consumer of this class says it is going
   // to send.

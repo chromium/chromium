@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -235,7 +236,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void OnLog(const std::string& message);
 
   // Owner/Manager of this instance.
-  FrameSinkVideoCapturerManager* const frame_sink_manager_;
+  const CheckedPtr<FrameSinkVideoCapturerManager> frame_sink_manager_;
 
   // Mojo receiver for this instance.
   mojo::Receiver<mojom::FrameSinkVideoCapturer> receiver_{this};
@@ -248,7 +249,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // Use the default base::TimeTicks clock; but allow unit tests to provide a
   // replacement.
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   // Current image format.
   media::VideoPixelFormat pixel_format_ = kDefaultPixelFormat;
@@ -270,7 +271,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
-  CapturableFrameSink* resolved_target_ = nullptr;
+  CheckedPtr<CapturableFrameSink> resolved_target_ = nullptr;
 
   // The current video frame consumer. This is set when Start() is called and
   // cleared when Stop() is called.

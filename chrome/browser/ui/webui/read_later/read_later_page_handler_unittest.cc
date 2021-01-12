@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -111,7 +112,7 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<TestReadLaterPageHandler> handler_;
-  ReadingListModel* model_;
+  CheckedPtr<ReadingListModel> model_;
 };
 
 TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {

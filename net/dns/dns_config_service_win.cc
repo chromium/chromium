@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/free_deleter.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -580,8 +581,9 @@ class DnsConfigServiceWin::Watcher
   ~Watcher() override { NetworkChangeNotifier::RemoveIPAddressObserver(this); }
 
   bool Watch() {
-    RegistryWatcher::CallbackType callback = base::BindRepeating(
-        &DnsConfigServiceWin::OnConfigChanged, base::Unretained(service_));
+    RegistryWatcher::CallbackType callback =
+        base::BindRepeating(&DnsConfigServiceWin::OnConfigChanged,
+                            base::Unretained(service_.get()));
 
     bool success = true;
 
@@ -629,7 +631,7 @@ class DnsConfigServiceWin::Watcher
     service_->OnHostsChanged(true);
   }
 
-  DnsConfigServiceWin* service_;
+  CheckedPtr<DnsConfigServiceWin> service_;
 
   RegistryWatcher tcpip_watcher_;
   RegistryWatcher tcpip6_watcher_;
@@ -671,7 +673,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     }
   }
 
-  DnsConfigServiceWin* service_;
+  CheckedPtr<DnsConfigServiceWin> service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
   DnsConfig dns_config_;
   bool success_;
@@ -708,7 +710,7 @@ class DnsConfigServiceWin::HostsReader : public SerialWorker {
   }
 
   const base::FilePath path_;
-  DnsConfigServiceWin* service_;
+  CheckedPtr<DnsConfigServiceWin> service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
   DnsHosts hosts_;
   bool success_;

@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -720,7 +721,7 @@ class RenderViewHostDestroyer : public WebContentsObserver {
   }
 
  private:
-  RenderViewHost* render_view_host_;
+  CheckedPtr<RenderViewHost> render_view_host_;
   std::unique_ptr<WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewHostDestroyer);

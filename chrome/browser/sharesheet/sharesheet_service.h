@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
@@ -106,9 +107,9 @@ class SharesheetService : public KeyedService {
 
   void RecordActionMetrics(const base::string16& target_name);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
-  apps::AppServiceProxy* app_service_proxy_;
+  CheckedPtr<apps::AppServiceProxy> app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegates. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.

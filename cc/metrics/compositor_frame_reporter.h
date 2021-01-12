@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -302,7 +303,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   const ActiveTrackers active_trackers_;
 
-  LatencyUkmReporter* latency_ukm_reporter_;
+  CheckedPtr<LatencyUkmReporter> latency_ukm_reporter_;
 
   // Indicates if work on Impl frame is finished.
   bool did_finish_impl_frame_ = false;
@@ -316,9 +317,10 @@ class CC_EXPORT CompositorFrameReporter {
   base::Optional<FrameSkippedReason> frame_skip_reason_;
   base::Optional<base::TimeTicks> main_frame_abort_time_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  CheckedPtr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
-  DroppedFrameCounter* dropped_frame_counter_ = nullptr;
+  CheckedPtr<DroppedFrameCounter> dropped_frame_counter_ = nullptr;
   bool has_partial_update_ = false;
 
   const SmoothThread smooth_thread_;

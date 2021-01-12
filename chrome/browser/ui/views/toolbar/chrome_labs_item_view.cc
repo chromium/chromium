@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -29,7 +30,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
   int GetDefaultIndex() const override { return default_index_; }
 
  private:
-  const flags_ui::FeatureEntry* feature_entry_;
+  CheckedPtr<const flags_ui::FeatureEntry> feature_entry_;
   int default_index_;
 };
 

@@ -5,6 +5,7 @@
 #include "base/win/iat_patch_function.h"
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/win/patch_util.h"
 #include "base/win/pe_image.h"
@@ -18,9 +19,9 @@ struct InterceptFunctionInformation {
   bool finished_operation;
   const char* imported_from_module;
   const char* function_name;
-  void* new_function;
-  void** old_function;
-  IMAGE_THUNK_DATA** iat_thunk;
+  CheckedPtr<void> new_function;
+  CheckedPtr<void*> old_function;
+  CheckedPtr<IMAGE_THUNK_DATA*> iat_thunk;
   DWORD return_code;
 };
 

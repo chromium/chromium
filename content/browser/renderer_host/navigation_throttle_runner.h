@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -70,7 +71,7 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   void ProcessInternal();
   void InformDelegate(const NavigationThrottle::ThrottleCheckResult& result);
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   // A list of Throttles registered for this navigation.
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;

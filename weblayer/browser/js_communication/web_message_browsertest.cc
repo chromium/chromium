@@ -5,6 +5,7 @@
 #include "weblayer/public/js_communication/web_message.h"
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "weblayer/public/js_communication/web_message.h"
@@ -59,7 +60,7 @@ class WebMessageHostImpl : public WebMessageHost {
  private:
   int call_count_ = 0;
   base::RepeatingClosure quit_closure_;
-  WebMessageReplyProxy* proxy_;
+  CheckedPtr<WebMessageReplyProxy> proxy_;
   std::vector<base::string16> messages_;
 };
 

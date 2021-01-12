@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -166,7 +167,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   SafeBrowsingService* GetSafeBrowsingService();
 #endif
 
-  MainParams* params_;
+  CheckedPtr<MainParams> params_;
 
   // Local-state is created early on, before BrowserProcess. Ownership moves to
   // BrowserMainParts, then BrowserProcess. BrowserProcess ultimately owns

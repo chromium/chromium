@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_registrar.h"
@@ -64,7 +65,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
 
-  content::BrowserContext* browser_context_;  // Not owned.
+  CheckedPtr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Registers and unregisters extensions.
   ExtensionRegistrar extension_registrar_;

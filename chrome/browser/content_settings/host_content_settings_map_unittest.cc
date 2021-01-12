@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -160,8 +161,8 @@ class TesterForType {
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
 

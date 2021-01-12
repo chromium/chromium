@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -33,7 +34,7 @@ class DeferredSequencedTaskRunnerTest : public testing::Test {
   private:
    friend class RefCounted<ExecuteTaskOnDestructor>;
    virtual ~ExecuteTaskOnDestructor() { executor_->ExecuteTask(task_id_); }
-   DeferredSequencedTaskRunnerTest* executor_;
+   CheckedPtr<DeferredSequencedTaskRunnerTest> executor_;
    int task_id_;
   };
 

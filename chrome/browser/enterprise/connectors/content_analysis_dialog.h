@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
@@ -214,14 +215,14 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::unique_ptr<ContentAnalysisDelegate> delegate_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // Views above the buttons. |contents_view_| owns every other view.
-  views::View* contents_view_ = nullptr;
-  DeepScanningTopImageView* image_ = nullptr;
-  DeepScanningSideIconImageView* side_icon_image_ = nullptr;
-  DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
-  DeepScanningMessageView* message_ = nullptr;
+  CheckedPtr<views::View> contents_view_ = nullptr;
+  CheckedPtr<DeepScanningTopImageView> image_ = nullptr;
+  CheckedPtr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
+  CheckedPtr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
+  CheckedPtr<DeepScanningMessageView> message_ = nullptr;
 
   bool shown_ = false;
 

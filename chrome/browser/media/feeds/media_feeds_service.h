@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -238,10 +239,10 @@ class MediaFeedsService : public KeyedService {
   base::OnceClosure cookie_change_callback_;
 
   std::unique_ptr<safe_search_api::URLChecker> safe_search_url_checker_;
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // An internal clock for testing.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   THREAD_CHECKER(thread_checker_);
 

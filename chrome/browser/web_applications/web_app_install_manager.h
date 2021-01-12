@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -151,7 +152,7 @@ class WebAppInstallManager final : public InstallManager,
     PendingTask(PendingTask&&);
     ~PendingTask();
 
-    const WebAppInstallTask* task = nullptr;
+    CheckedPtr<const WebAppInstallTask> task = nullptr;
     base::OnceClosure start;
   };
 
@@ -169,7 +170,7 @@ class WebAppInstallManager final : public InstallManager,
 
   using TaskQueue = base::queue<PendingTask>;
   TaskQueue task_queue_;
-  const WebAppInstallTask* current_queued_task_ = nullptr;
+  CheckedPtr<const WebAppInstallTask> current_queued_task_ = nullptr;
 
   struct AppSyncInstallRequest {
     AppSyncInstallRequest();

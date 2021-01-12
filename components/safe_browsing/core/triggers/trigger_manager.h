@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/triggers/trigger_throttler.h"
@@ -174,11 +175,11 @@ class TriggerManager {
 
   // The UI manager is used to send reports to Google. Not owned.
   // TODO(lpz): we may only need a the PingManager here.
-  BaseUIManager* ui_manager_;
+  CheckedPtr<BaseUIManager> ui_manager_;
 
   // The Referrer Chain Provider is used to retrieve the referrer chain for
   // reports that require it. Not owned.
-  ReferrerChainProvider* referrer_chain_provider_;
+  CheckedPtr<ReferrerChainProvider> referrer_chain_provider_;
 
   // Map of the data collectors running on each tabs. New keys are added the
   // first time any trigger tries to collect data on a tab and are removed when
@@ -212,7 +213,7 @@ class TriggerManagerWebContentsHelper
                                   TriggerManager* trigger_manager);
 
   // Trigger Manager will be notified of any relevant WebContents events.
-  TriggerManager* trigger_manager_;
+  CheckedPtr<TriggerManager> trigger_manager_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

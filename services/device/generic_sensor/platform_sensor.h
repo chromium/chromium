@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -108,10 +109,11 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
-  SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
+  CheckedPtr<SensorReadingSharedBuffer>
+      reading_buffer_;  // NOTE: Owned by |provider_|.
   mojom::SensorType type_;
   ConfigMap config_map_;
-  PlatformSensorProvider* provider_;
+  CheckedPtr<PlatformSensorProvider> provider_;
   bool is_active_ = false;
   SensorReading last_raw_reading_;
   mutable base::Lock lock_;  // Protect have_raw_reading_ and last_raw_reading_.

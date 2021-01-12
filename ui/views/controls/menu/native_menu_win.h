@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
@@ -77,7 +78,7 @@ class VIEWS_EXPORT NativeMenuWin {
   void ResetNativeMenu();
 
   // Our attached model and delegate.
-  ui::MenuModel* model_;
+  CheckedPtr<ui::MenuModel> model_;
 
   HMENU menu_;
 
@@ -98,12 +99,12 @@ class VIEWS_EXPORT NativeMenuWin {
   int first_item_index_;
 
   // If we're a submenu, this is our parent.
-  NativeMenuWin* parent_;
+  CheckedPtr<NativeMenuWin> parent_;
 
   // If non-null the destructor sets this to true. This is set to non-null while
   // the menu is showing. It is used to detect if the menu was deleted while
   // running.
-  bool* destroyed_flag_;
+  CheckedPtr<bool> destroyed_flag_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeMenuWin);
 };

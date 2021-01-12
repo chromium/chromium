@@ -45,7 +45,7 @@ XmlUnitTestResultPrinter::~XmlUnitTestResultPrinter() {
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
   if (output_file_ && !open_failed_) {
-    fprintf(output_file_, "</testsuites>\n");
+    fprintf(output_file_.get(), "</testsuites>\n");
     fflush(output_file_);
     CloseFile(output_file_);
   }
@@ -71,7 +71,7 @@ void XmlUnitTestResultPrinter::AddLink(const std::string& name,
   // theory it should not be possible to reach here and the info is null.
   DCHECK(info);
 
-  fprintf(output_file_,
+  fprintf(output_file_.get(),
           "    <link name=\"%s\" classname=\"%s\" "
           "link_name=\"%s\">%s</link>\n",
           info->name(), info->test_case_name(), name.c_str(),
@@ -93,7 +93,7 @@ bool XmlUnitTestResultPrinter::Initialize(const FilePath& output_file_path) {
     return false;
   }
 
-  fprintf(output_file_,
+  fprintf(output_file_.get(),
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites>\n");
   fflush(output_file_);
 
@@ -110,7 +110,7 @@ void XmlUnitTestResultPrinter::OnAssert(const char* file,
 
 void XmlUnitTestResultPrinter::OnTestCaseStart(
     const testing::TestCase& test_case) {
-  fprintf(output_file_, "  <testsuite>\n");
+  fprintf(output_file_.get(), "  <testsuite>\n");
   fflush(output_file_);
 }
 
@@ -119,15 +119,14 @@ void XmlUnitTestResultPrinter::OnTestStart(
   // This is our custom extension - it helps to recognize which test was
   // running when the test binary crashed. Note that we cannot even open the
   // <testcase> tag here - it requires e.g. run time of the test to be known.
-  fprintf(output_file_,
+  fprintf(output_file_.get(),
           "    <x-teststart name=\"%s\" classname=\"%s\" />\n",
-          test_info.name(),
-          test_info.test_case_name());
+          test_info.name(), test_info.test_case_name());
   fflush(output_file_);
 }
 
 void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
-  fprintf(output_file_,
+  fprintf(output_file_.get(),
           "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
           " classname=\"%s\">\n",
           test_info.name(),
@@ -135,7 +134,7 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
               Time::kMillisecondsPerSecond,
           test_info.test_case_name());
   if (test_info.result()->Failed()) {
-    fprintf(output_file_,
+    fprintf(output_file_.get(),
             "      <failure message=\"\" type=\"\"></failure>\n");
   }
 
@@ -165,13 +164,13 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
         kTestPartLesultsLimitExceeded, kTestPartLesultsLimitExceeded);
   }
 
-  fprintf(output_file_, "    </testcase>\n");
+  fprintf(output_file_.get(), "    </testcase>\n");
   fflush(output_file_);
 }
 
 void XmlUnitTestResultPrinter::OnTestCaseEnd(
     const testing::TestCase& test_case) {
-  fprintf(output_file_, "  </testsuite>\n");
+  fprintf(output_file_.get(), "  </testsuite>\n");
   fflush(output_file_);
 }
 
@@ -200,7 +199,7 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
   Base64Encode(summary, &summary_encoded);
   std::string message_encoded;
   Base64Encode(message, &message_encoded);
-  fprintf(output_file_,
+  fprintf(output_file_.get(),
           "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
           "        <summary>%s</summary>\n"
           "        <message>%s</message>\n"

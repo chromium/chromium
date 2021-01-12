@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -244,7 +245,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::vector<mojom::PaymentMethodDataPtr> method_data_;
   const std::string app_locale_;
   // The currently shipping option as specified by the merchant.
-  mojom::PaymentShippingOption* selected_shipping_option_;
+  CheckedPtr<mojom::PaymentShippingOption> selected_shipping_option_;
   base::string16 selected_shipping_option_error_;
 
   // One currency formatter is instantiated and cached per currency code.

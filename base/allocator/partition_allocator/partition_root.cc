@@ -391,19 +391,27 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
   // If alignment needs to be enforced, disallow adding a cookie and/or
   // ref-count at the beginning of the slot.
-  allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
+  if (opts.alignment == PartitionOptions::Alignment::kAlignedAlloc) {
+    allow_cookies = false;
+    allow_ref_count = false;
+  } else {
+    allow_cookies = true;
+    allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kEnabled;
+  }
 
 #if PARTITION_EXTRAS_REQUIRED
-  size_t size = 0, offset = 0;
-  if (allow_extras) {
-    size += internal::kPartitionCookieSizeAdjustment;
-    size += internal::kPartitionRefCountSizeAdjustment;
+  extras_size = 0;
+  extras_offset = 0;
 
-    offset += internal::kPartitionCookieOffsetAdjustment;
-    offset += internal::kPartitionRefCountOffsetAdjustment;
+  if (allow_cookies) {
+    extras_size += internal::kPartitionCookieSizeAdjustment;
+    extras_offset += internal::kPartitionCookieOffsetAdjustment;
   }
-  extras_size = static_cast<uint32_t>(size);
-  extras_offset = static_cast<uint32_t>(offset);
+
+  if (allow_ref_count) {
+    extras_size += internal::kPartitionRefCountSizeAdjustment;
+    extras_offset += internal::kPartitionRefCountOffsetAdjustment;
+  }
 #endif
 
   pcscan_mode = PartitionOptionsToPCScanMode<thread_safe>(opts.pcscan);
@@ -519,7 +527,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
-  if (allow_extras) {
+  if (allow_cookies) {
     internal::PartitionCookieWriteValue(char_ptr + raw_size -
                                         internal::kCookieSize);
   }
@@ -605,7 +613,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 #if DCHECK_IS_ON()
         // Write a new trailing cookie only when it is possible to keep track
         // raw size (otherwise we wouldn't know where to look for it later).
-        if (allow_extras) {
+        if (allow_cookies) {
           internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
                                               new_size);
         }

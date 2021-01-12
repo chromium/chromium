@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -4024,10 +4025,11 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
     notifier_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&TestDnsConfigService::OnHostsRead,
-                       base::Unretained(config_service_), config.hosts));
+                       base::Unretained(config_service_.get()), config.hosts));
     notifier_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                                  base::Unretained(config_service_), config));
+        FROM_HERE,
+        base::BindOnce(&TestDnsConfigService::OnConfigRead,
+                       base::Unretained(config_service_.get()), config));
 
     notifier_task_runner_->RunUntilIdle();
     base::RunLoop().RunUntilIdle();
@@ -4037,10 +4039,10 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
     notifier_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&TestDnsConfigService::OnHostsRead,
-                       base::Unretained(config_service_), DnsHosts()));
+                       base::Unretained(config_service_.get()), DnsHosts()));
     notifier_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&TestDnsConfigService::InvalidateConfig,
-                                  base::Unretained(config_service_)));
+                                  base::Unretained(config_service_.get())));
 
     notifier_task_runner_->FastForwardBy(
         DnsConfigService::kInvalidationTimeout);
@@ -4053,11 +4055,11 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> notifier_task_runner_;
-  TestDnsConfigService* config_service_;
+  CheckedPtr<TestDnsConfigService> config_service_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
 
   // Owned by |resolver_|.
-  MockDnsClient* dns_client_;
+  CheckedPtr<MockDnsClient> dns_client_;
 };
 
 TEST_F(HostResolverManagerDnsTest, FlushCacheOnDnsConfigChange) {

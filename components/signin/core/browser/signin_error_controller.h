@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -84,7 +85,7 @@ class SigninErrorController : public KeyedService,
       const CoreAccountInfo& previous_primary_account_info) override;
 
   const AccountMode account_mode_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

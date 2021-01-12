@@ -85,6 +85,16 @@ class BASE_EXPORT PartitionRefCount {
   }
 
  private:
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
+#endif
+  void* padding_;  // TODO(crbug.com/1164636): This "workaround" is meant to
+                   // reduce the number of freelist corruption crashes we see in
+                   // experiments. Remove once root cause has been found.
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   std::atomic<int32_t> count_{1};
 };
 
@@ -105,6 +115,11 @@ static constexpr size_t kPartitionRefCountOffset = kInSlotRefCountBufferSize;
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   DCheckGetSlotOffsetIsZero(slot_start);
+  return reinterpret_cast<PartitionRefCount*>(slot_start);
+}
+
+ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointerNoDCheck(
+    void* slot_start) {
   return reinterpret_cast<PartitionRefCount*>(slot_start);
 }
 

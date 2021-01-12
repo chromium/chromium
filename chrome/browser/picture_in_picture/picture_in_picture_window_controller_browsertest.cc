@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 
 #include "base/barrier_closure.h"
@@ -246,7 +247,7 @@ class PictureInPictureWindowControllerBrowserTest
     }
 
    private:
-    views::Widget* widget_;
+    CheckedPtr<views::Widget> widget_;
     gfx::Rect initial_bounds_;
     base::RunLoop run_loop_;
   };
@@ -260,7 +261,8 @@ class PictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  content::PictureInPictureWindowController* pip_window_controller_ = nullptr;
+  CheckedPtr<content::PictureInPictureWindowController> pip_window_controller_ =
+      nullptr;
   MockPictureInPictureWindowController mock_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureWindowControllerBrowserTest);
@@ -2392,7 +2394,7 @@ class WebAppPictureInPictureWindowControllerBrowserTest
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppPictureInPictureWindowControllerBrowserTest);
 };

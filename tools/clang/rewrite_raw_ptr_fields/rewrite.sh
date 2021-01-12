@@ -30,27 +30,28 @@ REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
 COMPILE_DIRS=.
 EDIT_DIRS=.
 
-# Save llvm-build as it is about to be overwritten.
-mv third_party/llvm-build third_party/llvm-build-upstream
+# # Save llvm-build as it is about to be overwritten.
+# mv third_party/llvm-build third_party/llvm-build-upstream
 
-# Build and test the rewriter.
-echo "*** Building the rewriter ***"
-time tools/clang/scripts/build.py \
-    --without-android \
-    --without-fuchsia \
-    --extra-tools rewrite_raw_ptr_fields
-tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
+# # Build and test the rewriter.
+# echo "*** Building the rewriter ***"
+# time tools/clang/scripts/build.py \
+#     --without-android \
+#     --without-fuchsia \
+#     --extra-tools rewrite_raw_ptr_fields
+# tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
 
-# Build generated files that a successful compilation depends on.
-echo "*** Preparing targets ***"
-gn gen $OUT_DIR
-GEN_H_TARGETS=`ninja -C $OUT_DIR -t targets all | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' | cut -d : -f 1`
-time ninja -C $OUT_DIR $GEN_H_TARGETS
+# # Build generated files that a successful compilation depends on.
+# echo "*** Preparing targets ***"
+# gn gen $OUT_DIR
+# GEN_H_TARGETS=`ninja -C $OUT_DIR -t targets all | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' | cut -d : -f 1`
+# time ninja -C $OUT_DIR $GEN_H_TARGETS
 
 # A preliminary rewriter run in a special mode that generates a list of fields
 # to ignore. These fields would likely lead to compiler errors if rewritten.
 echo "*** Generating the ignore list ***"
 time tools/clang/scripts/run_tool.py \
+    --target_os=win \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
     --generate-compdb \
@@ -66,6 +67,7 @@ cat ~/scratch/automated-fields-to-ignore.txt \
 # Main rewrite.
 echo "*** Running the main rewrite phase ***"
 time tools/clang/scripts/run_tool.py \
+    --target_os=win \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-fields=$HOME/scratch/combined-fields-to-ignore.txt \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \

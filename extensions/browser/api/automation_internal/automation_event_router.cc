@@ -108,7 +108,7 @@ void AutomationEventRouter::DispatchTreeDestroyedEvent(
   if (listeners_.empty())
     return;
 
-  browser_context = browser_context ? browser_context : active_context_;
+  browser_context = browser_context ? browser_context : active_context_.get();
   std::unique_ptr<base::ListValue> args(
       api::automation_internal::OnAccessibilityTreeDestroyed::Create(
           tree_id.ToString()));
@@ -125,7 +125,7 @@ void AutomationEventRouter::DispatchActionResult(
     content::BrowserContext* browser_context) {
   CHECK(!data.source_extension_id.empty());
 
-  browser_context = browser_context ? browser_context : active_context_;
+  browser_context = browser_context ? browser_context : active_context_.get();
   if (listeners_.empty())
     return;
 

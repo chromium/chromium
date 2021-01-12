@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 #include <string>
@@ -58,7 +59,7 @@ class TestPageLoadMetricsEmbedderInterface
   bool IsExtensionUrl(const GURL& url) override { return false; }
 
  private:
-  PageLoadMetricsObserverTester* test_;
+  CheckedPtr<PageLoadMetricsObserverTester> test_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPageLoadMetricsEmbedderInterface);
 };

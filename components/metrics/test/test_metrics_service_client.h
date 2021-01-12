@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -76,7 +77,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   MetricsLogStore::StorageLimits storage_limits_;
 
   // A weak ref to the last created TestMetricsLogUploader.
-  TestMetricsLogUploader* uploader_;
+  CheckedPtr<TestMetricsLogUploader> uploader_;
 
   DISALLOW_COPY_AND_ASSIGN(TestMetricsServiceClient);
 };

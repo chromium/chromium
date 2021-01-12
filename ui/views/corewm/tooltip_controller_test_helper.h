@@ -6,6 +6,7 @@
 #define UI_VIEWS_COREWM_TOOLTIP_CONTROLLER_TEST_HELPER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -40,7 +41,7 @@ class TooltipControllerTestHelper {
   void SetTooltipShowDelayEnable(bool tooltip_show_delay);
 
  private:
-  TooltipController* controller_;
+  CheckedPtr<TooltipController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipControllerTestHelper);
 };

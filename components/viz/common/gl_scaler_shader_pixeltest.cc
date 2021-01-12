@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/common/gl_scaler.h"
 
 #include <sstream>
@@ -370,7 +371,7 @@ class GLScalerShaderPixelTest
 
   testing::ScopedTrace scoped_trace_;
   std::unique_ptr<GLScaler> scaler_;
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   GLuint vertex_attributes_buffer_ = 0;
   std::unique_ptr<GLScalerTestTextureHelper> texture_helper_;
 };

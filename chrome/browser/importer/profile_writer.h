@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -93,7 +94,7 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   virtual ~ProfileWriter();
 
  private:
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileWriter);
 };

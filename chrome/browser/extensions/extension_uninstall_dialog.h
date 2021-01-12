@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -148,13 +149,13 @@ class ExtensionUninstallDialog
   // Returns true if a checkbox for removing associated data should be shown.
   bool ShouldShowRemoveDataCheckbox() const;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The dialog's parent window.
   gfx::NativeWindow parent_;
 
   // The delegate we will call Accepted/Canceled on after confirmation dialog.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // The extension we are showing the dialog for.
   scoped_refptr<const Extension> extension_;

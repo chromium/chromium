@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -46,9 +47,9 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
-  AppServiceProxy* app_service_proxy_ = nullptr;
+  CheckedPtr<AppServiceProxy> app_service_proxy_ = nullptr;
 
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AppServiceTest);
 };

@@ -234,7 +234,7 @@ InsecureCredentialsManager::InsecureCredentialsManager(
                                       account_store_.get()) {
   observed_compromised_credentials_reader_.Observe(
       &compromised_credentials_reader_);
-  observed_saved_password_presenter_.Observe(presenter_);
+  observed_saved_password_presenter_.Observe(presenter_.get());
 }
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;

@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -315,7 +316,7 @@ class ContentAnalysisDelegate {
   virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
   // The web contents that is attempting to access the data.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   // Description of the data being scanned and the results of the scan.
   // The elements of the vector |file_info_| hold the FileInfo of the file at
@@ -345,7 +346,7 @@ class ContentAnalysisDelegate {
   CompletionCallback callback_;
 
   // Pointer to UI when enabled.
-  ContentAnalysisDialog* dialog_ = nullptr;
+  CheckedPtr<ContentAnalysisDialog> dialog_ = nullptr;
 
   // Access point to use to record UMA metrics.
   safe_browsing::DeepScanAccessPoint access_point_;

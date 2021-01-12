@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "build/buildflag.h"
@@ -155,7 +156,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
   }
 
   // Back pointer to the factory which owns this class.
-  ProxyingURLLoaderFactory* const factory_;
+  const CheckedPtr<ProxyingURLLoaderFactory> factory_;
 
   // Information about the current request.
   GURL request_url_;
@@ -217,7 +218,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
   }
 
  private:
-  InProgressRequest* const in_progress_request_;
+  const CheckedPtr<InProgressRequest> in_progress_request_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyRequestAdapter);
 };
@@ -266,8 +267,8 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
  private:
-  InProgressRequest* const in_progress_request_;
-  net::HttpResponseHeaders* const headers_;
+  const CheckedPtr<InProgressRequest> in_progress_request_;
+  const CheckedPtr<net::HttpResponseHeaders> headers_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResponseAdapter);
 };

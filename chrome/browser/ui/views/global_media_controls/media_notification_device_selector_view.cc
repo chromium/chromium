@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +39,7 @@ class ExpandDeviceSelectorButton : public IconLabelBubbleView {
 
  private:
   bool ShouldShowSeparator() const override { return false; }
-  IconLabelBubbleView::Delegate* delegate_;
+  CheckedPtr<IconLabelBubbleView::Delegate> delegate_;
 };
 
 }  // anonymous namespace
@@ -188,7 +189,7 @@ void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
     auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
         base::BindRepeating(
             &MediaNotificationDeviceSelectorViewDelegate::OnAudioSinkChosen,
-            base::Unretained(delegate_), description.unique_id),
+            base::Unretained(delegate_.get()), description.unique_id),
         foreground_color_, background_color_, description.unique_id,
         description.device_name);
     device_entry_view->set_tag(next_tag_++);

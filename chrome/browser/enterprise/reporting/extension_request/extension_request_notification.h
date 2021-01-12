@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -47,7 +48,7 @@ class ExtensionRequestNotification
 
   std::unique_ptr<message_center::Notification> notification_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   const NotifyType notify_type_ = kApproved;
   const ExtensionIds extension_ids_;
   NotificationCloseCallback callback_;

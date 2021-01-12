@@ -117,7 +117,7 @@ InterventionsInternalsPageHandler::InterventionsInternalsPageHandler(
 InterventionsInternalsPageHandler::~InterventionsInternalsPageHandler() {
   DCHECK(logger_);
   logger_->RemoveObserver(this);
-  (network_quality_tracker_ ? network_quality_tracker_
+  (network_quality_tracker_ ? network_quality_tracker_.get()
                             : g_browser_process->network_quality_tracker())
       ->RemoveEffectiveConnectionTypeObserver(this);
 }
@@ -127,7 +127,7 @@ void InterventionsInternalsPageHandler::SetClientPage(
   page_.Bind(std::move(page));
   DCHECK(page_);
   logger_->AddAndNotifyObserver(this);
-  (network_quality_tracker_ ? network_quality_tracker_
+  (network_quality_tracker_ ? network_quality_tracker_.get()
                             : g_browser_process->network_quality_tracker())
       ->AddEffectiveConnectionTypeObserver(this);
 }

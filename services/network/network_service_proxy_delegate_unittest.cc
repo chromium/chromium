@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
@@ -112,7 +113,7 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
  private:
   mojo::Remote<mojom::CustomProxyConfigClient> client_;
   // Owned by the proxy delegate returned by |CreateDelegate|.
-  TestCustomProxyConnectionObserver* observer_ = nullptr;
+  CheckedPtr<TestCustomProxyConnectionObserver> observer_ = nullptr;
   std::unique_ptr<net::TestURLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
 };

@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/sys_byteorder.h"
@@ -63,7 +64,7 @@ class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  StreamSocket* tcp_sock_;
+  CheckedPtr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<SocketDataProvider> data_;
 
@@ -101,7 +102,7 @@ std::unique_ptr<SOCKS5ClientSocket> SOCKS5ClientSocketTest::BuildMockSocket(
 
   // The SOCKS5ClientSocket takes ownership of |tcp_sock_|, but keep a
   // non-owning pointer to it.
-  return std::make_unique<SOCKS5ClientSocket>(base::WrapUnique(tcp_sock_),
+  return std::make_unique<SOCKS5ClientSocket>(base::WrapUnique(tcp_sock_.get()),
                                               HostPortPair(hostname, port),
                                               TRAFFIC_ANNOTATION_FOR_TESTS);
 }

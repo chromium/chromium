@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/base/ui_base_types.h"
 
@@ -32,7 +33,7 @@ class ToolbarActionsBarBubbleDelegate {
 
     // The resource defining the image icon. If has a value of null, then no
     // image icon will be added.
-    const gfx::VectorIcon* resource;
+    CheckedPtr<const gfx::VectorIcon> resource;
 
     // Text in the view. If this is an empty string, no text will be added.
     base::string16 text;

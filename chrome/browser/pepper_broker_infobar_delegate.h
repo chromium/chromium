@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
@@ -56,7 +57,7 @@ class PepperBrokerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   const GURL url_;
   const base::string16 plugin_name_;
-  HostContentSettingsMap* content_settings_;
+  CheckedPtr<HostContentSettingsMap> content_settings_;
   base::WeakPtr<content_settings::PageSpecificContentSettings>
       page_content_settings_;
   base::OnceCallback<void(bool)> callback_;

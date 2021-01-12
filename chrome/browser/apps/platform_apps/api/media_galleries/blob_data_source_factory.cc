@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blob_reader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,7 +54,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
 
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;
 
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
   std::string blob_uuid_;
 
   BlobDataSourceFactory::MediaDataCallback callback_;

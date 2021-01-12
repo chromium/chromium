@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -46,7 +47,7 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
   }
 
   int retry_counter_ = 2;
-  ProfileOAuth2TokenService* oauth2_service_;
+  CheckedPtr<ProfileOAuth2TokenService> oauth2_service_;
   CoreAccountId account_id_;
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_;
 };
@@ -117,8 +118,9 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::
           IO};  // net:: stuff needs IO
                 // message loop.
-  network::TestURLLoaderFactory* test_url_loader_factory_ = nullptr;
-  FakeProfileOAuth2TokenServiceDelegate* delegate_ptr_ = nullptr;  // Not owned.
+  CheckedPtr<network::TestURLLoaderFactory> test_url_loader_factory_ = nullptr;
+  CheckedPtr<FakeProfileOAuth2TokenServiceDelegate> delegate_ptr_ =
+      nullptr;  // Not owned.
   std::unique_ptr<ProfileOAuth2TokenService> oauth2_service_;
   CoreAccountId account_id_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;

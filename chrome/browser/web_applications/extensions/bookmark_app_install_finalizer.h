@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_INSTALL_FINALIZER_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
@@ -81,7 +82,7 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
   CrxInstallerFactory crx_installer_factory_;
   web_app::ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   base::WeakPtrFactory<BookmarkAppInstallFinalizer> weak_ptr_factory_{this};
 

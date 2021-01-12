@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -67,7 +68,7 @@ class DistillabilityDriver
   // metrics for the ReaderMode experiment.
   UMAHelper::DistillabilityDriverTimer timer_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::RepeatingCallback<bool(content::WebContents*)> is_secure_check_;
 
   base::WeakPtrFactory<DistillabilityDriver> weak_factory_{this};

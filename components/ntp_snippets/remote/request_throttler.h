@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -78,7 +79,7 @@ class RequestThrottler {
   void SetDay(int day);
   bool HasDay() const;
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   const RequestTypeInfo& type_info_;
 
   // The quotas are hardcoded, but can be overridden by variation params.
@@ -86,9 +87,9 @@ class RequestThrottler {
   int interactive_quota_;
 
   // The histograms for reporting the requests of the given |type_|.
-  base::HistogramBase* histogram_request_status_;
-  base::HistogramBase* histogram_per_day_background_;
-  base::HistogramBase* histogram_per_day_interactive_;
+  CheckedPtr<base::HistogramBase> histogram_request_status_;
+  CheckedPtr<base::HistogramBase> histogram_per_day_background_;
+  CheckedPtr<base::HistogramBase> histogram_per_day_interactive_;
 
   DISALLOW_COPY_AND_ASSIGN(RequestThrottler);
 };

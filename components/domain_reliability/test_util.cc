@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/domain_reliability/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +63,7 @@ class MockTimer : public MockableTime::Timer {
     std::move(task_to_run).Run();
   }
 
-  MockTime* time_;
+  CheckedPtr<MockTime> time_;
   bool running_;
   int callback_sequence_number_;
   base::OnceClosure user_task_;

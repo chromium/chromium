@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
@@ -374,7 +375,7 @@ class DataReductionProxyTestContext {
     void StoreSerializedConfig(const std::string& serialized_config);
 
    private:
-    PrefService* prefs_;
+    CheckedPtr<PrefService> prefs_;
   };
 
   DataReductionProxyTestContext(
@@ -403,7 +404,7 @@ class DataReductionProxyTestContext {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
   std::unique_ptr<DataReductionProxySettings> settings_;
-  DataReductionProxyService* data_reduction_proxy_service_;
+  CheckedPtr<DataReductionProxyService> data_reduction_proxy_service_;
   std::unique_ptr<network::TestNetworkQualityTracker>
       test_network_quality_tracker_;
   std::unique_ptr<DataReductionProxyService> service_;

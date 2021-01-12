@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -222,8 +223,8 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
 
   MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
 
-  Combobox* owner_;           // Weak. Owns this.
-  ui::ComboboxModel* model_;  // Weak.
+  CheckedPtr<Combobox> owner_;           // Weak. Owns this.
+  CheckedPtr<ui::ComboboxModel> model_;  // Weak.
 
   DISALLOW_COPY_AND_ASSIGN(ComboboxMenuModel);
 };
@@ -257,7 +258,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   UpdateBorder();
 
   arrow_button_->SetVisible(true);
-  AddChildView(arrow_button_);
+  AddChildView(arrow_button_.get());
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
@@ -310,13 +311,13 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   DCHECK(model) << "After construction, the model must not be null.";
 
   if (model_)
-    observer_.Remove(model_);
+    observer_.Remove(model_.get());
 
   model_ = model;
 
   if (model_) {
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
-    observer_.Add(model_);
+    observer_.Add(model_.get());
     SetSelectedIndex(model_->GetDefaultIndex());
     OnComboboxModelChanged(model_);
   }

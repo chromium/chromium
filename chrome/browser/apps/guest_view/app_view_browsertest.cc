@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -102,7 +103,7 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManagerFactory factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_;
+  CheckedPtr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(AppViewTest);
 };

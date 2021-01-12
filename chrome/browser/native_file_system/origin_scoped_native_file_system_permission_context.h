@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -66,7 +67,7 @@ class OriginScopedNativeFileSystemPermissionContext
 
   base::WeakPtr<ChromeNativeFileSystemPermissionContext> GetWeakPtr() override;
 
-  content::BrowserContext* const profile_;
+  const CheckedPtr<content::BrowserContext> profile_;
 
   // Permission state per origin.
   struct OriginState;

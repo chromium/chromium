@@ -16,6 +16,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "net/base/host_port_pair.h"
@@ -165,7 +166,7 @@ class NET_EXPORT HttpStreamFactory {
   // from |job_controller_set_|.
   void OnJobControllerComplete(JobController* controller);
 
-  HttpNetworkSession* const session_;
+  const CheckedPtr<HttpNetworkSession> session_;
 
   // All Requests/Preconnects are assigned with a JobController to manage
   // serving Job(s). JobController might outlive Request when Request

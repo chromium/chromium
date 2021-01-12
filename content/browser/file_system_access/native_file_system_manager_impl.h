@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
@@ -353,7 +354,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_;
-  NativeFileSystemPermissionContext* permission_context_;
+  CheckedPtr<NativeFileSystemPermissionContext> permission_context_;
 
   // All the mojo receivers for this NativeFileSystemManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on
