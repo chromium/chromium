@@ -106,6 +106,9 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
     const std::vector<uint8_t>& id = descriptor.id();
     req.add_excluded_credential_id(std::string(id.begin(), id.end()));
   }
+  if (request.app_id) {
+    req.set_app_id_exclude(*request.app_id);
+  }
 
   dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FMakeCredential);
   dbus::MessageWriter writer(&method_call);
@@ -204,6 +207,9 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp_id);
+  if (request.app_id) {
+    req.set_app_id(*request.app_id);
+  }
   req.set_client_data_hash(std::string(request.client_data_hash.begin(),
                                        request.client_data_hash.end()));
   DCHECK(generate_request_id_callback_);
@@ -297,6 +303,10 @@ bool ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
 
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);
+  if (request.app_id) {
+    req.set_app_id(*request.app_id);
+  }
+
   for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
     const std::vector<uint8_t>& id = descriptor.id();
     req.add_credential_id(std::string(id.begin(), id.end()));
