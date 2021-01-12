@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -13,12 +11,8 @@ import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
-
-import java.util.List;
 
 /**
  * A location bar implementation specific for smaller/phone screens.
@@ -206,38 +200,11 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     /**
-     * @return Width of child views before the first view that would be visible when location bar is
-     *         focused. The first visible, focused view should be either url bar or status icon.
+     * Returns the first child view that would be visible when location bar is focused. The first
+     * visible, focused view should be either url bar or status icon.
      */
-    public int getOffsetOfFirstVisibleFocusedView() {
-        int visibleWidth = 0;
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            if (child == mFirstVisibleFocusedView) break;
-            if (child.getVisibility() == GONE) continue;
-            visibleWidth += child.getMeasuredWidth();
-        }
-        return visibleWidth;
-    }
-
-    /**
-     * Populates fade animators of status icon for location bar focus change animation.
-     * @param animators The target list to add animators to.
-     * @param startDelayMs Start delay of fade animation in milliseconds.
-     * @param durationMs Duration of fade animation in milliseconds.
-     * @param targetAlpha Target alpha value.
-     */
-    public void populateFadeAnimations(
-            List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            if (child == mFirstVisibleFocusedView) break;
-            Animator animator = ObjectAnimator.ofFloat(child, ALPHA, targetAlpha);
-            animator.setStartDelay(startDelayMs);
-            animator.setDuration(durationMs);
-            animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
-            animators.add(animator);
-        }
+    /* package */ View getFirstVisibleFocusedView() {
+        return mFirstVisibleFocusedView;
     }
 
     /**
