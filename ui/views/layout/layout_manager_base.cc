@@ -63,6 +63,8 @@ int LayoutManagerBase::GetPreferredHeightForWidth(const View* host,
 SizeBounds LayoutManagerBase::GetAvailableSize(const View* host,
                                                const View* view) const {
   DCHECK_EQ(host_view_, host);
+  if (!cached_layout_size_)
+    GetProposedLayout(host->size());
   if (cached_layout_size_) {
     for (const auto& child_layout : cached_layout_.child_layouts)
       if (child_layout.child_view == view) {
@@ -92,6 +94,11 @@ std::vector<View*> LayoutManagerBase::GetChildViewsInPaintOrder(
 ProposedLayout LayoutManagerBase::GetProposedLayout(
     const gfx::Size& host_size) const {
   if (cached_layout_size_ != host_size) {
+#if (DCHECK_IS_ON())
+    // This calculation must not be re-entrant.
+    DCHECK(!calculating_layout_);
+    base::AutoReset<bool> calculating_layout(&calculating_layout_, true);
+#endif
     cached_layout_size_ = host_size;
     cached_layout_ = CalculateProposedLayout(SizeBounds(host_size));
   }

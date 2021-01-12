@@ -67,7 +67,11 @@ class VIEWS_EXPORT LayoutManager {
   virtual int GetPreferredHeightForWidth(const View* host, int width) const;
 
   // Returns the maximum space available in the layout for the specified child
-  // view. Default is unbounded.
+  // view. Default is unbounded. May result in a layout calculation for |host|
+  // if the layout is not valid, so while it can be called during the Layout()
+  // method for |view|, it should never be called during the actual computation
+  // of |host|'s layout (e.g. in a FlexLayout FlexRule calculation) to prevent
+  // an infinite loop.
   virtual SizeBounds GetAvailableSize(const View* host, const View* view) const;
 
   // Called when a View is added as a child of the View the LayoutManager has

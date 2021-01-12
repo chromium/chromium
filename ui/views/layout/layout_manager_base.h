@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/insets.h"
@@ -215,6 +216,11 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   // when it changes, children are always laid out regardless of visibility or
   // whether their bounds have changed.
   SizeBounds cached_available_size_;
+
+#if (DCHECK_IS_ON())
+  // Used to prevent GetProposedLayout() from being re-entrant.
+  mutable bool calculating_layout_ = false;
+#endif
 
   // Do some really simple caching because layout generation can cost as much
   // as 1ms or more for complex views.
