@@ -21,6 +21,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -1918,6 +1919,50 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetimeAtExit) {
 
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
   EXPECT_FALSE(weak_lifetime_test);
+}
+
+TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
+  V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests, graph());
+
+  MockV8DetailedMemoryReporter reporter;
+
+  auto process = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+
+  // Create a couple of frames with specified IDs.
+  auto page = CreateNode<PageNodeImpl>();
+
+  blink::LocalFrameToken frame_id = blink::LocalFrameToken();
+  auto frame = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr, 1,
+                                         2, frame_id);
+
+  blink::DedicatedWorkerToken worker_id = blink::DedicatedWorkerToken();
+  auto worker = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, process.get(),
+      page->browser_context_id(), worker_id);
+
+  worker->AddClientFrame(frame.get());
+  {
+    auto data = NewPerProcessV8MemoryUsage(2);
+    AddIsolateMemoryUsage(frame_id, 1001u, data->isolates[0].get());
+    AddIsolateMemoryUsage(worker_id, 1002u, data->isolates[1].get());
+    ExpectBindAndRespondToQuery(&reporter, std::move(data));
+  }
+
+  task_env().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&reporter);
+
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get()));
+  EXPECT_EQ(1001u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
+                ->v8_bytes_used());
+  ASSERT_TRUE(
+      V8DetailedMemoryExecutionContextData::ForWorkerNode(worker.get()));
+  EXPECT_EQ(1002u,
+            V8DetailedMemoryExecutionContextData::ForWorkerNode(worker.get())
+                ->v8_bytes_used());
+  worker->RemoveClientFrame(frame.get());
 }
 
 }  // namespace v8_memory

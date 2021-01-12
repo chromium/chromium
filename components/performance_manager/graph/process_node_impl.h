@@ -158,6 +158,7 @@ class ProcessNodeImpl
   base::Optional<int32_t> GetExitStatus() const override;
   bool VisitFrameNodes(const FrameNodeVisitor& visitor) const override;
   base::flat_set<const FrameNode*> GetFrameNodes() const override;
+  base::flat_set<const WorkerNode*> GetWorkerNodes() const override;
   bool GetMainThreadTaskLoadIsLow() const override;
   uint64_t GetPrivateFootprintKb() const override;
   uint64_t GetResidentSetKb() const override;

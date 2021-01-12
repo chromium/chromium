@@ -469,43 +469,48 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // existing frame is likewise accured to unassociated usage.
   uint64_t unassociated_v8_bytes_used = 0;
 
-  // Create a mapping from token to per-frame usage for the merge below.
-  std::vector<std::pair<blink::LocalFrameToken,
+  // Create a mapping from token to execution context usage for the merge below.
+  std::vector<std::pair<blink::ExecutionContextToken,
                         blink::mojom::PerContextV8MemoryUsagePtr>>
       tmp;
   for (auto& isolate : result->isolates) {
     for (auto& entry : isolate->contexts) {
-      if (entry->token.Is<blink::LocalFrameToken>()) {
-        tmp.emplace_back(entry->token.GetAs<blink::LocalFrameToken>(),
-                         std::move(entry));
-      }
-      // TODO(ulan): Handle WorkerFrameTokens here.
+      tmp.emplace_back(entry->token, std::move(entry));
     }
     unassociated_v8_bytes_used += isolate->unassociated_bytes_used;
   }
 
   size_t found_frame_count = tmp.size();
 
-  base::flat_map<blink::LocalFrameToken,
+  base::flat_map<blink::ExecutionContextToken,
                  blink::mojom::PerContextV8MemoryUsagePtr>
       associated_memory(std::move(tmp));
   // Validate that the frame tokens were all unique. If there are duplicates,
   // the map will arbitrarily drop all but one record per unique token.
   DCHECK_EQ(associated_memory.size(), found_frame_count);
 
-  base::flat_set<const FrameNode*> frame_nodes = process_node_->GetFrameNodes();
-  for (const FrameNode* frame_node : frame_nodes) {
-    auto it = associated_memory.find(frame_node->GetFrameToken());
+  std::vector<const execution_context::ExecutionContext*> execution_contexts;
+  for (auto* node : process_node_->GetFrameNodes()) {
+    execution_contexts.push_back(
+        execution_context::ExecutionContext::From(node));
+  }
+  for (auto* node : process_node_->GetWorkerNodes()) {
+    execution_contexts.push_back(
+        execution_context::ExecutionContext::From(node));
+  }
+
+  for (const execution_context::ExecutionContext* ec : execution_contexts) {
+    auto it = associated_memory.find(ec->GetToken());
     if (it == associated_memory.end()) {
       // No data for this node, clear any data associated with it.
-      ExecutionContextAttachedData::Destroy(frame_node);
+      ExecutionContextAttachedData::Destroy(ec);
     } else {
-      ExecutionContextAttachedData* frame_data =
-          ExecutionContextAttachedData::GetOrCreate(frame_node);
-      DCHECK_CALLED_ON_VALID_SEQUENCE(frame_data->sequence_checker_);
+      ExecutionContextAttachedData* ec_data =
+          ExecutionContextAttachedData::GetOrCreate(ec);
+      DCHECK_CALLED_ON_VALID_SEQUENCE(ec_data->sequence_checker_);
 
-      frame_data->data_available_ = true;
-      frame_data->data_.set_v8_bytes_used(it->second->bytes_used);
+      ec_data->data_available_ = true;
+      ec_data->data_.set_v8_bytes_used(it->second->bytes_used);
       // Zero out this datum as its usage has been consumed.
       // We avoid erase() here because it may take O(n) time.
       it->second.reset();
@@ -514,7 +519,7 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
 
   for (const auto& it : associated_memory) {
     if (it.second.is_null()) {
-      // Frame was already consumed.
+      // Execution context was already consumed.
       continue;
     }
     // Accrue the data for non-existent frames to unassociated bytes.

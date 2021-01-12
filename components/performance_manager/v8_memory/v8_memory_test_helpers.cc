@@ -353,18 +353,18 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
   return data;
 }
 
-void AddIsolateMemoryUsage(const blink::LocalFrameToken& frame_token,
+void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
                            uint64_t bytes_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate) {
   for (auto& entry : isolate->contexts) {
-    if (entry->token == blink::ExecutionContextToken(frame_token)) {
+    if (entry->token == token) {
       entry->bytes_used = bytes_used;
       return;
     }
   }
 
   auto context = blink::mojom::PerContextV8MemoryUsage::New();
-  context->token = blink::ExecutionContextToken(frame_token);
+  context->token = token;
   context->bytes_used = bytes_used;
   isolate->contexts.push_back(std::move(context));
 }

@@ -332,9 +332,9 @@ class WebMemoryTestHarness : public GraphTestHarness {
 blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
     size_t number_of_isolates);
 
-// Finds the PerContextV8MemoryUsage in |isolate| whose token is |frame_token|,
+// Finds the PerContextV8MemoryUsage in |isolate| whose token is |token|,
 // or creates it if it does not exist, and sets its bytes_used to |bytes_used|.
-void AddIsolateMemoryUsage(const blink::LocalFrameToken& frame_token,
+void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
                            uint64_t bytes_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate);
 

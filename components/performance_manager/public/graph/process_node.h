@@ -21,6 +21,7 @@ class Process;
 namespace performance_manager {
 
 class FrameNode;
+class WorkerNode;
 class ProcessNodeObserver;
 class RenderProcessHostProxy;
 
@@ -78,6 +79,10 @@ class ProcessNode : public Node {
   // Returns the set of frame nodes that are hosted in this process. Note that
   // calling this causes the set of nodes to be generated.
   virtual base::flat_set<const FrameNode*> GetFrameNodes() const = 0;
+
+  // Returns the set of worker nodes that are hosted in this process. Note that
+  // calling this causes the set of nodes to be generated.
+  virtual base::flat_set<const WorkerNode*> GetWorkerNodes() const = 0;
 
   // Returns true if the main thread task load is low (below some threshold
   // of usage). See ProcessNodeObserver::OnMainThreadTaskLoadIsLow.

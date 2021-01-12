@@ -10,6 +10,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
@@ -247,6 +248,16 @@ base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
     frames.insert(frame);
   }
   return frames;
+}
+
+base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_set<const WorkerNode*> workers;
+  for (auto* worker_impl : worker_nodes_) {
+    const WorkerNode* worker = worker_impl;
+    workers.insert(worker);
+  }
+  return workers;
 }
 
 bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
