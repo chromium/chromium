@@ -118,6 +118,12 @@ void WorkerScriptLoader::MaybeStartLoader(
   DCHECK(!completed_);
   DCHECK(interceptor);
 
+  if (!service_worker_handle_) {
+    // The DedicatedWorkerHost or SharedWorkerHost is already destroyed.
+    Abort();
+    return;
+  }
+
   // Create SubresourceLoaderParams for intercepting subresource requests and
   // populating the "controller" field in ServiceWorkerContainer. This can be
   // null if the interceptor is not interested in this request.
