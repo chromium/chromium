@@ -285,6 +285,10 @@
       initial: true,
     },
     {
+      name: "targetBlankImpliesNoOpenerEnabledWillBeRemoved",
+      initial: true,
+    },
+    {
       name: "cookieEnabled",
       initial: true,
     },
