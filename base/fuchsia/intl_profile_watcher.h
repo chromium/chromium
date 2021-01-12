@@ -31,7 +31,7 @@ class BASE_EXPORT FuchsiaIntlProfileWatcher {
   ~FuchsiaIntlProfileWatcher();
 
   // Returns the ID of the primary time zone in |profile|.
-  // Returns the empty string if the ID cannot be obtained.
+  // Returns an empty string if the ID cannot be obtained.
   static std::string GetPrimaryTimeZoneIdFromProfile(
       const ::fuchsia::intl::Profile& profile);
 
@@ -41,18 +41,29 @@ class BASE_EXPORT FuchsiaIntlProfileWatcher {
   // be used for ICU initialization.
   static std::string GetPrimaryTimeZoneIdForIcuInitialization();
 
+  // Returns the ID of the primary locale preference in |profile|.
+  // Returns an empty string if the ID cannot be obtained.
+  static std::string GetPrimaryLocaleIdFromProfile(
+      const ::fuchsia::intl::Profile& profile);
+
+  // Returns the ID of the primary locale preference for the system.
+  // Returns an empty string if the ID cannot be obtained.
+  // This is a synchronous blocking call to the system service, and should only
+  // be used for first value initialization.
+  static std::string GetPrimaryLocaleIdForInitialization();
+
  private:
-  friend class GetPrimaryTimeZoneIdFromPropertyProviderTest;
+  friend class GetValuesFromIntlPropertyProviderTest;
   friend class IntlProfileWatcherTest;
 
   FuchsiaIntlProfileWatcher(
       ::fuchsia::intl::PropertyProviderPtr property_provider,
       ProfileChangeCallback on_profile_changed);
 
-  // Returns the ID of the primary time zone from the profile obtained from
-  // |property_provider|. Returns the empty string if the ID cannot be obtained.
-  static std::string GetPrimaryTimeZoneIdFromPropertyProvider(
+  static ::fuchsia::intl::Profile GetProfileFromPropertyProvider(
       ::fuchsia::intl::PropertyProviderSyncPtr property_provider);
+
+  static ::fuchsia::intl::Profile GetCurrentProfileSync();
 
   ::fuchsia::intl::PropertyProviderPtr property_provider_;
   const ProfileChangeCallback on_profile_changed_;
