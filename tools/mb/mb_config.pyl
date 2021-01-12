@@ -217,7 +217,6 @@
       'ToTWinThinLTO64': 'clang_tot_win_official_full_symbols_thin_lto_static',
       'ToTiOS': 'ios_clang_tot_xctest',
       'ToTiOSDevice': 'ios_clang_device_tot_xctest',
-      'UBSanVptr Linux': 'ubsan_vptr_release_bot',
     },
 
     'chromium.dawn': {

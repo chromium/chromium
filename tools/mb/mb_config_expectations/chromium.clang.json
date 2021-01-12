@@ -434,15 +434,6 @@
       "target_os": "ios"
     }
   },
-  "UBSanVptr Linux": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "is_ubsan_no_recover": true,
-      "is_ubsan_vptr": true,
-      "use_goma": true
-    }
-  },
   "linux-win_cross-rel": {
     "gn_args": {
       "dcheck_always_on": true,

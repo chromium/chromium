@@ -2078,16 +2078,6 @@
           'isolated_scripts': 'ios_clang_tot_device_tests'
         },
       },
-      'UBSanVptr Linux': {
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          # no "_and_gl":gl_unittests doesn't pass yet,
-          # https://crbug.com/815183
-          'gtest_tests': 'chromium_linux_gtests',
-        },
-      },
       'linux-win_cross-rel': {
         'mixins': [
           'win10',

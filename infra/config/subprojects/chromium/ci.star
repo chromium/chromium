@@ -2027,14 +2027,6 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
-    name = "UBSanVptr Linux",
-    console_view_entry = consoles.console_view_entry(
-        short_name = "usn",
-    ),
-    goma_backend = goma.backend.RBE_PROD,
-)
-
-ci.clang_builder(
     name = "ToTWindowsCoverage",
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
