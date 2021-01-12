@@ -152,7 +152,6 @@ class ParentAccessController;
 class PartialMagnificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
-class PeripheralBatteryTracker;
 class PersistentWindowController;
 class PolicyRecommendationRestorer;
 class PowerButtonController;
@@ -793,7 +792,6 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<PeripheralBatteryListener> peripheral_battery_listener_;
   std::unique_ptr<PeripheralBatteryNotifier> peripheral_battery_notifier_;
-  std::unique_ptr<PeripheralBatteryTracker> peripheral_battery_tracker_;
   std::unique_ptr<PowerEventObserver> power_event_observer_;
   std::unique_ptr<PowerPrefs> power_prefs_;
   std::unique_ptr<ui::UserActivityPowerManagerNotifier> user_activity_notifier_;
