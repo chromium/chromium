@@ -10213,20 +10213,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Nearby.Share.Transfer.FinalStatus"
-    enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the final status of a Nearby Share transfer. Emitted when a transfer
-    completes successfully, fails, or was aborted by the user, for example, by
-    cancelling the transfer.
-  </summary>
-</histogram>
-
 <histogram
     name="Nearby.Share.Transfer.FinalStatus.{Direction}.{ShareTargetType}.{ContactStatus}"
     enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
+  <obsolete>
+    Replaced 01/2021 with Nearby.Share.Transfer.FinalStatus{Variation}, which
+    slices by only one dimension.
+  </obsolete>
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -10248,6 +10241,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="ContactStatus">
     <variant name="Contact" summary="contact-based sharing"/>
     <variant name="NonContact" summary="non-contact-based sharing"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Transfer.FinalStatus{Variation}"
+    enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the final status of a Nearby Share transfer {Variation}. Emitted
+    when a transfer completes successfully, fails, or was aborted by the user,
+    for example, by cancelling the transfer.
+  </summary>
+  <token key="Variation">
+    <variant name=""
+        summary="for all sharing scenarios, agnostic of send/receive, device
+                 type, or contact/non-contact"/>
+    <variant name=".Contact" summary="when sharing with a contact"/>
+    <variant name=".Laptop" summary="when sharing with a laptop"/>
+    <variant name=".NonContact" summary="when sharing with a non-contact"/>
+    <variant name=".Phone" summary="when sharing with a phone"/>
+    <variant name=".Receive" summary="when receiving"/>
+    <variant name=".Send" summary="when sending"/>
+    <variant name=".Tablet" summary="when sharing with a tablet"/>
+    <variant name=".UnknownDeviceType"
+        summary="when sharing with an unknown device type"/>
   </token>
 </histogram>
 

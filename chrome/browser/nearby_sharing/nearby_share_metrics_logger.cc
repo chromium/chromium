@@ -367,7 +367,7 @@ void RecordNearbyShareTransferFinalStatusMetric(
 
   const std::string prefix = "Nearby.Share.Transfer.FinalStatus";
   base::UmaHistogramEnumeration(prefix, final_status);
-  base::UmaHistogramEnumeration(
-      prefix + send_or_receive + share_target_type + contact_or_not,
-      final_status);
+  base::UmaHistogramEnumeration(prefix + send_or_receive, final_status);
+  base::UmaHistogramEnumeration(prefix + share_target_type, final_status);
+  base::UmaHistogramEnumeration(prefix + contact_or_not, final_status);
 }
