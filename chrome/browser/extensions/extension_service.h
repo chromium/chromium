@@ -732,6 +732,8 @@ class ExtensionService : public ExtensionServiceInterface,
                            ManagementPolicyProhibitsEnableOnInstalled);
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            BlockAndUnblockBlocklistedExtension);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
+                           CanAddDisableReasonToBlocklistedExtension);
   FRIEND_TEST_ALL_PREFIXES(::BlocklistedExtensionSyncServiceTest,
                            SyncBlocklistedExtension);
   friend class ::BlocklistedExtensionSyncServiceTest;

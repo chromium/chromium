@@ -228,17 +228,6 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_NE(disable_reason::DISABLE_NONE, disable_reasons);
 
-  if (extension_prefs_->IsExtensionBlocklisted(extension_id))
-    return;
-
-  // The extension may have been disabled already. Just add the disable reasons.
-  // TODO(michaelpg): Move this after the policy check, below, to ensure that
-  // disable reasons disallowed by policy are not added here.
-  if (!IsExtensionEnabled(extension_id)) {
-    extension_prefs_->AddDisableReasons(extension_id, disable_reasons);
-    return;
-  }
-
   scoped_refptr<const Extension> extension =
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
 
@@ -260,6 +249,12 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
 
     if (disable_reasons == disable_reason::DISABLE_NONE)
       return;
+  }
+
+  // The extension may have been disabled already. Just add the disable reasons.
+  if (!IsExtensionEnabled(extension_id)) {
+    extension_prefs_->AddDisableReasons(extension_id, disable_reasons);
+    return;
   }
 
   extension_prefs_->SetExtensionDisabled(extension_id, disable_reasons);

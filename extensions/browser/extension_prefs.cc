@@ -964,17 +964,13 @@ bool ExtensionPrefs::HasDisableReason(
 void ExtensionPrefs::AddDisableReason(
     const std::string& extension_id,
     disable_reason::DisableReason disable_reason) {
-  // TODO(https://crbug.com/1073570): Extensions can be blocklisted but in
-  // enabled state. This checks the kPrefState which is the state of the
-  // extension.
-  DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED) ||
-         disable_reason == disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
-  ModifyDisableReasons(extension_id, disable_reason, DISABLE_REASON_ADD);
+  AddDisableReasons(extension_id, disable_reason);
 }
 
 void ExtensionPrefs::AddDisableReasons(const std::string& extension_id,
                                        int disable_reasons) {
-  DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED));
+  DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED) ||
+         IsExtensionBlocklisted(extension_id));
   ModifyDisableReasons(extension_id, disable_reasons, DISABLE_REASON_ADD);
 }
 

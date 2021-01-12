@@ -4838,6 +4838,56 @@ TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
   EXPECT_FALSE(prefs->IsExtensionBlocklisted(good_crx));
 }
 
+TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
+  InitializeGoodInstalledExtensionService();
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  TestBlocklist blocklist;
+
+  blocklist.Attach(service()->blocklist_);
+  service()->Init();
+
+  blocklist.SetBlocklistState(good0, BLOCKLISTED_MALWARE, true);
+  blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, true);
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good0));
+  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+
+  // Test that a disable reason can be added to a blocklisted extension.
+  prefs->AddDisableReason(good0, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+  EXPECT_TRUE(prefs->HasDisableReason(
+      good0, disable_reason::DISABLE_REMOTELY_FOR_MALWARE));
+
+  // Test that a blocklisted extension can be disabled.
+  service()->DisableExtension(good1, disable_reason::DISABLE_BLOCKED_BY_POLICY);
+  EXPECT_TRUE(prefs->HasDisableReason(
+      good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
+  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+  // Even though the extension was disabled with a new disable reason, it should
+  // remain in the blocklisted set (which can't be re-enabled by the user).
+  EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
+  // Since the extension is blocklisted, it should not be in the disabled set.
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(good1));
+
+  // Extensions should remain in the appropriate sets after being reloaded (as
+  // in a profile restart).
+  service()->ReloadExtensionsForTest();
+  EXPECT_TRUE(prefs->HasDisableReason(
+      good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
+  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(good1));
+
+  // Test that the extension is disabled when unblocklisted.
+  blocklist.SetBlocklistState(good1, NOT_BLOCKLISTED, true);
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_TRUE(prefs->IsExtensionDisabled(good1));
+  EXPECT_FALSE(registry()->blocklisted_extensions().Contains(good1));
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(good1));
+  EXPECT_TRUE(prefs->HasDisableReason(
+      good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
+}
+
 TEST_F(ExtensionServiceTest, TerminateExtension) {
   InitializeEmptyExtensionService();
 
