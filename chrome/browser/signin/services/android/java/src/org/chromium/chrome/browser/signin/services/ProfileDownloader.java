@@ -110,7 +110,7 @@ class ProfileDownloader {
                 // Pending requests here must be pre-signin request since SigninManager will wait
                 // system accounts been seeded into AccountTrackerService before finishing sign in.
                 ProfileDownloaderJni.get().startFetchingAccountInfoFor(
-                        mProfiles.get(0), mAccountEmails.get(0), mImageSizes.get(0), true);
+                        mProfiles.get(0), mAccountEmails.get(0), mImageSizes.get(0));
                 mProfiles.remove(0);
                 mAccountEmails.remove(0);
                 mImageSizes.remove(0);
@@ -140,8 +140,7 @@ class ProfileDownloader {
             PendingProfileDownloads.get().pendProfileDownload(profile, accountEmail, imageSize);
             return;
         }
-        ProfileDownloaderJni.get().startFetchingAccountInfoFor(
-                profile, accountEmail, imageSize, /* isPreSignin= */ true);
+        ProfileDownloaderJni.get().startFetchingAccountInfoFor(profile, accountEmail, imageSize);
     }
 
     @VisibleForTesting
@@ -155,7 +154,6 @@ class ProfileDownloader {
 
     @NativeMethods
     interface Natives {
-        void startFetchingAccountInfoFor(
-                Profile profile, String accountEmail, int imageSize, boolean isPreSignin);
+        void startFetchingAccountInfoFor(Profile profile, String accountEmail, int imageSize);
     }
 }

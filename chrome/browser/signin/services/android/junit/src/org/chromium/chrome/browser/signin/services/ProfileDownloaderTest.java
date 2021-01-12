@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -82,10 +81,10 @@ public class ProfileDownloaderTest {
                 ProfileDownloader.PendingProfileDownloads.get();
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingProfileDownloads);
         verify(mProfileDownloaderNativeMock, never())
-                .startFetchingAccountInfoFor(any(), anyString(), anyInt(), anyBoolean());
+                .startFetchingAccountInfoFor(any(), anyString(), anyInt());
         pendingProfileDownloads.onSystemAccountsSeedingComplete();
         verify(mProfileDownloaderNativeMock)
-                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE, true);
+                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE);
     }
 
     @Test
@@ -97,7 +96,7 @@ public class ProfileDownloaderTest {
         verify(mAccountTrackerServiceMock, never())
                 .addSystemAccountsSeededListener(pendingProfileDownloads);
         verify(mProfileDownloaderNativeMock)
-                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE, true);
+                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE);
     }
 
     @Test

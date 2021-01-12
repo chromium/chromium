@@ -30,13 +30,11 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
   AccountInfoRetriever(Profile* profile,
                        const CoreAccountId& account_id,
                        const std::string& email,
-                       const int desired_image_side_pixels,
-                       bool is_pre_signin)
+                       const int desired_image_side_pixels)
       : profile_(profile),
         account_id_(account_id),
         email_(email),
-        desired_image_side_pixels_(desired_image_side_pixels),
-        is_pre_signin_(is_pre_signin) {}
+        desired_image_side_pixels_(desired_image_side_pixels) {}
 
   void Start() {
     profile_image_downloader_.reset(new ProfileDownloader(this));
@@ -70,7 +68,7 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
 
   std::string GetCachedPictureURL() const override { return std::string(); }
 
-  bool IsPreSignin() const override { return is_pre_signin_; }
+  bool IsPreSignin() const override { return true; }
 
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override {
     base::string16 full_name = downloader->GetProfileFullName();
@@ -108,11 +106,6 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
   // Desired side length of the profile image (in pixels).
   const int desired_image_side_pixels_;
 
-  // True when the profile download is happening before the user has signed in,
-  // such as during first run when we can still get tokens and want to fetch
-  // the profile name and picture to display.
-  bool is_pre_signin_;
-
   DISALLOW_COPY_AND_ASSIGN(AccountInfoRetriever);
 };
 
@@ -123,8 +116,7 @@ void JNI_ProfileDownloader_StartFetchingAccountInfoFor(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jemail,
-    jint image_side_pixels,
-    jboolean is_pre_signin) {
+    jint image_side_pixels) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   const std::string email = base::android::ConvertJavaStringToUTF8(env, jemail);
 
@@ -139,8 +131,7 @@ void JNI_ProfileDownloader_StartFetchingAccountInfoFor(
     return;
   }
 
-  AccountInfoRetriever* retriever =
-      new AccountInfoRetriever(profile, maybe_account_info.value().account_id,
-                               email, image_side_pixels, is_pre_signin);
+  AccountInfoRetriever* retriever = new AccountInfoRetriever(
+      profile, maybe_account_info.value().account_id, email, image_side_pixels);
   retriever->Start();
 }
