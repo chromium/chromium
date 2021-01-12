@@ -144,25 +144,25 @@ void TapUserCreationNext() {
 }
 
 void WaitForEulaScreen() {
-  if (!WizardController::IsBrandedBuildForTesting())
+  if (!WizardController::IsBrandedBuild())
     return;
   WaitFor(EulaView::kScreenId);
 }
 
 void TapEulaAccept() {
-  if (!WizardController::IsBrandedBuildForTesting())
+  if (!WizardController::IsBrandedBuild())
     return;
   test::OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
 }
 
 void WaitForSyncConsentScreen() {
-  if (!SyncConsentScreen::IsBrandedBuildForTesting())
+  if (!WizardController::IsBrandedBuild())
     return;
   WaitFor(SyncConsentScreenView::kScreenId);
 }
 
 void ExitScreenSyncConsent() {
-  if (!SyncConsentScreen::IsBrandedBuildForTesting())
+  if (!WizardController::IsBrandedBuild())
     return;
   SyncConsentScreen* screen = static_cast<SyncConsentScreen*>(
       WizardController::default_controller()->GetScreen(

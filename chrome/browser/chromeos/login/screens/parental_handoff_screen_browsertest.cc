@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/chromeos/login/screens/edu_coexistence_login_screen.h"
-#include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
@@ -95,7 +94,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   base::HistogramTester histogram_tester_;
 
-  std::unique_ptr<base::AutoReset<bool>> chrome_sync_is_google_branded_build_;
+  std::unique_ptr<base::AutoReset<bool>> is_google_branded_build_;
 
   std::unique_ptr<base::AutoReset<bool>> assistant_is_enabled_;
 
@@ -108,8 +107,8 @@ ParentalHandoffScreenBrowserTest::ParentalHandoffScreenBrowserTest() {
 }
 
 void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {
-  chrome_sync_is_google_branded_build_ =
-      SyncConsentScreen::ForceBrandedBuildForTesting(true);
+  is_google_branded_build_ =
+      WizardController::ForceBrandedBuildForTesting(true);
   assistant_is_enabled_ =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(false);
   ParentalHandoffScreen* screen = GetParentalHandoffScreen();

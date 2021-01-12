@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,13 +53,6 @@ void RecordUmaReviewFollowingSetup(bool value) {
 }
 
 }  // namespace
-
-// static
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-bool g_is_branded_build = true;
-#else
-bool g_is_branded_build = false;
-#endif
 
 // static
 std::string SyncConsentScreen::GetResultString(Result result) {
@@ -273,17 +267,6 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
   }
 }
 
-// static
-std::unique_ptr<base::AutoReset<bool>>
-SyncConsentScreen::ForceBrandedBuildForTesting(bool value) {
-  return std::make_unique<base::AutoReset<bool>>(&g_is_branded_build, value);
-}
-
-// static
-bool SyncConsentScreen::IsBrandedBuildForTesting() {
-  return g_is_branded_build;
-}
-
 void SyncConsentScreen::SetDelegateForTesting(
     SyncConsentScreen::SyncConsentScreenTestDelegate* delegate) {
   test_delegate_ = delegate;
@@ -307,7 +290,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior()
   // Skip for non-branded (e.g. developer) builds. Check this after the account
   // type checks so we don't try to enable sync in browser_tests for those
   // account types.
-  if (!g_is_branded_build)
+  if (!WizardController::IsBrandedBuild())
     return SyncScreenBehavior::kSkipAndEnableNonBrandedBuild;
 
   const user_manager::UserManager* user_manager =

@@ -2023,8 +2023,8 @@ void WizardController::SkipEnrollmentPromptsForTesting() {
 
 // static
 std::unique_ptr<base::AutoReset<bool>>
-WizardController::ForceBrandedBuildForTesting() {
-  return std::make_unique<base::AutoReset<bool>>(&is_branded_build_, true);
+WizardController::ForceBrandedBuildForTesting(bool value) {
+  return std::make_unique<base::AutoReset<bool>>(&is_branded_build_, value);
 }
 
 // static

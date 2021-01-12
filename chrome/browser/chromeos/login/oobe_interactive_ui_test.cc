@@ -652,10 +652,8 @@ class OobeInteractiveUITest : public OobeBaseTest,
                                   std::tuple<bool, bool, bool, ArcState>> {
  public:
   OobeInteractiveUITest() {
-    // TODO(https://crbug.com/1130502): Merge these functions into one.
-    branded_build_override_ = WizardController::ForceBrandedBuildForTesting();
-    sync_branded_build_override_ =
-        SyncConsentScreen::ForceBrandedBuildForTesting(true);
+    branded_build_override_ =
+        WizardController::ForceBrandedBuildForTesting(true);
   }
   ~OobeInteractiveUITest() override = default;
 
@@ -693,7 +691,6 @@ class OobeInteractiveUITest : public OobeBaseTest,
 
  private:
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-  std::unique_ptr<base::AutoReset<bool>> sync_branded_build_override_;
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 

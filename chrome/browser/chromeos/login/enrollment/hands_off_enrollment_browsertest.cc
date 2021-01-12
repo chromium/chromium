@@ -52,7 +52,8 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
     // Set official build so EULA screen is not skipped by default.
-    branded_build_override_ = WizardController::ForceBrandedBuildForTesting();
+    branded_build_override_ =
+        WizardController::ForceBrandedBuildForTesting(true);
 
     // Sets all network services into idle state to simulate disconnected state.
     NetworkStateHandler::NetworkStateList networks;

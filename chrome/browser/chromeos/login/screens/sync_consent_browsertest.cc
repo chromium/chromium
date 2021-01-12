@@ -129,7 +129,7 @@ class SyncConsentTest : public OobeBaseTest {
  public:
   SyncConsentTest()
       : force_branded_build_(
-            SyncConsentScreen::ForceBrandedBuildForTesting(true)) {}
+            WizardController::ForceBrandedBuildForTesting(true)) {}
   ~SyncConsentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -252,7 +252,7 @@ class SyncConsentTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
-  auto autoreset = SyncConsentScreen::ForceBrandedBuildForTesting(false);
+  auto autoreset = WizardController::ForceBrandedBuildForTesting(false);
   LoginToSyncConsentScreen();
 
   WaitForScreenExit();
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
   // Set up screen and policy.
-  auto autoreset = SyncConsentScreen::ForceBrandedBuildForTesting(true);
+  auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
   SyncConsentScreen* screen = GetSyncConsentScreen();
   screen->SetProfileSyncDisabledByPolicyForTesting(true);
 
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest, LanguageVariant) {
 
 IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest,
                        SkippedNotBrandedBuild) {
-  auto autoreset = SyncConsentScreen::ForceBrandedBuildForTesting(false);
+  auto autoreset = WizardController::ForceBrandedBuildForTesting(false);
   LoginToSyncConsentScreen();
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);

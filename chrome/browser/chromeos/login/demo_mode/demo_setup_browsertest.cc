@@ -148,7 +148,8 @@ class DemoSetupTestBase : public OobeBaseTest {
     update_engine_client()->set_update_check_result(
         UpdateEngineClient::UPDATE_RESULT_FAILED);
     DisableConfirmationDialogAnimations();
-    branded_build_override_ = WizardController::ForceBrandedBuildForTesting();
+    branded_build_override_ =
+        WizardController::ForceBrandedBuildForTesting(true);
     DisconnectAllNetworks();
   }
 

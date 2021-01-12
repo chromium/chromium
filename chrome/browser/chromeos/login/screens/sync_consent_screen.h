@@ -104,11 +104,6 @@ class SyncConsentScreen : public BaseScreen,
   // Enables sync if required when skipping the dialog.
   void MaybeEnableSyncForSkip();
 
-  static std::unique_ptr<base::AutoReset<bool>> ForceBrandedBuildForTesting(
-      bool value);
-
-  static bool IsBrandedBuildForTesting();
-
   // Sets internal condition "Sync disabled by policy" for tests.
   void SetProfileSyncDisabledByPolicyForTesting(bool value);
 
