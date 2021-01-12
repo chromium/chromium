@@ -89,8 +89,10 @@ class ToolbarIconContainerView::WidgetRestoreObserver
     const bool is_collapsed = observed_view->bounds().IsEmpty();
     if (is_collapsed != was_collapsed_) {
       was_collapsed_ = is_collapsed;
-      if (!is_collapsed)
-        toolbar_icon_container_view_->animating_layout_manager()->ResetLayout();
+      if (!is_collapsed) {
+        toolbar_icon_container_view_->GetAnimatingLayoutManager()
+            ->ResetLayout();
+      }
     }
   }
 
@@ -203,6 +205,21 @@ void ToolbarIconContainerView::OnViewFocused(views::View* observed_view) {
 
 void ToolbarIconContainerView::OnViewBlurred(views::View* observed_view) {
   UpdateHighlight();
+}
+
+views::AnimatingLayoutManager*
+ToolbarIconContainerView::GetAnimatingLayoutManager() {
+  return static_cast<views::AnimatingLayoutManager*>(GetLayoutManager());
+}
+
+const views::AnimatingLayoutManager*
+ToolbarIconContainerView::GetAnimatingLayoutManager() const {
+  return static_cast<const views::AnimatingLayoutManager*>(GetLayoutManager());
+}
+
+views::FlexLayout* ToolbarIconContainerView::GetTargetLayoutManager() {
+  return static_cast<views::FlexLayout*>(
+      GetAnimatingLayoutManager()->target_layout_manager());
 }
 
 void ToolbarIconContainerView::OnBoundsChanged(

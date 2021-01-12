@@ -87,7 +87,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   }
   extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
   AddMainButton(extensions_button_);
-  target_layout_manager()
+  GetTargetLayoutManager()
       ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
                   hide_icon_flex_specification.WithOrder(3));
@@ -136,7 +136,7 @@ void ExtensionsToolbarContainer::ShowWidgetForExtension(
   anchored_widgets_.push_back({widget, extension_id});
   widget->AddObserver(this);
   UpdateIconVisibility(extension_id);
-  animating_layout_manager()->PostOrQueueAction(base::BindOnce(
+  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately,
       weak_ptr_factory_.GetWeakPtr(), widget));
 }
@@ -207,9 +207,9 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
 
   if (must_show ||
       (CanShowIconInToolbar() && model_->IsActionPinned(extension_id)))
-    animating_layout_manager()->FadeIn(action_view);
+    GetAnimatingLayoutManager()->FadeIn(action_view);
   else
-    animating_layout_manager()->FadeOut(action_view);
+    GetAnimatingLayoutManager()->FadeOut(action_view);
 }
 
 void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
@@ -349,7 +349,7 @@ void ExtensionsToolbarContainer::PopOutAction(
   DCHECK(!popped_out_action_);
   popped_out_action_ = action;
   UpdateIconVisibility(action->GetId());
-  animating_layout_manager()->PostOrQueueAction(std::move(closure));
+  GetAnimatingLayoutManager()->PostOrQueueAction(std::move(closure));
   UpdateContainerVisibility();
 }
 
@@ -629,7 +629,7 @@ void ExtensionsToolbarContainer::OnDragExited() {
       drop_info_->action_id;
   drop_info_.reset();
   ReorderViews();
-  animating_layout_manager()->PostOrQueueAction(base::BindOnce(
+  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &ExtensionsToolbarContainer::SetExtensionIconVisibility,
       weak_ptr_factory_.GetWeakPtr(), dragged_extension_id, true));
 }
@@ -703,7 +703,7 @@ void ExtensionsToolbarContainer::UpdateContainerVisibility() {
   // Layout animation does not handle host view visibility changing; requires
   // resetting.
   if (was_visible != GetVisible())
-    animating_layout_manager()->ResetLayout();
+    GetAnimatingLayoutManager()->ResetLayout();
 
   if (!was_visible && GetVisible() && GetOnVisibleCallbackForTesting())
     std::move(GetOnVisibleCallbackForTesting()).Run();
@@ -719,7 +719,7 @@ bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
   if (display_mode_ != DisplayMode::kAutoHide)
     return true;
 
-  if (animating_layout_manager()->is_animating())
+  if (GetAnimatingLayoutManager()->is_animating())
     return true;
 
   // Is menu showing.
@@ -738,7 +738,7 @@ bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
 }
 
 void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
-  animating_layout_manager()->PostOrQueueAction(
+  GetAnimatingLayoutManager()->PostOrQueueAction(
       base::BindOnce(&ExtensionsToolbarContainer::UpdateContainerVisibility,
                      weak_ptr_factory_.GetWeakPtr()));
 }

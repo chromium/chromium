@@ -698,7 +698,7 @@ void ToolbarView::InitLayout() {
   } else if (extensions_container_) {
     const views::FlexSpecification extensions_flex_rule =
         views::FlexSpecification(
-            extensions_container_->animating_layout_manager()
+            extensions_container_->GetAnimatingLayoutManager()
                 ->GetDefaultFlexRule())
             .WithOrder(kExtensionsFlexOrder);
 

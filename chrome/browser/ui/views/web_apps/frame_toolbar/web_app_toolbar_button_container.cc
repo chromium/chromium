@@ -119,7 +119,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
       extensions_container_->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(
-              extensions_container_->animating_layout_manager()
+              extensions_container_->GetAnimatingLayoutManager()
                   ->GetDefaultFlexRule())
               .WithOrder(kLowPriorityFlexOrder));
       views::SetHitTestComponent(extensions_container_,

@@ -56,20 +56,11 @@ class ToolbarIconContainerView : public views::View,
   bool uses_highlight() const { return uses_highlight_; }
 
   // Provides access to the animating layout manager for subclasses.
-  views::AnimatingLayoutManager* animating_layout_manager() {
-    return static_cast<views::AnimatingLayoutManager*>(GetLayoutManager());
-  }
-
-  const views::AnimatingLayoutManager* animating_layout_manager() const {
-    return static_cast<const views::AnimatingLayoutManager*>(
-        GetLayoutManager());
-  }
+  views::AnimatingLayoutManager* GetAnimatingLayoutManager();
+  const views::AnimatingLayoutManager* GetAnimatingLayoutManager() const;
 
   // Provides access to the flex layout in the animating layout manager.
-  views::FlexLayout* target_layout_manager() {
-    return static_cast<views::FlexLayout*>(
-        animating_layout_manager()->target_layout_manager());
-  }
+  views::FlexLayout* GetTargetLayoutManager();
 
  protected:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
