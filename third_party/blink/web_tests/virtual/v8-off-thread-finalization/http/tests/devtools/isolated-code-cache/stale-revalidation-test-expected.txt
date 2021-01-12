@@ -1,0 +1,82 @@
+Tests V8 code cache for resources revalidated with 304.
+
+--- Begin trace events related to code cache. ------
+1st load. Produce timestamp. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-revalidated-script.cgi:1
+2nd load. Produce code cache. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-revalidated-script.cgi:1
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        producedCacheSize : <number>
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-revalidated-script.cgi:1
+3rd load. Consume code cache. -->
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-revalidated-script.cgi:1
+Clear the resource from the MemoryCache. -->
+Load the resource with revalidation. The code cache got dropped because its timestamp did not match the one of the request. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-revalidated-script.cgi:1
+----- End trace events related to code cache. ------
+

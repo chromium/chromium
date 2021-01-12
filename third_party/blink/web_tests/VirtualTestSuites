@@ -109,6 +109,15 @@
              "--disable-blink-features=DecodeJpeg420ImagesToYUV"]
   },
   {
+    "prefix": "v8-off-thread-finalization",
+    "bases": [
+      "external/wpt/html/semantics/scripting-1",
+      "fast/dom",
+      "http/tests/devtools/isolated-code-cache/"
+    ],
+    "args": ["--enable-features=V8OffThreadFinalization,SmallScriptStreaming"]
+  },
+  {
     "prefix": "exotic-color-space",
     "bases": ["images"],
     "args": ["--force-color-profile=srgb",

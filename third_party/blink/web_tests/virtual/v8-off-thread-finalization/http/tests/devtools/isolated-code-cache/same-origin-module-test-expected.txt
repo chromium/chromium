@@ -1,0 +1,111 @@
+Tests V8 code cache for javascript resources
+
+--- Trace events related to code caches ------
+v8.compileModule Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        notStreamedReason : "module script"
+        producedCacheSize : <number>
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : "script has code-cache available"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+-----------------------------------------------
+

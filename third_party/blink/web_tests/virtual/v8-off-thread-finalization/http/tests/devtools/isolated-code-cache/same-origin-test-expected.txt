@@ -1,0 +1,118 @@
+Tests V8 code cache for javascript resources
+
+--- Trace events related to code caches ------
+Load [A] 1st time. Produce timestamp. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+Load [A] 2nd time. Produce code cache. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        producedCacheSize : <number>
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+Load [A] 3rd time. Consume code cache. -->
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+Load [B]. Should not use the cached code. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+Load [A] again from MemoryCache. Should use the cached code. -->
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+Clear [A] from MemoryCache. -->
+Load [A] from Disk Cache. -->
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "script has code-cache available"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.cgi:1
+-----------------------------------------------
+
