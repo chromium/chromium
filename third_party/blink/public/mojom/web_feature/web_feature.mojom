@@ -3069,6 +3069,7 @@ enum WebFeature {
   kSamePartyCookieInclusionOverruledSameSite = 3748,
   kEmbedElementWithoutTypeSrcChanged = 3749,
   kPaymentHandlerStandardizedPaymentMethodIdentifier = 3750,
+  kWebCodecsAudioEncoder = 3751,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

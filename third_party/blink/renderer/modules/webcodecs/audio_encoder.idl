@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,24 @@
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
-] interface VideoEncoder {
-    [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
-    constructor(VideoEncoderInit init);
+] interface AudioEncoder {
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsAudioEncoder]
+    constructor(AudioEncoderInit init);
 
     // The number of pending encode requests. This does not include requests
     // that have been sent to the underlying codec.
     readonly attribute long encodeQueueSize;
 
-    // Enqueues a control message to configure the video encoder for encoding
-    // frames as described by config.
+    // Enqueues a control message to configure the audio encoder for encoding
+    // audio frames as described by config.
     [RaisesException]
-    void configure(VideoEncoderConfig config);
+    void configure(AudioEncoderConfig config);
 
     // Enqueues a request to encode a frame.
-    // Results of the encoding (EncodedVideoChunk) are returned via
+    // Results of the encoding (EncodedAudioChunk) are returned via
     // the output callback provided in configure().
     [RaisesException]
-    void encode(VideoFrame frame,
-                         optional VideoEncoderEncodeOptions options = {});
+    void encode(AudioFrame frame);
 
 
     // Enqueues a request to produce outputs for all already encoded frames.

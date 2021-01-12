@@ -148,6 +148,8 @@ generated_modules_callback_function_files = [
   "$bindings_modules_v8_output_dir/v8_decode_error_callback.h",
   "$bindings_modules_v8_output_dir/v8_decode_success_callback.cc",
   "$bindings_modules_v8_output_dir/v8_decode_success_callback.h",
+  "$bindings_modules_v8_output_dir/v8_encoded_audio_chunk_output_callback.cc",
+  "$bindings_modules_v8_output_dir/v8_encoded_audio_chunk_output_callback.h",
   "$bindings_modules_v8_output_dir/v8_idb_observer_callback.cc",
   "$bindings_modules_v8_output_dir/v8_idb_observer_callback.h",
   "$bindings_modules_v8_output_dir/v8_launch_consumer.cc",

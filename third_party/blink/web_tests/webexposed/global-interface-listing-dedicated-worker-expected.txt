@@ -26,6 +26,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method decode
 [Worker]     method flush
 [Worker]     method reset
+[Worker] interface AudioEncoder
+[Worker]     attribute @@toStringTag
+[Worker]     getter encodeQueueSize
+[Worker]     getter state
+[Worker]     method close
+[Worker]     method configure
+[Worker]     method constructor
+[Worker]     method encode
+[Worker]     method flush
+[Worker]     method reset
 [Worker] interface AudioFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter buffer

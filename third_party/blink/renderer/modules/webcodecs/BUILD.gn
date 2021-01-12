@@ -13,6 +13,8 @@ blink_modules_sources("webcodecs") {
     "audio_decoder.h",
     "audio_decoder_broker.cc",
     "audio_decoder_broker.h",
+    "audio_encoder.cc",
+    "audio_encoder.h",
     "audio_frame.cc",
     "audio_frame.h",
     "codec_config_eval.h",
