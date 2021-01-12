@@ -8914,77 +8914,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ManualFallback.PresentedOptions.AllPasswords"
-    units="Credentials" expires_after="2021-05-23">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of credentials presented to the user in the &quot;Use
-    other password...&quot; view in Manual Fallback. This is logged everytime
-    the user opens this view.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.PresentedOptions.CreditCards" units="Cards"
-    expires_after="2021-05-23">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of cards presented to the user in Manual Fallback. This is
-    logged everytime the user opens this view.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.PresentedOptions.Passwords" units="Credentials"
-    expires_after="2021-05-23">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of credentials presented to the user in the Passwords
-    Manual Fallback view. This is logged everytime the user opens this view.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.PresentedOptions.Profiles" units="Profiles"
-    expires_after="2021-05-23">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of profiles presented to the user in Manual Fallback. This
-    is logged everytime the user opens this view.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.VisibleSuggestions.OpenCreditCards"
-    units="Suggestions" expires_after="2021-05-30">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of autofill suggestions present when the user taps on the
-    credit card button in manual fallback.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.VisibleSuggestions.OpenPasswords"
-    units="Suggestions" expires_after="2021-05-30">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of password suggestions present when the user taps on the
-    password button in manual fallback.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
-    units="Suggestions" expires_after="2021-01-15">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks the number of autofill suggestions present when the user taps on the
-    profiles (address) button in manual fallback.
-  </summary>
-</histogram>
-
 <histogram name="Mist.SwitchResult" enum="MistSwitchResult" expires_after="M77">
   <owner>akhouderchah@chromium.org</owner>
   <owner>benchan@chromium.org</owner>
@@ -16885,18 +16814,6 @@ should be kept until we use this API.  -->
 <histogram name="UserImage.ProfileDownloadTime" units="ms" expires_after="M81">
   <owner>achuith@chromium.org</owner>
   <summary>The time it took to download user's profile picture.</summary>
-</histogram>
-
-<histogram name="UserInterfaceStyle.CurrentlyUsed" enum="IOSUserInterfaceStyle"
-    expires_after="2021-01-15">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>rkgibson@google.com</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    [iOS] Used on iOS 13+ to report the usage of Light and Dark mode. This is
-    logged at startup and on each user interface style change. Can be caused by
-    the system automatic switch or by the user manually changing the style.
-  </summary>
 </histogram>
 
 <histogram name="UserManager.LoginUserType" enum="UserType"

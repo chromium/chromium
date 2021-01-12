@@ -51,7 +51,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ContentExtension.DisplayCount" units="count"
-    expires_after="2021-05-02">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ContentExtension.Index" units="index"
-    expires_after="2021-11-01">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -118,7 +118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyURLCount" units="count"
-    expires_after="2021-05-09">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyUsernameCount" units="count"
-    expires_after="2021-05-09">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.DisplayCount" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
-    expires_after="2021-05-09">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -159,7 +159,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
-    units="count" expires_after="2021-06-06">
+    units="count" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -170,7 +170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -180,7 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -191,7 +191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ReauthCount" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -201,7 +201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SearchCount" units="count"
-    expires_after="2021-05-09">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
     enum="iOSCredentialIdentityStoreErrorForReporting"
-    expires_after="2021-06-22">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
-    expires_after="2021-01-31">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
-    enum="FormInputAccessoryAction" expires_after="2021-06-01">
+    enum="FormInputAccessoryAction" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
@@ -592,7 +592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
-    enum="Boolean" expires_after="2021-07-31">
+    enum="Boolean" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
@@ -668,9 +668,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2021-06-20">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>sarraf@google.com</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using password
     Autofill suggestions.
@@ -678,9 +678,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.ManualFallback"
-    enum="ReauthenticationEvent" expires_after="2021-06-20">
+    enum="ReauthenticationEvent" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>sarraf@google.com</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using a password in
     Manual Fallback.
@@ -741,14 +741,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
-    expires_after="2021-05-23">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The action selected by the user in the Search Extension.</summary>
 </histogram>
 
 <histogram name="IOS.SearchExtension.DisplayCount" units="count"
-    expires_after="2021-07-04">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -758,7 +758,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
-    expires_after="2021-11-01">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -768,14 +768,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2021-11-01">
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntryDelay" units="ms"
-    expires_after="2021-11-01">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -785,7 +785,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2021-11-01">
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -931,7 +931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"
-    expires_after="2021-09-24">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>muradyan@google.com</owner>
   <summary>
@@ -941,7 +941,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.WidgetKit.{Status}" enum="IOSWidgetKitExtensionKind"
-    expires_after="2021-10-30">
+    expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
   <owner>muradyan@chromium.org</owner>
   <summary>
@@ -993,6 +993,90 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>pkl@chromium.org</owner>
   <summary>
     Records the user actions related to the WKWebView 3D touch link preview API.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.PresentedOptions.AllPasswords"
+    units="Credentials" expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of credentials presented to the user in the
+    &quot;Use other password...&quot; view in Manual Fallback. This is logged
+    everytime the user opens this view.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.PresentedOptions.CreditCards" units="Cards"
+    expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of cards presented to the user in Manual
+    Fallback. This is logged everytime the user opens this view.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.PresentedOptions.Passwords" units="Credentials"
+    expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of credentials presented to the user in the
+    Passwords Manual Fallback view. This is logged everytime the user opens this
+    view.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.PresentedOptions.Profiles" units="Profiles"
+    expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of profiles presented to the user in Manual
+    Fallback. This is logged everytime the user opens this view.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.VisibleSuggestions.OpenCreditCards"
+    units="Suggestions" expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of autofill suggestions present when the user
+    taps on the credit card button in manual fallback.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.VisibleSuggestions.OpenPasswords"
+    units="Suggestions" expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of password suggestions present when the user
+    taps on the password button in manual fallback.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
+    units="Suggestions" expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    [iOS Only] Tracks the number of autofill suggestions present when the user
+    taps on the profiles (address) button in manual fallback.
+  </summary>
+</histogram>
+
+<histogram name="UserInterfaceStyle.CurrentlyUsed" enum="IOSUserInterfaceStyle"
+    expires_after="2021-12-11">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS Only] Used on iOS 13+ to report the usage of Light and Dark mode. This
+    is logged at startup and on each user interface style change. Can be caused
+    by the system automatic switch or by the user manually changing the style.
   </summary>
 </histogram>
 
