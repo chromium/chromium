@@ -76,6 +76,13 @@ AX_BASE_EXPORT extern const base::Feature kMagnifierNewFocusFollowing;
 
 // Returns true if the new magnifier focus following feature is enabled.
 AX_BASE_EXPORT bool IsMagnifierNewFocusFollowingEnabled();
+
+// Enables new magnifier panning improvements feature, which adds
+// additional keyboard and mouse panning functionality in Magnifier.
+AX_BASE_EXPORT extern const base::Feature kMagnifierPanningImprovements;
+
+// Returns true if the new magnifier panning improvements feature is enabled.
+AX_BASE_EXPORT bool IsMagnifierPanningImprovementsEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

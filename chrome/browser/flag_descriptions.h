@@ -2476,6 +2476,9 @@ extern const char kExperimentalAccessibilityCursorColorsDescription[];
 extern const char kMagnifierNewFocusFollowingName[];
 extern const char kMagnifierNewFocusFollowingDescription[];
 
+extern const char kMagnifierPanningImprovementsName[];
+extern const char kMagnifierPanningImprovementsDescription[];
+
 extern const char kFilesAppCopyImageName[];
 extern const char kFilesAppCopyImageDescription[];
 

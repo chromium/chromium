@@ -91,6 +91,14 @@ const base::Feature kMagnifierNewFocusFollowing{
 bool IsMagnifierNewFocusFollowingEnabled() {
   return base::FeatureList::IsEnabled(::features::kMagnifierNewFocusFollowing);
 }
+
+const base::Feature kMagnifierPanningImprovements{
+    "MagnifierPanningImprovements", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsMagnifierPanningImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMagnifierPanningImprovements);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{
