@@ -380,7 +380,8 @@ TEST_F(ScriptExecutorTest, ClearDetailsWhenFinished) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
+  // empty, but not null
+  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
 }
@@ -400,7 +401,8 @@ TEST_F(ScriptExecutorTest, DontClearDetailsIfOtherActionsAreLeft) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
+  // empty, but not null
+  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_THAT(delegate_.GetDetails(), Not(IsEmpty()));
 }
@@ -415,7 +417,8 @@ TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, false)));
 
-  delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
+  // empty, but not null
+  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
 }

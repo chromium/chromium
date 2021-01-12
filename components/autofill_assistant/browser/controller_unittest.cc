@@ -2957,15 +2957,63 @@ TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {
 }
 
 TEST_F(ControllerTest, Details) {
+  // The current controller details, as notified to the observers.
+  std::vector<Details> observed_details;
+
+  ON_CALL(mock_observer_, OnDetailsChanged(_))
+      .WillByDefault(
+          Invoke([&observed_details](const std::vector<Details>& details) {
+            observed_details = details;
+          }));
+
+  // Details are initially empty.
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
 
-  controller_->SetDetails(std::make_unique<Details>());
+  // Set 2 details.
+  controller_->SetDetails(std::make_unique<Details>(), base::TimeDelta());
   EXPECT_THAT(controller_->GetDetails(), SizeIs(1));
+  EXPECT_THAT(observed_details, SizeIs(1));
 
-  controller_->AppendDetails(std::make_unique<Details>());
-  EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
-
-  controller_->SetDetails(nullptr);
+  // Set 2 details in 1s (which directly clears the current details).
+  controller_->SetDetails(std::make_unique<Details>(),
+                          base::TimeDelta::FromMilliseconds(1000));
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
+  EXPECT_THAT(observed_details, IsEmpty());
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(1));
+  EXPECT_THAT(observed_details, SizeIs(1));
+
+  controller_->AppendDetails(std::make_unique<Details>(),
+                             /* delay= */ base::TimeDelta());
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
+  EXPECT_THAT(observed_details, SizeIs(2));
+
+  // Delay the appending of the details.
+  controller_->AppendDetails(
+      std::make_unique<Details>(),
+      /* delay= */ base::TimeDelta::FromMilliseconds(1000));
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
+  EXPECT_THAT(observed_details, SizeIs(2));
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(999));
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
+  EXPECT_THAT(observed_details, SizeIs(2));
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(3));
+  EXPECT_THAT(observed_details, SizeIs(3));
+
+  // Setting the details clears the timers.
+  controller_->AppendDetails(
+      std::make_unique<Details>(),
+      /* delay= */ base::TimeDelta::FromMilliseconds(1000));
+  controller_->SetDetails(nullptr, base::TimeDelta());
+  EXPECT_THAT(controller_->GetDetails(), IsEmpty());
+  EXPECT_THAT(observed_details, IsEmpty());
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(2000));
+  EXPECT_THAT(controller_->GetDetails(), IsEmpty());
+  EXPECT_THAT(observed_details, IsEmpty());
 }
 }  // namespace autofill_assistant

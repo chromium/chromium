@@ -93,7 +93,9 @@ std::string FakeScriptExecutorDelegate::GetBubbleMessage() const {
   return status_message_;
 }
 
-void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details) {
+void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details,
+                                            base::TimeDelta delay) {
+  // We ignore |delay|.
   if (details) {
     details_ = {*details};
   } else {
@@ -101,8 +103,9 @@ void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details) {
   }
 }
 
-void FakeScriptExecutorDelegate::AppendDetails(
-    std::unique_ptr<Details> details) {
+void FakeScriptExecutorDelegate::AppendDetails(std::unique_ptr<Details> details,
+                                               base::TimeDelta delay) {
+  // We ignore |delay|.
   if (details) {
     details_.push_back(*details);
   }

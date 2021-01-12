@@ -120,8 +120,9 @@ class Controller : public ScriptExecutorDelegate,
   std::string GetStatusMessage() const override;
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
-  void SetDetails(std::unique_ptr<Details> details) override;
-  void AppendDetails(std::unique_ptr<Details> details) override;
+  void SetDetails(std::unique_ptr<Details>, base::TimeDelta delay) override;
+  void AppendDetails(std::unique_ptr<Details> details,
+                     base::TimeDelta delay) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
   void SetProgress(int progress) override;
@@ -187,7 +188,7 @@ class Controller : public ScriptExecutorDelegate,
   // Overrides autofill_assistant::UiDelegate:
   AutofillAssistantState GetState() const override;
   void OnUserInteractionInsideTouchableArea() override;
-  const std::vector<Details>& GetDetails() const override;
+  std::vector<Details> GetDetails() const override;
   const InfoBox* GetInfoBox() const override;
   int GetProgress() const override;
   base::Optional<int> GetProgressActiveStep() const override;
@@ -260,6 +261,34 @@ class Controller : public ScriptExecutorDelegate,
 
  private:
   friend ControllerTest;
+
+  // A holder class which contains some details and, optionally, a timer that
+  // will "enable" them later on.
+  class DetailsHolder {
+   public:
+    DetailsHolder(std::unique_ptr<Details> details,
+                  std::unique_ptr<base::OneShotTimer> timer);
+    ~DetailsHolder();
+    DetailsHolder(DetailsHolder&& other);
+    DetailsHolder& operator=(DetailsHolder&& other);
+
+    // The details held by this object.
+    const Details& GetDetails() const;
+
+    // Whether the details held by this object are visible. Will return false if
+    // a timer was set and was not reached yet.
+    bool CurrentlyVisible() const;
+
+    // Enable the details held by this object so that they are shown (i.e.
+    // CurrentlyVisible() returns true).
+    //
+    // In practice, this is called at most once when |timer_| is triggered.
+    void Enable();
+
+   private:
+    std::unique_ptr<Details> details_;
+    std::unique_ptr<base::OneShotTimer> timer_;
+  };
 
   void SetWebControllerForTest(std::unique_ptr<WebController> web_controller);
 
@@ -362,6 +391,9 @@ class Controller : public ScriptExecutorDelegate,
 
   void SetVisibilityAndUpdateUserActions();
 
+  void MakeDetailsVisible(size_t details_index);
+  void NotifyDetailsChanged();
+
   ClientSettings settings_;
   Client* const client_;
   const base::TickClock* const tick_clock_;
@@ -418,7 +450,7 @@ class Controller : public ScriptExecutorDelegate,
   std::string bubble_message_;
 
   // Current details, may be empty.
-  std::vector<Details> details_;
+  std::vector<DetailsHolder> details_;
 
   // Current info box, may be null.
   std::unique_ptr<InfoBox> info_box_;

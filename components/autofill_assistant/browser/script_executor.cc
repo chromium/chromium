@@ -247,7 +247,7 @@ void ScriptExecutor::OnPause(const std::string& message,
   }
 
   delegate_->ClearInfoBox();
-  delegate_->SetDetails(nullptr);
+  delegate_->SetDetails(nullptr, base::TimeDelta());
   delegate_->SetCollectUserDataOptions(nullptr);
   delegate_->SetForm(nullptr, base::DoNothing(), base::DoNothing());
 
@@ -747,12 +747,14 @@ std::string ScriptExecutor::GetLocale() {
   return delegate_->GetLocale();
 }
 
-void ScriptExecutor::SetDetails(std::unique_ptr<Details> details) {
-  return delegate_->SetDetails(std::move(details));
+void ScriptExecutor::SetDetails(std::unique_ptr<Details> details,
+                                base::TimeDelta delay) {
+  return delegate_->SetDetails(std::move(details), delay);
 }
 
-void ScriptExecutor::AppendDetails(std::unique_ptr<Details> details) {
-  return delegate_->AppendDetails(std::move(details));
+void ScriptExecutor::AppendDetails(std::unique_ptr<Details> details,
+                                   base::TimeDelta delay) {
+  return delegate_->AppendDetails(std::move(details), delay);
 }
 
 void ScriptExecutor::ClearInfoBox() {
@@ -899,7 +901,7 @@ void ScriptExecutor::ReportScriptsUpdateToListener(
 
 void ScriptExecutor::RunCallback(bool success) {
   if (should_clean_contextual_ui_on_finish_ || !success) {
-    SetDetails(nullptr);
+    SetDetails(nullptr, base::TimeDelta());
     should_clean_contextual_ui_on_finish_ = false;
   }
 

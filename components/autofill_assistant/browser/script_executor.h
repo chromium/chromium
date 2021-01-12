@@ -236,8 +236,10 @@ class ScriptExecutor : public ActionDelegate,
   WebController* GetWebController() const override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   std::string GetLocale() override;
-  void SetDetails(std::unique_ptr<Details> details) override;
-  void AppendDetails(std::unique_ptr<Details> details) override;
+  void SetDetails(std::unique_ptr<Details> details,
+                  base::TimeDelta delay) override;
+  void AppendDetails(std::unique_ptr<Details> details,
+                     base::TimeDelta delay) override;
   void ClearInfoBox() override;
   void SetInfoBox(const InfoBox& info_box) override;
   void SetProgress(int progress) override;

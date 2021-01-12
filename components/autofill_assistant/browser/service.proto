@@ -2365,6 +2365,15 @@ message ShowDetailsProto {
   // Whether the details should be added/appended instead of replacing the
   // current details.
   optional bool append = 6;
+
+  // If set, add a delay of |delay_ms| before setting/appending the details.
+  //
+  // The details will never be shown if another ShowDetailsProto action with
+  // |append| = false is sent after this action and before the delay is reached.
+  //
+  // Note that it's not possible to delay the clearing of the details. If
+  // |data_to_show| is not set, then the details will be cleared directly.
+  optional bool delay_ms = 7;
 }
 
 // Set the value of an form element.

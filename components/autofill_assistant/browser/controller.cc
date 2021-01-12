@@ -114,6 +114,30 @@ Controller::~Controller() {
   user_model_.RemoveObserver(this);
 }
 
+Controller::DetailsHolder::DetailsHolder(
+    std::unique_ptr<Details> details,
+    std::unique_ptr<base::OneShotTimer> timer)
+    : details_(std::move(details)), timer_(std::move(timer)) {}
+
+Controller::DetailsHolder::~DetailsHolder() = default;
+Controller::DetailsHolder::DetailsHolder(DetailsHolder&& other) = default;
+Controller::DetailsHolder& Controller::DetailsHolder::operator=(
+    DetailsHolder&& other) = default;
+
+const Details& Controller::DetailsHolder::GetDetails() const {
+  return *details_;
+}
+
+bool Controller::DetailsHolder::CurrentlyVisible() const {
+  // If there is a timer associated to these details, then they should be shown
+  // only once the timer has triggered.
+  return !timer_;
+}
+
+void Controller::DetailsHolder::Enable() {
+  timer_.reset();
+}
+
 const ClientSettings& Controller::GetSettings() {
   return settings_;
 }
@@ -203,31 +227,69 @@ std::string Controller::GetBubbleMessage() const {
   return bubble_message_;
 }
 
-void Controller::SetDetails(std::unique_ptr<Details> details) {
-  if (details) {
-    details_ = {*details};
-  } else {
-    details_ = {};
+void Controller::SetDetails(std::unique_ptr<Details> details,
+                            base::TimeDelta delay) {
+  details_.clear();
+
+  // There is nothing to append: notify that we cleared the details and return.
+  if (!details) {
+    NotifyDetailsChanged();
+    return;
   }
 
-  for (ControllerObserver& observer : observers_) {
-    observer.OnDetailsChanged(details_);
+  // If there is a delay, notify now that details have been cleared. If there is
+  // no delay, AppendDetails will take care of the notifying the observers after
+  // appending the details.
+  if (!delay.is_zero()) {
+    NotifyDetailsChanged();
   }
+
+  AppendDetails(std::move(details), delay);
 }
 
-void Controller::AppendDetails(std::unique_ptr<Details> details) {
+void Controller::AppendDetails(std::unique_ptr<Details> details,
+                               base::TimeDelta delay) {
   if (!details) {
     return;
   }
 
-  details_.push_back(*details);
-  for (ControllerObserver& observer : observers_) {
-    observer.OnDetailsChanged(details_);
+  if (delay.is_zero()) {
+    details_.push_back(DetailsHolder(std::move(details), /* timer= */ nullptr));
+    NotifyDetailsChanged();
+    return;
+  }
+
+  // Delay the addition of the new details.
+  size_t details_index = details_.size();
+  auto timer = std::make_unique<base::OneShotTimer>();
+  timer->Start(FROM_HERE, delay,
+               base::BindOnce(&Controller::MakeDetailsVisible,
+                              weak_ptr_factory_.GetWeakPtr(), details_index));
+  details_.push_back(DetailsHolder(std::move(details), std::move(timer)));
+}
+
+void Controller::MakeDetailsVisible(size_t details_index) {
+  if (details_index < details_.size()) {
+    details_[details_index].Enable();
+    NotifyDetailsChanged();
   }
 }
 
-const std::vector<Details>& Controller::GetDetails() const {
-  return details_;
+void Controller::NotifyDetailsChanged() {
+  std::vector<Details> details = GetDetails();
+  for (ControllerObserver& observer : observers_) {
+    observer.OnDetailsChanged(details);
+  }
+}
+
+std::vector<Details> Controller::GetDetails() const {
+  std::vector<Details> details;
+  for (const auto& holder : details_) {
+    if (holder.CurrentlyVisible()) {
+      details.push_back(holder.GetDetails());
+    }
+  }
+  return details;
 }
 
 int Controller::GetProgress() const {
@@ -751,7 +813,7 @@ void Controller::EnterStoppedState() {
     script_tracker_->StopScript();
 
   ClearInfoBox();
-  SetDetails(nullptr);
+  SetDetails(nullptr, base::TimeDelta());
   SetUserActions(nullptr);
   SetCollectUserDataOptions(nullptr);
   SetForm(nullptr, base::DoNothing(), base::DoNothing());
@@ -1119,7 +1181,7 @@ bool Controller::MaybeAutostartScript(
 void Controller::InitFromParameters() {
   auto details = std::make_unique<Details>();
   if (details->UpdateFromParameters(*trigger_context_))
-    SetDetails(std::move(details));
+    SetDetails(std::move(details), base::TimeDelta());
 
   const base::Optional<std::string> overlay_color =
       trigger_context_->GetOverlayColors();
@@ -1269,8 +1331,8 @@ std::string Controller::GetDebugContext() {
   dict.SetKey("scripts", script_tracker()->GetDebugContext());
 
   std::vector<base::Value> details_list;
-  for (const auto& details : details_) {
-    details_list.push_back(details.GetDebugContext());
+  for (const auto& holder : details_) {
+    details_list.push_back(holder.GetDetails().GetDebugContext());
   }
   dict.SetKey("details", base::Value(details_list));
 

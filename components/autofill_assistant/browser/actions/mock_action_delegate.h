@@ -235,8 +235,10 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_METHOD0(GetLocale, std::string());
-  MOCK_METHOD1(SetDetails, void(std::unique_ptr<Details> details));
-  MOCK_METHOD1(AppendDetails, void(std::unique_ptr<Details> details));
+  MOCK_METHOD2(SetDetails,
+               void(std::unique_ptr<Details> details, base::TimeDelta delay));
+  MOCK_METHOD2(AppendDetails,
+               void(std::unique_ptr<Details> details, base::TimeDelta delay));
   MOCK_METHOD1(SetInfoBox, void(const InfoBox& info_box));
   MOCK_METHOD0(ClearInfoBox, void());
   MOCK_METHOD1(SetProgress, void(int progress));

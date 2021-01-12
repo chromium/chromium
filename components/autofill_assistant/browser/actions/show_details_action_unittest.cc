@@ -28,7 +28,7 @@ class ShowDetailsActionTest : public testing::Test {
   void SetUp() override {
     autofill::CountryNames::SetLocaleString("us-en");
 
-    ON_CALL(mock_action_delegate_, SetDetails(_)).WillByDefault(Return());
+    ON_CALL(mock_action_delegate_, SetDetails(_, _)).WillByDefault(Return());
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, GetLastSuccessfulUserDataOptions)
@@ -64,7 +64,7 @@ class ShowDetailsActionTest : public testing::Test {
 };
 
 TEST_F(ShowDetailsActionTest, EmptyIsValid) {
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_));
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -74,7 +74,7 @@ TEST_F(ShowDetailsActionTest, EmptyIsValid) {
 TEST_F(ShowDetailsActionTest, DetailsCase) {
   proto_.mutable_details();
 
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_));
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -86,7 +86,7 @@ TEST_F(ShowDetailsActionTest, ContactDetailsCase) {
   user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
   user_data_options_.request_payer_name = true;
 
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_));
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -97,7 +97,7 @@ TEST_F(ShowDetailsActionTest, ShippingAddressCase) {
   proto_.set_shipping_address("shipping");
   user_data_.selected_addresses_["shipping"] = MakeAutofillProfile();
 
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_));
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -108,7 +108,7 @@ TEST_F(ShowDetailsActionTest, CreditCardCase) {
   proto_.set_credit_card(true);
   user_data_.selected_card_ = MakeCreditCard();
 
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_));
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -117,7 +117,7 @@ TEST_F(ShowDetailsActionTest, CreditCardCase) {
 
 TEST_F(ShowDetailsActionTest, CreditCardRequestedButNotAvailable) {
   proto_.set_credit_card(true);
-  EXPECT_CALL(mock_action_delegate_, SetDetails(_)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetDetails(_, _)).Times(0);
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));

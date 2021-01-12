@@ -58,7 +58,7 @@ class UiDelegate {
   virtual std::string GetBubbleMessage() const = 0;
 
   // Returns the current contextual information. May be empty.
-  virtual const std::vector<Details>& GetDetails() const = 0;
+  virtual std::vector<Details> GetDetails() const = 0;
 
   // Returns the current info box data. May be null if empty.
   virtual const InfoBox* GetInfoBox() const = 0;

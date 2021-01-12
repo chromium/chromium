@@ -43,8 +43,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::string GetStatusMessage() const override;
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
-  void SetDetails(std::unique_ptr<Details> details) override;
-  void AppendDetails(std::unique_ptr<Details> details) override;
+  void SetDetails(std::unique_ptr<Details> details,
+                  base::TimeDelta delay) override;
+  void AppendDetails(std::unique_ptr<Details> details,
+                     base::TimeDelta delay) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
   void SetProgress(int progress) override;
