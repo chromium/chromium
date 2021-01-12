@@ -119,6 +119,11 @@ class ExternalWebAppManager {
   // profile.
   bool IsNewUser();
 
+  // |force_reinstall_for_milestone| is a major version number. See
+  // components/version_info/version_info.h.
+  bool IsReinstallPastMilestoneNeededSinceLastSync(
+      int force_reinstall_for_milestone);
+
   PendingAppManager* pending_app_manager_ = nullptr;
   Profile* const profile_;
 

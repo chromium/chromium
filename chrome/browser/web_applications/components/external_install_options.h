@@ -109,6 +109,12 @@ struct ExternalInstallOptions {
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
 
+  // Whether we should update the app if the browser's binary milestone number
+  // goes from less the milestone specified to greater or equal than the
+  // milestone specified. For example, if this value is 89 then we update the
+  // app on all browser upgrades from <89 to >=89. The update happens only once.
+  base::Optional<int> force_reinstall_for_milestone;
+
   // Whether we should wait for all app windows being closed before reinstalling
   // the placeholder.
   bool wait_for_windows_closed = false;

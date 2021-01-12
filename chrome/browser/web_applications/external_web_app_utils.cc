@@ -148,6 +148,10 @@ constexpr char kOfflineManifestIconAnyPngs[] = "icon_any_pngs";
 //   "theme_color": "red"
 constexpr char kOfflineManifestThemeColorArgbHex[] = "theme_color_argb_hex";
 
+// Contains numeric milestone number M like 89 (the Chrome version). The app
+// gets updated if browser's binary milestone number goes from <M to >=M.
+constexpr char kForceReinstallForMilestone[] = "force_reinstall_for_milestone";
+
 }  // namespace
 
 OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
@@ -356,6 +360,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                          " set with no ", kOfflineManifest, " available"});
   }
 
+  // force_reinstall_for_milestone
+  value = app_config.FindKey(kForceReinstallForMilestone);
+  if (value) {
+    if (!value->is_int()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
+                           kForceReinstallForMilestone});
+    }
+    options.force_reinstall_for_milestone = value->GetInt();
+  }
+
   return options;
 }
 
@@ -493,6 +507,25 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
   return base::BindRepeating(
       &std::make_unique<WebApplicationInfo, const WebApplicationInfo&>,
       std::move(app_info));
+}
+
+bool IsReinstallPastMilestoneNeeded(
+    base::StringPiece last_preinstall_synchronize_milestone_str,
+    base::StringPiece current_milestone_str,
+    int force_reinstall_for_milestone) {
+  int last_preinstall_synchronize_milestone = 0;
+  if (!base::StringToInt(last_preinstall_synchronize_milestone_str,
+                         &last_preinstall_synchronize_milestone)) {
+    return false;
+  }
+
+  int current_milestone = 0;
+  if (!base::StringToInt(current_milestone_str, &current_milestone))
+    return false;
+
+  return last_preinstall_synchronize_milestone <
+             force_reinstall_for_milestone &&
+         current_milestone >= force_reinstall_for_milestone;
 }
 
 }  // namespace web_app

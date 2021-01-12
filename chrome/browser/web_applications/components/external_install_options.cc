@@ -61,6 +61,7 @@ bool ExternalInstallOptions::operator==(
         options.bypass_service_worker_check,
         options.require_manifest,
         options.force_reinstall,
+        options.force_reinstall_for_milestone,
         options.wait_for_windows_closed,
         options.install_placeholder,
         options.reinstall_placeholder,
@@ -133,6 +134,8 @@ std::ostream& operator<<(std::ostream& out,
          << install_options.bypass_service_worker_check
          << "\n require_manifest: " << install_options.require_manifest
          << "\n force_reinstall: " << install_options.force_reinstall
+         << "\n force_reinstall_for_milestone: "
+         << install_options.force_reinstall_for_milestone
          << "\n wait_for_windows_closed: "
          << install_options.wait_for_windows_closed
          << "\n install_placeholder: " << install_options.install_placeholder

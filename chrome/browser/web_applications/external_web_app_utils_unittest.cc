@@ -443,4 +443,51 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
   )")) << "theme_color_argb_hex is valid";
 }
 
+TEST_F(ExternalWebAppUtilsTest, ForceReinstallForMilestone) {
+  base::Optional<ExternalInstallOptions> non_number = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "force_reinstall_for_milestone": "error",
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_FALSE(non_number.has_value());
+
+  base::Optional<ExternalInstallOptions> number = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "force_reinstall_for_milestone": 89,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_TRUE(number.has_value());
+  EXPECT_EQ(89, number->force_reinstall_for_milestone);
+}
+
+TEST_F(ExternalWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
+  // Arguments: last_preinstall_synchronize_milestone, current_milestone,
+  // force_reinstall_for_milestone.
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("87", "87", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("87", "88", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("88", "88", 89));
+  EXPECT_TRUE(IsReinstallPastMilestoneNeeded("88", "89", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("89", "89", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("89", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "91", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("91", "91", 89));
+
+  // Long jumps:
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("80", "85", 89));
+  EXPECT_TRUE(IsReinstallPastMilestoneNeeded("80", "100", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "95", 89));
+
+  // Wrong input:
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("88", "error", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "error", 0));
+}
+
 }  // namespace web_app

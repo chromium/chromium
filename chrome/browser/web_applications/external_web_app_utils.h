@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -35,6 +36,16 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
     const base::FilePath& dir,
     const base::FilePath& file,
     const base::Value& offline_manifest);
+
+// Returns true if we need to update the app. |current_milestone_str| is the
+// browser's binary milestone number.
+// |last_preinstall_synchronize_milestone_str| is a previous milestone for the
+// user's data state. For example, if |force_reinstall_for_milestone| value is
+// 89 then we need to update the app on all browser upgrades from <89 to >=89.
+bool IsReinstallPastMilestoneNeeded(
+    base::StringPiece last_preinstall_synchronize_milestone_str,
+    base::StringPiece current_milestone_str,
+    int force_reinstall_for_milestone);
 
 }  // namespace web_app
 

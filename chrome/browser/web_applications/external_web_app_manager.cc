@@ -392,6 +392,16 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
     debug_info_->enabled_configs = parsed_configs.options_list;
   }
 
+  // Triggers |force_reinstall| in PendingAppManager if milestone increments
+  // across |force_reinstall_for_milestone|.
+  for (ExternalInstallOptions& options : parsed_configs.options_list) {
+    if (options.force_reinstall_for_milestone &&
+        IsReinstallPastMilestoneNeededSinceLastSync(
+            options.force_reinstall_for_milestone.value())) {
+      options.force_reinstall = true;
+    }
+  }
+
   UMA_HISTOGRAM_COUNTS_100(kHistogramEnabledCount,
                            parsed_configs.options_list.size());
   UMA_HISTOGRAM_COUNTS_100(kHistogramDisabledCount, disabled_count);
@@ -417,8 +427,8 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
     std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
-  // Note that we are storing the Chrome version instead of a "has synchronised"
-  // bool in order to do version update specific logic in the future.
+  // Note that we are storing the Chrome version (milestone number) instead of a
+  // "has synchronised" bool in order to do version update specific logic.
   profile_->GetPrefs()->SetString(
       prefs::kWebAppsLastPreinstallSynchronizeVersion,
       version_info::GetMajorVersionNumber());
@@ -489,6 +499,17 @@ bool ExternalWebAppManager::IsNewUser() {
   // ExternallyInstalledWebAppPrefs which would have been set by past default
   // app installs. Remove this after a few Chrome versions have passed.
   return ExternallyInstalledWebAppPrefs(prefs).HasNoApps();
+}
+
+bool ExternalWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
+    int force_reinstall_for_milestone) {
+  PrefService* prefs = profile_->GetPrefs();
+  std::string last_preinstall_synchronize_milestone =
+      prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
+
+  return IsReinstallPastMilestoneNeeded(last_preinstall_synchronize_milestone,
+                                        version_info::GetMajorVersionNumber(),
+                                        force_reinstall_for_milestone);
 }
 
 ExternalWebAppManager::DebugInfo::DebugInfo() = default;
