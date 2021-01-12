@@ -37,6 +37,7 @@ function toString16(s) {
 const TITLE_ID = 'title';
 const BODY_ID = 'body';
 const CATEGORY_ID = 'main-category';
+const SUBCATEGORY_ID = 'subcategory';
 const SUBHEADING_ID = 'subheading';
 
 /**
@@ -79,9 +80,17 @@ guestMessagePipe.registerHandler(
             weight: 0.1,
           },
         ];
+        if (searchable_item.subcategoryNames) {
+          for (let i = 0; i < searchable_item.subcategoryNames.length; ++i) {
+            contents.push({
+              id: SUBCATEGORY_ID + i,
+              content: toString16(searchable_item.subcategoryNames[i]),
+              weight: 0.1,
+            });
+          }
+        }
         // If there are subheadings, use those instead of the body.
-        if (searchable_item.subheadings
-            && searchable_item.subheadings.length > 0) {
+        if (searchable_item.subheadings) {
           for (let i = 0; i < searchable_item.subheadings.length; ++i) {
             contents.push({
               id: SUBHEADING_ID + i,

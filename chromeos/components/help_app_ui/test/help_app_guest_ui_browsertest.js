@@ -98,6 +98,72 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
   ]);
 });
 
+// Test that search works for the categories and subcategories of searchable
+// items.
+GUEST_TEST('GuestCanSearchWithCategories', async () => {
+  const delegate = await waitForInitialIndexUpdate();
+
+  await delegate.addOrUpdateSearchIndex([{
+    // Main category match. No subcategories.
+    id: 'test-id-1',
+    title: 'Title with of article',
+    body: 'Body text',
+    mainCategoryName: 'Verycomplicatedsearchtoken',
+    locale: 'en-US',
+  },{
+    // Subcategory match.
+    id: 'test-id-2',
+    title: 'Title 2',
+    subcategoryNames: [
+      'Subcategory 1',
+      'verycomplicatedsearchtoken in subcategory. Verycomplicatedsearchtoken',
+      'Another subcategory with verycomplicatedsearchtoken',
+    ],
+    body: 'Body text',
+    mainCategoryName: 'Help',
+    locale: 'en-US',
+  },{
+    // Should not appear in the results.
+    id: 'test-id-3',
+    title: 'Title of irrelevant article',
+    body: 'Body text',
+    mainCategoryName: 'Help',
+    locale: 'en-US',
+  }]);
+
+  // Keep polling until the index finishes updating or too much time has passed.
+  /** @type {?helpApp.FindResponse} */
+  let response = null;
+  for (let numTries = 0; numTries < 50; numTries++) {
+    // This search query was chosen because it is unlikely to show any search
+    // results for the real app's data.
+    response = await delegate.findInSearchIndex('verycomplicatedsearchtoken');
+    if (response && response.results && response.results.length > 0) break;
+    await new Promise(resolve => {setTimeout(resolve, 50)});
+  }
+
+  // Don't test the ordering of search results because they should have similar
+  // relevance.
+  chai.expect(response.results).to.have.deep.members([
+      // This result only matches on the main category.
+      {
+        id: 'test-id-1',
+        titlePositions: [],
+        subheadingIndex: null,
+        subheadingPositions: null,
+        bodyPositions: [],
+      },
+      // This result only matches on the second and third subcategories.
+      {
+        id: 'test-id-2',
+        titlePositions: [],
+        subheadingIndex: null,
+        subheadingPositions: null,
+        bodyPositions: [],
+      },
+    ]);
+});
+
 // Test that the guest frame can clear the search index.
 GUEST_TEST('GuestCanClearSearchIndex', async () => {
   const delegate = await waitForInitialIndexUpdate();
