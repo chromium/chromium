@@ -422,6 +422,12 @@ FormRetrievalResult TestPasswordStore::ReadAllLogins(
   return FormRetrievalResult::kDbError;
 }
 
+std::vector<CompromisedCredentials> TestPasswordStore::ReadSecurityIssues(
+    FormPrimaryKey parent_key) {
+  NOTIMPLEMENTED();
+  return std::vector<CompromisedCredentials>();
+}
+
 PasswordStoreChangeList TestPasswordStore::RemoveLoginByPrimaryKeySync(
     int primary_key) {
   NOTIMPLEMENTED();

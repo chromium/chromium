@@ -271,6 +271,10 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               ReadAllLogins,
               (PrimaryKeyToFormMap*),
               (override));
+  MOCK_METHOD(std::vector<CompromisedCredentials>,
+              ReadSecurityIssues,
+              (FormPrimaryKey),
+              (override));
   MOCK_METHOD(PasswordStoreChangeList,
               RemoveLoginByPrimaryKeySync,
               (int),

@@ -35,6 +35,7 @@ constexpr char kUsername3[] = "user3";
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::SizeIs;
+using testing::UnorderedElementsAre;
 
 PasswordForm TestForm() {
   PasswordForm form;
@@ -351,6 +352,31 @@ TEST_F(InsecureCredentialsTableTest, ReportMetricsAfterBulkCheck) {
       "PasswordManager.CompromisedCredentials.CountLeaked", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck", 2, 1);
+}
+
+TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
+  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  CompromisedCredentials compromised_credentials1 = test_data();
+  CompromisedCredentials compromised_credentials2 = test_data();
+  compromised_credentials2.compromise_type = CompromiseType::kReused;
+
+  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
+  EXPECT_TRUE(db()->AddRow(compromised_credentials2));
+
+  EXPECT_THAT(
+      db()->GetRows(FormPrimaryKey(1)),
+      UnorderedElementsAre(compromised_credentials1, compromised_credentials2));
+
+  test_form().username_value = base::ASCIIToUTF16(kUsername2);
+  test_data().username = test_form().username_value;
+
+  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)), IsEmpty());
+
+  compromised_credentials1 = test_data();
+  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)),
+              UnorderedElementsAre(compromised_credentials1));
 }
 
 }  // namespace

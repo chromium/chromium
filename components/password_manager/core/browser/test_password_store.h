@@ -141,6 +141,8 @@ class TestPasswordStore : public PasswordStore {
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
+  std::vector<CompromisedCredentials> ReadSecurityIssues(
+      FormPrimaryKey parent_key) override;
   PasswordStoreChangeList RemoveLoginByPrimaryKeySync(int primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;
   bool IsAccountStore() const override;

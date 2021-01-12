@@ -323,6 +323,13 @@ FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
   return login_db_->GetAllLogins(key_to_form_map);
 }
 
+std::vector<CompromisedCredentials> PasswordStoreImpl::ReadSecurityIssues(
+    FormPrimaryKey parent_key) {
+  if (!login_db_)
+    return {};
+  return login_db_->GetCompromisedCredentials(parent_key);
+}
+
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(
     int primary_key) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());

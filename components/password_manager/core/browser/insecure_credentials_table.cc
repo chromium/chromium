@@ -173,6 +173,23 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
   return StatementToCompromisedCredentials(&s);
 }
 
+std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
+    FormPrimaryKey parent_key) const {
+  DCHECK(db_);
+  DCHECK(db_->DoesTableExist(kTableName));
+
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StringPrintf("SELECT signon_realm, username_value, "
+                         "insecurity_type, create_time, is_muted FROM %s "
+                         "INNER JOIN logins ON parent_id = logins.id "
+                         "WHERE parent_id = ? ",
+                         kTableName)
+          .c_str()));
+  s.BindInt(0, *parent_key);
+  return StatementToCompromisedCredentials(&s);
+}
+
 bool InsecureCredentialsTable::RemoveRowsByUrlAndTime(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time remove_begin,

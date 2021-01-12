@@ -23,6 +23,7 @@ namespace password_manager {
 struct CompromisedCredentials;
 struct PasswordForm;
 
+using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
 using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
 
 // This enum is used to determine result status when deleting undecryptable
@@ -122,6 +123,10 @@ class PasswordStoreSync {
   // corresponding form for all stored credentials. Returns true on success.
   virtual FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) WARN_UNUSED_RESULT = 0;
+
+  // Returns compromised credentials for the provided |parent_key|.
+  virtual std::vector<CompromisedCredentials> ReadSecurityIssues(
+      FormPrimaryKey parent_key) = 0;
 
   // Deletes logins that cannot be decrypted.
   virtual DatabaseCleanupResult DeleteUndecryptableLogins() = 0;
