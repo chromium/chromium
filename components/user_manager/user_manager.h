@@ -327,7 +327,7 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Returns true if |user| is allowed depending on device policies.
   // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-  // USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
+  // USER_TYPE_SUPERVISED_DEPRECATED, USER_TYPE_CHILD.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
   // Returns "Local State" PrefService instance.
@@ -355,9 +355,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if |account_id| is Stub user.
   virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
 
-  // Returns true if |account_id| is supervised.
-  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
-  virtual bool IsSupervisedAccountId(const AccountId& account_id) const = 0;
+  // Returns true if |account_id| is deprecated supervised.
+  // TODO(crbug.com/1155729): Check it is not used anymore and remove it.
+  virtual bool IsDeprecatedSupervisedAccountId(
+      const AccountId& account_id) const = 0;
 
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;

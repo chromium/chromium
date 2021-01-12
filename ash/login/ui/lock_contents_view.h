@@ -470,6 +470,7 @@ class ASH_EXPORT LockContentsView
   // Bubble for displaying warning banner message.
   LoginErrorBubble* warning_banner_bubble_;
   // Bubble for displaying supervised user deprecation message.
+  // TODO(crbug/1164090): Remove this.
   LoginErrorBubble* supervised_user_deprecation_bubble_;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert

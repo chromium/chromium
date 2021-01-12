@@ -341,7 +341,7 @@ bool FakeChromeUserManager::IsStubAccountId(const AccountId& account_id) const {
   return account_id == user_manager::StubAccountId();
 }
 
-bool FakeChromeUserManager::IsSupervisedAccountId(
+bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   const policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -612,13 +612,13 @@ bool FakeChromeUserManager::IsUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
          user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_SUPERVISED ||
+         user.GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          user.GetType() == user_manager::USER_TYPE_CHILD);
 
   if (user.GetType() == user_manager::USER_TYPE_GUEST &&
       !IsGuestSessionAllowed())
     return false;
-  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED)
+  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
     return false;
   if (user.HasGaiaAccount() && !IsGaiaUserAllowed(user))
     return false;

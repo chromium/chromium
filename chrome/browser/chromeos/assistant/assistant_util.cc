@@ -72,7 +72,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
       NOTREACHED();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
 
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::NUM_USER_TYPES:
       NOTREACHED();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;

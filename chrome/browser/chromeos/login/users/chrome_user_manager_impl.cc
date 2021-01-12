@@ -1184,7 +1184,7 @@ bool ChromeUserManagerImpl::IsUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
          user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_SUPERVISED ||
+         user.GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          user.GetType() == user_manager::USER_TYPE_CHILD);
 
   return chrome_user_manager_util::IsUserAllowed(
@@ -1367,7 +1367,7 @@ bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
          account_id == user_manager::StubAdAccountId();
 }
 
-bool ChromeUserManagerImpl::IsSupervisedAccountId(
+bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   const policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();

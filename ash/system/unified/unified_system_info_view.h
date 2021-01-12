@@ -33,8 +33,7 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
                            EnterpriseManagedVisibleForActiveDirectory);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest,
-                           SupervisedVisible);
+  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest, ChildVisible);
 
   // EnterpriseManagedView for unit testing. Owned by this view. Null if
   // kManagedDeviceUIRedesign is enabled.

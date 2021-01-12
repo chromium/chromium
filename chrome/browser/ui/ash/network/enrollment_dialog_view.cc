@@ -262,7 +262,7 @@ bool EnrollmentDialogAllowed(Profile* profile) {
     case LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT:
     case LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED:
       return false;
-    case LoginState::LOGGED_IN_USER_SUPERVISED:
+    case LoginState::LOGGED_IN_USER_SUPERVISED_DEPRECATED:
       return true;
     case LoginState::LOGGED_IN_USER_KIOSK_APP:
       return false;

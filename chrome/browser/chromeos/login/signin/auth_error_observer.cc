@@ -25,8 +25,9 @@ namespace chromeos {
 bool AuthErrorObserver::ShouldObserve(Profile* profile) {
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  return user && (user->HasGaiaAccount() ||
-                  user->GetType() == user_manager::USER_TYPE_SUPERVISED);
+  return user &&
+         (user->HasGaiaAccount() ||
+          user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED);
 }
 
 AuthErrorObserver::AuthErrorObserver(Profile* profile) : profile_(profile) {
@@ -80,7 +81,7 @@ void AuthErrorObserver::HandleAuthError(
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user->HasGaiaAccount() ||
-         user->GetType() == user_manager::USER_TYPE_SUPERVISED);
+         user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED);
 
   if (auth_error.IsPersistentError()) {
     // Invalidate OAuth2 refresh token to force Gaia sign-in flow. This is
@@ -100,10 +101,6 @@ void AuthErrorObserver::HandleAuthError(
                     "token status.";
       user_manager::UserManager::Get()->SaveUserOAuthStatus(
           user->GetAccountId(), user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
-      if (user->GetType() == user_manager::USER_TYPE_SUPERVISED) {
-        base::RecordAction(
-            base::UserMetricsAction("ManagedUsers_Chromeos_Sync_Recovered"));
-      }
     }
   }
 }

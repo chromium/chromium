@@ -209,10 +209,9 @@ bool User::IsActiveDirectoryUser() const {
   return GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
 }
 
-bool User::IsSupervised() const {
+bool User::IsChildOrDeprecatedSupervised() const {
   UserType type = GetType();
-  return  type == USER_TYPE_SUPERVISED ||
-          type == USER_TYPE_CHILD;
+  return type == USER_TYPE_SUPERVISED_DEPRECATED || type == USER_TYPE_CHILD;
 }
 
 bool User::IsChild() const {
@@ -263,7 +262,7 @@ bool User::has_gaia_account() const {
       return true;
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
@@ -507,7 +506,7 @@ SupervisedUser::~SupervisedUser() {
 }
 
 UserType SupervisedUser::GetType() const {
-  return user_manager::USER_TYPE_SUPERVISED;
+  return user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
 }
 
 std::string SupervisedUser::display_email() const {

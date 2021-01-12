@@ -377,8 +377,10 @@ SupervisedUserView::SupervisedUserView()
     : ManagedStateView(PressedCallback(),
                        IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL,
                        GetSupervisedUserIcon()) {
-  SetVisible(Shell::Get()->session_controller()->IsUserSupervised());
-  if (Shell::Get()->session_controller()->IsUserSupervised())
+  bool visible =
+      Shell::Get()->session_controller()->IsUserChildOrDeprecatedSupervised();
+  SetVisible(visible);
+  if (visible)
     SetTooltipText(GetSupervisedUserMessage());
 
   // TODO(crbug/1026821) Add SupervisedUserView::ButtonPress() overload

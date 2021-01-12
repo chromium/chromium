@@ -75,7 +75,7 @@ api::users_private::User CreateApiUser(const std::string& email,
   api_user.name = base::UTF16ToUTF8(user.GetDisplayName());
   api_user.is_owner = user.GetAccountId() ==
                       user_manager::UserManager::Get()->GetOwnerAccountId();
-  api_user.is_supervised = user.IsSupervised();
+  api_user.is_supervised = user.IsChildOrDeprecatedSupervised();
   api_user.is_child = user.IsChild();
   return api_user;
 }
@@ -128,7 +128,8 @@ std::unique_ptr<base::ListValue> GetUsersList(Profile* profile,
   for (size_t i = 0; i < email_list->GetSize(); ++i) {
     std::string email;
     email_list->GetString(i, &email);
-    if (user_manager->IsSupervisedAccountId(AccountId::FromUserEmail(email))) {
+    if (user_manager->IsDeprecatedSupervisedAccountId(
+            AccountId::FromUserEmail(email))) {
       email_list->Remove(i, nullptr);
       --i;
     }

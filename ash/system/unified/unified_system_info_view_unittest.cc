@@ -83,7 +83,7 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
 
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
 
-TEST_F(UnifiedSystemInfoViewNoSessionTest, SupervisedVisible) {
+TEST_F(UnifiedSystemInfoViewNoSessionTest, ChildVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kManagedDeviceUIRedesign);
   std::unique_ptr<UnifiedSystemTrayModel> model_ =
@@ -103,7 +103,7 @@ TEST_F(UnifiedSystemInfoViewNoSessionTest, SupervisedVisible) {
   // Simulate a supervised user logging in.
   TestSessionControllerClient* client = GetSessionControllerClient();
   client->Reset();
-  client->AddUserSession("child@test.com", user_manager::USER_TYPE_SUPERVISED);
+  client->AddUserSession("child@test.com", user_manager::USER_TYPE_CHILD);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";

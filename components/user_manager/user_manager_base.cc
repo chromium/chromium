@@ -64,8 +64,8 @@ const char kLastLoggedInGaiaUser[] = "LastLoggedInRegularUser";
 // session restore.
 const char kLastActiveUser[] = "LastActiveUser";
 
-// Histogram for tracking the number of legacy supervised user cryptohomes
-// remaining in the wild.
+// Histogram for tracking the number of deprecated legacy supervised user
+// cryptohomes remaining in the wild.
 const char kHideLegacySupervisedUserHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
 
@@ -200,7 +200,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
             user ? user : User::CreatePublicAccountUser(account_id));
         break;
 
-      case USER_TYPE_SUPERVISED:
+      case USER_TYPE_SUPERVISED_DEPRECATED:
         NOTREACHED() << "Supervised users are not supported anymore";
         break;
 
@@ -812,7 +812,7 @@ void UserManagerBase::EnsureUsersLoaded() {
                 &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
-    if (IsSupervisedAccountId(*it)) {
+    if (IsDeprecatedSupervisedAccountId(*it)) {
       base::UmaHistogramBoolean(kHideLegacySupervisedUserHistogramName, true);
       continue;
     }

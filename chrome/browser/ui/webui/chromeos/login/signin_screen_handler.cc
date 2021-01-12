@@ -359,6 +359,7 @@ void SigninScreenHandler::DeclareLocalizedValues(
   builder->Add("removeUserWarningTextCalculating", base::string16());
   builder->Add("removeUserWarningTextSyncNoStats", base::string16());
   builder->Add("removeUserWarningTextSyncCalculating", base::string16());
+  // TODO(crbug/1164090): Remove this.
   builder->AddF("removeLegacySupervisedUserWarningText",
                IDS_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING,
                base::UTF8ToUTF16(

@@ -123,7 +123,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                               const std::string& gaia_id,
                               AccountId* out_account_id) const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
-  bool IsSupervisedAccountId(const AccountId& account_id) const override;
+  bool IsDeprecatedSupervisedAccountId(
+      const AccountId& account_id) const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
   base::string16 GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,

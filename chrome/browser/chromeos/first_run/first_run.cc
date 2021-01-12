@@ -67,7 +67,7 @@ void LaunchApp(Profile* profile, std::string app_id) {
 bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
   switch (user_manager->GetActiveUser()->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::USER_TYPE_CHILD:
       return true;
     default:
@@ -85,7 +85,7 @@ bool ShouldShowGetStarted(Profile* profile,
     return true;
   switch (user_manager->GetActiveUser()->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       return !profile->GetProfilePolicyConnector()->IsManaged();
     default:
       return false;

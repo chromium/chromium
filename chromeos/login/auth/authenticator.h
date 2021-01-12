@@ -44,10 +44,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
   virtual void AuthenticateToLogin(content::BrowserContext* browser_context,
                                    const UserContext& user_context) = 0;
 
-  // Initiates supervised user login.
-  // TODO(crbug.com/866790): Remove this as a part of Supervised users cleanup.
-  virtual void LoginAsSupervisedUser(const UserContext& user_context) = 0;
-
   // Initiates incognito ("browse without signing in") login.
   virtual void LoginOffTheRecord() = 0;
 

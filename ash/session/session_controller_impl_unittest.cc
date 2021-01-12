@@ -294,9 +294,8 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::USER_TYPE_REGULAR, LoginStatus::USER},
       {user_manager::USER_TYPE_GUEST, LoginStatus::GUEST},
       {user_manager::USER_TYPE_PUBLIC_ACCOUNT, LoginStatus::PUBLIC},
-      {user_manager::USER_TYPE_SUPERVISED, LoginStatus::SUPERVISED},
       {user_manager::USER_TYPE_KIOSK_APP, LoginStatus::KIOSK_APP},
-      {user_manager::USER_TYPE_CHILD, LoginStatus::SUPERVISED},
+      {user_manager::USER_TYPE_CHILD, LoginStatus::CHILD},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, LoginStatus::KIOSK_APP},
       {user_manager::USER_TYPE_WEB_KIOSK_APP, LoginStatus::KIOSK_APP}
       // TODO: Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for it.
@@ -408,15 +407,6 @@ TEST_F(SessionControllerImplTest,
   }
 }
 
-TEST_F(SessionControllerImplTest, IsUserSupervised) {
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::USER_TYPE_SUPERVISED;
-  controller()->UpdateUserSession(session);
-
-  EXPECT_TRUE(controller()->IsUserSupervised());
-}
-
 TEST_F(SessionControllerImplTest, IsUserChild) {
   UserSession session;
   session.session_id = 1u;
@@ -426,7 +416,7 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   EXPECT_TRUE(controller()->IsUserChild());
 
   // Child accounts are supervised.
-  EXPECT_TRUE(controller()->IsUserSupervised());
+  EXPECT_TRUE(controller()->IsUserChildOrDeprecatedSupervised());
 }
 
 using SessionControllerImplPrefsTest = NoSessionAshTestBase;

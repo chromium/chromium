@@ -129,8 +129,8 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
   if (is_child)
     return USER_TYPE_CHILD;
 
-  if (IsSupervisedAccountId(account_id))
-    return USER_TYPE_SUPERVISED;
+  if (IsDeprecatedSupervisedAccountId(account_id))
+    return USER_TYPE_SUPERVISED_DEPRECATED;
 
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY)
     return USER_TYPE_ACTIVE_DIRECTORY;

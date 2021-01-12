@@ -46,7 +46,9 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // Session with Regular new user, which has a user name and password.
     USER_TYPE_REGULAR_NEW = 2,
     USER_TYPE_PUBLIC_ACCOUNT = 3,
-    USER_TYPE_SUPERVISED = 4,
+    // TODO(crbug/1155729): Legacy supervised users are deprecated. Use
+    // USER_TYPE_CHILD instead. Remove this enum.
+    USER_TYPE_SUPERVISED_DEPRECATED = 4,
     USER_TYPE_KIOSK_APP = 5,
     USER_TYPE_CHILD = 6,
     USER_TYPE_ARC_KIOSK_APP = 7,

@@ -74,7 +74,7 @@ TEST_F(UnifiedManagedDeviceViewTest, ActiveDirectoryManagedDevice) {
 
 using UnifiedManagedDeviceViewNoSessionTest = NoSessionAshTestBase;
 
-TEST_F(UnifiedManagedDeviceViewNoSessionTest, SupervisedUserDevice) {
+TEST_F(UnifiedManagedDeviceViewNoSessionTest, ChildUserDevice) {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   ASSERT_FALSE(session->IsActiveUserSessionStarted());
 
@@ -91,7 +91,7 @@ TEST_F(UnifiedManagedDeviceViewNoSessionTest, SupervisedUserDevice) {
   // Simulate a supervised user logging in.
   TestSessionControllerClient* client = GetSessionControllerClient();
   client->Reset();
-  client->AddUserSession("child@test.com", user_manager::USER_TYPE_SUPERVISED);
+  client->AddUserSession("child@test.com", user_manager::USER_TYPE_CHILD);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";

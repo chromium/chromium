@@ -106,7 +106,7 @@ void UnifiedManagedDeviceView::Update() {
     label_->SetText(managed_string);
     SetAccessibleName(managed_string);
     SetVisible(true);
-  } else if (session->IsUserSupervised()) {
+  } else if (session->IsUserChildOrDeprecatedSupervised()) {
     // Show supervised user UI (locally supervised or Family Link).
     icon_->SetImage(gfx::CreateVectorIcon(GetSupervisedUserIcon(), icon_color));
     label_->SetText(GetSupervisedUserMessage());

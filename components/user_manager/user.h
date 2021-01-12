@@ -99,8 +99,9 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // Returns true if it's Active Directory user.
   virtual bool IsActiveDirectoryUser() const;
 
-  // Returns true if user is supervised.
-  virtual bool IsSupervised() const;
+  // Returns true if user is child or deprecated legacy supervised.
+  // TODO(crbug/1155729): Remove and replace with IsChild().
+  virtual bool IsChildOrDeprecatedSupervised() const;
 
   // Returns true if user is child.
   virtual bool IsChild() const;

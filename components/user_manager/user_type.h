@@ -33,7 +33,7 @@ typedef enum {
   // Legacy supervised user, being deprecated. Logs in only with local
   // authentication. No Gaia account. Never ephemeral. Could have a sync token
   // to fetch some basic account info.
-  USER_TYPE_SUPERVISED = 4,
+  USER_TYPE_SUPERVISED_DEPRECATED = 4,
 
   // Kiosk users used to launch application in a single app mode. Logs in
   // without authentications. No Gaia user account. Uses device robot account.

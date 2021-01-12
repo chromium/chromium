@@ -19,10 +19,10 @@ namespace {
 constexpr char kHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
 
-const LoginManagerMixin::TestUserInfo kLegacySupervisedUser{
+const LoginManagerMixin::TestUserInfo kDeprecatedSupervisedUser{
     AccountId::FromUserEmailGaiaId("test@locally-managed.localhost",
                                    "123456780"),
-    user_manager::USER_TYPE_SUPERVISED};
+    user_manager::USER_TYPE_SUPERVISED_DEPRECATED};
 
 const LoginManagerMixin::TestUserInfo kFamilyLinkUser{
     AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
@@ -38,11 +38,11 @@ class LoginUIHideSupervisedUsersTest : public LoginManagerTest {
 
  protected:
   LoginManagerMixin login_mixin_{&mixin_host_,
-                                 {kLegacySupervisedUser, kFamilyLinkUser}};
+                                 {kDeprecatedSupervisedUser, kFamilyLinkUser}};
   base::HistogramTester histogram_tester_;
 };
 
-// Verifies that the login screen hides legacy supervised users and records
+// Verifies that the login screen hides deprecated supervised users and records
 // metrics.
 IN_PROC_BROWSER_TEST_F(LoginUIHideSupervisedUsersTest, SupervisedUserHidden) {
   // Only the Gaia users should be displayed on the login screen.
@@ -50,10 +50,10 @@ IN_PROC_BROWSER_TEST_F(LoginUIHideSupervisedUsersTest, SupervisedUserHidden) {
   EXPECT_EQ(3u, user_manager::UserManager::Get()->GetUsers().size());
   for (user_manager::User* user :
        user_manager::UserManager::Get()->GetUsers()) {
-    EXPECT_TRUE(!user->IsSupervised() || user->IsChild());
+    EXPECT_TRUE(!user->IsChildOrDeprecatedSupervised() || user->IsChild());
   }
 
-  // The login screen hid one legacy supervised user.
+  // The login screen hid one deprecated supervised user.
   histogram_tester_.ExpectBucketCount(kHistogramName, /*sample=*/true,
                                       /*expected_count=*/1);
   // The login screen displayed two regular users and one Family Link user.

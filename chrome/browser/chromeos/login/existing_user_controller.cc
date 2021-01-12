@@ -481,7 +481,7 @@ void ExistingUserController::UpdateLoginDisplay(
     if (user->IsKioskType())
       continue;
     // TODO(xiyuan): Clean user profile whose email is not in allowlist.
-    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED)
+    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
       continue;
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() || user_manager->IsGaiaUserAllowed(*user);

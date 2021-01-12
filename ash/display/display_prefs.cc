@@ -187,7 +187,7 @@ bool UserCanSaveDisplayPreference() {
     return false;
   return *user_type == user_manager::USER_TYPE_REGULAR ||
          *user_type == user_manager::USER_TYPE_CHILD ||
-         *user_type == user_manager::USER_TYPE_SUPERVISED ||
+         *user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          *user_type == user_manager::USER_TYPE_KIOSK_APP;
 }
 

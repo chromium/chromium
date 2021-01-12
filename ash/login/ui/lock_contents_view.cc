@@ -1993,8 +1993,10 @@ void LockContentsView::OnBigUserChanged() {
   Shell::Get()->login_screen_controller()->OnFocusPod(big_user_account_id);
   UpdateEasyUnlockIconForUser(big_user_account_id);
 
-  // http://crbug/866790: After Supervised Users are deprecated, remove this.
-  if (big_user.basic_user_info.type == user_manager::USER_TYPE_SUPERVISED) {
+  // TODO(crbug/1164090): After Supervised Users are deprecated, remove this.
+  if (big_user.basic_user_info.type ==
+      user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
+    // TODO(crbug/1164090): Remove this string and the associated screenshot.
     base::string16 message = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_EXPIRATION_WARNING);
     // Shows supervised user deprecation message as a persistent error bubble.

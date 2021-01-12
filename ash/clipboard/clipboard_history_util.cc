@@ -123,7 +123,7 @@ bool IsEnabledInCurrentMode() {
       return false;
     case LoginStatus::USER:
     case LoginStatus::GUEST:
-    case LoginStatus::SUPERVISED:
+    case LoginStatus::CHILD:
       return true;
   }
 }

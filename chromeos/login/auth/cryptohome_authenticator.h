@@ -84,10 +84,12 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
     ONLINE_FAILED = 15,      // Obsolete (ClientLogin): Online login disallowed,
                              // but offline succeeded.
     GUEST_LOGIN = 16,        // Logged in guest mode.
-    PUBLIC_ACCOUNT_LOGIN = 17,        // Logged into a public account.
-    SUPERVISED_USER_LOGIN = 18,       // Logged in as a supervised user.
-    LOGIN_FAILED = 19,                // Obsolete: Login denied.
-    OWNER_REQUIRED = 20,              // Login is restricted to the owner only.
+    PUBLIC_ACCOUNT_LOGIN = 17,  // Logged into a public account.
+    // TODO(crbug/1155729): Remove this enum.
+    SUPERVISED_USER_LOGIN_DEPRECATED =
+        18,               // Logged in as deprecated legacy supervised user.
+    LOGIN_FAILED = 19,    // Obsolete: Login denied.
+    OWNER_REQUIRED = 20,  // Login is restricted to the owner only.
     FAILED_USERNAME_HASH = 21,        // Failed GetSanitizedUsername request.
     KIOSK_ACCOUNT_LOGIN = 22,         // Logged into a kiosk account.
     REMOVED_DATA_AFTER_FAILURE = 23,  // Successfully removed the user's
@@ -120,11 +122,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // Uses |context| when doing URL fetches.
   void AuthenticateToLogin(content::BrowserContext* context,
                            const UserContext& user_context) override;
-
-  // Initiates supervised user login.
-  // Creates cryptohome if missing or mounts existing one and
-  // notifies consumer on the success/failure.
-  void LoginAsSupervisedUser(const UserContext& user_context) override;
 
   // Initiates incognito ("browse without signing in") login.
   // Mounts tmpfs and notifies consumer on the success/failure.

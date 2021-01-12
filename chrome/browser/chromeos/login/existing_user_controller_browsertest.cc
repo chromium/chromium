@@ -122,9 +122,7 @@ const char kManager[] = "admin@example.com";
 const char kManagedDomain[] = "example.com";
 const char kUserAllowlist[] = "*@ad-domain.com";
 const char kUserNotMatchingAllowlist[] = "user@another_mail.com";
-const char kSupervisedUserID[] = "supervised_user@locally-managed.localhost";
 const char kPassword[] = "test_password";
-const char kHash[] = "test_hash";
 
 const char kPublicSessionUserEmail[] = "public_session_user@localhost";
 const char kPublicSessionSecondUserEmail[] =
@@ -345,15 +343,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
   existing_user_controller()->Login(
       UserContext(user_manager::USER_TYPE_GUEST, EmptyAccountId()),
       SigninSpecifics());
-}
-
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
-                       SupervisedUserLoginForbidden) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_SUPERVISED,
-                           AccountId::FromUserEmail(kSupervisedUserID));
-  user_context.SetKey(Key(kPassword));
-  user_context.SetUserIDHash(kHash);
-  existing_user_controller()->Login(user_context, SigninSpecifics());
 }
 
 MATCHER_P(HasDetails, expected, "") {

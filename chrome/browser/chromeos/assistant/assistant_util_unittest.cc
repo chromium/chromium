@@ -130,7 +130,7 @@ class ScopedLogIn {
         EXPECT_EQ(account_id_, fake_user_manager_->GetGuestAccountId());
         return;
       case user_manager::NUM_USER_TYPES:
-      case user_manager::USER_TYPE_SUPERVISED:
+      case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
         NOTREACHED();
     }
   }
@@ -161,7 +161,7 @@ class ScopedLogIn {
       case user_manager::USER_TYPE_GUEST:
         fake_user_manager_->AddGuestUser();
         return;
-      case user_manager::USER_TYPE_SUPERVISED:
+      case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       case user_manager::NUM_USER_TYPES:
         NOTREACHED();
     }

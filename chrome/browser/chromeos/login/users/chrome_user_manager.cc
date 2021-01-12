@@ -97,8 +97,8 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
       return IsManagedSessionEnabledForUser(active_user)
                  ? LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED
                  : LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_SUPERVISED:
-      return LoginState::LOGGED_IN_USER_SUPERVISED;
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
+      return LoginState::LOGGED_IN_USER_SUPERVISED_DEPRECATED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return LoginState::LOGGED_IN_USER_KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:

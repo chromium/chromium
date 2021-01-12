@@ -113,8 +113,8 @@ const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
       return "GUEST_LOGIN";
     case CryptohomeAuthenticator::PUBLIC_ACCOUNT_LOGIN:
       return "PUBLIC_ACCOUNT_LOGIN";
-    case CryptohomeAuthenticator::SUPERVISED_USER_LOGIN:
-      return "SUPERVISED_USER_LOGIN";
+    case CryptohomeAuthenticator::SUPERVISED_USER_LOGIN_DEPRECATED:
+      return "SUPERVISED_USER_LOGIN_DEPRECATED";
     case CryptohomeAuthenticator::LOGIN_FAILED:
       return "LOGIN_FAILED";
     case CryptohomeAuthenticator::OWNER_REQUIRED:
@@ -628,22 +628,6 @@ void CryptohomeAuthenticator::CompleteLogin(content::BrowserContext* context,
                      this));
 }
 
-void CryptohomeAuthenticator::LoginAsSupervisedUser(
-    const UserContext& user_context) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(user_manager::USER_TYPE_SUPERVISED, user_context.GetUserType());
-
-  // TODO(nkostylev): Pass proper value for |user_is_new| or remove (not used).
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,    // unlock
-                                            false,    // online_complete
-                                            false));  // user_is_new
-  remove_user_data_on_failure_ = false;
-  StartMount(current_state_->AsWeakPtr(),
-             scoped_refptr<CryptohomeAuthenticator>(this),
-             false /* ephemeral */, false /* create_if_nonexistent */);
-}
-
 void CryptohomeAuthenticator::LoginOffTheRecord() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   current_state_.reset(
@@ -962,7 +946,7 @@ void CryptohomeAuthenticator::Resolve() {
           FROM_HERE,
           base::BindOnce(&CryptohomeAuthenticator::OnAuthSuccess, this));
       break;
-    case SUPERVISED_USER_LOGIN:
+    case SUPERVISED_USER_LOGIN_DEPRECATED:
       current_state_->user_context.SetIsUsingOAuth(false);
       task_runner_->PostTask(
           FROM_HERE,
@@ -1141,8 +1125,9 @@ CryptohomeAuthenticator::ResolveCryptohomeSuccessState() {
     return PUBLIC_ACCOUNT_LOGIN;
   if (user_type == user_manager::USER_TYPE_KIOSK_APP)
     return KIOSK_ACCOUNT_LOGIN;
-  if (user_type == user_manager::USER_TYPE_SUPERVISED)
-    return SUPERVISED_USER_LOGIN;
+  // TODO(crbug/1155729): If this check is never true, remove the enum field.
+  if (user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
+    return SUPERVISED_USER_LOGIN_DEPRECATED;
 
   if (!VerifyOwner())
     return CONTINUE;

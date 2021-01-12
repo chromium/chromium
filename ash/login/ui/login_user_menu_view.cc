@@ -203,7 +203,8 @@ LoginUserMenuView::LoginUserMenuView(
     user_manager::UserType type = user.basic_user_info.type;
     base::string16 part1 = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
-    if (type == user_manager::UserType::USER_TYPE_SUPERVISED) {
+    // TODO(crbug/1164090): Remove this section and the strings.
+    if (type == user_manager::UserType::USER_TYPE_SUPERVISED_DEPRECATED) {
       part1 = l10n_util::GetStringFUTF16(
           IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING,
           base::UTF8ToUTF16(kLegacySupervisedUserManagementDisplayURL));

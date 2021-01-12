@@ -531,15 +531,16 @@ void UserSelectionScreen::FillUserDictionary(
     base::DictionaryValue* user_dict) {
   const bool is_public_session =
       user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-  const bool is_legacy_supervised_user =
-      user->GetType() == user_manager::USER_TYPE_SUPERVISED;
+  const bool is_deprecated_supervised_user =
+      user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
   const bool is_child_user = user->GetType() == user_manager::USER_TYPE_CHILD;
 
   user_dict->SetString(kKeyUsername, user->GetAccountId().Serialize());
   user_dict->SetString(kKeyEmailAddress, user->display_email());
   user_dict->SetString(kKeyDisplayName, user->GetDisplayName());
   user_dict->SetBoolean(kKeyPublicAccount, is_public_session);
-  user_dict->SetBoolean(kKeyLegacySupervisedUser, is_legacy_supervised_user);
+  user_dict->SetBoolean(kKeyLegacySupervisedUser,
+                        is_deprecated_supervised_user);
   user_dict->SetBoolean(kKeyChildUser, is_child_user);
   user_dict->SetBoolean(kKeyDesktopUser, false);
   user_dict->SetInteger(kKeyInitialAuthType, static_cast<int>(auth_type));
@@ -587,7 +588,7 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
     return false;
 
   // Public sessions are always allowed to log in offline.
-  // Supervised users are always allowed to log in offline.
+  // Deprecated supervised users are always allowed to log in offline.
   // For all other users, force online sign in if:
   // * The flag to force online sign-in is set for the user.
   // * The user's OAuth token is invalid or unknown.
@@ -596,13 +597,14 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
 
   const user_manager::User::OAuthTokenStatus token_status =
       user->oauth_token_status();
-  const bool is_supervised_user =
-      user->GetType() == user_manager::USER_TYPE_SUPERVISED;
+  // TODO(crbug/1155729): Check if this bool is ever true. If not, remove it.
+  const bool is_deprecated_supervised_user =
+      user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
   const bool is_public_session =
       user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
   const bool has_gaia_account = user->HasGaiaAccount();
 
-  if (is_supervised_user)
+  if (is_deprecated_supervised_user)
     return false;
 
   if (is_public_session)

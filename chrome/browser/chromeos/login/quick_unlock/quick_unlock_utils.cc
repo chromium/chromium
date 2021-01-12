@@ -110,10 +110,12 @@ bool IsPinEnabled(PrefService* pref_service) {
   if (enable_for_testing_)
     return true;
 
-  // PIN is disabled for legacy supervised user, but allowed to child user.
+  // PIN is disabled for deprecated supervised user, but allowed to child user.
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (user && user->GetType() == user_manager::UserType::USER_TYPE_SUPERVISED)
+  if (user && user->GetType() ==
+                  user_manager::UserType::USER_TYPE_SUPERVISED_DEPRECATED) {
     return false;
+  }
 
   return true;
 }

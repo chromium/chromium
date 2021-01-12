@@ -13,7 +13,7 @@ namespace chrome_user_manager_util {
 
 // Returns true if all `users` are allowed depending on the provided device
 // policies. Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-// USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
+// USER_TYPE_SUPERVISED_DEPRECATED, USER_TYPE_CHILD.
 // This function only checks against the device policies provided, so it does
 // not depend on CrosSettings or any other policy store.
 bool AreAllUsersAllowed(const user_manager::UserList& users,
@@ -22,7 +22,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 
 // Returns true if `user` is allowed, according to the given constraints.
 // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-// USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
+// USER_TYPE_SUPERVISED_DEPRECATED, USER_TYPE_CHILD.
 bool IsUserAllowed(const user_manager::User& user,
                    bool is_guest_allowed,
                    bool is_user_allowlisted);

@@ -104,7 +104,8 @@ class ChromeUserManagerImpl
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
   bool IsStubAccountId(const AccountId& account_id) const override;
-  bool IsSupervisedAccountId(const AccountId& account_id) const override;
+  bool IsDeprecatedSupervisedAccountId(
+      const AccountId& account_id) const override;
   bool HasBrowserRestarted() const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
   base::string16 GetResourceStringUTF16(int string_id) const override;

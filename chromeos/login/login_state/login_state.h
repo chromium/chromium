@@ -27,7 +27,9 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
     LOGGED_IN_USER_GUEST,           // A guest is logged in (i.e. incognito)
     LOGGED_IN_USER_PUBLIC_ACCOUNT,  // A user is logged in to a public session.
     LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED,  // Public session v2.
-    LOGGED_IN_USER_SUPERVISED,              // A supervised user is logged in
+    // TODO(crbug/1155729): Remove this enum field.
+    LOGGED_IN_USER_SUPERVISED_DEPRECATED,  // A deprecated legacy supervised
+                                           // user is logged in.
     LOGGED_IN_USER_KIOSK_APP,  // Is in one of the kiosk modes -- Chrome App,
                                // Arc or Web App
     LOGGED_IN_USER_CHILD       // A child is logged in

@@ -170,7 +170,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:

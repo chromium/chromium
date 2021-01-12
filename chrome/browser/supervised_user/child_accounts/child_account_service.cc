@@ -161,7 +161,7 @@ bool ChildAccountService::SetActive(bool active) {
         SupervisedUserSettingsServiceFactory::GetForKey(
             profile_->GetProfileKey());
 
-    // In contrast to legacy SUs, child account SUs must sign in.
+    // In contrast to deprecated legacy SUs, child account SUs must sign in.
     settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
                                       std::make_unique<base::Value>(true));
 
@@ -341,9 +341,9 @@ void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
-    // Note that supervised user is allowed to change type due to legacy
-    // initialization.
-    if (user->GetType() != user_manager::USER_TYPE_SUPERVISED) {
+    // Note that deprecated legacy supervised users are allowed to change type
+    // due to legacy initialization.
+    if (user->GetType() != user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
       if (is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
         LOG(FATAL) << "User child flag has changed: " << is_child;
     }

@@ -88,7 +88,7 @@ class MockUserManager : public ChromeUserManager {
   MOCK_CONST_METHOD0(IsFirstExecAfterBoot, bool(void));
   MOCK_CONST_METHOD1(IsGuestAccountId, bool(const AccountId&));
   MOCK_CONST_METHOD1(IsStubAccountId, bool(const AccountId&));
-  MOCK_CONST_METHOD1(IsSupervisedAccountId, bool(const AccountId&));
+  MOCK_CONST_METHOD1(IsDeprecatedSupervisedAccountId, bool(const AccountId&));
   MOCK_CONST_METHOD0(HasBrowserRestarted, bool(void));
 
   // UserManagerBase overrides:
