@@ -26,7 +26,7 @@ class ExtensionLoadWaiterOneShot : public content::NotificationObserver {
 
   // Waits for extension with |extension_id| to load. The id should be a pointer
   // to a static char array.
-  void WaitForExtension(const char* extension_id, const base::Closure& load_cb);
+  void WaitForExtension(const char* extension_id, base::OnceClosure load_cb);
 
   // content::NotificationObserver overrides.
   void Observe(int type,

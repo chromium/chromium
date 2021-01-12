@@ -22,7 +22,7 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
 
  protected:
   // Waits for an extension to load; returns immediately if already loaded.
-  void WaitForExtension(const char* extension_id, const base::Closure& load_cb);
+  void WaitForExtension(const char* extension_id, base::OnceClosure load_cb);
 
   // Method required for js2gtest.
   // Runs |test_fixture|.|test_name| using the framework in test_api.js.

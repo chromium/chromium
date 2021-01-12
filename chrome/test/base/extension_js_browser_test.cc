@@ -19,9 +19,9 @@ ExtensionJSBrowserTest::ExtensionJSBrowserTest() {}
 ExtensionJSBrowserTest::~ExtensionJSBrowserTest() {}
 
 void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
-                                              const base::Closure& load_cb) {
+                                              base::OnceClosure load_cb) {
   load_waiter_.reset(new ExtensionLoadWaiterOneShot());
-  load_waiter_->WaitForExtension(extension_id, load_cb);
+  load_waiter_->WaitForExtension(extension_id, std::move(load_cb));
 }
 
 bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
