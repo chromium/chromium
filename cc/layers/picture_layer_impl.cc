@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -1111,6 +1112,15 @@ bool PictureLayerImpl::ShouldDirectlyCompositeImage(float raster_scale) const {
   // compositing images in cases where doing so is going to save memory.
   if (raster_scale < 0.1f)
     return true;
+
+#if defined(OS_FUCHSIA)
+  // Always downscale images on low-end devices to save memory. This is a
+  // temporary fix to work around crbug.com/1161327 .
+  // TODO(crbug.com/1161327): Implement proper solution that works on all
+  // devices.
+  if (base::SysInfo::IsLowEndDevice() && raster_scale > 1.0)
+    return false;
+#endif  // defined(OS_FUCHSIA)
 
   // If the results of scaling the bounds by the expected raster scale
   // would end up with a content rect whose width/height are more than one
