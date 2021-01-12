@@ -252,30 +252,30 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
       // Negative cases
       // Leaf is missing O
       {"leaf-no-o.pem", "int-o1-o2.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Leaf is missing O
       {"leaf-no-o.pem", "int-cn.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Leaf doesn't match issuer O
       {"leaf-o1.pem", "int-o3.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Multiple identical organization values, but in different orders.
       {"leaf-o1-o2.pem", "int-o2-o1.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Intermediate is nameConstrained, with a dirName, but not an O
       {"leaf-o1.pem", "nc-int-permit-cn.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Intermediate is nameConstrained, but with a dNSName
       {"leaf-o1.pem", "nc-int-permit-dns.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Intermediate is nameConstrained, but with an excludedSubtrees that
       // has a dirName that matches the O.
       {"leaf-o1.pem", "nc-int-exclude-o1.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
       // Intermediate is nameConstrained, but the encoding of the
       // nameConstraint is different from the encoding of the leaf
       {"leaf-o1.pem", "nc-int-permit-bmp-o1.pem", intermediate_spki,
-       CTRequirementLevel::DEFAULT},
+       CTRequirementLevel::REQUIRED},
   };
 
   for (const auto& test : kTestCases) {
@@ -312,8 +312,8 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
     }
     delegate.UpdateCTPolicies({}, {}, {}, {});
 
-    // There should be no existing settings.
-    EXPECT_EQ(CTRequirementLevel::DEFAULT,
+    // The default setting should require CT.
+    EXPECT_EQ(CTRequirementLevel::REQUIRED,
               delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
     delegate.UpdateCTPolicies({}, {}, {test.spki.ToString()}, {});

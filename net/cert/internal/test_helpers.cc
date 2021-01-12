@@ -224,7 +224,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       ReadCertChainFromFile(chain_path, &test->chain);
     } else if (GetValue("utc_time: ", line_piece, &value, &has_time)) {
       if (value == "DEFAULT") {
-        value = "180510120000Z";
+        value = "201103120000Z";
       }
       if (!der::ParseUTCTime(der::Input(&value), &test->time)) {
         ADD_FAILURE() << "Failed parsing UTC time";

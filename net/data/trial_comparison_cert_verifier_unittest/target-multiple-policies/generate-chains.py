@@ -6,7 +6,7 @@
 """Chain where the leaf has two policies and the intermediate has anyPolicy."""
 
 import sys
-sys.path += ['../../../../../../net/data']
+sys.path += ['../../../../net/data']
 
 import gencerts
 
