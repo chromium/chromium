@@ -32,10 +32,8 @@ using chromeos::UserContext;
 
 namespace {
 
-// TODO(b/156258540): Replace with correct URL once the article is uploaded.
-// This URL is an irrelevant article just for validating functionality.
 const char kInSessionAuthHelpPageUrl[] =
-    "https://support.google.com/chrome/?p=settings_sign_in";
+    "https://support.google.com/chromebook?p=WebAuthn";
 
 InSessionAuthDialogClient* g_auth_dialog_client_instance = nullptr;
 
