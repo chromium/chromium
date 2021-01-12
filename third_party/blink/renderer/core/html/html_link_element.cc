@@ -134,9 +134,6 @@ void HTMLLinkElement::ParseAttribute(
   } else if (name == html_names::kMediaAttr) {
     media_ = value.LowerASCII();
     Process();
-  } else if (name == html_names::kScopeAttr) {
-    scope_ = value;
-    Process();
   } else if (name == html_names::kIntegrityAttr) {
     integrity_ = value;
   } else if (name == html_names::kImportanceAttr &&
