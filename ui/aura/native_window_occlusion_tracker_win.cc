@@ -22,7 +22,58 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_version.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/win/hwnd_util.h"
+
+const CLSID CLSID_ImmersiveShell = {
+    0xC2F03A33,
+    0x21F5,
+    0x47FA,
+    {0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39}};
+
+const CLSID CLSID_VirtualDesktopAPI_Unknown = {
+    0xC5E0CDCA,
+    0x7B6E,
+    0x41B2,
+    {0x9F, 0xC4, 0xD9, 0x39, 0x75, 0xCC, 0x46, 0x7B}};
+
+struct IApplicationView : public IUnknown {
+ public:
+};
+
+MIDL_INTERFACE("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4")
+IVirtualDesktop : public IUnknown {
+ public:
+  virtual HRESULT STDMETHODCALLTYPE IsViewVisible(IApplicationView * pView,
+                                                  int* pfVisible) = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetID(GUID * pGuid) = 0;
+};
+
+enum AdjacentDesktop { LeftDirection = 3, RightDirection = 4 };
+
+MIDL_INTERFACE("F31574D6-B682-4cdc-BD56-1827860ABEC6")
+IVirtualDesktopManagerInternal : public IUnknown {
+ public:
+  virtual HRESULT STDMETHODCALLTYPE GetCount(UINT * pCount) = 0;
+  virtual HRESULT STDMETHODCALLTYPE MoveViewToDesktop(
+      IApplicationView * pView, IVirtualDesktop * pDesktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE CanViewMoveDesktops(
+      IApplicationView * pView, int* pfCanViewMoveDesktops) = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetCurrentDesktop(IVirtualDesktop *
+                                                      *desktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetDesktops(IObjectArray * *ppDesktops) = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetAdjacentDesktop(
+      IVirtualDesktop * pDesktopReference, AdjacentDesktop uDirection,
+      IVirtualDesktop * *ppAdjacentDesktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE SwitchDesktop(IVirtualDesktop *
+                                                  pDesktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE CreateDesktopW(IVirtualDesktop *
+                                                   *ppNewDesktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE RemoveDesktop(
+      IVirtualDesktop * pRemove, IVirtualDesktop * pFallbackDesktop) = 0;
+  virtual HRESULT STDMETHODCALLTYPE FindDesktop(
+      GUID * desktopId, IVirtualDesktop * *ppDesktop) = 0;
+};
 
 namespace aura {
 
@@ -31,6 +82,9 @@ namespace {
 // ~16 ms = time between frames when frame rate is 60 FPS.
 const base::TimeDelta kUpdateOcclusionDelay =
     base::TimeDelta::FromMilliseconds(16);
+
+const base::TimeDelta kUpdateVirtualDesktopDelay =
+    base::TimeDelta::FromMilliseconds(1000);
 
 // This global variable can be accessed only on main thread.
 NativeWindowOcclusionTrackerWin* g_tracker = nullptr;
@@ -308,6 +362,19 @@ NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
                        IID_PPV_ARGS(&virtual_desktop_manager_));
+
+    Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
+    if (base::FeatureList::IsEnabled(
+            features::kCalculateNativeWinOcclusionCheckVirtualDesktopUsed) &&
+        SUCCEEDED(::CoCreateInstance(CLSID_ImmersiveShell, NULL,
+                                     CLSCTX_LOCAL_SERVER,
+                                     IID_PPV_ARGS(&service_provider)))) {
+      service_provider->QueryService(
+          CLSID_VirtualDesktopAPI_Unknown,
+          IID_PPV_ARGS(&virtual_desktop_manager_internal_));
+      if (virtual_desktop_manager_internal_)
+        ComputeVirtualDesktopUsed();
+    }
   }
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -355,6 +422,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     UnregisterEventHooks();
     if (occlusion_update_timer_.IsRunning())
       occlusion_update_timer_.Stop();
+    if (virtual_desktop_update_timer_.IsRunning())
+      virtual_desktop_update_timer_.Stop();
   }
 }
 
@@ -501,12 +570,25 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
+    ComputeVirtualDesktopUsed() {
+  UINT count = 0;
+  if (SUCCEEDED(virtual_desktop_manager_internal_->GetCount(&count)))
+    virtual_desktops_used_ = count > 1;
+}
+
+void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     ScheduleOcclusionCalculationIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!occlusion_update_timer_.IsRunning())
+  if (!occlusion_update_timer_.IsRunning()) {
     occlusion_update_timer_.Start(
         FROM_HERE, kUpdateOcclusionDelay, this,
         &WindowOcclusionCalculator::ComputeNativeWindowOcclusionStatus);
+    if (virtual_desktop_manager_internal_) {
+      virtual_desktop_update_timer_.Start(
+          FROM_HERE, kUpdateVirtualDesktopDelay, this,
+          &WindowOcclusionCalculator::ComputeVirtualDesktopUsed);
+    }
+  }
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
@@ -740,7 +822,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
 base::Optional<bool> NativeWindowOcclusionTrackerWin::
     WindowOcclusionCalculator::IsWindowOnCurrentVirtualDesktop(HWND hwnd) {
-  if (!virtual_desktop_manager_)
+  if (!virtual_desktop_manager_ || !virtual_desktops_used_)
     return true;
 
   BOOL on_current_desktop;
