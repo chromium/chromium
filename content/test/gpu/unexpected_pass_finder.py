@@ -153,20 +153,8 @@ def SetLoggingVerbosity(verbosity_level):
   logging.getLogger().setLevel(level)
 
 
-def WarnUserOfIncompleteRollout():
-  response = raw_input('WARNING: This script relies on data from ResultDB, '
-                       'which is not enabled on all builders yet. As such, '
-                       'results from this script should not be trusted yet. '
-                       'Do you want to continue? y/N ')
-  if response.lower() != 'y':
-    sys.exit(0)
-
-
 def main():
   args = ParseArgs()
-  # TODO(crbug.com/1108016): Remove this warning once ResultDB is enabled on all
-  # builders and there is enough data for the results to be trusted.
-  WarnUserOfIncompleteRollout()
   test_expectation_map = expectations.CreateTestExpectationMap(
       args.expectation_file, args.tests)
   ci_builders = builders.GetCiBuilders(
