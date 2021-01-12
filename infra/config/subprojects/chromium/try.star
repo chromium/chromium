@@ -1058,28 +1058,6 @@ try_.chromium_linux_builder(
     name = "linux-viz-rel",
 )
 
-# crbug.com/1149606: Experimental builder to test pre-warming
-try_.chromium_linux_builder(
-    name = "linux-warmed",
-    builderless = False,
-    goma_jobs = goma.jobs.J150,
-    use_clang_coverage = True,
-)
-
-# crbug.com/1149606: Experimental builder to test pre-warming
-try_.chromium_linux_builder(
-    name = "linux-warmed-orchestrator",
-    executable = "recipe:chromium/mini_orchestrator",
-    properties = {
-        "builder_to_trigger": {
-            "builder_group": "tryserver.chromium.linux",
-            "buildername": "linux-warmed",
-        },
-    },
-    service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(experiment_percentage = 5),
-)
-
 try_.chromium_linux_builder(
     name = "linux-webkit-msan-rel",
 )

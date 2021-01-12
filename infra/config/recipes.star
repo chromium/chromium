@@ -118,14 +118,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:chromium/mini_orchestrator",
-)
-
-build_recipe(
-    name = "recipe:chromium/try_warmer",
-)
-
-build_recipe(
     name = "recipe:presubmit",
 )
 

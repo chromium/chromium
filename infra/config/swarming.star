@@ -91,10 +91,6 @@ swarming.task_triggerers(
         # An account used by "Build Recipes Tester" builder infra/try bucket
         # used to tests changes to Chromium recipes using LED before commit.
         "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
-
-        # crbug.com/1149606: Used for experimental pre-warming. This account will
-        # run the led-tot-warmer builder in chromium.ci.
-        "chromium-led-tot-warmer@chops-service-accounts.iam.gserviceaccount.com",
     ],
 )
 

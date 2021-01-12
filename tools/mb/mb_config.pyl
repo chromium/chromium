@@ -990,7 +990,6 @@
       'linux-rts': 'release_trybot_rts',
       'linux-trusty-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-viz-rel': 'release_trybot',
-      'linux-warmed': 'release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-wpt-fyi-rel': 'release_trybot',
       'linux-wpt-identity-fyi-rel': 'release_trybot',
       'linux-wpt-input-fyi-rel': 'release_trybot',
@@ -2562,11 +2561,6 @@
 
     'release_trybot_no_nacl': [
       'release_trybot', 'disable_nacl',
-    ],
-
-    'release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
-      'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'release_trybot_paeverywhere_x86': [
