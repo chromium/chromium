@@ -1443,12 +1443,9 @@ WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
 }
 
 // static
-WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document,
-                                         bool update_layout_if_necessary) {
-  if (update_layout_if_necessary &&
-      !MaybeUpdateLayoutAndCheckValidity(web_document)) {
+WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
+  if (!MaybeUpdateLayoutAndCheckValidity(web_document))
     return WebAXObject();
-  }
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->GetOrCreate(document->GetLayoutView()))
