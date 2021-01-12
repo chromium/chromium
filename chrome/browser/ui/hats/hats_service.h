@@ -23,8 +23,11 @@ namespace content {
 class WebContents;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 class Browser;
-class PrefRegistrySimple;
 class Profile;
 
 // Trigger identifiers currently used; duplicates not allowed.
@@ -144,7 +147,7 @@ class HatsService : public KeyedService {
 
   explicit HatsService(Profile* profile);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Launches survey with identifier |trigger| if appropriate.
   // |success_callback| is called when the survey is shown to the user.

@@ -23,7 +23,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,11 +51,14 @@ constexpr double kHatsSurveyProbabilityDefault = 0;
 
 constexpr char kHatsSurveyEnSiteIDDefault[] = "bhej2dndhpc33okm6xexsbyv4y";
 
+// TODO(crbug.com/1160661): When the minimum time between any survey, and the
+// minimum time between a specific survey, are the same, the logic supporting
+// the latter check is superfluous.
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts =
-    base::TimeDelta::FromDays(60);
+    base::TimeDelta::FromDays(180);
 
 constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts =
-    base::TimeDelta::FromDays(7);
+    base::TimeDelta::FromDays(180);
 
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks =
     base::TimeDelta::FromDays(1);
@@ -187,8 +190,11 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
 HatsService::~HatsService() = default;
 
 // static
-void HatsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kHatsSurveyMetadata);
+void HatsService::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(
+      prefs::kHatsSurveyMetadata,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void HatsService::LaunchSurvey(const std::string& trigger,
