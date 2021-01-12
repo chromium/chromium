@@ -87,7 +87,7 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
 namespace {
 
 void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
-                  const base::Closure& all_get_session_func,
+                  const base::RepeatingClosure& all_get_session_func,
                   base::ListValue* session_list,
                   const Status& status,
                   std::unique_ptr<base::Value> value,
@@ -144,7 +144,7 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
 namespace {
 
 void OnSessionQuit(const base::WeakPtr<size_t>& quit_remaining_count,
-                   const base::Closure& all_quit_func,
+                   const base::RepeatingClosure& all_quit_func,
                    const Status& status,
                    std::unique_ptr<base::Value> value,
                    const std::string& session_id,
@@ -205,7 +205,7 @@ void ExecuteSessionCommandOnSessionThread(
     std::unique_ptr<base::DictionaryValue> params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const CommandCallback& callback_on_cmd,
-    const base::Closure& terminate_on_cmd) {
+    const base::RepeatingClosure& terminate_on_cmd) {
   Session* session = GetThreadLocalSession();
 
   if (!session) {

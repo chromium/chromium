@@ -311,12 +311,14 @@ HttpHandler::HttpHandler(
           kGet, "session/:sessionId/element/:id/enabled",
           WrapToCommand("IsElementEnabled",
                         base::BindRepeating(&ExecuteIsElementEnabled))),
-      CommandMapping(kGet, "session/:sessionId/element/:id/computedlabel",
-                     WrapToCommand("GetComputedLabel",
-                                   base::Bind(&ExecuteGetComputedLabel))),
-      CommandMapping(kGet, "session/:sessionId/element/:id/computedrole",
-                     WrapToCommand("GetComputedRole",
-                                   base::Bind(&ExecuteGetComputedRole))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/computedlabel",
+          WrapToCommand("GetComputedLabel",
+                        base::BindRepeating(&ExecuteGetComputedLabel))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/computedrole",
+          WrapToCommand("GetComputedRole",
+                        base::BindRepeating(&ExecuteGetComputedRole))),
       CommandMapping(kPost, "session/:sessionId/element/:id/click",
                      WrapToCommand("ClickElement",
                                    base::BindRepeating(&ExecuteClickElement))),
@@ -1014,16 +1016,17 @@ Command HttpHandler::WrapToCommand(const char* name,
 Command HttpHandler::WrapToCommand(const char* name,
                                    const WindowCommand& window_command,
                                    bool w3c_standard_command) {
-  return WrapToCommand(name, base::Bind(&ExecuteWindowCommand, window_command),
-                       w3c_standard_command);
+  return WrapToCommand(
+      name, base::BindRepeating(&ExecuteWindowCommand, window_command),
+      w3c_standard_command);
 }
 
 Command HttpHandler::WrapToCommand(const char* name,
                                    const ElementCommand& element_command,
                                    bool w3c_standard_command) {
-  return WrapToCommand(name,
-                       base::Bind(&ExecuteElementCommand, element_command),
-                       w3c_standard_command);
+  return WrapToCommand(
+      name, base::BindRepeating(&ExecuteElementCommand, element_command),
+      w3c_standard_command);
 }
 
 void HttpHandler::HandleCommand(
