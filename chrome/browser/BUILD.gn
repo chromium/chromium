@@ -3135,6 +3135,8 @@ static_library("browser") {
       "password_manager/android/password_manager_launcher_android.cc",
       "password_manager/android/password_manager_launcher_android.h",
       "password_manager/android/password_scripts_fetcher_android.cc",
+      "password_manager/android/password_store_bridge.cc",
+      "password_manager/android/password_store_bridge.h",
       "password_manager/android/save_password_infobar_delegate_android.cc",
       "password_manager/android/save_password_infobar_delegate_android.h",
       "password_manager/android/save_password_message_delegate.cc",
