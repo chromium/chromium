@@ -1392,7 +1392,7 @@
                     "name": "Enabled_Stage2",
                     "enable_features": [
                         "AutofillEnableAccountWalletStorage",
-                        "AutofillEnablePasswordInfoBarAccountIndicationFooter"
+                        "AutofillEnableSaveCardInfoBarAccountIndicationFooter"
                     ],
                     "disable_features": [
                         "WalletRequiresFirstSyncSetupComplete"
