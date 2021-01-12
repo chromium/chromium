@@ -42,56 +42,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11CreateDeviceError" enum="Hresult"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
-    An extended Windows error code returned from D3D11CreateDevice on error. Can
-    be almost any valid HRESULT or DXGI error code, which are listed at
+    An extended Windows error code returned from D3D11CreateDevice on error when
+    ANGLE's D3D backend is in use. Can be almost any valid HRESULT or DXGI error
+    code, which are listed at
     https://msdn.microsoft.com/en-us/library/windows/desktop/bb509553.aspx.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The maxmium supported (or currently requested) Direct3D feature level in
     D3D11 ANGLE. We support as low as 9.3, and as high as 11.1, though Chrome
     should only use 10.0+ for D3D11. Gives an indication of how new a user's
     video card is, what features it supports, and it's general speed tier.
+    Recorded on D3D device initialization, loss, or reset when ANGLE's D3D
+    backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D11 device in ANGLE. Can be success, or one
     of several error codes which indicate different reasons for failing.
+    Recorded on D3D11 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D9 device in ANGLE. Can be success, or one
     of several error codes which indicate different reasons for failing.
+    Recorded on D3D9 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2021-02-28">
+<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The time ANGLE spends calling the D3D shader compiler. Tracks total time we
-    spend compiling shaders on startup and during Chrome's lifetime.
+    spend compiling shaders on startup and during Chrome's lifetime. Recorded on
+    D3D shader compilation when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.DisplayInitializeMS" units="ms"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -138,31 +147,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.ProgramCache.LoadBinarySuccess"
-    enum="BooleanSuccess" expires_after="2021-06-06">
+    enum="BooleanSuccess" expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
-    Records if the call to load a cached binary was successful. This can
-    legitimately fail if the driver wants chrome to re-link and re-cache the gpu
-    program.
+    Records if the call to load a cached binary was successful. Calls are made
+    on shader creation and linking. This can legitimately fail if the driver
+    wants chrome to re-link and re-cache the gpu program.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.ProgramCache.ProgramBinarySizeBytes" units="bytes"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
-    The size of program binaries loaded into the gpu program cache.
+    Records the size of program binaries loaded into the gpu program cache.
+    Programs are loaded into the cache upon use in draw and dispatch calls.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     Windows computers running Windows 8+, or running Windows 7 with a platform
     update, support the newer version of DXGI. This update also indicates the
     computer is capable of running Direct3D 11.1 if the hardware supports it.
+    Recorded on D3D11 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
@@ -345,8 +358,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2021-09-01">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     ANGLE's currently active D3D shader model version. Logged once every startup
     of the GPU process, on Windows only. Note that Shader Models 2 and 3 map to
@@ -601,7 +615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.DoLinkProgramTime" units="ms" expires_after="2020-11-30">
+<histogram name="GPU.DoLinkProgramTime" units="ms" expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -787,7 +801,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2021-07-04">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -895,7 +909,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.PassthroughDoLinkProgramTime" units="ms"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -966,7 +980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProgramCache.CacheHit" enum="BooleanSuccess"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
