@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -23,9 +24,13 @@ namespace ash {
 // Dvorak) after switching IMEs with an accelerator (e.g. Ctrl-Space).
 class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ImeModeIndicatorView);
+
   // The cursor bounds is in the universal screen coordinates in DIP.
   ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
                        const base::string16& label);
+  ImeModeIndicatorView(const ImeModeIndicatorView&) = delete;
+  ImeModeIndicatorView& operator=(const ImeModeIndicatorView&) = delete;
   ~ImeModeIndicatorView() override;
 
   // Show the mode indicator then hide with fading animation.
@@ -35,7 +40,6 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
   void Init() override;
 
  protected:
@@ -47,8 +51,6 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
   gfx::Rect cursor_bounds_;
   views::Label* label_view_;
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeModeIndicatorView);
 };
 
 }  // namespace ash
