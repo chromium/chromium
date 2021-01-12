@@ -146,9 +146,12 @@ void DownloadStatusUpdater::UpdateProfileKeepAlive(
     return;
   }
 
-  // Are we already holding a keepalive?
   Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
   DCHECK(profile);
+  if (profile->IsOffTheRecord())
+    return;
+
+  // Are we already holding a keepalive?
   bool already_has_keep_alive =
       (profile_keep_alives_.find(profile) != profile_keep_alives_.end());
 
