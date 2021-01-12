@@ -50,10 +50,10 @@ FakeServiceWorkerContext::FinishedExternalRequest(
   NOTREACHED();
   return ServiceWorkerExternalRequestResult::kWorkerNotFound;
 }
-void FakeServiceWorkerContext::CountExternalRequestsForTest(
-    const url::Origin& origin,
-    CountExternalRequestsCallback callback) {
+size_t FakeServiceWorkerContext::CountExternalRequestsForTest(
+    const url::Origin& origin) {
   NOTREACHED();
+  return 0u;
 }
 bool FakeServiceWorkerContext::MaybeHasRegistrationForOrigin(
     const url::Origin& origin) {

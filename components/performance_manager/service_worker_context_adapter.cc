@@ -131,10 +131,10 @@ ServiceWorkerContextAdapter::FinishedExternalRequest(
   return content::ServiceWorkerExternalRequestResult::kOk;
 }
 
-void ServiceWorkerContextAdapter::CountExternalRequestsForTest(
-    const url::Origin& origin,
-    CountExternalRequestsCallback callback) {
+size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
+    const url::Origin& origin) {
   NOTIMPLEMENTED();
+  return 0u;
 }
 
 bool ServiceWorkerContextAdapter::MaybeHasRegistrationForOrigin(

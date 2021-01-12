@@ -351,16 +351,15 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
         shell()->web_contents()->GetBrowserContext());
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
-
-    RunOnCoreThread(
-        base::BindOnce(&self::SetUpOnCoreThread, base::Unretained(this)));
   }
 
   void TearDownOnMainThread() override {
-    base::RunLoop loop;
-    RunOnCoreThread(base::BindOnce(&self::TearDownOnCoreThread,
-                                   base::Unretained(this), loop.QuitClosure()));
-    loop.Run();
+    // Flush remote storage control so that all pending callbacks are executed.
+    wrapper()
+        ->context()
+        ->registry()
+        ->GetRemoteStorageControl()
+        .FlushForTesting();
     content::RunAllTasksUntilIdle();
     wrapper_ = nullptr;
   }
@@ -377,18 +376,6 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
     NavigateToURLBlockUntilNavigationsComplete(
         shell(), embedded_test_server()->GetURL("/service_worker/empty.html"),
         1);
-  }
-
-  virtual void SetUpOnCoreThread() {}
-
-  virtual void TearDownOnCoreThread(base::OnceClosure callback) {
-    // Flush remote storage control so that all pending callbacks are executed.
-    wrapper()
-        ->context()
-        ->registry()
-        ->GetRemoteStorageControl()
-        .FlushForTesting();
-    std::move(callback).Run();
   }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }

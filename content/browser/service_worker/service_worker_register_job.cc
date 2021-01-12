@@ -336,39 +336,6 @@ bool ServiceWorkerRegisterJob::IsUpdateCheckNeeded() const {
   return !skip_script_comparison_;
 }
 
-void ServiceWorkerRegisterJob::TriggerUpdateCheck(
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-
-  if (!loader_factory) {
-    // We can't continue with update checking appropriately without
-    // |loader_factory|. Null |loader_factory| means that the storage partition
-    // was not available probably because it's shutting down.
-    // This terminates the current job (|this|).
-    Complete(blink::ServiceWorkerStatusCode::kErrorAbort,
-             ServiceWorkerConsts::kShutdownErrorMessage);
-    return;
-  }
-
-  ServiceWorkerVersion* version_to_update = registration()->GetNewestVersion();
-  base::TimeDelta time_since_last_check =
-      base::Time::Now() - registration()->last_update_check();
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  version_to_update->script_cache_map()->GetResources(&resources);
-  int64_t script_resource_id =
-      version_to_update->script_cache_map()->LookupResourceId(script_url_);
-  DCHECK_NE(script_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-
-  update_checker_ = std::make_unique<ServiceWorkerUpdateChecker>(
-      std::move(resources), script_url_, script_resource_id, version_to_update,
-      std::move(loader_factory), force_bypass_cache_,
-      registration()->update_via_cache(), time_since_last_check, context_,
-      outside_fetch_client_settings_object_.Clone());
-  update_checker_->Start(
-      base::BindOnce(&ServiceWorkerRegisterJob::OnUpdateCheckFinished,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
     ServiceWorkerSingleScriptUpdateChecker::Result result,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
@@ -518,10 +485,35 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     return;
   }
 
-  // This will start the update check after loader factory is retrieved.
-  context_->wrapper()->GetLoaderFactoryForUpdateCheck(
-      scope_, base::BindOnce(&ServiceWorkerRegisterJob::TriggerUpdateCheck,
-                             weak_factory_.GetWeakPtr()));
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+      context_->wrapper()->GetLoaderFactoryForUpdateCheck(scope_);
+  if (!loader_factory) {
+    // We can't continue with update checking appropriately without
+    // |loader_factory|. Null |loader_factory| means that the storage partition
+    // was not available probably because it's shutting down.
+    // This terminates the current job (|this|).
+    Complete(blink::ServiceWorkerStatusCode::kErrorAbort,
+             ServiceWorkerConsts::kShutdownErrorMessage);
+    return;
+  }
+
+  ServiceWorkerVersion* version_to_update = registration()->GetNewestVersion();
+  base::TimeDelta time_since_last_check =
+      base::Time::Now() - registration()->last_update_check();
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  version_to_update->script_cache_map()->GetResources(&resources);
+  int64_t script_resource_id =
+      version_to_update->script_cache_map()->LookupResourceId(script_url_);
+  DCHECK_NE(script_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
+
+  update_checker_ = std::make_unique<ServiceWorkerUpdateChecker>(
+      std::move(resources), script_url_, script_resource_id, version_to_update,
+      std::move(loader_factory), force_bypass_cache_,
+      registration()->update_via_cache(), time_since_last_check, context_,
+      outside_fetch_client_settings_object_.Clone());
+  update_checker_->Start(
+      base::BindOnce(&ServiceWorkerRegisterJob::OnUpdateCheckFinished,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegisterJob::OnStartWorkerFinished(

@@ -43,12 +43,11 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           base::MakeRefCounted<URLLoaderFactoryGetter>()) {
   scoped_refptr<base::SequencedTaskRunner> database_task_runner =
       base::ThreadTaskRunnerHandle::Get();
-  wrapper_->InitOnCoreThread(
-      user_data_directory, std::move(database_task_runner),
+  wrapper_->InitInternal(
+      user_data_directory,
       /*quota_manager_proxy=*/nullptr, special_storage_policy, nullptr,
-      url_loader_factory_getter_.get(),
-      wrapper_->CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
-          browser_context_.get()));
+      url_loader_factory_getter_.get(), std::move(database_task_runner),
+      browser_context_.get());
   wrapper_->process_manager()->SetProcessIdForTest(mock_render_process_id());
   wrapper_->process_manager()->SetNewProcessIdForTest(new_render_process_id());
 

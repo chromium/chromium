@@ -45,9 +45,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  void CountExternalRequestsForTest(
-      const url::Origin& origin,
-      CountExternalRequestsCallback callback) override;
+  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
   void GetInstalledRegistrationOrigins(
       base::Optional<std::string> host_filter,

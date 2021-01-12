@@ -115,8 +115,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   bool IsUpdateCheckNeeded() const;
-  void TriggerUpdateCheck(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   // Refer ServiceWorkerUpdateChecker::UpdateStatusCallback for the meaning of
   // the parameters.
