@@ -9,8 +9,6 @@
 
 namespace blink {
 
-// TODO(tkent): Rename this to WebPointerID to follow the naming convention
-// in blink/public/.
 using PointerId = std::int32_t;
 
 }  // namespace blink
