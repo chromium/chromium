@@ -66,7 +66,7 @@ Polymer({
    * This is called from oobe_welcome when this dialog is shown.
    */
   show() {
-    this.$.show();
+    this.$.dialog.show();
   },
 
 });
