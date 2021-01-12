@@ -38,15 +38,10 @@ async function performChromiumSetup() {
   ];
   // Determine path prefixes.
   let resPrefix = '/resources';
-  let extra = ['/resources/chromium/web-bluetooth-test.js'];
+  const extra = ['/resources/chromium/web-bluetooth-test.js'];
   const pathname = window.location.pathname;
-  if (pathname.includes('/web_tests/')) {
-    let root = pathname.match(/.*(?:web_tests)/);
-    resPrefix = `${root}/external/wpt/resources`;
-    extra = [
-      `${root}/external/wpt/resources/chromium/web-bluetooth-test.js`,
-      `${root}/resources/bluetooth/bluetooth-fake-adapter.js`,
-    ];
+  if (pathname.includes('/wpt_internal/')) {
+    extra.push('/wpt_internal/bluetooth/resources/bluetooth-fake-adapter.js');
   }
 
   await loadScript(`${resPrefix}/test-only-api.js`);

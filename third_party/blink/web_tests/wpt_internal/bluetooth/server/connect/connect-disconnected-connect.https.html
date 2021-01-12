@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+ 'use strict';
+ bluetooth_test(t => {
+   return setBluetoothFakeAdapter('DisconnectingHeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}],
+      optionalServices: [request_disconnection_service_uuid]
+    }))
+    .then(device => {
+      return device.gatt.connect()
+        .then(gattServer => get_request_disconnection(gattServer))
+        .then(requestDisconnection => {
+          let disconnected = eventPromise(device, 'gattserverdisconnected');
+          // This write causes the device to disconnect.
+          return Promise.all([requestDisconnection(),
+                              disconnected]);
+        }).then(() => {
+          return device.gatt.connect()
+            .then(gattServer => gattServer.getPrimaryService('heart_rate'))
+            .then(service => service.getCharacteristic('body_sensor_location'))
+            .then(char => char.readValue())
+            .then(value => assert_array_equals(new Uint8Array(value.buffer), [1]));
+        });
+    });
+ }, 'A device that gets disconnected can re-connect.');
+</script>

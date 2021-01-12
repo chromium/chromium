@@ -714,7 +714,7 @@
   },
   {
     "prefix": "web-bluetooth-new-permissions-backend",
-    "bases": ["bluetooth", "external/wpt/bluetooth"],
+    "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
     "args": ["--enable-features=WebBluetoothNewPermissionsBackend"]
   },
   {

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'The characteristic should be able to start and stop ' +
+    'notifications multiple times in a row.';
+let characteristic, fake_characteristic;
+let startStopNotifications = () => {
+  return fake_characteristic.setNextSubscribeToNotificationsResponse(
+          HCI_SUCCESS)
+      .then(() => characteristic.startNotifications())
+      .then(() => fake_characteristic.isNotifying())
+      .then(isNotifying => assert_true(isNotifying))
+      .then(() =>
+          fake_characteristic.setNextUnsubscribeFromNotificationsResponse(
+              HCI_SUCCESS))
+      .then(() => characteristic.stopNotifications())
+      .then(() => fake_characteristic.isNotifying())
+      .then(isNotifying => assert_false(isNotifying));
+}
+
+bluetooth_test(() => getMeasurementIntervalCharacteristic()
+    .then(_ => ({characteristic, fake_characteristic} = _))
+    .then(() => startStopNotifications())
+    .then(() => startStopNotifications()),
+    test_desc);
+</script>

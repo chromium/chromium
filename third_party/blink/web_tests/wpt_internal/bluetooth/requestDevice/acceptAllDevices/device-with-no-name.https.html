@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('NoNameDeviceAdapter')
+    .then(() => requestDeviceWithTrustedClick({acceptAllDevices: true}))
+    .then(device => {
+      assert_true(device.name === null);
+    });
+}, 'Device with no name or UUIDs nearby. Should be found if ' +
+   'acceptAllDevices is true.');
+</script>

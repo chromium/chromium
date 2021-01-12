@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan with multiple filters.';
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(
+      async () => {await navigator.bluetooth.requestLEScan(
+          {filters: [{namePrefix: 'Health'}, {services: [health_uuid]}]})});
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let scan = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  // This event should not be seen.
+  fake_central.simulateAdvertisementReceived(scan);
+
+  // Our filter is looking for this uuid
+  scan.scanRecord.name = 'Not a Health Thermometer';
+  scan.scanRecord.uuids = [health_uuid];
+  fake_central.simulateAdvertisementReceived(scan);
+  await eventWatcher.wait_for(['advertisementreceived']).then(e => {
+    assert_equals(e.name, 'Not a Health Thermometer');
+    assert_array_equals(e.uuids, [health_uuid]);
+  });
+
+  // Our filter is also looking for this name
+  scan.scanRecord.name = 'Health Thermometer';
+  scan.scanRecord.uuids = [];
+  fake_central.simulateAdvertisementReceived(scan);
+  await eventWatcher.wait_for(['advertisementreceived']).then(e => {
+    assert_equals(e.name, 'Health Thermometer');
+    assert_array_equals(e.uuids, []);
+  });
+}, test_desc);
+</script>

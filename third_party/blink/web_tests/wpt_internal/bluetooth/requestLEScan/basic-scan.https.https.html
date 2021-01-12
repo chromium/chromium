@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan receive a scan result.';
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(async () => {
+    let scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+    assert_equals(scan.constructor.name, 'BluetoothLEScan');
+    assert_true(scan.acceptAllAdvertisements)
+  });
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let promise = eventWatcher.wait_for('advertisementreceived').then(e => {
+    verifyBluetoothAdvertisingEvent(e);
+  });
+  fake_central.simulateAdvertisementReceived(scanResult);
+  return promise;
+}, test_desc);
+</script>

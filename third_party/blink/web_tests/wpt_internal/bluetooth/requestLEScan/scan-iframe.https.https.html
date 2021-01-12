@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<body></body>
+<script>
+'use strict';
+
+function createIframe(iframe) {
+  return new Promise(resolve => {
+    iframe.src = '';
+    iframe.onload = () => {
+      resolve(iframe.contentWindow.navigator.bluetooth);
+    };
+    document.body.appendChild(iframe);
+  });
+}
+
+promise_test(async (t) => {
+  let iframe = document.createElement('iframe');
+  let iframeBluetoothObject = await createIframe(iframe);
+  document.body.removeChild(iframe);
+  // Set iframe to null to ensure that the GC cleans up as much as possible.
+  iframe = null;
+  GCController.collect();
+  return callWithTrustedClick(iframeBluetoothObject.requestLEScan)
+      .catch(err => assert_equals(err.name, 'ReferenceError'));
+}, 'detaching from iframe invalidates reference to the iframe bluetooth object');
+</script>

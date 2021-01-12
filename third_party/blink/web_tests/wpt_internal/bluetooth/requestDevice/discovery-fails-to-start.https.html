@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+  let requestDevicePromise =
+      setBluetoothFakeAdapter('FailStartDiscoveryAdapter')
+          .then(
+              () => requestDeviceWithTrustedClick(
+                  {filters: [{services: ['generic_access']}]}));
+  return getBluetoothManualChooserEvents(3).then(events => {
+    assert_array_equals(
+        events,
+        ['chooser-opened(https://web-platform.test:8444)', 'discovering', 'discovery-failed-to-start'],
+        events);
+    sendBluetoothManualChooserEvent('cancelled', '');
+    return assert_promise_rejects_with_message(
+        requestDevicePromise,
+        new DOMException(
+            'User cancelled the requestDevice() chooser.', 'NotFoundError'),
+        'The adapter failed to start a discovery session.');
+  });
+}, 'Discovery session fails to start.');
+</script>

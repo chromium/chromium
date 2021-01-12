@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'Characteristic with exclude-writes fullfills read and ' +
+    'rejects write.';
+const expected = new DOMException(
+    'writeValue() called on blocklisted object marked exclude-writes. ' +
+    'https://goo.gl/4NeimX',
+    'SecurityError');
+
+// 1. Connect to the device and retrieve the GATT characteristic.
+bluetooth_test(async () => {
+  const {characteristic, fake_characteristic} =
+      await getBlocklistExcludeWritesCharacteristic();
+  // 2. Attempt to write and read the characteristic.
+  await fake_characteristic.setNextReadResponse(HCI_SUCCESS, 'foo');
+  await characteristic.readValue();
+  await assert_promise_rejects_with_message(
+      characteristic.writeValueWithoutResponse(new Uint8Array(1 /* length */)),
+      expected, 'writeValueWithoutResponse() should reject.');
+}, test_desc);
+</script>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(t => {
+  return setBluetoothFakeAdapter('FailingConnectionsAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: [errorUUID(0x1) /* in progress error */]}]}))
+    .then(device => {
+      promise_rejects_dom(t, 'NetworkError', device.gatt.connect());
+    })
+    .then(runGarbageCollection);
+}, 'Garbage collection ran during a connect call that fails. ' +
+   'Should not crash.');
+</script>

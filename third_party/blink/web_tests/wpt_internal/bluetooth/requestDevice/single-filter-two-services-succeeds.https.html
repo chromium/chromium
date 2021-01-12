@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('GlucoseHeartRateAdapter')
+      .then(
+          () => requestDeviceWithTrustedClick(
+              {filters: [{services: ['glucose', 'tx_power']}]}))
+      .then(device => assert_equals(device.name, 'Glucose Device'));
+}, 'Filter with 2 services returns a matching device.');
+</script>

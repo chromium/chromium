@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+
+  let requestDevicePromise =
+      setBluetoothFakeAdapter('DeviceEventAdapter')
+          .then(
+              () => requestDeviceWithTrustedClick(
+                  {filters: [{services: ['generic_access']}]}));
+  return getBluetoothManualChooserEvents(4).then(events => {
+    assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+    assert_equals(events[1], 'discovering');
+    let idsByName = new AddDeviceEventSet();
+    idsByName.assert_add_device_event(events[2]);
+    assert_true(idsByName.has('Discovery Generic Access Device'));
+    assert_equals(events[3], 'discovery-idle');
+    sendBluetoothManualChooserEvent(
+        'selected', idsByName.get('Discovery Generic Access Device'));
+    return requestDevicePromise;
+  });
+});
+</script>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan calls do not consume user gestures.';
+
+bluetooth_test(
+    () => navigator.bluetooth.test.simulateCentral({state: 'powered-on'})
+              .then(() => callWithTrustedClick(() => {
+                      let first = navigator.bluetooth.requestLEScan(
+                          {acceptAllAdvertisements: true});
+                      let second = navigator.bluetooth.requestLEScan(
+                          {acceptAllAdvertisements: true});
+                      return Promise.all([
+                        first.then(
+                            scan => assert_equals(
+                                scan.constructor.name, 'BluetoothLEScan')),
+                        second.then(
+                            scan => assert_equals(
+                                scan.constructor.name, 'BluetoothLEScan')),
+                      ]);
+                    })),
+    test_desc);
+</script>

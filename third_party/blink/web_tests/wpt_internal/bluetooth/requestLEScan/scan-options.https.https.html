@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan options in scan result.';
+
+bluetooth_test(async () => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(async () => {
+    const expected = new DOMException(
+        'Failed to execute \'requestLEScan\' on ' +
+            '\'Bluetooth\': \'filters\' member must be non-empty to find any devices.',
+        new TypeError());
+
+    assert_promise_rejects_with_message(
+        navigator.bluetooth.requestLEScan({filters: []}), expected)
+
+    let scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+    assert_true(scan.acceptAllAdvertisements)
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan(
+        {filters: [{name: 'Health Thermometer'}]});
+    assert_false(scan.acceptAllAdvertisements)
+    assert_equals(scan.filters[0].name, 'Health Thermometer')
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan({
+      acceptAllAdvertisements: false,
+      filters: [{name: 'Health Thermometer'}]
+    });
+    assert_false(scan.acceptAllAdvertisements)
+    assert_equals(scan.filters[0].name, 'Health Thermometer')
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true, keepRepeatedDevices: true});
+    assert_true(scan.acceptAllAdvertisements)
+    assert_true(scan.keepRepeatedDevices)
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true, keepRepeatedDevices: false});
+    assert_true(scan.acceptAllAdvertisements)
+    assert_false(scan.keepRepeatedDevices)
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan(
+        {filters: [{name: 'Some Device', services: [health_uuid]}]})
+    assert_equals(scan.filters[0].name, 'Some Device')
+    assert_array_equals(scan.filters[0].services, [health_uuid]);
+    scan.stop();
+
+    scan = await navigator.bluetooth.requestLEScan({
+      filters: [
+        {name: 'Some Device', services: [health_uuid]},
+        {name: 'I love pancakes'}, {namePrefix: 'How now brown '},
+        {services: ['generic_access', 'human_interface_device']}
+      ]
+    })
+
+    assert_equals(scan.filters[0].name, 'Some Device')
+    assert_array_equals(scan.filters[0].services, [health_uuid]);
+    assert_equals(scan.filters[1].name, 'I love pancakes')
+    assert_equals(scan.filters[2].namePrefix, 'How now brown ')
+    // 00001800-0000-1000-8000-00805f9b34fb == generic_access
+    // 00001812-0000-1000-8000-00805f9b34fb == human_interface_device
+    assert_array_equals(scan.filters[3].services, [
+      '00001800-0000-1000-8000-00805f9b34fb',
+      '00001812-0000-1000-8000-00805f9b34fb'
+    ]);
+    scan.stop();
+  });
+}, test_desc);
+</script>

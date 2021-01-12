@@ -1,0 +1,70 @@
+<!doctype html>
+<title>RequestLEScan Visiblility Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+
+function setMainWindowHidden(hidden) {
+  return new Promise((resolve, reject) => {
+    if (!window.testRunner) {
+      reject("no window.testRunner present");
+      return;
+    }
+    if (document.visibilityState == (hidden ? "hidden" : "visible")) {
+      reject("setMainWindowHidden(" + hidden + ") called but already " + hidden);
+      return;
+    }
+    document.addEventListener("visibilitychange", resolve, {once:true});
+    testRunner.setMainWindowHidden(hidden);
+  });
+}
+
+let ble_scan;
+bluetooth_test(async (t) => {
+  navigator.bluetooth.addEventListener('advertisementreceived', () => {
+    t.unreached_func('Should not receive advertisementreceived if the page was hidden');
+  });
+
+  const fake_central = await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(async () => {
+    ble_scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+  });
+  assert_true(ble_scan.active, "ble_scan.active should be true since we just requested it");
+
+  let scan_result = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  await setMainWindowHidden(true);
+  assert_false(ble_scan.active, "ble_scan.active should be false after visiblility change");
+
+  // We should not receive a bluetooth scan result if the page was put into the background.
+  fake_central.simulateAdvertisementReceived(scan_result);
+
+  await setMainWindowHidden(false);
+  assert_false(ble_scan.active, "ble_scan.active should still be false after page returns to being visible");
+
+  // We should not receive a bluetooth scan result even if the page returns to being visible
+  fake_central.simulateAdvertisementReceived(scan_result);
+
+  // We want to make sure that there is time between the simulation of
+  // the event and leaving this test so that we don't accidently miss
+  // the event.
+  function wait(ms) {
+    return new Promise(resolve => step_timeout(resolve, ms));
+  }
+  return wait(500);
+}, 'requestLEScan active=false post page visiblility change.');
+</script>

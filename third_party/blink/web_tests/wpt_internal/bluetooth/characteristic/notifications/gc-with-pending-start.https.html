@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  let start_promise;
+  return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => gattServer.getPrimaryService('heart_rate'))
+    .then(service => service.getCharacteristic('heart_rate_measurement'))
+    .then(characteristic => {
+      start_promise = characteristic.startNotifications();
+      // We intentionally don't return the promise so that 'characteristic' goes
+      // out of scope while the request is still pending.
+    })
+    .then(() => runGarbageCollection())
+    .then(() => start_promise);
+  // TODO(ortuno): Assert that notifications are not active.
+  // http://crbug.com/600762
+  // Objects will no longer get garbage collected once we implement the
+  // bluetooth tree.
+  // https://crbug.com/495270
+}, 'Object gets garbage collected while start request is pending. Make ' +
+   'sure we don\' crash.');
+</script>

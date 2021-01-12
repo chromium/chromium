@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  let char;
+  return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => gattServer.getPrimaryService('heart_rate'))
+    .then(service => service.getCharacteristic('heart_rate_measurement'))
+    .then(characteristic => {
+      char = characteristic;
+      return assert_promise_resolves_before_event(characteristic,
+                                                  'startNotifications',
+                                                  'characteristicvaluechanged',
+                                                  3 /* add 3 listeners */);
+    })
+    .then(() => char.stopNotifications())
+    .then(() => assert_no_events(char, 'characteristicvaluechanged'));
+}, 'Add multiple event listeners then startNotifications().');
+</script>

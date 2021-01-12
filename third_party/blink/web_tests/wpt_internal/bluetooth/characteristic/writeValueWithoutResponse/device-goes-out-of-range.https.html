@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(async () => {
+  await setBluetoothFakeAdapter('HeartRateAdapter');
+  const device = await requestDeviceWithTrustedClick({
+    filters: [{services: ['heart_rate']}],
+    optionalServices: ['generic_access'],
+  });
+  const gattServer = await device.gatt.connect();
+  const service = await gattServer.getPrimaryService('generic_access');
+  const characteristic = await service.getCharacteristic('gap.device_name');
+  await setBluetoothFakeAdapter('EmptyAdapter');
+  await assert_promise_rejects_with_message(
+      characteristic.writeValueWithoutResponse(new ArrayBuffer(1 /* length */)),
+      new DOMException(
+          'Bluetooth Device is no longer in range.', 'NetworkError'),
+      'Device went out of range.');
+}, 'Device goes out of range. Reject with NetworkError.');
+</script>

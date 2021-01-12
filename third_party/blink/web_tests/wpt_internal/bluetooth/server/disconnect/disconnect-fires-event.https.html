@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+ 'use strict';
+ // TODO(ortuno): Write tests to check that "Disconnect" was actually
+ // called on the device.
+ // http://crbug.com/569716
+ bluetooth_test(() => {
+   return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => {
+      let disconnected = eventPromise(gattServer.device, 'gattserverdisconnected')
+      gattServer.disconnect();
+      return disconnected;
+    }).then(event => assert_true(event.bubbles));
+ }, 'disconnect() fires the gattserverdisconnected event.');
+</script>

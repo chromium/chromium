@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'Successful write should update descriptor\'s value.';
+const newValue = new TextEncoder().encode('foo');
+let descriptor, fake_descriptor;
+
+bluetooth_test(() => getUserDescriptionDescriptor()
+    .then(_ => ({descriptor, fake_descriptor} = _))
+    .then(() => assert_equals(descriptor.value, null))
+    .then(() => fake_descriptor.setNextWriteResponse(GATT_SUCCESS))
+    .then(() => descriptor.writeValue(newValue))
+    .then(() => assert_array_equals(
+        new Uint8Array(descriptor.value.buffer), newValue))
+    .then(() => fake_descriptor.getLastWrittenValue())
+    .then(lastValue => assert_array_equals(lastValue, newValue)),
+    test_desc);
+</script>

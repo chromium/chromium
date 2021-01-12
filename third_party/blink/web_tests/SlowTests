@@ -271,11 +271,6 @@ crbug.com/869662 [ Mac10.13 ] virtual/threaded-prefer-compositing/fast/scrolling
 # Tests where |3s <= slowest_run < 10s| on flakiness dashboard for site_per_process_blink_web_tests
 crbug.com/874695 accessibility/is-ignored-change-sends-notification.html [ Slow ]
 crbug.com/874695 animations/svg/animated-filter-svg-element.html [ Slow ]
-crbug.com/874695 bluetooth/server/connect/garbage-collection-ran-during-error.html [ Slow ]
-crbug.com/874695 bluetooth/server/disconnect/disconnect-fires-event.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryService/gen-device-goes-out-of-range.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryService/gen-reconnect-during-error.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryServices/gen-delayed-discovery-service-found-with-uuid.html [ Slow ]
 crbug.com/874695 compositing/animation/busy-indicator.html [ Slow ]
 crbug.com/874695 compositing/culling/filter-occlusion-blur.html [ Slow ]
 crbug.com/874695 compositing/lots-of-img-layers-with-opacity.html [ Slow ]
@@ -463,6 +458,11 @@ crbug.com/874695 virtual/threaded/http/tests/devtools/tracing/timeline-style/tim
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchpad-zoom-in-slow.html [ Slow ]
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/connect/garbage-collection-ran-during-error.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/disconnect/disconnect-fires-event.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryService/gen-device-goes-out-of-range.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryService/gen-reconnect-during-error.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryServices/gen-delayed-discovery-service-found-with-uuid.html [ Slow ]
 
 crbug.com/868956 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 

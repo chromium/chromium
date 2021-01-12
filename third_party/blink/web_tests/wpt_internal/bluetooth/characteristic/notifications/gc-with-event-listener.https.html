@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(async () => {
+  let expectingEvent = false;
+  let eventHandler;
+  let eventPromise = new Promise((resolve, reject) => {
+    eventHandler = () => {
+      if (expectingEvent) {
+        resolve();
+      } else {
+        reject('Event fired before garbage collection.');
+      }
+    };
+  });
+
+  await (async () => {
+    await setBluetoothFakeAdapter('HeartRateAdapter');
+    let device = await requestDeviceWithTrustedClick({
+        filters: [{services: ['heart_rate']}]});
+    let gattServer = await device.gatt.connect();
+    let service = await gattServer.getPrimaryService('heart_rate');
+    let characteristic =
+        await service.getCharacteristic('heart_rate_measurement');
+    await characteristic.startNotifications();
+
+    characteristic.addEventListener(
+        'characteristicvaluechanged', eventHandler, { once: true });
+
+    // The characteristic must hold the last reference to the event handler.
+    eventHandler = undefined;
+  })();
+
+  // At this point all the variables above should be out of scope and so this
+  // will free them.
+  GCController.collect();
+
+  // The event listener should still be active.
+  expectingEvent = true;
+  await eventPromise;
+}, 'Event listeners remain registered after garbage collection.');
+</script>
