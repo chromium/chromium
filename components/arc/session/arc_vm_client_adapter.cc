@@ -238,6 +238,10 @@ std::vector<std::string> GenerateKernelCmdline(
   // TODO(niwa): Check if we need to set ro.boot.enable_adb_sideloading for
   // ARCVM.
 
+  // Only add boot property if flag to disable media store maintenance is set.
+  if (start_params.disable_media_store_maintenance)
+    result.push_back("androidboot.disable_media_store_maintenance=1");
+
   // Conditionally sets some properties based on |start_params|.
   switch (start_params.play_store_auto_update) {
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:

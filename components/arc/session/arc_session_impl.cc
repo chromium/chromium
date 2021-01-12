@@ -460,6 +460,14 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.arc_disable_system_default_app =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcDisableSystemDefaultApps);
+  if (params.arc_disable_system_default_app)
+    VLOG(1) << "System default app(s) are disabled";
+
+  params.disable_media_store_maintenance =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcDisableMediaStoreMaintenance);
+  if (params.disable_media_store_maintenance)
+    VLOG(1) << "MediaStore maintenance task(s) are disabled";
 
   VLOG(1) << "Starting ARC mini instance with lcd_density="
           << params.lcd_density

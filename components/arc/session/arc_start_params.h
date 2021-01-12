@@ -56,6 +56,9 @@ struct StartParams {
   // Flag to disable system default apps.
   bool arc_disable_system_default_app = false;
 
+  // Flag to disable scheduling of media store periodic maintenance tasks.
+  bool disable_media_store_maintenance = false;
+
   // The number of logical CPU cores that are currently disabled on the host.
   // This parameter is used only for starting ARCVM.
   uint32_t num_cores_disabled = 0;

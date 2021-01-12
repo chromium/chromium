@@ -1226,6 +1226,20 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_DisableSystemDefaultApp) {
                      "androidboot.disable_system_default_app=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableMediaStoreMaintenance) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.disable_media_store_maintenance = true;
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeParams params(GetPopulatedUpgradeParams());
+  UpgradeArcWithParams(true, std::move(params));
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.disable_media_store_maintenance=1"));
+}
+
 // Tests that StartArcVm() is called with valid parameters.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmParams) {
   SetValidUserInfo();

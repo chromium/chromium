@@ -97,13 +97,19 @@ const char kArcDisableGmsCoreCache[] = "arc-disable-gms-core-cache";
 // 'en-US,en' as preferred languages.
 const char kArcDisableLocaleSync[] = "arc-disable-locale-sync";
 
-// Used for development of Android app that are included into ARC++ as system
-// default apps in order to be able to install them via adb.
-const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
+// Used to disable GMS scheduling of media store periodic indexing and corpora
+// maintenance tasks. Used in performance tests to prevent running during
+// testing which can cause unstable results or CPU not idle pre-test failures.
+const char kArcDisableMediaStoreMaintenance[] =
+    "arc-disable-media-store-maintenance";
 
 // Flag that disables ARC Play Auto Install flow that installs set of predefined
 // apps silently. Used in autotests to resolve racy conditions.
 const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
+
+// Used for development of Android app that are included into ARC as system
+// default apps in order to be able to install them via adb.
+const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
 
 // Flag that forces ARC to cache icons for apps.
 const char kArcForceCacheAppIcons[] = "arc-force-cache-app-icons";
