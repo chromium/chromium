@@ -154,8 +154,9 @@ void AutocompleteInput::Init(
       type_ == metrics::OmniboxInputType::URL &&
       scheme_ == base::ASCIIToUTF16(url::kHttpScheme) &&
       !base::StartsWith(text_, scheme_, base::CompareCase::INSENSITIVE_ASCII) &&
-      !url::HostIsIPAddress(base::UTF16ToUTF8(text)) &&
-      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text))) {
+      !url::HostIsIPAddress(canonicalized_url.host()) &&
+      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text)) &&
+      canonicalized_url.port().empty()) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
     // intranet hosts which we don't to upgrade to HTTPS so we only check the
@@ -164,7 +165,11 @@ void AutocompleteInput::Init(
     // - Non-unique hostnames such as intranet hosts
     // - Single word hostnames (these are most likely non-unique).
     // - IP addresses
-    // TODO(crbug.com/1141691): Add tests for these cases.
+    // - URLs with a specified port. If it's a non-standard HTTP port, we can't
+    //   simply change the scheme to HTTPS and assume that these will load over
+    //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
+    //   upgraded (e.g. example.com:80 will load https://example.com).
+    DCHECK_EQ(url::kHttpScheme, canonicalized_url.scheme());
     added_default_scheme_to_typed_url_ = true;
     scheme_ = base::ASCIIToUTF16(url::kHttpsScheme);
     GURL::Replacements replacements;
