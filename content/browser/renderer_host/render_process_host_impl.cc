@@ -2029,8 +2029,8 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
   storage_partition->CreateRestrictedCookieManager(
-      network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
-      net::SiteForCookies::FromOrigin(origin), origin,
+      network::mojom::RestrictedCookieManagerRole::SCRIPT,
+      net::IsolationInfo::ToDoUseTopFrameOriginAsWell(origin),
       true /* is_service_worker */, GetID(), MSG_ROUTING_NONE,
       std::move(receiver),
       storage_partition->CreateCookieAccessObserverForServiceWorker());

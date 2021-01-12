@@ -194,16 +194,14 @@ RestrictedCookieManager::RestrictedCookieManager(
     const mojom::RestrictedCookieManagerRole role,
     net::CookieStore* cookie_store,
     const CookieSettings* cookie_settings,
-    const url::Origin& origin,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
     : role_(role),
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
-      origin_(origin),
-      site_for_cookies_(site_for_cookies),
-      top_frame_origin_(top_frame_origin),
+      origin_(isolation_info.frame_origin().value()),
+      site_for_cookies_(isolation_info.site_for_cookies()),
+      top_frame_origin_(isolation_info.top_frame_origin().value()),
       cookie_observer_(std::move(cookie_observer)) {
   DCHECK(cookie_store);
 }

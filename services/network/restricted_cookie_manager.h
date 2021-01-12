@@ -14,11 +14,11 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_store.h"
-#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -40,14 +40,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     : public mojom::RestrictedCookieManager {
  public:
   // All the pointers passed to the constructor are expected to point to
-  // objects that will outlive |this|.
+  // objects that will outlive |this|. |isolation_info| must be fully populated.
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
       const CookieSettings* cookie_settings,
-      const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
 
   ~RestrictedCookieManager() override;

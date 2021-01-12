@@ -2750,6 +2750,14 @@ void RenderFrameHostImpl::DidNavigate(
   frame_tree_node_->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
 
+  // TODO(https://crbug.com/1164508): Remove this check once origin is computed
+  // correctly by the browser side.
+  if (!GetLastCommittedOrigin().IsSameOriginWith(
+          GetIsolationInfoForSubresources().frame_origin().value())) {
+    isolation_info_ = ComputeIsolationInfoInternal(
+        GetLastCommittedOrigin(), isolation_info_.request_type());
+  }
+
   // Separately, update the frame's last successful URL except for net error
   // pages, since those do not end up in the correct process after transfers
   // (see https://crbug.com/560511).  Instead, the next cross-process navigation
@@ -8058,8 +8066,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManager(
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->CreateRestrictedCookieManager(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetLastCommittedOrigin(), isolation_info_.site_for_cookies(),
-          ComputeTopFrameOrigin(GetLastCommittedOrigin()),
+          GetIsolationInfoForSubresources(),
           /* is_service_worker = */ false, GetProcess()->GetID(), routing_id(),
           std::move(receiver), CreateCookieAccessObserver());
 }

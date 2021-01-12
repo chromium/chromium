@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
@@ -175,13 +176,13 @@ class RestrictedCookieManagerTest
  public:
   RestrictedCookieManagerTest()
       : cookie_monster_(nullptr, nullptr /* netlog */),
+        isolation_info_(net::IsolationInfo::CreateForInternalRequest(
+            url::Origin::Create(GURL("https://example.com")))),
         service_(std::make_unique<RestrictedCookieManager>(
             GetParam(),
             &cookie_monster_,
             &cookie_settings_,
-            url::Origin::Create(GURL("https://example.com")),
-            net::SiteForCookies::FromUrl(GURL("https://example.com")),
-            url::Origin::Create(GURL("https://example.com")),
+            isolation_info_,
             recording_client_.GetRemote())),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
@@ -268,6 +269,7 @@ class RestrictedCookieManagerTest
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   net::CookieMonster cookie_monster_;
   CookieSettings cookie_settings_;
+  net::IsolationInfo isolation_info_;
   RecordingCookieObserver recording_client_;
   std::unique_ptr<RestrictedCookieManager> service_;
   mojo::Remote<mojom::RestrictedCookieManager> service_remote_;

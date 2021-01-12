@@ -29,6 +29,10 @@ namespace safe_browsing {
 class UrlCheckerDelegate;
 }
 
+namespace net {
+class IsolationInfo;
+}
+
 namespace android_webview {
 
 class AwBrowserContext;
@@ -210,9 +214,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
       content::BrowserContext* browser_context,
-      const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       bool is_service_worker,
       int process_id,
       int routing_id,

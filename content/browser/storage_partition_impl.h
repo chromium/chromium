@@ -69,6 +69,10 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }
 
+namespace net {
+class IsolationInfo;
+}
+
 namespace content {
 
 class BackgroundFetchContext;
@@ -342,9 +346,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // makes some decision based on that.
   void CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
-      const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       bool is_service_worker,
       int process_id,
       int routing_id,

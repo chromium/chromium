@@ -4922,20 +4922,18 @@ void ChromeContentBrowserClient::CreateWebSocket(
 bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
     content::BrowserContext* browser_context,
-    const url::Origin& origin,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
+    const net::IsolationInfo& isolation_info,
     bool is_service_worker,
     int process_id,
     int routing_id,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (origin.scheme() == extensions::kExtensionScheme) {
+  DCHECK(isolation_info.frame_origin());
+  if (isolation_info.frame_origin()->scheme() == extensions::kExtensionScheme) {
     DCHECK_EQ(network::mojom::RestrictedCookieManagerRole::SCRIPT, role);
     extensions::ChromeExtensionCookies::Get(browser_context)
-        ->CreateRestrictedCookieManager(origin, site_for_cookies,
-                                        top_frame_origin, std::move(*receiver));
+        ->CreateRestrictedCookieManager(isolation_info, std::move(*receiver));
     return true;
   }
 #endif

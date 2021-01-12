@@ -1404,9 +1404,7 @@ StoragePartitionImpl::GetCookieManagerForBrowserProcess() {
 
 void StoragePartitionImpl::CreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
-    const url::Origin& origin,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
+    const net::IsolationInfo& isolation_info,
     bool is_service_worker,
     int process_id,
     int routing_id,
@@ -1414,11 +1412,10 @@ void StoragePartitionImpl::CreateRestrictedCookieManager(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer) {
   DCHECK(initialized_);
   if (!GetContentClient()->browser()->WillCreateRestrictedCookieManager(
-          role, browser_context_, origin, site_for_cookies, top_frame_origin,
-          is_service_worker, process_id, routing_id, &receiver)) {
+          role, browser_context_, isolation_info, is_service_worker, process_id,
+          routing_id, &receiver)) {
     GetNetworkContext()->GetRestrictedCookieManager(
-        std::move(receiver), role, origin, site_for_cookies, top_frame_origin,
-        std::move(cookie_observer));
+        std::move(receiver), role, isolation_info, std::move(cookie_observer));
   }
 }
 

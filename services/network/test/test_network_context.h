@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONTEXT_H_
 
 #include <cstdint>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -57,9 +59,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::RestrictedCookieManager>
           restricted_cookie_manager,
       mojom::RestrictedCookieManagerRole role,
-      const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override {}
   void GetHasTrustTokensAnswerer(
       mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,

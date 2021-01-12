@@ -73,6 +73,7 @@ class CertNetFetcher;
 class CertNetFetcherURLRequest;
 class CertVerifier;
 class HostPortPair;
+class IsolationInfo;
 class NetworkIsolationKey;
 class ReportSender;
 class StaticHttpUserAgentSettings;
@@ -199,9 +200,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void GetRestrictedCookieManager(
       mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
       mojom::RestrictedCookieManagerRole role,
-      const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override;
   void GetHasTrustTokensAnswerer(
       mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,

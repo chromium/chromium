@@ -23,6 +23,7 @@
 #include "media/base/android/media_url_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/auth.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -50,11 +51,22 @@ GetRestrictedCookieManagerForContext(
   StoragePartition* storage_partition =
       BrowserContext::GetDefaultStoragePartition(browser_context);
 
+  net::IsolationInfo isolation_info =
+      render_frame_host
+          ? render_frame_host->GetIsolationInfoForSubresources()
+          : net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                       top_frame_origin, origin,
+                                       site_for_cookies, base::nullopt);
+  DCHECK_EQ(origin, isolation_info.frame_origin().value());
+  DCHECK_EQ(top_frame_origin, isolation_info.top_frame_origin().value());
+  // TODO(https://crbug.com/911299): Check `site_for_cookies` and
+  // `isolation_info.site_for_cookies` are equivalent.
+
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)
       ->CreateRestrictedCookieManager(
-          network::mojom::RestrictedCookieManagerRole::NETWORK, origin,
-          site_for_cookies, top_frame_origin,
+          network::mojom::RestrictedCookieManagerRole::NETWORK,
+          std::move(isolation_info),
           /* is_service_worker = */ false,
           render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
