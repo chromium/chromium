@@ -3768,10 +3768,13 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
         </div>
       </div>
       <span></span>
-      <div id="container3" class="container">
+      <div class="container">
         <span class="affected"></span>
         <span class="affected"></span>
       </div>
+      <span class="container" style="display:inline-block">
+        <span class="affected"></span>
+      </span>
     </div>
   )HTML");
 
@@ -3796,6 +3799,55 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
 
   // Three direct span.affected children, and the two display:none elements.
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
+TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .container {
+        contain: layout size;
+      }
+    </style>
+    <div id="container" class="container">
+      <div class="container" style="display:contents">
+        <span class="affected"></span>
+      </div>
+      <span class="container">
+        <span class="affected"></span>
+      </span>
+      <rt class="container">
+        <span class="affected"></span>
+      </rt>
+      <div class="container" style="display:table">
+        <span class="affected"></span>
+      </div>
+      <div class="container" style="display:table-cell">
+        <span class="affected"></span>
+      </div>
+      <div class="container" style="display:table-row">
+        <span class="affected"></span>
+      </div>
+      <div class="container" style="display:table-row-group">
+        <span class="affected"></span>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  auto* container = GetDocument().getElementById("container");
+  auto* affected = GetDocument().getElementsByClassName("affected");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(affected);
+  SetDependsOnContainerQueries(*affected);
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container);
+
+  // span.affected is updated because containment does not apply to the display
+  // types on the element styled with containment. All marked as affected are
+  // recalculated.
+  EXPECT_EQ(7u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {

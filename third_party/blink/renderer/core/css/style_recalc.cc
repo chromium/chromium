@@ -61,8 +61,9 @@ bool StyleRecalcChange::RecalcContainerQueryDependentChildren(
   // recalculating container queries. If the queries for this container also
   // changes, we will enter another container query recalc for this subtree from
   // layout.
-  const ComputedStyle* style = element.GetComputedStyle();
-  return style && !style->IsContainerForContainerQueries();
+  if (LayoutObject* layout_object = element.GetLayoutObject())
+    return !layout_object->IsContainerForContainerQueries();
+  return true;
 }
 
 }  // namespace blink
