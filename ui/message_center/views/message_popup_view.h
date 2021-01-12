@@ -21,8 +21,12 @@ class Notification;
 class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
                                                public views::WidgetObserver {
  public:
+  METADATA_HEADER(MessagePopupView);
+
   MessagePopupView(const Notification& notification,
                    MessagePopupCollection* popup_collection);
+  MessagePopupView(const MessagePopupView&) = delete;
+  MessagePopupView& operator=(const MessagePopupView&) = delete;
   ~MessagePopupView() override;
 
   // Update notification contents to |notification|. Virtual for unit testing.
@@ -54,7 +58,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
@@ -70,7 +73,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
 
  protected:
   // For unit testing.
-  MessagePopupView(MessagePopupCollection* popup_collection);
+  explicit MessagePopupView(MessagePopupCollection* popup_collection);
 
  private:
   // True if the view has a widget and the widget is not closed.
@@ -87,8 +90,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   bool is_active_ = false;
 
   ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupView);
 };
 
 }  // namespace message_center

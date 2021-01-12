@@ -15,6 +15,7 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
@@ -182,10 +183,6 @@ void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
-const char* MessagePopupView::GetClassName() const {
-  return "MessagePopupView";
-}
-
 void MessagePopupView::OnDisplayChanged() {
   OnWorkAreaChanged();
 }
@@ -223,5 +220,8 @@ void MessagePopupView::OnWidgetDestroyed(views::Widget* widget) {
 bool MessagePopupView::IsWidgetValid() const {
   return GetWidget() && !GetWidget()->IsClosed();
 }
+
+BEGIN_METADATA(MessagePopupView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace message_center
