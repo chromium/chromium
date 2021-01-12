@@ -10,7 +10,7 @@ GEN_INCLUDE([
 /**
  * Test fixture for cursors.
  */
-ChromeVoxCursorsTest = class extends ChromeVoxNextE2ETest {
+AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
   /** Test cursors.Cursor. @const {string} */
   get CURSOR() {
     return 'cursor';
@@ -53,93 +53,93 @@ ChromeVoxCursorsTest = class extends ChromeVoxNextE2ETest {
       const expected = move[3];
       this.makeCursorAssertion(expected, cursor);
     }
+  }
+
+  /**
+   * Performs a series of operations on a range and asserts the result.
+   * @param {cursors.Range} range The starting range.
+   * @param {!Array<Array<
+   *          cursors.Unit|
+   *          cursors.Movement|
+   *          constants.Dir|
+   *          Object>>}
+   *     moves An array of arrays. Each inner array contains 4 items: unit,
+   *     direction, start and end assertions objects. See example below.
+   */
+  rangeMoveAndAssert(range, moves) {
+    let move = null;
+    while (move = moves.shift()) {
+      range = range.move(move[0], move[1]);
+      const expectedStart = move[2];
+      const expectedEnd = move[3];
+
+      this.makeCursorAssertion(expectedStart, range.start);
+      this.makeCursorAssertion(expectedEnd, range.end);
     }
+  }
 
-    /**
-     * Performs a series of operations on a range and asserts the result.
-     * @param {cursors.Range} range The starting range.
-     * @param {!Array<Array<
-     *          cursors.Unit|
-     *          cursors.Movement|
-     *          constants.Dir|
-     *          Object>>}
-     *     moves An array of arrays. Each inner array contains 4 items: unit,
-     *     direction, start and end assertions objects. See example below.
-     */
-    rangeMoveAndAssert(range, moves) {
-      let move = null;
-      while (move = moves.shift()) {
-        range = range.move(move[0], move[1]);
-        const expectedStart = move[2];
-        const expectedEnd = move[3];
-
-        this.makeCursorAssertion(expectedStart, range.start);
-        this.makeCursorAssertion(expectedEnd, range.end);
-      }
+  /**
+   * Makes assertions about the given |cursor|.
+   * @param {Object} expected
+   * @param {Cursor} cursor
+   */
+  makeCursorAssertion(expected, cursor) {
+    if (goog.isDef(expected.value)) {
+      assertEquals(expected.value, cursor.node.name);
     }
-
-    /**
-     * Makes assertions about the given |cursor|.
-     * @param {Object} expected
-     * @param {Cursor} cursor
-     */
-    makeCursorAssertion(expected, cursor) {
-      if (goog.isDef(expected.value)) {
-        assertEquals(expected.value, cursor.node.name);
-      }
-      if (goog.isDef(expected.index)) {
-        assertEquals(expected.index, cursor.index);
-      }
+    if (goog.isDef(expected.index)) {
+      assertEquals(expected.index, cursor.index);
     }
+  }
 
-    /**
-     * Runs the specified moves on the |doc| and asserts expectations.
-     * @param {function} doc
-     * @param {string=} opt_testType Either CURSOR or RANGE.
-     */
-    runCursorMovesOnDocument(doc, moves, opt_testType) {
-      this.runWithLoadedTree(doc, function(root) {
-        let start = null;
+  /**
+   * Runs the specified moves on the |doc| and asserts expectations.
+   * @param {function} doc
+   * @param {string=} opt_testType Either CURSOR or RANGE.
+   */
+  runCursorMovesOnDocument(doc, moves, opt_testType) {
+    this.runWithLoadedTree(doc, function(root) {
+      let start = null;
 
-        // This occurs as a result of a load complete.
-        start = AutomationUtil.findNodePost(
-            root, FORWARD, AutomationPredicate.leaf);
+      // This occurs as a result of a load complete.
+      start =
+          AutomationUtil.findNodePost(root, FORWARD, AutomationPredicate.leaf);
 
+      const cursor = new cursors.Cursor(start, 0);
+      if (!opt_testType || opt_testType === this.CURSOR) {
         const cursor = new cursors.Cursor(start, 0);
-        if (!opt_testType || opt_testType === this.CURSOR) {
-          const cursor = new cursors.Cursor(start, 0);
-          this.cursorMoveAndAssert(cursor, moves);
-        } else if (opt_testType === this.RANGE) {
-          const range = new cursors.Range(cursor, cursor);
-          this.rangeMoveAndAssert(range, moves);
-        }
-      });
-    }
+        this.cursorMoveAndAssert(cursor, moves);
+      } else if (opt_testType === this.RANGE) {
+        const range = new cursors.Range(cursor, cursor);
+        this.rangeMoveAndAssert(range, moves);
+      }
+    });
+  }
 
-    get simpleDoc() {
-      return `
+  get simpleDoc() {
+    return `
       <p>start <span>same line</span>
       <p>end
     `;
-    }
+  }
 
-    get multiInlineDoc() {
-      return `
+  get multiInlineDoc() {
+    return `
       <p style='max-width: 5px'>start diff line</p>
       <p>end
     `;
-    }
+  }
 
-    get buttonAndInlineTextDoc() {
-      return `
+  get buttonAndInlineTextDoc() {
+    return `
       <div>Inline text content</div>
       <div role="button">Button example content</div>
     `;
-    }
+  }
 };
 
 
-TEST_F('ChromeVoxCursorsTest', 'CharacterCursor', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'CharacterCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
     [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
@@ -160,7 +160,7 @@ TEST_F('ChromeVoxCursorsTest', 'CharacterCursor', function() {
   ]);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'WordCursor', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'WordCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     // Word (BOUND).
     [WORD, BOUND, BACKWARD, {index: 0, value: 'start '}],
@@ -183,7 +183,7 @@ TEST_F('ChromeVoxCursorsTest', 'WordCursor', function() {
   ]);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'CharacterWordCursor', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'CharacterWordCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
 
@@ -200,7 +200,7 @@ TEST_F('ChromeVoxCursorsTest', 'CharacterWordCursor', function() {
   ]);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'LineCursor', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     // Line (BOUND).
     [LINE, BOUND, FORWARD, {value: 'same line'}],
@@ -218,7 +218,7 @@ TEST_F('ChromeVoxCursorsTest', 'LineCursor', function() {
   ]);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'CharacterRange', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'CharacterRange', function() {
   this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
@@ -280,7 +280,7 @@ TEST_F('ChromeVoxCursorsTest', 'CharacterRange', function() {
       this.RANGE);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'WordRange', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'WordRange', function() {
   this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
@@ -318,7 +318,7 @@ TEST_F('ChromeVoxCursorsTest', 'WordRange', function() {
 });
 
 
-TEST_F('ChromeVoxCursorsTest', 'LineRange', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'LineRange', function() {
   this.runCursorMovesOnDocument(
       this.simpleDoc,
       [
@@ -340,27 +340,29 @@ TEST_F('ChromeVoxCursorsTest', 'LineRange', function() {
       this.RANGE);
 });
 
-TEST_F('ChromeVoxCursorsTest', 'DontSplitOnNodeNavigation', function() {
-  this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-    const para = root.firstChild;
-    assertEquals('paragraph', para.role);
-    let cursor = new cursors.Cursor(para.firstChild, 0);
-    cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
-    assertEquals('staticText', cursor.node.role);
-    assertEquals('end', cursor.node.name);
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'DontSplitOnNodeNavigation',
+    function() {
+      this.runWithLoadedTree(this.multiInlineDoc, function(root) {
+        const para = root.firstChild;
+        assertEquals('paragraph', para.role);
+        let cursor = new cursors.Cursor(para.firstChild, 0);
+        cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
+        assertEquals('staticText', cursor.node.role);
+        assertEquals('end', cursor.node.name);
 
-    cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
-    assertEquals('staticText', cursor.node.role);
-    assertEquals('start diff line', cursor.node.name);
+        cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
+        assertEquals('staticText', cursor.node.role);
+        assertEquals('start diff line', cursor.node.name);
 
-    assertEquals('inlineTextBox', cursor.node.firstChild.role);
-    assertEquals('start ', cursor.node.firstChild.name);
-    assertEquals('diff ', cursor.node.firstChild.nextSibling.name);
-    assertEquals('line', cursor.node.lastChild.name);
-  });
-});
+        assertEquals('inlineTextBox', cursor.node.firstChild.role);
+        assertEquals('start ', cursor.node.firstChild.name);
+        assertEquals('diff ', cursor.node.firstChild.nextSibling.name);
+        assertEquals('line', cursor.node.lastChild.name);
+      });
+    });
 
-TEST_F('ChromeVoxCursorsTest', 'WrappingCursors', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'WrappingCursors', function() {
   this.runWithLoadedTree(this.multiInlineDoc, function(root) {
     const first = root;
     const last = root.lastChild.firstChild;
@@ -376,7 +378,7 @@ TEST_F('ChromeVoxCursorsTest', 'WrappingCursors', function() {
   });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'IsInWebRange', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'IsInWebRange', function() {
   this.runWithLoadedTree(this.simpleDoc, function(root) {
     const para = root.firstChild;
     const webRange = cursors.Range.fromNode(para);
@@ -386,7 +388,7 @@ TEST_F('ChromeVoxCursorsTest', 'IsInWebRange', function() {
   });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'SingleDocSelection', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'SingleDocSelection', function() {
   this.runWithLoadedTree(
       `
     <span>start</span>
@@ -430,35 +432,38 @@ TEST_F('ChromeVoxCursorsTest', 'SingleDocSelection', function() {
       });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'MultiLineOffsetSelection', function() {
-  this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-    const secondLine = root.firstChild.firstChild.firstChild.nextSibling;
-    assertEquals('inlineTextBox', secondLine.role);
-    assertEquals('diff ', secondLine.name);
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'MultiLineOffsetSelection',
+    function() {
+      this.runWithLoadedTree(this.multiInlineDoc, function(root) {
+        const secondLine = root.firstChild.firstChild.firstChild.nextSibling;
+        assertEquals('inlineTextBox', secondLine.role);
+        assertEquals('diff ', secondLine.name);
 
-    let secondLineCursor = new cursors.Cursor(secondLine, -1);
-    // The selected node moves to the static text node.
-    assertEquals(secondLineCursor.node.parent, secondLineCursor.selectionNode_);
+        let secondLineCursor = new cursors.Cursor(secondLine, -1);
+        // The selected node moves to the static text node.
+        assertEquals(
+            secondLineCursor.node.parent, secondLineCursor.selectionNode_);
 
-    // This selects the entire node via a character offset.
-    assertEquals(6, secondLineCursor.selectionIndex_);
+        // This selects the entire node via a character offset.
+        assertEquals(6, secondLineCursor.selectionIndex_);
 
-    // Index into the characters.
-    secondLineCursor = new cursors.Cursor(secondLine, 1);
-    assertEquals(7, secondLineCursor.selectionIndex_);
+        // Index into the characters.
+        secondLineCursor = new cursors.Cursor(secondLine, 1);
+        assertEquals(7, secondLineCursor.selectionIndex_);
 
-    // Now, try selecting via node offsets.
-    let cursor = new cursors.Cursor(root.firstChild, -1);
-    assertEquals(root, cursor.selectionNode_);
-    assertEquals(0, cursor.selectionIndex_);
+        // Now, try selecting via node offsets.
+        let cursor = new cursors.Cursor(root.firstChild, -1);
+        assertEquals(root, cursor.selectionNode_);
+        assertEquals(0, cursor.selectionIndex_);
 
-    cursor = new cursors.Cursor(root.firstChild.nextSibling, -1);
-    assertEquals(root, cursor.selectionNode_);
-    assertEquals(1, cursor.selectionIndex_);
-  });
-});
+        cursor = new cursors.Cursor(root.firstChild.nextSibling, -1);
+        assertEquals(root, cursor.selectionNode_);
+        assertEquals(1, cursor.selectionIndex_);
+      });
+    });
 
-TEST_F('ChromeVoxCursorsTest', 'InlineElementOffset', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
   this.runWithLoadedTree(
       `
     <span>start</span>
@@ -501,7 +506,7 @@ TEST_F('ChromeVoxCursorsTest', 'InlineElementOffset', function() {
       });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'ContentEquality', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'ContentEquality', function() {
   this.runWithLoadedTree(
       `
     <div role="region">this is a test</button>
@@ -535,7 +540,7 @@ TEST_F('ChromeVoxCursorsTest', 'ContentEquality', function() {
       });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'DeepEquivalency', function() {
+TEST_F('AccessibilityExtensionCursorsTest', 'DeepEquivalency', function() {
   this.runWithLoadedTree(
       `
     <p style="word-spacing:100000px">this is a test</p>
@@ -588,107 +593,115 @@ TEST_F('ChromeVoxCursorsTest', 'DeepEquivalency', function() {
       });
 });
 
-TEST_F('ChromeVoxCursorsTest', 'DeepEquivalencyBeyondLastChild', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'DeepEquivalencyBeyondLastChild',
+    function() {
+      this.runWithLoadedTree(
+          `
     <p>test</p>
   `,
-      function(root) {
-        const paragraph = root.find({role: RoleType.PARAGRAPH});
-        assertEquals(1, paragraph.children.length);
-        const cursor = new cursors.Cursor(paragraph, 1);
+          function(root) {
+            const paragraph = root.find({role: RoleType.PARAGRAPH});
+            assertEquals(1, paragraph.children.length);
+            const cursor = new cursors.Cursor(paragraph, 1);
 
-        const deep = cursor.deepEquivalent;
-        assertEquals(RoleType.STATIC_TEXT, deep.node.role);
-        assertEquals(4, deep.index);
-      });
-});
+            const deep = cursor.deepEquivalent;
+            assertEquals(RoleType.STATIC_TEXT, deep.node.role);
+            assertEquals(4, deep.index);
+          });
+    });
 
-TEST_F('ChromeVoxCursorsTest', 'SelectionAdjustmentsRichText', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsRichText',
+    function() {
+      this.runWithLoadedTree(
+          `
     <div contenteditable><p>test</p><p>123</p></div>
   `,
-      function(root) {
-        const textField = root.firstChild;
-        const paragraph = textField.firstChild;
-        const otherParagraph = textField.lastChild;
-        const staticText = paragraph.firstChild;
-        const otherStaticText = otherParagraph.firstChild;
+          function(root) {
+            const textField = root.firstChild;
+            const paragraph = textField.firstChild;
+            const otherParagraph = textField.lastChild;
+            const staticText = paragraph.firstChild;
+            const otherStaticText = otherParagraph.firstChild;
 
-        // Ranges by default surround a node. Ensure it results in a collapsed
-        // selection.
-        let range = cursors.Range.fromNode(staticText);
-        assertEquals(0, range.start.selectionIndex_);
-        assertEquals(0, range.end.selectionIndex_);
-        assertEquals(paragraph, range.start.selectionNode_);
-        assertEquals(paragraph, range.end.selectionNode_);
+            // Ranges by default surround a node. Ensure it results in a
+            // collapsed selection.
+            let range = cursors.Range.fromNode(staticText);
+            assertEquals(0, range.start.selectionIndex_);
+            assertEquals(0, range.end.selectionIndex_);
+            assertEquals(paragraph, range.start.selectionNode_);
+            assertEquals(paragraph, range.end.selectionNode_);
 
-        // Text selection.
-        range = new cursors.Range(
-            new cursors.Cursor(staticText, 2),
-            new cursors.Cursor(staticText, 4));
-        assertEquals(2, range.start.selectionIndex_);
-        assertEquals(4, range.end.selectionIndex_);
-        assertEquals(staticText, range.start.selectionNode_);
-        assertEquals(staticText, range.end.selectionNode_);
+            // Text selection.
+            range = new cursors.Range(
+                new cursors.Cursor(staticText, 2),
+                new cursors.Cursor(staticText, 4));
+            assertEquals(2, range.start.selectionIndex_);
+            assertEquals(4, range.end.selectionIndex_);
+            assertEquals(staticText, range.start.selectionNode_);
+            assertEquals(staticText, range.end.selectionNode_);
 
-        // Tree selection.
-        range = cursors.Range.fromNode(paragraph);
-        assertEquals(0, range.start.selectionIndex_);
-        assertEquals(0, range.end.selectionIndex_);
-        assertEquals(textField, range.start.selectionNode_);
-        assertEquals(textField, range.end.selectionNode_);
+            // Tree selection.
+            range = cursors.Range.fromNode(paragraph);
+            assertEquals(0, range.start.selectionIndex_);
+            assertEquals(0, range.end.selectionIndex_);
+            assertEquals(textField, range.start.selectionNode_);
+            assertEquals(textField, range.end.selectionNode_);
 
-        range = cursors.Range.fromNode(otherStaticText);
-        assertEquals(0, range.start.selectionIndex_);
-        assertEquals(0, range.end.selectionIndex_);
-        assertEquals(otherParagraph, range.start.selectionNode_);
-        assertEquals(otherParagraph, range.end.selectionNode_);
+            range = cursors.Range.fromNode(otherStaticText);
+            assertEquals(0, range.start.selectionIndex_);
+            assertEquals(0, range.end.selectionIndex_);
+            assertEquals(otherParagraph, range.start.selectionNode_);
+            assertEquals(otherParagraph, range.end.selectionNode_);
 
-        range = cursors.Range.fromNode(otherParagraph);
-        assertEquals(1, range.start.selectionIndex_);
-        assertEquals(1, range.end.selectionIndex_);
-        assertEquals(textField, range.start.selectionNode_);
-        assertEquals(textField, range.end.selectionNode_);
-      });
-});
+            range = cursors.Range.fromNode(otherParagraph);
+            assertEquals(1, range.start.selectionIndex_);
+            assertEquals(1, range.end.selectionIndex_);
+            assertEquals(textField, range.start.selectionNode_);
+            assertEquals(textField, range.end.selectionNode_);
+          });
+    });
 
-TEST_F('ChromeVoxCursorsTest', 'SelectionAdjustmentsNonRichText', function() {
-  this.runWithLoadedTree(
-      `
+TEST_F(
+    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsNonRichText',
+    function() {
+      this.runWithLoadedTree(
+          `
     <input type="text"></input>
     <textarea></textarea>
   `,
-      function(root) {
-        const testEditable = function(edit) {
-          // Occurs as part of ordinary (non-text) navigation.
-          let range = cursors.Range.fromNode(edit);
-          assertEquals(-1, range.start.selectionIndex_);
-          assertEquals(-1, range.end.selectionIndex_);
-          assertEquals(edit, range.start.selectionNode_);
-          assertEquals(edit, range.end.selectionNode_);
+          function(root) {
+            const testEditable = function(edit) {
+              // Occurs as part of ordinary (non-text) navigation.
+              let range = cursors.Range.fromNode(edit);
+              assertEquals(-1, range.start.selectionIndex_);
+              assertEquals(-1, range.end.selectionIndex_);
+              assertEquals(edit, range.start.selectionNode_);
+              assertEquals(edit, range.end.selectionNode_);
 
-          // Occurs as a result of explicit text nav e.g. nextCharacter command.
-          range = new cursors.Range(
-              new cursors.Cursor(edit, 2), new cursors.Cursor(edit, 3));
-          assertEquals(2, range.start.selectionIndex_);
-          assertEquals(3, range.end.selectionIndex_);
-          assertEquals(edit, range.start.selectionNode_);
-          assertEquals(edit, range.end.selectionNode_);
-        };
+              // Occurs as a result of explicit text nav e.g. nextCharacter
+              // command.
+              range = new cursors.Range(
+                  new cursors.Cursor(edit, 2), new cursors.Cursor(edit, 3));
+              assertEquals(2, range.start.selectionIndex_);
+              assertEquals(3, range.end.selectionIndex_);
+              assertEquals(edit, range.start.selectionNode_);
+              assertEquals(edit, range.end.selectionNode_);
+            };
 
-        const textField = root.firstChild.firstChild;
-        const textArea = root.lastChild.lastChild;
+            const textField = root.firstChild.firstChild;
+            const textArea = root.lastChild.lastChild;
 
-        // Both of these should behave in the same way.
-        testEditable(textField);
-        testEditable(textArea);
-      });
-});
+            // Both of these should behave in the same way.
+            testEditable(textField);
+            testEditable(textArea);
+          });
+    });
 
 TEST_F(
-    'ChromeVoxCursorsTest', 'MovementByWordThroughNonInlineText', function() {
+    'AccessibilityExtensionCursorsTest', 'MovementByWordThroughNonInlineText',
+    function() {
       this.runCursorMovesOnDocument(this.buttonAndInlineTextDoc, [
         // Move forward by word.
         // 'text' start and end indices.
