@@ -482,7 +482,7 @@ group("gn_all") {
     }
   }
 
-  if (is_ios || is_win || (is_linux || is_chromeos_lacros)) {
+  if (is_ios || is_win || (is_linux || is_chromeos_lacros) || is_fuchsia) {
     deps += [
       "//base:base_i18n_perftests",
       "//google_apis:google_apis_unittests",
