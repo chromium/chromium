@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -33,7 +34,8 @@ class ScopedClipboardHistoryPause;
 // keyboard shortcut is pressed.
 class ASH_EXPORT ClipboardHistoryControllerImpl
     : public ClipboardHistoryController,
-      public ClipboardHistory::Observer {
+      public ClipboardHistory::Observer,
+      public ClipboardHistoryResourceManager::Observer {
  public:
   ClipboardHistoryControllerImpl();
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
@@ -89,11 +91,19 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
   base::Value GetHistoryValues(
       const std::set<std::string>& item_id_filter) const override;
+  std::vector<std::string> GetHistoryItemIds() const override;
   bool PasteClipboardItemById(const std::string& item_id) override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
 
   // ClipboardHistory::Observer:
+  void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
+                                   bool is_duplicate) override;
+  void OnClipboardHistoryItemRemoved(const ClipboardHistoryItem& item) override;
   void OnClipboardHistoryCleared() override;
+
+  // ClipboardHistoryResourceManager:
+  void OnCachedImageModelUpdated(
+      const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
   void ExecuteSelectedMenuItem(int event_flags);
 

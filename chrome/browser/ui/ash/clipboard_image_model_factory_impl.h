@@ -32,6 +32,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   void CancelRequest(const base::UnguessableToken& id) override;
   void Activate() override;
   void Deactivate() override;
+  void RenderCurrentPendingRequests() override;
   void OnShutdown() override;
 
   // Starts the first request in |pending_list_|.
@@ -47,6 +48,11 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   // Whether ClipboardImageModelFactoryImpl is activated. If not, requests are
   // queued until Activate().
   bool active_ = false;
+
+  // Whether ClipboardImageModelFactoryImpl will render all requests until the
+  // |pending_list_| is empty. When true, all requests will be rendered
+  // regardless of |active_|.
+  bool active_until_empty_ = false;
 
   // Requests which are waiting to be run.
   std::list<ClipboardImageModelRequest::Params> pending_list_;

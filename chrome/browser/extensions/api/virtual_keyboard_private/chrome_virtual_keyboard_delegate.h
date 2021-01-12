@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -20,7 +21,9 @@ class AudioSystem;
 
 namespace extensions {
 
-class ChromeVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
+class ChromeVirtualKeyboardDelegate
+    : public VirtualKeyboardDelegate,
+      public ash::ClipboardHistoryController::Observer {
  public:
   explicit ChromeVirtualKeyboardDelegate(
       content::BrowserContext* browser_context);
@@ -64,6 +67,11 @@ class ChromeVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
       const api::virtual_keyboard::RestrictFeatures::Params& params) override;
 
  private:
+  // ash::ClipboardHistoryController::Observer:
+  void OnClipboardHistoryItemListAddedOrRemoved() override;
+  void OnClipboardHistoryItemsUpdated(
+      const std::vector<base::UnguessableToken>& menu_item_ids) override;
+
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);
   void DispatchConfigChangeEvent(

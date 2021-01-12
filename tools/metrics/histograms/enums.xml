@@ -24299,6 +24299,9 @@ Called by update_extension_histograms.py.-->
   <int value="467"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION"/>
   <int value="468" label="FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED"/>
+  <int value="469"
+      label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED"/>
+  <int value="470" label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_ITEM_UPDATED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

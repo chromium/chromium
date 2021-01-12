@@ -431,7 +431,7 @@
       },
       {
         "name": "onClipboardHistoryChanged",
-        "type": "funciton",
+        "type": "function",
         "description": "Fired when the list of items in the clipboard history changes.",
         "parameters": [
           {

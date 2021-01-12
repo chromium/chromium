@@ -205,9 +205,11 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
           std::make_unique<ClipboardNudgeController>(clipboard_history_.get(),
                                                      this)) {
   clipboard_history_->AddObserver(this);
+  resource_manager_->AddObserver(this);
 }
 
 ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
+  resource_manager_->RemoveObserver(this);
   clipboard_history_->RemoveObserver(this);
 }
 
@@ -345,6 +347,15 @@ base::Value ClipboardHistoryControllerImpl::GetHistoryValues(
   return item_results;
 }
 
+std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()
+    const {
+  std::vector<std::string> item_ids;
+  for (const auto& item : history()->GetItems()) {
+    item_ids.push_back(item.id().ToString());
+  }
+  return item_ids;
+}
+
 bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
     const std::string& item_id) {
   if (currently_pasting_)
@@ -370,6 +381,19 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
   return false;
 }
 
+void ClipboardHistoryControllerImpl::OnClipboardHistoryItemAdded(
+    const ClipboardHistoryItem& item,
+    bool is_duplicate) {
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryItemListAddedOrRemoved();
+}
+
+void ClipboardHistoryControllerImpl::OnClipboardHistoryItemRemoved(
+    const ClipboardHistoryItem& item) {
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryItemListAddedOrRemoved();
+}
+
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   // Prevent clipboard contents getting restored if the Clipboard is cleared
   // soon after a `PasteMenuItemData()`.
@@ -378,6 +402,12 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
     return;
   context_menu_->Cancel();
   context_menu_.reset();
+}
+
+void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
+    const std::vector<base::UnguessableToken>& menu_item_ids) {
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryItemsUpdated(menu_item_ids);
 }
 
 void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/bind.h"
@@ -165,9 +166,20 @@ ChromeVirtualKeyboardDelegate::ChromeVirtualKeyboardDelegate(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   weak_this_ = weak_factory_.GetWeakPtr();
+
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (clipboard_history_controller) {
+    clipboard_history_controller->AddObserver(this);
+  }
 }
 
-ChromeVirtualKeyboardDelegate::~ChromeVirtualKeyboardDelegate() {}
+ChromeVirtualKeyboardDelegate::~ChromeVirtualKeyboardDelegate() {
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (clipboard_history_controller)
+    clipboard_history_controller->RemoveObserver(this);
+}
 
 void ChromeVirtualKeyboardDelegate::GetKeyboardConfig(
     OnKeyboardSettingsCallback on_settings_callback) {
@@ -341,6 +353,10 @@ void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
   if (!clipboard_history_controller)
     return;
 
+  // Begin renderng all items in the clipboard history. Current items will
+  // render even if Deactivate() is called on the ClipboardImageModelFactory.
+  ash::ClipboardImageModelFactory::Get()->RenderCurrentPendingRequests();
+
   std::move(get_history_callback)
       .Run(clipboard_history_controller->GetHistoryValues(item_ids_filter));
 }
@@ -406,6 +422,77 @@ bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
           !chromeos::UserAddingScreen::Get()->IsRunning() &&
           !(chromeos::ScreenLocker::default_screen_locker() &&
             chromeos::ScreenLocker::default_screen_locker()->locked()));
+}
+
+void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemListAddedOrRemoved() {
+  EventRouter* router = EventRouter::Get(browser_context_);
+  if (!router->HasEventListener(
+          keyboard_api::OnClipboardHistoryChanged::kEventName)) {
+    return;
+  }
+
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (!clipboard_history_controller)
+    return;
+
+  auto item_ids = clipboard_history_controller->GetHistoryItemIds();
+
+  std::unique_ptr<base::ListValue> ids =
+      keyboard_api::OnClipboardHistoryChanged::Create(item_ids);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED,
+      keyboard_api::OnClipboardHistoryChanged::kEventName, std::move(ids),
+      browser_context_);
+  router->BroadcastEvent(std::move(event));
+}
+
+void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated(
+    const std::vector<base::UnguessableToken>& menu_item_ids) {
+  EventRouter* router = EventRouter::Get(browser_context_);
+  if (!router->HasEventListener(
+          keyboard_api::OnClipboardItemUpdated::kEventName)) {
+    return;
+  }
+
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (!clipboard_history_controller)
+    return;
+
+  std::set<std::string> item_ids_filter;
+  for (const auto& id : menu_item_ids) {
+    item_ids_filter.insert(id.ToString());
+  }
+  // Make call to get the updated clipboard items.
+  base::Value updated_items =
+      clipboard_history_controller->GetHistoryValues(item_ids_filter);
+
+  // Broadcast an api event for each updated item.
+  for (auto& item : updated_items.GetList()) {
+    keyboard_api::ClipboardItem clipboard_item;
+    if (item.FindKey("imageData")) {
+      clipboard_item.image_data =
+          std::make_unique<std::string>(item.FindKey("imageData")->GetString());
+    }
+    if (item.FindKey("textData")) {
+      clipboard_item.text_data =
+          std::make_unique<std::string>(item.FindKey("textData")->GetString());
+    }
+    if (item.FindKey("idToken")) {
+      clipboard_item.id = item.FindKey("idToken")->GetString();
+    }
+
+    std::unique_ptr<base::ListValue> item_value =
+        keyboard_api::OnClipboardItemUpdated::Create(clipboard_item);
+
+    auto event = std::make_unique<extensions::Event>(
+        extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_ITEM_UPDATED,
+        keyboard_api::OnClipboardItemUpdated::kEventName, std::move(item_value),
+        browser_context_);
+    router->BroadcastEvent(std::move(event));
+  }
 }
 
 void ChromeVirtualKeyboardDelegate::OnHasInputDevices(

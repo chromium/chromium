@@ -14,6 +14,7 @@
 
 namespace base {
 class Value;
+class UnguessableToken;
 }  // namespace base
 
 namespace gfx {
@@ -33,6 +34,12 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
     virtual void OnClipboardHistoryMenuShown() {}
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
+    // Called when the clipboard history changes.
+    virtual void OnClipboardHistoryItemListAddedOrRemoved() {}
+    // Called when existing clipboard items in the history have changes.
+    // virtual void OnClipboardHistoryItemsUpdated(
+    virtual void OnClipboardHistoryItemsUpdated(
+        const std::vector<base::UnguessableToken>& menu_item_ids) {}
   };
 
   // Returns the singleton instance.
@@ -58,6 +65,9 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // is empty, then all items in the history are returned.
   virtual base::Value GetHistoryValues(
       const std::set<std::string>& item_id_filter) const = 0;
+
+  // Returns a list of item ids for items contained in the clipboard history.
+  virtual std::vector<std::string> GetHistoryItemIds() const = 0;
 
   // Pastes the clipboard item specified by the item id.
   virtual bool PasteClipboardItemById(const std::string& item_id) = 0;

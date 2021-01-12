@@ -68,6 +68,8 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
 
   void Deactivate() override {}
 
+  void RenderCurrentPendingRequests() override {}
+
   void OnShutdown() override {}
 };
 
