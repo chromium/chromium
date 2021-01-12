@@ -54,7 +54,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   observed_windows_.AddObservation(window);
 }
 
-void FullRestoreSaveHandler::OnWindowDestroying(aura::Window* window) {
+void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   // TODO(crbug.com/1146900): Handle ARC app windows.
 
   DCHECK(observed_windows_.IsObservingSource(window));

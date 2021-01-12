@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   void OnWindowInitialized(aura::Window* window) override;
 
   // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowDestroyed(aura::Window* window) override;
 
   // Save |app_launch_info| to the full restore file in |profile_path|.
   void SaveAppLaunchInfo(const base::FilePath& profile_path,
