@@ -68,7 +68,8 @@ class AppInstall : public App {
 
   void RegisterUpdater();
 
-  void RegisterUpdaterDone(const RegistrationResponse& response);
+  void RegisterUpdaterDone(scoped_refptr<UpdateService>,
+                           const RegistrationResponse& response);
 
   // Handles the --tag and --app-id command line arguments, and triggers
   // installing of the corresponding application if either argument is present.

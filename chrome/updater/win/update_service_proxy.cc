@@ -25,6 +25,7 @@
 #include "base/version.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -302,7 +303,9 @@ void UpdateServiceProxy::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED();
+  // TODO(crbug.com/1163524): Implement registration API.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), RegistrationResponse(0)));
 }
 
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,

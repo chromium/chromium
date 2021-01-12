@@ -143,14 +143,18 @@ void AppInstall::WakeCandidate() {
 }
 
 void AppInstall::RegisterUpdater() {
-  // TODO(crbug.com/1128060): We should update the updater's registration with
-  // the new version, brand code, etc. For now, fake it.
-  RegistrationResponse result;
-  result.status_code = 0;
-  RegisterUpdaterDone(result);
+  RegistrationRequest registration_request;
+  registration_request.app_id = kUpdaterAppId;
+  registration_request.version = base::Version(UPDATER_VERSION_STRING);
+
+  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  update_service->RegisterApp(
+      registration_request,
+      base::BindOnce(&AppInstall::RegisterUpdaterDone, this, update_service));
 }
 
-void AppInstall::RegisterUpdaterDone(const RegistrationResponse& response) {
+void AppInstall::RegisterUpdaterDone(scoped_refptr<UpdateService>,
+                                     const RegistrationResponse& response) {
   VLOG(1) << "Updater registration complete, code = " << response.status_code;
   MaybeInstallApp();
 }
