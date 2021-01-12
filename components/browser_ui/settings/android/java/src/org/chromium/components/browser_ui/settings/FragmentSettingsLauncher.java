@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.settings;
+package org.chromium.components.browser_ui.settings;
 
 /**
  * Interface for injecting SettingsLauncher to a fragment. It is useful for modularized fragments

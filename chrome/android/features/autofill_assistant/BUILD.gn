@@ -51,6 +51,7 @@ android_library("java") {
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/android/bottomsheet:java",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",

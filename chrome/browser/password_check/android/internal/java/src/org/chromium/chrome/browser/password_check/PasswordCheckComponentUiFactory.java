@@ -10,7 +10,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.TrustedIntentHelper;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Use {@link #create()} to instantiate a {@link PasswordCheckComponentUi}.

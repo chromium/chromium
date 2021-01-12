@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedP
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator;
 import org.chromium.components.browser_ui.widget.promo.PromoCardProperties;
 import org.chromium.ui.modelutil.PropertyModel;

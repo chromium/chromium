@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.ui.UiUtils;

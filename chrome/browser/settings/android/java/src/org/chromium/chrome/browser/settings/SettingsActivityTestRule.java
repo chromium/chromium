@@ -16,6 +16,7 @@ import org.junit.Assert;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Activity test rule that launch {@link SettingsActivity} in tests.

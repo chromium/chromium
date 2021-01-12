@@ -15,6 +15,7 @@ android_library_factory("public_factory_java") {
   # These deps will be inherited by the resulting android_library target.
   deps = [
     "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
     _public_target,
   ]
 
@@ -28,6 +29,7 @@ android_library("internal_factory_java") {
     ":internal_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     _public_target,
   ]
@@ -41,6 +43,7 @@ android_library_factory("public_ui_factory_java") {
   deps = [
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
     _public_ui_target,
@@ -53,6 +56,7 @@ android_library("internal_ui_factory_java") {
     ":internal_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     _public_target,
     _public_ui_target,
@@ -75,6 +79,7 @@ android_library("internal_java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",

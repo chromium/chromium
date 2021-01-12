@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePass
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;

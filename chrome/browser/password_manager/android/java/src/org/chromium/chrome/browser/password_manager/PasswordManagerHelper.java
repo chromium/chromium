@@ -8,7 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** A helper class for showing PasswordSettings. */
 public class PasswordManagerHelper {

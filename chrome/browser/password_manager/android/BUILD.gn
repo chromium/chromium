@@ -9,6 +9,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",

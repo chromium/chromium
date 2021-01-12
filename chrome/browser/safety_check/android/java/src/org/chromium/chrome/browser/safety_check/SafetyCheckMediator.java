@@ -36,8 +36,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckBridge.SafetyCheckCom
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;

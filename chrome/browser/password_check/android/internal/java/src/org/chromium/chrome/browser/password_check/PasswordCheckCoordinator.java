@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.internal.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;

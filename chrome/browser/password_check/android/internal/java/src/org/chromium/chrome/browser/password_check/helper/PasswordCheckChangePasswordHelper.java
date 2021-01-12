@@ -16,7 +16,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.Objects;
 

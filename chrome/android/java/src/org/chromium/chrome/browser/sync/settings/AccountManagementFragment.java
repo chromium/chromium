@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.signin.ui.SignOutDialogFragment.SignOutDialog
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;

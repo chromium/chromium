@@ -9,8 +9,8 @@ import android.os.Bundle;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * This is a bridge between PasswordEntryEditor and the C++ code. The bridge is in charge of
