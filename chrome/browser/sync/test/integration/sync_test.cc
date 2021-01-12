@@ -135,10 +135,10 @@ void SetURLLoaderFactoryForTest(
 }
 
 class FakePerUserTopicSubscriptionManager
-    : public syncer::PerUserTopicSubscriptionManager {
+    : public invalidation::PerUserTopicSubscriptionManager {
  public:
   explicit FakePerUserTopicSubscriptionManager(PrefService* local_state)
-      : syncer::PerUserTopicSubscriptionManager(
+      : invalidation::PerUserTopicSubscriptionManager(
             /*identity_provider=*/nullptr,
             /*pref_service=*/local_state,
             /*url_loader_factory=*/nullptr,
@@ -146,28 +146,28 @@ class FakePerUserTopicSubscriptionManager
             /*migrate_prefs=*/false) {}
   ~FakePerUserTopicSubscriptionManager() override = default;
 
-  void UpdateSubscribedTopics(const syncer::Topics& topics,
+  void UpdateSubscribedTopics(const invalidation::Topics& topics,
                               const std::string& instance_id_token) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakePerUserTopicSubscriptionManager);
 };
 
-std::unique_ptr<syncer::FCMNetworkHandler> CreateFCMNetworkHandler(
+std::unique_ptr<invalidation::FCMNetworkHandler> CreateFCMNetworkHandler(
     Profile* profile,
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     const std::string& sender_id,
     const std::string& app_id) {
-  auto handler = std::make_unique<syncer::FCMNetworkHandler>(
+  auto handler = std::make_unique<invalidation::FCMNetworkHandler>(
       gcm_driver, instance_id_driver, sender_id, app_id);
   (*profile_to_fcm_network_handler_map)[profile] = handler.get();
   return handler;
 }
 
-std::unique_ptr<syncer::PerUserTopicSubscriptionManager>
+std::unique_ptr<invalidation::PerUserTopicSubscriptionManager>
 CreatePerUserTopicSubscriptionManager(
     invalidation::IdentityProvider* identity_provider,
     PrefService* local_state,
@@ -177,9 +177,9 @@ CreatePerUserTopicSubscriptionManager(
   return std::make_unique<FakePerUserTopicSubscriptionManager>(local_state);
 }
 
-syncer::FCMNetworkHandler* GetFCMNetworkHandler(
+invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
     Profile* profile,
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map) {
   // Delivering FCM notifications does not work if explicitly signed-out.
   signin::IdentityManager* identity_manager =
@@ -1064,7 +1064,7 @@ void SyncTest::OnWillCreateBrowserContextServices(
 
 // static
 std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
     std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
         profile_to_instance_id_driver_map,

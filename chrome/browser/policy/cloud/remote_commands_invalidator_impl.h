@@ -33,7 +33,8 @@ class RemoteCommandsInvalidatorImpl : public RemoteCommandsInvalidator,
   void OnShutdown() override;
   void OnStart() override;
   void OnStop() override;
-  void DoRemoteCommandsFetch(const syncer::Invalidation& invalidation) override;
+  void DoRemoteCommandsFetch(
+      const invalidation::Invalidation& invalidation) override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(CloudPolicyCore* core) override;
@@ -46,7 +47,8 @@ class RemoteCommandsInvalidatorImpl : public RemoteCommandsInvalidator,
   void OnStoreError(CloudPolicyStore* store) override;
 
  private:
-  void RecordInvalidationMetric(const syncer::Invalidation& invalidation) const;
+  void RecordInvalidationMetric(
+      const invalidation::Invalidation& invalidation) const;
 
   CloudPolicyCore* const core_;
 

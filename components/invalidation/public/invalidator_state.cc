@@ -4,8 +4,7 @@
 
 #include "components/invalidation/public/invalidator_state.h"
 
-
-namespace syncer {
+namespace invalidation {
 
 const char* InvalidatorStateToString(InvalidatorState state) {
   switch (state) {
@@ -22,4 +21,4 @@ const char* InvalidatorStateToString(InvalidatorState state) {
   }
 }
 
-}  // namespace syncer
+}  // namespace invalidation

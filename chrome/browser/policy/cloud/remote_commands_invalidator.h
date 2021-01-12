@@ -15,9 +15,9 @@ namespace invalidation {
 class InvalidationService;
 }  // namespace invalidation
 
-namespace syncer {
+namespace invalidation {
 class Invalidation;
-}  // namespace syncer
+}  // namespace invalidation
 
 namespace policy {
 
@@ -25,7 +25,7 @@ namespace policy {
 // services. It's not interacting with CloudPolicyClient/CloudPolicyCore
 // directly, instead, it handles the interacting with invalidation service
 // only and leaves interfaces to integrate with subclasses.
-class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
+class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
  public:
   explicit RemoteCommandsInvalidator(std::string owner_name);
   ~RemoteCommandsInvalidator() override;
@@ -54,12 +54,12 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
   // Whether the invalidator currently has the ability to receive invalidations.
   bool invalidations_enabled() { return invalidations_enabled_; }
 
-  // syncer::InvalidationHandler:
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // invalidation::InvalidationHandler:
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
  protected:
   virtual void OnInitialize() = 0;
@@ -70,7 +70,7 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
   // Subclasses must override this method to implement the actual remote
   // commands fetch.
   virtual void DoRemoteCommandsFetch(
-      const syncer::Invalidation& invalidation) = 0;
+      const invalidation::Invalidation& invalidation) = 0;
 
   // Subclasses must call this function to set the topic for remote command
   // invalidations.
@@ -79,7 +79,7 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
  private:
   // Registers this handler with |invalidation_service_| if needed and
   // subscribes to the given |topic| with the invalidation service.
-  void Register(const syncer::Topic& topic);
+  void Register(const invalidation::Topic& topic);
 
   // Unregisters this handler and unsubscribes from the current topic with
   // the invalidation service.
@@ -117,7 +117,7 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
   bool is_registered_ = false;
 
   // The Topic representing the remote commands in the invalidation service.
-  syncer::Topic topic_;
+  invalidation::Topic topic_;
 
   // A thread checker to make sure that callbacks are invoked on the correct
   // thread.

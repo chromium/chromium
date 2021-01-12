@@ -89,9 +89,9 @@ void InvalidationsMessageHandler::OnRegistrationChange(
 }
 
 void InvalidationsMessageHandler::OnStateChange(
-    const syncer::InvalidatorState& new_state,
+    const invalidation::InvalidatorState& new_state,
     const base::Time& last_changed_timestamp) {
-  std::string state(syncer::InvalidatorStateToString(new_state));
+  std::string state(invalidation::InvalidatorStateToString(new_state));
   web_ui()->CallJavascriptFunctionUnsafe(
       "chrome.invalidations.updateInvalidatorState", base::Value(state),
       base::Value(last_changed_timestamp.ToJsTime()));
@@ -99,7 +99,7 @@ void InvalidationsMessageHandler::OnStateChange(
 
 void InvalidationsMessageHandler::OnUpdatedTopics(
     const std::string& handler_name,
-    const syncer::TopicCountMap& topics) {
+    const invalidation::TopicCountMap& topics) {
   base::ListValue list_of_objects;
   for (const auto& topic_item : topics) {
     std::unique_ptr<base::DictionaryValue> dic(new base::DictionaryValue());
@@ -120,7 +120,7 @@ void InvalidationsMessageHandler::OnDebugMessage(
     const base::DictionaryValue& details) {}
 
 void InvalidationsMessageHandler::OnInvalidation(
-    const syncer::TopicInvalidationMap& new_invalidations) {
+    const invalidation::TopicInvalidationMap& new_invalidations) {
   std::unique_ptr<base::ListValue> invalidations_list =
       new_invalidations.ToValue();
   web_ui()->CallJavascriptFunctionUnsafe(

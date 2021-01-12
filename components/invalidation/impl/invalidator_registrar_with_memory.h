@@ -21,7 +21,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace syncer {
+namespace invalidation {
 
 // A helper class for FCMInvalidationService.  It helps keep track of registered
 // handlers and which topic registrations are associated with each handler.
@@ -62,7 +62,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // Note that this also updates the *subscribed* topics - assuming that whoever
   // called this will also send (un)subscription requests to the server.
   bool UpdateRegisteredTopics(InvalidationHandler* handler,
-                              const std::set<invalidation::TopicData>& topics)
+                              const std::set<TopicData>& topics)
       WARN_UNUSED_RESULT;
 
   // Returns all topics currently registered to |handler|.
@@ -108,9 +108,8 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
  private:
   // Checks if any of the |topics| is already registered for a *different*
   // handler than the given one.
-  bool HasDuplicateTopicRegistration(
-      InvalidationHandler* handler,
-      const std::set<invalidation::TopicData>& topics) const;
+  bool HasDuplicateTopicRegistration(InvalidationHandler* handler,
+                                     const std::set<TopicData>& topics) const;
 
   // Generate a Dictionary with all the debugging information.
   base::DictionaryValue CollectDebugData() const;
@@ -121,9 +120,9 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // Note: When a handler is unregistered, its entry is removed from
   // |registered_handler_to_topics_map_| but NOT from
   // |handler_name_to_subscribed_topics_map_|.
-  std::map<InvalidationHandler*, std::set<invalidation::TopicData>>
+  std::map<InvalidationHandler*, std::set<TopicData>>
       registered_handler_to_topics_map_;
-  std::map<std::string, std::set<invalidation::TopicData>>
+  std::map<std::string, std::set<TopicData>>
       handler_name_to_subscribed_topics_map_;
 
   InvalidatorState state_;
@@ -136,6 +135,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   const std::string sender_id_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_INVALIDATOR_REGISTRAR_WITH_MEMORY_H_

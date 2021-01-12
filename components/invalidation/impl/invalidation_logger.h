@@ -16,13 +16,10 @@ namespace base {
 class DictionaryValue;
 }  // namespace base
 
-namespace syncer {
-class TopicInvalidationMap;
-}  // namespace syncer
-
 namespace invalidation {
 
 class InvalidationLoggerObserver;
+class TopicInvalidationMap;
 
 // This class is in charge of logging invalidation-related information.
 // It is used store the state of the InvalidationService that owns this object
@@ -47,11 +44,11 @@ class InvalidationLogger {
   // We will do local logging here too.
   void OnRegistration(const std::string& details);
   void OnUnregistration(const std::string& details);
-  void OnStateChange(const syncer::InvalidatorState& new_state);
+  void OnStateChange(const InvalidatorState& new_state);
   void OnUpdatedTopics(
-      std::map<std::string, syncer::Topics> handler_updated_topics_map);
+      std::map<std::string, Topics> handler_updated_topics_map);
   void OnDebugMessage(const base::DictionaryValue& details);
-  void OnInvalidation(const syncer::TopicInvalidationMap& invalidations);
+  void OnInvalidation(const TopicInvalidationMap& invalidations);
 
   // Triggers messages to be sent to the Observers to provide them with
   // the current state of the logging.
@@ -79,15 +76,15 @@ class InvalidationLogger {
   base::ObserverList<InvalidationLoggerObserver>::Unchecked observer_list_;
 
   // The last InvalidatorState updated by the InvalidatorService.
-  syncer::InvalidatorState last_invalidator_state_;
+  InvalidatorState last_invalidator_state_ = TRANSIENT_INVALIDATION_ERROR;
   base::Time last_invalidator_state_timestamp_;
 
   // The map that contains every topic that is currently registered and its
   // owner.
-  std::map<std::string, syncer::Topics> handler_latest_topics_map_;
+  std::map<std::string, Topics> handler_latest_topics_map_;
 
   // The map that counts how many invalidations per Topic there has been.
-  syncer::TopicCountMap invalidation_count_;
+  TopicCountMap invalidation_count_;
 
   // The name of all invalidatorHandler registered (note that this is not
   // necessarily the same as the keys of latest_topics_, because they might

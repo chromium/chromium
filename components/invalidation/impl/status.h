@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace syncer {
+namespace invalidation {
 
 // Status of the message arrived from FCM.
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
@@ -55,6 +55,6 @@ struct Status {
   // Copy and assignment allowed.
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_STATUS_H_

@@ -33,7 +33,8 @@ namespace internal {
 // topic when destroyed so that subscription can be preserved if browser
 // restarts. A user must explicitly call |Unregister| if subscription is not
 // needed anymore.
-class CertProvisioningInvalidationHandler : public syncer::InvalidationHandler {
+class CertProvisioningInvalidationHandler
+    : public invalidation::InvalidationHandler {
  public:
   // Creates and registers the handler to |invalidation_service| with |topic|.
   // |on_invalidation_callback| will be called when incoming invalidation is
@@ -42,13 +43,13 @@ class CertProvisioningInvalidationHandler : public syncer::InvalidationHandler {
   static std::unique_ptr<CertProvisioningInvalidationHandler> BuildAndRegister(
       CertScope scope,
       invalidation::InvalidationService* invalidation_service,
-      const syncer::Topic& topic,
+      const invalidation::Topic& topic,
       OnInvalidationCallback on_invalidation_callback);
 
   CertProvisioningInvalidationHandler(
       CertScope scope,
       invalidation::InvalidationService* invalidation_service,
-      const syncer::Topic& topic,
+      const invalidation::Topic& topic,
       OnInvalidationCallback on_invalidation_callback);
   CertProvisioningInvalidationHandler(
       const CertProvisioningInvalidationHandler&) = delete;
@@ -60,12 +61,12 @@ class CertProvisioningInvalidationHandler : public syncer::InvalidationHandler {
   // Unregisters handler and unsubscribes given topic from invalidation service.
   void Unregister();
 
-  // syncer::InvalidationHandler:
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // invalidation::InvalidationHandler:
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
  private:
   // Registers the handler to |invalidation_service_| and subscribes with
@@ -91,13 +92,13 @@ class CertProvisioningInvalidationHandler : public syncer::InvalidationHandler {
 
   ScopedObserver<
       invalidation::InvalidationService,
-      syncer::InvalidationHandler,
+      invalidation::InvalidationHandler,
       &invalidation::InvalidationService::RegisterInvalidationHandler,
       &invalidation::InvalidationService::UnregisterInvalidationHandler>
       invalidation_service_observer_{this};
 
   // A topic representing certificate invalidations.
-  const syncer::Topic topic_;
+  const invalidation::Topic topic_;
 
   // A callback to be called on incoming invalidation event.
   const OnInvalidationCallback on_invalidation_callback_;
@@ -139,7 +140,7 @@ class CertProvisioningInvalidator {
       delete;
   virtual ~CertProvisioningInvalidator();
 
-  virtual void Register(const syncer::Topic& topic,
+  virtual void Register(const invalidation::Topic& topic,
                         OnInvalidationCallback on_invalidation_callback) = 0;
   virtual void Unregister();
 
@@ -168,7 +169,7 @@ class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
  public:
   explicit CertProvisioningUserInvalidator(Profile* profile);
 
-  void Register(const syncer::Topic& topic,
+  void Register(const invalidation::Topic& topic,
                 OnInvalidationCallback on_invalidation_callback) override;
 
  private:
@@ -200,7 +201,7 @@ class CertProvisioningDeviceInvalidator
       policy::AffiliatedInvalidationServiceProvider* service_provider);
   ~CertProvisioningDeviceInvalidator() override;
 
-  void Register(const syncer::Topic& topic,
+  void Register(const invalidation::Topic& topic,
                 OnInvalidationCallback on_invalidation_callback) override;
   void Unregister() override;
 
@@ -209,7 +210,7 @@ class CertProvisioningDeviceInvalidator
   void OnInvalidationServiceSet(
       invalidation::InvalidationService* invalidation_service) override;
 
-  syncer::Topic topic_;
+  invalidation::Topic topic_;
   OnInvalidationCallback on_invalidation_callback_;
   policy::AffiliatedInvalidationServiceProvider* service_provider_ = nullptr;
 };

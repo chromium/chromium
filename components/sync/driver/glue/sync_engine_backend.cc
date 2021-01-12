@@ -176,13 +176,15 @@ void SyncEngineBackend::OnProtocolEvent(const ProtocolEvent& event) {
   }
 }
 
-void SyncEngineBackend::DoOnInvalidatorStateChange(InvalidatorState state) {
+void SyncEngineBackend::DoOnInvalidatorStateChange(
+    invalidation::InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->SetInvalidatorEnabled(state == INVALIDATIONS_ENABLED);
+  sync_manager_->SetInvalidatorEnabled(state ==
+                                       invalidation::INVALIDATIONS_ENABLED);
 }
 
 bool SyncEngineBackend::ShouldIgnoreRedundantInvalidation(
-    const Invalidation& invalidation,
+    const invalidation::Invalidation& invalidation,
     ModelType type) {
   bool fcm_invalidation = base::FeatureList::IsEnabled(
       invalidation::switches::kFCMInvalidationsForSyncDontCheckVersion);
@@ -204,19 +206,19 @@ bool SyncEngineBackend::ShouldIgnoreRedundantInvalidation(
 }
 
 void SyncEngineBackend::DoOnIncomingInvalidation(
-    const TopicInvalidationMap& invalidation_map) {
+    const invalidation::TopicInvalidationMap& invalidation_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const Topic& topic : invalidation_map.GetTopics()) {
+  for (const invalidation::Topic& topic : invalidation_map.GetTopics()) {
     ModelType type;
     if (!NotificationTypeToRealModelType(topic, &type)) {
       DLOG(WARNING) << "Notification has invalid topic: " << topic;
     } else {
       UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
                                 ModelTypeHistogramValue(type));
-      SingleObjectInvalidationSet invalidation_set =
+      invalidation::SingleObjectInvalidationSet invalidation_set =
           invalidation_map.ForTopic(topic);
-      for (Invalidation invalidation : invalidation_set) {
+      for (invalidation::Invalidation invalidation : invalidation_set) {
         if (ShouldIgnoreRedundantInvalidation(invalidation, type)) {
           continue;
         }

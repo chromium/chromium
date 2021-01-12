@@ -16,7 +16,7 @@
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -156,4 +156,4 @@ Invalidation::Invalidation(const Topic& topic,
       payload_(payload),
       ack_handle_(ack_handle) {}
 
-}  // namespace syncer
+}  // namespace invalidation

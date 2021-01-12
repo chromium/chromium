@@ -168,6 +168,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   FirstRun::RegisterProfilePrefs(registry);
   FontSizeTabHelper::RegisterBrowserStatePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
+  invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
+  invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   ios::NotificationPromo::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
@@ -188,8 +190,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   safe_browsing::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
-  syncer::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
-  syncer::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);

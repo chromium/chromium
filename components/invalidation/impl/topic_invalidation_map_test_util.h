@@ -10,11 +10,11 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace syncer {
+namespace invalidation {
 
 ::testing::Matcher<const TopicInvalidationMap&> Eq(
     const TopicInvalidationMap& expected);
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_TOPIC_INVALIDATION_MAP_TEST_UTIL_H_

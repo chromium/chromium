@@ -16,7 +16,7 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 class SingleObjectInvalidationSet;
 class TopicInvalidationMap;
@@ -103,6 +103,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   InvalidationsSet invalidations_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_UNACKED_INVALIDATION_SET_H_

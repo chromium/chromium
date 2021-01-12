@@ -17,7 +17,7 @@ namespace syncer {
 // Wraps a Invalidation in the InvalidationInterface.
 class InvalidationAdapter : public InvalidationInterface {
  public:
-  explicit InvalidationAdapter(const Invalidation& invalidation);
+  explicit InvalidationAdapter(const invalidation::Invalidation& invalidation);
   ~InvalidationAdapter() override;
 
   // Implementation of InvalidationInterface.
@@ -28,7 +28,7 @@ class InvalidationAdapter : public InvalidationInterface {
   void Drop() override;
 
  private:
-  Invalidation invalidation_;
+  invalidation::Invalidation invalidation_;
 };
 
 }  // namespace syncer

@@ -11,7 +11,7 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
-namespace syncer {
+namespace invalidation {
 
 class TopicInvalidationMap;
 
@@ -44,6 +44,6 @@ class INVALIDATION_EXPORT InvalidationHandler {
   virtual bool IsPublicTopic(const Topic& topic) const;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_HANDLER_H_

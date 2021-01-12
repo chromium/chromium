@@ -34,7 +34,7 @@ namespace drive {
 // 1. XMPP invalidation is received from Google Drive.
 // 2. Polling timer counts down.
 class DriveNotificationManager : public KeyedService,
-                                 public syncer::InvalidationHandler {
+                                 public invalidation::InvalidationHandler {
  public:
   // |clock| can be injected for testing.
   explicit DriveNotificationManager(
@@ -45,12 +45,12 @@ class DriveNotificationManager : public KeyedService,
   // KeyedService override.
   void Shutdown() override;
 
-  // syncer::InvalidationHandler implementation.
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // invalidation::InvalidationHandler implementation.
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
   void AddObserver(DriveNotificationObserver* observer);
   void RemoveObserver(DriveNotificationObserver* observer);
@@ -112,8 +112,8 @@ class DriveNotificationManager : public KeyedService,
   // Returns a string representation of NotificationSource.
   static std::string NotificationSourceToString(NotificationSource source);
 
-  syncer::Topic GetDriveInvalidationTopic() const;
-  syncer::Topic GetTeamDriveInvalidationTopic(
+  invalidation::Topic GetDriveInvalidationTopic() const;
+  invalidation::Topic GetTeamDriveInvalidationTopic(
       const std::string& team_drive_id) const;
   std::string ExtractTeamDriveId(base::StringPiece topic_name) const;
 

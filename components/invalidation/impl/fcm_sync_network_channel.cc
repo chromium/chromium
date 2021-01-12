@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 
-namespace syncer {
+namespace invalidation {
 
 FCMSyncNetworkChannel::FCMSyncNetworkChannel() : received_messages_count_(0) {}
 
@@ -60,4 +60,4 @@ bool FCMSyncNetworkChannel::DeliverToken(const std::string& token) {
   return true;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

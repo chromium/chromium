@@ -644,6 +644,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   GpuModeManager::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   invalidation::FCMInvalidationService::RegisterPrefs(registry);
+  invalidation::InvalidatorRegistrarWithMemory::RegisterPrefs(registry);
+  invalidation::PerUserTopicSubscriptionManager::RegisterPrefs(registry);
   language::GeoLanguageProvider::RegisterLocalStatePrefs(registry);
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
@@ -664,8 +666,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(registry);
-  syncer::InvalidatorRegistrarWithMemory::RegisterPrefs(registry);
-  syncer::PerUserTopicSubscriptionManager::RegisterPrefs(registry);
   SystemNetworkContextManager::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
@@ -857,6 +857,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
   site_engagement::ImportantSitesUtil::RegisterProfilePrefs(registry);
   IncognitoModePrefs::RegisterProfilePrefs(registry);
+  invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
+  invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   login_detection::prefs::RegisterProfilePrefs(registry);
   lookalikes::RegisterProfilePrefs(registry);
@@ -899,8 +901,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
-  syncer::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
-  syncer::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   omnibox::RegisterProfilePrefs(registry);

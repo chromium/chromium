@@ -343,14 +343,15 @@ void SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop(
   host_->OnMigrationNeededForTypes(types);
 }
 
-void SyncEngineImpl::OnInvalidatorStateChange(InvalidatorState state) {
+void SyncEngineImpl::OnInvalidatorStateChange(
+    invalidation::InvalidatorState state) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidatorStateChange,
                                 backend_, state));
 }
 
 void SyncEngineImpl::OnIncomingInvalidation(
-    const TopicInvalidationMap& invalidation_map) {
+    const invalidation::TopicInvalidationMap& invalidation_map) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnIncomingInvalidation,
                                 backend_, invalidation_map));

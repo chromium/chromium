@@ -37,7 +37,7 @@ using testing::Invoke;
 using testing::StrictMock;
 using testing::WithArg;
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -247,8 +247,8 @@ class FCMNetworkHandlerTestWithTTL : public FCMNetworkHandlerTest {
         {"time_to_live_seconds", base::NumberToString(kTimeToLiveInSeconds)}};
     override_features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{invalidation::switches::kSyncInstanceIDTokenTTL, feature_params},
-         {invalidation::switches::kPolicyInstanceIDTokenTTL, feature_params}},
+        {{switches::kSyncInstanceIDTokenTTL, feature_params},
+         {switches::kPolicyInstanceIDTokenTTL, feature_params}},
         /*disabled_features=*/{});
   }
 
@@ -508,4 +508,4 @@ TEST_F(FCMNetworkHandlerTestWithTTL, ShouldNotProvideTTLWithFakeSenderID) {
   MakeHandler(/*sender_id=*/"fake_sender_id")->StartListening();
 }
 
-}  // namespace syncer
+}  // namespace invalidation

@@ -9,7 +9,7 @@
 #include "components/invalidation/impl/invalidation_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -74,4 +74,4 @@ TEST_F(SingleObjectInvalidationSetTest, StartWithUnknownVersion) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

@@ -4,7 +4,7 @@
 
 #include "components/invalidation/impl/status.h"
 
-namespace syncer {
+namespace invalidation {
 
 Status::Status(StatusCode status_code, const std::string& message)
     : code(status_code), message(message) {}
@@ -15,4 +15,4 @@ Status Status::Success() {
 
 Status::~Status() = default;
 
-}  // namespace syncer
+}  // namespace invalidation

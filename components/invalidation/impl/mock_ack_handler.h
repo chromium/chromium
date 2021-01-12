@@ -14,7 +14,7 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 class Invalidation;
 
@@ -59,7 +59,7 @@ class INVALIDATION_EXPORT MockAckHandler
   void Drop(const Topic& topic, const AckHandle& handle) override;
 
  private:
-  typedef std::vector<syncer::Invalidation> InvalidationVector;
+  typedef std::vector<Invalidation> InvalidationVector;
 
   InvalidationVector unsent_invalidations_;
   InvalidationVector unacked_invalidations_;
@@ -69,6 +69,6 @@ class INVALIDATION_EXPORT MockAckHandler
   std::map<Topic, AckHandle> unrecovered_drop_events_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_MOCK_ACK_HANDLER_H_

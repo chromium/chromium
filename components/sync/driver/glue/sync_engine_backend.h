@@ -62,10 +62,11 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void OnSyncStatusChanged(const SyncStatus& status) override;
 
   // Forwards an invalidation state change to the sync manager.
-  void DoOnInvalidatorStateChange(InvalidatorState state);
+  void DoOnInvalidatorStateChange(invalidation::InvalidatorState state);
 
   // Forwards an invalidation to the sync manager.
-  void DoOnIncomingInvalidation(const TopicInvalidationMap& invalidation_map);
+  void DoOnIncomingInvalidation(
+      const invalidation::TopicInvalidationMap& invalidation_map);
 
   // Note:
   //
@@ -163,8 +164,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // For the olg tango based invalidations method returns true if the
   // invalidation has version lower than last seen version for this datatype.
-  bool ShouldIgnoreRedundantInvalidation(const Invalidation& invalidation,
-                                         ModelType Type);
+  bool ShouldIgnoreRedundantInvalidation(
+      const invalidation::Invalidation& invalidation,
+      ModelType Type);
 
   void LoadAndConnectNigoriController();
 

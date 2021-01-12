@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 
-namespace syncer {
+namespace invalidation {
 
 // FCMSyncNetworkChannel implements common tasks needed from the network by
 // client:
@@ -96,6 +96,7 @@ class FCMSyncNetworkChannel {
 
   base::ObserverList<Observer>::Unchecked observers_;
 };
-}  // namespace syncer
+
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FCM_SYNC_NETWORK_CHANNEL_H_

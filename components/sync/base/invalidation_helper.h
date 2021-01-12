@@ -10,7 +10,7 @@
 
 namespace syncer {
 
-TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types);
+invalidation::TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types);
 
 }  // namespace syncer
 

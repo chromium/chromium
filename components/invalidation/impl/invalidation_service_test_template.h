@@ -82,6 +82,11 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/1031125): consider moving this file content under invalidation
+// namespace, instead of specifying it everywhere (invalidation::internal if
+// polluting invalidation namespace is a concern, though it already pollutes
+// global namespace).
+
 template <typename InvalidatorTestDelegate>
 class InvalidationServiceTest : public testing::Test {
  protected:
@@ -95,10 +100,10 @@ class InvalidationServiceTest : public testing::Test {
 
   InvalidatorTestDelegate delegate_;
 
-  const syncer::Topic topic1 = "BOOKMARK";
-  const syncer::Topic topic2 = "PREFERENCE";
-  const syncer::Topic topic3 = "AUTOFILL";
-  const syncer::Topic topic4 = "PUSH_MESSAGE";
+  const invalidation::Topic topic1 = "BOOKMARK";
+  const invalidation::Topic topic2 = "PREFERENCE";
+  const invalidation::Topic topic3 = "AUTOFILL";
+  const invalidation::Topic topic4 = "PUSH_MESSAGE";
 };
 
 TYPED_TEST_SUITE_P(InvalidationServiceTest);
@@ -111,33 +116,36 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   invalidation::InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  syncer::FakeInvalidationHandler handler;
+  invalidation::FakeInvalidationHandler handler;
 
   invalidator->RegisterInvalidationHandler(&handler);
 
-  syncer::TopicInvalidationMap invalidation_map;
-  invalidation_map.Insert(syncer::Invalidation::Init(this->topic1, 1, "1"));
-  invalidation_map.Insert(syncer::Invalidation::Init(this->topic2, 2, "2"));
-  invalidation_map.Insert(syncer::Invalidation::Init(this->topic3, 3, "3"));
+  invalidation::TopicInvalidationMap invalidation_map;
+  invalidation_map.Insert(
+      invalidation::Invalidation::Init(this->topic1, 1, "1"));
+  invalidation_map.Insert(
+      invalidation::Invalidation::Init(this->topic2, 2, "2"));
+  invalidation_map.Insert(
+      invalidation::Invalidation::Init(this->topic3, 3, "3"));
 
   // Should be ignored since no IDs are registered to |handler|.
   this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 
-  syncer::TopicSet topics;
+  invalidation::TopicSet topics;
   topics.insert(this->topic1);
   topics.insert(this->topic2);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler, topics));
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::INVALIDATIONS_ENABLED);
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
+      invalidation::INVALIDATIONS_ENABLED);
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
-  syncer::TopicInvalidationMap expected_invalidations;
+  invalidation::TopicInvalidationMap expected_invalidations;
   expected_invalidations.Insert(
-      syncer::Invalidation::Init(this->topic1, 1, "1"));
+      invalidation::Invalidation::Init(this->topic1, 1, "1"));
   expected_invalidations.Insert(
-      syncer::Invalidation::Init(this->topic2, 2, "2"));
+      invalidation::Invalidation::Init(this->topic2, 2, "2"));
 
   this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
   EXPECT_EQ(1, handler.GetInvalidationCount());
@@ -147,11 +155,11 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   topics.insert(this->topic3);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler, topics));
 
-  expected_invalidations = syncer::TopicInvalidationMap();
+  expected_invalidations = invalidation::TopicInvalidationMap();
   expected_invalidations.Insert(
-      syncer::Invalidation::Init(this->topic2, 2, "2"));
+      invalidation::Invalidation::Init(this->topic2, 2, "2"));
   expected_invalidations.Insert(
-      syncer::Invalidation::Init(this->topic3, 3, "3"));
+      invalidation::Invalidation::Init(this->topic3, 3, "3"));
 
   // Removed Topics should not be notified, newly-added ones should.
   this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
@@ -159,14 +167,13 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   EXPECT_THAT(expected_invalidations, Eq(handler.GetLastInvalidationMap()));
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+      invalidation::TRANSIENT_INVALIDATION_ERROR);
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler.GetInvalidatorState());
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::INVALIDATIONS_ENABLED);
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED,
-            handler.GetInvalidatorState());
+      invalidation::INVALIDATIONS_ENABLED);
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
   invalidator->UnregisterInvalidationHandler(&handler);
 
@@ -184,10 +191,10 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   invalidation::InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  syncer::FakeInvalidationHandler handler1;
-  syncer::FakeInvalidationHandler handler2;
-  syncer::FakeInvalidationHandler handler3;
-  syncer::FakeInvalidationHandler handler4;
+  invalidation::FakeInvalidationHandler handler1;
+  invalidation::FakeInvalidationHandler handler2;
+  invalidation::FakeInvalidationHandler handler3;
+  invalidation::FakeInvalidationHandler handler4;
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -195,14 +202,14 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   invalidator->RegisterInvalidationHandler(&handler4);
 
   {
-    syncer::TopicSet topics;
+    invalidation::TopicSet topics;
     topics.insert(this->topic1);
     topics.insert(this->topic2);
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler1, topics));
   }
 
   {
-    syncer::TopicSet topics;
+    invalidation::TopicSet topics;
     topics.insert(this->topic3);
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler2, topics));
   }
@@ -210,7 +217,7 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   // Don't register any topics for handler3.
 
   {
-    syncer::TopicSet topics;
+    invalidation::TopicSet topics;
     topics.insert(this->topic4);
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler4, topics));
   }
@@ -218,33 +225,40 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   invalidator->UnregisterInvalidationHandler(&handler4);
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::INVALIDATIONS_ENABLED);
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+      invalidation::INVALIDATIONS_ENABLED);
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler1.GetInvalidatorState());
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler2.GetInvalidatorState());
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler3.GetInvalidatorState());
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler4.GetInvalidatorState());
 
   {
-    syncer::TopicInvalidationMap invalidation_map;
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic1, 1, "1"));
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic2, 2, "2"));
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic3, 3, "3"));
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic4, 4, "4"));
+    invalidation::TopicInvalidationMap invalidation_map;
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic1, 1, "1"));
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic2, 2, "2"));
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic3, 3, "3"));
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic4, 4, "4"));
     this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
 
-    syncer::TopicInvalidationMap expected_invalidations;
+    invalidation::TopicInvalidationMap expected_invalidations;
     expected_invalidations.Insert(
-        syncer::Invalidation::Init(this->topic1, 1, "1"));
+        invalidation::Invalidation::Init(this->topic1, 1, "1"));
     expected_invalidations.Insert(
-        syncer::Invalidation::Init(this->topic2, 2, "2"));
+        invalidation::Invalidation::Init(this->topic2, 2, "2"));
 
     EXPECT_EQ(1, handler1.GetInvalidationCount());
     EXPECT_THAT(expected_invalidations, Eq(handler1.GetLastInvalidationMap()));
 
-    expected_invalidations = syncer::TopicInvalidationMap();
+    expected_invalidations = invalidation::TopicInvalidationMap();
     expected_invalidations.Insert(
-        syncer::Invalidation::Init(this->topic3, 3, "3"));
+        invalidation::Invalidation::Init(this->topic3, 3, "3"));
 
     EXPECT_EQ(1, handler2.GetInvalidationCount());
     EXPECT_THAT(expected_invalidations, Eq(handler2.GetLastInvalidationMap()));
@@ -254,14 +268,14 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   }
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+      invalidation::TRANSIENT_INVALIDATION_ERROR);
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler1.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler2.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler3.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler4.GetInvalidatorState());
 
   invalidator->UnregisterInvalidationHandler(&handler3);
@@ -275,15 +289,15 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleRegistrations) {
   invalidation::InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  syncer::FakeInvalidationHandler handler1;
-  syncer::FakeInvalidationHandler handler2;
+  invalidation::FakeInvalidationHandler handler1;
+  invalidation::FakeInvalidationHandler handler2;
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
 
   // Registering both handlers for the same topic. First call should succeed,
   // second should fail.
-  syncer::TopicSet topics;
+  invalidation::TopicSet topics;
   topics.insert(this->topic1);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler1, topics));
   EXPECT_FALSE(invalidator->UpdateInterestedTopics(&handler2, topics));
@@ -298,23 +312,23 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   invalidation::InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  syncer::FakeInvalidationHandler handler1;
+  invalidation::FakeInvalidationHandler handler1;
 
   // Control observer.
-  syncer::FakeInvalidationHandler handler2;
+  invalidation::FakeInvalidationHandler handler2;
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
 
   {
-    syncer::TopicSet topics;
+    invalidation::TopicSet topics;
     topics.insert(this->topic1);
     topics.insert(this->topic2);
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler1, topics));
   }
 
   {
-    syncer::TopicSet topics;
+    invalidation::TopicSet topics;
     topics.insert(this->topic3);
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler2, topics));
   }
@@ -322,28 +336,33 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   // Unregister the topics for the first observer. It should not receive any
   // further invalidations.
   EXPECT_TRUE(
-      invalidator->UpdateInterestedTopics(&handler1, syncer::TopicSet()));
+      invalidator->UpdateInterestedTopics(&handler1, invalidation::TopicSet()));
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::INVALIDATIONS_ENABLED);
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
+      invalidation::INVALIDATIONS_ENABLED);
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler1.GetInvalidatorState());
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler2.GetInvalidatorState());
 
   {
-    syncer::TopicInvalidationMap invalidation_map;
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic1, 1, "1"));
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic2, 2, "2"));
-    invalidation_map.Insert(syncer::Invalidation::Init(this->topic3, 3, "3"));
+    invalidation::TopicInvalidationMap invalidation_map;
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic1, 1, "1"));
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic2, 2, "2"));
+    invalidation_map.Insert(
+        invalidation::Invalidation::Init(this->topic3, 3, "3"));
     this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
     EXPECT_EQ(0, handler1.GetInvalidationCount());
     EXPECT_EQ(1, handler2.GetInvalidationCount());
   }
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+      invalidation::TRANSIENT_INVALIDATION_ERROR);
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler1.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler2.GetInvalidatorState());
 
   invalidator->UnregisterInvalidationHandler(&handler2);
@@ -355,7 +374,8 @@ namespace internal {
 // A FakeInvalidationHandler that is "bound" to a specific
 // InvalidationService.  This is for cross-referencing state information with
 // the bound InvalidationService.
-class BoundFakeInvalidationHandler : public syncer::FakeInvalidationHandler {
+class BoundFakeInvalidationHandler
+    : public invalidation::FakeInvalidationHandler {
  public:
   explicit BoundFakeInvalidationHandler(
       const invalidation::InvalidationService& invalidator);
@@ -364,14 +384,14 @@ class BoundFakeInvalidationHandler : public syncer::FakeInvalidationHandler {
   // Returns the last return value of GetInvalidatorState() on the
   // bound invalidator from the last time the invalidator state
   // changed.
-  syncer::InvalidatorState GetLastRetrievedState() const;
+  invalidation::InvalidatorState GetLastRetrievedState() const;
 
   // InvalidationHandler implementation.
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
 
  private:
   const invalidation::InvalidationService& invalidator_;
-  syncer::InvalidatorState last_retrieved_state_;
+  invalidation::InvalidatorState last_retrieved_state_;
 
   DISALLOW_COPY_AND_ASSIGN(BoundFakeInvalidationHandler);
 };
@@ -386,15 +406,16 @@ TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
   invalidator->RegisterInvalidationHandler(&handler);
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::INVALIDATIONS_ENABLED);
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
-  EXPECT_EQ(syncer::INVALIDATIONS_ENABLED, handler.GetLastRetrievedState());
+      invalidation::INVALIDATIONS_ENABLED);
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
+  EXPECT_EQ(invalidation::INVALIDATIONS_ENABLED,
+            handler.GetLastRetrievedState());
 
   this->delegate_.TriggerOnInvalidatorStateChange(
-      syncer::TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+      invalidation::TRANSIENT_INVALIDATION_ERROR);
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler.GetInvalidatorState());
-  EXPECT_EQ(syncer::TRANSIENT_INVALIDATION_ERROR,
+  EXPECT_EQ(invalidation::TRANSIENT_INVALIDATION_ERROR,
             handler.GetLastRetrievedState());
 
   invalidator->UnregisterInvalidationHandler(&handler);

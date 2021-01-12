@@ -32,7 +32,7 @@ class MockCertProvisioningInvalidator : public CertProvisioningInvalidator {
 
   MOCK_METHOD(void,
               Register,
-              (const syncer::Topic& topic,
+              (const invalidation::Topic& topic,
                OnInvalidationCallback on_invalidation_callback),
               (override));
 

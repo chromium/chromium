@@ -9,17 +9,17 @@ namespace internal {
 BoundFakeInvalidationHandler::BoundFakeInvalidationHandler(
     const invalidation::InvalidationService& invalidator)
     : invalidator_(invalidator),
-      last_retrieved_state_(syncer::DEFAULT_INVALIDATION_ERROR) {}
+      last_retrieved_state_(invalidation::DEFAULT_INVALIDATION_ERROR) {}
 
 BoundFakeInvalidationHandler::~BoundFakeInvalidationHandler() = default;
 
-syncer::InvalidatorState
+invalidation::InvalidatorState
 BoundFakeInvalidationHandler::GetLastRetrievedState() const {
   return last_retrieved_state_;
 }
 
 void BoundFakeInvalidationHandler::OnInvalidatorStateChange(
-    syncer::InvalidatorState state) {
+    invalidation::InvalidatorState state) {
   FakeInvalidationHandler::OnInvalidatorStateChange(state);
   last_retrieved_state_ = invalidator_.GetInvalidatorState();
 }

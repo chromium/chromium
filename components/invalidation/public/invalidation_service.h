@@ -9,11 +9,9 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
-namespace syncer {
-class InvalidationHandler;
-}  // namespace syncer
-
 namespace invalidation {
+
+class InvalidationHandler;
 class InvalidationLogger;
 
 // Interface for classes that handle invalidation subscriptions and send out
@@ -72,8 +70,7 @@ class InvalidationService {
   // and it must not already be registered.
   //
   // Handler registrations are persisted across restarts of sync.
-  virtual void RegisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) = 0;
+  virtual void RegisterInvalidationHandler(InvalidationHandler* handler) = 0;
 
   // Updates the set of topics associated with |handler|. |handler| must not be
   // nullptr, and must already be registered. A topic must be subscribed for at
@@ -81,8 +78,8 @@ class InvalidationService {
   // InvalidationHandler function returns false.
   //
   // Subscribed topics are persisted across restarts of sync.
-  virtual bool UpdateInterestedTopics(syncer::InvalidationHandler* handler,
-                                      const syncer::TopicSet& topics)
+  virtual bool UpdateInterestedTopics(InvalidationHandler* handler,
+                                      const TopicSet& topics)
       WARN_UNUSED_RESULT = 0;
 
   // Stops sending notifications to |handler|.  |handler| must not be NULL, and
@@ -90,13 +87,12 @@ class InvalidationService {
   // associated with |handler|.
   //
   // Handler registrations are persisted across restarts of sync.
-  virtual void UnregisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) = 0;
+  virtual void UnregisterInvalidationHandler(InvalidationHandler* handler) = 0;
 
   // Returns the current invalidator state.  When called from within
   // InvalidationHandler::OnInvalidatorStateChange(), this must return
   // the updated state.
-  virtual syncer::InvalidatorState GetInvalidatorState() const = 0;
+  virtual InvalidatorState GetInvalidatorState() const = 0;
 
   // Returns the ID belonging to this invalidation client.  Can be used to
   // prevent the receipt of notifications of our own changes.

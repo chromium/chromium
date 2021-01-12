@@ -15,7 +15,7 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 class UnackedInvalidationSetTest : public testing::Test {
  public:
@@ -185,4 +185,4 @@ TEST_F(UnackedInvalidationSetTest, Drop) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

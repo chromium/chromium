@@ -51,12 +51,12 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
   auto service = std::make_unique<FCMInvalidationService>(
       identity_provider,
       base::BindRepeating(
-          &syncer::FCMNetworkHandler::Create,
+          &FCMNetworkHandler::Create,
           gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
           instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
               ->driver()),
       base::BindRepeating(
-          &syncer::PerUserTopicSubscriptionManager::Create, identity_provider,
+          &PerUserTopicSubscriptionManager::Create, identity_provider,
           profile->GetPrefs(),
           base::RetainedRef(
               content::BrowserContext::GetDefaultStoragePartition(profile)

@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "components/invalidation/public/invalidation_export.h"
 
-namespace syncer {
+namespace invalidation {
 
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
 enum class HandlerOwnerType {
@@ -58,6 +58,6 @@ using Topics = std::map<std::string, TopicMetadata>;
 
 HandlerOwnerType OwnerNameToHandlerType(const std::string& owner_name);
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_UTIL_H_

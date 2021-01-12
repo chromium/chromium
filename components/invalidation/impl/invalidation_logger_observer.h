@@ -12,11 +12,10 @@ namespace base {
 class DictionaryValue;
 }  // namespace base
 
-namespace syncer {
-class TopicInvalidationMap;
-}  // namespace syncer
-
 namespace invalidation {
+
+class TopicInvalidationMap;
+
 // This class provides the possibility to register as an observer for the
 // InvalidationLogger notifications whenever an InvalidationService changes
 // its internal state.
@@ -25,12 +24,12 @@ class InvalidationLoggerObserver {
  public:
   virtual void OnRegistrationChange(
       const std::multiset<std::string>& registered_handlers) = 0;
-  virtual void OnStateChange(const syncer::InvalidatorState& new_state,
+  virtual void OnStateChange(const InvalidatorState& new_state,
                              const base::Time& last_change_timestamp) = 0;
   virtual void OnUpdatedTopics(const std::string& handler_name,
-                               const syncer::TopicCountMap& details) = 0;
+                               const TopicCountMap& details) = 0;
   virtual void OnDebugMessage(const base::DictionaryValue& details) = 0;
-  virtual void OnInvalidation(const syncer::TopicInvalidationMap& details) = 0;
+  virtual void OnInvalidation(const TopicInvalidationMap& details) = 0;
   virtual void OnDetailedStatus(const base::DictionaryValue& details) = 0;
 
  protected:

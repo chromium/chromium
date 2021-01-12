@@ -85,7 +85,7 @@ void RemoteCommandsInvalidatorImpl::OnStop() {
 }
 
 void RemoteCommandsInvalidatorImpl::DoRemoteCommandsFetch(
-    const syncer::Invalidation& invalidation) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK(core_->remote_commands_service());
 
   RecordInvalidationMetric(invalidation);
@@ -114,7 +114,7 @@ void RemoteCommandsInvalidatorImpl::OnStoreLoaded(CloudPolicyStore* core) {
 void RemoteCommandsInvalidatorImpl::OnStoreError(CloudPolicyStore* core) {}
 
 void RemoteCommandsInvalidatorImpl::RecordInvalidationMetric(
-    const syncer::Invalidation& invalidation) const {
+    const invalidation::Invalidation& invalidation) const {
   const auto last_fetch_time =
       base::Time::FromJavaTime(core_->store()->policy()->timestamp());
   const auto current_time = clock_->Now();

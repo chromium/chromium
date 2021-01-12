@@ -351,11 +351,11 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   invalidation_service_ =
       std::make_unique<invalidation::FCMInvalidationService>(
           identity_provider_.get(),
-          base::BindRepeating(&syncer::FCMNetworkHandler::Create,
+          base::BindRepeating(&invalidation::FCMNetworkHandler::Create,
                               g_browser_process->gcm_driver(),
                               device_instance_id_driver_.get()),
           base::BindRepeating(
-              &syncer::PerUserTopicSubscriptionManager::Create,
+              &invalidation::PerUserTopicSubscriptionManager::Create,
               identity_provider_.get(), g_browser_process->local_state(),
               base::RetainedRef(
                   g_browser_process->shared_url_loader_factory())),

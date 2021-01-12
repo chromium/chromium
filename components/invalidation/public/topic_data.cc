@@ -31,12 +31,10 @@ bool operator<(const TopicData& lhs, const TopicData& rhs) {
   return lhs.is_public < rhs.is_public;
 }
 
-syncer::Topics ConvertTopicSetToLegacyTopicMap(
-    const std::set<TopicData>& topics) {
-  syncer::Topics result;
+Topics ConvertTopicSetToLegacyTopicMap(const std::set<TopicData>& topics) {
+  Topics result;
   for (const TopicData& topic : topics) {
-    result.emplace(topic.name,
-                   syncer::TopicMetadata{/*is_public=*/topic.is_public});
+    result.emplace(topic.name, TopicMetadata{/*is_public=*/topic.is_public});
   }
   return result;
 }

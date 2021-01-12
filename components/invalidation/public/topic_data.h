@@ -43,8 +43,7 @@ INVALIDATION_EXPORT std::string ToString(const TopicData& topic_data);
 
 // TDOO(crbug.com/1029698): delete this function together with legacy topic
 // datatypes.
-syncer::Topics ConvertTopicSetToLegacyTopicMap(
-    const std::set<TopicData>& topics);
+Topics ConvertTopicSetToLegacyTopicMap(const std::set<TopicData>& topics);
 
 }  // namespace invalidation
 

@@ -145,18 +145,18 @@ class MockInvalidationService : public invalidation::InvalidationService {
   ~MockInvalidationService() override = default;
   MOCK_METHOD(void,
               RegisterInvalidationHandler,
-              (syncer::InvalidationHandler * handler),
+              (invalidation::InvalidationHandler * handler),
               (override));
   MOCK_METHOD(bool,
               UpdateInterestedTopics,
-              (syncer::InvalidationHandler * handler,
-               const syncer::TopicSet& topics),
+              (invalidation::InvalidationHandler * handler,
+               const invalidation::TopicSet& topics),
               (override));
   MOCK_METHOD(void,
               UnregisterInvalidationHandler,
-              (syncer::InvalidationHandler * handler),
+              (invalidation::InvalidationHandler * handler),
               (override));
-  MOCK_METHOD(syncer::InvalidatorState,
+  MOCK_METHOD(invalidation::InvalidatorState,
               GetInvalidatorState,
               (),
               (const override));
@@ -619,7 +619,8 @@ TEST_F(SyncEngineImplTest,
   ConfigureDataTypes();
 
   // At shutdown, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(backend_.get(), TopicSet()));
+  EXPECT_CALL(invalidator_,
+              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
 }
 
 TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
@@ -636,7 +637,8 @@ TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
   ConfigureDataTypes();
 
   // At shutdown, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(backend_.get(), TopicSet()));
+  EXPECT_CALL(invalidator_,
+              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
 }
 
 TEST_F(SyncEngineImplTest,
@@ -664,7 +666,8 @@ TEST_F(SyncEngineImplTest,
   backend_->SetInvalidationsForSessionsEnabled(false);
 
   // At shutdown, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(backend_.get(), TopicSet()));
+  EXPECT_CALL(invalidator_,
+              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
 }
 
 // Regression test for crbug.com/1019956.
@@ -716,7 +719,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   ConfigureDataTypes();
 
   // At shutdown, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(backend_.get(), TopicSet()));
+  EXPECT_CALL(invalidator_,
+              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
 }
 
 TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
@@ -726,7 +730,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   // Since the old invalidations system is not being used anymore (based on the
   // enabled feature flags), SyncEngine should call the (old) invalidator with
   // an empty TopicSet upon initialization.
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(_, TopicSet()));
+  EXPECT_CALL(invalidator_,
+              UpdateInterestedTopics(_, invalidation::TopicSet()));
   InitializeBackend(/*expect_success=*/true);
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);

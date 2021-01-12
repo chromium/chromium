@@ -10,7 +10,7 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 class AckHandle;
 
@@ -30,6 +30,6 @@ class INVALIDATION_EXPORT AckHandler {
   virtual void Drop(const Topic& topic, const AckHandle& handle) = 0;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_ACK_HANDLER_H_

@@ -15,11 +15,11 @@ class PolicyData;
 
 }  // namespace enterprise_management
 
-namespace syncer {
+namespace invalidation {
 
 class Invalidation;
 
-}  // namespace syncer
+}  // namespace invalidation
 
 namespace policy {
 
@@ -47,22 +47,22 @@ constexpr base::TimeDelta kMaxInvalidationTimeDelta =
 // addressed to topic "DeviceGuestModeEnabled". But if 2 clients with different
 // users subscribe to private topic "BOOKMARK", they will receive different set
 // of messages addressed to pair ("BOOKMARK", GAIA ID) respectievely.
-bool IsPublicInvalidationTopic(const syncer::Topic& topic);
+bool IsPublicInvalidationTopic(const invalidation::Topic& topic);
 
 // Returns true if |policy| has data about policy to invalidate, and saves
 // that data in |topic|, and false otherwise.
 bool GetCloudPolicyTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    syncer::Topic* topic);
+    invalidation::Topic* topic);
 
 // The same as GetCloudPolicyTopicFromPolicy but gets the |topic| for
 // remote command.
 bool GetRemoteCommandTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    syncer::Topic* topic);
+    invalidation::Topic* topic);
 
 // Determines if an invalidation is expired.
-bool IsInvalidationExpired(const syncer::Invalidation& invalidation,
+bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
                            const base::Time& last_fetch_time,
                            const base::Time& current_time);
 

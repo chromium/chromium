@@ -53,30 +53,34 @@ class CertProvisioningInvalidationHandlerTest
   }
 
   void EnableInvalidationService() {
-    invalidation_service_.SetInvalidatorState(syncer::INVALIDATIONS_ENABLED);
+    invalidation_service_.SetInvalidatorState(
+        invalidation::INVALIDATIONS_ENABLED);
   }
 
   void DisableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        syncer::TRANSIENT_INVALIDATION_ERROR);
+        invalidation::TRANSIENT_INVALIDATION_ERROR);
   }
 
-  syncer::Invalidation CreateInvalidation(const syncer::Topic& topic) {
-    return syncer::Invalidation::InitUnknownVersion(topic);
+  invalidation::Invalidation CreateInvalidation(
+      const invalidation::Topic& topic) {
+    return invalidation::Invalidation::InitUnknownVersion(topic);
   }
 
-  syncer::Invalidation FireInvalidation(const syncer::Topic& topic) {
-    const syncer::Invalidation invalidation = CreateInvalidation(topic);
+  invalidation::Invalidation FireInvalidation(
+      const invalidation::Topic& topic) {
+    const invalidation::Invalidation invalidation = CreateInvalidation(topic);
     invalidation_service_.EmitInvalidationForTest(invalidation);
     base::RunLoop().RunUntilIdle();
     return invalidation;
   }
 
-  bool IsInvalidationSent(const syncer::Invalidation& invalidation) {
+  bool IsInvalidationSent(const invalidation::Invalidation& invalidation) {
     return !invalidation_service_.GetMockAckHandler()->IsUnsent(invalidation);
   }
 
-  bool IsInvalidationAcknowledged(const syncer::Invalidation& invalidation) {
+  bool IsInvalidationAcknowledged(
+      const invalidation::Invalidation& invalidation) {
     return invalidation_service_.GetMockAckHandler()->IsAcknowledged(
         invalidation);
   }
@@ -96,8 +100,8 @@ class CertProvisioningInvalidationHandlerTest
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  const syncer::Topic kInvalidatorTopic;
-  const syncer::Topic kSomeOtherTopic;
+  const invalidation::Topic kInvalidatorTopic;
+  const invalidation::Topic kSomeOtherTopic;
 
   invalidation::FakeInvalidationService invalidation_service_;
 
@@ -180,7 +184,7 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
   EXPECT_EQ(0, incoming_invalidations_count_);
 
   // Ensure that topic is still subscribed.
-  const syncer::Topics topics =
+  const invalidation::Topics topics =
       invalidation_service_.invalidator_registrar().GetAllSubscribedTopics();
   EXPECT_NE(topics.end(), topics.find(kInvalidatorTopic));
 }

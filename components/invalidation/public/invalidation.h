@@ -17,7 +17,7 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 class AckHandler;
 
@@ -121,6 +121,6 @@ class INVALIDATION_EXPORT Invalidation {
   scoped_refptr<base::SequencedTaskRunner> ack_handler_task_runner_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_H_

@@ -20,6 +20,8 @@
 
 using net::HttpRequestHeaders;
 
+namespace invalidation {
+
 namespace {
 
 const char kPublicTopicNameKey[] = "publicTopicName";
@@ -54,25 +56,24 @@ enum class SubscriptionStatus {
   kMaxValue = kFailure,
 };
 
-void RecordRequestStatus(
-    SubscriptionStatus status,
-    syncer::PerUserTopicSubscriptionRequest::RequestType type,
-    const std::string& topic,
-    int net_error = net::OK,
-    int response_code = 200) {
+void RecordRequestStatus(SubscriptionStatus status,
+                         PerUserTopicSubscriptionRequest::RequestType type,
+                         const std::string& topic,
+                         int net_error = net::OK,
+                         int response_code = 200) {
   switch (type) {
-    case syncer::PerUserTopicSubscriptionRequest::SUBSCRIBE: {
+    case PerUserTopicSubscriptionRequest::SUBSCRIBE: {
       base::UmaHistogramEnumeration(
           "FCMInvalidations.SubscriptionRequestStatus", status);
       break;
     }
-    case syncer::PerUserTopicSubscriptionRequest::UNSUBSCRIBE: {
+    case PerUserTopicSubscriptionRequest::UNSUBSCRIBE: {
       base::UmaHistogramEnumeration(
           "FCMInvalidations.UnsubscriptionRequestStatus", status);
       break;
     }
   }
-  if (type != syncer::PerUserTopicSubscriptionRequest::SUBSCRIBE) {
+  if (type != PerUserTopicSubscriptionRequest::SUBSCRIBE) {
     return;
   }
 
@@ -101,8 +102,6 @@ void RecordRequestStatus(
 }
 
 }  // namespace
-
-namespace syncer {
 
 PerUserTopicSubscriptionRequest::PerUserTopicSubscriptionRequest() = default;
 
@@ -409,4 +408,4 @@ PerUserTopicSubscriptionRequest::Builder::BuildURLFetcher(
   return url_loader;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

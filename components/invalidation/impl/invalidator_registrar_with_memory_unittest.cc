@@ -15,7 +15,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -24,9 +24,9 @@ namespace {
 // between. The handler should only see invalidations when it's registered and
 // its topics are registered.
 TEST(InvalidatorRegistrarWithMemoryTest, Basic) {
-  const invalidation::TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
-  const invalidation::TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
-  const invalidation::TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
+  const TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
+  const TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
+  const TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
@@ -92,10 +92,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, Basic) {
 // invalidations, and the ones that have registered topics should receive
 // invalidations for those topics.
 TEST(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
-  const invalidation::TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
-  const invalidation::TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
-  const invalidation::TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
-  const invalidation::TopicData kTopic4(/*name=*/"d", /*is_public=*/false);
+  const TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
+  const TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
+  const TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
+  const TopicData kTopic4(/*name=*/"d", /*is_public=*/false);
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
@@ -165,7 +165,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
 // Multiple registrations by different handlers on the same topic should
 // return false.
 TEST(InvalidatorRegistrarWithMemoryTest, MultipleRegistrations) {
-  const invalidation::TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
+  const TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
@@ -196,9 +196,9 @@ TEST(InvalidatorRegistrarWithMemoryTest, MultipleRegistrations) {
 // Make sure that passing an empty set to UpdateRegisteredTopics clears the
 // corresponding entries for the handler.
 TEST(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
-  const invalidation::TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
-  const invalidation::TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
-  const invalidation::TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
+  const TopicData kTopic1(/*name=*/"a", /*is_public=*/false);
+  const TopicData kTopic2(/*name=*/"b", /*is_public=*/false);
+  const TopicData kTopic3(/*name=*/"c", /*is_public=*/false);
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
@@ -246,4 +246,4 @@ TEST(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

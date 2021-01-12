@@ -360,7 +360,7 @@ class SyncTest : public PlatformBrowserTest {
                                     Profile::CreateStatus status);
 
   static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
-      std::map<const Profile*, syncer::FCMNetworkHandler*>*
+      std::map<const Profile*, invalidation::FCMNetworkHandler*>*
           profile_to_fcm_network_handler_map,
       std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
           profile_to_instance_id_driver_map,
@@ -497,7 +497,7 @@ class SyncTest : public PlatformBrowserTest {
   // Maps a profile to the corresponding FCMNetworkHandler. Contains one entry
   // per profile. It is used to simulate an incoming FCM messages to different
   // profiles within the FakeServerInvalidationSender.
-  std::map<const Profile*, syncer::FCMNetworkHandler*>
+  std::map<const Profile*, invalidation::FCMNetworkHandler*>
       profile_to_fcm_network_handler_map_;
 
   std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>

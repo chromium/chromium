@@ -22,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -379,4 +379,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          net::HTTP_FORBIDDEN,
                                          net::HTTP_NOT_FOUND));
 
-}  // namespace syncer
+}  // namespace invalidation

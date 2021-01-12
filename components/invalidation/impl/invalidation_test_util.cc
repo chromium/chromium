@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 
-namespace syncer {
+namespace invalidation {
 
 using ::testing::MakeMatcher;
 using ::testing::MatchResultListener;
@@ -108,4 +108,4 @@ Matcher<const Invalidation&> Eq(const Invalidation& expected) {
   return MakeMatcher(new InvalidationEqMatcher(expected));
 }
 
-}  // namespace syncer
+}  // namespace invalidation

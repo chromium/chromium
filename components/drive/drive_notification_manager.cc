@@ -70,9 +70,9 @@ void DriveNotificationManager::Shutdown() {
 }
 
 void DriveNotificationManager::OnInvalidatorStateChange(
-    syncer::InvalidatorState state) {
+    invalidation::InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  push_notification_enabled_ = (state == syncer::INVALIDATIONS_ENABLED);
+  push_notification_enabled_ = (state == invalidation::INVALIDATIONS_ENABLED);
   if (push_notification_enabled_) {
     DVLOG(1) << "XMPP Notifications enabled";
   } else {
@@ -83,7 +83,7 @@ void DriveNotificationManager::OnInvalidatorStateChange(
 }
 
 void DriveNotificationManager::OnIncomingInvalidation(
-    const syncer::TopicInvalidationMap& invalidation_map) {
+    const invalidation::TopicInvalidationMap& invalidation_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "XMPP Drive Notification Received";
 
@@ -120,7 +120,8 @@ void DriveNotificationManager::OnIncomingInvalidation(
 }
 
 std::string DriveNotificationManager::GetOwnerName() const { return "Drive"; }
-bool DriveNotificationManager::IsPublicTopic(const syncer::Topic& topic) const {
+bool DriveNotificationManager::IsPublicTopic(
+    const invalidation::Topic& topic) const {
   return base::StartsWith(topic, kTeamDriveChangePrefix);
 }
 
@@ -141,8 +142,8 @@ void DriveNotificationManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 
   if (!observers_.might_have_observers()) {
-    CHECK(invalidation_service_->UpdateInterestedTopics(this,
-                                                        syncer::TopicSet()));
+    CHECK(invalidation_service_->UpdateInterestedTopics(
+        this, invalidation::TopicSet()));
     polling_timer_.Stop();
     batch_timer_.Stop();
     invalidated_change_ids_.clear();
@@ -265,7 +266,7 @@ void DriveNotificationManager::UpdateRegisteredDriveNotifications() {
   if (!invalidation_service_)
     return;
 
-  syncer::TopicSet topics;
+  invalidation::TopicSet topics;
   topics.insert(GetDriveInvalidationTopic());
 
   for (const auto& team_drive_id : team_drive_ids_) {
@@ -300,11 +301,12 @@ std::string DriveNotificationManager::NotificationSourceToString(
   return "";
 }
 
-syncer::Topic DriveNotificationManager::GetDriveInvalidationTopic() const {
+invalidation::Topic DriveNotificationManager::GetDriveInvalidationTopic()
+    const {
   return kDriveInvalidationTopicName;
 }
 
-syncer::Topic DriveNotificationManager::GetTeamDriveInvalidationTopic(
+invalidation::Topic DriveNotificationManager::GetTeamDriveInvalidationTopic(
     const std::string& team_drive_id) const {
   return base::StrCat({kTeamDriveChangePrefix, team_drive_id});
 }
