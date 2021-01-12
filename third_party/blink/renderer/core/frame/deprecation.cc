@@ -540,11 +540,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   "RTCConfiguration.encodedInsertableStreams", kM88,
                   "6321945865879552")};
 
-    case WebFeature::kCommaSeparatorInAllowAttribute:
-      return {"CommaSeparatorInAllowAttribute", kM89,
-              ReplacedWillBeRemoved("Comma separator in iframe allow attribute",
-                                    "semicolons", kM89, "5740835259809792")};
-
     case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
       return {"RTP data channel", kM88,
               ReplacedWillBeRemoved("RTP data channels",

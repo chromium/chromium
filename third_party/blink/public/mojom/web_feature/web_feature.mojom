@@ -2679,7 +2679,7 @@ enum WebFeature {
   kV8PointerEvent_AltitudeAngle_AttributeGetter = 3352,
   kCrossBrowsingContextGroupMainFrameNulledNonEmptyNameAccessed = 3353,
   kPositionSticky = 3354,
-  kCommaSeparatorInAllowAttribute = 3355,
+  kOBSOLETE_CommaSeparatorInAllowAttribute = 3355,
   kMainFrameCSPViaHTTP = 3359,
   kMainFrameCSPViaMeta = 3360,
   kMainFrameCSPViaOriginPolicy = 3361,

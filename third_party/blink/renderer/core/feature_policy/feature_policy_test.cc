@@ -34,7 +34,7 @@ namespace blink {
 
 namespace {
 
-const char* const kValidPolicies[] = {
+const char* const kValidHeaderPolicies[] = {
     "",      // An empty policy.
     " ",     // An empty policy.
     ";;",    // Empty policies.
@@ -44,8 +44,7 @@ const char* const kValidPolicies[] = {
     ",;,",   // Empty policies.
     "geolocation 'none'",
     "geolocation 'self'",
-    "geolocation 'src'",  // Only valid for iframe allow attribute.
-    "geolocation",        // Only valid for iframe allow attribute.
+    "geolocation",
     "geolocation; fullscreen; payment",
     "geolocation *",
     "geolocation " ORIGIN_A "",
@@ -58,10 +57,11 @@ const char* const kValidPolicies[] = {
     "fullscreen  " ORIGIN_A "; payment 'self'",
     "fullscreen " ORIGIN_A "; payment *, geolocation 'self'"};
 
-const char* const kInvalidPolicies[] = {
+const char* const kInvalidHeaderPolicies[] = {
     "badfeaturename",
     "badfeaturename 'self'",
     "1.0",
+    "geolocation 'src'",  // Only valid for iframe allow attribute.
     "geolocation data://badorigin",
     "geolocation https://bad;origin",
     "geolocation https:/bad,origin",
@@ -301,7 +301,7 @@ const FeaturePolicyParserTestCase FeaturePolicyParserParsingTest::kCases[] = {
         /* test_name */ "MultiplePoliciesIncludingBadFeatureName",
         /* feature_policy_string */
         "geolocation * " ORIGIN_B "; "
-        "fullscreen " ORIGIN_B " bad_feature_name " ORIGIN_C ","
+        "fullscreen " ORIGIN_B " bad_feature_name " ORIGIN_C ";"
         "payment 'self' badorigin",
         /* permissions_policy_string */
         "geolocation=(* \"" ORIGIN_B "\"),"
@@ -680,23 +680,50 @@ TEST_F(FeaturePolicyParserParsingTest,
       });
 }
 
-TEST_F(FeaturePolicyParserTest, ParseValidPolicy) {
-  for (const char* policy_string : kValidPolicies) {
+TEST_F(FeaturePolicyParserParsingTest, CommaSeparatorInAttribute) {
+  PolicyParserMessageBuffer logger;
+
+  CheckParsedPolicy(
+      FeaturePolicyParser::ParseAttribute(
+          "geolocation 'none', fullscreen 'self'",
+          /* self_origin */ origin_a_.get(),
+          /* src_origin */ origin_a_.get(), logger, /* context */ nullptr),
+      {
+          {
+              mojom::blink::FeaturePolicyFeature::kGeolocation,
+              /* matches_all_origins */ false,
+              /* matches_opaque_src */ false,
+              {ORIGIN_A},
+          },
+      });
+
+  EXPECT_EQ(logger.GetMessages().size(), 2u)
+      << "Parser should report parsing error.";
+
+  EXPECT_EQ(logger.GetMessages().front().content.Ascii(),
+            "Unrecognized origin: ''none','.")
+      << "\"'none',\" should be treated as an invalid allowlist item ";
+
+  EXPECT_EQ(logger.GetMessages().back().content.Ascii(),
+            "Unrecognized origin: 'fullscreen'.")
+      << "\"fullscreen\" should be treated as an invalid allowlist item";
+}
+
+TEST_F(FeaturePolicyParserTest, ParseValidHeaderPolicy) {
+  for (const char* policy_string : kValidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
     FeaturePolicyParser::ParseFeaturePolicyForTest(
-        policy_string, origin_a_.get(), origin_b_.get(), logger,
-        test_feature_name_map);
+        policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
     EXPECT_EQ(0UL, logger.GetMessages().size())
         << "Should parse " << policy_string;
   }
 }
 
-TEST_F(FeaturePolicyParserTest, ParseInvalidPolicy) {
-  for (const char* policy_string : kInvalidPolicies) {
+TEST_F(FeaturePolicyParserTest, ParseInvalidHeaderPolicy) {
+  for (const char* policy_string : kInvalidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
     FeaturePolicyParser::ParseFeaturePolicyForTest(
-        policy_string, origin_a_.get(), origin_b_.get(), logger,
-        test_feature_name_map);
+        policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
     EXPECT_LT(0UL, logger.GetMessages().size())
         << "Should fail to parse " << policy_string;
   }
@@ -891,26 +918,18 @@ class FeaturePolicyAllowlistHistogramTest
 
 const AllowlistHistogramData FeaturePolicyAllowlistHistogramTest::kCases[] = {
     {"Empty", "fullscreen", 1, {FeaturePolicyAllowlistType::kEmpty}},
-    {"Empty_MultipleDirectivesComma",
-     "fullscreen, geolocation, payment",
-     1,
-     {FeaturePolicyAllowlistType::kEmpty}},
     {"Empty_MultipleDirectivesSemicolon",
      "fullscreen; payment",
      1,
      {FeaturePolicyAllowlistType::kEmpty}},
     {"Star", "fullscreen *", 1, {FeaturePolicyAllowlistType::kStar}},
-    {"Star_MultipleDirectivesComma",
-     "fullscreen *, payment *",
-     1,
-     {FeaturePolicyAllowlistType::kStar}},
     {"Star_MultipleDirectivesSemicolon",
      "fullscreen *; payment *",
      1,
      {FeaturePolicyAllowlistType::kStar}},
     {"Self", "fullscreen 'self'", 1, {FeaturePolicyAllowlistType::kSelf}},
     {"Self_MultipleDirectives",
-     "fullscreen 'self', geolocation 'self', payment 'self'",
+     "fullscreen 'self'; geolocation 'self'; payment 'self'",
      1,
      {FeaturePolicyAllowlistType::kSelf}},
     {"None", "fullscreen 'none'", 1, {FeaturePolicyAllowlistType::kNone}},
@@ -922,10 +941,6 @@ const AllowlistHistogramData FeaturePolicyAllowlistHistogramTest::kCases[] = {
      "fullscreen " ORIGIN_A,
      1,
      {FeaturePolicyAllowlistType::kOrigins}},
-    {"Origins_MultipleDirectivesComma",
-     "fullscreen " ORIGIN_A ", payment " ORIGIN_A,
-     1,
-     {FeaturePolicyAllowlistType::kOrigins}},
     {"Origins_MultipleDirectivesSemicolon",
      "fullscreen " ORIGIN_A "; payment " ORIGIN_A " " ORIGIN_B,
      1,
@@ -935,7 +950,7 @@ const AllowlistHistogramData FeaturePolicyAllowlistHistogramTest::kCases[] = {
      1,
      {FeaturePolicyAllowlistType::kMixed}},
     {"Mixed_MultipleDirectives",
-     "fullscreen 'self' " ORIGIN_A ", payment 'none' " ORIGIN_A " " ORIGIN_B,
+     "fullscreen 'self' " ORIGIN_A "; payment 'none' " ORIGIN_A " " ORIGIN_B,
      1,
      {FeaturePolicyAllowlistType::kMixed}},
     {"KeywordsOnly",
@@ -954,11 +969,7 @@ const AllowlistHistogramData FeaturePolicyAllowlistHistogramTest::kCases[] = {
      "fullscreen *; geolocation 'none' " ORIGIN_A,
      2,
      {FeaturePolicyAllowlistType::kStar, FeaturePolicyAllowlistType::kMixed}},
-    {"MultipleDirectives_SeparateTypes_Comma",
-     "fullscreen *, geolocation 'none', payment " ORIGIN_A " " ORIGIN_B,
-     3,
-     {FeaturePolicyAllowlistType::kStar, FeaturePolicyAllowlistType::kNone,
-      FeaturePolicyAllowlistType::kOrigins}}};
+};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
