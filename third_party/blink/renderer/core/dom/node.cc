@@ -1598,7 +1598,8 @@ void Node::AttachLayoutTree(AttachContext& context) {
 }
 
 void Node::DetachLayoutTree(bool performing_reattach) {
-  DCHECK(GetDocument().Lifecycle().StateAllowsDetach());
+  DCHECK(GetDocument().Lifecycle().StateAllowsDetach() ||
+         GetDocument().GetStyleEngine().InContainerQueryStyleRecalc());
   DCHECK(!performing_reattach ||
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
