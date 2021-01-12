@@ -117,7 +117,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 - (void)viewDidLoad {
   if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.styler.tableViewBackgroundColor =
-        UIColor.cr_systemGroupedBackgroundColor;
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   }
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -128,7 +128,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
   [super viewDidLoad];
   self.styler.cellBackgroundColor =
-      UIColor.cr_secondarySystemGroupedBackgroundColor;
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   self.styler.cellTitleColor = UIColor.cr_labelColor;
   self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = kSettingsCellDefaultHeight;

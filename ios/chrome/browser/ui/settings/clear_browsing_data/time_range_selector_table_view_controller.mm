@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -78,7 +79,8 @@ static_assert(
 - (void)viewDidLoad {
   [super viewDidLoad];
   if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
+    self.styler.tableViewBackgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
     self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
   }
   [self loadModel];

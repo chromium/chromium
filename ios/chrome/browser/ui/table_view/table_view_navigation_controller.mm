@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -43,9 +42,10 @@
     self.toolbar.barTintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   } else {
-    self.navigationBar.barTintColor = UIColor.cr_systemBackgroundColor;
-    self.toolbar.barTintColor = UIColor.cr_systemBackgroundColor;
-    self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
+    self.navigationBar.barTintColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.toolbar.barTintColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   }
 }
 

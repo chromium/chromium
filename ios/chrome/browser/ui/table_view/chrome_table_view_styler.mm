@@ -6,7 +6,6 @@
 
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,9 +19,10 @@
     if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
       _tableViewBackgroundColor =
           [UIColor colorNamed:kSecondaryBackgroundColor];
-      _cellBackgroundColor = UIColor.cr_secondarySystemGroupedBackgroundColor;
+      _cellBackgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     } else {
-      _tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
+      _tableViewBackgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     }
   }
   return self;

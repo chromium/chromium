@@ -27,9 +27,12 @@ group("resources") {
     ":grey_700_color",
     ":grey_800_color",
     ":grey_900_color",
+    ":grouped_primary_background_color",
+    ":grouped_secondary_background_color",
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
     ":placeholder_image_tint_color",
+    ":primary_background_color",
     ":red_color",
     ":red_dark_color",
     ":scrim_background_color",
@@ -222,4 +225,16 @@ colorset("toolbar_shadow_color") {
 
 colorset("secondary_background_color") {
   sources = [ "secondary_background_color.colorset/Contents.json" ]
+}
+
+colorset("primary_background_color") {
+  sources = [ "primary_background_color.colorset/Contents.json" ]
+}
+
+colorset("grouped_secondary_background_color") {
+  sources = [ "grouped_secondary_background_color.colorset/Contents.json" ]
+}
+
+colorset("grouped_primary_background_color") {
+  sources = [ "grouped_primary_background_color.colorset/Contents.json" ]
 }
