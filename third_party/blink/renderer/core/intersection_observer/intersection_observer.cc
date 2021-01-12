@@ -445,11 +445,16 @@ bool IntersectionObserver::ComputeIntersections(unsigned flags) {
     return false;
 
   // If we're processing post-layout deliveries only and we're not a post-layout
-  // delivery observer, then return early.
-  if (flags & IntersectionObservation::kPostLayoutDeliveryOnly) {
-    if (GetDeliveryBehavior() != kDeliverDuringPostLayoutSteps)
-      return false;
-  }
+  // delivery observer, then return early. Likewise, return if we need to
+  // compute non-post-layout-delivery observations but the observer behavior is
+  // post-layout.
+  bool post_layout_delivery_only =
+      flags & IntersectionObservation::kPostLayoutDeliveryOnly;
+  bool is_post_layout_delivery_observer =
+      GetDeliveryBehavior() ==
+      IntersectionObserver::kDeliverDuringPostLayoutSteps;
+  if (post_layout_delivery_only != is_post_layout_delivery_observer)
+    return false;
 
   IntersectionGeometry::RootGeometry root_geometry(
       IntersectionGeometry::GetRootLayoutObjectForTarget(root(), nullptr,
