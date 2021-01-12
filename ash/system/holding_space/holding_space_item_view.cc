@@ -170,15 +170,17 @@ bool HoldingSpaceItemView::HandleAccessibleAction(
 }
 
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // Inset `bounds` to account for stroke.
   gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(-gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2));
+
+  // Selection ring.
   selected_layer_owner_->layer()->SetBounds(bounds);
   InvalidateLayer(selected_layer_owner_->layer());
 
-  // The focus ring is painted just outside the bounds for this view.
-  const float kFocusInsets = kHoldingSpaceFocusInsets -
-                             (views::PlatformStyle::kFocusHaloThickness / 2.f);
-
-  bounds.Inset(gfx::Insets(kFocusInsets));
+  // Focus ring.
+  // NOTE: The focus ring is painted just outside the bounds for this view.
+  bounds.Inset(gfx::Insets(kHoldingSpaceFocusInsets));
   focused_layer_owner_->layer()->SetBounds(bounds);
   InvalidateLayer(focused_layer_owner_->layer());
 }
@@ -297,7 +299,7 @@ void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
 
   gfx::Rect bounds = gfx::Rect(size);
   bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+  canvas->DrawRoundRect(bounds, kHoldingSpaceFocusCornerRadius, flags);
 }
 
 void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
