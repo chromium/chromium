@@ -1187,19 +1187,13 @@ Chromium is unable to recover your settings.
       <!-- Profile Picker -->
       <if expr="not chromeos and not is_android">
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
-          Who's using Chromium?
+          Welcome to Chromium profiles
         </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
-          Use different profiles in Chromium to separate work and personal browsing, or for different people who use this device
-        </message>
-        <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-          This will permanently delete your browsing data from this device. To recover the data, sign in to Chromium as
+          With Chromium profiles you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chromium profile
-        </message>
-        <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
-          Ask when Chromium opens
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
           Customize your Chromium profile

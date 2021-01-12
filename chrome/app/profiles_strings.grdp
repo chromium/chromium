@@ -708,7 +708,7 @@
       Add
     </message>
     <message name="IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON" desc="Text for the profile picker main view button that launches guest session.">
-      Browse as Guest
+      Guest mode
     </message>
     <message name="IDS_PROFILE_PICKER_BACK_BUTTON_LABEL" desc="Label for a button that navigates user to the previous page">
       Back
@@ -723,16 +723,28 @@
       Customize your profile, including its name
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT" desc="Text of the remove button in profile card menu.">
-      Remove
+      Delete
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_CONFIRM" desc="Text of the remove button in the remove warning.">
-      Remove this profile
+      Delete
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT" desc="Text of the customize button in profile card menu">
-      Customize
+      Edit
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_INCOGNITO_TEXT" desc="Text of the incognito button in profile card menu">
       Incognito
+    </message>
+    <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
+      Show on startup
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
+      Delete this profile?
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
+      This will permanently delete your browsing data from this device. To recover the data, turn on sync as
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
+      Delete this profile and its data?
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
       This will permanently delete your browsing data from this device.
