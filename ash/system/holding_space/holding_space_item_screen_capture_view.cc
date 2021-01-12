@@ -23,6 +23,11 @@
 
 namespace ash {
 
+// Appearance.
+constexpr gfx::Insets kPinButtonMargins(4);
+constexpr gfx::Size kPinButtonSize(24, 24);
+constexpr gfx::Size kPlayIconSize(32, 32);
+
 HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
@@ -48,8 +53,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
 
   auto* layout =
       pin_button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kHoldingSpaceScreenCapturePadding));
+          views::BoxLayout::Orientation::kHorizontal, kPinButtonMargins));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
@@ -59,8 +63,8 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
   // Create contrasting background for the pin icon.
   pin->SetBackground(views::CreateRoundedRectBackground(
       HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
-      kHoldingSpaceScreenCapturePinButtonSize.width() / 2));
-  pin->SetPreferredSize(kHoldingSpaceScreenCapturePinButtonSize);
+      kPinButtonSize.width() / 2));
+  pin->SetPreferredSize(kPinButtonSize);
 }
 
 HoldingSpaceItemScreenCaptureView::~HoldingSpaceItemScreenCaptureView() =
@@ -108,12 +112,12 @@ void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
       vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor)));
-  play_icon->SetPreferredSize(kHoldingSpaceScreenCapturePlayIconSize);
+  play_icon->SetPreferredSize(kPlayIconSize);
 
   // Create contrasting background for the play icon.
   play_icon->SetBackground(views::CreateRoundedRectBackground(
       HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
-      kHoldingSpaceScreenCapturePlayIconSize.width() / 2));
+      kPlayIconSize.width() / 2));
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)

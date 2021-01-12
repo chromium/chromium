@@ -17,6 +17,9 @@
 
 namespace ash {
 
+// Appearance.
+constexpr int kChildSpacing = 8;
+
 ScreenCapturesSection::ScreenCapturesSection(
     HoldingSpaceItemViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
@@ -47,7 +50,7 @@ std::unique_ptr<views::View> ScreenCapturesSection::CreateContainer() {
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
-                              /*right=*/kHoldingSpaceScreenCaptureSpacing));
+                              /*right=*/kChildSpacing));
   return container;
 }
 
