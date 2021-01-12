@@ -158,7 +158,12 @@ base::Optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
 
   cc::PaintFlags dark_mode_flags = flags;
   if (flags.HasShader()) {
-    dark_mode_flags.setColorFilter(immutable_.color_filter->ToSkColorFilter());
+    PaintShader::Type shader_type = flags.getShader()->shader_type();
+    if (shader_type != PaintShader::Type::kImage &&
+        shader_type != PaintShader::Type::kPaintRecord) {
+      dark_mode_flags.setColorFilter(
+          immutable_.color_filter->ToSkColorFilter());
+    }
   } else if (ShouldApplyToColor(flags.getColor(), role)) {
     dark_mode_flags.setColor(inverted_color_cache_->GetInvertedColor(
         immutable_.color_filter.get(), flags.getColor()));
