@@ -1250,9 +1250,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
                    {"dragstart", "dragleave", "dragenter", "dragend"}));
 }
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_LINUX)
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
+// Also disable the test on Linux due to flaky: crbug.com/1164442
 #define MAYBE_DragImageFromDisappearingFrame \
   DISABLED_DragImageFromDisappearingFrame
 #else
