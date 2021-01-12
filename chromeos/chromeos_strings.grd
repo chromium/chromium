@@ -1019,6 +1019,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL" desc="Label for Network diagnostics `Captive Portal` test. This test ensures that the device's internet connection is not gated by a captive portal">
         Captive Portal
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING" desc="Label for Network diagnostics `Video Conferencing` test. This test ensures that the device can communicate with Google's video conferencing servers">
+        Video Conferencing
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
         Passed
       </message>
@@ -1135,6 +1138,15 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET" desc="Error message shown when no network portal is detected, but there is no internet connection">
         No internet
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_UPD_FAILURE" desc="Error message shown when there are failed UDP requests to the video conferencing servers">
+        UDP request failures
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_TCP_FAILURE" desc="Error message shown when there are failed TCP requests to the video conferencing servers">
+        TCP request failures
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_MEDIA_FAILURE" desc="Error message shown when a connection cannot be established to the video conferencing media servers">
+        Unable to connect to media servers
       </message>
     </messages>
   </release>

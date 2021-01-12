@@ -32,6 +32,8 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsHttpsFirewall", IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL},
     {"NetworkDiagnosticsHttpsLatency", IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY},
     {"NetworkDiagnosticsCaptivePortal", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
+    {"NetworkDiagnosticsVideoConferencing",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING},
     {"NetworkDiagnosticsPassed", IDS_NETWORK_DIAGNOSTICS_PASSED},
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
@@ -99,6 +101,12 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PROXY_AUTH_REQUIRED},
     {"CaptivePortalProblem_NoInternet",
      IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET},
+    {"VideoConferencingProblem_UdpFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_UPD_FAILURE},
+    {"VideoConferencingProblem_TcpFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_TCP_FAILURE},
+    {"VideoConferencingProblem_MediaFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_MEDIA_FAILURE},
 };
 
 struct WebUiResource {
@@ -131,6 +139,7 @@ constexpr StringMap kPlaceholderStrings[] = {
     {"NetworkDiagnosticsGatewayGroup", "Gateway"},
     {"NetworkDiagnosticsFirewallGroup", "Firewall"},
     {"NetworkDiagnosticsDnsGroup", "DNS"},
+    {"NetworkDiagnosticsGoogleServicesGroup", "Google Services"},
 };
 
 }  // namespace
