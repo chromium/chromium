@@ -300,10 +300,8 @@ void EventHandler::StartMiddleClickAutoscroll(LayoutObject* layout_object) {
   AutoscrollController* controller = scroll_manager_->GetAutoscrollController();
   if (!controller)
     return;
-
   LayoutBox* scrollable = LayoutBox::FindAutoscrollable(
       layout_object, /*is_middle_click_autoscroll*/ true);
-
   controller->StartMiddleClickAutoscroll(
       layout_object->GetFrame(), scrollable,
       LastKnownMousePositionInRootFrame(),

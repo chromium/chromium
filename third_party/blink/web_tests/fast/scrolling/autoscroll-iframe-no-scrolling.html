@@ -86,14 +86,15 @@ window.addEventListener('load', () => {
       // Autoscroll over the inner scroller.
       await autoScroll(startX, startY, endX, endY);
       await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
-      assert_equals(frames[0].window.scrollY, 0, "Iframe frame should not scroll");
+      assert_equals(window.scrollY, 0, "Main frame should not scroll");
 
       // Autoscroll over the iframe.
       startX = rect.right - 20;
       endX = startX;
       await autoScroll(startX, startY, endX, endY);
       await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
-      assert_true(window.scrollY > 0, "Main frame should not scroll");
+      assert_equals(window.scrollY, 0, "Main frame should not scroll");
+
       assert_equals(frames[0].window.scrollY, 0, "IFrame must NOT scroll.");
     });
 });
