@@ -2117,7 +2117,7 @@
     },
     {
       name: "WebAuthenticationResidentKeyRequirement",
-      status: "experimental",
+      status: "stable",
     },
     // WebBluetooth is enabled by default on Android, ChromeOS and Mac.
     // It is also supported in Windows 10 which is handled in runtime_features.cc
