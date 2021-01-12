@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -20,4 +20,4 @@ class PredictionModelDownloadObserver : public base::CheckedObserver {
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_OBSERVER_H_

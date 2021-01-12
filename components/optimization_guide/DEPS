@@ -1,12 +1,17 @@
 include_rules = [
+  "+components/crx_file",
+  "+components/download/public",
   "+components/leveldb_proto",
   "+components/prefs",
+  "+components/services/unzip",
   "+components/variations",
   "+google_apis",
+  "+mojo/public",
   "+net",
   "+services/network",
   "+third_party/re2",
   "+third_party/smhasher",
+  "+third_party/zlib/google",
 
   # Optimization Guide is a layered component; subdirectories must explicitly
   # introduce the ability to use the content layer as appropriate.

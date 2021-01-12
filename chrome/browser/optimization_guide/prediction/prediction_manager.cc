@@ -25,7 +25,6 @@
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,12 +37,14 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_model.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/prediction_model_file.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -248,7 +249,7 @@ PredictionManager::PredictionManager(
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(
             DownloadServiceFactory::GetForKey(profile->GetProfileKey()),
-            models_dir,
+            models_dir, base::BindRepeating(&unzip::LaunchUnzipper),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
     prediction_model_download_manager_->AddObserver(this);

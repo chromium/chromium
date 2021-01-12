@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
 
 #include <map>
 #include <set>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace download {
 class DownloadService;
@@ -29,9 +32,13 @@ class PredictionModel;
 // Manages the downloads of prediction models.
 class PredictionModelDownloadManager {
  public:
+  using LaunchUnzipperCallback =
+      base::RepeatingCallback<mojo::PendingRemote<unzip::mojom::Unzipper>()>;
+
   PredictionModelDownloadManager(
       download::DownloadService* download_service,
       const base::FilePath& models_dir,
+      LaunchUnzipperCallback unzipper_launcher_callback,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -138,6 +145,9 @@ class PredictionModelDownloadManager {
   // Whether the download should be verified. Should only be false for testing.
   bool should_verify_download_ = true;
 
+  // Callback used to launch unzippers.
+  const LaunchUnzipperCallback unzipper_launcher_callback_;
+
   // Background thread where download file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
@@ -152,4 +162,4 @@ class PredictionModelDownloadManager {
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_

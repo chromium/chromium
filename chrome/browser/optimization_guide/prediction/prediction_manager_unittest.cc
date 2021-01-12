@@ -17,9 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
-#include "chrome/services/machine_learning/public/cpp/test_support/fake_service_connection.h"
-#include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -28,12 +25,14 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_model.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/services/unzip/in_process_unzipper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -194,9 +193,11 @@ class FakePredictionModelDownloadManager
  public:
   FakePredictionModelDownloadManager(
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : PredictionModelDownloadManager(/*download_service=*/nullptr,
-                                       base::FilePath(),
-                                       task_runner) {}
+      : PredictionModelDownloadManager(
+            /*download_service=*/nullptr,
+            base::FilePath(),
+            base::BindRepeating(&unzip::LaunchInProcessUnzipper),
+            task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
   void StartDownload(const GURL& url) override {
