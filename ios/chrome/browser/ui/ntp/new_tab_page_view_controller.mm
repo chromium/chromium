@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -96,6 +97,8 @@
       setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
   self.overscrollActionsController.delegate = self.overscrollDelegate;
   [self updateOverscrollActionsState];
+
+  self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
 }
 
 - (void)viewDidLayoutSubviews {
