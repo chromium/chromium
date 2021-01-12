@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_WIN_H_
 #define SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_WIN_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <vector>
@@ -206,7 +207,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
   std::map<uint8_t, Interface> interfaces_;
   std::map<uint8_t, Endpoint> endpoints_;
-  std::map<Request*, std::unique_ptr<Request>> requests_;
+  std::list<std::unique_ptr<Request>> requests_;
 
   // Control transfers which are waiting for a function handle to be ready.
   std::vector<OpenInterfaceCallback> ep0_ready_callbacks_;
