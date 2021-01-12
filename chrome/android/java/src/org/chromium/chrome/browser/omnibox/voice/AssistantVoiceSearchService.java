@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.util.ColorUtils;
@@ -42,7 +44,8 @@ import java.lang.annotation.RetentionPolicy;
  * Service for state tracking and event delivery to classes that need to observe the state
  * of Assistant Voice Search.
  **/
-public class AssistantVoiceSearchService implements TemplateUrlService.TemplateUrlServiceObserver {
+public class AssistantVoiceSearchService implements TemplateUrlService.TemplateUrlServiceObserver,
+                                                    GSAState.Observer, ProfileManager.Observer {
     private static final String USER_ELIGIBILITY_HISTOGRAM =
             "Assistant.VoiceSearch.UserEligibility";
     @VisibleForTesting
@@ -114,22 +117,16 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         mSharedPrefsManager = sharedPrefsManager;
         mObserver = observer;
 
+        ProfileManager.addObserver(this);
+        mGsaState.addObserver(this);
         mTemplateUrlService.addObserver(this);
         initializeAssistantVoiceSearchState();
     }
 
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
-    }
-
-    @Override
-    public void onTemplateURLServiceChanged() {
-        boolean searchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        if (mIsDefaultSearchEngineGoogle == searchEngineGoogle) return;
-
-        mIsDefaultSearchEngineGoogle = searchEngineGoogle;
-        mShouldShowColorfulMic = isColorfulMicEnabled();
-        notifyObserver();
+        mGsaState.removeObserver(this);
+        ProfileManager.removeObserver(this);
     }
 
     private void notifyObserver() {
@@ -202,6 +199,11 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         return AppCompatResources.getColorStateList(context, id);
     }
 
+    /** Called from {@link VoiceRecognitionHandler} after the consent flow has completed. */
+    public void onAssistantConsentDialogComplete(boolean useAssistant) {
+        if (useAssistant) updateColorfulMicState();
+    }
+
     /**
      * @return Whether the user has enabled the feature, ensure {@link needsEnabledCheck} is
      *         called first.
@@ -222,6 +224,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             sAgsaSupportsAssistantVoiceSearch =
                     mSharedPrefsManager.readBoolean(ASSISTANT_VOICE_SEARCH_SUPPORTED,
                             /* default= */ false);
+            updateColorfulMicState();
         } else {
             DeferredStartupHandler.getInstance().addDeferredTask(() -> {
                 // Only do this once per browser start.
@@ -240,6 +243,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
                                 sAgsaSupportsAssistantVoiceSearch);
                         mSharedPrefsManager.writeString(
                                 ASSISTANT_LAST_VERSION, currentAgsaVersion);
+                        updateColorfulMicState();
                     }
                 }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             });
@@ -326,14 +330,61 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
                 USER_ELIGIBILITY_HISTOGRAM, canRequestAssistantVoiceSearch());
     }
 
+    private void updateColorfulMicState() {
+        final boolean shouldShowColorfulMic = isColorfulMicEnabled();
+        // Execute the update/notification in an AsyncTask to prevent re-entrant calls.
+        new AsyncTask<Boolean>() {
+            @Override
+            protected Boolean doInBackground() {
+                return mShouldShowColorfulMic != shouldShowColorfulMic;
+            }
+            @Override
+            protected void onPostExecute(Boolean notify) {
+                mShouldShowColorfulMic = shouldShowColorfulMic;
+                if (notify) notifyObserver();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    // TemplateUrlService.TemplateUrlServiceObserver implementation
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        boolean searchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        if (mIsDefaultSearchEngineGoogle == searchEngineGoogle) return;
+
+        mIsDefaultSearchEngineGoogle = searchEngineGoogle;
+        mShouldShowColorfulMic = isColorfulMicEnabled();
+        notifyObserver();
+    }
+
+    // GSAState.Observer implementation
+
+    @Override
+    public void onSetGsaAccount() {
+        updateColorfulMicState();
+    }
+
+    // ProfileManager.Observer implementation
+
+    @Override
+    public void onProfileAdded(Profile profile) {
+        updateColorfulMicState();
+    }
+
+    @Override
+    public void onProfileDestroyed(Profile profile) {}
+
+    // Test-only methods
+
     /** Enable the colorful mic for testing purposes. */
     void setColorfulMicEnabledForTesting(boolean enabled) {
         mIsColorfulMicEnabled = enabled;
         mShouldShowColorfulMic = enabled;
     }
 
-    // Allows testing the NULL case for Boolean.
-    static void setAgsaSupportsAssistantVoiceSearchForTesting(Boolean value) {
+    /** Allows skipping the cross-app check for testing. */
+    public static void setAgsaSupportsAssistantVoiceSearchForTesting(Boolean value) {
         sAgsaSupportsAssistantVoiceSearch = value;
     }
 }

@@ -189,6 +189,25 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_TemporaryAccountMismatch() {
+        doReturn(false).when(mGsaState).doesGsaAccountMatchChrome();
+
+        Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                        AssistantVoiceSearchService.EligibilityFailureReason.ACCOUNT_MISMATCH));
+
+        doReturn(true).when(mGsaState).doesGsaAccountMatchChrome();
+        Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                        AssistantVoiceSearchService.EligibilityFailureReason.ACCOUNT_MISMATCH));
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
     public void testAssistantEligibility_VersionTooLow() {
         doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
 

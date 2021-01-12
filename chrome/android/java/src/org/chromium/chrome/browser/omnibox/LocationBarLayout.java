@@ -700,13 +700,7 @@ public class LocationBarLayout
         final int primaryColor =
                 mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
 
-        // This will be called between inflation and initialization. For those calls, using a null
-        // ColorStateList should have no visible impact to the user.
-        ColorStateList micColorStateList = mAssistantVoiceSearchService == null
-                ? null
-                : mAssistantVoiceSearchService.getMicButtonColorStateList(
-                        primaryColor, getContext());
-        ApiCompatibilityUtils.setImageTintList(mMicButton, micColorStateList);
+        updateAssistantVoiceSearchDrawableAndColors();
 
         final boolean useDarkColors =
                 !ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -751,6 +745,12 @@ public class LocationBarLayout
 
     @Override
     public void onAssistantVoiceSearchServiceChanged() {
+        updateAssistantVoiceSearchDrawableAndColors();
+    }
+
+    private void updateAssistantVoiceSearchDrawableAndColors() {
+        if (mAssistantVoiceSearchService == null) return;
+
         Drawable drawable = mAssistantVoiceSearchService.getCurrentMicDrawable();
         mMicButton.setImageDrawable(drawable);
 

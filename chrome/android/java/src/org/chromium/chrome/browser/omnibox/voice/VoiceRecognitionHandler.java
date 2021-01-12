@@ -591,6 +591,9 @@ public class VoiceRecognitionHandler {
             AssistantVoiceSearchConsentUi.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), new SettingsLauncherImpl(),
                     (useAssistant) -> {
+                        // Notify the service about the consent completion.
+                        mAssistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
+
                         if (useAssistant) {
                             if (!startAGSAForAssistantVoiceSearch(
                                         activity, windowAndroid, source)) {
