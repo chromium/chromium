@@ -59,6 +59,24 @@ void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
     context.EndLayer();
 }
 
+namespace {
+
+void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
+  if (spread == 0)
+    return;
+
+  if (spread >= 0)
+    shadow_shape.ExpandRadii(spread);
+  else
+    shadow_shape.ShrinkRadii(-spread);
+
+  if (!shadow_shape.IsRenderable())
+    shadow_shape.AdjustRadii();
+  shadow_shape.ConstrainRadii();
+}
+
+}  // namespace
+
 void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
                                           const PhysicalRect& paint_rect,
                                           const ComputedStyle& style,
@@ -147,14 +165,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     if (has_border_radius) {
       FloatRoundedRect rounded_fill_rect = border;
       rounded_fill_rect.Inflate(shadow_spread);
-
-      if (shadow_spread >= 0)
-        rounded_fill_rect.ExpandRadii(shadow_spread);
-      else
-        rounded_fill_rect.ShrinkRadii(-shadow_spread);
-      if (!rounded_fill_rect.IsRenderable())
-        rounded_fill_rect.AdjustRadii();
-      rounded_fill_rect.ConstrainRadii();
+      ApplySpreadToShadowShape(rounded_fill_rect, shadow_spread);
       context.FillRoundedRect(rounded_fill_rect, Color::kBlack);
     } else {
       context.FillRect(fill_rect, Color::kBlack);
@@ -255,10 +266,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     GraphicsContextStateSaver state_saver(context);
     if (bounds.IsRounded()) {
       context.ClipRoundedRect(bounds);
-      if (shadow.Spread() < 0)
-        inner_rounded_rect.ExpandRadii(-shadow.Spread());
-      else
-        inner_rounded_rect.ShrinkRadii(shadow.Spread());
+      ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
     } else {
       context.Clip(bounds.Rect());
     }
