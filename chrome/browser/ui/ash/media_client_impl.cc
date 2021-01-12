@@ -319,13 +319,12 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
 
 void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
     cros::mojom::CameraPrivacySwitchState state) {
-  camera_privacy_switch_state_ = state;
-
   // Show camera privacy switch toast.
   switch (state) {
     case cros::mojom::CameraPrivacySwitchState::UNKNOWN:
       break;
     case cros::mojom::CameraPrivacySwitchState::ON: {
+      ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOffToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOnToastId,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST),
@@ -336,6 +335,13 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
       break;
     }
     case cros::mojom::CameraPrivacySwitchState::OFF: {
+      // Only show the "Camera is on" toast if the privacy switch state changed
+      // from ON (avoiding the toast when the state changes from UNKNOWN).
+      if (camera_privacy_switch_state_ !=
+          cros::mojom::CameraPrivacySwitchState::ON) {
+        break;
+      }
+      ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOnToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOffToastId,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST),
@@ -347,11 +353,12 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
     }
   }
 
-  if (camera_privacy_switch_state_ ==
-      cros::mojom::CameraPrivacySwitchState::OFF) {
+  if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
     SystemNotificationHelper::GetInstance()->Close(
         kCameraPrivacySwitchOnNotificationId);
   }
+
+  camera_privacy_switch_state_ = state;
 }
 
 void MediaClientImpl::OnActiveClientChange(cros::mojom::CameraClientType type,

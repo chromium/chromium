@@ -28,8 +28,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // ToastManager overrides:
   void Show(const ToastData& data) override;
-
-  void Cancel(const std::string& id);
+  void Cancel(const std::string& id) override;
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
