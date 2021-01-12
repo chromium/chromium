@@ -83,6 +83,14 @@ const tetherRegEx = new RegExp('tether(ing)?', 'i');
 const smartLockRegEx = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
 
 /**
+ * Regular expression to check for keywords related to Nearby Share like
+ * "nearby (share)" or "phone (hub)".
+ * Case insensitive matching.
+ * @type {RegExp}
+ */
+const nearbyShareRegEx = new RegExp('nearby|phone', 'i');
+
+/**
  * The callback used by the sys_info_page to receive the event that the system
  * information is ready.
  * @type {function(sysInfo)}
@@ -172,7 +180,8 @@ function checkForBluetoothKeywords(inputEvent) {
   const isRelatedToBluetooth = btRegEx.test(inputEvent.target.value) ||
       cantConnectRegEx.test(inputEvent.target.value) ||
       tetherRegEx.test(inputEvent.target.value) ||
-      smartLockRegEx.test(inputEvent.target.value);
+      smartLockRegEx.test(inputEvent.target.value) ||
+      nearbyShareRegEx.test(inputEvent.target.value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
 }
 
