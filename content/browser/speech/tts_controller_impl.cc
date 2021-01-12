@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -691,11 +692,13 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
 
     // Prefer the utterance language.
     if (!voice.lang.empty() && !utterance->GetLang().empty()) {
-      // An exact language match is worth more than a partial match.
-      if (voice.lang == utterance->GetLang()) {
+      // An exact locale match is worth more than a partial match.
+      // Convert locales to lowercase to handle cases like "en-us" vs. "en-US".
+      if (base::EqualsCaseInsensitiveASCII(voice.lang, utterance->GetLang())) {
         score += 128;
-      } else if (l10n_util::GetLanguage(voice.lang) ==
-                 l10n_util::GetLanguage(utterance->GetLang())) {
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     l10n_util::GetLanguage(voice.lang),
+                     l10n_util::GetLanguage(utterance->GetLang()))) {
         score += 64;
       }
     }
@@ -739,8 +742,9 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
     if (!voice.lang.empty()) {
       if (voice.lang == app_lang) {
         score += 2;
-      } else if (l10n_util::GetLanguage(voice.lang) ==
-                 l10n_util::GetLanguage(app_lang)) {
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     l10n_util::GetLanguage(voice.lang),
+                     l10n_util::GetLanguage(app_lang))) {
         score += 1;
       }
     }

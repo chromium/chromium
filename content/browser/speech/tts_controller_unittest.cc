@@ -510,6 +510,50 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
 #endif
   }
+
+  {
+    // This block ensures that voices can be matched, even if their locale's
+    // casing doesn't exactly match that of the utterance e.g. "en-us" will
+    // match with "en-US".
+    std::vector<VoiceData> voices;
+    VoiceData voice0;
+    voice0.engine_id = "id0";
+    voice0.name = "English voice";
+    voice0.lang = "en-US";
+    voices.push_back(voice0);
+    VoiceData voice1;
+    voice1.engine_id = "id0";
+    voice1.name = "French voice";
+    voice1.lang = "fr";
+    voices.push_back(voice1);
+
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
+    utterance->SetLang("en-us");
+    EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
+    utterance->SetLang("en-US");
+    EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
+    utterance->SetLang("EN-US");
+    EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Add another English voice.
+    VoiceData voice2;
+    voice2.engine_id = "id1";
+    voice2.name = "Another English voice";
+    voice2.lang = "en-us";
+    voices.push_back(voice2);
+
+    // Set voice2 as the preferred voice for English.
+    TtsControllerDelegate::PreferredVoiceIds preferred_voice_ids;
+    preferred_voice_ids.lang_voice_id.emplace(voice2.name, voice2.engine_id);
+    delegate()->SetPreferredVoiceIds(preferred_voice_ids);
+
+    // Ensure that voice2 is chosen over voice0, even though the locales don't
+    // match exactly. The utterance has a locale of "en-US", while voice2 has
+    // a locale of "en-us"; this shouldn't prevent voice2 from being used.
+    EXPECT_EQ(2, controller()->GetMatchingVoice(utterance.get(), voices));
+#endif
+  }
 }
 
 TEST_F(TtsControllerTest, StopsWhenWebContentsDestroyed) {
