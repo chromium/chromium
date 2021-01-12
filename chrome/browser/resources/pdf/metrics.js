@@ -212,7 +212,15 @@ export const UserAction = {
   TOGGLE_DISPLAY_ANNOTATIONS_FIRST: 59,
   TOGGLE_DISPLAY_ANNOTATIONS: 60,
 
-  NUMBER_OF_ACTIONS: 61,
+  // Recorded when the present menu item is clicked.
+  PRESENT_FIRST: 61,
+  PRESENT: 62,
+
+  // Recorded when the document properties menu item is clicked.
+  PROPERTIES_FIRST: 63,
+  PROPERTIES: 64,
+
+  NUMBER_OF_ACTIONS: 65,
 };
 
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
@@ -338,5 +346,13 @@ const firstMap = new Map([
   [
     UserAction.TOGGLE_DISPLAY_ANNOTATIONS,
     UserAction.TOGGLE_DISPLAY_ANNOTATIONS_FIRST,
+  ],
+  [
+    UserAction.PRESENT,
+    UserAction.PRESENT_FIRST,
+  ],
+  [
+    UserAction.PROPERTIES,
+    UserAction.PROPERTIES_FIRST,
   ],
 ]);

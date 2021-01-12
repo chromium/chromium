@@ -250,5 +250,35 @@ chrome.test.runTests(function() {
           chrome.metricsPrivate.actionCounter);
       chrome.test.succeed();
     },
+
+    function testMetricsOverflowMenu() {
+      PDFMetrics.resetForTesting();
+
+      chrome.metricsPrivate = new MockMetricsPrivate();
+      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+
+      PDFMetrics.record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
+      PDFMetrics.record(UserAction.PRESENT);
+      PDFMetrics.record(UserAction.PROPERTIES);
+      PDFMetrics.record(UserAction.PRESENT);
+      PDFMetrics.record(UserAction.PRESENT);
+      PDFMetrics.record(UserAction.PROPERTIES);
+      PDFMetrics.record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
+      PDFMetrics.record(UserAction.PROPERTIES);
+      PDFMetrics.record(UserAction.PRESENT);
+
+      chrome.test.assertEq(
+          {
+            [UserAction.DOCUMENT_OPENED]: 1,
+            [UserAction.TOGGLE_DISPLAY_ANNOTATIONS_FIRST]: 1,
+            [UserAction.TOGGLE_DISPLAY_ANNOTATIONS]: 2,
+            [UserAction.PRESENT_FIRST]: 1,
+            [UserAction.PRESENT]: 4,
+            [UserAction.PROPERTIES_FIRST]: 1,
+            [UserAction.PROPERTIES]: 3,
+          },
+          chrome.metricsPrivate.actionCounter);
+      chrome.test.succeed();
+    },
   ];
 }());

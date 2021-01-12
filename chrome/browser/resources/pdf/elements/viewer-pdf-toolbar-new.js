@@ -221,12 +221,14 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   /** @private */
   onPresentClick_() {
     assert(this.presentationModeEnabled);
+    PDFMetrics.record(UserAction.PRESENT);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('present-click'));
   }
 
   /** @private */
   onPropertiesClick_() {
+    PDFMetrics.record(UserAction.PROPERTIES);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('properties-click'));
   }
