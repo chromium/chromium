@@ -539,7 +539,12 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 // request callback called, it should stop rotating.
 TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalSecondaryDisplayBeforeSecondCopyCallback) {
-  UpdateDisplay("640x480,800x600");
+  {
+    // Disable wallpaper animation on a secondary display.
+    ui::ScopedAnimationDurationScaleMode disable(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    UpdateDisplay("640x480,800x600");
+  }
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   const int64_t primary_display_id = display_manager()->GetDisplayAt(0).id();

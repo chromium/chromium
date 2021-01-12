@@ -65,6 +65,7 @@ void CopyToLayerOnCopyRequestFinished(
 std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
   auto copy_layer = std::make_unique<ui::Layer>();
+  copy_layer->SetBounds(gfx::Rect(copy_result->size()));
   CopyCopyOutputResultToLayer(std::move(copy_result), copy_layer.get());
   return copy_layer;
 }
