@@ -9,11 +9,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-
-class PrivacySandboxSettings;
 
 namespace federated_learning {
 
@@ -48,9 +47,14 @@ class FlocEventLogger;
 //
 // In the event of history deletion, the floc will be invalidated immediately if
 // the time range of the deletion overlaps with the time range used to compute
-// the existing floc.
+// the existing floc. In the event of cookie deletion, the floc will always be
+// invalidated. Note that we only invalidate the floc rather than recomputing,
+// because we don't want the floc to change more frequently than the scheduled
+// update rate (% rare cases such as when the finch version param has changed
+// indicating a new algorithm / experiment, a recompute will be needed).
 class FlocIdProviderImpl : public FlocIdProvider,
                            public FlocSortingLshClustersService::Observer,
+                           public PrivacySandboxSettings::Observer,
                            public history::HistoryServiceObserver {
  public:
   struct ComputeFlocResult {
@@ -101,8 +105,16 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // KeyedService:
   void Shutdown() override;
 
+  // PrivacySandboxSettings::Observer
+
+  // When the floc-accessible-since time is updated (due to e.g. cookies
+  // deletion), we'll either invalidate or keep using the floc. This will
+  // depend on the updated time and the begin time of the history used to
+  // compute the current floc.
+  void OnFlocDataAccessibleSinceUpdated() override;
+
   // history::HistoryServiceObserver
-  //
+
   // On history deletion, we'll either invalidate or keep using the floc. This
   // will depend on the deletion type and the time range.
   void OnURLsDeleted(history::HistoryService* history_service,

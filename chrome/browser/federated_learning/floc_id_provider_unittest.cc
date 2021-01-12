@@ -21,6 +21,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -183,6 +184,7 @@ class FlocIdProviderUnitTest : public testing::Test {
 
   void SetUp() override {
     FlocId::RegisterPrefs(prefs_.registry());
+    privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -233,6 +235,10 @@ class FlocIdProviderUnitTest : public testing::Test {
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback) {
     floc_id_provider_->CheckCanComputeFloc(std::move(callback));
+  }
+
+  void OnFlocDataAccessibleSinceUpdated() {
+    floc_id_provider_->OnFlocDataAccessibleSinceUpdated();
   }
 
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -476,8 +482,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, UnqualifiedInitialHistory) {
   EXPECT_TRUE(floc_computation_scheduled());
 
   const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(6);
-  AddHistoryEntriesForDomains({"foo.com"},
-                              base::Time::Now() - base::TimeDelta::FromDays(6));
+  AddHistoryEntriesForDomains({"foo.com"}, kTime);
 
   // Advance the clock by 23 hours. Expect no more computation, as the id
   // refresh interval is 24 hours.
@@ -498,11 +503,90 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, UnqualifiedInitialHistory) {
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
-       HistoryDeleteAndScheduledUpdate) {
+       HistoryQueryBoundedByFlocAccessibleSince) {
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kSevenDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(7);
+      kStartTime - base::TimeDelta::FromDays(7);
   const base::Time kSixDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(6);
+      kStartTime - base::TimeDelta::FromDays(6);
+
+  prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
+                 kSixDaysBeforeStart);
+
+  AddHistoryEntriesForDomains({"foo.com"}, kSevenDaysBeforeStart);
+  AddHistoryEntriesForDomains({"bar.com"}, kSixDaysBeforeStart);
+
+  // Initializing the floc provider should trigger an immediate computation.
+  InitializeFlocIdProvider();
+  EXPECT_TRUE(floc_computation_in_progress());
+  EXPECT_FALSE(floc_computation_scheduled());
+
+  // Finish any outstanding history queries.
+  task_environment_.RunUntilIdle();
+
+  // Expect that the 1st computation has completed.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+
+  // Expected that floc is calculated from only "bar.com".
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"bar.com"}), kSixDaysBeforeStart,
+                   kSixDaysBeforeStart, 0),
+            floc_id());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       FlocAccessibleSinceViolationOnStartup) {
+  const base::Time kStartTime = base::Time::Now();
+  const base::Time kSevenDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(7);
+  const base::Time kSixDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(6);
+  const base::Time kTwelveHoursBeforeStart =
+      kStartTime - base::TimeDelta::FromHours(12);
+
+  FlocId floc_id_in_prefs_before_start =
+      FlocIdTester::Create(123, kSevenDaysBeforeStart, kSixDaysBeforeStart, 1,
+                           0, kTwelveHoursBeforeStart);
+  floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
+
+  prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
+                 kSixDaysBeforeStart);
+
+  AddHistoryEntriesForDomains({"foo.com"}, kSevenDaysBeforeStart);
+  AddHistoryEntriesForDomains({"bar.com"}, kSixDaysBeforeStart);
+
+  // Initializing the floc provider should invalidate the previous floc but
+  // should not trigger an immediate computation.
+  InitializeFlocIdProvider();
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+
+  EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_FALSE(FlocId::ReadFromPrefs(&prefs_).IsValid());
+
+  // Fast forward by 12 hours. This should trigger a scheduled update.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
+
+  // Expect a completed computation and an update to the local prefs.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+
+  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"bar.com"}),
+                              kSixDaysBeforeStart, kSixDaysBeforeStart, 0));
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       HistoryDeleteAndScheduledUpdate) {
+  const base::Time kStartTime = base::Time::Now();
+  const base::Time kSevenDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(7);
+  const base::Time kSixDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(6);
 
   AddHistoryEntriesForDomains({"foo.com"}, kSevenDaysBeforeStart);
   AddHistoryEntriesForDomains({"bar.com"}, kSixDaysBeforeStart);
@@ -601,6 +685,38 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   CheckCanComputeFloc(std::move(cb));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       OnFlocDataAccessibleSinceUpdated_TimeRangeNotFullyCovered) {
+  InitializeFlocIdProvider();
+  task_environment_.RunUntilIdle();
+
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+
+  set_floc_id(FlocId(123, kTime1, kTime2, 0));
+
+  prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime2);
+  OnFlocDataAccessibleSinceUpdated();
+
+  EXPECT_FALSE(floc_id().IsValid());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       OnFlocDataAccessibleSinceUpdated_TimeRangeFullyCovered) {
+  InitializeFlocIdProvider();
+  task_environment_.RunUntilIdle();
+
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+
+  set_floc_id(FlocId(123, kTime1, kTime2, 0));
+
+  prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime1);
+  OnFlocDataAccessibleSinceUpdated();
+
+  EXPECT_TRUE(floc_id().IsValid());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, HistoryDelete_AllHistory) {
@@ -840,12 +956,13 @@ class FlocIdProviderUnitTestSortingLshEnabled
 
 TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
        HistoryDeleteDuringInProgressComputation) {
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kSevenDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(7);
+      kStartTime - base::TimeDelta::FromDays(7);
   const base::Time kSixDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(6);
+      kStartTime - base::TimeDelta::FromDays(6);
   const base::Time kFiveDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(5);
+      kStartTime - base::TimeDelta::FromDays(5);
 
   AddHistoryEntriesForDomains({"foo.com"}, kSevenDaysBeforeStart);
   AddHistoryEntriesForDomains({"bar.com"}, kSixDaysBeforeStart);
@@ -1040,12 +1157,13 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        LastFlocUnexpired_NextScheduledUpdate) {
   // Setups before session start.
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kFourDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(4);
+      kStartTime - base::TimeDelta::FromDays(4);
   const base::Time kThreeDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(3);
+      kStartTime - base::TimeDelta::FromDays(3);
   const base::Time kLastComputeTime =
-      base::Time::Now() - base::TimeDelta::FromHours(12);
+      kStartTime - base::TimeDelta::FromHours(12);
 
   FlocId floc_id_in_prefs_before_start =
       FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
@@ -1086,12 +1204,13 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        LastFlocUnexpired_HistoryDelete) {
   // Setups before session start.
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kFourDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(4);
+      kStartTime - base::TimeDelta::FromDays(4);
   const base::Time kThreeDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(3);
+      kStartTime - base::TimeDelta::FromDays(3);
   const base::Time kLastComputeTime =
-      base::Time::Now() - base::TimeDelta::FromHours(12);
+      kStartTime - base::TimeDelta::FromHours(12);
 
   FlocId floc_id_in_prefs_before_start =
       FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
@@ -1128,14 +1247,15 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        LastFlocExpired_ImmediateCompute) {
   // Setups before session start.
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kTwentyDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(20);
+      kStartTime - base::TimeDelta::FromDays(20);
   const base::Time kNineteenDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(19);
+      kStartTime - base::TimeDelta::FromDays(19);
   const base::Time kTwoDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(2);
+      kStartTime - base::TimeDelta::FromDays(2);
   const base::Time kLastComputeTime =
-      base::Time::Now() - base::TimeDelta::FromHours(25);
+      kStartTime - base::TimeDelta::FromHours(25);
 
   FlocId floc_id_in_prefs_before_start =
       FlocIdTester::Create(123, kTwentyDaysBeforeStart,
@@ -1177,14 +1297,14 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        NextComputeDelayTooBig_ImmediateCompute) {
   // Setups before session start.
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kFourDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(4);
+      kStartTime - base::TimeDelta::FromDays(4);
   const base::Time kThreeDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(3);
+      kStartTime - base::TimeDelta::FromDays(3);
   const base::Time kTwoDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(2);
-  const base::Time kLastComputeTime =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+      kStartTime - base::TimeDelta::FromDays(2);
+  const base::Time kLastComputeTime = kStartTime + base::TimeDelta::FromDays(1);
 
   // Configure the last compute time to be 1 day after the start time, that
   // emulates the situation when the machine time has changed.
@@ -1227,14 +1347,15 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        LastFlocVersionMismatch_ImmediateCompute) {
   // Setups before session start.
+  const base::Time kStartTime = base::Time::Now();
   const base::Time kFourDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(4);
+      kStartTime - base::TimeDelta::FromDays(4);
   const base::Time kThreeDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(3);
+      kStartTime - base::TimeDelta::FromDays(3);
   const base::Time kTwoDaysBeforeStart =
-      base::Time::Now() - base::TimeDelta::FromDays(2);
+      kStartTime - base::TimeDelta::FromDays(2);
   const base::Time kLastComputeTime =
-      base::Time::Now() - base::TimeDelta::FromHours(12);
+      kStartTime - base::TimeDelta::FromHours(12);
 
   // Configure a floc with version finch_config_version 0, that is different
   // from the current version 1.

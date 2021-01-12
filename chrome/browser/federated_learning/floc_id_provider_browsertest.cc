@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/federated_learning/floc_event_logger.h"
@@ -35,6 +36,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -296,6 +298,17 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     run_loop.Run();
   }
 
+  void ClearCookiesBrowsingData() {
+    content::BrowsingDataRemover* remover =
+        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+    content::BrowsingDataRemoverCompletionObserver observer(remover);
+    remover->RemoveAndReply(
+        base::Time(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+    observer.BlockUntilCompletion();
+  }
+
   base::FilePath GetUniqueTemporaryPath() {
     CHECK(scoped_temp_dir_.IsValid() || scoped_temp_dir_.CreateUniqueTempDir());
     return scoped_temp_dir_.GetPath().AppendASCII(
@@ -507,7 +520,24 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
-                       HistoryDeleteRecomputeFloc) {
+                       ClearCookiesInvalidateFloc) {
+  ConfigureReplacementHostAndPortForRemotePermissionService();
+
+  FinishOutstandingAsyncQueries();
+  EXPECT_TRUE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+
+  ClearCookiesBrowsingData();
+  FinishOutstandingAsyncQueries();
+
+  // The floc has been invalidated. Expect no additional event logging.
+  EXPECT_FALSE(GetFlocId().IsValid());
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+}
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+                       HistoryDeleteInvalidateFloc) {
   ConfigureReplacementHostAndPortForRemotePermissionService();
 
   FinishOutstandingAsyncQueries();

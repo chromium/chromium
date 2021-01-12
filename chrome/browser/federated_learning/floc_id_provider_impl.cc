@@ -23,16 +23,24 @@ constexpr int kQueryHistoryWindowInDays = 7;
 // The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
 constexpr uint32_t kSortingLshVersionPlaceholder = 0;
 
-// Checks whether we can keep using the previous floc. If so, write to
-// |next_compute_delay| the time period we should wait until the floc needs to
-// be recomputed.
-bool ShouldKeepUsingPreviousFloc(const FlocId& last_floc,
-                                 base::TimeDelta* next_compute_delay) {
+struct StartupComputeDecision {
+  bool invalidate_existing_floc = true;
+  // Will be base::nullopt if should recompute immediately.
+  base::Optional<base::TimeDelta> next_compute_delay;
+};
+
+// Determine whether we can keep using the previous floc and/or when should the
+// next floc computation occur.
+StartupComputeDecision GetStartupComputeDecision(
+    const FlocId& last_floc,
+    base::Time floc_accessible_since) {
   // The floc has never been computed. This could happen with a fresh profile,
   // or some early trigger conditions were never met (e.g. sorting-lsh file has
   // never been ready).
-  if (last_floc.compute_time().is_null())
-    return false;
+  if (last_floc.compute_time().is_null()) {
+    return StartupComputeDecision{.invalidate_existing_floc = true,
+                                  .next_compute_delay = base::nullopt};
+  }
 
   // The browser started with a kFlocIdFinchConfigVersion param different from
   // the param when floc was computed last time.
@@ -44,7 +52,8 @@ bool ShouldKeepUsingPreviousFloc(const FlocId& last_floc,
   // wouldn't arrive due to e.g. component updater issue.
   if (last_floc.finch_config_version() !=
       static_cast<uint32_t>(kFlocIdFinchConfigVersion.Get())) {
-    return false;
+    return StartupComputeDecision{.invalidate_existing_floc = true,
+                                  .next_compute_delay = base::nullopt};
   }
 
   base::TimeDelta presumed_next_compute_delay =
@@ -52,19 +61,33 @@ bool ShouldKeepUsingPreviousFloc(const FlocId& last_floc,
       base::Time::Now();
 
   // The last floc has expired.
-  if (presumed_next_compute_delay <= base::TimeDelta())
-    return false;
+  if (presumed_next_compute_delay <= base::TimeDelta()) {
+    return StartupComputeDecision{.invalidate_existing_floc = true,
+                                  .next_compute_delay = base::nullopt};
+  }
 
   // This could happen if the machine time has changed since the last
-  // computation. Return false in order to keep computing the floc at the
-  // anticipated schedule rather than potentially stop computing for a very long
-  // time.
-  if (presumed_next_compute_delay >= 2 * kFlocIdScheduledUpdateInterval.Get())
-    return false;
+  // computation. Recompute immediately to align with the expected schedule
+  // rather than potentially stop computing for a very long time.
+  if (presumed_next_compute_delay >= 2 * kFlocIdScheduledUpdateInterval.Get()) {
+    return StartupComputeDecision{.invalidate_existing_floc = true,
+                                  .next_compute_delay = base::nullopt};
+  }
 
-  *next_compute_delay = presumed_next_compute_delay;
+  // Normally "floc_accessible_since <= last_floc.history_begin_time()" is an
+  // invariant, because we monitor its update and reset the floc accordingly.
+  // But "Clear on exit" may cause a cookie deletion on shutdown (practically on
+  // startup) that will reset floc_accessible_since to base::Time::Now and
+  // break the invariant on startup.
+  if (floc_accessible_since > last_floc.history_begin_time()) {
+    return StartupComputeDecision{
+        .invalidate_existing_floc = true,
+        .next_compute_delay = presumed_next_compute_delay};
+  }
 
-  return true;
+  return StartupComputeDecision{
+      .invalidate_existing_floc = false,
+      .next_compute_delay = presumed_next_compute_delay};
 }
 
 }  // namespace
@@ -79,19 +102,23 @@ FlocIdProviderImpl::FlocIdProviderImpl(
       history_service_(history_service),
       floc_event_logger_(std::move(floc_event_logger)),
       floc_id_(FlocId::ReadFromPrefs(prefs_)) {
+  privacy_sandbox_settings->AddObserver(this);
   history_service->AddObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
 
-  // If the previous floc has expired, invalidate it. The next computation will
-  // be "immediate", i.e. will occur after we first observe that the SortingLSH
-  // file is loaded; otherwise, keep using the last floc (which may still have
-  // be invalid), and schedule a recompute event with the desired delay.
-  base::TimeDelta next_compute_delay;
-  if (ShouldKeepUsingPreviousFloc(floc_id_, &next_compute_delay)) {
-    ScheduleFlocComputation(next_compute_delay);
-  } else {
+  StartupComputeDecision decision = GetStartupComputeDecision(
+      floc_id_, privacy_sandbox_settings->FlocDataAccessibleSince());
+
+  // If the previous floc has expired, invalidate it; otherwise, keep using the
+  // previous floc though it may already be invalid.
+  if (decision.invalidate_existing_floc)
     floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
-  }
+
+  // Schedule the next floc computation if a delay is needed; otherwise, the
+  // next computation will occur immediately, or as soon as the sorting-lsh file
+  // is loaded when the sorting-lsh feature is enabled.
+  if (decision.next_compute_delay.has_value())
+    ScheduleFlocComputation(decision.next_compute_delay.value());
 
   if (g_browser_process->floc_sorting_lsh_clusters_service()
           ->IsSortingLshClustersFileReady()) {
@@ -147,11 +174,33 @@ void FlocIdProviderImpl::LogFlocComputedEvent(const ComputeFlocResult& result) {
 }
 
 void FlocIdProviderImpl::Shutdown() {
-  if (history_service_)
-    history_service_->RemoveObserver(this);
-  history_service_ = nullptr;
-
+  privacy_sandbox_settings_->RemoveObserver(this);
+  history_service_->RemoveObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->RemoveObserver(this);
+}
+
+void FlocIdProviderImpl::OnFlocDataAccessibleSinceUpdated() {
+  // Set the |need_recompute_| flag so that we will recompute the floc
+  // immediately after the in-progress one finishes, so as to avoid potential
+  // data races.
+  if (floc_computation_in_progress_) {
+    need_recompute_ = true;
+    return;
+  }
+
+  // Note: we only invalidate the floc rather than recomputing, because we don't
+  // want the floc to change more frequently than the scheduled update rate.
+
+  // No-op if the floc is already invalid.
+  if (!floc_id_.IsValid())
+    return;
+
+  // Invalidate the floc if the new floc-accessible-since time is greater than
+  // the begin time of the history used to compute the current floc.
+  if (privacy_sandbox_settings_->FlocDataAccessibleSince() >
+      floc_id_.history_begin_time()) {
+    floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
+  }
 }
 
 void FlocIdProviderImpl::OnURLsDeleted(
@@ -198,8 +247,8 @@ void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
 
 void FlocIdProviderImpl::MaybeTriggerImmediateComputation() {
   // If the floc computation is neither in progress nor scheduled, it means we
-  // want to trigger an immediate computation as soon as the sorting-lsh file is
-  // loaded.
+  // want to trigger an immediate computation, or as soon as the sorting-lsh
+  // file is loaded when the sorting-lsh feature is enabled.
   if (floc_computation_in_progress_ || compute_floc_timer_.IsRunning())
     return;
 
@@ -254,8 +303,13 @@ bool FlocIdProviderImpl::IsPrivacySandboxAllowed() const {
 
 void FlocIdProviderImpl::GetRecentlyVisitedURLs(
     GetRecentlyVisitedURLsCallback callback) {
+  base::Time now = base::Time::Now();
+
   history::QueryOptions options;
-  options.SetRecentDayRange(kQueryHistoryWindowInDays);
+  options.begin_time =
+      std::max(privacy_sandbox_settings_->FlocDataAccessibleSince(),
+               now - base::TimeDelta::FromDays(kQueryHistoryWindowInDays));
+  options.end_time = now;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   history_service_->QueryHistory(base::string16(), options, std::move(callback),
