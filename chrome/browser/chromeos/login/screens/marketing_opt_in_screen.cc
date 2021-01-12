@@ -121,16 +121,17 @@ bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
 void MarketingOptInScreen::ShowImpl() {
   DCHECK(initialized_);
 
-  view_->Show();
-  // Mark the screen as shown for this user.
+  // Show a verbose legal footer for Canada. (https://crbug.com/1124956)
+  const bool legal_footer_visible =
+      email_opt_in_visible_ && countries_with_legal_footer.count(country_);
 
+  view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
+              /*opt_in_default_state=*/IsDefaultOptInCountry(),
+              /*legal_footer_visible=*/legal_footer_visible);
+
+  // Mark the screen as shown for this user.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kOobeMarketingOptInScreenFinished, true);
-
-  view_->SetOptInVisibility(email_opt_in_visible_);
-
-  // Set the default state of the email opt-in toggle.
-  view_->SetEmailToggleState(IsDefaultOptInCountry());
 
   // Only show the link for accessibility settings if the gesture navigation
   // screen was shown.
@@ -167,9 +168,9 @@ void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
 
   // UMA Metrics & API call only when the toggle is visible
   if (email_opt_in_visible_) {
-    RecordOptInAndOptOutRates(chromebook_email_opt_in /*user_opted_in*/,
-                              IsDefaultOptInCountry() /*opt_in_by_default*/,
-                              country_ /*country*/);
+    RecordOptInAndOptOutRates(/*user_opted_in=*/chromebook_email_opt_in,
+                              /*opt_in_by_default=*/IsDefaultOptInCountry(),
+                              /*country=*/country_);
 
     // Store the user's preference regarding marketing emails
     Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -201,6 +202,19 @@ bool MarketingOptInScreen::IsCurrentUserManaged() {
     return false;
   const std::string user_type = apps::DetermineUserType(profile);
   return (user_type != apps::kUserTypeUnmanaged);
+}
+
+void MarketingOptInScreen::Initialize() {
+  // Set the country to be used based on the timezone
+  // and supported country list.
+  SetCountryFromTimezoneIfAvailable(g_browser_process->local_state()->GetString(
+      ::prefs::kSigninScreenTimezone));
+
+  // Only show the opt in option if this is a supported region, and if the user
+  // never made a choice regarding emails.
+  email_opt_in_visible_ = !country_.empty() && ShouldShowOptionToSubscribe();
+
+  initialized_ = true;
 }
 
 void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
@@ -264,21 +278,6 @@ bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
 
   // The screen was shown before and the user has made its choice.
   return false;
-}
-
-void MarketingOptInScreen::Initialize() {
-  DCHECK(!initialized_);
-
-  // Set the country to be used based on the timezone
-  // and supported country list.
-  SetCountryFromTimezoneIfAvailable(g_browser_process->local_state()->GetString(
-      ::prefs::kSigninScreenTimezone));
-
-  // Only show the opt in option if this is a supported region, and if the user
-  // never made a choice regarding emails.
-  email_opt_in_visible_ = !country_.empty() && ShouldShowOptionToSubscribe();
-
-  initialized_ = true;
 }
 
 }  // namespace chromeos

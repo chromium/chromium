@@ -31,6 +31,15 @@
   line-height: 20px;
 }
 
+.legal-info {
+  color: var(--google-grey-700);
+  margin-top: 20px;
+}
+
+.legal-info-address {
+  margin-top: 10px;
+}
+
 .marketing-option hd-iron-icon {
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;

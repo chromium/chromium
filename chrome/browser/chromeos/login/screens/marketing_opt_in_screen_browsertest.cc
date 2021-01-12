@@ -52,6 +52,10 @@ const test::UIPath kChromebookEmailToggle = {"marketing-opt-in",
                                              "chromebookUpdatesOption"};
 const test::UIPath kChromebookEmailToggleDiv = {"marketing-opt-in",
                                                 "marketing-opt-in-toggle"};
+const test::UIPath kChromebookEmailLegalFooterDiv = {"marketing-opt-in",
+                                                     "legalFooter"};
+const test::UIPath kChromebookEmailAnimation = {"marketing-opt-in",
+                                                "animation"};
 const test::UIPath kMarketingA11yButton = {
     "marketing-opt-in", "marketing-opt-in-accessibility-button"};
 const test::UIPath kMarketingFinalA11yPage = {"marketing-opt-in",
@@ -66,30 +70,31 @@ struct RegionToCodeMap {
   const char* country_code;
   bool is_default_opt_in;
   bool is_unknown_country;
+  bool requires_legal_footer;
 };
 
 // Default countries
 const RegionToCodeMap kDefaultCountries[]{
-    {"US", "America/Los_Angeles", "us", true, false},
-    {"Canada", "Canada/Atlantic", "ca", false, false},
-    {"UnitedKingdom", "Europe/London", "gb", false, false}};
+    {"US", "America/Los_Angeles", "us", true, false, false},
+    {"Canada", "Canada/Atlantic", "ca", false, false, true},
+    {"UnitedKingdom", "Europe/London", "gb", false, false, false}};
 
 // Extended region list. Behind feature flag.
 const RegionToCodeMap kExtendedCountries[]{
-    {"France", "Europe/Paris", "fr", false, false},
-    {"Netherlands", "Europe/Amsterdam", "nl", false, false},
-    {"Finland", "Europe/Helsinki", "fi", false, false},
-    {"Sweden", "Europe/Stockholm", "se", false, false},
-    {"Norway", "Europe/Oslo", "no", false, false},
-    {"Denmark", "Europe/Copenhagen", "dk", false, false},
-    {"Spain", "Europe/Madrid", "es", false, false},
-    {"Italy", "Europe/Rome", "it", false, false},
-    {"Japan", "Asia/Tokyo", "jp", false, false},
-    {"Australia", "Australia/Sydney", "au", false, false}};
+    {"France", "Europe/Paris", "fr", false, false, false},
+    {"Netherlands", "Europe/Amsterdam", "nl", false, false, false},
+    {"Finland", "Europe/Helsinki", "fi", false, false, false},
+    {"Sweden", "Europe/Stockholm", "se", false, false, false},
+    {"Norway", "Europe/Oslo", "no", false, false, false},
+    {"Denmark", "Europe/Copenhagen", "dk", false, false, false},
+    {"Spain", "Europe/Madrid", "es", false, false, false},
+    {"Italy", "Europe/Rome", "it", false, false, false},
+    {"Japan", "Asia/Tokyo", "jp", false, false, false},
+    {"Australia", "Australia/Sydney", "au", false, false, false}};
 
 // Double opt-in countries. Behind double opt-in feature flag.
 const RegionToCodeMap kDoubleOptInCountries[]{
-    {"Germany", "Europe/Berlin", "de", false, false}};
+    {"Germany", "Europe/Berlin", "de", false, false, false}};
 
 // Unknown country.
 const RegionToCodeMap kUnknownCountry[]{
@@ -114,6 +119,8 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   void ExpectNoOptInOption();
   // Expects that the option to opt-in is visible.
   void ExpectOptInOptionAvailable();
+  // Expects a verbose footer containing legal information.
+  void ExpectLegalFooterVisibility(bool visibility);
   // Expects that the opt-in toggle is visible and unchecked.
   void ExpectOptedOut();
   // Expects that the opt-in toggle is visible and checked.
@@ -229,6 +236,17 @@ void MarketingOptInScreenTest::ExpectOptInOptionAvailable() {
   test::OobeJS().ExpectVisiblePath(
       {"marketing-opt-in", "marketingOptInOverviewDialog"});
   test::OobeJS().ExpectVisiblePath(kChromebookEmailToggleDiv);
+}
+
+void MarketingOptInScreenTest::ExpectLegalFooterVisibility(bool visibility) {
+  ExpectOptInOptionAvailable();
+  if (visibility) {
+    test::OobeJS().ExpectVisiblePath(kChromebookEmailLegalFooterDiv);
+    test::OobeJS().ExpectHiddenPath(kChromebookEmailAnimation);
+  } else {
+    test::OobeJS().ExpectHiddenPath(kChromebookEmailLegalFooterDiv);
+    test::OobeJS().ExpectVisiblePath(kChromebookEmailAnimation);
+  }
 }
 
 void MarketingOptInScreenTest::ExpectOptedOut() {
@@ -498,6 +516,7 @@ IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
   ShowMarketingOptInScreen();
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
 
+  ExpectLegalFooterVisibility(param.requires_legal_footer);
   if (param.is_default_opt_in) {
     ExpectOptedIn();
   } else {

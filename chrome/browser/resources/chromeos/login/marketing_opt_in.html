@@ -64,9 +64,19 @@
               aria-labelledby="chromebookUpdatesOptionLabel">
           </cr-toggle>
         </div>
-        <div class="marketing-animation-container">
+        <div id="animation" class="marketing-animation-container"
+            hidden="[[hasLegalFooter_]]">
           <cr-lottie class="marketing-animation" animation-url="all_set.json">
           </cr-lottie>
+        </div>
+        <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
+          <div>
+            [[i18nDynamic(locale, 'marketingOptInScreenFooterNotice')]]
+          </div>
+          <div class="legal-info-address">
+            Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+            <div>www.google.com</div>
+          </div>
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">

@@ -25,7 +25,9 @@ class MarketingOptInScreenView {
   virtual void Bind(MarketingOptInScreen* screen) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(bool opt_in_visible,
+                    bool opt_in_default_state,
+                    bool legal_footer_visible) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -33,15 +35,10 @@ class MarketingOptInScreenView {
   // Sets whether the a11y Settings button is visible.
   virtual void UpdateA11ySettingsButtonVisibility(bool shown) = 0;
 
-  // Sets whether the a11y setting for showing shelf navigation buttons is
+  // Sets whether the a11y setting for showing shelf navigation buttons is.
   // toggled on or off.
   virtual void UpdateA11yShelfNavigationButtonToggle(bool enabled) = 0;
 
-  // Sets the visibility of the marketing email opt-in
-  virtual void SetOptInVisibility(bool visible) = 0;
-
-  // Updates the toggle state for the email opt-in
-  virtual void SetEmailToggleState(bool checked) = 0;
 };
 
 // The sole implementation of the MarketingOptInScreenView, using WebUI.
@@ -59,12 +56,12 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
 
   // MarketingOptInScreenView:
   void Bind(MarketingOptInScreen* screen) override;
-  void Show() override;
+  void Show(bool opt_in_visible,
+            bool opt_in_default_state,
+            bool legal_footer_visible) override;
   void Hide() override;
   void UpdateA11ySettingsButtonVisibility(bool shown) override;
   void UpdateA11yShelfNavigationButtonToggle(bool enabled) override;
-  void SetOptInVisibility(bool visible) override;
-  void SetEmailToggleState(bool checked) override;
 
  private:
   // BaseScreenHandler:

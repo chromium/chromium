@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
@@ -84,16 +85,16 @@ class MarketingOptInScreen : public BaseScreen {
   // Checks whether this user is managed.
   bool IsCurrentUserManaged();
 
+  // Initializes the screen and determines if it should be visible based on the
+  // country.
+  void Initialize();
+
   // Sets the country to be used if the feature is available in this region.
   void SetCountryFromTimezoneIfAvailable(const std::string& timezone_id);
 
   // Whether the screen should be shown depending if it was shown before and if
   // the user had the option to subscribe to emails.
   bool ShouldShowOptionToSubscribe();
-
-  // Initializes the screen and determines if it should be visible based on the
-  // country.
-  void Initialize();
 
   bool IsDefaultOptInCountry() {
     return default_opt_in_countries_.count(country_);
@@ -119,19 +120,22 @@ class MarketingOptInScreen : public BaseScreen {
   bool ignore_pref_sync_for_testing_ = false;
 
   // Default country list.
-  const std::unordered_set<std::string> default_countries_{"us", "ca", "gb"};
+  const base::flat_set<base::StringPiece> default_countries_{"us", "ca", "gb"};
 
   // Extended country list. Protected behind the flag:
   // - kOobeMarketingAdditionalCountriesSupported (DEFAULT_ON)
-  const std::unordered_set<std::string> additional_countries_{
+  const base::flat_set<base::StringPiece> additional_countries_{
       "fr", "nl", "fi", "se", "no", "dk", "es", "it", "jp", "au"};
 
   // Countries with double opt-in.  Behind the flag:
   // - kOobeMarketingDoubleOptInCountriesSupported (DEFAULT_OFF)
-  const std::unordered_set<std::string> double_opt_in_countries_{"de"};
+  const base::flat_set<base::StringPiece> double_opt_in_countries_{"de"};
 
   // Countries in which the toggle will be enabled by default.
-  const std::unordered_set<std::string> default_opt_in_countries_{"us"};
+  const base::flat_set<base::StringPiece> default_opt_in_countries_{"us"};
+
+  // Countries that require the screen to show a footer with legal information.
+  const base::flat_set<base::StringPiece> countries_with_legal_footer{"ca"};
 
   base::WeakPtrFactory<MarketingOptInScreen> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);

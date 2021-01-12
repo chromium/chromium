@@ -898,14 +898,26 @@ cr.define('cr.ui.login.debug', function() {
       states: [
         {
           id: 'WithOptionToSubscribe',
-          trigger: (screen) => {
-            screen.setOptInVisibility(true);
+          data: {
+            optInVisibility: true,
+            optInDefaultState: true,
+            legalFooterVisibility: false,
           },
         },
         {
           id: 'NoOptionToSubscribe',
-          trigger: (screen) => {
-            screen.setOptInVisibility(false);
+          data: {
+            optInVisibility: false,
+            optInDefaultState: false,
+            legalFooterVisibility: false,
+          },
+        },
+        {
+          id: 'WithLegalFooter',
+          data: {
+            optInVisibility: true,
+            optInDefaultState: true,
+            legalFooterVisibility: true,
           },
         },
       ],
