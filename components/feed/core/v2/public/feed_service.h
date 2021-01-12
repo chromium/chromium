@@ -31,6 +31,9 @@ class DeletionInfo;
 namespace feedstore {
 class Record;
 }  // namespace feedstore
+namespace feedkvstore {
+class Entry;
+}  // namespace feedkvstore
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -48,6 +51,7 @@ class MetricsReporter;
 class FeedNetwork;
 class FeedStore;
 class FeedStream;
+class PersistentKeyValueStoreImpl;
 class ImageFetcher;
 
 namespace internal {
@@ -82,6 +86,8 @@ class FeedService : public KeyedService {
       PrefService* profile_prefs,
       PrefService* local_state,
       std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database,
+      std::unique_ptr<leveldb_proto::ProtoDatabase<feedkvstore::Entry>>
+          key_value_store_database,
       signin::IdentityManager* identity_manager,
       history::HistoryService* history_service,
       offline_pages::PrefetchService* prefetch_service,
@@ -123,6 +129,7 @@ class FeedService : public KeyedService {
   std::unique_ptr<FeedNetwork> feed_network_;
   std::unique_ptr<ImageFetcher> image_fetcher_;
   std::unique_ptr<FeedStore> store_;
+  std::unique_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
   std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
   std::unique_ptr<IdentityManagerObserverImpl> identity_manager_observer_;

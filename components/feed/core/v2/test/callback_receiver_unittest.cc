@@ -5,6 +5,9 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 
 #include "base/optional.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -39,6 +42,27 @@ TEST(CallbackReceiverTest, Clear) {
   cr.Clear();
   EXPECT_EQ(cr.GetResult<0>(), base::nullopt);
   EXPECT_EQ(cr.GetResult<1>(), base::nullopt);
+}
+
+TEST(CallbackReceiverTest, RunAndGetResult) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  CallbackReceiver<int> cr1;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(cr1.Bind(), 42));
+  EXPECT_EQ(42, cr1.RunAndGetResult());
+}
+
+TEST(CallbackReceiverTest, RunAndGetResultExternalRunLoop) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::RunLoop run_loop;
+  CallbackReceiver<int> cr1(&run_loop);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(cr1.Bind(), 42));
+  EXPECT_EQ(42, cr1.RunAndGetResult());
 }
 
 }  // namespace feed

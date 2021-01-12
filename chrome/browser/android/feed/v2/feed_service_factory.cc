@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_version.h"
 #include "components/background_task_scheduler/background_task_scheduler_factory.h"
 #include "components/feed/buildflags.h"
+#include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -129,6 +130,9 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
       storage_partition->GetProtoDatabaseProvider()->GetDB<feedstore::Record>(
           leveldb_proto::ProtoDbType::FEED_STREAM_DATABASE,
           feed_dir.AppendASCII("streamdb"), background_task_runner),
+      storage_partition->GetProtoDatabaseProvider()->GetDB<feedkvstore::Entry>(
+          leveldb_proto::ProtoDbType::FEED_KEY_VALUE_DATABASE,
+          feed_dir.AppendASCII("keyvaldb"), background_task_runner),
       identity_manager,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS),

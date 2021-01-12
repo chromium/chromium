@@ -23,6 +23,7 @@ proto_library("proto_v2") {
     #UNUSED_IN_CHROME "v2/wire/in_place_update_handle.proto",
     #UNUSED_IN_CHROME "v2/wire/response_status_code.proto",
     #UNUSED_IN_CHROME "v2/wire/templates.proto",
+    "v2/keyvalue_store.proto",
     "v2/packing.proto",
     "v2/store.proto",
     "v2/ui.proto",
