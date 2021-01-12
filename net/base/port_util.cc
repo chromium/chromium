@@ -73,7 +73,6 @@ const int kRestrictedPorts[] = {
     532,   // netnews
     540,   // uucp
     548,   // AFP (Apple Filing Protocol)
-    554,   // rtsp
     556,   // remotefs
     563,   // nntp+ssl
     587,   // smtp (rfc6409)
