@@ -458,7 +458,7 @@
       'chrome_all_tast_tests': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
-          'shards': 2,
+          'shards': 4,
         },
         'resultdb': {
           'enable': True,
