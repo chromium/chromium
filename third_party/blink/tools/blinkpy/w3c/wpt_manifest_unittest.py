@@ -24,8 +24,9 @@ class WPTManifestUnitTest(unittest.TestCase):
                          {manifest_path: '{"manifest": "base"}'})
 
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            'python',
             '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '--py2',
             'manifest',
             '-v',
             '--no-download',
@@ -48,8 +49,9 @@ class WPTManifestUnitTest(unittest.TestCase):
                          {manifest_path: '{"manifest": "base"}'})
 
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            'python',
             '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '--py2',
             'manifest',
             '-v',
             '--no-download',
@@ -70,8 +72,9 @@ class WPTManifestUnitTest(unittest.TestCase):
         port = TestPort(host)
         WPTManifest.ensure_manifest(port, 'wpt_internal')
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            'python',
             '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '--py2',
             'manifest',
             '-v',
             '--no-download',

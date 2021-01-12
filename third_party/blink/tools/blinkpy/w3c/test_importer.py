@@ -404,8 +404,7 @@ class TestImporter(object):
         stages the generated MANIFEST.json in the git index, ready to commit.
         """
         _log.info('Generating MANIFEST.json')
-        WPTManifest.generate_manifest(self.host.port_factory.get(),
-                                      self.dest_path)
+        WPTManifest.generate_manifest(self.host, self.dest_path)
         manifest_path = self.fs.join(self.dest_path, 'MANIFEST.json')
         assert self.fs.exists(manifest_path)
         manifest_base_path = self.fs.normpath(
