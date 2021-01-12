@@ -16,7 +16,6 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/public/common/content_client.h"
@@ -148,7 +147,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // `container_info`.
     DCHECK(!handle_->container_host());
     base::WeakPtr<ServiceWorkerContainerHost> container_host;
-    bool inherit_container_host_only = false;
+    bool inherit_controller_only = false;
 
     if (request_destination_ == network::mojom::RequestDestination::kDocument ||
         request_destination_ == network::mojom::RequestDestination::kIframe) {
@@ -177,34 +176,29 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           tentative_resource_request.url.SchemeIsBlob()) {
         container_host->InheritControllerFrom(*parent_container_host,
                                               tentative_resource_request.url);
-        inherit_container_host_only = true;
+        inherit_controller_only = true;
       }
     }
     DCHECK(container_host);
     handle_->set_container_host(container_host);
 
-    // Also make the inner interceptor.
-    DCHECK(!handle_->interceptor());
-    handle_->set_interceptor(
-        std::make_unique<ServiceWorkerControlleeRequestHandler>(
-            context_core->AsWeakPtr(), container_host, request_destination_,
-            skip_service_worker_, handle_->service_worker_accessed_callback()));
-
-    // For the blob worker case, we only inherit the controller and do not
-    // let it intercept the requests. Blob URLs are not eligible to go through
-    // service worker interception. So just call the loader callback now.
-    // We don't use the interceptor but have to set it because we need
-    // ControllerServiceWorkerInfoPtr and ServiceWorkerObjectHost from the
-    // subresource loader params which is created by the interceptor.
-    if (inherit_container_host_only) {
+    // For the blob worker case, we only inherit the controller and do not let
+    // it intercept the main resource request. Blob URLs are not eligible to
+    // go through service worker interception. So just call the loader
+    // callback now.
+    if (inherit_controller_only) {
       std::move(loader_callback).Run(/*handler=*/{});
       return;
     }
   }
 
-  // Start the inner interceptor. It will invoke the loader callback
-  // or fallback callback.
-  handle_->interceptor()->MaybeCreateLoader(
+  // Create and start the handler for this request. It will invoke the loader
+  // callback or fallback callback.
+  request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
+      context_core->AsWeakPtr(), handle_->container_host(),
+      request_destination_, skip_service_worker_,
+      handle_->service_worker_accessed_callback());
+  request_handler_->MaybeCreateLoader(
       tentative_resource_request, browser_context, std::move(loader_callback),
       std::move(fallback_callback));
 }
