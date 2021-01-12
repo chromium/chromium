@@ -24,13 +24,19 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/components/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -214,27 +220,37 @@ class WebAppIntegrationBrowserTest
         action_strings, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
 
+  // Non-assert actions implemented before assert actions. Implemented in
+  // alphabetical order.
   void ExecuteAction(const std::string& action_string) {
-    if (base::StartsWith(action_string, "navigate_installable")) {
-      NavigateToSite(browser(), GetInstallableAppURL());
-    } else if (action_string == "navigate_browser_in_scope") {
-      NavigateToSite(browser(), GetInScopeURL());
-    } else if (action_string == "navigate_not_installable") {
-      NavigateToSite(browser(), GetOutOfScopeURL());
+    if (action_string == "add_policy_app_internal_tabbed") {
+      AddPolicyAppInternalTabbed();
+    } else if (action_string == "close_pwa") {
+      ClosePWA();
+    } else if (action_string == "install_create_shortcut_tabbed") {
+      InstallCreateShortcutTabbed();
     } else if (action_string == "install_omnibox_or_menu") {
-      ExecutePwaInstallIcon();
+      InstallOmniboxOrMenu();
     } else if (base::StartsWith(action_string, "launch_internal")) {
       LaunchInternal();
+    } else if (action_string == "list_apps_internal") {
+      ListAppsInternal();
+    } else if (action_string == "navigate_browser_in_scope") {
+      NavigateToSite(browser(), GetInScopeURL());
+    } else if (base::StartsWith(action_string, "navigate_installable")) {
+      NavigateToSite(browser(), GetInstallableAppURL());
+    } else if (action_string == "navigate_not_installable") {
+      NavigateToSite(browser(), GetNonInstallableAppURL());
+    } else if (action_string == "remove_policy_app") {
+      RemovePolicyApp();
+    } else if (action_string == "set_open_in_window_internal") {
+      SetOpenInWindowInternal();
     } else if (action_string == "uninstall_from_menu") {
       UninstallFromMenu();
     } else if (action_string == "uninstall_internal") {
       UninstallInternal();
-    } else if (action_string == "install_create_shortcut_tabbed") {
-      InstallCreateShortcutTabbed();
-    } else if (action_string == "set_open_in_window_internal") {
-      SetOpenInWindowInternal();
-    } else if (action_string == "close_pwa") {
-      ClosePWA();
+    } else if (action_string == "assert_app_not_in_list") {
+      AssertAppNotInList();
     } else if (action_string == "assert_installable") {
       AssertInstallable();
     } else if (action_string == "assert_install_icon_shown") {
@@ -245,46 +261,60 @@ class WebAppIntegrationBrowserTest
       AssertLaunchIconShown();
     } else if (action_string == "assert_launch_icon_not_shown") {
       AssertLaunchIconNotShown();
+    } else if (action_string == "assert_no_crash") {
     } else if (action_string == "assert_window_created") {
       AssertWindowCreated();
-    } else if (action_string == "assert_no_crash") {
     } else {
       FAIL() << "Unimplemented action: " << action_string;
     }
   }
 
   // Automated Testing Actions
-  NavigateToSiteResult NavigateToSite(Browser* browser, const GURL& url) {
-    content::WebContents* web_contents = GetCurrentTab(browser);
-    auto* app_banner_manager =
-        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
-    DCHECK(!app_banner_manager->WaitForInstallableCheck());
-
-    ui_test_utils::NavigateToURL(browser, url);
-    bool installable = app_banner_manager->WaitForInstallableCheck();
-
-    last_navigation_result_ =
-        NavigateToSiteResult{web_contents, app_banner_manager, installable};
-    return last_navigation_result_;
+  void AddPolicyAppInternalTabbed() {
+    GURL url = GetInstallableAppURL();
+    auto* web_app_registrar = WebAppProvider::Get(browser()->profile())
+                                  ->registrar()
+                                  .AsWebAppRegistrar();
+    base::RunLoop run_loop;
+    WebAppInstallObserver observer(browser()->profile());
+    observer.SetWebAppInstalledDelegate(
+        base::BindLambdaForTesting([&](const AppId& app_id) {
+          bool is_installed = web_app_registrar->IsInstalled(app_id);
+          GURL installed_url = web_app_registrar->GetAppStartUrl(app_id);
+          if (is_installed && installed_url.is_valid() &&
+              installed_url.spec() == url.spec()) {
+            app_id_ = app_id;
+            run_loop.Quit();
+          }
+        }));
+    {
+      base::Value item(base::Value::Type::DICTIONARY);
+      item.SetKey(kUrlKey, base::Value(url.spec()));
+      item.SetKey(kDefaultLaunchContainerKey,
+                  base::Value(kDefaultLaunchContainerTabValue));
+      ListPrefUpdate update(browser()->profile()->GetPrefs(),
+                            prefs::kWebAppInstallForceList);
+      update->Append(item.Clone());
+    }
+    run_loop.Run();
   }
 
-  GURL GetInstallableAppURL() {
-    return https_server_.GetURL("/banners/manifest_test_page.html");
+  void ClosePWA() {
+    DCHECK(app_browser_);
+    app_browser_->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser_);
   }
 
-  GURL GetInScopeURL() {
-    return https_server_.GetURL("/banners/manifest_test_page.html");
+  void InstallCreateShortcutTabbed() {
+    chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                                /*auto_open_in_window=*/false);
+    WebAppInstallObserver observer(browser()->profile());
+    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+    app_id_ = observer.AwaitNextInstall();
+    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   }
 
-  GURL GetOutOfScopeURL() {
-    return https_server_.GetURL("/out_of_scope/index.html");
-  }
-
-  content::WebContents* GetCurrentTab(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents();
-  }
-
-  web_app::AppId ExecutePwaInstallIcon() {
+  web_app::AppId InstallOmniboxOrMenu() {
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
     web_app::AppId app_id;
@@ -313,6 +343,55 @@ class WebAppIntegrationBrowserTest
     app_browser_ = LaunchWebAppBrowserAndWait(
         ProfileManager::GetActiveUserProfile(), app_id_);
     return app_browser_;
+  }
+
+  void ListAppsInternal() {
+    auto* web_app_registrar = WebAppProvider::Get(browser()->profile())
+                                  ->registrar()
+                                  .AsWebAppRegistrar();
+    app_ids_ = web_app_registrar->GetAppIds();
+  }
+
+  NavigateToSiteResult NavigateToSite(Browser* browser, const GURL& url) {
+    content::WebContents* web_contents = GetCurrentTab(browser);
+    auto* app_banner_manager =
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+    DCHECK(!app_banner_manager->WaitForInstallableCheck());
+
+    ui_test_utils::NavigateToURL(browser, url);
+    bool installable = app_banner_manager->WaitForInstallableCheck();
+
+    last_navigation_result_ =
+        NavigateToSiteResult{web_contents, app_banner_manager, installable};
+    return last_navigation_result_;
+  }
+
+  void RemovePolicyApp() {
+    GURL url = GetInstallableAppURL();
+    base::RunLoop run_loop;
+    WebAppInstallObserver observer(browser()->profile());
+    observer.SetWebAppUninstalledDelegate(
+        base::BindLambdaForTesting([&](const AppId& app_id) {
+          if (app_id_ == app_id) {
+            run_loop.Quit();
+          }
+        }));
+    {
+      ListPrefUpdate update(browser()->profile()->GetPrefs(),
+                            prefs::kWebAppInstallForceList);
+      update->EraseListValueIf([&](const base::Value& item) {
+        const base::Value* url_value = item.FindKey(kUrlKey);
+        return url_value && url_value->GetString() == url.spec();
+      });
+    }
+    run_loop.Run();
+  }
+
+  void SetOpenInWindowInternal() {
+    auto& app_registry_controller =
+        WebAppProvider::Get(browser()->profile())->registry_controller();
+    app_registry_controller.SetAppUserDisplayMode(
+        app_id_, blink::mojom::DisplayMode::kStandalone, true);
   }
 
   // TODO(https://crbug.com/1159651): Support this action on CrOS.
@@ -364,42 +443,25 @@ class WebAppIntegrationBrowserTest
     run_loop.Run();
   }
 
-  void InstallCreateShortcutTabbed() {
-    chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                                /*auto_open_in_window=*/false);
-    WebAppInstallObserver observer(browser()->profile());
-    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    app_id_ = observer.AwaitNextInstall();
-    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
-  }
-
-  void SetOpenInWindowInternal() {
-    auto& app_registry_controller =
-        WebAppProvider::Get(browser()->profile())->registry_controller();
-    app_registry_controller.SetAppUserDisplayMode(
-        app_id_, blink::mojom::DisplayMode::kStandalone, true);
-  }
-
-  void ClosePWA() {
-    DCHECK(app_browser_);
-    app_browser_->window()->Close();
-    ui_test_utils::WaitForBrowserToClose(app_browser_);
-  }
-
   // Assert Actions
+  void AssertAppNotInList() { EXPECT_FALSE(base::Contains(app_ids_, app_id_)); }
   void AssertInstallable() { EXPECT_TRUE(last_navigation_result_.installable); }
+
   void AssertInstallIconShown() {
     EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
     EXPECT_TRUE(pwa_install_view()->GetVisible());
   }
+
   void AssertInstallIconNotShown() {
     EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
     EXPECT_FALSE(pwa_install_view()->GetVisible());
   }
+
   void AssertLaunchIconShown() {
     EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
               kEnabled);
   }
+
   void AssertLaunchIconNotShown() {
     EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
               kNotPresent);
@@ -407,12 +469,33 @@ class WebAppIntegrationBrowserTest
 
   void AssertWindowCreated() { EXPECT_TRUE(app_browser_); }
 
+  GURL GetInstallableAppURL() {
+    return https_server_.GetURL("/banners/manifest_test_page.html");
+  }
+
+  GURL GetNonInstallableAppURL() {
+    return https_server_.GetURL("/banners/no_manifest_test_page.html");
+  }
+
+  GURL GetInScopeURL() {
+    return https_server_.GetURL("/banners/manifest_test_page.html");
+  }
+
+  GURL GetOutOfScopeURL() {
+    return https_server_.GetURL("/out_of_scope/index.html");
+  }
+
+  content::WebContents* GetCurrentTab(Browser* browser) {
+    return browser->tab_strip_model()->GetActiveWebContents();
+  }
+
   Browser* app_browser() { return app_browser_; }
   std::vector<std::string>& testing_actions() { return testing_actions_; }
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
 
  private:
   Browser* app_browser_ = nullptr;
+  std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
   NavigateToSiteResult last_navigation_result_;
   AppId app_id_;
@@ -435,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kNotPresent);
 
-  ExecutePwaInstallIcon();
+  InstallOmniboxOrMenu();
 
   chrome::NewTab(browser());
   NavigateToSite(browser(), GetInstallableAppURL());
@@ -450,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, LaunchInternal) {
   EXPECT_EQ(1U, browser_list->size());
   EXPECT_FALSE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
   NavigateToSite(browser(), GetInstallableAppURL());
-  ExecutePwaInstallIcon();
+  InstallOmniboxOrMenu();
   EXPECT_EQ(2U, browser_list->size());
   EXPECT_TRUE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
   ClosePWA();
