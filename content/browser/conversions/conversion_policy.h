@@ -49,7 +49,7 @@ class CONTENT_EXPORT ConversionPolicy {
       uint64_t conversion_data) const;
 
   // Gets the sanitized impression data for an impression. Returns the decoded
-  // number as a hexadecimal string.
+  // number as a base 10 string.
   virtual std::string GetSanitizedImpressionData(
       uint64_t impression_data) const;
 
