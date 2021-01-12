@@ -362,6 +362,14 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     if (result_out->is_overflow)
       return ShapeToEnd(start, first_safe, range_start, range_end);
     break_opportunity.offset = range_end;
+    if (break_opportunity.non_hangable_run_end &&
+        range_end < break_opportunity.non_hangable_run_end) {
+      break_opportunity.non_hangable_run_end = base::nullopt;
+    }
+    if (IsBreakableSpace(text[range_end - 1])) {
+      break_opportunity.non_hangable_run_end =
+          FindNonHangableEnd(text, range_end - 1);
+    }
   }
   CheckBreakOffset(break_opportunity.offset, start, range_end);
 

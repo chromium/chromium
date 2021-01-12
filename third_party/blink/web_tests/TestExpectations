@@ -1545,10 +1545,10 @@ crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-sep
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-002.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-003.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-004.html [ Failure ]
-crbug.com/1129834 external/wpt/css/css-text/white-space/full-width-leading-spaces-004.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-ideographic-space-001.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-ideographic-space-002.html [ Failure ]
 
+crbug.com/1162836 external/wpt/css/css-text/white-space/full-width-leading-spaces-004.html [ Failure ]
 
 # Follow up the spec change for U+2010, U+2013
 crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-loose-hyphens-001.html [ Failure ]
