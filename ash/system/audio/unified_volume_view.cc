@@ -228,13 +228,15 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
 
 UnifiedVolumeView::UnifiedVolumeView(
     UnifiedVolumeSliderController* controller,
-    UnifiedVolumeSliderController::Delegate* delegate)
+    UnifiedVolumeSliderController::Delegate* delegate,
+    bool in_bubble)
     : UnifiedSliderView(base::BindRepeating(
                             &UnifiedVolumeSliderController::SliderButtonPressed,
                             base::Unretained(controller)),
                         controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
+      in_bubble_(in_bubble),
       live_caption_button_(new LiveCaptionButton(
           base::BindRepeating(&UnifiedVolumeView::OnLiveCaptionButtonPressed,
                               base::Unretained(this)))),
@@ -277,7 +279,8 @@ void UnifiedVolumeView::Update(bool by_user) {
       IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
 
   live_caption_button_->SetVisible(
-      base::FeatureList::IsEnabled(media::kLiveCaption));
+      in_bubble_ &&
+      base::FeatureList::IsEnabled(media::kLiveCaptionSystemWideOnChromeOS));
   live_caption_button_->SetToggled(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kLiveCaptionEnabled));

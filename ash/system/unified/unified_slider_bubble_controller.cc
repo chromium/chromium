@@ -204,8 +204,8 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 void UnifiedSliderBubbleController::CreateSliderController() {
   switch (slider_type_) {
     case SLIDER_TYPE_VOLUME:
-      slider_controller_ =
-          std::make_unique<UnifiedVolumeSliderController>(this);
+      slider_controller_ = std::make_unique<UnifiedVolumeSliderController>(
+          this, true /* in_bubble */);
       return;
     case SLIDER_TYPE_DISPLAY_BRIGHTNESS:
       slider_controller_ =

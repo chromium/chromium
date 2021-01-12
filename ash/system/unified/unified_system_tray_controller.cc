@@ -128,8 +128,8 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
         media_controls_controller_->CreateView());
   }
 
-  volume_slider_controller_ =
-      std::make_unique<UnifiedVolumeSliderController>(this);
+  volume_slider_controller_ = std::make_unique<UnifiedVolumeSliderController>(
+      this, false /* in_bubble */);
   unified_view_->AddSliderView(volume_slider_controller_->CreateView());
 
   brightness_slider_controller_ =

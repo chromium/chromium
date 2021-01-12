@@ -17,15 +17,16 @@ using chromeos::CrasAudioHandler;
 namespace ash {
 
 UnifiedVolumeSliderController::UnifiedVolumeSliderController(
-    UnifiedVolumeSliderController::Delegate* delegate)
-    : delegate_(delegate) {
+    UnifiedVolumeSliderController::Delegate* delegate,
+    bool in_bubble)
+    : delegate_(delegate), in_bubble_(in_bubble) {
   DCHECK(delegate);
 }
 
 UnifiedVolumeSliderController::~UnifiedVolumeSliderController() = default;
 
 views::View* UnifiedVolumeSliderController::CreateView() {
-  return new UnifiedVolumeView(this, delegate_);
+  return new UnifiedVolumeView(this, delegate_, in_bubble_);
 }
 
 void UnifiedVolumeSliderController::SliderValueChanged(
