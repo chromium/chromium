@@ -65,6 +65,7 @@ class ASH_EXPORT AmbientController
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
+  void OnFirstSessionStarted() override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // PowerStatus::Observer:
@@ -118,7 +119,7 @@ class ASH_EXPORT AmbientController
   }
 
   AmbientPhotoController* ambient_photo_controller() {
-    return ambient_photo_controller_.get();
+    return &ambient_photo_controller_;
   }
 
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
@@ -175,7 +176,7 @@ class ASH_EXPORT AmbientController
 
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
-  std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
+  AmbientPhotoController ambient_photo_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;

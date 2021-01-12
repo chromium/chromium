@@ -104,14 +104,9 @@ base::FilePath GetCacheRootPath() {
 AmbientPhotoController::AmbientPhotoController()
     : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      photo_cache_(AmbientPhotoCache::Create(GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)))),
-      backup_photo_cache_(AmbientPhotoCache::Create(GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)))),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
   ambient_backend_model_observer_.Add(&ambient_backend_model_);
-  ScheduleFetchBackupImages();
 }
 
 AmbientPhotoController::~AmbientPhotoController() = default;
@@ -142,6 +137,18 @@ void AmbientPhotoController::StopScreenUpdate() {
   resume_fetch_image_backoff_.Reset();
   ambient_backend_model_.Clear();
   weak_factory_.InvalidateWeakPtrs();
+}
+
+void AmbientPhotoController::ScheduleFetchBackupImages() {
+  if (backup_photo_refresh_timer_.IsRunning())
+    return;
+
+  backup_photo_refresh_timer_.Start(
+      FROM_HERE,
+      std::max(kBackupPhotoRefreshDelay,
+               resume_fetch_image_backoff_.GetTimeUntilRelease()),
+      base::BindOnce(&AmbientPhotoController::FetchBackupImages,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AmbientPhotoController::OnTopicsChanged() {
@@ -180,6 +187,17 @@ void AmbientPhotoController::ClearCache() {
   backup_photo_cache_->Clear();
 }
 
+void AmbientPhotoController::InitCache() {
+  if (!photo_cache_) {
+    photo_cache_ = AmbientPhotoCache::Create(GetCacheRootPath().Append(
+        FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)));
+  }
+  if (!backup_photo_cache_) {
+    backup_photo_cache_ = AmbientPhotoCache::Create(GetCacheRootPath().Append(
+        FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)));
+  }
+}
+
 void AmbientPhotoController::ScheduleFetchTopics(bool backoff) {
   // If retry, using the backoff delay, otherwise the default delay.
   const base::TimeDelta delay =
@@ -196,19 +214,6 @@ void AmbientPhotoController::ScheduleRefreshImage() {
   photo_refresh_timer_.Start(
       FROM_HERE, ambient_backend_model_.GetPhotoRefreshInterval(),
       base::BindOnce(&AmbientPhotoController::FetchPhotoRawData,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void AmbientPhotoController::ScheduleFetchBackupImages() {
-  DVLOG(3) << __func__;
-  if (backup_photo_refresh_timer_.IsRunning())
-    return;
-
-  backup_photo_refresh_timer_.Start(
-      FROM_HERE,
-      std::max(kBackupPhotoRefreshDelay,
-               resume_fetch_image_backoff_.GetTimeUntilRelease()),
-      base::BindOnce(&AmbientPhotoController::FetchBackupImages,
                      weak_factory_.GetWeakPtr()));
 }
 

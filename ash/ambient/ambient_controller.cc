@@ -253,7 +253,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
         }
       } else {
         DCHECK(visibility == AmbientUiVisibility::kClosed);
-        GetAmbientBackendModel()->ResetImageFailures();
         inactivity_timer_.Stop();
         user_activity_observer_.Reset();
         power_status_observer_.Reset();
@@ -312,6 +311,11 @@ void AmbientController::OnLockStateChanged(bool locked) {
     // hidden and will show after a delay.
     ShowHiddenUi();
   }
+}
+
+void AmbientController::OnFirstSessionStarted() {
+  if (IsAmbientModeEnabled())
+    ambient_photo_controller_.ScheduleFetchBackupImages();
 }
 
 void AmbientController::OnActiveUserPrefServiceChanged(
@@ -445,6 +449,7 @@ void AmbientController::CloseUi() {
   DVLOG(1) << __func__;
 
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
+  GetAmbientBackendModel()->ResetImageFailures();
 }
 
 void AmbientController::ToggleInSessionUi() {
@@ -504,6 +509,10 @@ void AmbientController::CloseAllWidgets(bool immediately) {
 }
 
 void AmbientController::OnEnabledPrefChanged() {
+  // TODO(b/176094707) conditionally create/destroy photo_controller and cache
+  // if Ambient is enabled
+  ambient_photo_controller_.InitCache();
+
   if (IsAmbientModeEnabled()) {
     DVLOG(1) << "Ambient mode enabled";
 
@@ -530,11 +539,10 @@ void AmbientController::OnEnabledPrefChanged() {
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
 
-    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>();
-
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
-    ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
+    ambient_backend_model_observer_.Observe(
+        ambient_photo_controller_.ambient_backend_model());
 
     auto* power_manager_client = chromeos::PowerManagerClient::Get();
     DCHECK(power_manager_client);
@@ -555,8 +563,6 @@ void AmbientController::OnEnabledPrefChanged() {
       if (pref_change_registrar_->IsObserved(pref_name))
         pref_change_registrar_->Remove(pref_name);
     }
-
-    ambient_photo_controller_.reset();
 
     ambient_ui_model_observer_.Reset();
     ambient_backend_model_observer_.Reset();
@@ -624,8 +630,7 @@ void AmbientController::DismissUI() {
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
-  DCHECK(ambient_photo_controller_);
-  return ambient_photo_controller_->ambient_backend_model();
+  return ambient_photo_controller_.ambient_backend_model();
 }
 
 void AmbientController::OnImagesReady() {
@@ -680,13 +685,11 @@ void AmbientController::CreateAndShowWidgets() {
 }
 
 void AmbientController::StartRefreshingImages() {
-  DCHECK(ambient_photo_controller_);
-  ambient_photo_controller_->StartScreenUpdate();
+  ambient_photo_controller_.StartScreenUpdate();
 }
 
 void AmbientController::StopRefreshingImages() {
-  DCHECK(ambient_photo_controller_);
-  ambient_photo_controller_->StopScreenUpdate();
+  ambient_photo_controller_.StopScreenUpdate();
 }
 
 void AmbientController::set_backend_controller_for_testing(

@@ -80,10 +80,6 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
                               loop.QuitClosure());
     loop.Run();
   }
-
-  void ScheduleFetchBackupImages() {
-    photo_controller()->ScheduleFetchBackupImages();
-  }
 };
 
 // Test that topics are downloaded when starting screen update.
@@ -286,7 +282,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   std::string expected_data = "backup data";
   SetBackupDownloadPhotoData(expected_data);
 
-  ScheduleFetchBackupImages();
+  photo_controller()->ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
@@ -312,7 +308,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
-  ScheduleFetchBackupImages();
+  photo_controller()->ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
@@ -330,7 +326,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
 
 TEST_F(AmbientPhotoControllerTest,
        ShouldStartDownloadBackupImagesOnAmbientModeStart) {
-  ScheduleFetchBackupImages();
+  photo_controller()->ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
