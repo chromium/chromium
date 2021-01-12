@@ -1822,7 +1822,7 @@ String AXNodeObject::GetText() const {
   }
 
   auto* element = DynamicTo<Element>(node);
-  return element ? element->innerText() : String();
+  return element ? element->GetInnerTextWithoutUpdate() : String();
 }
 
 ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {

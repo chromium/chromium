@@ -464,6 +464,22 @@ String Element::innerText() {
   // boxes in the layout tree.
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
+  return GetInnerTextWithoutUpdate();
+}
+
+// Used for callers that must ensure no document lifecycle rewind.
+String Element::GetInnerTextWithoutUpdate() {
+  // TODO(https:://crbug.com/1165850) Layout should always be clean here, but
+  // the lifecycle does not report the correctly updated value unless servicing
+  // animations. Fix the UpdateStyleAndLayout() to correctly advance the
+  // lifecycle, and then update the following DCHECK to always require clean
+  // layout in active documents.
+  DCHECK(!GetDocument().IsActive() || !GetDocument().GetPage() ||
+         !GetDocument().GetPage()->Animator().IsServicingAnimations() ||
+         GetDocument().Lifecycle().GetState() >=
+             DocumentLifecycle::kLayoutClean)
+      << "If GetInnerTextWithoutUpdate() is called while servicing animations, "
+         "then layout must be clean.";
   return ElementInnerTextCollector().RunOn(*this);
 }
 

@@ -1349,8 +1349,11 @@ String AXLayoutObject::StringValue() const {
     NOTREACHED();
   }
 
-  if (IsTextControl())
+  if (IsTextControl()) {
+    // TODO(https://crbug.com/1165853) For contenteditable, compute on browser
+    // side instead.
     return GetText();
+  }
 
   if (layout_object_->IsFileUploadControl())
     return To<LayoutFileUploadControl>(layout_object_)->FileTextValue();
@@ -1379,11 +1382,6 @@ String AXLayoutObject::StringValue() const {
     return TextFromDescendants(visited, false);
   }
 
-  // FIXME: We might need to implement a value here for more types
-  // FIXME: It would be better not to advertise a value at all for the types for
-  // which we don't implement one; this would require subclassing or making
-  // accessibilityAttributeNames do something other than return a single static
-  // array.
   return String();
 }
 
