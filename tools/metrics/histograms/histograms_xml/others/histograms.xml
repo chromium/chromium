@@ -7925,7 +7925,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The type of panes which language settings loads.</summary>
 </histogram>
 
-<histogram name="LanguageUsage.AcceptLanguage" enum="LanguageCode"
+<histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
     expires_after="2021-06-06">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -7945,7 +7945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageCode"
+<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
     expires_after="2021-06-06">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -7955,7 +7955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageCode"
+<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
     expires_after="2021-06-20">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
