@@ -5,14 +5,11 @@
       "bounds": [800, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 200, 100, 100],
+        [8, 100, 100, 100]
+      ],
       "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed green'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 2
     }
   ],
   "transforms": [
@@ -23,15 +20,6 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -100, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 100, 0, 1]
       ]
     }
   ]

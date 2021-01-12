@@ -2,13 +2,13 @@ TEST
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling Contents Layer",
       "bounds": [800, 5021],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [39, 20],
       "transform": 1
     }

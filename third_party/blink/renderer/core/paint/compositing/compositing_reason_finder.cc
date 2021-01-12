@@ -356,25 +356,28 @@ bool CompositingReasonFinder::RequiresCompositingForRootScroller(
 
 bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
     const PaintLayer& layer) {
-  const auto& layout_object = layer.GetLayoutObject();
-  if (!layout_object.StyleRef().HasViewportConstrainedPosition() &&
-      !layout_object.StyleRef().HasStickyConstrainedPosition())
-    return false;
-
   // Don't promote fixed position elements that are descendants of a non-view
   // container, e.g. transformed elements.  They will stay fixed wrt the
   // container rather than the enclosing frame.
-  EPosition position = layout_object.StyleRef().GetPosition();
-  if (position == EPosition::kFixed) {
-    return layer.FixedToViewport() &&
-           layout_object.GetFrameView()->LayoutViewport()->ScrollsOverflow();
+  if (layer.FixedToViewport()) {
+    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure fixed
+    // position elements are composited under overflow: hidden, which can still
+    // have smooth scroll animations.
+    LocalFrameView* frame_view = layer.GetLayoutObject().GetFrameView();
+    return frame_view->LayoutViewport()->HasOverflow();
   }
-  DCHECK_EQ(position, EPosition::kSticky);
 
   // Don't promote sticky position elements that cannot move with scrolls.
-  if (!layer.SticksToScroller())
-    return false;
-  return layer.AncestorScrollContainerLayer()->ScrollsOverflow();
+  if (layer.SticksToScroller()) {
+    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
+    // position elements are composited under overflow: hidden, which can still
+    // have smooth scroll animations.
+    return layer.AncestorScrollContainerLayer()
+        ->GetScrollableArea()
+        ->HasOverflow();
+  }
+
+  return false;
 }
 
 }  // namespace blink

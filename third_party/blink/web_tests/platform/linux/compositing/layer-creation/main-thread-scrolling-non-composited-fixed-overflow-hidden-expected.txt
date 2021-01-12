@@ -2,7 +2,7 @@ TEST
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling Contents Layer",
       "bounds": [800, 5021],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
