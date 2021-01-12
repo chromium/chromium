@@ -15,8 +15,6 @@ static_library("policy_engine") {
     "//components/safe_browsing/core:realtimeapi_proto",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/signin/public/identity_manager",
-    "//components/sync",
     "//components/unified_consent",
     "//components/user_prefs",
     "//components/variations/service",

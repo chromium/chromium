@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -92,7 +93,10 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookup() const {
 
 bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
   return RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
-      pref_service_, is_off_the_record_, sync_service_, identity_manager_,
+      pref_service_, is_off_the_record_,
+      base::BindOnce(
+          &SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
+          sync_service_, identity_manager_),
       variations_);
 }
 

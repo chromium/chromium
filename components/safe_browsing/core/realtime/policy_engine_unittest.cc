@@ -10,8 +10,6 @@
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/features.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -19,6 +17,15 @@
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
+
+// Used in tests of CanPerformFullURLLookupWithToken().
+bool AreTokenFetchesEnabledInClient(bool expected_ep_enabled_value,
+                                    bool return_value,
+                                    bool user_has_enabled_enhanced_protection) {
+  EXPECT_EQ(expected_ep_enabled_value, user_has_enabled_enhanced_protection);
+
+  return return_value;
+}
 
 class RealTimePolicyEngineTest : public PlatformTest {
  public:
@@ -41,10 +48,10 @@ class RealTimePolicyEngineTest : public PlatformTest {
 
   bool CanPerformFullURLLookupWithToken(
       bool is_off_the_record,
-      syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager) {
+      RealTimePolicyEngine::ClientConfiguredForTokenFetchesCallback
+          client_callback) {
     return RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
-        &pref_service_, is_off_the_record, sync_service, identity_manager,
+        &pref_service_, is_off_the_record, std::move(client_callback),
         /*variations_service=*/nullptr);
   }
 
@@ -106,26 +113,22 @@ TEST_F(RealTimePolicyEngineTest,
 
 TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_RTLookupForEpEnabled_WithTokenDisabled) {
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env =
-      std::make_unique<signin::IdentityTestEnvironment>();
-  signin::IdentityManager* identity_manager =
-      identity_test_env->identity_manager();
-  syncer::TestSyncService sync_service;
-  // User is signed in.
-  identity_test_env->MakeUnconsentedPrimaryAccountAvailable("test@example.com");
-
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kEnhancedProtection);
     EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
     EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-        /* is_off_the_record */ false, &sync_service, identity_manager));
+        /* is_off_the_record */ false,
+        base::BindOnce(&AreTokenFetchesEnabledInClient,
+                       /*expected_ep_enabled_value=*/true,
+                       /*return_value=*/true)));
   }
 }
 
-TEST_F(RealTimePolicyEngineTest,
-       TestCanPerformFullURLLookupWithToken_SyncControlled) {
+TEST_F(
+    RealTimePolicyEngineTest,
+    TestCanPerformFullURLLookupWithToken_ClientControlledWithoutEnhancedProtection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */ {kRealTimeUrlLookupEnabled,
@@ -134,71 +137,57 @@ TEST_F(RealTimePolicyEngineTest,
   pref_service_.SetUserPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
       std::make_unique<base::Value>(true));
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env =
-      std::make_unique<signin::IdentityTestEnvironment>();
-  signin::IdentityManager* identity_manager =
-      identity_test_env->identity_manager();
-  syncer::TestSyncService sync_service;
 
-  // Sync is disabled.
-  sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
-  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  // Token fetches are not configured in the client.
   EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/false,
+                     /*return_value=*/false)));
 
-  // Sync is enabled.
-  sync_service.SetDisableReasons({});
-  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  // Token fetches are configured in the client.
   EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
-
-  // History sync is disabled.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /* sync_everything */ false, {});
-  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
-
-  // Custom passphrase is enabled.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      false, {syncer::UserSelectableType::kHistory});
-  sync_service.SetIsUsingSecondaryPassphrase(true);
-  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/false,
+                     /*return_value=*/true)));
 }
 
-TEST_F(RealTimePolicyEngineTest,
-       TestCanPerformFullURLLookupWithToken_EnhancedProtection) {
+TEST_F(
+    RealTimePolicyEngineTest,
+    TestCanPerformFullURLLookupWithToken_ClientControlledWithEnhancedProtection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */ {kEnhancedProtection},
       /* disabled_features */ {kRealTimeUrlLookupEnabledWithToken});
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env =
-      std::make_unique<signin::IdentityTestEnvironment>();
-  signin::IdentityManager* identity_manager =
-      identity_test_env->identity_manager();
-  syncer::TestSyncService sync_service;
 
-  // For the purposes of this test, disable sync.
-  sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
-  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /* sync_everything */ false, {});
+  // Enhanced protection is not enabled and the Finch feature is disabled: token
+  // fetches should be disallowed whether or not they are configured in the
+  // client.
+  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/false,
+                     /*return_value=*/false)));
+  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/false,
+                     /*return_value=*/true)));
 
-  // Enhanced protection is on but the user is not signed in: it should not be
-  // possible to perform URL lookups with tokens.
+  // With enhanced protection enabled, whether token fetches are allowed should
+  // be dependent on the configuration of the client
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
-
-  // Enhanced protection is on and the user is signed in: it should be possible
-  // to perform URL lookups with tokens (even though the
-  // kRealTimeLookupEnabledWithToken feature and sync/history sync are
-  // disabled).
-  identity_test_env->MakeUnconsentedPrimaryAccountAvailable("test@example.com");
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/true,
+                     /*return_value=*/false)));
   EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/true,
+                     /*return_value=*/true)));
 }
 
 TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {

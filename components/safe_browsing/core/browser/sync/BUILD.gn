@@ -8,6 +8,8 @@ source_set("sync") {
   sources = [
     "safe_browsing_primary_account_token_fetcher.cc",
     "safe_browsing_primary_account_token_fetcher.h",
+    "sync_utils.cc",
+    "sync_utils.h",
   ]
 
   deps = [
@@ -15,19 +17,24 @@ source_set("sync") {
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/common:thread_utils",
     "//components/signin/public/identity_manager",
+    "//components/sync/driver",
     "//google_apis",
   ]
 }
 
 source_set("unittests") {
   testonly = true
-  sources = [ "safe_browsing_primary_account_token_fetcher_unittest.cc" ]
+  sources = [
+    "safe_browsing_primary_account_token_fetcher_unittest.cc",
+    "sync_utils_unittest.cc",
+  ]
 
   deps = [
     ":sync",
     "//base/test:test_support",
     "//components/safe_browsing/core/common:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync/driver:test_support",
     "//testing/gtest",
   ]
 }
