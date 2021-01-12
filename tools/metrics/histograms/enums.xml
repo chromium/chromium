@@ -30841,6 +30841,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3749" label="EmbedElementWithoutTypeSrcChanged"/>
   <int value="3750" label="PaymentHandlerStandardizedPaymentMethodIdentifier"/>
   <int value="3751" label="WebCodecsAudioEncoder"/>
+  <int value="3752" label="EmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

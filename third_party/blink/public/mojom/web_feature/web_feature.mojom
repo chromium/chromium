@@ -3070,6 +3070,7 @@ enum WebFeature {
   kEmbedElementWithoutTypeSrcChanged = 3749,
   kPaymentHandlerStandardizedPaymentMethodIdentifier = 3750,
   kWebCodecsAudioEncoder = 3751,
+  kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO = 3752,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

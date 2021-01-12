@@ -23,10 +23,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace content {
 
@@ -453,15 +455,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
     LoggingDisposition logging) {
-  if (!base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn))
-    return CheckResult::PROCEED;
-
+  // If the proposal in https://github.com/mikewest/embedding-requires-opt-in is
+  // enabled, a response will be blocked unless it's explicitly opted-into
+  // being embeddable via 'X-Frame-Options'/'frame-ancestors', or is same-origin
+  // with its ancestors.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-
-  // If embedding requires opt-in, then we check whether the response opted-into
-  // embedding via either an 'X-Frame-Options' header or a 'frame-ancestors'
-  // directive. If neither is present, the response will be blocked unless it is
-  // same-origin with its ancestor chain.
   if (request->response()->parsed_headers->xfo ==
           network::mojom::XFrameOptionsValue::kNone &&
       !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
@@ -471,8 +469,16 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
         url::Origin::Create(navigation_handle()->GetURL());
     while (parent) {
       if (!parent->GetLastCommittedOrigin().IsSameOriginWith(current_origin)) {
+        GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+            parent, blink::mojom::WebFeature::
+                        kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
+
+        if (!base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn))
+          return CheckResult::PROCEED;
+
         if (logging == LoggingDisposition::LOG_TO_CONSOLE)
           ConsoleErrorEmbeddingRequiresOptIn();
+
         return CheckResult::BLOCK;
       }
       parent = ParentOrOuterDelegate(parent);

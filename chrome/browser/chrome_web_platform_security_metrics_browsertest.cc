@@ -280,6 +280,72 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ExpectHistogramIncreasedBy(1);
 }
 
+// Check kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO feature usage.
+// This should increment in cases where a cross-origin frame is embedded which
+// does not assert either X-Frame-Options or CSP's frame-ancestors.
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       EmbeddingOptIn) {
+  set_monitored_feature(
+      blink::mojom::WebFeature::
+          kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
+  GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
+
+  struct TestCase {
+    const char* name;
+    const char* host;
+    const char* header;
+    bool expect_counter;
+  } cases[] = {{
+                   "Same-origin, no XFO, no frame-ancestors",
+                   "a.com",
+                   nullptr,
+                   false,
+               },
+               {
+                   "Cross-origin, no XFO, no frame-ancestors",
+                   "b.com",
+                   nullptr,
+                   true,
+               },
+               {
+                   "Same-origin, yes XFO, no frame-ancestors",
+                   "a.com",
+                   "X-Frame-Options: ALLOWALL",
+                   false,
+               },
+               {
+                   "Cross-origin, yes XFO, no frame-ancestors",
+                   "b.com",
+                   "X-Frame-Options: ALLOWALL",
+                   false,
+               },
+               {
+                   "Same-origin, no XFO, yes frame-ancestors",
+                   "a.com",
+                   "Content-Security-Policy: frame-ancestors *",
+                   false,
+               },
+               {
+                   "Cross-origin, no XFO, yes frame-ancestors",
+                   "b.com",
+                   "Content-Security-Policy: frame-ancestors *",
+                   false,
+               }};
+
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+
+    std::string path = "/set-header?";
+    if (test.header)
+      path += test.header;
+    GURL url = https_server().GetURL(test.host, path);
+    LoadIFrame(url);
+
+    ExpectHistogramIncreasedBy(test.expect_counter ? 1 : 0);
+  }
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // - CrossOriginOpenerPolicySameOrigin
 // - CrossOriginOpenerPolicySameOriginAllowPopups
