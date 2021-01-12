@@ -182,6 +182,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
+      fileName_: String,
+
+      /** @private */
       hadPassword_: {
         type: Boolean,
         value: false,
@@ -257,10 +260,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
-      title_: {
-        type: String,
-        value: '',
-      },
+      title_: String,
 
       /** @private */
       twoUpViewEnabled_: {
@@ -405,7 +405,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         () => chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true));
     // </if>
 
-    this.title_ = getFilenameFromURL(this.originalUrl);
+    this.fileName_ = getFilenameFromURL(this.originalUrl);
+    this.title_ = this.fileName_;
+
     if (this.toolbarEnabled_) {
       this.getToolbar_().hidden = false;
     }
@@ -1060,8 +1062,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   setDocumentMetadata_(metadata) {
     this.documentMetadata_ = metadata;
-    this.title_ =
-        this.documentMetadata_.title || getFilenameFromURL(this.originalUrl);
+    this.title_ = this.documentMetadata_.title || this.fileName_;
     document.title = this.title_;
     this.canSerializeDocument_ = this.documentMetadata_.canSerializeDocument;
   }

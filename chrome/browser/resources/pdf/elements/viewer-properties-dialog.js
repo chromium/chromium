@@ -23,6 +23,10 @@ export class ViewerPropertiesDialogElement extends PolymerElement {
     return {
       /** @type {!DocumentMetadata} */
       documentMetadata: Object,
+
+      fileName: String,
+
+      pageCount: Number,
     };
   }
 
