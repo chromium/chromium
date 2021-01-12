@@ -65,7 +65,7 @@ bool RemoveContentType(base::ListValue* args,
   args->Remove(0, nullptr);
   // PLUGINS have been deprecated, so ignore requests for removing them.
   if (content_type_str == "plugins") {
-    *content_type = ContentSettingsType::PLUGINS;
+    *content_type = ContentSettingsType::DEPRECATED_PLUGINS;
     return true;
   }
   *content_type =
@@ -86,7 +86,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   std::unique_ptr<Clear::Params> params(Clear::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  if (content_type == ContentSettingsType::PLUGINS) {
+  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
     return RespondNow(
         Error(content_settings_api_constants::
                   kSettingPluginContentSettingsClearIsDisallowed));
@@ -126,7 +126,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   std::unique_ptr<Get::Params> params(Get::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  if (content_type == ContentSettingsType::PLUGINS) {
+  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
     return RespondNow(Error(content_settings_api_constants::
                                 kSettingPluginContentSettingsGetIsDisallowed));
   }
@@ -200,7 +200,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // PLUGINS have been deprecated.
-  if (content_type == ContentSettingsType::PLUGINS) {
+  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
     return RespondNow(Error(content_settings_api_constants::
                                 kSettingPluginContentSettingsIsDisallowed));
   }
@@ -329,7 +329,7 @@ ContentSettingsContentSettingGetResourceIdentifiersFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
 
-  if (content_type != ContentSettingsType::PLUGINS) {
+  if (content_type != ContentSettingsType::DEPRECATED_PLUGINS) {
     return RespondNow(NoArguments());
   }
 
