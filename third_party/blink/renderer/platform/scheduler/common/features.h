@@ -301,6 +301,12 @@ constexpr base::FeatureParam<PerAgentSignal> kPerAgentSignal{
     &kPerAgentSchedulingExperiments, "signal",
     PerAgentSignal::kFirstMeaningfulPaint, &kPerAgentSignalOptions};
 
+// If enabled, base::ThreadTaskRunnerHandle::Get() and
+// base::SequencedTaskRunnerHandle::Get() returns the current active
+// per-ASG task runner instead of the per-thread task runner.
+const base::Feature kMbiOverrideTaskRunnerHandle{
+    "MbiOverrideTaskRunnerHandle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kThrottleVisibleNotFocusedTimers{
     "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
 

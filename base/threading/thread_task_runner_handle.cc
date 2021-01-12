@@ -38,51 +38,6 @@ bool ThreadTaskRunnerHandle::IsSet() {
   return !!thread_task_runner_tls.Pointer()->Get();
 }
 
-// static
-ScopedClosureRunner ThreadTaskRunnerHandle::OverrideForTesting(
-    scoped_refptr<SingleThreadTaskRunner> overriding_task_runner) {
-  // OverrideForTesting() is not compatible with a SequencedTaskRunnerHandle
-  // already being set on this thread (except when it's set by the current
-  // ThreadTaskRunnerHandle).
-  DCHECK(!SequencedTaskRunnerHandle::IsSet() || IsSet());
-
-  if (!IsSet()) {
-    auto top_level_ttrh = std::make_unique<ThreadTaskRunnerHandle>(
-        std::move(overriding_task_runner));
-    return ScopedClosureRunner(base::BindOnce(
-        [](std::unique_ptr<ThreadTaskRunnerHandle> ttrh_to_release) {},
-        std::move(top_level_ttrh)));
-  }
-
-  ThreadTaskRunnerHandle* ttrh = thread_task_runner_tls.Pointer()->Get();
-  // Swap the two (and below bind |overriding_task_runner|, which is now the
-  // previous one, as the |task_runner_to_restore|).
-  ttrh->sequenced_task_runner_handle_.task_runner_ = overriding_task_runner;
-  ttrh->task_runner_.swap(overriding_task_runner);
-
-  auto no_running_during_override =
-      std::make_unique<RunLoop::ScopedDisallowRunningForTesting>();
-
-  return ScopedClosureRunner(base::BindOnce(
-      [](scoped_refptr<SingleThreadTaskRunner> task_runner_to_restore,
-         SingleThreadTaskRunner* expected_task_runner_before_restore,
-         std::unique_ptr<RunLoop::ScopedDisallowRunningForTesting>
-             no_running_during_override) {
-        ThreadTaskRunnerHandle* ttrh = thread_task_runner_tls.Pointer()->Get();
-
-        DCHECK_EQ(expected_task_runner_before_restore, ttrh->task_runner_.get())
-            << "Nested overrides must expire their ScopedClosureRunners "
-               "in LIFO order.";
-
-        ttrh->sequenced_task_runner_handle_.task_runner_ =
-            task_runner_to_restore;
-        ttrh->task_runner_.swap(task_runner_to_restore);
-      },
-      std::move(overriding_task_runner),
-      base::Unretained(ttrh->task_runner_.get()),
-      std::move(no_running_during_override)));
-}
-
 ThreadTaskRunnerHandle::ThreadTaskRunnerHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
@@ -96,6 +51,49 @@ ThreadTaskRunnerHandle::~ThreadTaskRunnerHandle() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(thread_task_runner_tls.Pointer()->Get(), this);
   thread_task_runner_tls.Pointer()->Set(nullptr);
+}
+
+ThreadTaskRunnerHandleOverride::ThreadTaskRunnerHandleOverride(
+    scoped_refptr<SingleThreadTaskRunner> overriding_task_runner,
+    bool allow_nested_runloop) {
+  DCHECK(!SequencedTaskRunnerHandle::IsSet() || ThreadTaskRunnerHandle::IsSet())
+      << "ThreadTaskRunnerHandleOverride is not compatible with a "
+         "SequencedTaskRunnerHandle already being set on this thread (except "
+         "when it's set by the current ThreadTaskRunnerHandle).";
+
+  if (!ThreadTaskRunnerHandle::IsSet()) {
+    top_level_thread_task_runner_handle_.emplace(
+        std::move(overriding_task_runner));
+    return;
+  }
+
+#if DCHECK_IS_ON()
+  expected_task_runner_before_restore_ = overriding_task_runner.get();
+#endif
+  ThreadTaskRunnerHandle* ttrh = thread_task_runner_tls.Pointer()->Get();
+  ttrh->sequenced_task_runner_handle_.task_runner_ = overriding_task_runner;
+  ttrh->task_runner_.swap(overriding_task_runner);
+  // Due to the swap, now `ttrh->task_runner_` points to the overriding task
+  // runner and `overriding_task_runner_` points to the previous task runner.
+  task_runner_to_restore_ = std::move(overriding_task_runner);
+
+  if (!allow_nested_runloop)
+    no_running_during_override_.emplace();
+}
+
+ThreadTaskRunnerHandleOverride::~ThreadTaskRunnerHandleOverride() {
+  if (task_runner_to_restore_) {
+    ThreadTaskRunnerHandle* ttrh = thread_task_runner_tls.Pointer()->Get();
+
+#if DCHECK_IS_ON()
+    DCHECK_EQ(expected_task_runner_before_restore_, ttrh->task_runner_.get())
+        << "Nested overrides must expire their ThreadTaskRunnerHandleOverride "
+           "in LIFO order.";
+#endif
+
+    ttrh->sequenced_task_runner_handle_.task_runner_ = task_runner_to_restore_;
+    ttrh->task_runner_.swap(task_runner_to_restore_);
+  }
 }
 
 }  // namespace base

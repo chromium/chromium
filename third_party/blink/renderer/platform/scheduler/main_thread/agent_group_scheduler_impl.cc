@@ -37,7 +37,7 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
 }
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
-  default_task_queue_->ShutdownTaskQueue();
+  default_task_queue_->DetachFromMainThreadScheduler();
   main_thread_scheduler_.RemoveAgentGroupScheduler(this);
 }
 

@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/test_pending_task.h"
 #include "base/threading/thread_checker_impl.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -117,7 +118,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     ~ScopedContext();
 
    private:
-    ScopedClosureRunner on_destroy_;
+    ThreadTaskRunnerHandleOverrideForTesting
+        thread_task_runner_handle_override_;
     DISALLOW_COPY_AND_ASSIGN(ScopedContext);
   };
 

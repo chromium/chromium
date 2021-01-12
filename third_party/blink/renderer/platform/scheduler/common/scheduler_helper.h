@@ -121,6 +121,10 @@ class PLATFORM_EXPORT SchedulerHelper
 
   virtual void ShutdownAllQueues() {}
 
+  const scoped_refptr<base::SingleThreadTaskRunner>& default_task_runner() {
+    return default_task_runner_;
+  }
+
   base::ThreadChecker thread_checker_;
   base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
 

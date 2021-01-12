@@ -265,7 +265,7 @@ RepeatingClosure RunLoop::QuitCurrentWhenIdleClosureDeprecated() {
 }
 
 #if DCHECK_IS_ON()
-RunLoop::ScopedDisallowRunningForTesting::ScopedDisallowRunningForTesting()
+RunLoop::ScopedDisallowRunning::ScopedDisallowRunning()
     : current_delegate_(GetTlsDelegate().Get()),
       previous_run_allowance_(
           current_delegate_ ? current_delegate_->allow_running_for_testing_
@@ -274,7 +274,7 @@ RunLoop::ScopedDisallowRunningForTesting::ScopedDisallowRunningForTesting()
     current_delegate_->allow_running_for_testing_ = false;
 }
 
-RunLoop::ScopedDisallowRunningForTesting::~ScopedDisallowRunningForTesting() {
+RunLoop::ScopedDisallowRunning::~ScopedDisallowRunning() {
   DCHECK_EQ(current_delegate_, GetTlsDelegate().Get());
   if (current_delegate_)
     current_delegate_->allow_running_for_testing_ = previous_run_allowance_;
@@ -283,10 +283,8 @@ RunLoop::ScopedDisallowRunningForTesting::~ScopedDisallowRunningForTesting() {
 // Defined out of line so that the compiler doesn't inline these and realize
 // the scope has no effect and then throws an "unused variable" warning in
 // non-dcheck builds.
-RunLoop::ScopedDisallowRunningForTesting::ScopedDisallowRunningForTesting() =
-    default;
-RunLoop::ScopedDisallowRunningForTesting::~ScopedDisallowRunningForTesting() =
-    default;
+RunLoop::ScopedDisallowRunning::ScopedDisallowRunning() = default;
+RunLoop::ScopedDisallowRunning::~ScopedDisallowRunning() = default;
 #endif  // DCHECK_IS_ON()
 
 RunLoop::RunLoopTimeout::RunLoopTimeout() = default;
@@ -309,7 +307,7 @@ bool RunLoop::BeforeRun() {
 #if DCHECK_IS_ON()
   DCHECK(delegate_->allow_running_for_testing_)
       << "RunLoop::Run() isn't allowed in the scope of a "
-         "ScopedDisallowRunningForTesting. Hint: if mixing "
+         "ScopedDisallowRunning. Hint: if mixing "
          "TestMockTimeTaskRunners on same thread, use TestMockTimeTaskRunner's "
          "API instead of RunLoop to drive individual task runners.";
   DCHECK(!run_called_);

@@ -147,7 +147,7 @@ TestMockTimeTaskRunner::TestOrderedPendingTask::operator=(
 // Ref. TestMockTimeTaskRunner::RunsTasksInCurrentSequence().
 TestMockTimeTaskRunner::ScopedContext::ScopedContext(
     scoped_refptr<TestMockTimeTaskRunner> scope)
-    : on_destroy_(ThreadTaskRunnerHandle::OverrideForTesting(scope)) {
+    : thread_task_runner_handle_override_(scope) {
   scope->RunUntilIdle();
 }
 
@@ -344,11 +344,10 @@ void TestMockTimeTaskRunner::ProcessAllTasksNoLaterThan(TimeDelta max_delta) {
 
   // Multiple test task runners can share the same thread for determinism in
   // unit tests. Make sure this TestMockTimeTaskRunner's tasks run in its scope.
-  ScopedClosureRunner undo_override;
+  base::Optional<ThreadTaskRunnerHandleOverrideForTesting> ttrh_override;
   if (!ThreadTaskRunnerHandle::IsSet() ||
       ThreadTaskRunnerHandle::Get() != proxy_task_runner_.get()) {
-    undo_override =
-        ThreadTaskRunnerHandle::OverrideForTesting(proxy_task_runner_.get());
+    ttrh_override.emplace(proxy_task_runner_.get());
   }
 
   const TimeTicks original_now_ticks = NowTicks();

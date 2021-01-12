@@ -223,8 +223,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  void SetCurrentAgentGroupScheduler(
-      WebAgentGroupScheduler* agent_group_scheduler);
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
       override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
@@ -493,6 +491,21 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   static const char* TimeDomainTypeToString(TimeDomainType domain_type);
 
   void AddAgentGroupScheduler(AgentGroupSchedulerImpl*);
+
+  struct AgentGroupSchedulerScope {
+    std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
+        thread_task_runner_handle_override;
+    WebAgentGroupScheduler* previous_agent_group_scheduler;
+    WebAgentGroupScheduler* current_agent_group_scheduler;
+    scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
+    scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
+    const char* trace_event_scope_name;
+    void* trace_event_scope_id;
+  };
+
+  void BeginAgentGroupSchedulerScope(
+      WebAgentGroupScheduler* next_agent_group_scheduler);
+  void EndAgentGroupSchedulerScope();
 
   bool IsAnyMainFrameWaitingForFirstContentfulPaint() const;
   bool IsAnyMainFrameWaitingForFirstMeaningfulPaint() const;
@@ -965,6 +978,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // kNormalPriority and is updated via UpdateCompositorTaskQueuePriority().
     TraceableState<TaskQueue::QueuePriority, TracingCategoryName::kDefault>
         compositor_priority;
+
+    WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
   };
 
   struct AnyThread {

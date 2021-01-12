@@ -205,7 +205,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   bool reboot_after_update_ = false;
 
   base::test::TaskEnvironment task_environment_;
-  base::ScopedClosureRunner reset_main_thread_task_runner_;
+  base::ThreadTaskRunnerHandleOverrideForTesting
+      thread_task_runner_handle_override_;
 
   TestingPrefServiceSimple local_state_;
   MockUserManager* mock_user_manager_;  // Not owned.
@@ -308,8 +309,7 @@ void MockAutomaticRebootManagerObserver::StopObserving() {
 
 AutomaticRebootManagerBasicTest::AutomaticRebootManagerBasicTest()
     : task_runner_(new TestAutomaticRebootManagerTaskRunner),
-      reset_main_thread_task_runner_(
-          base::ThreadTaskRunnerHandle::OverrideForTesting(task_runner_)),
+      thread_task_runner_handle_override_(task_runner_),
       mock_user_manager_(new MockUserManager),
       user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {}
 

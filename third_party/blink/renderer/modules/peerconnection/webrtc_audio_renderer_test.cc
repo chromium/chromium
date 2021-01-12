@@ -208,6 +208,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
   }
 
   void TearDown() override {
+    base::RunLoop().RunUntilIdle();
     renderer_proxy_ = nullptr;
     renderer_ = nullptr;
     stream_descriptor_ = nullptr;

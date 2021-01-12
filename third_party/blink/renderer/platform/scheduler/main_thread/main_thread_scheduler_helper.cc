@@ -42,7 +42,7 @@ MainThreadSchedulerHelper::DefaultMainThreadTaskQueue() {
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
 MainThreadSchedulerHelper::DefaultTaskRunner() {
-  return default_task_queue_->GetTaskRunnerWithDefaultTaskType();
+  return default_task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -59,7 +59,7 @@ scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerHelper::DeprecatedDefaultTaskRunner() {
   // TODO(hajimehoshi): Introduce a different task queue from the default task
   // queue and return the task runner created from it.
-  return DefaultTaskRunner();
+  return default_task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerHelper::NewTaskQueue(
