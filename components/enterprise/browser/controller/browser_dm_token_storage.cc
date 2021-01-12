@@ -15,10 +15,8 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,13 +28,6 @@ namespace policy {
 namespace {
 
 constexpr char kInvalidTokenValue[] = "INVALID_DM_TOKEN";
-
-void OnHardwarePlatformInfo(base::OnceClosure quit_closure,
-                            std::string* out,
-                            base::SysInfo::HardwareInfo info) {
-  *out = info.serial_number;
-  std::move(quit_closure).Run();
-}
 
 DMToken CreateValidToken(const std::string& dm_token) {
   DCHECK_NE(dm_token, kInvalidTokenValue);
@@ -94,17 +85,6 @@ std::string BrowserDMTokenStorage::RetrieveClientId() {
 
   InitIfNeeded();
   return client_id_;
-}
-
-std::string BrowserDMTokenStorage::RetrieveSerialNumber() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!serial_number_) {
-    serial_number_ = InitSerialNumber();
-    DVLOG(1) << "Serial number= " << serial_number_.value();
-  }
-
-  return serial_number_.value();
 }
 
 std::string BrowserDMTokenStorage::RetrieveEnrollmentToken() {
@@ -207,22 +187,6 @@ void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {
   base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),
                                    FROM_HERE, std::move(task),
                                    std::move(reply));
-}
-
-std::string BrowserDMTokenStorage::InitSerialNumber() {
-  // GetHardwareInfo is asynchronous, but we need this synchronously. This call
-  // will only happens once, as we cache the value. This will eventually be
-  // moved earlier in Chrome's startup as it will be needed by the registration
-  // as well.
-  // TODO(crbug.com/907518): Move this earlier and make it async.
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  std::string serial_number;
-  base::SysInfo::GetHardwareInfo(base::BindOnce(
-      &OnHardwarePlatformInfo, run_loop.QuitClosure(), &serial_number));
-
-  run_loop.Run();
-
-  return serial_number;
 }
 
 }  // namespace policy

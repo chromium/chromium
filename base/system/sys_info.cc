@@ -17,7 +17,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -92,16 +91,7 @@ std::string SysInfo::HardwareModelName() {
 #endif
 
 void SysInfo::GetHardwareInfo(base::OnceCallback<void(HardwareInfo)> callback) {
-#if defined(OS_WIN)
-  // On Windows the calls to GetHardwareInfoSync can take a really long time to
-  // complete as they depend on WMI, using the CONTINUE_ON_SHUTDOWN traits will
-  // prevent this task from blocking shutdown.
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-          .get(),
-      FROM_HERE, base::BindOnce(&GetHardwareInfoSync), std::move(callback));
-#elif defined(OS_ANDROID) || defined(OS_APPLE)
+#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_APPLE)
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {}, base::BindOnce(&GetHardwareInfoSync), std::move(callback));
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)

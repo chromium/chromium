@@ -16,10 +16,11 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/win/registry.h"
 #include "base/win/windows_version.h"
-#include "base/win/wmi.h"
 
 namespace {
 
@@ -168,15 +169,26 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 
 // static
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
-  win::WmiComputerSystemInfo wmi_info = win::WmiComputerSystemInfo::Get();
+  constexpr base::char16 kSystemBiosInformationRegKey[] =
+      L"HARDWARE\\DESCRIPTION\\System\\BIOS";
 
   HardwareInfo info;
-  info.manufacturer = WideToUTF8(wmi_info.manufacturer());
-  info.model = WideToUTF8(wmi_info.model());
-  info.serial_number = WideToUTF8(wmi_info.serial_number());
-  DCHECK(IsStringUTF8(info.manufacturer));
-  DCHECK(IsStringUTF8(info.model));
-  DCHECK(IsStringUTF8(info.serial_number));
+  base::win::RegKey system_information_key;
+  if (system_information_key.Open(HKEY_LOCAL_MACHINE,
+                                  kSystemBiosInformationRegKey,
+                                  KEY_READ) == ERROR_SUCCESS) {
+    base::string16 value16;
+    if (system_information_key.ReadValue(L"SystemManufacturer", &value16) ==
+        ERROR_SUCCESS) {
+      info.manufacturer = base::SysWideToUTF8(value16);
+    }
+
+    if (system_information_key.ReadValue(L"SystemProductName", &value16) ==
+        ERROR_SUCCESS) {
+      info.model = base::SysWideToUTF8(value16);
+    }
+  }
+
   return info;
 }
 
