@@ -66,7 +66,9 @@ export function scannerSelectTest() {
     assertFalse(select.hidden);
     assertTrue(throbber.hidden);
     assertTrue(helpLink.hidden);
-    assertEquals(2, select.length);
+    // The expected options are the 2 scanners + the hidden 'No scanners'
+    // option.
+    assertEquals(3, select.length);
     assertEquals(firstScannerName, select.options[0].textContent.trim());
     assertEquals(secondScannerName, select.options[1].textContent.trim());
     assertEquals(tokenToString(firstScannerId), select.value);

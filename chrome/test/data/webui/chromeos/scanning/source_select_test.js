@@ -48,11 +48,12 @@ export function sourceSelectTest() {
   });
 
   test('initializeSourceSelect', () => {
-    // Before options are added, the dropdown should be enabled and empty.
+    // Before options are added, the dropdown should be enabled and display the
+    // default option.
     const select = sourceSelect.$$('select');
     assertTrue(!!select);
     assertFalse(select.disabled);
-    assertEquals(0, select.length);
+    assertEquals(1, select.length);
 
     const firstSource =
         createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
@@ -63,8 +64,9 @@ export function sourceSelectTest() {
     flush();
 
     // Verify that adding sources results in the dropdown displaying the correct
-    // options.
-    assertEquals(2, select.length);
+    // options. The expected options are simplex, flatbed, and the hidden
+    // default option.
+    assertEquals(3, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
         select.options[0].textContent.trim());

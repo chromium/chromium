@@ -20,18 +20,14 @@
     <select id="scannerSelect" class="md-select"
         value="{{selectedScannerId::change}}" hidden$="[[!loaded]]"
         disabled="[[disabled]]" aria-labelledby="scannerLabel">
-      <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
-          remove it from the dropdown. -->
-      <template is="dom-if" if="[[!scanners.length]]" restamp>
-        <option value="">
-          [[i18n('noScannersText')]]
-        </option>
-      </template>
       <template is="dom-repeat" items="[[scanners]]" as="scanner">
         <option value="[[getTokenAsString_(scanner)]]">
           [[getScannerDisplayName_(scanner)]]
         </option>
       </template>
+      <option value="" hidden="[[scanners.length]]">
+        [[i18n('noScannersText')]]
+      </option>
     </select>
   </div>
   <div id="scanHelp" slot="error"
