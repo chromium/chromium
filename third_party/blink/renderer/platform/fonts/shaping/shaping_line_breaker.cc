@@ -50,11 +50,18 @@ bool IsAllSpaces(const String& text, unsigned start, unsigned end) {
       .IsAllSpecialCharacters<IsBreakableSpace>();
 }
 
-bool ShouldHyphenate(const String& text, unsigned start, unsigned end) {
+bool ShouldHyphenate(const String& text,
+                     unsigned word_start,
+                     unsigned word_end,
+                     unsigned line_start) {
+  // If this is the first word in this line, allow to hyphenate. Otherwise the
+  // word will overflow.
+  if (word_start <= line_start)
+    return true;
   // Do not hyphenate the last word in a paragraph, except when it's a single
   // word paragraph.
-  if (IsAllSpaces(text, end, text.length()))
-    return IsAllSpaces(text, 0, start);
+  if (IsAllSpaces(text, word_end, text.length()))
+    return IsAllSpaces(text, 0, word_start);
   return true;
 }
 
@@ -141,7 +148,7 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
          LazyLineBreakIterator::IsBreakableSpace(text[word_start]))
     word_start++;
   if (offset >= word_start &&
-      ShouldHyphenate(text, previous_break_opportunity, word_end)) {
+      ShouldHyphenate(text, previous_break_opportunity, word_end, start)) {
     unsigned prefix_length = Hyphenate(offset, word_start, word_end, backwards);
     if (prefix_length)
       return {word_start + prefix_length, true};
