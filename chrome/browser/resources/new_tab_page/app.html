@@ -82,15 +82,6 @@
     width: var(--ntp-search-box-width);
   }
 
-  :host([modules-enabled_]) ntp-middle-slot-promo {
-    width: var(--ntp-search-box-width);
-  }
-
-  :host(:not([modules-enabled_])) ntp-middle-slot-promo {
-    bottom: 16px;
-    position: fixed;
-  }
-
   ntp-realbox {
     visibility: hidden;
   }
@@ -242,19 +233,6 @@
 
   #backgroundImageAttribution2 {
     font-size: .75rem;
-  }
-
-  @keyframes fadein {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .fadein {
-    animation: 100ms ease-in-out fadein;
   }
 
   svg {

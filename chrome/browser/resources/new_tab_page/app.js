@@ -858,19 +858,6 @@ class AppElement extends PolymerElement {
   /** @private */
   onMiddleSlotPromoLoaded_() {
     this.middleSlotPromoLoaded_ = true;
-    // The promo is always shown when modules are enabled since it will not
-    // overlap with other elements.
-    if (this.modulesEnabled_) {
-      return;
-    }
-    const onResize = () => {
-      const promoElement = $$(this, 'ntp-middle-slot-promo');
-      promoElement.hidden =
-          $$(this, '#mostVisited').getBoundingClientRect().bottom >=
-          promoElement.offsetTop;
-    };
-    this.eventTracker_.add(window, 'resize', onResize);
-    onResize();
   }
 
   /** @private */

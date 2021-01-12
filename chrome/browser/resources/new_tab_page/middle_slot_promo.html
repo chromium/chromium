@@ -1,15 +1,8 @@
 <style>
   :host {
     font-size: 12px;
-    white-space: pre;
-  }
-
-  :host([modules-enabled_]):host {
-    font-size: 13px;
-  }
-
-  :host(:not([modules-enabled_])):host {
     max-width: 537px;
+    white-space: pre;
   }
 
   #container {
@@ -25,11 +18,6 @@
     justify-content: center;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
-  }
-
-  :host([modules-enabled_]) #container {
-    border-radius: 5px;
-    height: 48px;
   }
 
   a {
@@ -59,13 +47,6 @@
     width: 24px;
   }
 
-  :host([modules-enabled_]) img {
-    background-color: var(--google-grey-refresh-100);
-    height: 22px;
-    padding: 5px;
-    width: 22px;
-  }
-
   @media (prefers-color-scheme: dark) {
     img {
       background-color: var(--google-grey-200);
@@ -78,4 +59,3 @@
   }
 </style>
 <!-- Promo parts are added by JS. -->
-<div id="container"></div>
