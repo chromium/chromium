@@ -97,6 +97,19 @@ class WebAppFrameToolbarBrowserTest : public InProcessBrowserTest {
     return &web_app_frame_toolbar_helper_;
   }
 
+  bool IsMenuCommandEnabled(int command_id) {
+    auto app_menu_model = std::make_unique<WebAppMenuModel>(
+        /*provider=*/nullptr, helper()->app_browser());
+    app_menu_model->Init();
+    ui::MenuModel* model = app_menu_model.get();
+    int index = -1;
+    if (!app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
+                                                      &index)) {
+      return false;
+    }
+    return model->IsEnabledAt(index);
+  }
+
  private:
   net::EmbeddedTestServer https_server_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
@@ -311,26 +324,27 @@ class WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
                        Test) {
-  LoadTestPopUpExtension(browser()->profile());
   helper()->InstallAndLaunchWebApp(browser(), GURL("https://test.org"));
 
-  WebAppToolbarButtonContainer* toolbar_button_container =
-      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  // There should be no menu entry for opening the Extensions menu prior to
+  // installing Extensions.
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
+
+  // Install test Extension.
+  LoadTestPopUpExtension(browser()->profile());
 
   // There should be no visible Extensions icon.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
   EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
 
   // There should be a menu entry for opening the Extensions menu.
+  EXPECT_TRUE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
+
+  // Trigger the Extensions menu entry.
   auto app_menu_model = std::make_unique<WebAppMenuModel>(
       /*provider=*/nullptr, helper()->app_browser());
   app_menu_model->Init();
-  ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
-  const bool found = app_menu_model->GetModelAndIndexForCommandId(
-      WebAppMenuModel::kExtensionsMenuCommandId, &model, &index);
-  EXPECT_TRUE(found);
-  EXPECT_TRUE(model->IsEnabledAt(index));
-
   app_menu_model->ExecuteCommand(WebAppMenuModel::kExtensionsMenuCommandId,
                                  /*event_flags=*/0);
 
@@ -371,12 +385,5 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
   EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
 
   // There should be no menu entry for opening the Extensions menu.
-  auto app_menu_model = std::make_unique<WebAppMenuModel>(
-      /*provider=*/nullptr, helper()->app_browser());
-  app_menu_model->Init();
-  ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
-  const bool found = app_menu_model->GetModelAndIndexForCommandId(
-      WebAppMenuModel::kExtensionsMenuCommandId, &model, &index);
-  EXPECT_FALSE(found);
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
 }

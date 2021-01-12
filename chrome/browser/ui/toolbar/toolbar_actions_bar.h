@@ -249,6 +249,7 @@ class ToolbarActionsBar : public ExtensionsContainer,
   void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ToggleExtensionsMenu() override;
+  bool HasAnyExtensions() const override;
 
  private:
   // Returns the insets by which the icon area bounds (See GetIconAreaRect())

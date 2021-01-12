@@ -608,8 +608,15 @@ void ToolbarActionsBar::ShowToolbarActionBubbleAsync(
 
 void ToolbarActionsBar::ToggleExtensionsMenu() {
   // This is only implemented by |ExtensionsToolbarContainer|.
-  // TODO(crbug.com/943702): Remove this entire class.
+  // TODO(crbug.com/1165609): Remove this entire class.
   NOTREACHED();
+}
+
+bool ToolbarActionsBar::HasAnyExtensions() const {
+  // This is only implemented by |ExtensionsToolbarContainer|.
+  // TODO(crbug.com/1165609): Remove this entire class.
+  NOTREACHED();
+  return false;
 }
 
 bool ToolbarActionsBar::CloseOverflowMenuIfOpen() {

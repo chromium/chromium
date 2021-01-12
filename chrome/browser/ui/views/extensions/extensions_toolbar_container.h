@@ -54,13 +54,13 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     // be hidden if the available space does not allow for them. Compact mode is
     // used in smaller windows (e.g. web apps) where
     // there may not be enough space to display the buttons.
+    // TODO(crbug.com/1155421): Remove kCompact in favour of kAutoHide once the
+    // |kDesktopPWAsElidedExtensionsMenu| flag is removed.
     kCompact,
     // In auto hide mode the menu icon is hidden until
     // extensions_button()->ToggleExtensionsMenu() is called by the embedder.
-    // This
-    // is used for windows that want to minimize the number of visible icons in
-    // their
-    // toolbar (e.g. web apps).
+    // This is used for windows that want to minimize the number of visible
+    // icons in their toolbar (e.g. web apps).
     kAutoHide,
   };
 
@@ -141,6 +141,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ToggleExtensionsMenu() override;
+  bool HasAnyExtensions() const override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;

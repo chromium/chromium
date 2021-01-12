@@ -26,8 +26,8 @@ class ExtensionsToolbarButton : public ToolbarButton,
   ExtensionsToolbarButton& operator=(const ExtensionsToolbarButton&) = delete;
   ~ExtensionsToolbarButton() override;
 
-  // Activate the Extensions menu. If the ExtensionsToolbarContainer is in
-  // kAutoHide mode this will cause it to show.
+  // Toggle the Extensions menu. If the ExtensionsToolbarContainer is in
+  // kAutoHide mode and hidden this will cause it to show.
   void ToggleExtensionsMenu();
 
   bool IsExtensionsMenuShowing() const;

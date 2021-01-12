@@ -391,6 +391,10 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
   extensions_button_->ToggleExtensionsMenu();
 }
 
+bool ExtensionsToolbarContainer::HasAnyExtensions() const {
+  return !actions_.empty();
+}
+
 void ExtensionsToolbarContainer::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -407,7 +411,11 @@ void ExtensionsToolbarContainer::OnToolbarActionAdded(
     int index) {
   CreateActionForId(action_id);
   ReorderViews();
-  UpdateContainerVisibility();
+
+  // Auto hide mode should not become visible due to extensions being added,
+  // only due to user interaction.
+  if (display_mode_ != DisplayMode::kAutoHide)
+    UpdateContainerVisibility();
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionRemoved(
@@ -712,7 +720,7 @@ void ExtensionsToolbarContainer::UpdateContainerVisibility() {
 bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
   // The container (and extensions-menu button) should not be visible if we have
   // no extensions.
-  if (actions_.empty())
+  if (!HasAnyExtensions())
     return false;
 
   // All other display modes are constantly visible.

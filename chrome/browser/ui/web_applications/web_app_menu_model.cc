@@ -47,7 +47,8 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
     case kExtensionsMenuCommandId:
       return base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu) &&
              base::FeatureList::IsEnabled(
-                 features::kDesktopPWAsElidedExtensionsMenu);
+                 features::kDesktopPWAsElidedExtensionsMenu) &&
+             browser()->window()->GetExtensionsContainer()->HasAnyExtensions();
     default:
       return AppMenuModel::IsCommandIdEnabled(command_id);
   }

@@ -76,7 +76,11 @@ class ExtensionsContainer {
   virtual void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
 
+  // Toggle the Extensions menu (as if the user clicked the puzzle piece icon).
   virtual void ToggleExtensionsMenu() = 0;
+
+  // Whether there are any Extensions registered with the ExtensionsContainer.
+  virtual bool HasAnyExtensions() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
