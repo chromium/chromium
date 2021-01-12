@@ -531,6 +531,13 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // this document, to avoid reporting duplicates. The value stored comes
   // from |DocumentPolicyViolationReport::MatchId()|.
   mutable HashSet<unsigned> document_policy_violation_reports_sent_;
+
+  // A list of the most recently recorded source frame UKM source IDs for the
+  // PostMessage.Incoming.Frame UKM event, in order to partially deduplicate
+  // logged events. Its size is limited to 20. See SchedulePostMessage() where
+  // this UKM is logged.
+  // TODO(crbug.com/1112491): Remove when no longer needed.
+  Deque<ukm::SourceId> post_message_ukm_recorded_source_ids_;
 };
 
 template <>

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -70,6 +72,35 @@ using TokenFrameMap = std::unordered_map<base::UnguessableToken,
                                          base::UnguessableTokenHash>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
     LAZY_INSTANCE_INITIALIZER;
+
+// Maintains a list of the most recently recorded (source, target) pairs for the
+// PostMessage.Incoming.Page UKM event, in order to partially deduplicate
+// logged events. Its size is limited to 20. See RouteMessageEvent() where
+// this UKM is logged.
+// TODO(crbug.com/1112491): Remove when no longer needed.
+bool ShouldRecordPostMessageIncomingPageUkmEvent(
+    ukm::SourceId source_page_ukm_source_id,
+    ukm::SourceId target_page_ukm_source_id) {
+  constexpr size_t kMaxPostMessageUkmAlreadyRecordedPairsSize = 20;
+  static base::NoDestructor<
+      base::circular_deque<std::pair<ukm::SourceId, ukm::SourceId>>>
+      s_post_message_ukm_already_recorded_pairs;
+
+  DCHECK_LE(s_post_message_ukm_already_recorded_pairs->size(),
+            kMaxPostMessageUkmAlreadyRecordedPairsSize);
+  std::pair<ukm::SourceId, ukm::SourceId> new_pair =
+      std::make_pair(source_page_ukm_source_id, target_page_ukm_source_id);
+
+  if (base::Contains(*s_post_message_ukm_already_recorded_pairs, new_pair))
+    return false;
+
+  if (s_post_message_ukm_already_recorded_pairs->size() ==
+      kMaxPostMessageUkmAlreadyRecordedPairsSize) {
+    s_post_message_ukm_already_recorded_pairs->pop_back();
+  }
+  s_post_message_ukm_already_recorded_pairs->push_front(new_pair);
+  return true;
+}
 
 }  // namespace
 
@@ -595,11 +626,15 @@ void RenderFrameProxyHost::RouteMessageEvent(
   }
 
   // Record UKM metrics for the postMessage event.
-  ukm::builders::PostMessage_Incoming_Page ukm_builder(
-      target_rfh->GetPageUkmSourceId());
-  if (source_page_ukm_source_id != ukm::kInvalidSourceId)
-    ukm_builder.SetSourcePageSourceId(source_page_ukm_source_id);
-  ukm_builder.Record(ukm::UkmRecorder::Get());
+  ukm::SourceId target_page_ukm_source_id = target_rfh->GetPageUkmSourceId();
+  if (ShouldRecordPostMessageIncomingPageUkmEvent(source_page_ukm_source_id,
+                                                  target_page_ukm_source_id)) {
+    ukm::builders::PostMessage_Incoming_Page ukm_builder(
+        target_page_ukm_source_id);
+    if (source_page_ukm_source_id != ukm::kInvalidSourceId)
+      ukm_builder.SetSourcePageSourceId(source_page_ukm_source_id);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  }
 
   target_rfh->PostMessageEvent(translated_source_token, source_origin,
                                target_origin, std::move(message));

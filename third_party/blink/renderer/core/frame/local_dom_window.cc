@@ -137,6 +137,31 @@
 
 namespace blink {
 
+namespace {
+
+constexpr size_t kMaxPostMessageUkmRecordedSourceIdsSize = 20;
+
+bool ShouldRecordPostMessageIncomingFrameUkmEvent(
+    ukm::SourceId source_frame_ukm_source_id,
+    Deque<ukm::SourceId>& already_recorded_source_frame_ids) {
+  DCHECK_LE(already_recorded_source_frame_ids.size(),
+            kMaxPostMessageUkmRecordedSourceIdsSize);
+
+  if (base::Contains(already_recorded_source_frame_ids,
+                     source_frame_ukm_source_id)) {
+    return false;
+  }
+
+  if (already_recorded_source_frame_ids.size() ==
+      kMaxPostMessageUkmRecordedSourceIdsSize) {
+    already_recorded_source_frame_ids.pop_back();
+  }
+  already_recorded_source_frame_ids.push_front(source_frame_ukm_source_id);
+  return true;
+}
+
+}  // namespace
+
 LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
     : DOMWindow(frame),
       ExecutionContext(V8PerIsolateData::MainThreadIsolate(), agent),
@@ -945,9 +970,13 @@ void LocalDOMWindow::SchedulePostMessage(
     scoped_refptr<const SecurityOrigin> target,
     LocalDOMWindow* source) {
   // Record UKM metrics for postMessage event.
-  ukm::builders::PostMessage_Incoming_Frame(UkmSourceID())
-      .SetSourceFrameSourceId(source->UkmSourceID())
-      .Record(UkmRecorder());
+  ukm::SourceId source_frame_ukm_source_id = source->UkmSourceID();
+  if (ShouldRecordPostMessageIncomingFrameUkmEvent(
+          source_frame_ukm_source_id, post_message_ukm_recorded_source_ids_)) {
+    ukm::builders::PostMessage_Incoming_Frame(UkmSourceID())
+        .SetSourceFrameSourceId(source_frame_ukm_source_id)
+        .Record(UkmRecorder());
+  }
 
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
