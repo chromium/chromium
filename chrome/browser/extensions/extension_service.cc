@@ -1712,7 +1712,7 @@ void ExtensionService::AddNewOrUpdatedExtension(
                                          install_flags, install_parameter,
                                          ruleset_install_prefs);
   delayed_installs_.Remove(extension->id());
-  if (InstallVerifier::NeedsVerification(*extension))
+  if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext()))
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
 
   FinishInstallation(extension);

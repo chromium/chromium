@@ -106,7 +106,7 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
       AddExtensionAsPolicyInstalled(extension->id());
 
     EXPECT_EQ(test_case.expected_from_store_status == FROM_STORE,
-              InstallVerifier::IsFromStore(*extension));
+              InstallVerifier::IsFromStore(*extension, profile()));
     disable_reason::DisableReason disable_reason;
     base::string16 error;
     EXPECT_EQ(

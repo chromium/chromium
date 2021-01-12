@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -30,7 +31,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/manifest_url_handlers.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 using extensions::Extension;
@@ -84,9 +84,9 @@ metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
 // webstore, we attempt to verify with |verifier| by checking if it has been
 // explicitly deemed invalid. If |verifier| is inactive or if the extension is
 // unknown to |verifier|, the local information is trusted.
-ExtensionState IsOffStoreExtension(
-    const extensions::Extension& extension,
-    const extensions::InstallVerifier& verifier) {
+ExtensionState IsOffStoreExtension(const extensions::Extension& extension,
+                                   const extensions::InstallVerifier& verifier,
+                                   content::BrowserContext* context) {
   if (!extension.is_extension() && !extension.is_legacy_packaged_app())
     return NO_EXTENSIONS;
 
@@ -97,7 +97,7 @@ ExtensionState IsOffStoreExtension(
   if (verifier.AllowedByEnterprisePolicy(extension.id()))
     return NO_EXTENSIONS;
 
-  if (!extensions::InstallVerifier::IsFromStore(extension))
+  if (!extensions::InstallVerifier::IsFromStore(extension, context))
     return OFF_STORE;
 
   // Local information about the extension implies it is from the store. We try
@@ -115,14 +115,15 @@ ExtensionState IsOffStoreExtension(
 // highest (as defined by the order of ExtensionState) value of each extension
 // in |extensions|.
 ExtensionState CheckForOffStore(const extensions::ExtensionSet& extensions,
-                                const extensions::InstallVerifier& verifier) {
+                                const extensions::InstallVerifier& verifier,
+                                content::BrowserContext* context) {
   ExtensionState state = NO_EXTENSIONS;
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
        it != extensions.end() && state < OFF_STORE;
        ++it) {
     // Combine the state of each extension, always favoring the higher state as
     // defined by the order of ExtensionState.
-    state = std::max(state, IsOffStoreExtension(**it, verifier));
+    state = std::max(state, IsOffStoreExtension(**it, verifier, context));
   }
   return state;
 }
@@ -304,7 +305,8 @@ ExtensionInstallProto::BlacklistState GetBlacklistState(
 metrics::ExtensionInstallProto ConstructInstallProto(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
-    base::Time last_sample_time) {
+    base::Time last_sample_time,
+    extensions::ExtensionManagement* extension_management) {
   ExtensionInstallProto install;
   install.set_type(GetType(extension.manifest()->type()));
   install.set_install_location(GetInstallLocation(extension.location()));
@@ -315,7 +317,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_has_incognito_access(prefs->IsIncognitoEnabled(extension.id()));
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(
-      extensions::ManifestURL::UpdatesFromGallery(&extension));
+      extension_management->UpdatesFromWebstore(extension));
   install.set_is_from_bookmark(extension.from_bookmark());
   install.set_is_converted_from_user_script(
       extension.converted_from_user_script());
@@ -343,9 +345,11 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
           ->GenerateInstalledExtensionsSet();
   std::vector<ExtensionInstallProto> installs;
   installs.reserve(extensions->size());
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
   for (const auto& extension : *extensions) {
-    installs.push_back(
-        ConstructInstallProto(*extension, prefs, last_sample_time));
+    installs.push_back(ConstructInstallProto(
+        *extension, prefs, last_sample_time, extension_management));
   }
 
   return installs;
@@ -401,8 +405,12 @@ metrics::ExtensionInstallProto
 ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
-    base::Time last_sample_time) {
-  return ConstructInstallProto(extension, prefs, last_sample_time);
+    base::Time last_sample_time,
+    Profile* profile) {
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  return ConstructInstallProto(extension, prefs, last_sample_time,
+                               extension_management);
 }
 
 // static
@@ -435,7 +443,8 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
 
     // Combine the state from each profile, always favoring the higher state as
     // defined by the order of ExtensionState.
-    state = std::max(state, CheckForOffStore(*extensions.get(), *verifier));
+    state = std::max(
+        state, CheckForOffStore(*extensions.get(), *verifier, profiles[i]));
   }
 
   system_profile->set_offstore_extensions_state(ExtensionStateAsProto(state));

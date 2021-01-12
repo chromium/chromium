@@ -181,14 +181,17 @@ bool InstallVerifier::ShouldEnforce() {
 }
 
 // static
-bool InstallVerifier::NeedsVerification(const Extension& extension) {
-  return IsFromStore(extension) && CanUseExtensionApis(extension);
+bool InstallVerifier::NeedsVerification(const Extension& extension,
+                                        content::BrowserContext* context) {
+  return IsFromStore(extension, context) && CanUseExtensionApis(extension);
 }
 
 // static
-bool InstallVerifier::IsFromStore(const Extension& extension) {
+bool InstallVerifier::IsFromStore(const Extension& extension,
+                                  content::BrowserContext* context) {
   return extension.from_webstore() ||
-         ManifestURL::UpdatesFromGallery(&extension);
+         ExtensionManagementFactory::GetForBrowserContext(context)
+             ->UpdatesFromWebstore(extension);
 }
 
 void InstallVerifier::Init() {
@@ -332,7 +335,7 @@ bool InstallVerifier::MustRemainDisabled(const Extension* extension,
   if (base::Contains(InstallSigner::GetForcedNotFromWebstore(),
                      extension->id())) {
     verified = false;
-  } else if (!IsFromStore(*extension)) {
+  } else if (!IsFromStore(*extension, context_)) {
     verified = false;
   } else if (!signature_ && (!bootstrap_check_complete_ ||
                              GetStatus() < VerifyStatus::ENFORCE_STRICT)) {
@@ -386,7 +389,7 @@ ExtensionIdSet InstallVerifier::GetExtensionsToVerify() const {
   for (ExtensionSet::const_iterator iter = extensions->begin();
        iter != extensions->end();
        ++iter) {
-    if (NeedsVerification(**iter))
+    if (NeedsVerification(**iter, context_))
       result.insert((*iter)->id());
   }
   return result;

@@ -49,10 +49,12 @@ class InstallVerifier : public KeyedService,
   static bool ShouldEnforce();
 
   // Returns whether |extension| is of a type that needs verification.
-  static bool NeedsVerification(const Extension& extension);
+  static bool NeedsVerification(const Extension& extension,
+                                content::BrowserContext* context);
 
   // Determines if an extension claims to be from the webstore.
-  static bool IsFromStore(const Extension& extension);
+  static bool IsFromStore(const Extension& extension,
+                          content::BrowserContext* context);
 
   // Initializes this object for use, including reading preferences and
   // validating the stored signature.

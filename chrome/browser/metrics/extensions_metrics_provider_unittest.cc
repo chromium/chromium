@@ -158,7 +158,7 @@ class ExtensionMetricsProviderInstallsTest
 
   ExtensionInstallProto ConstructProto(const Extension& extension) {
     return ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
-        extension, prefs_, last_sample_time_);
+        extension, prefs_, last_sample_time_, profile());
   }
   std::vector<ExtensionInstallProto> GetInstallsForProfile() {
     return ExtensionsMetricsProvider::GetInstallsForProfileForTesting(
