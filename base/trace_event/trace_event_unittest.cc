@@ -64,8 +64,6 @@ const int kAsyncId = 5;
 const char kAsyncIdStr[] = "0x5";
 const int kAsyncId2 = 6;
 const char kAsyncId2Str[] = "0x6";
-const int kFlowId = 7;
-const char kFlowIdStr[] = "0x7";
 
 constexpr const char kRecordAllCategoryFilter[] = "*";
 constexpr const char kAllCategory[] = "all";
@@ -445,12 +443,6 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
                            "name1", "value1",
                            "name2", "value2");
 
-    TRACE_EVENT_FLOW_BEGIN0("all", "TRACE_EVENT_FLOW_BEGIN0 call", kFlowId);
-    TRACE_EVENT_FLOW_STEP0("all", "TRACE_EVENT_FLOW_STEP0 call",
-                           kFlowId, "step1");
-    TRACE_EVENT_FLOW_END_BIND_TO_ENCLOSING0("all",
-        "TRACE_EVENT_FLOW_END_BIND_TO_ENCLOSING0 call", kFlowId);
-
     TRACE_COUNTER1("all", "TRACE_COUNTER1 call", 31415);
     TRACE_COUNTER2("all", "TRACE_COUNTER2 call",
                    "a", 30000,
@@ -642,17 +634,6 @@ void ValidateAllTraceMacrosCreatedData(const ListValue& trace_parsed) {
   EXPECT_SUB_FIND_("value1");
   EXPECT_SUB_FIND_("name2");
   EXPECT_SUB_FIND_("value2");
-
-  EXPECT_FIND_("TRACE_EVENT_FLOW_BEGIN0 call");
-  EXPECT_SUB_FIND_("id");
-  EXPECT_SUB_FIND_(kFlowIdStr);
-  EXPECT_FIND_("TRACE_EVENT_FLOW_STEP0 call");
-  EXPECT_SUB_FIND_("id");
-  EXPECT_SUB_FIND_(kFlowIdStr);
-  EXPECT_SUB_FIND_("step1");
-  EXPECT_FIND_("TRACE_EVENT_FLOW_END_BIND_TO_ENCLOSING0 call");
-  EXPECT_SUB_FIND_("id");
-  EXPECT_SUB_FIND_(kFlowIdStr);
 
   EXPECT_FIND_("TRACE_COUNTER1 call");
   {

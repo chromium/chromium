@@ -115,8 +115,9 @@ bool WireServerCommandSerializer::Flush() {
                  "WireServerCommandSerializer::Flush", "bytes", put_offset_);
 
     static uint32_t return_trace_id = 0;
-    TRACE_EVENT_FLOW_BEGIN0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                            "DawnReturnCommands", return_trace_id++);
+    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+                           "DawnReturnCommands", TRACE_EVENT_FLAG_FLOW_OUT,
+                           return_trace_id++);
 
     client_->HandleReturnData(base::make_span(buffer_.data(), put_offset_));
     put_offset_ = kDawnReturnCmdsOffset;
@@ -1026,8 +1027,9 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
     return error::kOutOfBounds;
   }
 
-  TRACE_EVENT_FLOW_END0(
+  TRACE_EVENT_WITH_FLOW0(
       TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
+      TRACE_EVENT_FLAG_FLOW_IN,
       (static_cast<uint64_t>(commands_shm_id) << 32) + commands_shm_offset);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),

@@ -136,10 +136,10 @@ bool WebGPUCommandSerializer::Flush() {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WebGPUCommandSerializer::Flush", "bytes", c2s_put_offset_);
 
-    TRACE_EVENT_FLOW_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
-        (static_cast<uint64_t>(c2s_buffer_.shm_id()) << 32) +
-            c2s_buffer_.offset());
+    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+                           "DawnCommands", TRACE_EVENT_FLAG_FLOW_OUT,
+                           (static_cast<uint64_t>(c2s_buffer_.shm_id()) << 32) +
+                               c2s_buffer_.offset());
 
     c2s_buffer_.Shrink(c2s_put_offset_);
     helper_->DawnCommands(device_client_id_, c2s_buffer_.shm_id(),
@@ -415,8 +415,9 @@ void WebGPUImplementation::OnGpuControlReturnData(
 #if BUILDFLAG(USE_DAWN)
 
   static uint32_t return_trace_id = 0;
-  TRACE_EVENT_FLOW_END0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                        "DawnReturnCommands", return_trace_id++);
+  TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+                         "DawnReturnCommands", TRACE_EVENT_FLAG_FLOW_IN,
+                         return_trace_id++);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUImplementation::OnGpuControlReturnData", "bytes",

@@ -356,9 +356,9 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   }
 
   // Trace this begin frame time through the Chrome stack
-  TRACE_EVENT_FLOW_BEGIN0(
-      TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
-      "viz::BeginFrameArgs", args.frame_time.since_origin().InMicroseconds());
+  TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
+                         "viz::BeginFrameArgs", TRACE_EVENT_FLAG_FLOW_OUT,
+                         args.frame_time.since_origin().InMicroseconds());
 
   if (settings_.using_synchronous_renderer_compositor) {
     BeginImplFrameSynchronous(args);
