@@ -254,10 +254,10 @@ sk_sp<SkImage> WrapGLTexture(
   texture_info.fFormat = GL_RGBA8_OES;
   GrBackendTexture backend_texture(size.width(), size.height(),
                                    GrMipMapped::kNo, texture_info);
-  return SkImage::MakeFromAdoptedTexture(
+  return SkImage::MakeFromTexture(
       raster_context_provider->GrContext(), backend_texture,
       kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
-      color_space.ToSkColorSpace());
+      color_space.ToSkColorSpace(), nullptr, nullptr);
 }
 
 void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
@@ -912,7 +912,7 @@ void PaintCanvasVideoRenderer::Paint(
 
   const bool need_rotation = video_transformation.rotation != VIDEO_ROTATION_0;
   const bool need_scaling =
-      dest_rect.size() != gfx::SizeF(video_frame->visible_rect().size());
+      dest_rect.size() != gfx::SizeF(image.width(), image.height());
   const bool need_translation = !dest_rect.origin().IsOrigin();
   // TODO(tmathmeyer): apply horizontal / vertical mirroring if needed.
   bool need_transform = need_rotation || need_scaling || need_translation;
@@ -943,13 +943,10 @@ void PaintCanvasVideoRenderer::Paint(
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());
     }
-    canvas->scale(SkFloatToScalar(rotated_dest_size.width() /
-                                  video_frame->visible_rect().width()),
-                  SkFloatToScalar(rotated_dest_size.height() /
-                                  video_frame->visible_rect().height()));
-    canvas->translate(
-        -SkFloatToScalar(video_frame->visible_rect().width() * 0.5f),
-        -SkFloatToScalar(video_frame->visible_rect().height() * 0.5f));
+    canvas->scale(SkFloatToScalar(rotated_dest_size.width() / image.width()),
+                  SkFloatToScalar(rotated_dest_size.height() / image.height()));
+    canvas->translate(-SkFloatToScalar(image.width() * 0.5f),
+                      -SkFloatToScalar(image.height() * 0.5f));
   }
 
   SkImageInfo info;
@@ -968,15 +965,7 @@ void PaintCanvasVideoRenderer::Paint(
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
     void* const pixels_offset = reinterpret_cast<char*>(pixels) + offset;
     ConvertVideoFrameToRGBPixels(video_frame.get(), pixels_offset, row_bytes);
-  } else if (video_frame->HasTextures()) {
-    DCHECK_EQ(video_frame->coded_size(),
-              gfx::Size(image.width(), image.height()));
-    canvas->drawImageRect(image, gfx::RectToSkRect(video_frame->visible_rect()),
-                          dest, &video_flags,
-                          SkCanvas::kStrict_SrcRectConstraint);
   } else {
-    DCHECK_EQ(video_frame->visible_rect().size(),
-              gfx::Size(image.width(), image.height()));
     canvas->drawImage(image, 0, 0, &video_flags);
   }
 
@@ -1709,6 +1698,8 @@ PaintCanvasVideoRenderer::Cache::~Cache() {
   DCHECK(!source_mailbox.IsZero());
   DCHECK(source_texture);
   auto* ri = raster_context_provider->RasterInterface();
+  if (!texture_ownership_in_skia)
+    ri->DeleteGpuRasterTexture(source_texture);
   if (!wraps_video_frame_texture) {
     gpu::SyncToken sync_token;
     ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -1718,7 +1709,9 @@ PaintCanvasVideoRenderer::Cache::~Cache() {
 }
 
 bool PaintCanvasVideoRenderer::Cache::Recycle() {
-  DCHECK(!wraps_video_frame_texture);
+  if (!texture_ownership_in_skia)
+    return true;
+
   if (!paint_image.HasExclusiveTextureAccess())
     return false;
 
@@ -1728,6 +1721,7 @@ bool PaintCanvasVideoRenderer::Cache::Recycle() {
   paint_image = cc::PaintImage();
   // We need a new texture ID because skia will destroy the previous one with
   // the SkImage.
+  texture_ownership_in_skia = false;
   source_texture = 0;
   return true;
 }
@@ -1773,6 +1767,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         } else {
           cache_.emplace(video_frame->unique_id());
           auto* sii = raster_context_provider->SharedImageInterface();
+
           // TODO(nazabris): Sort out what to do when GLES2 is needed but the
           // cached shared image is created without it.
           uint32_t flags =
@@ -1788,6 +1783,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           ri->WaitSyncTokenCHROMIUM(
               sii->GenUnverifiedSyncToken().GetConstData());
         }
+
+        DCHECK(!cache_->texture_ownership_in_skia);
         if (video_frame->NumTextures() == 1) {
           auto frame_mailbox =
               SynchronizeVideoFrameSingleMailbox(ri, video_frame.get());
@@ -1828,10 +1825,35 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       cache_->raster_context_provider = raster_context_provider;
       cache_->coded_size = video_frame->coded_size();
       cache_->visible_rect = video_frame->visible_rect();
-
+      GrDirectContext* direct =
+          GrAsDirectContext(raster_context_provider->GrContext());
+      sk_sp<SkImage> source_subset = source_image->makeSubset(
+          gfx::RectToSkIRect(cache_->visible_rect), direct);
+      if (source_subset) {
+        // We use the flushPendingGrContextIO = true so we can flush any pending
+        // GPU work on the GrContext to ensure that skia exectues the work for
+        // generating the subset and it can be safely destroyed.
+        GrBackendTexture image_backend =
+            source_image->getBackendTexture(/*flushPendingGrContextIO*/ true);
+        GrBackendTexture subset_backend =
+            source_subset->getBackendTexture(/*flushPendingGrContextIO*/ true);
+#if DCHECK_IS_ON()
+        GrGLTextureInfo backend_info;
+        if (image_backend.getGLTextureInfo(&backend_info))
+          DCHECK_EQ(backend_info.fID, cache_->source_texture);
+#endif
+        if (subset_backend.isValid() &&
+            subset_backend.isSameTexture(image_backend)) {
+          cache_->texture_ownership_in_skia = true;
+          source_subset = SkImage::MakeFromAdoptedTexture(
+              cache_->raster_context_provider->GrContext(), image_backend,
+              kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType,
+              kPremul_SkAlphaType, source_image->imageInfo().refColorSpace());
+        }
+      }
       paint_image_builder.set_texture_backing(
           sk_sp<VideoTextureBacking>(new VideoTextureBacking(
-              std::move(source_image), raster_context_provider)),
+              std::move(source_subset), raster_context_provider)),
           cc::PaintImage::GetNextContentId());
     } else {
       cache_.emplace(video_frame->unique_id());
