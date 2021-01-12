@@ -730,9 +730,8 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
   v8::Local<v8::Object> exports = v8::Object::New(GetIsolate());
 
   v8::Local<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(
-      GetIsolate(),
-      &SetExportsProperty);
-  tmpl->RemovePrototype();
+      GetIsolate(), &SetExportsProperty, v8::Local<v8::Value>(),
+      v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
   v8::Local<v8::String> v8_key;
   if (!ToV8String(GetIsolate(), "$set", &v8_key)) {
     NOTREACHED();

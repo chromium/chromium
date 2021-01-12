@@ -144,9 +144,9 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
       << feature_name;
   SetPrivate(data, kFeatureName,
              v8_helpers::ToV8StringUnsafe(isolate, feature_name));
-  v8::Local<v8::FunctionTemplate> function_template =
-      v8::FunctionTemplate::New(isolate, Router, data);
-  function_template->RemovePrototype();
+  v8::Local<v8::FunctionTemplate> function_template = v8::FunctionTemplate::New(
+      isolate, Router, data, v8::Local<v8::Signature>(), 0,
+      v8::ConstructorBehavior::kThrow);
   v8::Local<v8::ObjectTemplate>::New(isolate, object_template_)
       ->Set(isolate, name.c_str(), function_template);
   router_data_.Append(data);
