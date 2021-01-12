@@ -70,13 +70,12 @@ void LogReceiveResult(bool success, const network::SimpleURLLoader* loader) {
           "FailureReason",
           http_status.GetResultCodeForMetrics());
     }
-  } else {
-    ss << " Missing URL loader.";
   }
+
   if (success) {
     NS_LOG(VERBOSE) << ss.str();
   } else {
-    NS_LOG(WARNING) << ss.str();
+    NS_LOG(ERROR) << ss.str();
   }
 }
 
@@ -124,7 +123,12 @@ void ReceiveMessagesExpress::DoStartReceivingMessages(
         ReceiveMessagesExpressRequest& request,
     const std::string& oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.ReceiveExpress."
+      "OAuthTokenFetchResult",
+      !oauth_token.empty());
   if (oauth_token.empty()) {
+    NS_LOG(ERROR) << __func__ << ": Failed to fetch OAuth token.";
     std::move(success_callback_).Run(false);
     return;
   }
@@ -164,9 +168,10 @@ void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
 
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LogReceiveResult(success, url_loader_.get());
-  if (!success_callback_.is_null())
+  if (!success_callback_.is_null()) {
+    LogReceiveResult(success, url_loader_.get());
     std::move(success_callback_).Run(success);
+  }
 
   url_loader_.reset();
   stream_parser_.reset();
@@ -178,6 +183,7 @@ void ReceiveMessagesExpress::OnRetry(base::OnceClosure start_retry) {
 
 void ReceiveMessagesExpress::OnFastPathReady() {
   if (!success_callback_.is_null()) {
+    LogReceiveResult(/*success=*/true, /*loader=*/nullptr);
     std::move(success_callback_).Run(true);
   }
 }

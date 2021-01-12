@@ -63,7 +63,7 @@ void LogSendResult(bool success, const NearbyShareHttpStatus& http_status) {
   if (success) {
     NS_LOG(VERBOSE) << ss.str();
   } else {
-    NS_LOG(WARNING) << ss.str();
+    NS_LOG(ERROR) << ss.str();
   }
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.SendExpress.Result", success);
@@ -100,7 +100,11 @@ void SendMessageExpress::DoSendMessage(
         SendMessageExpressRequest& request,
     SuccessCallback callback,
     const std::string& oauth_token) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.SendExpress.OAuthTokenFetchResult",
+      !oauth_token.empty());
   if (oauth_token.empty()) {
+    NS_LOG(ERROR) << __func__ << ": Failed to fetch OAuth token.";
     std::move(callback).Run(false);
     return;
   }
