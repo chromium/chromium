@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.accounts.Account;
 import android.app.Activity;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,28 +20,28 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+import java.util.List;
+
 /**
  * A helper to perform all necessary steps for forced sign in.
  * The helper performs:
  * - necessary child account checks;
- * - automatic non-interactive forced sign in for child accounts; and
+ * - automatic non-interactive sign in for child accounts; and
  * The helper calls the observer's onSignInComplete() if
  * - nothing needs to be done, or when
  * - the sign in is complete.
  *
  * Usage:
- * ForcedSigninProcessor.start(appContext).
+ * ForcedSigninProcessor.start().
  */
 public final class ForcedSigninProcessor {
-    private static final String TAG = "ForcedSignin";
-
     /*
      * Only for static usage.
      */
     private ForcedSigninProcessor() {}
 
     /**
-     * Check whether a forced automatic signin is required and process it if it is.
+     * Check whether an automatic signin is required and process it if it is.
      * This is triggered once per Chrome Application lifetime and every time the Account state
      * changes with early exit if an account has already been signed in.
      */
@@ -50,37 +50,32 @@ public final class ForcedSigninProcessor {
             boolean hasChildAccount = ChildAccountStatus.isChild(status);
             AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
             if (hasChildAccount) {
-                processForcedSignIn();
+                // Account cache is already available when child account status is ready.
+                final List<Account> accounts =
+                        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
+                assert accounts.size() == 1 : "Child account should be the only account on device!";
+                signinAndEnableSync(accounts.get(0));
             }
         });
     }
 
     /**
      * Processes the fully automatic non-FRE-related forced sign-in.
-     * This is used to enforce the environment for Android EDU and child accounts.
+     * This is used to enforce the environment for child accounts.
      */
-    private static void processForcedSignIn() {
+    private static void signinAndEnableSync(final Account childAccount) {
         final Profile profile = Profile.getLastUsedRegularProfile();
         if (FirstRunUtils.canAllowSync()
                 && IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
             // TODO(https://crbug.com/1044206): Remove this.
             ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         }
-
         final SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(profile);
         // By definition we have finished all the checks for first run.
         signinManager.onFirstRunCheckDone();
-        if (!FirstRunUtils.canAllowSync() || !signinManager.isSignInAllowed()) {
-            Log.d(TAG, "Sign in disallowed");
-            return;
-        }
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            if (accounts.size() != 1) {
-                Log.d(TAG, "Incorrect number of accounts (%d)", accounts.size());
-                return;
-            }
-            signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, accounts.get(0),
+        if (FirstRunUtils.canAllowSync() && signinManager.isSignInAllowed()) {
+            signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, childAccount,
                     new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
@@ -92,7 +87,7 @@ public final class ForcedSigninProcessor {
                         @Override
                         public void onSignInAborted() {}
                     });
-        });
+        }
     }
 
     /**
