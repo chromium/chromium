@@ -116,6 +116,17 @@
         }
       }
     ],
+    "manifest_keys": {
+      "omnibox": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "The keyword to register with the omnibox. Must be non-empty."
+          }
+        }
+      }
+    },
     "functions": [
       {
         "name": "sendSuggestions",

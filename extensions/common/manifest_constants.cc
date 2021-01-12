@@ -107,7 +107,6 @@ const char kOAuth2AutoApprove[] = "oauth2.auto_approve";
 const char kOAuth2ClientId[] = "oauth2.client_id";
 const char kOAuth2Scopes[] = "oauth2.scopes";
 const char kOfflineEnabled[] = "offline_enabled";
-const char kOmnibox[] = "omnibox";
 const char kOmniboxKeyword[] = "omnibox.keyword";
 const char kOptionalPermissions[] = "optional_permissions";
 const char kOptionsPage[] = "options_page";
@@ -544,8 +543,8 @@ const char kInvalidOAuth2Scopes[] =
     "Invalid value for 'oauth2.scopes'.";
 const char kInvalidOfflineEnabled[] =
     "Invalid value for 'offline_enabled'.";
-const char kInvalidOmniboxKeyword[] =
-    "Invalid value for 'omnibox.keyword'.";
+const char kEmptyOmniboxKeyword[] =
+    "Invalid value for 'omnibox.keyword'. It must be non-empty.";
 const char kInvalidOptionsPage[] = "Invalid value for '*'.";
 const char kInvalidOptionsPageExpectUrlInPackage[] =
     "Invalid value for 'options_page'.  Value must be a relative path.";

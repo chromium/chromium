@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
@@ -39,10 +40,10 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
 
   void AddOmniboxKeyword(extensions::ExtensionBuilder* builder,
                          const std::string& keyword) {
+    using ManifestKeys = extensions::api::omnibox::ManifestKeys;
     auto info = std::make_unique<base::DictionaryValue>();
-    info->SetStringKey("keyword", keyword);
-    builder->SetManifestKey(extensions::manifest_keys::kOmnibox,
-                            std::move(info));
+    info->SetStringKey(ManifestKeys::Omnibox::kKeyword, keyword);
+    builder->SetManifestKey(ManifestKeys::kOmnibox, std::move(info));
   }
 
   void AddRegularAction(extensions::ExtensionBuilder* builder) {

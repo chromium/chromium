@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
@@ -185,7 +186,7 @@ const char* const kSafeManifestEntries[] = {
     // A bit risky as the extensions sees all keystrokes entered into the
     // omnibox after the search key matches, but generally we deem URLs fair
     // game.
-    emk::kOmnibox,
+    ::extensions::api::omnibox::ManifestKeys::kOmnibox,
 
     // Special-cased in IsSafeForPublicSession(). Subject to permission
     // restrictions.
