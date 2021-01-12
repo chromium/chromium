@@ -150,6 +150,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
 
+  void UpdateAppDisabledState(
+      const base::ListValue* disabled_system_features_pref,
+      int feature,
+      const std::string& app_id);
+
   apps::InstanceRegistry* instance_registry_;
   ScopedObserver<extensions::AppWindowRegistry,
                  extensions::AppWindowRegistry::Observer>

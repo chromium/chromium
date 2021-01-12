@@ -10939,6 +10939,7 @@
             'os_settings',
             'camera',
             'scanning',
+            'web_store',
           ],
         },
       },
@@ -10963,6 +10964,11 @@
           'value': 'scanning',
           'caption': '''Scanning (supported since version 87)''',
         },
+        {
+          'name': 'web_store',
+          'value': 'web_store',
+          'caption': '''Web Store (supported since version 89)''',
+        },
       ],
       'supported_on': ['chrome_os:84-'],
       'features': {
@@ -10970,9 +10976,9 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning'],
+      'example_value': ['camera', 'browser_settings', 'os_settings', 'scanning', 'web_store'],
       'id': 689,
-      'caption': '''Configure the camera, browser settings, os settings, and scanning features to be disabled''',
+      'caption': '''Configure the camera, browser settings, os settings, scanning and web store features to be disabled''',
       'tags': [],
       'desc': '''Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> features to be disabled.
 

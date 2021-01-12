@@ -18,6 +18,7 @@ const char kCameraFeature[] = "camera";
 const char kBrowserSettingsFeature[] = "browser_settings";
 const char kOsSettingsFeature[] = "os_settings";
 const char kScanningFeature[] = "scanning";
+const char kWebStoreFeature[] = "web_store";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -78,6 +79,8 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     return SystemFeature::kBrowserSettings;
   if (system_feature == kScanningFeature)
     return SystemFeature::kScanning;
+  if (system_feature == kWebStoreFeature)
+    return SystemFeature::kWebStore;
 
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return kUnknownSystemFeature;

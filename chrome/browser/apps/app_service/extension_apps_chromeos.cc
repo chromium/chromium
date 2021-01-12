@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_chromeos.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -62,6 +63,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -502,36 +504,13 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
     return;
   }
 
-  bool is_disabled =
-      base::Contains(*disabled_system_features_pref,
-                     base::Value(policy::SystemFeature::kCamera));
-  auto* app_id = extension_misc::kCameraAppId;
+  UpdateAppDisabledState(disabled_system_features_pref,
+                         policy::SystemFeature::kCamera,
+                         extension_misc::kCameraAppId);
 
-  // Sometimes the policy is updated before the app is installed, so this way
-  // the disabled_apps_ is updated regardless the Publish should happen or not
-  // and the app will be published with the correct readiness upon its
-  // installation.
-  bool should_publish = (base::Contains(disabled_apps_, app_id) != is_disabled);
-
-  if (is_disabled) {
-    disabled_apps_.insert(app_id);
-  } else {
-    disabled_apps_.erase(app_id);
-  }
-
-  if (!should_publish) {
-    return;
-  }
-
-  const auto* extension = MaybeGetExtension(app_id);
-  if (!extension) {
-    return;
-  }
-
-  Publish(
-      Convert(extension, is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                                     : apps::mojom::Readiness::kReady),
-      subscribers());
+  UpdateAppDisabledState(disabled_system_features_pref,
+                         policy::SystemFeature::kWebStore,
+                         extensions::kWebStoreAppId);
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
@@ -728,6 +707,40 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
 
   full_restore::SaveAppLaunchInfo(profile()->GetPath(), std::move(launch_info));
   return web_contents;
+}
+
+void ExtensionAppsChromeOs::UpdateAppDisabledState(
+    const base::ListValue* disabled_system_features_pref,
+    int feature,
+    const std::string& app_id) {
+  const bool is_disabled =
+      base::Contains(*disabled_system_features_pref, base::Value(feature));
+  // Sometimes the policy is updated before the app is installed, so this way
+  // the disabled_apps_ is updated regardless the Publish should happen or not
+  // and the app will be published with the correct readiness upon its
+  // installation.
+  const bool should_publish =
+      (base::Contains(disabled_apps_, app_id) != is_disabled);
+
+  if (is_disabled) {
+    disabled_apps_.insert(app_id);
+  } else {
+    disabled_apps_.erase(app_id);
+  }
+
+  if (!should_publish) {
+    return;
+  }
+
+  const auto* extension = MaybeGetExtension(app_id);
+  if (!extension) {
+    return;
+  }
+
+  Publish(
+      Convert(extension, is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
+                                     : apps::mojom::Readiness::kReady),
+      subscribers());
 }
 
 }  // namespace apps
