@@ -119,7 +119,8 @@ def _undo_mapping(mappings, url):
   # TODO(dbeam): can we make this stricter?
   return url
 
-def _request_list_path(out_path, host):
+def _request_list_path(out_path, host_url):
+  host = host_url[host_url.find('://') + 3:-1]
   return os.path.join(out_path, host + '_requestlist.txt')
 
 # Get a list of all files that were bundled with polymer-bundler and update the
@@ -142,7 +143,7 @@ def _update_dep_file(in_folder, args, manifest):
   # current working directory.
   url_mappings = _URL_MAPPINGS + [
       ('/', os.path.relpath(in_path, _CWD)),
-      ('chrome://%s/' % args.host, os.path.relpath(in_path, _CWD)),
+      (args.host_url, os.path.relpath(in_path, _CWD)),
   ]
 
   deps = [_undo_mapping(url_mappings, u) for u in request_list]
@@ -158,10 +159,8 @@ def _update_dep_file(in_folder, args, manifest):
 # Autogenerate a rollup config file so that we can import the plugin and
 # pass it information about the location of the directories and files to exclude
 # from the bundle.
-def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host,
+def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host_url,
                             excludes, external_paths):
-  scheme_end_index = host.find('://')
-  host_url = 'chrome://%s/' % host if scheme_end_index == -1 else host
   rollup_config_file = os.path.join(tmp_out_dir, 'rollup.config.js')
   config_content = r'''
     import plugin from '{plugin_path}';
@@ -211,7 +210,7 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
   path_to_plugin = os.path.join(
       os.path.abspath(_HERE_PATH), 'rollup_plugin.js')
   rollup_config_file = _generate_rollup_config(tmp_out_dir, path_to_plugin,
-                                               in_path, args.host, excludes,
+                                               in_path, args.host_url, excludes,
                                                external_paths)
   rollup_args = [os.path.join(in_path, f) for f in args.js_module_in_files]
 
@@ -282,7 +281,7 @@ def _bundle_v2(tmp_out_dir, in_path, out_path, manifest_out_path, args,
       [
        '--manifest-out', manifest_out_path,
        '--root', in_path,
-       '--redirect', 'chrome://%s/|%s' % (args.host, in_path + '/'),
+       '--redirect', '%s|%s' % (args.host_url, in_path + '/'),
        '--out-dir', os.path.relpath(tmp_out_dir, _CWD).replace('\\', '/'),
        '--shell', args.html_in_files[0],
       ] + in_html_args)
@@ -325,7 +324,7 @@ def _bundle_v2(tmp_out_dir, in_path, out_path, manifest_out_path, args,
 def _optimize(in_folder, args):
   in_path = os.path.normpath(os.path.join(_CWD, in_folder)).replace('\\', '/')
   out_path = os.path.join(_CWD, args.out_folder).replace('\\', '/')
-  manifest_out_path = _request_list_path(out_path, args.host)
+  manifest_out_path = _request_list_path(out_path, args.host_url)
   tmp_out_dir = tempfile.mkdtemp(dir=out_path).replace('\\', '/')
 
   excludes = _BASE_EXCLUDES + [
@@ -333,8 +332,8 @@ def _optimize(in_folder, args):
     # URL for both the relative URL and chrome:// URL syntax.
     'strings.js',
     'strings.m.js',
-    'chrome://%s/strings.js' % args.host,
-    'chrome://%s/strings.m.js' % args.host,
+    '%s/strings.js' % args.host_url,
+    '%s/strings.m.js' % args.host_url,
   ]
   excludes.extend(args.exclude or [])
   external_paths = args.external_paths or []
@@ -347,7 +346,8 @@ def _optimize(in_folder, args):
                                  external_paths)
     else:
       # Ensure Polymer 2 and Polymer 3 request lists don't collide.
-      manifest_out_path = _request_list_path(out_path, args.host + '-v2')
+      manifest_out_path = _request_list_path(out_path,
+                                             args.host_url[:-1] + '-v2/')
       pcb_out_paths = [os.path.join(out_path, f) for f in args.html_out_files]
       bundled_paths = _bundle_v2(tmp_out_dir, in_path, out_path,
                                  manifest_out_path, args, excludes)
@@ -397,6 +397,11 @@ def main(argv):
   args.depfile = os.path.normpath(args.depfile)
   args.input = os.path.normpath(args.input)
   args.out_folder = os.path.normpath(args.out_folder)
+  scheme_end_index = args.host.find('://')
+  if (scheme_end_index == -1):
+    args.host_url = 'chrome://%s/' % args.host
+  else:
+    args.host_url = args.host
 
   manifest_out_path = _optimize(args.input, args)
 

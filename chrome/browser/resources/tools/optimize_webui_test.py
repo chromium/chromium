@@ -53,7 +53,6 @@ class OptimizeWebUiTest(unittest.TestCase):
     # TODO(dbeam): make it possible to _run_optimize twice? Is that useful?
     args = input_args + [
       '--depfile', os.path.join(self._out_folder, 'depfile.d'),
-      '--host', 'fake-host',
       '--input', self._tmp_src_dir,
       '--out_folder', self._out_folder,
     ]
@@ -157,6 +156,7 @@ import './element_in_dir/element_in_dir.js';
   def testSimpleOptimize(self):
     self._write_files_to_src_dir()
     args = [
+      '--host', 'fake-host',
       '--html_in_files', 'ui.html',
       '--html_out_files', 'fast.html',
       '--js_out_files', 'fast.js',
@@ -172,6 +172,7 @@ import './element_in_dir/element_in_dir.js';
   def testV3SimpleOptimize(self):
     self._write_v3_files_to_src_dir()
     args = [
+      '--host', 'fake-host',
       '--js_module_in_files', 'ui.js',
       '--js_out_files', 'ui.rollup.js',
     ]
@@ -185,6 +186,7 @@ import './element_in_dir/element_in_dir.js';
     resources_path = os.path.join(
         'gen', 'ui', 'webui', 'resources', 'preprocessed')
     args = [
+      '--host', 'fake-host',
       '--js_module_in_files', 'ui.js',
       '--js_out_files', 'ui.rollup.js',
       '--external_paths', 'chrome://resources|%s' % resources_path,
@@ -215,6 +217,7 @@ import './element_in_dir/element_in_dir.js';
 ''')
 
     args = [
+      '--host', 'fake-host',
       '--js_module_in_files', 'ui.js', 'lazy.js',
       '--js_out_files', 'ui.rollup.js', 'lazy.rollup.js', 'shared.rollup.js',
       '--out-manifest', os.path.join(self._out_folder, 'out_manifest.json'),
@@ -259,6 +262,7 @@ import './element_in_dir/element_in_dir.js';
     resources_path = os.path.join(
         'gen', 'ui', 'webui', 'resources', 'preprocessed')
     args = [
+      '--host', 'fake-host',
       '--js_module_in_files', 'ui.js',
       '--js_out_files', 'ui.rollup.js',
       '--external_paths',
@@ -283,6 +287,24 @@ import './element_in_dir/element_in_dir.js';
         os.path.join(relpath, 'external_dir', 'sub_dir',
                      'external_element_dep.js')),
         depfile_d)
+
+  def testV3SimpleOptimizeExcludes(self):
+    self._write_v3_files_to_src_dir()
+    args = [
+      '--host', 'chrome-extension://myextensionid/',
+      '--js_module_in_files', 'ui.js',
+      '--js_out_files', 'ui.rollup.js',
+      '--exclude', 'element_in_dir/element_in_dir.js',
+    ]
+    self._run_optimize(args)
+
+    output_js = self._read_out_file('ui.rollup.js')
+    self.assertIn('yay', output_js)
+    self.assertNotIn('hello from element_in_dir', output_js)
+    depfile_d = self._read_out_file('depfile.d')
+    self.assertIn('element.js', depfile_d)
+    self.assertNotIn('element_in_dir', depfile_d)
+
 
 if __name__ == '__main__':
   unittest.main()
