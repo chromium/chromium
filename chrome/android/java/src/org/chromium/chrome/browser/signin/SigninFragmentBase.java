@@ -524,7 +524,7 @@ public abstract class SigninFragmentBase
 
                     // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
                     // instead.
-                    SigninUtils.openSettingsForAllAccounts(getContext());
+                    SigninUtils.openSettingsForAllAccounts(getActivity());
                 });
     }
 
