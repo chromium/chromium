@@ -46,6 +46,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    systemInfoReceived_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
@@ -66,6 +72,7 @@ Polymer({
    * @private
    */
   onSystemInfoReceived_(systemInfo) {
+    this.systemInfoReceived_ = true;
     this.showBatteryStatusCard_ = systemInfo.deviceCapabilities.hasBattery;
   },
 
