@@ -19,7 +19,7 @@ namespace scheduler {
 class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
  public:
   IdleTimeEstimator(
-      const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
+      const scoped_refptr<MainThreadTaskQueue>& compositor_task_queue,
       const base::TickClock* time_source,
       int sample_count,
       double estimation_percentile);

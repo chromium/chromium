@@ -862,7 +862,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct MainThreadOnly {
     MainThreadOnly(
         MainThreadSchedulerImpl* main_thread_scheduler_impl,
-        const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
+        const scoped_refptr<MainThreadTaskQueue>& compositor_task_queue,
         const base::TickClock* time_source,
         base::TimeTicks now);
     ~MainThreadOnly();

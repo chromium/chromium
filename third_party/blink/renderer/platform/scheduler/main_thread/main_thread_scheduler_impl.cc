@@ -376,10 +376,10 @@ WebThreadScheduler* WebThreadScheduler::MainThreadScheduler() {
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
     MainThreadSchedulerImpl* main_thread_scheduler_impl,
-    const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
+    const scoped_refptr<MainThreadTaskQueue>& compositor_task_queue,
     const base::TickClock* time_source,
     base::TimeTicks now)
-    : idle_time_estimator(compositor_task_runner,
+    : idle_time_estimator(compositor_task_queue,
                           time_source,
                           kShortIdlePeriodDurationSampleCount,
                           kShortIdlePeriodDurationPercentile),
