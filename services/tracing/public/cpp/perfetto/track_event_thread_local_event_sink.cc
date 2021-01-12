@@ -133,6 +133,8 @@ ChromeThreadDescriptor::ThreadType GetThreadType(
     return ChromeThreadDescriptor::THREAD_MAIN;
   } else if (base::MatchPattern(thread_name, "Chrome*IOThread")) {
     return ChromeThreadDescriptor::THREAD_IO;
+  } else if (base::MatchPattern(thread_name, "NetworkService")) {
+    return ChromeThreadDescriptor::THREAD_NETWORK_SERVICE;
   } else if (base::MatchPattern(thread_name, "ThreadPoolForegroundWorker*")) {
     return ChromeThreadDescriptor::THREAD_POOL_FG_WORKER;
   } else if (base::MatchPattern(thread_name, "ThreadPoolBackgroundWorker*")) {
