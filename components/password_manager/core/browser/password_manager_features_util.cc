@@ -259,6 +259,18 @@ void OptInToAccountStorage(PrefService* pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .SetOptedIn();
 
+  // Potentially also set the default store to the account one, based on a
+  // feature param.
+  bool save_to_account_store = base::GetFieldTrialParamByFeatureAsBool(
+      features::kEnablePasswordsAccountStorage,
+      features::kSaveToAccountStoreOnOptIn,
+      features::kSaveToAccountStoreOnOptInDefaultValue);
+  if (save_to_account_store) {
+    ScopedAccountStorageSettingsUpdate(pref_service,
+                                       GaiaIdHash::FromGaiaId(gaia_id))
+        .SetDefaultStore(PasswordForm::Store::kAccountStore);
+  }
+
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn",

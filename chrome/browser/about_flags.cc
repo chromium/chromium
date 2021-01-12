@@ -2517,6 +2517,7 @@ constexpr FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kPasswordsAccountStorage_ProfileStore[] = {
     {password_manager::features::kSaveToProfileStoreByDefault, "true"},
+    {password_manager::features::kSaveToAccountStoreOnOptIn, "true"},
 };
 
 const FeatureEntry::FeatureVariation kPasswordsAccountStorageVariations[] = {
