@@ -154,10 +154,15 @@ Polymer({
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-          SafetyCheckInteractions
-              .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION);
+          this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
+              SafetyCheckInteractions
+                  .SAFETY_CHECK_PASSWORDS_MANAGE_WEAK_PASSWORDS :
+              SafetyCheckInteractions
+                  .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION);
       this.metricsBrowserProxy_.recordAction(
-          'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation');
+          this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
+              'Settings.SafetyCheck.ManageWeakPasswords' :
+              'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation');
       this.openPasswordCheckPage_();
     }
   },

@@ -186,7 +186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Which user actions were taken in safety check. Recorded every time a user
     does an interaction in safety check. Value 5 and 6 got added with M86, 7-9
-    with M87, and 10 with M88.
+    with M87, 10 with M88, and 11 with M89.
   </summary>
 </histogram>
 

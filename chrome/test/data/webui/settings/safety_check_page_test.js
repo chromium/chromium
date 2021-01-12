@@ -619,6 +619,32 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
         PasswordManagerProxy.PasswordCheckReferrer.SAFETY_CHECK, referrer);
   });
 
+  test('passwordWeakUiTest', async function() {
+    fireSafetyCheckPasswordsEvent(
+        SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.INFO,
+      label: 'Passwords',
+      rowClickable: true,
+    });
+
+    // User clicks the manage passwords button.
+    page.$$('#safetyCheckChild').click();
+    // Ensure UMA is logged.
+    assertEquals(
+        SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_MANAGE_WEAK_PASSWORDS,
+        await metricsBrowserProxy.whenCalled(
+            'recordSafetyCheckInteractionHistogram'));
+    assertEquals(
+        'Settings.SafetyCheck.ManageWeakPasswords',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    // Ensure the correct Settings page is shown.
+    assertEquals(
+        routes.CHECK_PASSWORDS, Router.getInstance().getCurrentRoute());
+  });
+
   test('passwordInfoStatesUiTest', function() {
     // Iterate over all states
     for (const state of Object.values(SafetyCheckPasswordsStatus)) {
@@ -639,7 +665,6 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
           break;
         case SafetyCheckPasswordsStatus.QUOTA_LIMIT:
         case SafetyCheckPasswordsStatus.ERROR:
-        case SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST:
           assertSafetyCheckChild({
             page: page,
             iconStatus: SafetyCheckIconStatus.INFO,

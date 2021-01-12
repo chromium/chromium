@@ -21099,7 +21099,8 @@ should be able to be added at any place in this file.
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <description>
-    User clicks the manage passwords button in safety check.
+    User clicks the manage passwords button in safety check when compromised
+    passwords have been found.
   </description>
 </action>
 
@@ -21124,6 +21125,15 @@ should be able to be added at any place in this file.
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <description>User clicks the safe browsing row in safety check.</description>
+</action>
+
+<action name="Settings.SafetyCheck.ManageWeakPasswords">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the manage passwords button in safety check when weak passwords
+    have been found.
+  </description>
 </action>
 
 <action name="Settings.SafetyCheck.RelaunchAfterUpdates">
