@@ -545,13 +545,13 @@ GEN('#endif  //!defined(OS_MAC)');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['DefaultBrowser', 'default_browser_browsertest.js'],
+ ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 
 GEN('#if !defined(OS_CHROMEOS)');
 [['ImportDataDialog', 'import_data_dialog_test.js'],
  ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
- ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !defined(OS_CHROMEOS)');
 

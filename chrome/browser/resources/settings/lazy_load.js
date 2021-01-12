@@ -41,7 +41,7 @@ import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
 import './languages_page/languages_page.js';
 import './reset_page/reset_page.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './system_page/system_page.js';
 // </if>
 
