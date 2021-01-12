@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -21,6 +22,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
@@ -261,9 +263,10 @@ void RootView::DeviceScaleFactorChanged(float old_device_scale_factor,
 
 void RootView::AnnounceText(const base::string16& text) {
 #if defined(OS_APPLE)
-  // MacOSX has its own API for making announcements; see AnnounceText()
-  // override in ax_platform_node_mac.[h|mm]
-  NOTREACHED();
+  gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
+  auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native);
+  if (ax_node)
+    ax_node->AnnounceText(text);
 #else
   DCHECK(GetWidget());
   DCHECK(GetContentsView());
