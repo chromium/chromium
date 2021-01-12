@@ -120,6 +120,11 @@ Polymer({
    */
   onSetupStateChanged_(setupState) {
     this.setupState_ = setupState;
+    if (this.setupState_ ===
+        NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY) {
+      this.browserProxy_.setFeatureEnabledState(
+          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+    }
   },
 
   /**
