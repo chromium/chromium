@@ -614,13 +614,6 @@ public final class ChromePreferenceKeys {
     public static final String SETTINGS_DEVELOPER_TRACING_CATEGORIES = "tracing_categories";
     public static final String SETTINGS_DEVELOPER_TRACING_MODE = "tracing_mode";
 
-    /**
-     * SharedPreference name for the preference that disables signing out of Chrome.
-     * Signing out is forever disabled once Chrome signs the user in automatically
-     * if the device has a child account or if the device is an Android EDU device.
-     */
-    public static final String SETTINGS_SYNC_SIGN_OUT_ALLOWED = "auto_signed_in_school_account";
-
     public static final String SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN =
             "org.chromium.chrome.browser.settings.privacy."
             + "PREF_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN";

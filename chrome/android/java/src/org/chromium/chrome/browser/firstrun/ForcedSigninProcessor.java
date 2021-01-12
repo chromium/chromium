@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -47,9 +46,7 @@ public final class ForcedSigninProcessor {
      */
     public static void start() {
         ChildAccountService.checkChildAccountStatus(status -> {
-            boolean hasChildAccount = ChildAccountStatus.isChild(status);
-            AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
-            if (hasChildAccount) {
+            if (ChildAccountStatus.isChild(status)) {
                 // Account cache is already available when child account status is ready.
                 final List<Account> accounts =
                         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
