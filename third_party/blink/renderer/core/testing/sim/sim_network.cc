@@ -71,8 +71,8 @@ void SimNetwork::DidFail(WebURLLoaderClient* client,
                          int64_t total_encoded_body_length,
                          int64_t total_decoded_body_length) {
   if (!current_request_) {
-    client->DidFail(error, total_encoded_data_length, total_encoded_body_length,
-                    total_decoded_body_length);
+    client->DidFail(error, base::TimeTicks::Now(), total_encoded_data_length,
+                    total_encoded_body_length, total_decoded_body_length);
     return;
   }
   current_request_->DidFail(error);

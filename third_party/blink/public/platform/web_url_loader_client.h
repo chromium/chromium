@@ -116,8 +116,10 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
                                 bool should_report_corb_blocking) {}
 
   // Called when the load completes with an error.
+  // |finish_time| indicating the time in which the response failed.
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.
   virtual void DidFail(const WebURLError&,
+                       base::TimeTicks finish_time,
                        int64_t total_encoded_data_length,
                        int64_t total_encoded_body_length,
                        int64_t total_decoded_body_length) {}
