@@ -1515,14 +1515,9 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
       canvas->scale(1.f / op->scale_adjustment.width(),
                     1.f / op->scale_adjustment.height());
     }
-    sk_sp<SkImage> sk_image;
-    if (op->image.IsTextureBacked()) {
-      sk_image = op->image.GetAcceleratedSkImage();
-      DCHECK(sk_image || !canvas->recordingContext());
-    }
-    if (!sk_image)
-      sk_image = op->image.GetSwSkImage();
-
+    auto sk_image = op->image.IsTextureBacked()
+                        ? op->image.GetAcceleratedSkImage()
+                        : op->image.GetSwSkImage();
     canvas->drawImage(sk_image.get(), op->left, op->top, &paint);
     return;
   }
@@ -1594,13 +1589,9 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   if (!params.image_provider) {
     SkRect adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
     flags->DrawToSk(canvas, [op, adjusted_src](SkCanvas* c, const SkPaint& p) {
-      sk_sp<SkImage> sk_image;
-      if (op->image.IsTextureBacked()) {
-        sk_image = op->image.GetAcceleratedSkImage();
-        DCHECK(sk_image || !c->recordingContext());
-      }
-      if (!sk_image)
-        sk_image = op->image.GetSwSkImage();
+      auto sk_image = op->image.IsTextureBacked()
+                          ? op->image.GetAcceleratedSkImage()
+                          : op->image.GetSwSkImage();
       c->drawImageRect(sk_image.get(), adjusted_src, op->dst, &p,
                        op->constraint);
     });
