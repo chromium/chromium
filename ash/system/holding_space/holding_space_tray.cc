@@ -192,13 +192,18 @@ TrayBubbleView* HoldingSpaceTray::GetBubbleView() {
   return bubble_ ? bubble_->GetBubbleView() : nullptr;
 }
 
-void HoldingSpaceTray::SetVisiblePreferred(bool preferred_visibility) {
-  if (visible_preferred() != preferred_visibility) {
-    holding_space_metrics::RecordPodAction(
-        preferred_visibility ? holding_space_metrics::PodAction::kShowPod
-                             : holding_space_metrics::PodAction::kHidePod);
-    TrayBackgroundView::SetVisiblePreferred(preferred_visibility);
-  }
+void HoldingSpaceTray::SetVisiblePreferred(bool visible_preferred) {
+  if (this->visible_preferred() == visible_preferred)
+    return;
+
+  holding_space_metrics::RecordPodAction(
+      visible_preferred ? holding_space_metrics::PodAction::kShowPod
+                        : holding_space_metrics::PodAction::kHidePod);
+
+  TrayBackgroundView::SetVisiblePreferred(visible_preferred);
+
+  if (!visible_preferred)
+    CloseBubble();
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
