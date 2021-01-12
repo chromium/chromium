@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
@@ -48,9 +49,15 @@ class ThumbnailTabHelper
   void StartVideoCapture();
   void StopVideoCapture();
   void CaptureThumbnailOnTabHidden();
+
   void StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                                   const SkBitmap& bitmap);
-  void StoreThumbnail(CaptureType type, const SkBitmap& bitmap);
+  void StoreThumbnailForBackgroundCapture(const SkBitmap& bitmap,
+                                          uint64_t frame_id);
+  void StoreThumbnail(CaptureType type,
+                      const SkBitmap& bitmap,
+                      base::Optional<uint64_t> frame_id);
+
   // Clears the data associated to the currently set thumbnail. For when the
   // thumbnail is no longer valid.
   void ClearData();

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/test/task_environment.h"
@@ -89,7 +90,7 @@ class ThumbnailImageTest : public testing::Test,
   }
 
   std::vector<uint8_t> Compress(SkBitmap bitmap) const {
-    return ThumbnailImage::CompressBitmap(bitmap);
+    return ThumbnailImage::CompressBitmap(bitmap, base::nullopt);
   }
 
   bool is_being_observed() const { return is_being_observed_; }
@@ -149,7 +150,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmapNotifiesObservers) {
       IgnoreArgs<gfx::ImageSkia>(waiter2.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -172,7 +173,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmap_NotifiesObserversAgain) {
       IgnoreArgs<gfx::ImageSkia>(waiter2.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -182,7 +183,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmap_NotifiesObserversAgain) {
   waiter1.Reset();
   waiter2.Reset();
 
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -205,7 +206,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmap_NotifiesCompressedObservers) {
       IgnoreArgs<ThumbnailImage::CompressedThumbnailData>(waiter2.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -228,7 +229,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmap_NotifiesCompressedObserversAgain) {
       IgnoreArgs<ThumbnailImage::CompressedThumbnailData>(waiter2.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -238,7 +239,7 @@ TEST_F(ThumbnailImageTest, AssignSkBitmap_NotifiesCompressedObserversAgain) {
   waiter1.Reset();
   waiter2.Reset();
 
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
 
   waiter1.Wait();
   waiter2.Wait();
@@ -256,7 +257,7 @@ TEST_F(ThumbnailImageTest, RequestThumbnailImage) {
       IgnoreArgs<gfx::ImageSkia>(waiter1.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
   waiter1.Wait();
   EXPECT_TRUE(waiter1.called());
   waiter1.Reset();
@@ -284,7 +285,7 @@ TEST_F(ThumbnailImageTest, RequestCompressedThumbnailData) {
       IgnoreArgs<ThumbnailImage::CompressedThumbnailData>(waiter.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
   waiter.Wait();
   EXPECT_TRUE(waiter.called());
   waiter.Reset();
@@ -304,7 +305,7 @@ TEST_F(ThumbnailImageTest, ClearThumbnailWhileNotifyingObservers) {
       IgnoreArgs<gfx::ImageSkia>(waiter.callback()));
 
   SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
-  image->AssignSkBitmap(bitmap);
+  image->AssignSkBitmap(bitmap, base::nullopt);
   waiter.Wait();
   EXPECT_TRUE(waiter.called());
   waiter.Reset();

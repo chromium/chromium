@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/skia_util.h"
@@ -58,14 +59,17 @@ std::unique_ptr<ThumbnailImage::Subscription> ThumbnailImage::Subscribe() {
   return subscription;
 }
 
-void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap) {
+void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap,
+                                    base::Optional<uint64_t> frame_id) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ThumbnailImage::CompressBitmap, std::move(bitmap)),
+      base::BindOnce(&ThumbnailImage::CompressBitmap, std::move(bitmap),
+                     frame_id),
       base::BindOnce(&ThumbnailImage::AssignJPEGData,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     frame_id));
 }
 
 void ThumbnailImage::ClearData() {
@@ -101,16 +105,34 @@ size_t ThumbnailImage::GetCompressedDataSizeInBytes() const {
 }
 
 void ThumbnailImage::AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
+                                    base::Optional<uint64_t> frame_id,
                                     std::vector<uint8_t> data) {
   data_ = base::MakeRefCounted<base::RefCountedData<std::vector<uint8_t>>>(
       std::move(data));
+
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Tab.Preview.TimeToNotifyObserversAfterCaptureReceived",
       base::TimeTicks::Now() - assign_sk_bitmap_time,
       base::TimeDelta::FromMicroseconds(100),
       base::TimeDelta::FromMilliseconds(100), 50);
-  NotifyCompressedDataObservers(data_);
-  ConvertJPEGDataToImageSkiaAndNotifyObservers();
+
+  // We select a TRACE_EVENT_* macro based on |frame_id|'s presence.
+  // Since these are scoped traces, the macro invocation must be in the
+  // enclosing scope of these operations. Extract them into a common
+  // function.
+  auto notify = [&]() {
+    NotifyCompressedDataObservers(data_);
+    ConvertJPEGDataToImageSkiaAndNotifyObservers();
+  };
+
+  if (frame_id) {
+    TRACE_EVENT_WITH_FLOW0("ui", "Tab.Preview.JPEGReceivedOnUIThreadWithFlow",
+                           *frame_id, TRACE_EVENT_FLAG_FLOW_IN);
+    notify();
+  } else {
+    TRACE_EVENT0("ui", "Tab.Preview.JPEGReceivedOnUIThread");
+    notify();
+  }
 }
 
 bool ThumbnailImage::ConvertJPEGDataToImageSkiaAndNotifyObservers() {
@@ -153,12 +175,30 @@ void ThumbnailImage::NotifyCompressedDataObservers(
 }
 
 // static
-std::vector<uint8_t> ThumbnailImage::CompressBitmap(SkBitmap bitmap) {
+std::vector<uint8_t> ThumbnailImage::CompressBitmap(
+    SkBitmap bitmap,
+    base::Optional<uint64_t> frame_id) {
   constexpr int kCompressionQuality = 97;
   std::vector<uint8_t> data;
-  const bool result =
-      gfx::JPEGCodec::Encode(bitmap, kCompressionQuality, &data);
-  DCHECK(result);
+
+  // Similar to above, extract logic into function so we can select a
+  // TRACE_EVENT_* macro.
+  auto compress = [&]() {
+    const bool result =
+        gfx::JPEGCodec::Encode(bitmap, kCompressionQuality, &data);
+    DCHECK(result);
+  };
+
+  if (frame_id) {
+    TRACE_EVENT_WITH_FLOW0(
+        "ui", "Tab.Preview.CompressJPEGWithFlow", *frame_id,
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    compress();
+  } else {
+    TRACE_EVENT0("ui", "Tab.Preview.CompressJPEG");
+    compress();
+  }
+
   return data;
 }
 

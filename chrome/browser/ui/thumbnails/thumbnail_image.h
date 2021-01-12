@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_IMAGE_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_IMAGE_H_
 
+#include <stdint.h>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -113,7 +114,8 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   std::unique_ptr<Subscription> Subscribe();
 
   // Sets the SkBitmap data and notifies observers with the resulting image.
-  void AssignSkBitmap(SkBitmap bitmap);
+  void AssignSkBitmap(SkBitmap bitmap,
+                      base::Optional<uint64_t> frame_id = base::nullopt);
 
   // Clears the currently set |data_|, for when the current thumbnail is no
   // longer valid to display.
@@ -148,12 +150,14 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   virtual ~ThumbnailImage();
 
   void AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
+                      base::Optional<uint64_t> frame_id,
                       std::vector<uint8_t> data);
   bool ConvertJPEGDataToImageSkiaAndNotifyObservers();
   void NotifyUncompressedDataObservers(gfx::ImageSkia image);
   void NotifyCompressedDataObservers(CompressedThumbnailData data);
 
-  static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap);
+  static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap,
+                                             base::Optional<uint64_t> frame_id);
   static gfx::ImageSkia UncompressImage(CompressedThumbnailData compressed);
 
   // Crops and returns a preview from a thumbnail of an entire web page. Uses

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 
+#include <stdint.h>
 #include <algorithm>
 #include <set>
 #include <utility>
@@ -12,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -217,9 +219,9 @@ ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
     : state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
-          base::BindRepeating(&ThumbnailTabHelper::StoreThumbnail,
-                              base::Unretained(this),
-                              CaptureType::kVideoFrame))),
+          base::BindRepeating(
+              &ThumbnailTabHelper::StoreThumbnailForBackgroundCapture,
+              base::Unretained(this)))),
       thumbnail_(base::MakeRefCounted<ThumbnailImage>(state_.get())) {}
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
@@ -274,11 +276,18 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                              base::TimeTicks::Now() - start_time,
                              base::TimeDelta::FromMilliseconds(1),
                              base::TimeDelta::FromSeconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap);
+  StoreThumbnail(CaptureType::kCopyFromView, bitmap, base::nullopt);
+}
+
+void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
+    const SkBitmap& bitmap,
+    uint64_t frame_id) {
+  StoreThumbnail(CaptureType::kVideoFrame, bitmap, frame_id);
 }
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
-                                        const SkBitmap& bitmap) {
+                                        const SkBitmap& bitmap,
+                                        base::Optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
   if (bitmap.drawsNothing())
@@ -288,7 +297,7 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
 
   RecordCaptureType(type);
   state_->OnFrameCaptured(type);
-  thumbnail_->AssignSkBitmap(bitmap);
+  thumbnail_->AssignSkBitmap(bitmap, frame_id);
 }
 
 void ThumbnailTabHelper::ClearData() {
