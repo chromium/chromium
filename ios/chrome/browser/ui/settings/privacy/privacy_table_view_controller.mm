@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/prefs_util.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
@@ -167,7 +168,10 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
 
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+  // Do not show the incognito authentication setting when Incongito mode is
+  // disabled.
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
+      !IsIncognitoModeDisabled(_browserState->GetPrefs())) {
     // Incognito authentication item.
     [model addItem:self.incognitoReauthItem
         toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
