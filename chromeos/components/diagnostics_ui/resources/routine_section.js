@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_list.js';
@@ -77,12 +78,6 @@ Polymer({
     isTestRunning: {
       type: Boolean,
       notify: true,
-    },
-
-    /** @private {boolean} */
-    isReportListHidden_: {
-      type: Boolean,
-      value: true,
     },
 
     /** @type {boolean} */
@@ -166,7 +161,7 @@ Polymer({
   /** @private */
   onToggleReportClicked_() {
     // Toggle report list visibility
-    this.isReportListHidden_ = !this.isReportListHidden_;
+    this.$.collapse.toggle();
   },
 
   /** @private */
@@ -192,10 +187,13 @@ Polymer({
     return this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
-  /** @protected */
-  getReportToggleButtonText_() {
-    return loadTimeData.getString(
-        this.isReportListHidden_ ? 'seeReportText' : 'hideReportText');
+  /**
+   * @param {boolean} opened Whether the section is expanded or not.
+   * @return {string} button text.
+   * @protected
+   */
+  getReportToggleButtonText_(opened) {
+    return loadTimeData.getString(opened ? 'hideReportText' : 'seeReportText');
   },
 
   /** @protected */
@@ -206,7 +204,7 @@ Polymer({
       }
       return BadgeType.SUCCESS;
     }
-    return BadgeType.DEFAULT;
+    return BadgeType.RUNNING;
   },
 
   /** @protected */

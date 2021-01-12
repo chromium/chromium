@@ -14,7 +14,7 @@ import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -106,14 +106,6 @@ export function routineSectionTestSuite() {
   }
 
   /**
-   * Returns the learn more help button.
-   * @return {!CrButtonElement}
-   */
-  function getLearnMoreButton() {
-    return dx_utils.getLearnMoreButtonFromSection(routineSectionElement);
-  }
-
-  /**
    * Returns the status badge.
    * @return {!TextBadgeElement}
    */
@@ -124,11 +116,14 @@ export function routineSectionTestSuite() {
 
   /**
    * Returns the status text.
-   * TODO(joonbug): Update this type for use with assertElementContainsText
-   * @return {?Element}
+   * @return {!HTMLElement}
    */
   function getStatusTextElement() {
-    return routineSectionElement.$$('#testStatusText');
+    const statusText =
+        /** @type {!HTMLElement} */ (
+            routineSectionElement.$$('#testStatusText'));
+    assertTrue(!!statusText);
+    return statusText;
   }
 
   /**
@@ -165,6 +160,14 @@ export function routineSectionTestSuite() {
     return dx_utils.getResultEntries(getResultList());
   }
 
+  /**
+   * Returns whether the "result list" section is expanded or not.
+   * @return {boolean}
+   */
+  function isIronCollapseOpen() {
+    return routineSectionElement.$.collapse.opened;
+  }
+
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
@@ -198,32 +201,29 @@ export function routineSectionTestSuite() {
       chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
     ];
 
-    // TODO(joonbug): Use visibility assert over testing .hidden attr.
     return initializeRoutineSection(routines)
         .then(() => {
           // Hidden by default.
-          assertTrue(getResultList().hidden);
-          assertTrue(getToggleTestReportButton().hidden);
+          assertFalse(isIronCollapseOpen());
+          assertFalse(isVisible(getToggleTestReportButton()));
           return clickRunTestsButton();
         })
         .then(() => {
           // Report is still hidden by default, but toggle button is visible.
-          assertTrue(getResultList().hidden);
-          assertFalse(getToggleTestReportButton().hidden);
+          assertFalse(isIronCollapseOpen());
+          assertTrue(isVisible(getToggleTestReportButton()));
           return clickToggleTestReportButton();
         })
         .then(() => {
           // Report is visible when button is clicked.
-          assertFalse(getResultList().hidden);
-          assertFalse(getToggleTestReportButton().hidden);
-          assertFalse(getLearnMoreButton().hidden);
+          assertTrue(isIronCollapseOpen());
+          assertTrue(isVisible(getToggleTestReportButton()));
           return clickToggleTestReportButton();
         })
         .then(() => {
           // Report is hidden when button is clicked again.
-          assertTrue(getResultList().hidden);
-          assertTrue(getLearnMoreButton().hidden);
-          assertFalse(getToggleTestReportButton().hidden);
+          assertFalse(isIronCollapseOpen());
+          assertTrue(isVisible(getToggleTestReportButton()));
         });
   });
 
@@ -233,18 +233,17 @@ export function routineSectionTestSuite() {
       chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
     ];
 
-    // TODO(joonbug): Use visibility assert over testing .hidden attr.
     return initializeRoutineSection(routines)
         .then(() => {
           // Hidden by default.
-          assertTrue(getResultList().hidden);
-          assertTrue(getToggleTestReportButton().hidden);
+          assertFalse(isIronCollapseOpen());
+          assertFalse(isVisible(getToggleTestReportButton()));
           return clickRunTestsButton();
         })
         .then(() => {
           // Report is hidden by default and so is toggle button.
-          assertTrue(getResultList().hidden);
-          assertTrue(getToggleTestReportButton().hidden);
+          assertFalse(isIronCollapseOpen());
+          assertFalse(isVisible(getToggleTestReportButton()));
         });
   });
 
@@ -365,15 +364,16 @@ export function routineSectionTestSuite() {
     return initializeRoutineSection(routines)
         .then(() => {
           // Hidden by default.
-          assertTrue(getStatusBadge().hidden);
-          assertTrue(getStatusTextElement().hidden);
+          assertFalse(isVisible(getStatusBadge()));
+          assertFalse(isVisible(getStatusTextElement()));
           return clickRunTestsButton();
         })
         .then(() => {
           // Badge is visible with test running.
           assertFalse(getStatusBadge().hidden);
-          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
-          assertEquals(getStatusBadge().value, 'Test running');
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
@@ -424,8 +424,9 @@ export function routineSectionTestSuite() {
         .then(() => {
           // Badge is visible with test running.
           assertFalse(getStatusBadge().hidden);
-          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
-          assertEquals(getStatusBadge().value, 'Test running');
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
@@ -443,8 +444,9 @@ export function routineSectionTestSuite() {
           // Badge is still visible with "test running", even though first one
           // failed.
           assertFalse(getStatusBadge().hidden);
-          assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
-          assertEquals(getStatusBadge().value, 'Test running');
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);

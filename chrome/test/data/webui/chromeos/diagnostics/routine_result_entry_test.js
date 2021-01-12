@@ -10,7 +10,9 @@ import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
+
+import * as dx_utils from './diagnostics_test_utils.js';
 
 export function routineResultEntryTestSuite() {
   /** @type {?RoutineResultEntryElement} */
@@ -124,9 +126,12 @@ export function routineResultEntryTestSuite() {
               'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
-      // Status should be empty if the test is not started.
-      // TODO(joonbug): Utilize isVisible util function.
-      assertTrue(getStatusBadge().hidden);
+      // Status should be queued if the test is not started.
+      assertTrue(isVisible(getStatusBadge()));
+      assertEquals(getStatusBadge().badgeType, BadgeType.QUEUED);
+      dx_utils.assertTextContains(
+          getStatusBadge().value,
+          loadTimeData.getString('testQueuedBadgeText'));
     });
   });
 
@@ -142,8 +147,10 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be running.
-      assertEquals(getStatusBadge().value, 'RUNNING');
-      assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
+      dx_utils.assertTextContains(
+          getStatusBadge().value,
+          loadTimeData.getString('testRunningBadgeText'));
+      assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
     });
   });
 

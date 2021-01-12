@@ -12,8 +12,9 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
  * @enum {string}
  */
 export const BadgeType = {
-  DEFAULT: 'default',
   ERROR: 'error',
+  QUEUED: 'queued',
+  RUNNING: 'running',
   SUCCESS: 'success',
 };
 
@@ -30,7 +31,7 @@ Polymer({
     /** @type {!BadgeType} */
     badgeType: {
       type: String,
-      value: BadgeType.DEFAULT,
+      value: BadgeType.QUEUED,
     },
 
     /** @type {string} */

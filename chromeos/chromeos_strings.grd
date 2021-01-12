@@ -681,7 +681,7 @@ Try tapping the mic to ask me anything.
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
       <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run.">
-        Learn more in the Help Center
+        Learn more in Help Center
       </message>
       <message name="IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT" desc="The label for the text link that leads to a help support article to learn more about the test routines being run.">
         Learn more
@@ -745,6 +745,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed.">
         SUCCESS
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT" desc="The text displayed to indicate that a test is currently queued.">
+        QUEUED
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running.">
         Test running

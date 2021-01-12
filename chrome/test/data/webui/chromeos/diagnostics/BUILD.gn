@@ -241,6 +241,7 @@ js_library("routine_section_test") {
     "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
     "//chromeos/components/diagnostics_ui/resources:routine_section",
     "//chromeos/components/diagnostics_ui/resources:text_badge",
+    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
 }

@@ -89,6 +89,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"stopTestButtonText", IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT},
       {"testFailure", IDS_DIAGNOSTICS_TEST_FAILURE_TEXT},
       {"testFailedBadgeText", IDS_DIAGNOSTICS_TEST_FAILURE_BADGE_TEXT},
+      {"testQueuedBadgeText", IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT},
       {"testRunning", IDS_DIAGNOSTICS_TEST_RUNNING_TEXT},
       {"testRunningBadgeText", IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},

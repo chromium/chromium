@@ -86,7 +86,21 @@ Polymer({
       type: String,
       computed: 'getRunningRoutineString_(item.routine)',
     },
+
+    /** @private {!BadgeType} */
+    badgeType_: {
+      type: String,
+      value: BadgeType.QUEUED,
+    },
+
+    /** @private {string} */
+    badgeText_: {
+      type: String,
+      value: '',
+    },
   },
+
+  observers: ['entryStatusChanged_(item.progress, item.result)'],
 
   /**
    * Get the localized string name for the routine.
@@ -98,44 +112,40 @@ Polymer({
   },
 
   /**
-   * @protected
+   * @private
    */
-  getBadgeText_() {
-    if (this.item.progress === ExecutionProgress.kRunning) {
-      return loadTimeData.getString('testRunningBadgeText');
+  entryStatusChanged_() {
+    // TODO(michaelcheco): Display "STOPPED" state when routines are cancelled.
+    switch (this.item.progress) {
+      case ExecutionProgress.kNotStarted:
+        this.setBadgeTypeAndText_(
+            BadgeType.QUEUED, loadTimeData.getString('testQueuedBadgeText'));
+        break;
+      case ExecutionProgress.kRunning:
+        this.setBadgeTypeAndText_(
+            BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
+        break;
+      case ExecutionProgress.kCompleted:
+        const testPassed = this.item.result &&
+            getSimpleResult(this.item.result) ===
+                chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed;
+        const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
+        const badgeText = loadTimeData.getString(
+            testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
+        this.setBadgeTypeAndText_(badgeType, badgeText);
+        break;
+      default:
+        assertNotReached();
     }
-
-    if (this.item.result &&
-        getSimpleResult(this.item.result) ===
-            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
-      return loadTimeData.getString('testSucceededBadgeText');
-    }
-
-    return loadTimeData.getString('testFailedBadgeText');
   },
 
   /**
-   * @protected
+   * @param {!BadgeType} badgeType
+   * @param {string} badgeText
+   * @private
    */
-  getBadgeType_() {
-    if (this.item.progress === ExecutionProgress.kRunning) {
-      return BadgeType.DEFAULT;
-    }
-
-    if (this.item.result &&
-        getSimpleResult(this.item.result) ===
-            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
-      return BadgeType.SUCCESS;
-    }
-    return BadgeType.ERROR;
-  },
-
-  /**
-   * @protected
-   * @return {boolean}
-   */
-  isTestStarted_() {
-    return this.item.progress !== ExecutionProgress.kNotStarted;
+  setBadgeTypeAndText_(badgeType, badgeText) {
+    this.setProperties({badgeType_: badgeType, badgeText_: badgeText});
   },
 
   /** @override */
