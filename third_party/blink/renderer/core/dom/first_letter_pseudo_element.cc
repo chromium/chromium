@@ -182,12 +182,17 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       return nullptr;
     } else if (first_letter_text_layout_object->IsInline() &&
                !first_letter_text_layout_object->SlowFirstChild()) {
-      LayoutObject* next_sibling =
-          first_letter_text_layout_object->NextSibling();
-      first_letter_text_layout_object =
-          next_sibling
-              ? next_sibling
-              : first_letter_text_layout_object->Parent()->NextSibling();
+      if (LayoutObject* next_sibling =
+              first_letter_text_layout_object->NextSibling()) {
+        first_letter_text_layout_object = next_sibling;
+        continue;
+      }
+      LayoutObject* parent = first_letter_text_layout_object->Parent();
+      if (parent && parent != parent_layout_object) {
+        first_letter_text_layout_object = parent->NextSibling();
+        continue;
+      }
+      return nullptr;
     } else {
       first_letter_text_layout_object =
           first_letter_text_layout_object->SlowFirstChild();
