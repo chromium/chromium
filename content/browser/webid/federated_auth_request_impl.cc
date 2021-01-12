@@ -129,8 +129,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
   }
 
   idp_endpoint_url_ = GURL(base::StringPiece(idp_endpoint));
-  // TODO(kenrb): Do we have to check that this URL is same-origin with the
-  // provider, or is that not a requirement?
+  // TODO(kenrb): This has to be same-origin with the provider.
   // https://crbug.com/1141125
   if (!IdpUrlIsValid(idp_endpoint_url_)) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
