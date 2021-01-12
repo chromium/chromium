@@ -31,6 +31,7 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
   // views::View:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   ArrowType arrow_type_ = kLeft;

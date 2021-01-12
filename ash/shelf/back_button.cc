@@ -90,4 +90,9 @@ void BackButton::ButtonPressed(views::Button* sender,
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 
+void BackButton::OnThemeChanged() {
+  ShelfControlButton::OnThemeChanged();
+  SchedulePaint();
+}
+
 }  // namespace ash

@@ -170,6 +170,11 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
+void HomeButton::OnThemeChanged() {
+  ShelfControlButton::OnThemeChanged();
+  SchedulePaint();
+}
+
 bool HomeButton::DoesIntersectRect(const views::View* target,
                                    const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);

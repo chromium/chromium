@@ -133,6 +133,9 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   views::Widget* GetWidget() override { return View::GetWidget(); }
   const views::Widget* GetWidget() const override { return View::GetWidget(); }
 
+  // views::View:
+  void OnThemeChanged() override;
+
   bool CanActivate() const override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
   void OnWidgetInitialized() override;
@@ -260,6 +263,13 @@ void ShelfWidget::DelegateView::ShowOpaqueBackground() {
   UpdateOpaqueBackground();
   UpdateDragHandle();
   UpdateBackgroundBlur();
+}
+
+void ShelfWidget::DelegateView::OnThemeChanged() {
+  views::AccessiblePaneView::OnThemeChanged();
+  shelf_widget_->background_animator_.PaintBackground(
+      shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
+      AnimationChangeType::IMMEDIATE);
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {

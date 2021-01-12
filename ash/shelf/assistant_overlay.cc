@@ -207,4 +207,10 @@ const char* AssistantOverlay::GetClassName() const {
   return "AssistantOverlay";
 }
 
+void AssistantOverlay::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  circle_layer_delegate_.set_color(
+      AshColorProvider::Get()->GetRippleAttributes().base_color);
+  SchedulePaint();
+}
 }  // namespace ash

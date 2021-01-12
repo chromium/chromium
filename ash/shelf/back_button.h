@@ -36,6 +36,9 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
   const char* GetClassName() const override;
   base::string16 GetTooltipText(const gfx::Point& p) const override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // ShelfButtonDelegate:
   void OnShelfButtonAboutToRequestFocusFromTabTraversal(ShelfButton* button,
                                                         bool reverse) override;

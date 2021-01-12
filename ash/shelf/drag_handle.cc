@@ -293,6 +293,11 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(accessible_name);
 }
 
+void DragHandle::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  UpdateColor();
+}
+
 void DragHandle::OnOverviewModeStarting() {
   StopDragHandleNudgeShowTimer();
 }

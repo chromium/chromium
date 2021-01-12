@@ -64,6 +64,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
  protected:
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  private:
   // views::ViewTargeterDelegate:

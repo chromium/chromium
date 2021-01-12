@@ -140,6 +140,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
