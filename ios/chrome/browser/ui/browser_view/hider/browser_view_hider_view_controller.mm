@@ -57,6 +57,7 @@
   UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
       initWithTarget:panGestureHandler
               action:@selector(handlePanGesture:)];
+  panGestureRecognizer.delegate = panGestureHandler;
   panGestureRecognizer.maximumNumberOfTouches = 1;
   [self.view addGestureRecognizer:panGestureRecognizer];
 

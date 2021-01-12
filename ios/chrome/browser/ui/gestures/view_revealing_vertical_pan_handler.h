@@ -23,7 +23,9 @@
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
 @interface ViewRevealingVerticalPanHandler
-    : NSObject <CRWWebViewScrollViewProxyObserver, UIScrollViewDelegate>
+    : NSObject <CRWWebViewScrollViewProxyObserver,
+                UIGestureRecognizerDelegate,
+                UIScrollViewDelegate>
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
 // |revealedCoverHeight| is the height of the cover view that remains visible

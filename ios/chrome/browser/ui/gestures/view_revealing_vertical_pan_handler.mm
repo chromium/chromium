@@ -65,6 +65,10 @@ const CGFloat kAnimationDuration = 0.25f;
 // -scrollViewDidScroll:.
 @property(nonatomic, assign) CGPoint lastScrollOffset;
 
+// Holds the gesture recognizer that is currently in progess. Any other
+// gestures received while one is active will be ignored.
+@property(nonatomic, weak) UIGestureRecognizer* currentRecognizer;
+
 @end
 
 @implementation ViewRevealingVerticalPanHandler
@@ -103,6 +107,9 @@ const CGFloat kAnimationDuration = 0.25f;
   } else if (gesture.state == UIGestureRecognizerStateEnded) {
     CGFloat velocityY = [gesture velocityInView:gesture.view.superview].y;
     [self panGestureEndedWithTranslation:translationY velocity:velocityY];
+    self.currentRecognizer = nil;
+  } else if (gesture.state == UIGestureRecognizerStateCancelled) {
+    self.currentRecognizer = nil;
   }
 }
 
@@ -431,6 +438,10 @@ const CGFloat kAnimationDuration = 0.25f;
 
 - (void)panHandlerScrollViewWillBeginDragging:
     (PanHandlerScrollView*)scrollView {
+  if (self.currentRecognizer &&
+      self.currentRecognizer != scrollView.panGestureRecognizer) {
+    return;
+  }
   switch (self.currentState) {
     case ViewRevealState::Hidden: {
       // The transition out of hidden state can only start if the scroll view
@@ -449,14 +460,19 @@ const CGFloat kAnimationDuration = 0.25f;
       // be able to be scrolled.
       NOTREACHED();
   }
+  self.currentRecognizer = scrollView.panGestureRecognizer;
   [self panGestureBegan];
   self.lastScrollOffset = scrollView.contentOffset;
 }
 
 - (void)panHandlerScrollViewDidScroll:(PanHandlerScrollView*)scrollView {
-  // These delegate methods are approximating the pan gesture handling from
-  // above, so only change things if the user is actively scrolling.
-  if (!scrollView.isDragging) {
+  // Early return if there is no current recognizer or one that does not match
+  // this scroll view's recognizer. The first can happen when the scroll view
+  // scrolls after the user lifts their finger. This should not be handled as
+  // these methods are only approximating the actual pan gesture handling from
+  // above. The second can happen if the user scrolls and uses one of the pan
+  // gestures simultaneously.
+  if (self.currentRecognizer != scrollView.panGestureRecognizer) {
     return;
   }
   UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
@@ -481,6 +497,16 @@ const CGFloat kAnimationDuration = 0.25f;
                                withVelocity:(CGPoint)velocity
                         targetContentOffset:
                             (inout CGPoint*)targetContentOffset {
+  // Early return if there is no current recognizer or one that does not match
+  // this scroll view's recognizer. The first can happen when the scroll view
+  // scrolls after the user lifts their finger. This should not be handled as
+  // these methods are only approximating the actual pan gesture handling from
+  // above. The second can happen if the user scrolls and uses one of the pan
+  // gestures simultaneously.
+  if (self.currentRecognizer != scrollView.panGestureRecognizer) {
+    return;
+  }
+  self.currentRecognizer = nil;
   if (self.currentState == ViewRevealState::Hidden &&
       self.animator.state != UIViewAnimatingStateActive) {
     return;
@@ -495,6 +521,16 @@ const CGFloat kAnimationDuration = 0.25f;
   }
 
   [self panGestureEndedWithTranslation:translationY velocity:velocityY];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+  if (self.currentRecognizer) {
+    return NO;
+  }
+  self.currentRecognizer = gestureRecognizer;
+  return YES;
 }
 
 @end
