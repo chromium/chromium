@@ -20,7 +20,7 @@ def _oncall(*, name, url, show_primary_secondary_labels = None, branch_selector 
         show_primary_secondary_labels = show_primary_secondary_labels,
     ))
 
-def _link(*, url, text, alt, branch_selector = branches.MAIN):
+def _link(*, url, text, alt = None, branch_selector = branches.MAIN):
     if not branches.matches(branch_selector):
         return None
     return _remove_none_values(dict(
@@ -275,7 +275,6 @@ HEADER = _header(
                 _link(
                     text = milestone,
                     url = "/p/{}/g/main/console".format(details.project),
-                    alt = "{} branch console".format(details.channel),
                 )
                 for milestone, details in sorted(ACTIVE_MILESTONES.items())
             ] + [

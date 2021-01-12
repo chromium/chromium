@@ -64,7 +64,7 @@ def _generate_project_pyl(ctx):
 
 lucicfg.generator(_generate_project_pyl)
 
-def _milestone_details(*, project, ref, channel):
+def _milestone_details(*, project, ref):
     """Define the details for an active milestone.
 
     Args:
@@ -72,13 +72,10 @@ def _milestone_details(*, project, ref, channel):
         milestone.
       * ref - The ref in the git repository that contains the code for the
         milestone.
-      * channel - The name of the release channel the milestone is in (used for
-        identifying the milestone in the console header).
     """
     return struct(
         project = project,
         ref = ref,
-        channel = channel,
     )
 
 # The milestone names and branch numbers of branches that we have builders
@@ -91,16 +88,13 @@ ACTIVE_MILESTONES = {
     "m86": _milestone_details(
         project = "chromium-m86",
         ref = "refs/branch-heads/4240",
-        channel = "LTS-C",
     ),
     "m87": _milestone_details(
         project = "chromium-m87",
         ref = "refs/branch-heads/4280",
-        channel = "Stable",
     ),
     "m88": _milestone_details(
         project = "chromium-m88",
         ref = "refs/branch-heads/4324",
-        channel = "Beta",
     ),
 }
