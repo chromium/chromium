@@ -143,6 +143,9 @@ const base::Feature kTemporaryHoldingSpacePreviews{
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kScalableStatusArea{"ScalableStatusArea",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kKeyboardBasedDisplayArrangementInSettings{
     "KeyboardBasedDisplayArrangementInSettings",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -319,6 +322,10 @@ bool IsTemporaryHoldingSpacePreviewsEnabled() {
 
 bool IsDragUnpinnedAppToPinEnabled() {
   return base::FeatureList::IsEnabled(kDragUnpinnedAppToPin);
+}
+
+bool IsScalableStatusAreaEnabled() {
+  return base::FeatureList::IsEnabled(kScalableStatusArea);
 }
 
 namespace {

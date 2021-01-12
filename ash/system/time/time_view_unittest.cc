@@ -76,5 +76,29 @@ TEST_F(TimeViewTest, Basics) {
   EXPECT_FALSE(vertical_view()->parent());
 }
 
+// Test the show date mode in the time view.
+TEST_F(TimeViewTest, ShowDateMode) {
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  base::string16 time_text = horizontal_label()->GetText();
+
+  // When showing date, the text is expected to be longer since it's showing
+  // more content.
+  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
+  EXPECT_GT(horizontal_label()->GetText(), time_text);
+
+  // Resetting show date mode should show only the time.
+  time_view()->SetShowDateWhenHorizontal(false /* show_date_when_horizontal */);
+  EXPECT_EQ(time_text, horizontal_label()->GetText());
+
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
+  base::string16 hours_text = vertical_label_hours()->GetText();
+  base::string16 minutes_text = vertical_label_minutes()->GetText();
+
+  // Show date mode should not affect vertical view.
+  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
+  EXPECT_EQ(hours_text, vertical_label_hours()->GetText());
+  EXPECT_EQ(minutes_text, vertical_label_minutes()->GetText());
+}
+
 }  // namespace tray
 }  // namespace ash

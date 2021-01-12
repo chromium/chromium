@@ -20,7 +20,6 @@
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -120,8 +119,7 @@ void UnifiedSystemTray::UiDelegate::HideMessageCenter() {}
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       ui_delegate_(std::make_unique<UiDelegate>(this)),
-      model_(std::make_unique<UnifiedSystemTrayModel>(
-          shelf->GetStatusAreaWidget()->GetRootView())),
+      model_(std::make_unique<UnifiedSystemTrayModel>(shelf)),
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
       privacy_screen_toast_controller_(
@@ -136,7 +134,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
       notification_counter_item_(new NotificationCounterView(shelf)),
       quiet_mode_view_(new QuietModeView(shelf)),
-      time_view_(new tray::TimeTrayItemView(shelf)) {
+      time_view_(new tray::TimeTrayItemView(shelf, model())) {
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -175,6 +173,10 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   if (bubble_)
     bubble_->CloseNow();
   bubble_.reset();
+
+  // Reset the view to remove its dependency from |model_|, since this view is
+  // destructed after |model_|.
+  time_view_->Reset();
 }
 
 bool UnifiedSystemTray::IsBubbleShown() const {

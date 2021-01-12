@@ -8,7 +8,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "ash/system/unified/unified_system_tray_model.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 class Shelf;
@@ -17,9 +19,11 @@ namespace tray {
 
 class TimeView;
 
-class TimeTrayItemView : public TrayItemView, public SessionObserver {
+class ASH_EXPORT TimeTrayItemView : public TrayItemView,
+                                    public SessionObserver,
+                                    public UnifiedSystemTrayModel::Observer {
  public:
-  explicit TimeTrayItemView(Shelf* shelf);
+  TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model);
   ~TimeTrayItemView() override;
 
   void UpdateAlignmentForShelf(Shelf* shelf);
@@ -31,13 +35,26 @@ class TimeTrayItemView : public TrayItemView, public SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  // UnifiedSystemTrayModel::Observer:
+  void OnSystemTrayButtonSizeChanged(
+      UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
+
+  // Reset the view by removing observer to |model_|.
+  void Reset();
+
   // views::View:
   const char* GetClassName() const override;
   void OnThemeChanged() override;
 
  private:
+  friend class TimeTrayItemViewTest;
+
+  UnifiedSystemTrayModel* model_ = nullptr;
   TimeView* time_view_ = nullptr;
   ScopedSessionObserver session_observer_;
+  base::ScopedObservation<UnifiedSystemTrayModel,
+                          UnifiedSystemTrayModel::Observer>
+      system_tray_model_observation_{this};
   DISALLOW_COPY_AND_ASSIGN(TimeTrayItemView);
 };
 

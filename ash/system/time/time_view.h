@@ -56,6 +56,9 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
 
+  // Shows the date in horizontal view when |show_date_when_horizontal| is true.
+  void SetShowDateWhenHorizontal(bool show_date_when_horizontal);
+
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
@@ -69,6 +72,7 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
 
  private:
   friend class TimeViewTest;
+  friend class TimeTrayItemViewTest;
 
   // ActionableView:
   bool PerformAction(const ui::Event& event) override;
@@ -106,6 +110,9 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // The time label is split into two lines for the vertical shelf.
   views::Label* vertical_label_hours_;
   views::Label* vertical_label_minutes_;
+
+  // Indicates if date should be show in horizontal view.
+  bool show_date_when_horizontal_ = false;
 
   // Invokes UpdateText() when the displayed time should change.
   base::OneShotTimer timer_;
