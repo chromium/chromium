@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
@@ -196,6 +197,18 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
                                  kSwitchesToCopy, base::size(kSwitchesToCopy));
 }
 
+std::string WebEngineContentBrowserClient::GetApplicationLocale() {
+  // ICU is configured with the system locale by WebEngineBrowserMainParts.
+  return base::i18n::GetConfiguredLocale();
+}
+
+std::string WebEngineContentBrowserClient::GetAcceptLangs(
+    content::BrowserContext* context) {
+  DCHECK_EQ(main_parts_->browser_context(), context);
+  return static_cast<WebEngineBrowserContext*>(context)
+      ->GetPreferredLanguages();
+}
+
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 WebEngineContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -248,9 +261,10 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
     network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
-  // Same as ContentBrowserClient::ConfigureNetworkContextParams().
   network_context_params->user_agent = GetUserAgent();
-  network_context_params->accept_language = "en-us,en";
+  network_context_params
+      ->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
+      static_cast<WebEngineBrowserContext*>(context)->GetPreferredLanguages());
 
   // Set the list of cors_exempt_headers which may be specified in a URLRequest,
   // starting with the headers passed in via

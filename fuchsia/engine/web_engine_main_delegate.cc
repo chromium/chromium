@@ -10,6 +10,7 @@
 #include "base/base_paths_fuchsia.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/intl_profile_watcher.h"
 #include "base/path_service.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/init_logging.h"
@@ -85,6 +86,15 @@ bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
 }
 
 void WebEngineMainDelegate::PreSandboxStartup() {
+  // Early during startup, configure the process with the primary locale and
+  // load resources. If locale-specific resources are loaded then they must be
+  // explicitly reloaded after each change to the primary locale.
+  // In the browser process the locale determines the accept-language header
+  // contents, and is supplied to renderers for Blink to report to web content.
+  std::string initial_locale =
+      base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdForInitialization();
+  base::i18n::SetICUDefaultLocale(initial_locale);
+
   InitializeResources();
 }
 
