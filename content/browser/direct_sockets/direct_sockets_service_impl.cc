@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -50,6 +51,12 @@ base::Optional<net::IPEndPoint> GetLocalAddr(
     local_addr = net::IPEndPoint(local_address, options.local_port);
 
   return local_addr;
+}
+
+// True if |hostname| ends with either ".local" or ".local.".
+bool ResemblesMulticastDNSName(const std::string& hostname) {
+  return base::EndsWith(hostname, ".local") ||
+         base::EndsWith(hostname, ".local.");
 }
 
 }  // namespace
@@ -104,16 +111,22 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
   void Start() {
     DCHECK(network_context_);
     DCHECK(!receiver_.is_bound());
+    DCHECK(!resolver_.is_bound());
 
     mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver;
-    mojo::Remote<network::mojom::HostResolver> resolver;
     network_context_->CreateHostResolver(
         base::nullopt, pending_host_resolver.InitWithNewPipeAndPassReceiver());
-    resolver.Bind(std::move(pending_host_resolver));
+    resolver_.Bind(std::move(pending_host_resolver));
 
-    resolver->ResolveHost(
+    network::mojom::ResolveHostParametersPtr parameters =
+        network::mojom::ResolveHostParameters::New();
+#if BUILDFLAG(ENABLE_MDNS)
+    if (ResemblesMulticastDNSName(*options_->remote_hostname))
+      parameters->source = net::HostResolverSource::MULTICAST_DNS;
+#endif  // !BUILDFLAG(ENABLE_MDNS)
+    resolver_->ResolveHost(
         net::HostPortPair(*options_->remote_hostname, options_->remote_port),
-        net::NetworkIsolationKey::CreateTransient(), nullptr,
+        net::NetworkIsolationKey::CreateTransient(), std::move(parameters),
         receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&ResolveHostAndOpenSocket::OnComplete,
@@ -206,6 +219,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
   OpenUdpSocketCallback udp_callback_;
 
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
+  mojo::Remote<network::mojom::HostResolver> resolver_;
 };
 
 void DirectSocketsServiceImpl::OpenTcpSocket(
@@ -320,7 +334,6 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   if (!options.remote_hostname)
     return net::ERR_NAME_NOT_RESOLVED;
 
-  // TODO(crbug.com/1124255): Support mDNS.
   return net::OK;
 }
 

@@ -26,6 +26,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -196,6 +197,25 @@ class DirectSocketsBrowserTest : public ContentBrowserTest {
         ->GetNetworkContext();
   }
 
+  std::string CreateMDNSHostName() {
+    DCHECK(!mdns_responder_.is_bound());
+    GetNetworkContext()->CreateMdnsResponder(
+        mdns_responder_.BindNewPipeAndPassReceiver());
+
+    std::string name;
+    base::RunLoop run_loop;
+    mdns_responder_->CreateNameForAddress(
+        net::IPAddress::IPv4Localhost(),
+        base::BindLambdaForTesting(
+            [&name, &run_loop](const std::string& name_out,
+                               bool announcement_scheduled) {
+              name = name_out;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return name;
+  }
+
   // Returns the port listening for TCP connections.
   uint16_t StartTcpServer() {
     net::IPEndPoint local_addr;
@@ -233,6 +253,7 @@ class DirectSocketsBrowserTest : public ContentBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 };
 
@@ -278,6 +299,26 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Hostname) {
       "openTcp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
 
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_MDNS) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  const uint16_t listening_port = StartTcpServer();
+  const std::string name = CreateMDNSHostName();
+  EXPECT_TRUE(base::EndsWith(name, ".local"));
+
+  const std::string script =
+      base::StringPrintf("openTcp({remoteAddress: '%s', remotePort: %d})",
+                         name.c_str(), listening_port);
+
+#if BUILDFLAG(ENABLE_MDNS)
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp succeeded"));
+#else
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+#endif  // BUILDFLAG(ENABLE_MDNS)
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
