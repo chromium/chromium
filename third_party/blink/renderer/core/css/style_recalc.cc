@@ -19,7 +19,8 @@ bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
-  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc();
+  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
+         RecalcContainerQueryDependent();
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {

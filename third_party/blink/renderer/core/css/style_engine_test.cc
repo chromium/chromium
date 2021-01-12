@@ -3752,7 +3752,7 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
         <span class="affected"></span>
         <span></span>
         <span class="affected"></span>
-        <span></span>
+        <span><span class="affected"></span></span>
         <span class="affected"></span>
         <div style="display:none" class="affected">
           <span class="affected"></span>
@@ -3790,7 +3790,7 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForContainer) {
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container2);
 
   // Three direct span.affected children, and the two display:none elements.
-  EXPECT_EQ(5u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
