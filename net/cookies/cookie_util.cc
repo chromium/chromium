@@ -612,8 +612,10 @@ bool IsFirstPartySetsEnabled() {
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
                                          const CookieOptions& options) {
-  if (!IsFirstPartySetsEnabled() || !cookie.IsSameParty())
+  if (!IsFirstPartySetsEnabled() || !cookie.IsSameParty() ||
+      !options.is_in_nontrivial_first_party_set()) {
     return CookieSamePartyStatus::kNoSamePartyEnforcement;
+  }
 
   switch (options.same_party_cookie_context_type()) {
     case CookieOptions::SamePartyCookieContextType::kCrossParty:

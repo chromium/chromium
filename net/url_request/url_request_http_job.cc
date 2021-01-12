@@ -156,7 +156,8 @@ void RecordCTHistograms(const net::SSLInfo& ssl_info) {
 net::CookieOptions CreateCookieOptions(
     net::CookieOptions::SameSiteCookieContext same_site_context,
     net::CookieOptions::SamePartyCookieContextType same_party_context,
-    const net::IsolationInfo& isolation_info) {
+    const net::IsolationInfo& isolation_info,
+    bool is_in_nontrivial_first_party_set) {
   net::CookieOptions options;
   options.set_return_excluded_cookies();
   options.set_include_httponly();
@@ -167,6 +168,8 @@ net::CookieOptions CreateCookieOptions(
     options.set_full_party_context_size(isolation_info.party_context()->size() +
                                         1);
   }
+  options.set_is_in_nontrivial_first_party_set(
+      is_in_nontrivial_first_party_set);
   return options;
 }
 
@@ -179,13 +182,13 @@ net::CookieOptions CreateCookieOptions(
 // IsolationInfo.  But that might not be true for other embedders yet
 // (including cast, WebView, etc).  Also not sure about iOS.
 net::CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
-    const GURL& request_url,
+    const net::SchemefulSite& request_site,
     const net::IsolationInfo& isolation_info,
     const net::CookieAccessDelegate* cookie_access_delegate) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
       cookie_access_delegate &&
       cookie_access_delegate->IsContextSamePartyWithSite(
-          net::SchemefulSite(request_url),
+          request_site,
           isolation_info.network_isolation_key().GetTopFrameSite().value(),
           isolation_info.party_context().value())) {
     return net::CookieOptions::SamePartyCookieContextType::kSameParty;
@@ -573,11 +576,19 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_->method(), request_->url(), request_->site_for_cookies(),
             request_->initiator(), force_ignore_site_for_cookies);
 
+    net::SchemefulSite request_site(request_->url());
+
+    const CookieAccessDelegate* delegate =
+        cookie_store->cookie_access_delegate();
+
     CookieOptions::SamePartyCookieContextType same_party_context =
-        ComputeSamePartyContext(request_->url(), request_->isolation_info(),
-                                cookie_store->cookie_access_delegate());
+        ComputeSamePartyContext(request_site, request_->isolation_info(),
+                                delegate);
+    bool is_in_nontrivial_first_party_set =
+        delegate && delegate->IsInNontrivialFirstPartySet(request_site);
     CookieOptions options = CreateCookieOptions(
-        same_site_context, same_party_context, request_->isolation_info());
+        same_site_context, same_party_context, request_->isolation_info(),
+        is_in_nontrivial_first_party_set);
 
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
@@ -716,12 +727,17 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->url(), request_->site_for_cookies(), request_->initiator(),
           force_ignore_site_for_cookies);
 
+  const CookieAccessDelegate* delegate = cookie_store->cookie_access_delegate();
+  net::SchemefulSite request_site(request_->url());
   CookieOptions::SamePartyCookieContextType same_party_context =
-      ComputeSamePartyContext(request_->url(), request_->isolation_info(),
-                              cookie_store->cookie_access_delegate());
+      ComputeSamePartyContext(request_site, request_->isolation_info(),
+                              delegate);
+  bool is_in_nontrivial_first_party_set =
+      delegate && delegate->IsInNontrivialFirstPartySet(request_site);
 
   CookieOptions options = CreateCookieOptions(
-      same_site_context, same_party_context, request_->isolation_info());
+      same_site_context, same_party_context, request_->isolation_info(),
+      is_in_nontrivial_first_party_set);
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

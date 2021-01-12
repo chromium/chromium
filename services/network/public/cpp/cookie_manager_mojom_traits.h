@@ -129,6 +129,10 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
     return o.full_party_context_size();
   }
 
+  static bool is_in_nontrivial_first_party_set(const net::CookieOptions& o) {
+    return o.is_in_nontrivial_first_party_set();
+  }
+
   static bool Read(network::mojom::CookieOptionsDataView mojo_options,
                    net::CookieOptions* cookie_options);
 };

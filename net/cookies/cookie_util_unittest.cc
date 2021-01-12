@@ -8,6 +8,10 @@
 #include "base/callback.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "net/base/features.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1265,6 +1269,175 @@ TEST(CookieUtilTest, AdaptCookieAccessResultToBool) {
   std::move(adapted_callback).Run(CookieAccessResult());
 
   EXPECT_TRUE(result_out);
+}
+
+TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kFirstPartySets);
+  CookieOptions options;
+  options.set_is_in_nontrivial_first_party_set(false);
+
+  for (bool same_party : {false, true}) {
+    for (bool secure : {false, true}) {
+      for (bool httponly : {false, true}) {
+        for (CookieSameSite same_site : {
+                 CookieSameSite::NO_RESTRICTION,
+                 CookieSameSite::LAX_MODE,
+                 CookieSameSite::STRICT_MODE,
+                 CookieSameSite::UNSPECIFIED,
+             }) {
+          for (CookieOptions::SamePartyCookieContextType party_context_type : {
+                   CookieOptions::SamePartyCookieContextType::kCrossParty,
+                   CookieOptions::SamePartyCookieContextType::kSameParty,
+               }) {
+            base::Time now = base::Time::Now();
+            std::unique_ptr<CanonicalCookie> cookie =
+                CanonicalCookie::CreateUnsafeCookieForTesting(
+                    "cookie", "tasty", "example.test", "/", now, now, now,
+                    secure, httponly, same_site,
+                    CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
+
+            options.set_same_party_cookie_context_type(party_context_type);
+            EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
+                      cookie_util::GetSamePartyStatus(*cookie, options));
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kFirstPartySets);
+  CookieOptions options;
+  options.set_is_in_nontrivial_first_party_set(true);
+
+  for (bool same_party : {false, true}) {
+    for (bool secure : {false, true}) {
+      for (bool httponly : {false, true}) {
+        for (CookieSameSite same_site : {
+                 CookieSameSite::NO_RESTRICTION,
+                 CookieSameSite::LAX_MODE,
+                 CookieSameSite::STRICT_MODE,
+                 CookieSameSite::UNSPECIFIED,
+             }) {
+          for (CookieOptions::SamePartyCookieContextType party_context_type : {
+                   CookieOptions::SamePartyCookieContextType::kCrossParty,
+                   CookieOptions::SamePartyCookieContextType::kSameParty,
+               }) {
+            base::Time now = base::Time::Now();
+            std::unique_ptr<CanonicalCookie> cookie =
+                CanonicalCookie::CreateUnsafeCookieForTesting(
+                    "cookie", "tasty", "example.test", "/", now, now, now,
+                    secure, httponly, same_site,
+                    CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
+
+            options.set_same_party_cookie_context_type(party_context_type);
+            EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
+                      cookie_util::GetSamePartyStatus(*cookie, options));
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kFirstPartySets);
+  CookieOptions options;
+  options.set_is_in_nontrivial_first_party_set(true);
+
+  for (bool secure : {false, true}) {
+    for (bool httponly : {false, true}) {
+      for (CookieSameSite same_site : {
+               CookieSameSite::NO_RESTRICTION,
+               CookieSameSite::LAX_MODE,
+               CookieSameSite::STRICT_MODE,
+               CookieSameSite::UNSPECIFIED,
+           }) {
+        for (CookieOptions::SamePartyCookieContextType party_context_type : {
+                 CookieOptions::SamePartyCookieContextType::kCrossParty,
+                 CookieOptions::SamePartyCookieContextType::kSameParty,
+             }) {
+          base::Time now = base::Time::Now();
+          std::unique_ptr<CanonicalCookie> cookie =
+              CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "cookie", "tasty", "example.test", "/", now, now, now, secure,
+                  httponly, same_site, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+                  false /* same_party */);
+
+          options.set_same_party_cookie_context_type(party_context_type);
+          EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
+                    cookie_util::GetSamePartyStatus(*cookie, options));
+        }
+      }
+    }
+  }
+}
+
+TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kFirstPartySets);
+  CookieOptions options;
+  options.set_is_in_nontrivial_first_party_set(true);
+
+  // Note: some SameParty cookie configurations (e.g. non-Secure cookies) are
+  // skipped, because they are invalid.
+  for (bool httponly : {false, true}) {
+    for (CookieSameSite same_site : {
+             CookieSameSite::NO_RESTRICTION,
+             CookieSameSite::LAX_MODE,
+             CookieSameSite::UNSPECIFIED,
+         }) {
+      for (CookieOptions::SameSiteCookieContext::ContextType same_site_context :
+           {
+               CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE,
+               CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX,
+               CookieOptions::SameSiteCookieContext::ContextType::
+                   SAME_SITE_LAX_METHOD_UNSAFE,
+               CookieOptions::SameSiteCookieContext::ContextType::
+                   SAME_SITE_STRICT,
+           }) {
+        for (CookieOptions::SameSiteCookieContext::ContextType
+                 schemeful_same_site_context :
+             {
+                 CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE,
+                 CookieOptions::SameSiteCookieContext::ContextType::
+                     SAME_SITE_LAX,
+                 CookieOptions::SameSiteCookieContext::ContextType::
+                     SAME_SITE_LAX_METHOD_UNSAFE,
+                 CookieOptions::SameSiteCookieContext::ContextType::
+                     SAME_SITE_STRICT,
+             }) {
+          if (same_site_context < schemeful_same_site_context)
+            continue;
+          options.set_same_site_cookie_context(
+              CookieOptions::SameSiteCookieContext(
+                  same_site_context, schemeful_same_site_context));
+
+          base::Time now = base::Time::Now();
+          std::unique_ptr<CanonicalCookie> cookie =
+              CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "cookie", "tasty", "example.test", "/", now, now, now,
+                  true /* secure */, httponly, same_site,
+                  CookiePriority::COOKIE_PRIORITY_DEFAULT,
+                  true /* same_party */);
+
+          options.set_same_party_cookie_context_type(
+              CookieOptions::SamePartyCookieContextType::kCrossParty);
+          EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyExclude,
+                    cookie_util::GetSamePartyStatus(*cookie, options));
+
+          options.set_same_party_cookie_context_type(
+              CookieOptions::SamePartyCookieContextType::kSameParty);
+          EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyInclude,
+                    cookie_util::GetSamePartyStatus(*cookie, options));
+        }
+      }
+    }
+  }
 }
 
 }  // namespace
