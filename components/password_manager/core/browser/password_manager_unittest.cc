@@ -3768,6 +3768,47 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   manager()->OnPasswordFormCleared(&driver_, form_data);
 }
 
+// Similar test as above with fields that have empty names.
+TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
+  constexpr base::char16 kEmptyName[] = STRING16_LITERAL("");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  PasswordForm saved_match(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_match)));
+
+  FormData form_data;
+  form_data.unique_renderer_id = FormRendererId(0);
+  form_data.url = GURL("http://www.google.com/a/LoginAuth");
+
+  FormFieldData old_password_field;
+  old_password_field.form_control_type = "password";
+  old_password_field.unique_renderer_id = FieldRendererId(1);
+  old_password_field.name = kEmptyName;
+  old_password_field.value = ASCIIToUTF16("oldpass");
+  form_data.fields.push_back(old_password_field);
+
+  FormFieldData new_password_field;
+  new_password_field.form_control_type = "password";
+  new_password_field.unique_renderer_id = FieldRendererId(2);
+  new_password_field.name = kEmptyName;
+  new_password_field.autocomplete_attribute = "new-password";
+  form_data.fields.push_back(new_password_field);
+
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+
+  form_data.fields[0].value = ASCIIToUTF16("oldpass");
+  form_data.fields[1].value = ASCIIToUTF16("newpass");
+
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr)
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  manager()->OnPasswordFormCleared(&driver_, form_data);
+}
+
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
@@ -3818,6 +3859,63 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
     form_data.fields[2].value = base::string16();
     if (new_password_field_was_cleared)
       form_data.fields[1].value = base::string16();
+
+    std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+    if (new_password_field_was_cleared) {
+      EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr)
+          .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+    } else {
+      EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
+    }
+
+    manager()->OnPasswordFormCleared(&driver_, form_data);
+  }
+}
+
+// Similar test as above with fields that have empty names.
+TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
+  constexpr base::char16 kEmptyName[] = STRING16_LITERAL("");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  PasswordForm saved_match(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_match)));
+
+  for (bool new_password_field_was_cleared : {true, false}) {
+    SCOPED_TRACE(testing::Message("#new password field was cleared = ")
+                 << new_password_field_was_cleared);
+
+    // Create FormData for a form with 1 password field and process it.
+    FormData form_data;
+    form_data.is_form_tag = false;
+    form_data.unique_renderer_id = FormRendererId(0);
+    form_data.url = GURL("http://www.google.com/a/LoginAuth");
+
+    FormFieldData old_password_field;
+    old_password_field.form_control_type = "password";
+    old_password_field.unique_renderer_id = FieldRendererId(1);
+    old_password_field.name = kEmptyName;
+    old_password_field.value = ASCIIToUTF16("oldpass");
+    form_data.fields.push_back(old_password_field);
+
+    FormFieldData new_password_field;
+    new_password_field.form_control_type = "password";
+    new_password_field.unique_renderer_id = FieldRendererId(2);
+    new_password_field.name = kEmptyName;
+    new_password_field.autocomplete_attribute = "new-password";
+    form_data.fields.push_back(new_password_field);
+
+    manager()->OnPasswordFormsParsed(&driver_, {form_data});
+
+    form_data.fields[0].value = ASCIIToUTF16("oldpass");
+    form_data.fields[1].value = ASCIIToUTF16("newpass");
+
+    manager()->OnInformAboutUserInput(&driver_, form_data);
+
+    form_data.fields[0].value.clear();
+    if (new_password_field_was_cleared)
+      form_data.fields[1].value.clear();
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {
