@@ -100,16 +100,6 @@ Polymer({
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
   },
 
-  /**
-   * Returns the translated helper text string with the id attribute. The id is
-   * used to selectively style parts of the string.
-   * @return {string}
-   * @private
-   */
-  getHelperTextHtml_() {
-    return this.i18nAdvanced('scanPreviewHelperText', {attrs: ['id']});
-  },
-
   /** @private */
   onAppStateChange_() {
     this.showScannedImages_ = this.appState === AppState.DONE;
@@ -148,12 +138,7 @@ Polymer({
     }
 
     if (this.showHelperText_) {
-      // We can't directly use the 'scanPreviewHelperText' string because it
-      // conatains HTML. So instead wait for the page to render then use its
-      // text as the ARIA label.
-      afterNextRender(this, () => {
-        this.previewAriaLabel_ = this.$.helperText.innerText;
-      });
+      this.previewAriaLabel_ = this.i18n('scanPreviewHelperText');
       return;
     }
   },

@@ -1,9 +1,4 @@
 <style include="scanning-shared scanning-fonts">
-  /* Styles part of the string returned by getHelperTextHtml_(). */
-  #boldHelperText {
-    font-weight: var(--scanning-medium-font-weight);
-  }
-
   #helperText {
     @apply --scanning-helper-text-font;
     color: var(--scanning-helper-text-color);
@@ -89,7 +84,7 @@
   <div id="helpOrProgress" class="preview-item" hidden$="[[showScannedImages_]]"
       aria-hidden="true">
     <div id="helperText" hidden$="[[!showHelperText_]]">
-      <span inner-h-t-m-l="[[getHelperTextHtml_()]]"></span>
+      [[i18n('scanPreviewHelperText')]]
     </div>
     <div id="scanProgress" hidden$="[[!showScanProgress_]]">
       <span id="progressText">[[progressTextString_]]</span>
