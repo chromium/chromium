@@ -1529,6 +1529,16 @@ const char kOmniboxDisplayTitleForCurrentUrlDescription[] =
     "the current page is provided as the first suggestion without a title. "
     "Enabling this flag causes the title to be displayed.";
 
+const char kOmniboxDefaultTypedNavigationsToHttpsName[] =
+    "Omnibox - Use HTTPS as the default protocol for navigations";
+const char kOmniboxDefaultTypedNavigationsToHttpsDescription[] =
+    "Use HTTPS as the default protocol when the user types a URL without "
+    "a protocol in the omnibox such as 'example.com'. Presently, such an entry "
+    "navigates to http://example.com. When this feature is enabled, it will "
+    "navigate to https://example.com if the HTTPS URL is available. If Chrome "
+    "can't determine the availability of the HTTPS URL within the timeout, it "
+    "will fall back to the HTTP URL.";
+
 const char kOmniboxExperimentalSuggestScoringName[] =
     "Omnibox Experimental Suggest Scoring";
 const char kOmniboxExperimentalSuggestScoringDescription[] =

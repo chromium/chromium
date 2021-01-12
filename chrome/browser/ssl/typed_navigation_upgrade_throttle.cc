@@ -25,13 +25,14 @@
 
 namespace {
 
-// Delay in milliseconds before falling back to the HTTP URL.
+// Delay before falling back to the HTTP URL.
 // This can be changed in tests.
 // - If the HTTPS load finishes successfully during this time, the timer is
 //   cleared and no more work is done.
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 constexpr base::FeatureParam<base::TimeDelta> kFallbackDelay{
-    &omnibox::kDefaultTypedNavigationsToHttps, "timeout",
+    &omnibox::kDefaultTypedNavigationsToHttps,
+    omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam,
     base::TimeDelta::FromSeconds(3)};
 
 bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {

@@ -99,6 +99,7 @@ extern const base::Feature kMaybeElideToRegistrableDomain;
 
 // Navigation experiments.
 extern const base::Feature kDefaultTypedNavigationsToHttps;
+extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 
 // Experiment to control whether visits from CCT are hidden.
 // TODO(https://crbug.com/1141501): this is for an experiment, and will be

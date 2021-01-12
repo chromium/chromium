@@ -373,6 +373,13 @@ const base::Feature kMaybeElideToRegistrableDomain{
 // necessary.
 const base::Feature kDefaultTypedNavigationsToHttps{
     "OmniboxDefaultTypedNavigationsToHttps", base::FEATURE_DISABLED_BY_DEFAULT};
+// Parameter name used to look up the delay before falling back to the HTTP URL
+// while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
+// unit must be included in the value as well (e.g. 3s for 3 seconds).
+// - If the HTTPS load finishes successfully during this time, the timer is
+//   cleared and no more work is done.
+// - Otherwise, a new navigation to the the fallback HTTP URL is started.
+const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
 // NOTE: while this is enabled by default, CCT visits are only tagged with the
 // necessary transition type if the intent launching CCT supplies the

@@ -92,7 +92,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     std::vector<base::Feature> disabled_features;
     if (IsFeatureEnabled()) {
       base::FieldTrialParams params;
-      params["timeout"] =
+      params[omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam] =
           base::NumberToString(fallback_delay.InMilliseconds()) + "ms";
       enabled_features.emplace_back(omnibox::kDefaultTypedNavigationsToHttps,
                                     params);

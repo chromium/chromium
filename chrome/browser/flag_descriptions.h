@@ -904,6 +904,9 @@ extern const char kOmniboxDisableCGIParamMatchingDescription[];
 extern const char kOmniboxDisplayTitleForCurrentUrlName[];
 extern const char kOmniboxDisplayTitleForCurrentUrlDescription[];
 
+extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
+extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
+
 extern const char kOmniboxExperimentalSuggestScoringName[];
 extern const char kOmniboxExperimentalSuggestScoringDescription[];
 
