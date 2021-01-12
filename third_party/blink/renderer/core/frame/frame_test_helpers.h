@@ -505,6 +505,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
                                       policy_container_host_receiver) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
+  bool SwapIn(WebFrame* previous_frame) override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory()
       override {
     return std::make_unique<WebURLLoaderFactoryWithMock>(

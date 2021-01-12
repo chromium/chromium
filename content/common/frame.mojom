@@ -208,15 +208,6 @@ interface FrameNavigationControl {
   // all possible.
   SetWantErrorMessageStackTrace();
 
-  // Requests that a provisional RenderFrame swap itself into the frame tree,
-  // replacing the RenderFrameProxy that it is associated with. This is used
-  // with remote-to-local frame navigations when the RenderFrameProxy
-  // corresponds to a non-live (crashed) frame. In that case, the browser
-  // process will send this message as part of an early commit to stop showing
-  // the sad iframe without waiting for the provisional RenderFrame's navigation
-  // to commit.
-  SwapIn();
-
   // Unload this RenderFrame and replace it by a RenderFrameProxy, so the frame
   // can navigate to a document rendered by a different process. The unload can
   // fail if the RenderFrame is currently detached (it was removed from the

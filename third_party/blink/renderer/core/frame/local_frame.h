@@ -610,6 +610,7 @@ class CORE_EXPORT LocalFrame final
                            const WTF::String& message,
                            bool discard_duplicates) final;
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
+  void SwapInImmediately() final;
   void StopLoading() final;
   void Collapse(bool collapsed) final;
   void EnableViewSourceMode() final;
@@ -736,6 +737,8 @@ class CORE_EXPORT LocalFrame final
   WebURLLoader::DeferType GetLoadDeferType();
   bool IsLoadDeferred();
 
+  bool SwapIn();
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -796,6 +799,10 @@ class CORE_EXPORT LocalFrame final
 #if defined(OS_MAC)
   mojom::blink::TextInputHost& GetTextInputHost();
 #endif
+
+  // Returns the `Frame` for which `provisional_frame_ == this`. May only be
+  // called on a provisional frame.
+  Frame* GetProvisionalOwnerFrame();
 
   static void BindToReceiver(
       blink::LocalFrame* frame,

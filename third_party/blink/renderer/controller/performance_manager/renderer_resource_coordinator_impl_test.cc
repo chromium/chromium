@@ -209,7 +209,8 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
                                        &current_v8_context_token),
                                    iframe_attribution_matcher));
   }
-  main_frame->FirstChild()->Swap(local_frame);
+  // Committing a navigation in the provisional frame swaps it in.
+  frame_test_helpers::LoadFrame(local_frame, "data:text/html,");
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Local -> Local
@@ -224,7 +225,8 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
                                        &current_v8_context_token),
                                    iframe_attribution_matcher));
   }
-  main_frame->FirstChild()->Swap(new_local_frame);
+  // Committing a navigation in the provisional frame swaps it in.
+  frame_test_helpers::LoadFrame(new_local_frame, "data:text/html,");
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Local -> Remote

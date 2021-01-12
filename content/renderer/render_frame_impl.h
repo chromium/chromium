@@ -522,7 +522,6 @@ class CONTENT_EXPORT RenderFrameImpl
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void SetWantErrorMessageStackTrace() override;
-  void SwapIn() override;
   void Unload(int proxy_routing_id,
               bool is_loading,
               const FrameReplicationState& replicated_frame_state,
@@ -602,6 +601,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void WillSendSubmitEvent(const blink::WebFormElement& form) override;
   void DidCreateDocumentLoader(
       blink::WebDocumentLoader* document_loader) override;
+  bool SwapIn(blink::WebFrame* previous_web_frame) override;
   void DidCommitNavigation(
       blink::WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
@@ -800,11 +800,6 @@ class CONTENT_EXPORT RenderFrameImpl
   bool IsLocalRoot() const;
   const RenderFrameImpl* GetLocalRoot() const;
 
-  // Gets the unique_name() of the frame being replaced by this frame, when
-  // it is a provisional frame. Invalid to call on frames that are already
-  // attached to the frame tree.
-  std::string GetPreviousFrameUniqueName();
-
  private:
   friend class RenderFrameImplTest;
   friend class RenderFrameObserver;
@@ -883,14 +878,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Functions to add and remove observers for this object.
   void AddObserver(RenderFrameObserver* observer);
   void RemoveObserver(RenderFrameObserver* observer);
-
-  // Swaps the current frame into the frame tree, replacing the
-  // RenderFrameProxy it is associated with. Return value indicates whether
-  // the swap operation succeeded. This should only be used for provisional
-  // frames associated with a proxy, while the proxy is still in the frame tree.
-  // If the associated proxy has been detached before this is called, this
-  // returns false and aborts the swap.
-  bool SwapInInternal();
 
   // Checks whether accessibility support for this frame is currently enabled.
   bool IsAccessibilityEnabled() const;
@@ -1210,13 +1197,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   RenderViewImpl* render_view_;
   const int routing_id_;
-
-  // If this RenderFrame was created to replace a previous object, this will
-  // store its routing id. The previous object can be:
-  // - A RenderFrame. This requires RenderDocument to be enabled.
-  // - A RenderFrameProxy.
-  // At commit time, the two objects will be swapped and the old one cleared.
-  int previous_routing_id_;
 
   // Keeps track of which future subframes the browser process has history items
   // for during a history navigation, as well as whether those items are for

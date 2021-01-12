@@ -31,9 +31,10 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
-  // Global proxies are passed in a vector to maintain their order: global proxy
-  // object for the main world is always first. This is needed to prevent bugs
-  // like https://crbug.com/700077 .
+  // Helpers used to transfer global proxies from the previous frame to the new
+  // frame when swapping frames. Global proxies are passed in a vector to ensure
+  // the main world is always processed first. This is needed to prevent bugs
+  // like https://crbug.com/700077.
   using GlobalProxyVector =
       Vector<std::pair<DOMWrapperWorld*, v8::Local<v8::Object>>>;
   void CORE_EXPORT ReleaseGlobalProxies(GlobalProxyVector&);

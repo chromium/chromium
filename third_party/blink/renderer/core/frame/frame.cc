@@ -542,11 +542,10 @@ Frame* Frame::Top() {
 }
 
 bool Frame::Swap(WebFrame* new_web_frame) {
+  DCHECK(IsAttached());
+
   using std::swap;
-  // TODO(dcheng): This should not be reachable. Reaching this implies `Swap()`
-  // is being called on an already-detached frame which should never happen...
-  if (!IsAttached())
-    return false;
+
   // Important: do not cache frame tree pointers (e.g.  `previous_sibling_`,
   // `next_sibling_`, `first_child_`, `last_child_`) here. It is possible for
   // `Detach()` to mutate the frame tree and cause cached values to become

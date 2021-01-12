@@ -1154,6 +1154,13 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
       std::move(in->remote));
 }
 
+std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {
+  if (web_frame->IsWebLocalFrame())
+    return RenderFrameImpl::FromWebFrame(web_frame)->unique_name();
+  return RenderFrameProxy::FromWebFrame(web_frame->ToWebRemoteFrame())
+      ->unique_name();
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -1714,13 +1721,17 @@ void RenderFrameImpl::CreateFrame(
         agent_scheduling_group, render_view, routing_id,
         std::move(browser_interface_broker), devtools_frame_token);
     render_frame->InitializeBlameContext(nullptr);
-    render_frame->previous_routing_id_ = previous_routing_id;
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(),
         frame_token, previous_web_frame, replicated_state.frame_policy,
         WebString::FromUTF8(replicated_state.name));
-    // The new |web_frame| is a main frame iff the proxy's frame was.
+    // The new |web_frame| is a main frame iff the previous frame was.
     DCHECK_EQ(!previous_web_frame->Parent(), !web_frame->Parent());
+    // Clone the current unique name so web tests that log frame unique names
+    // output something meaningful. At `SwapIn()` time, the unique name will be
+    // updated to the latest value.
+    render_frame->unique_name_helper_.set_propagated_name(
+        GetUniqueNameOfWebFrame(previous_web_frame));
   }
 
   CHECK(render_view);
@@ -1965,7 +1976,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       in_frame_tree_(false),
       render_view_(params.render_view),
       routing_id_(params.routing_id),
-      previous_routing_id_(MSG_ROUTING_NONE),
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
       render_accessibility_manager_(
@@ -2586,10 +2596,6 @@ base::Value RenderFrameImpl::GetJavaScriptExecutionResult(
       return std::move(*new_value);
   }
   return base::Value();
-}
-
-void RenderFrameImpl::SwapIn() {
-  SwapInInternal();
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
@@ -4102,15 +4108,6 @@ void RenderFrameImpl::DidCommitNavigation(
                "id", routing_id_, "url",
                GetLoadingUrl().possibly_invalid_spec());
 
-  bool is_provisional_frame = previous_routing_id_ != MSG_ROUTING_NONE;
-  if (is_provisional_frame) {
-    // If this is a provisional frame associated with a proxy (i.e., a frame
-    // created for a remote-to-local navigation), swap it into the frame tree
-    // now.
-    if (!SwapInInternal())
-      return;
-  }
-
   // Generate a new embedding token on each document change.
   GetWebFrame()->SetEmbeddingToken(base::UnguessableToken::Create());
 
@@ -5237,38 +5234,17 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
   return blink::mojom::CommitResult::Ok;
 }
 
-std::string RenderFrameImpl::GetPreviousFrameUniqueName() {
-  DCHECK(!in_frame_tree_);
-
-  RenderFrameProxy* previous_proxy =
-      RenderFrameProxy::FromRoutingID(previous_routing_id_);
-  RenderFrameImpl* previous_frame =
-      RenderFrameImpl::FromRoutingID(previous_routing_id_);
-
-  // The |previous_proxy| or the |previous_frame| should always exist.
-  // If it was detached while the provisional LocalFrame was being navigated,
-  // the provisional frame would've been cleaned up by
-  // RenderFrameProxy::FrameDetached.
-  // See https://crbug.com/526304 and https://crbug.com/568676 for context.
-  CHECK_NE(!!previous_proxy, !!previous_frame);
-
-  if (previous_proxy)
-    return previous_proxy->unique_name();
-  return previous_frame->unique_name();
-}
-
-bool RenderFrameImpl::SwapInInternal() {
-  CHECK_NE(previous_routing_id_, MSG_ROUTING_NONE);
+bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   CHECK(!in_frame_tree_);
 
-  unique_name_helper_.set_propagated_name(GetPreviousFrameUniqueName());
+  // The unique name can still change in `WebFrame::Swap()` below (due to JS
+  // changing the browsing context name), but in practice, this seems to be good
+  // enough.
+  unique_name_helper_.set_propagated_name(
+      GetUniqueNameOfWebFrame(previous_web_frame));
 
-  // Note: Calling swap() will detach and delete |previous_frame|, so do not
-  // reference it after this.
-  WebFrame* previous_web_frame = ResolveWebFrame(previous_routing_id_);
-
-  // With RenderDocument it's possible for the frame to be deleted as a side
-  // effect of JS event handlers called during swap.
+  // Swapping out a frame can dispatch JS event handlers, causing `this` to be
+  // deleted.
   bool is_main_frame = is_main_frame_;
   if (!previous_web_frame->Swap(frame_)) {
     // Main frames should always swap successfully because there is no parent
@@ -5277,7 +5253,8 @@ bool RenderFrameImpl::SwapInInternal() {
     return false;
   }
 
-  previous_routing_id_ = MSG_ROUTING_NONE;
+  // `previous_web_frame` is now detached, and should no longer be referenced.
+
   in_frame_tree_ = true;
 
   // If this is the main frame going from a remote frame to a local frame,

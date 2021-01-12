@@ -48,6 +48,9 @@ class RemoteWindowProxy final : public WindowProxy {
   RemoteWindowProxy(v8::Isolate*, RemoteFrame&, scoped_refptr<DOMWrapperWorld>);
 
  private:
+  friend class WindowProxyManager;
+
+  // WindowProxy overrides:
   void Initialize() override;
   void DisposeContext(Lifecycle next_status, FrameReuseStatus) override;
 
@@ -60,6 +63,11 @@ class RemoteWindowProxy final : public WindowProxy {
   // Associates the window wrapper and its prototype chain with the native
   // DOMWindow object. Also does some more Window-specific initialization.
   void SetupWindowPrototypeChain();
+};
+
+template <>
+struct DowncastTraits<RemoteWindowProxy> {
+  static bool AllowFrom(const WindowProxy& proxy) { return !proxy.IsLocal(); }
 };
 
 }  // namespace blink

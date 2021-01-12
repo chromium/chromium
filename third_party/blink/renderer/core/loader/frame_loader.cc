@@ -1053,7 +1053,20 @@ void FrameLoader::CommitNavigation(
     DCHECK(Client()->HasWebView());
     scoped_refptr<SecurityOrigin> security_origin =
         SecurityOrigin::Create(navigation_params->url);
-    if (!DetachDocument(security_origin.get(), &unload_timing))
+
+    // If `frame_` is provisional, this is largely a no-op other than cleaning
+    // up the initial (and unused) empty document. Otherwise, this unloads the
+    // previous Document and detaches subframes. If `DetachDocument()` returns
+    // false, JS caused `frame_` to be removed, so just return.
+    const bool is_provisional = frame_->IsProvisional();
+    if (!DetachDocument(security_origin.get(), &unload_timing)) {
+      DCHECK(!is_provisional);
+      return;
+    }
+
+    // If the frame is provisional, swap it in now. However, if `Swap()` returns
+    // false, JS caused `frame_` to be removed, so just return.
+    if (is_provisional && !frame_->SwapIn())
       return;
   }
 
@@ -1184,6 +1197,7 @@ bool FrameLoader::DetachDocument(
   DCHECK_EQ(client_navigation_.get(), client_navigation);
 
   // No more events will be dispatched so detach the Document.
+  // TODO(dcheng): Why is this a conditional check?
   // TODO(yoav): Should we also be nullifying domWindow's document (or
   // domWindow) since the doc is now detached?
   frame_->GetDocument()->Shutdown();

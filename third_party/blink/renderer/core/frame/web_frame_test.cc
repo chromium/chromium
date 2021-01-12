@@ -8838,10 +8838,8 @@ TEST_F(WebFrameSwapTest, SwapMainFrame) {
 
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame);
-  remote_frame->Swap(local_frame);
 
-  // Finally, make sure an embedder triggered load in the local frame swapped
-  // back in works.
+  // Committing a navigation in `local_frame` should swap it back in.
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
 
   std::string content =
@@ -9294,11 +9292,13 @@ TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
 
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame);
-  remote_frame->Swap(local_frame);
+  // Committing a navigation in a provisional frame will swap it in.
+  frame_test_helpers::LoadFrame(local_frame, "data:text/html,");
   v8::Local<v8::Value> local_window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("saved.top"));
   EXPECT_TRUE(local_window_top->IsObject());
   EXPECT_TRUE(window_top->StrictEquals(local_window_top));
+  local_frame->ExecuteScriptAndReturnValue(WebScriptSource("42"));
 }
 
 TEST_F(WebFrameSwapTest, RemoteFramesAreIndexable) {
@@ -9410,9 +9410,6 @@ TEST_F(WebFrameSwapTest, FrameElementInFramesWithRemoteParent) {
 class RemoteToLocalSwapWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  explicit RemoteToLocalSwapWebFrameClient(WebRemoteFrame* remote_frame)
-      : history_commit_type_(kWebHistoryInertCommit),
-        remote_frame_(remote_frame) {}
   ~RemoteToLocalSwapWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
@@ -9423,15 +9420,13 @@ class RemoteToLocalSwapWebFrameClient
       const ParsedFeaturePolicy& feature_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     history_commit_type_ = history_commit_type;
-    remote_frame_->Swap(Frame());
   }
 
   WebHistoryCommitType HistoryCommitType() const {
-    return history_commit_type_;
+    return *history_commit_type_;
   }
 
-  WebHistoryCommitType history_commit_type_;
-  WebRemoteFrame* remote_frame_;
+  base::Optional<WebHistoryCommitType> history_commit_type_;
 };
 
 // The commit type should be Initial if we are swapping a RemoteFrame to a
@@ -9446,7 +9441,7 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterNewRemoteToLocalSwap) {
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
-  RemoteToLocalSwapWebFrameClient client(remote_frame);
+  RemoteToLocalSwapWebFrameClient client;
   WebLocalFrame* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame, &client);
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
@@ -9468,7 +9463,7 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterExistingRemoteToLocalSwap) {
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
-  RemoteToLocalSwapWebFrameClient client(remote_frame);
+  RemoteToLocalSwapWebFrameClient client;
   WebLocalFrameImpl* local_frame =
       web_view_helper_.CreateProvisional(*remote_frame, &client);
   local_frame->SetCommittedFirstRealLoad();

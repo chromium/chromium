@@ -513,6 +513,14 @@ interface LocalFrame {
   // doing so via console messages.
   AddInspectorIssue(InspectorIssueInfo info);
 
+  // Requests that a provisional frame swap itself into the frame tree,
+  // immediately replacing the RemoteFrame that it is associated with. Normally,
+  // this swap happens when the navigation commits in the provisional frame.
+  // However, if the RemoteFrame corresponds to a crashed (and non-live) frame,
+  // the browser will immediately call this method to stop showing the sad
+  // iframe without having to wait for the navigation to commit.
+  SwapInImmediately();
+
   // Sent to a frame when one of its remote children finishes loading, so that
   // the frame can update its loading state.
   CheckCompleted();

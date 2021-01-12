@@ -71,6 +71,7 @@ class LocalWindowProxy final : public WindowProxy {
       v8::Context::AbortScriptExecutionCallback callback);
 
  private:
+  // LocalWindowProxy overrides:
   bool IsLocal() const override { return true; }
   void Initialize() override;
   void DisposeContext(Lifecycle next_status, FrameReuseStatus) override;

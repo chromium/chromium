@@ -576,12 +576,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   if (IsProvisional()) {
-    Frame* provisional_owner = nullptr;
-    if (Owner()) {
-      provisional_owner = Owner()->ContentFrame();
-    } else {
-      provisional_owner = GetPage()->MainFrame();
-    }
+    Frame* provisional_owner = GetProvisionalOwnerFrame();
     // Having multiple provisional frames somehow associated with the same frame
     // to potentially replace is a logic error.
     DCHECK_EQ(provisional_owner->ProvisionalFrame(), this);
@@ -2391,6 +2386,11 @@ bool LocalFrame::IsLoadDeferred() {
   return frozen_ || paused_;
 }
 
+bool LocalFrame::SwapIn() {
+  WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
+  return client->SwapIn(WebFrame::FromCoreFrame(GetProvisionalOwnerFrame()));
+}
+
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
       base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)) {
@@ -2919,6 +2919,10 @@ void LocalFrame::AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) {
   }
 }
 
+void LocalFrame::SwapInImmediately() {
+  SwapIn();
+}
+
 void LocalFrame::StopLoading() {
   Loader().StopAllLoaders(/*abort_client=*/true);
 
@@ -3365,6 +3369,14 @@ mojom::blink::TextInputHost& LocalFrame::GetTextInputHost() {
   return *text_input_host_.get();
 }
 #endif
+
+Frame* LocalFrame::GetProvisionalOwnerFrame() {
+  DCHECK(IsProvisional());
+  if (Owner()) {
+    return Owner()->ContentFrame();
+  }
+  return GetPage()->MainFrame();
+}
 
 void LocalFrame::BindToReceiver(
     blink::LocalFrame* frame,

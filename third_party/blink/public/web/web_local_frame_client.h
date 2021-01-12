@@ -335,6 +335,16 @@ class BLINK_EXPORT WebLocalFrameClient {
   // datasource will become the provisional datasource for the frame.
   virtual void DidCreateDocumentLoader(WebDocumentLoader*) {}
 
+  // A navigation is about to commit in a new frame that is still provisional
+  // (i.e. not swapped into the frame tree). Implementations should perform any
+  // bookkeeping work to sync the state of the previous frame and the new frame
+  // and use `WebFrame::Swap()` to swap in the new frame.
+  //
+  // The return value should be the return value of `WebFrame::Swap()`, which
+  // returns false if the navigation should not proceed due to the frame being
+  // removed from the frame tree by JS while swapping it in, or true otherwise.
+  virtual bool SwapIn(WebFrame* previous_frame) { return false; }
+
   // The navigation has been committed, as a result of
   // WebNavigationControl::CommitNavigation call. The newly created document
   // is committed to the frame, the encoding of the response body is known,

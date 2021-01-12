@@ -654,6 +654,10 @@ void TestWebFrameClient::DidStopLoading() {
   --loads_in_progress_;
 }
 
+bool TestWebFrameClient::SwapIn(WebFrame* previous_frame) {
+  return previous_frame->Swap(frame_);
+}
+
 void TestWebFrameClient::BeginNavigation(
     std::unique_ptr<WebNavigationInfo> info) {
   navigation_callback_.Cancel();

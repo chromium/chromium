@@ -45,6 +45,8 @@ void FakeLocalFrame::AddMessageToConsole(
 void FakeLocalFrame::AddInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr info) {}
 
+void FakeLocalFrame::SwapInImmediately() {}
+
 void FakeLocalFrame::CheckCompleted() {}
 
 void FakeLocalFrame::StopLoading() {}

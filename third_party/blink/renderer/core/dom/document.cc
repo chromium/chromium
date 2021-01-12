@@ -4034,6 +4034,9 @@ void Document::DispatchUnloadEvents(
     parser_->StopParsing();
 
   if (load_event_progress_ == kLoadEventNotRun ||
+      // TODO(dcheng): We should consider if we can make this conditional check
+      // stronger with a DCHECK() that this isn't called if the unload event is
+      // already complete.
       load_event_progress_ > kUnloadEventInProgress) {
     return;
   }

@@ -2557,7 +2557,7 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
 }
 
 void RenderFrameHostImpl::SwapIn() {
-  GetNavigationControl()->SwapIn();
+  GetAssociatedLocalFrame()->SwapInImmediately();
 }
 
 void RenderFrameHostImpl::Init() {
