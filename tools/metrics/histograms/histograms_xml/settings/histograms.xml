@@ -162,12 +162,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.ChromeCleanerResult"
-    enum="SafetyCheckChromeCleanerStatus" expires_after="M90">
+    enum="SafetyCheckChromeCleanerStatus" expires_after="M92">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
-    Resulting state of the safety check Chrome cleaner check. Value 4-9 got
-    added with M88.
+    Resulting state of the safety check Chrome cleaner check. Recorded when a
+    safety check is run by the user. Value 4-9 got added with M88.
   </summary>
 </histogram>
 
