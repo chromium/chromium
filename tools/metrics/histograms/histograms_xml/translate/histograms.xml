@@ -925,6 +925,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.UndisplayableLanguage" enum="LanguageName"
     expires_after="M81">
+  <obsolete>
+    Removed 01/09/2021. Not used anymore.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -116,10 +116,6 @@ void ReportLanguageDetectionContentLength(size_t length);
 
 void ReportLocalesOnDisabledByPrefs(base::StringPiece locale);
 
-// Called when Chrome Translate server sends the language list which includes
-// a undisplayable language in the user's locale.
-void ReportUndisplayableLanguage(base::StringPiece language);
-
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the source

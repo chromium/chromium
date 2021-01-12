@@ -341,7 +341,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   for (const auto& kv_pair : target_languages->DictItems()) {
     const std::string& lang = kv_pair.first;
     if (!l10n_util::IsLocaleNameTranslated(lang.c_str(), locale)) {
-      TranslateBrowserMetrics::ReportUndisplayableLanguage(lang);
+      // Don't include languages not displayable in current UI language.
       continue;
     }
     supported_languages_.push_back(lang);
