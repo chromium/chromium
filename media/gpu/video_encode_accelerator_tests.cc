@@ -333,8 +333,14 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
   // Check if there is no keyframe except the first frame.
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 1u);
   encoder->ForceKeyFrame();
-  // Check if the |middle_frame|+1-th frame is keyframe.
-  encoder->EncodeUntil(VideoEncoder::kBitstreamReady, middle_frame + 1u);
+  // Since kFrameReleased and kBitstreamReady events are asynchronous, the
+  // number of bitstreams being processed is unknown. We check keyframe request
+  // is applied by seeing if there is a keyframe in a few frames after
+  // requested. 10 is arbitrarily chosen.
+  constexpr size_t kKeyFrameRequestWindow = 10u;
+  encoder->EncodeUntil(VideoEncoder::kBitstreamReady,
+                       std::min(middle_frame + kKeyFrameRequestWindow,
+                                config.num_frames_to_encode));
   EXPECT_TRUE(encoder->WaitUntilIdle());
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
 
