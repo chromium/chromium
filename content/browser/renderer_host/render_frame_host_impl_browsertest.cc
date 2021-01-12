@@ -4589,7 +4589,7 @@ constexpr base::StringPiece kMinimalHtmlBody = R"(
 
 // Wraps the URLLoaderInterceptor method of the same name, asserts success.
 //
-// NOTE: ASSERT_* macros can only be used in functions returning void.
+// Note: ASSERT_* macros can only be used in functions returning void.
 void WriteResponseBody(base::StringPiece body,
                        network::mojom::URLLoaderClient* client) {
   ASSERT_EQ(content::URLLoaderInterceptor::WriteResponseBody(body, client),
@@ -4973,6 +4973,57 @@ IN_PROC_BROWSER_TEST_F(
 
 namespace {
 
+// Helper for CreateBlobURL() and CreateFilesystemURL().
+// ASSERT_* macros can only be used in functions returning void.
+void AssertResultIsString(const EvalJsResult& result) {
+  // We could skip this assert, but it helps in case of error.
+  ASSERT_EQ("", result.error);
+  // We could use result.value.is_string(), but this logs the actual type in
+  // case of mismatch.
+  ASSERT_EQ(base::Value::Type::STRING, result.value.type()) << result.value;
+}
+
+// Creates a blob containing dummy HTML, then returns its URL.
+// Executes javascript to do so in |frame_host|, which must not be nullptr.
+GURL CreateBlobURL(RenderFrameHostImpl* frame_host) {
+  EvalJsResult result = EvalJs(frame_host, R"(
+    const blob = new Blob(["foo"], {type: "text/html"});
+    URL.createObjectURL(blob)
+  )");
+
+  AssertResultIsString(result);
+  return GURL(result.ExtractString());
+}
+
+// Writes some dummy HTML to a file, then returns its `filesystem:` URL.
+// Executes javascript to do so in |frame_host|, which must not be nullptr.
+GURL CreateFilesystemURL(RenderFrameHostImpl* frame_host) {
+  EvalJsResult result = EvalJs(frame_host, R"(
+    // It seems anonymous async functions are not available yet, so we cannot
+    // use an immediately-invoked function expression.
+    async function run() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
+      });
+      const file = await new Promise((resolve, reject) => {
+        fs.root.getFile('hello.html', {create: true}, resolve, reject);
+      });
+      const writer = await new Promise((resolve, reject) => {
+        file.createWriter(resolve, reject);
+      });
+      await new Promise((resolve) => {
+        writer.onwriteend = resolve;
+        writer.write(new Blob(["foo"], {type: "text/html"}));
+      });
+      return file.toURL();
+    }
+    run()
+  )");
+
+  AssertResultIsString(result);
+  return GURL(result.ExtractString());
+}
+
 // Executes |script| to add a new child iframe to the given |parent| document.
 //
 // |parent| must not be nullptr.
@@ -4994,23 +5045,32 @@ RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
   return parent->child_at(initial_child_count)->current_frame_host();
 }
 
+// Adds a child iframe sourced from |url| to the given |parent| document.
+//
+// |parent| must not be nullptr.
+RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
+                                     const GURL& url) {
+  std::string script_template = R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = $1;
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )";
+  return AddChildWithScript(parent, JsReplace(script_template, url));
+}
+
+RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
+  return AddChildFromURL(parent, GURL("about:blank"));
+}
+
 RenderFrameHostImpl* AddChildInitialEmptyDoc(RenderFrameHostImpl* parent) {
   return AddChildWithScript(parent, R"(
     const iframe = document.createElement("iframe");
     iframe.src = "/nocontent";  // Returns 204 NO CONTENT, thus no doc commits.
     document.body.appendChild(iframe);
     true  // Do not wait for iframe.onload, which never fires.
-  )");
-}
-
-RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
-  return AddChildWithScript(parent, R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "about:blank";  // Superfluous, but being explicit is nice.
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
   )");
 }
 
@@ -5026,67 +5086,77 @@ RenderFrameHostImpl* AddChildFromSrcdoc(RenderFrameHostImpl* parent) {
 }
 
 RenderFrameHostImpl* AddChildFromDataURL(RenderFrameHostImpl* parent) {
-  return AddChildWithScript(parent, R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "data:text/html,foo";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )");
+  return AddChildFromURL(parent, GURL("data:text/html,foo"));
 }
 
 RenderFrameHostImpl* AddChildFromJavascriptURL(RenderFrameHostImpl* parent) {
-  return AddChildWithScript(parent, R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "javascript:'foo'";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )");
+  return AddChildFromURL(parent, GURL("javascript:'foo'"));
 }
 
 RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
-  return AddChildWithScript(parent, R"(
-    new Promise((resolve) => {
-      const blob = new Blob(["foo"], {type: "text/html"});
-      const iframe = document.createElement("iframe");
-      iframe.src = URL.createObjectURL(blob);
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )");
+  GURL blob_url = CreateBlobURL(parent);
+  return AddChildFromURL(parent, blob_url);
 }
 
 RenderFrameHostImpl* AddChildFromFilesystem(RenderFrameHostImpl* parent) {
-  return AddChildWithScript(parent, R"(
-    // It seems anonymous async functions are not available yet, so we cannot
-    // use an immediately-invoked function expression.
-    async function run() {
-      const fs = await new Promise((resolve, reject) => {
-        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
-      });
-      const file = await new Promise((resolve, reject) => {
-        fs.root.getFile('hello.html', {create: true}, resolve, reject);
-      });
-      const writer = await new Promise((resolve, reject) => {
-        file.createWriter(resolve, reject);
-      });
-      await new Promise((resolve) => {
-        writer.onwriteend = resolve;
-        writer.write(new Blob(["foo"], {type: "text/html"}));
-      });
-      await new Promise((resolve) => {
-        const iframe = document.createElement("iframe");
-        iframe.src = file.toURL();
-        iframe.onload = resolve;
-        document.body.appendChild(iframe);
-      });
-      return true;
-    }
-    run()
-  )");
+  GURL fs_url = CreateFilesystemURL(parent);
+  return AddChildFromURL(parent, fs_url);
+}
+
+// Returns the main frame RenderFrameHostImpl in the given |shell|.
+//
+// |shell| must not be nullptr.
+//
+// Helper for OpenWindow*().
+RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
+  return static_cast<RenderFrameHostImpl*>(
+      shell->web_contents()->GetMainFrame());
+}
+
+// Opens a new window from within |parent|, pointed at the given |url|.
+// Waits until the openee window has navigated to |url|, then returns a pointer
+// to its main frame RenderFrameHostImpl.
+//
+// |parent| must not be nullptr.
+RenderFrameHostImpl* OpenWindowFromURL(RenderFrameHostImpl* parent,
+                                       const GURL& url) {
+  return GetMainFrameHostImpl(OpenPopup(parent, url, "child"));
+}
+
+RenderFrameHostImpl* OpenWindowFromAboutBlank(RenderFrameHostImpl* parent) {
+  return OpenWindowFromURL(parent, GURL("about:blank"));
+}
+
+RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+
+  ShellAddedObserver observer;
+
+  EXPECT_TRUE(ExecJs(parent, R"(
+    window.open("/nocontent");
+  )"));
+
+  return GetMainFrameHostImpl(observer.GetShell());
+}
+
+RenderFrameHostImpl* OpenWindowFromJavascriptURL(RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation, since the `javascript:` URL will not commit (`about:blank`
+  // will).
+
+  ShellAddedObserver observer;
+
+  EXPECT_TRUE(ExecJs(parent, R"(
+    window.open("javascript:'foo'");
+  )"));
+
+  return GetMainFrameHostImpl(observer.GetShell());
+}
+
+RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
+  GURL blob_url = CreateBlobURL(parent);
+  return OpenWindowFromURL(parent, blob_url);
 }
 
 }  // namespace
@@ -5127,6 +5197,40 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForAboutBlankFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     IframeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
@@ -5153,6 +5257,40 @@ IN_PROC_BROWSER_TEST_F(
 
   network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForInitialEmptyDocFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
@@ -5265,6 +5403,40 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForJavascriptURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForJavascriptURLFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     IframeInheritsAddressSpaceForBlobURLFromPublic) {
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
@@ -5291,6 +5463,40 @@ IN_PROC_BROWSER_TEST_F(
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForBlobURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsAddressSpaceForBlobURLFromLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
@@ -5366,6 +5572,39 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForAboutBlankFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForAboutBlankFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     IframeInheritsSecureContextForInitialEmptyDocFromSecure) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
@@ -5392,6 +5631,39 @@ IN_PROC_BROWSER_TEST_F(
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForInitialEmptyDocFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForInitialEmptyDocFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5483,6 +5755,39 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForJavascriptURLFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForJavascriptURLFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1136028): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     IframeInheritsSecureContextForJavascriptURLFromInsecure) {
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
@@ -5525,6 +5830,38 @@ IN_PROC_BROWSER_TEST_F(
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForBlobURLFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    OpeneeInheritsSecureContextForBlobURLFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
