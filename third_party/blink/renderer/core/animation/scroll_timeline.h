@@ -129,6 +129,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   size_t AttachedAnimationsCount() const { return scroll_animations_.size(); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.

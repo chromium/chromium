@@ -205,6 +205,51 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
       time_range, vertical_timeline->CurrentTime(scroll_tree(), false));
 }
 
+TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
+  double time_range = 100.0;
+
+  // Start offset is greater than end offset ==> animation progress is
+  // either 0% or 100%.
+  std::vector<double> scroll_offsets = {350.0, 200.0, 50.0};
+
+  scoped_refptr<ScrollTimeline> vertical_timeline = ScrollTimeline::Create(
+      scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets, time_range);
+
+  // Offset is less than start offset ==> current time is 0.
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::ScrollOffset(0, 300));
+  EXPECT_SCROLL_TIMELINE_TIME_NEAR(
+      0, vertical_timeline->CurrentTime(scroll_tree(), false));
+
+  // Offset is greater than end offset ==> current time is time_range.
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::ScrollOffset(0, 360));
+  EXPECT_SCROLL_TIMELINE_TIME_NEAR(
+      time_range, vertical_timeline->CurrentTime(scroll_tree(), false));
+
+  scroll_offsets = {0.0, 400.0, 200.0};
+
+  vertical_timeline = ScrollTimeline::Create(
+      scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets, time_range);
+
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::ScrollOffset(0, 100));
+  // Scroll offset is 25% of [0, 400) range, which maps to [0% 50%) of the
+  // entire scroll range.
+  EXPECT_SCROLL_TIMELINE_TIME_NEAR(
+      time_range * 0.5 * 0.25,
+      vertical_timeline->CurrentTime(scroll_tree(), false));
+
+  scroll_offsets = {200.0, 0.0, 400.0};
+
+  vertical_timeline = ScrollTimeline::Create(
+      scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets, time_range);
+
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::ScrollOffset(0, 300));
+  // Scroll offset is 75% of [0, 400) range, which maps to [50% 100%) of the
+  // entire scroll range.
+  EXPECT_SCROLL_TIMELINE_TIME_NEAR(
+      time_range * (0.5 + 0.5 * 0.75),
+      vertical_timeline->CurrentTime(scroll_tree(), false));
+}
+
 TEST_F(ScrollTimelineTest, CurrentTimeIsAdjustedForTimeRange) {
   double time_range = content_size().height() - container_size().height();
 
