@@ -11,7 +11,9 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -81,9 +83,12 @@ public class BlankCTATabInitialStateRule implements TestRule {
     // quickly, at the cost of thoroughness. This should be adequate for most tests.
     private void resetTabStateFast() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Close all but the first tab as these tests expect to start with a single
+            IncognitoUtils.closeAllIncognitoTabs();
+            // Close all but the first regular tab as these tests expect to start with a single
             // tab.
-            while (TabModelUtils.closeTabByIndex(sActivity.getCurrentTabModel(), 1)) {
+            TabModel regularTabModel =
+                    sActivity.getTabModelSelector().getModel(/*incognito=*/false);
+            while (TabModelUtils.closeTabByIndex(regularTabModel, 1)) {
             }
         });
         mActivityTestRule.loadUrl("about:blank");
