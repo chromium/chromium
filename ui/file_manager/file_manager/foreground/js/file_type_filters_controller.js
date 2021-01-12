@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {str, util} from '../../common/js/util.m.js';
+
 /**
  * This class controls wires file-type filter UI and the filter settings in
  * Recents view.
  */
-class FileTypeFiltersController {
+/* #export */ class FileTypeFiltersController {
   /**
    * @param {!HTMLElement} fileTypeFilterContainer
    * @param {!DirectoryModel} directoryModel

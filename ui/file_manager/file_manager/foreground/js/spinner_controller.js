@@ -7,7 +7,7 @@
  * is called 3 times, the hide callback has to be called 3 times to make the
  * spinner invisible.
  */
-class SpinnerController {
+/* #export */ class SpinnerController {
   /** @param {!Element} element */
   constructor(element) {
     /**

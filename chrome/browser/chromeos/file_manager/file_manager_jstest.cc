@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypeFiltersController) {
-  RunTestURL("foreground/js/file_type_filters_controller_unittest_gen.html");
+  RunTestURL("foreground/js/file_type_filters_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProvidersModel) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SpinnerController) {
-  RunTestURL("foreground/js/spinner_controller_unittest_gen.html");
+  RunTestURL("foreground/js/spinner_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskController) {

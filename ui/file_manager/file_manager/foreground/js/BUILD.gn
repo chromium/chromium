@@ -39,14 +39,19 @@ js_type_check("closure_compile_jsmodules") {
     ":empty_folder_controller.m",
     ":fake_android_app_list_model.m",
     ":file_list_model.m",
+    ":file_type_filters_controller.m",
     ":file_watcher.m",
     ":folder_shortcuts_data_model.m",
     ":launch_param.m",
+    ":metrics_start.m",
+    ":mock_actions_model.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
     ":mock_navigation_list_model.m",
     ":navigation_list_model.m",
+    ":navigation_uma.m",
     ":providers_model.m",
+    ":spinner_controller.m",
     ":thumbnail_loader.m",
     ":web_store_utils.m",
   ]
@@ -186,6 +191,16 @@ js_library("mock_actions_model") {
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr:event_target",
   ]
+}
+
+js_library("mock_actions_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_actions_model.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("fake_file_selection_handler") {
@@ -466,6 +481,17 @@ js_library("navigation_uma") {
   ]
 }
 
+js_library("navigation_uma.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/navigation_uma.m.js" ]
+  deps = [
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("directory_tree_naming_controller") {
   deps = [
     ":directory_model",
@@ -711,10 +737,28 @@ js_library("file_type_filters_controller") {
   ]
 }
 
-js_unittest("file_type_filters_controller_unittest") {
+js_library("file_type_filters_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_type_filters_controller.m.js" ]
   deps = [
-    ":file_type_filters_controller",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":directory_model.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("file_type_filters_controller_unittest.m") {
+  deps = [
+    ":directory_model.m",
+    ":file_type_filters_controller.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -905,6 +949,13 @@ js_library("metrics_start") {
   deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
 }
 
+js_library("metrics_start.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metrics_start.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:metrics.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("naming_controller") {
   deps = [
     ":directory_contents",
@@ -1066,12 +1117,18 @@ js_library("sort_menu_controller") {
 js_library("spinner_controller") {
 }
 
-js_unittest("spinner_controller_unittest") {
+js_library("spinner_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/spinner_controller.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("spinner_controller_unittest.m") {
   deps = [
-    ":spinner_controller",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
+    ":spinner_controller.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -1172,8 +1229,10 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":directory_contents_unittest.m",
     ":file_list_model_unittest.m",
+    ":file_type_filters_controller_unittest.m",
     ":navigation_list_model_unittest.m",
     ":providers_model_unittest.m",
+    ":spinner_controller_unittest.m",
     ":thumbnail_loader_unittest.m",
   ]
   js_module = true
@@ -1193,10 +1252,8 @@ js_test_gen_html("js_test_gen_html") {
     ":file_manager_commands_unittest",
     ":file_tasks_unittest",
     ":file_transfer_controller_unittest",
-    ":file_type_filters_controller_unittest",
     ":import_controller_unittest",
     ":list_thumbnail_loader_unittest",
-    ":spinner_controller_unittest",
     ":task_controller_unittest",
   ]
   mocks = [ "$externs_path/file_manager_private.js" ]
@@ -1225,6 +1282,11 @@ js_modulizer("modulize") {
     "providers_model.js",
     "thumbnail_loader.js",
     "web_store_utils.js",
+    "file_type_filters_controller.js",
+    "navigation_uma.js",
+    "metrics_start.js",
+    "mock_actions_model.js",
+    "spinner_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

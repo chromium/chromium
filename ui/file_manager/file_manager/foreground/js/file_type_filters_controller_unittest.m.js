@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {FileTypeFiltersController} from './file_type_filters_controller.m.js';
+
 /**
  * @type {!HTMLElement}
  */
@@ -27,15 +39,36 @@ let myFilesEntry;
  */
 let fileTypeFiltersController;
 
-function setUp() {
+export function setUp() {
   // Mock loadTimeData strings.
-  window.loadTimeData.data = {
+  loadTimeData.data = {
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
   };
 
-  class MockDirectoryModel extends cr.EventTarget {
+  /**
+   * Mock chrome APIs.
+   * @type {!Object}
+   */
+  const mockChrome = {
+    fileManagerPrivate: {
+      SourceRestriction: {
+        ANY_SOURCE: 'any_source',
+        NATIVE_SOURCE: 'native_source',
+      },
+      RecentFileType: {
+        ALL: 'all',
+        AUDIO: 'audio',
+        IMAGE: 'image',
+        VIDEO: 'video',
+      },
+    },
+  };
+
+  installMockChrome(mockChrome);
+
+  class MockDirectoryModel extends EventTarget {
     constructor() {
       super();
 
@@ -83,7 +116,7 @@ function setUp() {
  * Tests that creating FileTypeFiltersController generates three buttons in the
  * given container element.
  */
-function testCreatedButtonLabels() {
+export function testCreatedButtonLabels() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
@@ -95,7 +128,7 @@ function testCreatedButtonLabels() {
 /**
  * Tests that initial states of all buttons inside container are inactive.
  */
-function testButtonInitialActiveState() {
+export function testButtonInitialActiveState() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
@@ -107,7 +140,7 @@ function testButtonInitialActiveState() {
 /**
  * Tests that click events toggle button state (inactive -> active -> inactive).
  */
-function testButtonToggleState() {
+export function testButtonToggleState() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
@@ -123,7 +156,7 @@ function testButtonToggleState() {
  * If button_1 is clicked then button_0 is active, button_0 becomes inactive and
  * button_1 becomes active.
  */
-function testOnlyOneButtonCanActive() {
+export function testOnlyOneButtonCanActive() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
@@ -148,7 +181,7 @@ function testOnlyOneButtonCanActive() {
  * Tests that container element is visible only when the current directory is
  * Recents view.
  */
-function testContainerIsShownOnlyInRecents() {
+export function testContainerIsShownOnlyInRecents() {
   container.hidden = true;
   directoryModel.changeDirectoryEntry(recentEntry);
   assertFalse(container.hidden);
@@ -160,7 +193,7 @@ function testContainerIsShownOnlyInRecents() {
  * Tests that button's active state is reset to inactive when the user leaves
  * Recents view.
  */
-function testActiveButtonIsResetOnLeavingRecents() {
+export function testActiveButtonIsResetOnLeavingRecents() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
@@ -182,7 +215,7 @@ function testActiveButtonIsResetOnLeavingRecents() {
  * recentFileType property, and DirectoryModel.rescan() is called after the
  * Recent entry's property is modified.
  */
-function testAppliedFilters() {
+export function testAppliedFilters() {
   const buttons = container.children;
   assertEquals(buttons.length, 3);
 
