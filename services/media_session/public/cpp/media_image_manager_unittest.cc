@@ -204,4 +204,17 @@ TEST_F(MediaImageManagerTest, PreferImagesWithNonZeroArea) {
   EXPECT_EQ(image1, manager()->SelectImage(images));
 }
 
+TEST_F(MediaImageManagerTest, PickImageWithAnySize) {
+  MediaImageManager manager(10, 10);
+
+  std::vector<MediaImage> images;
+
+  // Empty size denotes "any" value.
+  MediaImage image;
+  image.sizes.push_back(gfx::Size());
+  images.push_back(image);
+
+  EXPECT_TRUE(manager.SelectImage(images));
+}
+
 }  // namespace media_session

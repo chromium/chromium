@@ -154,6 +154,19 @@ bool IsSizeAtLeast(const gfx::Size& size, int min_size) {
   return size.width() >= min_size || size.height() >= min_size;
 }
 
+bool IsSizesAtLeast(const std::vector<gfx::Size>& sizes, int min_size) {
+  // If we haven't found an image based on size then we should check if there
+  // are any images that have no size data or have an "any" size which is
+  // denoted by a single empty gfx::Size value.
+  if (sizes.size() == 0 || (sizes.size() == 1 && sizes[0].IsEmpty()))
+    return true;
+
+  bool check_size = false;
+  for (auto& size : sizes)
+    check_size = check_size || IsSizeAtLeast(size, min_size);
+  return check_size;
+}
+
 base::string16 SanitizeMediaTitle(const base::string16 title) {
   base::string16 out;
   base::TrimString(title, base::ASCIIToUTF16(" "), &out);
@@ -1108,12 +1121,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
     }
   }
 
-  // Check that |image.sizes| contains a size that is above the minimum size.
-  bool check_size = false;
-  for (auto& size : image.sizes)
-    check_size = check_size || IsSizeAtLeast(size, minimum_size_px);
-
-  if (!found || !check_size) {
+  if (!found || !IsSizesAtLeast(image.sizes, minimum_size_px)) {
     std::move(callback).Run(SkBitmap());
     return;
   }
