@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.metrics;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
@@ -18,22 +19,23 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Computes and records metrics for what caused Chrome to be launched.
  */
-public class LaunchCauseMetrics {
+public abstract class LaunchCauseMetrics {
     // Static to avoid recording launch metrics when transitioning between Activities without
     // Chrome leaving the foreground.
     private static boolean sRecordedLaunchCause;
 
-    /* package */ static final String LAUNCH_CAUSE_HISTOGRAM =
-            "MobileStartup.Experimental.LaunchCause";
+    @VisibleForTesting
+    public static final String LAUNCH_CAUSE_HISTOGRAM = "MobileStartup.Experimental.LaunchCause";
 
     // These values are persisted in histograms. Please do not renumber. Append only.
-    @IntDef({LaunchCause.OTHER})
+    @IntDef({LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA})
     @Retention(RetentionPolicy.SOURCE)
-    /* package */ @interface LaunchCause {
+    public @interface LaunchCause {
         int OTHER = 0;
+        int CUSTOM_TAB = 1;
+        int TWA = 2;
 
-        // A histogram enum cannot have only 1 entry, so while developing this we need to lie.
-        int NUM_ENTRIES = 2;
+        int NUM_ENTRIES = 3;
     }
 
     public LaunchCauseMetrics() {
@@ -53,13 +55,9 @@ public class LaunchCauseMetrics {
     }
 
     /**
-     * TODO(mthiesse, https://crbug.com/1163961): Make this function abstract.
-     *
      * Computes and returns what the cause of the Chrome launch was.
      */
-    protected @LaunchCause int computeLaunchCause() {
-        return LaunchCause.OTHER;
-    }
+    protected abstract @LaunchCause int computeLaunchCause();
 
     /**
      * Called after Chrome has launched and all information necessary to compute why Chrome was
@@ -77,8 +75,9 @@ public class LaunchCauseMetrics {
                 LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
     }
 
-    @RemovableInRelease
-    /* package */ static void resetForTests() {
+    @VisibleForTesting
+    public static void resetForTests() {
+        ThreadUtils.assertOnUiThread();
         sRecordedLaunchCause = false;
     }
 }

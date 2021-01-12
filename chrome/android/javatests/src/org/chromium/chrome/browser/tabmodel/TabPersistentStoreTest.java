@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -251,6 +252,11 @@ public class TabPersistentStoreTest {
 
                 @Override
                 protected BrowserControlsManager createBrowserControlsManager() {
+                    return null;
+                }
+
+                @Override
+                protected LaunchCauseMetrics createLaunchCauseMetrics() {
                     return null;
                 }
 

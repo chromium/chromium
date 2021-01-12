@@ -732,13 +732,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * TODO(mthiesse, https://crbug.com/1163961): Make this function abstract and have derived
-     * classes make their own.
-     * @return The {@link LaunchCauseMetrics} owned by this {@link ChromeActivity}.
+     * @return The {@link LaunchCauseMetrics} to be owned by this {@link ChromeActivity}.
      */
-    protected LaunchCauseMetrics createLaunchCauseMetrics() {
-        return new LaunchCauseMetrics();
-    }
+    protected abstract LaunchCauseMetrics createLaunchCauseMetrics();
 
     private LaunchCauseMetrics getLaunchCauseMetrics() {
         if (mLaunchCauseMetrics == null) {

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
@@ -288,6 +289,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Nullable
     public String getTwaPackage() {
         return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
+    }
+
+    @Override
+    protected LaunchCauseMetrics createLaunchCauseMetrics() {
+        return new CustomTabLaunchCauseMetrics(this);
     }
 
     @VisibleForTesting

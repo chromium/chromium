@@ -40911,6 +40911,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="LaunchCause">
   <int value="0" label="Other"/>
+  <int value="1" label="Chrome Custom Tab"/>
+  <int value="2" label="Trusted Web Activity"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

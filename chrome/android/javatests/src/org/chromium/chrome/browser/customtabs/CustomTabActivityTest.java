@@ -105,6 +105,7 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -771,6 +772,10 @@ public class CustomTabActivityTest {
         IntentHandler.setForceIntentSenderChromeToTrue(true);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addDataScheme(Uri.parse(mTestServer.getURL("/")).getScheme());
@@ -789,6 +794,10 @@ public class CustomTabActivityTest {
         });
 
         callbackTriggered.waitForCallback(0);
+        // No additional LaunchCauses should have been recorded.
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 
     /**
@@ -798,7 +807,15 @@ public class CustomTabActivityTest {
     @SmallTest
     public void testTabReparentingBasic() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
         reparentAndVerifyTab();
+        // No additional LaunchCauses should have been recorded.
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 
     /**

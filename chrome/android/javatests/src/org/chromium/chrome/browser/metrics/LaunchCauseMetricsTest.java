@@ -21,6 +21,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -47,7 +48,7 @@ public final class LaunchCauseMetricsTest {
     @After
     public void tearDown() {
         ApplicationStatus.destroyForJUnitTests();
-        LaunchCauseMetrics.resetForTests();
+        ThreadUtils.runOnUiThreadBlocking(() -> LaunchCauseMetrics.resetForTests());
     }
 
     private static int histogramCountForValue(int value) {
@@ -55,12 +56,19 @@ public final class LaunchCauseMetricsTest {
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 
+    private static class TestLaunchCauseMetrics extends LaunchCauseMetrics {
+        @Override
+        protected @LaunchCause int computeLaunchCause() {
+            return LaunchCause.OTHER;
+        }
+    }
+
     @Test
     @SmallTest
     @UiThreadTest
     public void testRecordsOncePerLaunch() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
-        LaunchCauseMetrics metrics = new LaunchCauseMetrics();
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
@@ -86,11 +94,11 @@ public final class LaunchCauseMetricsTest {
     @UiThreadTest
     public void testRecordsOnceWithMultipleInstances() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
-        LaunchCauseMetrics metrics = new LaunchCauseMetrics();
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
-        new LaunchCauseMetrics().recordLaunchCause();
+        new TestLaunchCauseMetrics().recordLaunchCause();
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
     }
 }

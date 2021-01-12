@@ -101,8 +101,10 @@ import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
+import org.chromium.chrome.browser.metrics.TabbedActivityLaunchCauseMetrics;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
@@ -1673,6 +1675,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (startIncognito) mTabModelSelectorImpl.selectModel(true);
 
         return mTabModelSelectorImpl;
+    }
+
+    @Override
+    protected LaunchCauseMetrics createLaunchCauseMetrics() {
+        return new TabbedActivityLaunchCauseMetrics();
     }
 
     @Override
