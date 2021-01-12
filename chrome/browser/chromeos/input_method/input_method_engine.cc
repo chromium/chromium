@@ -502,7 +502,9 @@ void InputMethodEngine::CommitTextToInputContext(int context_id,
     return;
 
   const bool had_composition_text = input_context->HasCompositionText();
-  input_context->CommitText(text);
+  input_context->CommitText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   if (had_composition_text) {
     // Records histograms for committed characters with composition text.

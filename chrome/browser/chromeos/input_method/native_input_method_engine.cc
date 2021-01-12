@@ -412,7 +412,9 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
 }
 
 void NativeInputMethodEngine::ImeObserver::CommitText(const std::string& text) {
-  GetInputContext()->CommitText(NormalizeString(text));
+  GetInputContext()->CommitText(
+      NormalizeString(text),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 }
 
 void NativeInputMethodEngine::ImeObserver::SetComposition(
@@ -491,7 +493,10 @@ void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
   for (const auto& op : response->operations) {
     switch (op->method) {
       case ime::mojom::OperationMethodForRulebased::COMMIT_TEXT:
-        GetInputContext()->CommitText(NormalizeString(op->arguments));
+        GetInputContext()->CommitText(
+            NormalizeString(op->arguments),
+            ui::TextInputClient::InsertTextCursorBehavior::
+                kMoveCursorAfterText);
         break;
       case ime::mojom::OperationMethodForRulebased::SET_COMPOSITION:
         ui::CompositionText composition;

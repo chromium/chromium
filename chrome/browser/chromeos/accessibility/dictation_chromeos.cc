@@ -138,7 +138,9 @@ void DictationChromeos::DictationOff() {
 
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
-      input_context->CommitText(base::UTF16ToUTF8(composition_->text));
+      input_context->CommitText(
+          base::UTF16ToUTF8(composition_->text),
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
     composition_->text = base::string16();
   } else {

@@ -53,7 +53,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
                                 TextInputClient* focused) override;
 
   // ui::IMEInputContextHandlerInterface overrides:
-  void CommitText(const std::string& text) override;
+  void CommitText(
+      const std::string& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   bool SetCompositionRange(
       uint32_t before,
       uint32_t after,
@@ -157,6 +159,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // It'll be sent to the focused text input client as soon as we receive the
   // processing result of the pending key event.
   base::string16 result_text_;
+
+  // Where the cursor should be place after inserting |result_text_|.
+  // 0 <= |result_text_cursor_| <= |result_text_.length()|.
+  size_t result_text_cursor_ = 0;
 
   base::string16 previous_surrounding_text_;
   gfx::Range previous_selection_range_;
