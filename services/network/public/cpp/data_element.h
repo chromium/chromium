@@ -75,29 +75,11 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
     length_ = buf_.size();
   }
 
-  // Sets TYPE_BYTES data, and clears the internal bytes buffer.
-  // For use with AppendBytes.
-  void SetToEmptyBytes() {
-    type_ = mojom::DataElementType::kBytes;
-    buf_.clear();
-    length_ = 0;
-  }
-
-  // Copies and appends the given data into the element. SetToEmptyBytes or
-  // SetToBytes must be called before this method.
-  void AppendBytes(const char* bytes, int bytes_len) {
-    DCHECK_EQ(type_, mojom::DataElementType::kBytes);
-    DCHECK_NE(length_, std::numeric_limits<uint64_t>::max());
-    buf_.insert(buf_.end(), reinterpret_cast<const uint8_t*>(bytes),
-                reinterpret_cast<const uint8_t*>(bytes + bytes_len));
-    length_ = buf_.size();
-  }
-
   // Sets TYPE_FILE data with range.
   void SetToFilePathRange(const base::FilePath& path,
                           uint64_t offset,
                           uint64_t length,
-                          const base::Time& expected_modification_time);
+                          base::Time expected_modification_time);
 
   // Sets TYPE_DATA_PIPE data. The data pipe consumer can safely wait for the
   // callback passed to Read() to be invoked before reading the request body.

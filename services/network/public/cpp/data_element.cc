@@ -28,11 +28,10 @@ DataElement::~DataElement() = default;
 DataElement::DataElement(DataElement&& other) = default;
 DataElement& DataElement::operator=(DataElement&& other) = default;
 
-void DataElement::SetToFilePathRange(
-    const base::FilePath& path,
-    uint64_t offset,
-    uint64_t length,
-    const base::Time& expected_modification_time) {
+void DataElement::SetToFilePathRange(const base::FilePath& path,
+                                     uint64_t offset,
+                                     uint64_t length,
+                                     base::Time expected_modification_time) {
   type_ = mojom::DataElementType::kFile;
   path_ = path;
   offset_ = offset;

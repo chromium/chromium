@@ -1670,7 +1670,7 @@ struct FuzzTraits<network::DataElement> {
       case 0: {
         // network::DataElement::Type::TYPE_BYTES
         if (RandEvent(2)) {
-          p->SetToEmptyBytes();
+          p->SetToBytes(nullptr, 0);
         } else {
           char data[256];
           int data_len = RandInRange(sizeof(data));

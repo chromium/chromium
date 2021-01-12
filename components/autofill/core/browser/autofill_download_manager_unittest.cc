@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/format_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -84,23 +85,14 @@ std::vector<FormStructure*> ToRawPointerVector(
 // the response body data is utilized.
 std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
-  network::DataElement unified_data_element;
-  auto data_elements_it = data_elements->begin();
-  if (data_elements_it != data_elements->end()) {
-    unified_data_element.SetToBytes(data_elements_it->bytes(),
-                                    data_elements_it->length());
+  std::string result;
+  for (const network::DataElement& e : *data_elements) {
+    DCHECK_EQ(e.type(), network::mojom::DataElementType::kBytes);
+    // Provide the length of the bytes explicitly, not to rely on the null
+    // termination.
+    result.append(e.bytes(), base::checked_cast<size_t>(e.length()));
   }
-  ++data_elements_it;
-  while (data_elements_it != data_elements->end()) {
-    unified_data_element.AppendBytes(data_elements_it->bytes(),
-                                     data_elements_it->length());
-    ++data_elements_it;
-  }
-  // Using the std::string constructor with length ensures that we don't rely
-  // on having a termination character to delimit the string. This is the
-  // safest approach.
-  return std::string(unified_data_element.bytes(),
-                     unified_data_element.length());
+  return result;
 }
 
 // Gets the AutofillUploadRequest proto from the HTTP loader request payload.
