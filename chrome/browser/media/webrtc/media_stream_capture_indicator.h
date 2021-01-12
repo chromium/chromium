@@ -77,7 +77,8 @@ class MediaStreamCaptureIndicator
   std::unique_ptr<content::MediaStreamUI> RegisterMediaStream(
       content::WebContents* web_contents,
       const blink::MediaStreamDevices& devices,
-      std::unique_ptr<MediaStreamUI> ui = nullptr);
+      std::unique_ptr<MediaStreamUI> ui = nullptr,
+      const base::string16 application_title = base::string16());
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;

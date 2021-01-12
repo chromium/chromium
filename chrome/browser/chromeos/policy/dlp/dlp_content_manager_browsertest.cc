@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -45,9 +46,9 @@ const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare);
 
 constexpr char kScreenCapturePausedNotificationId[] =
-    "screen_capture_dlp_paused";
+    "screen_capture_dlp_paused-label";
 constexpr char kScreenCaptureResumedNotificationId[] =
-    "screen_capture_dlp_resumed";
+    "screen_capture_dlp_resumed-label";
 
 constexpr char kAllowedUrl[] = "https://example.com";
 constexpr char kUrl1[] = "https://example1.com";
@@ -264,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted("label", {media_id}, base::DoNothing());
+  manager->OnScreenCaptureStarted(
+      "label", {media_id}, base::UTF8ToUTF16("example.com"), base::DoNothing());
 
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCapturePausedNotificationId));

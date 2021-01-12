@@ -601,13 +601,13 @@ Additional details:
     Screen capture paused
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen capture is paused.">
-    Screen capture was paused by your administrator due to content on your screen.
+    Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE" desc="The title for notification informing the user that screen capture is resumed.">
     Screen capture resumed
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen capture is resumed.">
-    Screen capture was resumed.
+    Screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> was resumed
   </message>
 
 </grit-part>

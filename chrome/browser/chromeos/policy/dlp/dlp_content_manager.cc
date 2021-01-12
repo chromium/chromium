@@ -141,9 +141,11 @@ bool DlpContentManager::IsCaptureModeInitRestricted() const {
 void DlpContentManager::OnScreenCaptureStarted(
     const std::string& label,
     std::vector<content::DesktopMediaID> screen_capture_ids,
+    const base::string16& application_title,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
   for (const content::DesktopMediaID& id : screen_capture_ids) {
-    ScreenCaptureInfo capture_info(label, id, state_change_callback);
+    ScreenCaptureInfo capture_info(label, id, application_title,
+                                   state_change_callback);
     DCHECK(!base::Contains(running_screen_captures_, capture_info));
     running_screen_captures_.push_back(capture_info);
   }
@@ -155,7 +157,13 @@ void DlpContentManager::OnScreenCaptureStopped(
     const content::DesktopMediaID& media_id) {
   base::EraseIf(running_screen_captures_,
                 [=](const ScreenCaptureInfo& capture) -> bool {
-                  return capture.label == label && capture.media_id == media_id;
+                  const bool erased =
+                      capture.label == label && capture.media_id == media_id;
+                  if (erased && capture.showing_paused_notification)
+                    HideDlpScreenCapturePausedNotification(capture.label);
+                  if (erased && capture.showing_resumed_notification)
+                    HideDlpScreenCaptureResumedNotification(capture.label);
+                  return erased;
                 });
   MaybeUpdateScreenCaptureNotification();
 }
@@ -177,9 +185,11 @@ DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo() = default;
 DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
     const std::string& label,
     const content::DesktopMediaID& media_id,
+    const base::string16& application_title,
     content::MediaStreamUI::StateChangeCallback state_change_callback)
     : label(label),
       media_id(media_id),
+      application_title(application_title),
       state_change_callback(state_change_callback) {}
 DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
     const DlpContentManager::ScreenCaptureInfo& other) = default;
@@ -384,35 +394,33 @@ void DlpContentManager::CheckRunningVideoCapture() {
 }
 
 void DlpContentManager::MaybeUpdateScreenCaptureNotification() {
-  bool is_running = false;
-  bool is_paused = false;
   for (auto& capture : running_screen_captures_) {
-    is_running |= capture.is_running;
-    is_paused |= !capture.is_running;
-  }
-  // If a capture was paused and a "paused" notification was shown, but the
-  // capture is resumed/stopped - hide the "paused" notification.
-  if (showing_paused_notification_ && !is_paused) {
-    HideDlpScreenCapturePausedNotification();
-    showing_paused_notification_ = false;
-    // If a capture was paused and later resumed - show a "resumed" notification
-    // if not yet shown.
-    if (!showing_resumed_notification_ && is_running) {
-      ShowDlpScreenCaptureResumedNotification();
-      showing_resumed_notification_ = true;
+    // If the capture was paused and a "paused" notification was shown, but the
+    // capture is resumed - hide the "paused" notification.
+    if (capture.showing_paused_notification && capture.is_running) {
+      HideDlpScreenCapturePausedNotification(capture.label);
+      capture.showing_paused_notification = false;
+      // If the capture was paused and later resumed - show a "resumed"
+      // notification if not yet shown.
+      if (!capture.showing_resumed_notification) {
+        ShowDlpScreenCaptureResumedNotification(capture.label,
+                                                capture.application_title);
+        capture.showing_resumed_notification = true;
+      }
     }
-  }
-  // If a capture was resumed and "resumed" notification was shown, but the
-  // capture is not running anymore - hide the "resumed" notification.
-  if (showing_resumed_notification_ && !is_running) {
-    HideDlpScreenCaptureResumedNotification();
-    showing_resumed_notification_ = false;
-  }
-  // If a capture was paused, but no notification is yet shown - show "paused"
-  // notification.
-  if (!showing_paused_notification_ && is_paused) {
-    ShowDlpScreenCapturePausedNotification();
-    showing_paused_notification_ = true;
+    // If the capture was resumed and "resumed" notification was shown, but the
+    // capture is not running anymore - hide the "resumed" notification.
+    if (capture.showing_resumed_notification && !capture.is_running) {
+      HideDlpScreenCaptureResumedNotification(capture.label);
+      capture.showing_resumed_notification = false;
+    }
+    // If the capture was paused, but no notification is yet shown - show a
+    // "paused" notification.
+    if (!capture.showing_paused_notification && !capture.is_running) {
+      ShowDlpScreenCapturePausedNotification(capture.label,
+                                             capture.application_title);
+      capture.showing_paused_notification = true;
+    }
   }
 }
 
