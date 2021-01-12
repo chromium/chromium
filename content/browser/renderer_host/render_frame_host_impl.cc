@@ -147,7 +147,6 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
@@ -1247,9 +1246,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    flight.
   // 3. The RenderFrame can be detached, as part of removing a subtree (due to
   //    navigation, unload, or DOM mutation). In this case, the browser sends
-  //    a UnfreezableFrameMsg_Delete for the RenderFrame to detach itself and
-  //    release its associated resources. If the subframe contains an unload
-  //    handler, |lifecycle_state_| is advanced to
+  //    a mojom::FrameNavigationControl::Delete message for the RenderFrame
+  //    to detach itself and release its associated resources. If the subframe
+  //    contains an unload handler, |lifecycle_state_| is advanced to
   //    LifeCycleState::kRunningUnloadHandlers to track that the detach is in
   //    progress; otherwise, it is advanced directly to
   //    LifeCycleState::kReadyToBeDeleted.
@@ -1277,9 +1276,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //
   // TODO(dcheng): Due to how frame detach is signalled today, there are some
   // bugs in this area. In particular, subtree detach is reported from the
-  // bottom up, so the replicated UnfreezableFrameMsg_Delete messages actually
-  // operate on a node-by-node basis rather than detaching an entire subtree at
-  // once...
+  // bottom up, so the replicated mojom::FrameNavigationControl::Delete
+  // messages actually operate on a node-by-node basis rather than detaching an
+  // entire subtree at once...
   //
   // Note that this logic is fairly subtle. It needs to include all subframes
   // and all speculative frames, but it should exclude case #1 (a main
@@ -2440,7 +2439,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   return true;
 }
 
-void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
+void RenderFrameHostImpl::DeleteRenderFrame(
+    mojom::FrameDeleteIntention intent) {
   if (IsPendingDeletion())
     return;
 
@@ -2450,7 +2450,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
       has_unload_handlers() && !IsInBackForwardCache();
 
   if (is_render_frame_created()) {
-    Send(new UnfreezableFrameMsg_Delete(routing_id_, intent));
+    GetNavigationControl()->Delete(intent);
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
       DCHECK_NE(lifecycle_state(), LifecycleState::kSpeculative);
@@ -2986,10 +2986,10 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
       std::unique_ptr<FrameTreeNode> node_to_delete(std::move(*iter));
       children_.erase(iter);
       node_to_delete->current_frame_host()->DeleteRenderFrame(
-          FrameDeleteIntention::kNotMainFrame);
+          mojom::FrameDeleteIntention::kNotMainFrame);
       // Speculative RenderFrameHosts are deleted by the FrameTreeNode's
-      // RenderFrameHostManager's destructor. RenderFrameProxyHosts send
-      // UnfreezableFrameMsg_Delete automatically in the destructor.
+      // RenderFrameHostManager's destructor. RenderFrameProxyHosts disconnect
+      // the mojo channel automatically in the destructor.
       // TODO(dcheng): This is horribly confusing. Refactor this logic so it's
       // more understandable.
       node_to_delete.reset();
@@ -3010,7 +3010,7 @@ void RenderFrameHostImpl::ResetChildren() {
   // than messaging each child's current frame host...
   for (auto& child : children)
     child->current_frame_host()->DeleteRenderFrame(
-        FrameDeleteIntention::kNotMainFrame);
+        mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
 void RenderFrameHostImpl::SetLastCommittedUrl(const GURL& url) {
@@ -3339,7 +3339,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
     // The unload handlers already ran for this document during the
     // local<->local swap. Hence, there is no need to send
-    // mojo::FrameNavigationControl::Unload here. It can be marked at completed.
+    // mojom::FrameNavigationControl::Unload here. It can be marked at
+    // completed.
     SetLifecycleState(LifecycleState::kReadyToBeDeleted);
   }
 
@@ -3366,7 +3367,7 @@ void RenderFrameHostImpl::DetachFromProxy() {
     return;
 
   // Start pending deletion on this frame and its children.
-  DeleteRenderFrame(FrameDeleteIntention::kNotMainFrame);
+  DeleteRenderFrame(mojom::FrameDeleteIntention::kNotMainFrame);
   StartPendingDeletionOnSubtree();
   frame_tree()->FrameUnloading(frame_tree_node_);
 
@@ -6130,7 +6131,8 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
           local_ancestor = rfh;
       }
 
-      local_ancestor->DeleteRenderFrame(FrameDeleteIntention::kNotMainFrame);
+      local_ancestor->DeleteRenderFrame(
+          mojom::FrameDeleteIntention::kNotMainFrame);
       if (local_ancestor != child) {
         // In case of BackForwardCache, page is evicted directly from the cache
         // and deleted immediately, without waiting for unload handlers.

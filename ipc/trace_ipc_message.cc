@@ -83,9 +83,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ExtensionWorkerMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION_WORKER;
       break;
-    case UnfreezableFrameMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_UNFREEZABLE_FRAME;
-      break;
   }
   legacy_ipc->set_message_class(message_class);
   legacy_ipc->set_message_line(IPC_MESSAGE_ID_LINE(message_id));

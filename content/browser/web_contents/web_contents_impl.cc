@@ -944,7 +944,7 @@ WebContentsImpl::~WebContentsImpl() {
   frame_tree_.root()->ResetNavigationRequest(true);
   if (root->speculative_frame_host()) {
     root->speculative_frame_host()->DeleteRenderFrame(
-        FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
+        mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
     root->speculative_frame_host()->RenderFrameDeleted();
     root->speculative_frame_host()->ResetNavigationRequests();
   }

@@ -22,7 +22,6 @@
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -363,9 +362,8 @@ TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
       true /* new_session */, true /* force */, false /* wrap_within_frame */,
       false /* async */);
 
-  UnfreezableFrameMsg_Delete delete_message(
-      0, FrameDeleteIntention::kNotMainFrame);
-  frame()->OnMessageReceived(delete_message);
+  static_cast<mojom::FrameNavigationControl*>(frame())->Delete(
+      mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
 TEST_F(RenderFrameImplTest, AutoplayFlags) {

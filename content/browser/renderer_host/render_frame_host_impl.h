@@ -53,7 +53,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/frame_delete_intention.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/input/input_injector.mojom-forward.h"
 #include "content/common/navigation_client.mojom-forward.h"
@@ -497,7 +496,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Deletes the RenderFrame in the renderer process.
   // Postcondition: |IsPendingDeletion()| is true.
-  void DeleteRenderFrame(FrameDeleteIntention intent);
+  void DeleteRenderFrame(mojom::FrameDeleteIntention intent);
 
   // Track whether the RenderFrame for this RenderFrameHost has been created in
   // or destroyed in the renderer process.
@@ -2053,6 +2052,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            AttemptDuplicateRenderWidgetHost);
   FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
                            CheckInPendingDeletionState);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
 
   class DroppedInterfaceRequestLogger;
 

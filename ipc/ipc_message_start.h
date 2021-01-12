@@ -34,7 +34,6 @@ enum IPCMessageStart {
   MediaPlayerDelegateMsgStart,
   ExtensionWorkerMsgStart,
   SubresourceFilterMsgStart,
-  UnfreezableFrameMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

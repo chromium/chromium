@@ -300,34 +300,6 @@ class CONTENT_EXPORT RenderThreadImpl
   scoped_refptr<viz::ContextProviderCommandBuffer>
   SharedMainThreadContextProvider();
 
-  class UnfreezableMessageFilter : public IPC::MessageFilter {
-   public:
-    explicit UnfreezableMessageFilter(RenderThreadImpl* render_thread_impl);
-    bool OnMessageReceived(const IPC::Message& message) override;
-
-    // Adds |unfreezable_task_runner| for the task to be executed later.
-    void AddListenerUnfreezableTaskRunner(
-        int32_t routing_id,
-        scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner);
-
-    // Removes |unfreezable_task_runner| for the task to be executed later.
-    void RemoveListenerUnfreezableTaskRunner(
-        int32_t routing_id);
-
-    // Called on the I/O thread.
-    // Returns the unfreezable task runner associated with |routing_id|.
-    scoped_refptr<base::SingleThreadTaskRunner> GetUnfreezableTaskRunner(
-        int32_t routing_id);
-
-   private:
-    ~UnfreezableMessageFilter() override;
-    RenderThreadImpl* render_thread_impl_;
-    base::Lock unfreezable_task_runners_lock_;
-    // Map of routing_id and listener's thread unfreezable task runner.
-    std::map<int32_t, scoped_refptr<base::SingleThreadTaskRunner>>
-        unfreezable_task_runners_ GUARDED_BY(unfreezable_task_runners_lock_);
-  };
-
   // For producing custom V8 histograms. Custom histograms are produced if all
   // RenderViews share the same host, and the host is in the pre-specified set
   // of hosts we want to produce custom diagrams for. The name for a custom
@@ -354,7 +326,6 @@ class CONTENT_EXPORT RenderThreadImpl
     FRIEND_TEST_ALL_PREFIXES(RenderThreadImplUnittest,
                              IdentifyAlexaTop10NonGoogleSite);
     friend class RenderThreadImplUnittest;
-    friend class UnfreezableMessageFilter;
 
     // Converts a host name to a suffix for histograms
     std::string HostToCustomHistogramSuffix(const std::string& host);
@@ -509,9 +480,6 @@ class CONTENT_EXPORT RenderThreadImpl
   std::unique_ptr<RendererBlinkPlatformImpl> blink_platform_impl_;
   std::unique_ptr<ResourceDispatcher> resource_dispatcher_;
   std::unique_ptr<URLLoaderThrottleProvider> url_loader_throttle_provider_;
-
-  // Filter out unfreezable messages and pass it to unfreezable task runners.
-  scoped_refptr<UnfreezableMessageFilter> unfreezable_message_filter_;
 
   // Used on the render thread.
   std::unique_ptr<blink::WebVideoCaptureImplManager> vc_manager_;

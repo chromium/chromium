@@ -112,6 +112,20 @@ interface Frame {
           pending_remote<FrameHTMLSerializerHandler> handler_remote);
 };
 
+// An enumeration specifying the reason of the frame deletion.
+enum FrameDeleteIntention {
+  // The frame being deleted isn't a (speculative) main frame.
+  kNotMainFrame,
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted as part of the shutdown for that WebContents. The entire RenderView
+  // etc will be destroyed by a separate IPC sent later.
+  kSpeculativeMainFrameForShutdown,
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted because the speculative navigation was cancelled. This is not part
+  // of shutdown.
+  kSpeculativeMainFrameForNavigationCancelled,
+};
+
 // Implemented by the frame provider and currently must be associated with the
 // legacy IPC channel.
 // KEEP THE COMMIT FUNCTIONS IN SYNC in content/common/navigation_client.mojom.
@@ -221,6 +235,12 @@ interface FrameNavigationControl {
          bool is_loading,
          FrameReplicationState new_remote_frame_replication_state,
          mojo_base.mojom.UnguessableToken new_remote_frame_token);
+
+  // Delete the frame. This is only called for child frames that the browser
+  // wants to detach, or for speculative main frames which are owned by the
+  // browser process. Committed main frames are owned by the renderer's WebView
+  // and can not be deleted directly.
+  Delete(FrameDeleteIntention intention);
 };
 
 // Implemented by the frame (e.g. renderer processes).

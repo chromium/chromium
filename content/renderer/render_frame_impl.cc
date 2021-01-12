@@ -65,7 +65,6 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer_host.mojom.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/common/web_package/signed_exchange_utils.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
@@ -2181,7 +2180,6 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(FrameMsg_ContextMenuClosed, OnContextMenuClosed)
     IPC_MESSAGE_HANDLER(FrameMsg_CustomContextMenuAction,
                         OnCustomContextMenuAction)
-    IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_Delete, OnDeleteFrame)
   IPC_END_MESSAGE_MAP()
 
   return handled;
@@ -2342,7 +2340,7 @@ void RenderFrameImpl::Unload(
   task_runner->PostTask(FROM_HERE, std::move(send_unload_ack));
 }
 
-void RenderFrameImpl::OnDeleteFrame(FrameDeleteIntention intent) {
+void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   // The main frame (when not provisional) is owned by the renderer's frame tree
   // via WebViewImpl. When a provisional main frame is swapped in, the ownership
   // moves from the browser to the renderer, but this happens in the renderer
@@ -2351,13 +2349,13 @@ void RenderFrameImpl::OnDeleteFrame(FrameDeleteIntention intent) {
   // it, the browser may request to delete |this|, thinking it has ownership
   // of it, but the renderer has already taken ownership via SwapIn().
   switch (intent) {
-    case FrameDeleteIntention::kNotMainFrame:
+    case mojom::FrameDeleteIntention::kNotMainFrame:
       // The frame was not a main frame, so the browser should always have
       // ownership of it and we can just proceed with deleting it on
       // request.
       DCHECK(!is_main_frame_);
       break;
-    case FrameDeleteIntention::kSpeculativeMainFrameForShutdown:
+    case mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown:
       // In this case the renderer has taken ownership of the provisional main
       // frame but the browser did not know yet and is shutting down. We can
       // ignore this request as the frame will be destroyed when the RenderView
@@ -2366,7 +2364,8 @@ void RenderFrameImpl::OnDeleteFrame(FrameDeleteIntention intent) {
       if (in_frame_tree_)
         return;
       break;
-    case FrameDeleteIntention::kSpeculativeMainFrameForNavigationCancelled:
+    case mojom::FrameDeleteIntention::
+        kSpeculativeMainFrameForNavigationCancelled:
       // In this case the browser was navigating and cancelled the speculative
       // navigation. The renderer *should* undo the SwapIn() but the old state
       // has already been destroyed. Both ignoring the message or handling it

@@ -601,9 +601,6 @@ void RenderThreadImpl::Init() {
 
   vc_manager_.reset(new blink::WebVideoCaptureImplManager());
 
-  unfreezable_message_filter_ = new UnfreezableMessageFilter(this);
-  AddFilter(unfreezable_message_filter_.get());
-
   GetContentClient()->renderer()->RenderThreadStarted();
   ExposeRendererInterfacesToBrowser(weak_factory_.GetWeakPtr(), &binders);
   ExposeInterfacesToBrowser(std::move(binders));
@@ -840,18 +837,12 @@ void RenderThreadImpl::AddRoute(int32_t routing_id, IPC::Listener* listener) {
       routing_id,
       frame->GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 
-  unfreezable_message_filter_->AddListenerUnfreezableTaskRunner(
-      routing_id,
-      frame->GetTaskRunner(
-          blink::TaskType::kInternalNavigationAssociatedUnfreezable));
-
   frame->BindFrame(std::move(it->second));
   pending_frames_.erase(it);
 }
 
 void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
   ChildThreadImpl::GetRouter()->RemoveRoute(routing_id);
-  unfreezable_message_filter_->RemoveListenerUnfreezableTaskRunner(routing_id);
   GetChannel()->RemoveListenerTaskRunner(routing_id);
   pending_frames_.erase(routing_id);
 }
@@ -1975,60 +1966,5 @@ void RenderThreadImpl::SetRenderingColorSpace(
       factories->SetRenderingColorSpace(color_space);
   }
 }
-
-RenderThreadImpl::UnfreezableMessageFilter::UnfreezableMessageFilter(
-    RenderThreadImpl* render_thread_impl)
-    : render_thread_impl_(render_thread_impl) {}
-
-// Called on the I/O thread.
-bool RenderThreadImpl::UnfreezableMessageFilter::OnMessageReceived(
-    const IPC::Message& message) {
-  if ((IPC_MESSAGE_CLASS(message) == UnfreezableFrameMsgStart)) {
-    auto task_runner = GetUnfreezableTaskRunner(message.routing_id());
-    if (task_runner) {
-      return task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              base::IgnoreResult(&RenderThreadImpl::OnMessageReceived),
-              base::Unretained(render_thread_impl_), message));
-    }
-  }
-  // If unfreezable task runner is not found or the message class is not
-  // UnfreezableFrameMsgStart, return false so that this filter is skipped and
-  // other handlers can continue executing and handle this message.
-  return false;
-}
-
-// Called on the listener thread.
-void RenderThreadImpl::UnfreezableMessageFilter::
-    AddListenerUnfreezableTaskRunner(
-        int32_t routing_id,
-        scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner) {
-  DCHECK(unfreezable_task_runner);
-  base::AutoLock lock(unfreezable_task_runners_lock_);
-  DCHECK(!base::Contains(unfreezable_task_runners_, routing_id));
-  unfreezable_task_runners_.emplace(routing_id,
-                                    std::move(unfreezable_task_runner));
-}
-
-// Called on the listener thread.
-void RenderThreadImpl::UnfreezableMessageFilter::
-    RemoveListenerUnfreezableTaskRunner(int32_t routing_id) {
-  base::AutoLock lock(unfreezable_task_runners_lock_);
-  unfreezable_task_runners_.erase(routing_id);
-}
-
-// Called on the I/O thread.
-scoped_refptr<base::SingleThreadTaskRunner>
-RenderThreadImpl::UnfreezableMessageFilter::GetUnfreezableTaskRunner(
-    int32_t routing_id) {
-  base::AutoLock lock(unfreezable_task_runners_lock_);
-  auto it = unfreezable_task_runners_.find(routing_id);
-  if (it != unfreezable_task_runners_.end())
-    return it->second;
-  return nullptr;
-}
-
-RenderThreadImpl::UnfreezableMessageFilter::~UnfreezableMessageFilter() {}
 
 }  // namespace content

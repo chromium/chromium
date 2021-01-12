@@ -38,7 +38,6 @@
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
@@ -3201,8 +3200,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
   RenderFrameDeletedObserver delete_rfh_c(rfh_c);
 
   // Delete an iframe when the page is active(not frozen), which should succeed.
-  rfh_b->Send(new UnfreezableFrameMsg_Delete(
-      rfh_b->routing_id(), FrameDeleteIntention::kNotMainFrame));
+  rfh_b->GetNavigationControl()->Delete(
+      mojom::FrameDeleteIntention::kNotMainFrame);
   delete_rfh_b.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_b.deleted());
   EXPECT_FALSE(delete_rfh_c.deleted());
@@ -3212,8 +3211,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
   shell()->web_contents()->SetPageFrozen(true);
 
   // Try to delete an iframe, and succeeds because the message is unfreezable.
-  rfh_c->Send(new UnfreezableFrameMsg_Delete(
-      rfh_c->routing_id(), FrameDeleteIntention::kNotMainFrame));
+  rfh_c->GetNavigationControl()->Delete(
+      mojom::FrameDeleteIntention::kNotMainFrame);
   delete_rfh_c.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_c.deleted());
 }
@@ -3748,27 +3747,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // While there is a speculative RenderFrameHost in the root FrameTreeNode...
   ASSERT_TRUE(root->render_manager()->speculative_frame_host());
 
-  auto* frame_process = static_cast<RenderProcessHostImpl*>(
-      root->render_manager()->speculative_frame_host()->GetProcess());
-  int frame_routing_id =
-      root->render_manager()->speculative_frame_host()->GetRoutingID();
-
-  std::vector<int> deleted_routing_ids;
-  auto watcher = base::BindRepeating(
-      [](std::vector<int>* deleted_routing_ids, const IPC::Message& message) {
-        if (message.type() == UnfreezableFrameMsg_Delete::ID) {
-          deleted_routing_ids->push_back(message.routing_id());
-        }
-      },
-      &deleted_routing_ids);
-  frame_process->SetIpcSendWatcherForTesting(watcher);
+  // Add an observer to ensure that the speculative RenderFrameHost gets
+  // deleted.
+  RenderFrameDeletedObserver frame_deletion_observer(
+      root->render_manager()->speculative_frame_host());
 
   // ...shutdown the WebContents.
   public_web_contents.reset();
 
   // What should have happened is the speculative RenderFrameHost deletes the
-  // provisional RenderFrame. The |watcher| verifies that this happened.
-  EXPECT_THAT(deleted_routing_ids, testing::Contains(frame_routing_id));
+  // provisional RenderFrame. The |frame_deletion_observer| verifies that this
+  // happened.
+  EXPECT_TRUE(frame_deletion_observer.deleted());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MouseButtonsNavigate) {

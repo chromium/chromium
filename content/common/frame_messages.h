@@ -25,7 +25,6 @@
 #include "content/common/common_param_traits_macros.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
-#include "content/common/frame_delete_intention.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
@@ -82,8 +81,6 @@
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
 #define IPC_MESSAGE_START FrameMsgStart
-IPC_ENUM_TRAITS_MAX_VALUE(content::FrameDeleteIntention,
-                          content::FrameDeleteIntention::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameOwnerElementType,
                           blink::mojom::FrameOwnerElementType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::AdFrameType,

@@ -30,7 +30,6 @@
 #include "content/common/frame_messages.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -638,9 +637,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
       static_cast<TestRenderFrame*>(RenderFrame::FromWebFrame(
           root_web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
   ASSERT_TRUE(child_frame_2);
-  child_frame_1->Unload(kProxyRoutingId, true,
-                        ReconstructReplicationStateForTesting(child_frame_1),
-                        base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame_1)
+      ->Unload(kProxyRoutingId, true,
+               ReconstructReplicationStateForTesting(child_frame_1),
+               base::UnguessableToken::Create());
   EXPECT_TRUE(root_web_frame->FirstChild()->IsWebRemoteFrame());
   RenderFrameProxy* child_proxy_1 = RenderFrameProxy::FromWebFrame(
       root_web_frame->FirstChild()->ToWebRemoteFrame());
@@ -662,9 +662,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   // Create a new remote child, and get its proxy. Unloading will force creation
   // and registering of a new RenderFrameProxy, which should pick up the
   // existing setting.
-  child_frame_2->Unload(kProxyRoutingId + 1, true,
-                        ReconstructReplicationStateForTesting(child_frame_2),
-                        base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame_2)
+      ->Unload(kProxyRoutingId + 1, true,
+               ReconstructReplicationStateForTesting(child_frame_2),
+               base::UnguessableToken::Create());
   EXPECT_TRUE(root_web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   RenderFrameProxy* child_proxy_2 = RenderFrameProxy::FromWebFrame(
       root_web_frame->FirstChild()->NextSibling()->ToWebRemoteFrame());
@@ -1113,9 +1114,10 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
       RenderFrame::FromWebFrame(web_frame->FirstChild()->ToWebLocalFrame()));
   ASSERT_TRUE(child_frame);
 
-  child_frame->Unload(kProxyRoutingId + 1, true,
-                      ReconstructReplicationStateForTesting(child_frame),
-                      base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame)
+      ->Unload(kProxyRoutingId + 1, true,
+               ReconstructReplicationStateForTesting(child_frame),
+               base::UnguessableToken::Create());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
   RenderFrameProxy* child_proxy = RenderFrameProxy::FromWebFrame(
       web_frame->FirstChild()->ToWebRemoteFrame());
@@ -1158,8 +1160,9 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   content::FrameReplicationState replication_state =
       ReconstructReplicationStateForTesting(child_frame);
   replication_state.origin = url::Origin::Create(GURL("http://foo.com"));
-  child_frame->Unload(kProxyRoutingId, true, replication_state,
-                      base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame)
+      ->Unload(kProxyRoutingId, true, replication_state,
+               base::UnguessableToken::Create());
 
   // The child frame should now be a WebRemoteFrame.
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
@@ -1176,8 +1179,9 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   TestRenderFrame* child_frame2 =
       static_cast<TestRenderFrame*>(RenderFrame::FromWebFrame(
           web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
-  child_frame2->Unload(kProxyRoutingId + 1, true, replication_state,
-                       base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame2)
+      ->Unload(kProxyRoutingId + 1, true, replication_state,
+               base::UnguessableToken::Create());
   EXPECT_TRUE(web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   EXPECT_TRUE(
       web_frame->FirstChild()->NextSibling()->GetSecurityOrigin().IsOpaque());
@@ -1204,8 +1208,9 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   content::FrameReplicationState replication_state =
       ReconstructReplicationStateForTesting(frame());
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
-  frame()->Unload(kProxyRoutingId, true, replication_state,
-                  base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(frame())->Unload(
+      kProxyRoutingId, true, replication_state,
+      base::UnguessableToken::Create());
   EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
 
   // Do the remote-to-local transition for the proxy, which is to create a
@@ -1298,8 +1303,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // Unload the child frame.
   FrameReplicationState replication_state =
       ReconstructReplicationStateForTesting(child_frame);
-  child_frame->Unload(kProxyRoutingId, true, replication_state,
-                      base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(child_frame)
+      ->Unload(kProxyRoutingId, true, replication_state,
+               base::UnguessableToken::Create());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
   // Do the first step of a remote-to-local transition for the child proxy,
@@ -1350,9 +1356,10 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   // Unload the main frame after which it should become a WebRemoteFrame.
   TestRenderFrame* main_frame =
       static_cast<TestRenderFrame*>(view()->GetMainRenderFrame());
-  main_frame->Unload(kProxyRoutingId, true,
-                     ReconstructReplicationStateForTesting(main_frame),
-                     base::UnguessableToken::Create());
+  static_cast<mojom::FrameNavigationControl*>(main_frame)
+      ->Unload(kProxyRoutingId, true,
+               ReconstructReplicationStateForTesting(main_frame),
+               base::UnguessableToken::Create());
   EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
 }
 
@@ -2960,8 +2967,9 @@ TEST_F(RenderViewImplTest, DispatchBeforeUnloadCanDetachFrame) {
         EXPECT_EQ(base::UTF8ToUTF16("OnBeforeUnload called"), msg);
 
         // Unloads the main frame.
-        frame()->Unload(1, false, FrameReplicationState(),
-                        base::UnguessableToken::Create());
+        static_cast<mojom::FrameNavigationControl*>(frame())->Unload(
+            1, false, FrameReplicationState(),
+            base::UnguessableToken::Create());
 
         was_callback_run = true;
         run_loop.Quit();
