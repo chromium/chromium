@@ -19,12 +19,10 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/android/shortcut_helper.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/favicon/core/favicon_service.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/android/webapps_icon_utils.h"
 #include "components/webapps/android/webapps_utils.h"
@@ -313,20 +311,16 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
       {favicon_base::IconType::kTouchPrecomposedIcon,
        favicon_base::IconType::kTouchIcon}};
 
-  favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          ServiceAccessType::EXPLICIT_ACCESS);
-
   // Using favicon if its size is not smaller than platform required size,
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
-  favicon_service->GetLargestRawFaviconForPageURL(
-      shortcut_info_.url, icon_types, threshold_to_get_any_largest_icon,
-      base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
-                     weak_ptr_factory_.GetWeakPtr()),
-      &favicon_task_tracker_);
+  favicon::GetLargeFaviconProvider(web_contents()->GetBrowserContext())
+      ->GetLargestRawFaviconForPageURL(
+          shortcut_info_.url, icon_types, threshold_to_get_any_largest_icon,
+          base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
+                         weak_ptr_factory_.GetWeakPtr()),
+          &favicon_task_tracker_);
 }
 
 void AddToHomescreenDataFetcher::OnFaviconFetched(
