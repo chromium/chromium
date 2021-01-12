@@ -119,7 +119,7 @@ Polymer({
   onButtonClick_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_UPDATES_RELAUNCH);
+        SafetyCheckInteractions.UPDATES_RELAUNCH);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.RelaunchAfterUpdates');
 

@@ -105,7 +105,7 @@ Polymer({
   runSafetyCheck_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_START);
+        SafetyCheckInteractions.RUN_SAFETY_CHECK);
     this.metricsBrowserProxy_.recordAction('Settings.SafetyCheck.Start');
 
     // Trigger safety check.

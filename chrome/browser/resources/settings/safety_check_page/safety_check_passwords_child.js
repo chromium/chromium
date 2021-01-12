@@ -135,7 +135,7 @@ Polymer({
   onButtonClick_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_MANAGE);
+        SafetyCheckInteractions.PASSWORDS_MANAGE_COMPROMISED_PASSWORDS);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ManagePasswords');
     this.openPasswordCheckPage_();
@@ -155,10 +155,8 @@ Polymer({
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
           this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
-              SafetyCheckInteractions
-                  .SAFETY_CHECK_PASSWORDS_MANAGE_WEAK_PASSWORDS :
-              SafetyCheckInteractions
-                  .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION);
+              SafetyCheckInteractions.PASSWORDS_MANAGE_WEAK_PASSWORDS :
+              SafetyCheckInteractions.PASSWORDS_CARET_NAVIGATION);
       this.metricsBrowserProxy_.recordAction(
           this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
               'Settings.SafetyCheck.ManageWeakPasswords' :

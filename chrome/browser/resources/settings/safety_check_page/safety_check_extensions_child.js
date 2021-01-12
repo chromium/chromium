@@ -131,7 +131,7 @@ Polymer({
   onButtonClick_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_EXTENSIONS_REVIEW);
+        SafetyCheckInteractions.EXTENSIONS_REVIEW);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ReviewExtensions');
     this.openExtensionsPage_();
@@ -163,8 +163,7 @@ Polymer({
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-          SafetyCheckInteractions
-              .SAFETY_CHECK_EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION);
+          SafetyCheckInteractions.EXTENSIONS_CARET_NAVIGATION);
       this.metricsBrowserProxy_.recordAction(
           'Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation');
       this.openExtensionsPage_();

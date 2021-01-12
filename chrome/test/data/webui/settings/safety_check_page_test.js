@@ -204,7 +204,7 @@ suite('SafetyCheckPageUiTests', function() {
     page.$$('#safetyCheckParentButton').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_START,
+        SafetyCheckInteractions.RUN_SAFETY_CHECK,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -472,7 +472,7 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
     page.$$('#safetyCheckChild').$$('#button').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_UPDATES_RELAUNCH,
+        SafetyCheckInteractions.UPDATES_RELAUNCH,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -571,8 +571,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions
-            .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION,
+        SafetyCheckInteractions.PASSWORDS_CARET_NAVIGATION,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -602,7 +601,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     page.$$('#safetyCheckChild').$$('#button').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_MANAGE,
+        SafetyCheckInteractions.PASSWORDS_MANAGE_COMPROMISED_PASSWORDS,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -634,7 +633,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_MANAGE_WEAK_PASSWORDS,
+        SafetyCheckInteractions.PASSWORDS_MANAGE_WEAK_PASSWORDS,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -728,8 +727,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions
-            .SAFETY_CHECK_SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION,
+        SafetyCheckInteractions.SAFE_BROWSING_CARET_NAVIGATION,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -779,7 +777,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     page.$$('#safetyCheckChild').$$('#button').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_SAFE_BROWSING_MANAGE,
+        SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -849,7 +847,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     page.$$('#safetyCheckChild').$$('#button').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions.SAFETY_CHECK_EXTENSIONS_REVIEW,
+        SafetyCheckInteractions.EXTENSIONS_REVIEW,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(
@@ -896,8 +894,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
-        SafetyCheckInteractions
-            .SAFETY_CHECK_EXTENSIONS_REVIEW_THROUGH_CARET_NAVIGATION,
+        SafetyCheckInteractions.EXTENSIONS_CARET_NAVIGATION,
         await metricsBrowserProxy.whenCalled(
             'recordSafetyCheckInteractionHistogram'));
     assertEquals(

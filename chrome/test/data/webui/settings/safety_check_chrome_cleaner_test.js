@@ -168,8 +168,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     // User clicks the button.
     page.$$('#safetyCheckChild').$$('#button').click();
     await expectLogging(
-        SafetyCheckInteractions
-            .SAFETY_CHECK_CHROME_CLEANER_REVIEW_INFECTED_STATE,
+        SafetyCheckInteractions.CHROME_CLEANER_REVIEW_INFECTED_STATE,
         'Settings.SafetyCheck.ChromeCleanerReviewInfectedState');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
@@ -190,7 +189,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     // User clicks the button.
     page.$$('#safetyCheckChild').$$('#button').click();
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_REBOOT,
+        SafetyCheckInteractions.CHROME_CLEANER_REBOOT,
         'Settings.SafetyCheck.ChromeCleanerReboot');
     // Ensure the browser proxy call is done.
     return chromeCleanupBrowserProxy.whenCalled('restartComputer');
@@ -210,7 +209,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
@@ -230,7 +229,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
@@ -261,7 +260,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
@@ -281,7 +280,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
@@ -301,7 +300,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     page.$$('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
-        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
