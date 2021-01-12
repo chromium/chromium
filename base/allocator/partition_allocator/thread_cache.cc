@@ -106,7 +106,9 @@ void ThreadCacheRegistry::PurgeAll() {
 }
 
 void ThreadCacheRegistry::StartPeriodicPurge() {
-  PostDelayedPurgeTask();
+  // Can be called several times, don't post multiple tasks.
+  if (!has_pending_purge_task_)
+    PostDelayedPurgeTask();
 }
 
 void ThreadCacheRegistry::PostDelayedPurgeTask() {
