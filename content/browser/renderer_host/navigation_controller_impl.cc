@@ -1102,7 +1102,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // If this is a navigation to a matching pending_entry_ and the SiteInstance
   // has changed, this must be treated as a new navigation with replacement.
   // Set the replacement bit here and ClassifyNavigation will identify this
-  // case and return NEW_PAGE.
+  // case and return NEW_ENTRY.
   if (!rfh->GetParent() && pending_entry_ &&
       pending_entry_->GetUniqueID() ==
           navigation_request->commit_params().nav_entry_id &&
@@ -1132,24 +1132,24 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // other navigation types. See https://crbug.com/900036.
   // TODO(crbug.com/926009): Handle history.pushState() as well.
   bool keep_pending_entry = is_same_document_navigation &&
-                            details->type == NAVIGATION_TYPE_EXISTING_PAGE &&
+                            details->type == NAVIGATION_TYPE_EXISTING_ENTRY &&
                             pending_entry_ &&
                             !PendingEntryMatchesRequest(navigation_request);
 
   switch (details->type) {
-    case NAVIGATION_TYPE_NEW_PAGE:
-      RendererDidNavigateToNewPage(
+    case NAVIGATION_TYPE_NEW_ENTRY:
+      RendererDidNavigateToNewEntry(
           rfh, params, details->is_same_document, details->did_replace_entry,
           previous_document_was_activated, navigation_request);
       break;
-    case NAVIGATION_TYPE_EXISTING_PAGE:
-      RendererDidNavigateToExistingPage(rfh, params, details->is_same_document,
-                                        was_restored, navigation_request,
-                                        keep_pending_entry);
+    case NAVIGATION_TYPE_EXISTING_ENTRY:
+      RendererDidNavigateToExistingEntry(rfh, params, details->is_same_document,
+                                         was_restored, navigation_request,
+                                         keep_pending_entry);
       break;
-    case NAVIGATION_TYPE_SAME_PAGE:
-      RendererDidNavigateToSamePage(rfh, params, details->is_same_document,
-                                    navigation_request);
+    case NAVIGATION_TYPE_SAME_ENTRY:
+      RendererDidNavigateToSameEntry(rfh, params, details->is_same_document,
+                                     navigation_request);
       break;
     case NAVIGATION_TYPE_NEW_SUBFRAME:
       RendererDidNavigateNewSubframe(
@@ -1284,11 +1284,11 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       "ClassifyNavigation");
 
   if (params.did_create_new_entry) {
-    // A new entry. We may or may not have a pending entry for the page, and
+    // A new entry. We may or may not have a corresponding pending entry, and
     // this may or may not be the main frame.
     if (!rfh->GetParent()) {
-      trace_return.set_return_reason("new entry, no parent, new page");
-      return NAVIGATION_TYPE_NEW_PAGE;
+      trace_return.set_return_reason("new entry, no parent, new entry");
+      return NAVIGATION_TYPE_NEW_ENTRY;
     }
 
     // When this is a new subframe navigation, we should have a committed page
@@ -1306,7 +1306,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_NEW_SUBFRAME;
   }
 
-  // We only clear the session history when navigating to a new page.
+  // We only clear the session history in tests when navigating to a new entry.
   DCHECK(!params.history_list_was_cleared);
 
   if (rfh->GetParent()) {
@@ -1340,11 +1340,11 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // This is history.replaceState() or history.reload().
     // TODO(nasko): With error page isolation, reloading an existing session
     // history entry can result in change of SiteInstance. Check for such a case
-    // here and classify it as NEW_PAGE, as such navigations should be treated
+    // here and classify it as NEW_ENTRY, as such navigations should be treated
     // as new with replacement.
     trace_return.set_return_reason(
-        "nav entry 0, last committed, existing page");
-    return NAVIGATION_TYPE_EXISTING_PAGE;
+        "nav entry 0, last committed, existing entry");
+    return NAVIGATION_TYPE_EXISTING_ENTRY;
   }
 
   if (pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id) {
@@ -1355,8 +1355,8 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // reloaded into a different SiteInstance.
     if (pending_entry_->site_instance() &&
         pending_entry_->site_instance() != rfh->GetSiteInstance()) {
-      trace_return.set_return_reason("pending matching nav entry, new page");
-      return NAVIGATION_TYPE_NEW_PAGE;
+      trace_return.set_return_reason("pending matching nav entry, new entry");
+      return NAVIGATION_TYPE_NEW_ENTRY;
     }
 
     if (pending_entry_index_ == -1) {
@@ -1367,8 +1367,8 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       // we must treat it as NEW since the SiteInstance doesn't match the entry.
       if (!GetLastCommittedEntry() ||
           GetLastCommittedEntry()->site_instance() != rfh->GetSiteInstance()) {
-        trace_return.set_return_reason("no pending, new page");
-        return NAVIGATION_TYPE_NEW_PAGE;
+        trace_return.set_return_reason("no pending, new entry");
+        return NAVIGATION_TYPE_NEW_ENTRY;
       }
 
       // Otherwise, this happens when you press enter in the URL bar to reload.
@@ -1377,56 +1377,56 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       // doesn't want to have a new back/forward entry when they do this).
       // Therefore we want to just ignore the pending entry and go back to where
       // we were (the "existing entry").
-      // TODO(creis,avi): Eliminate SAME_PAGE in https://crbug.com/536102.
-      trace_return.set_return_reason("no pending, same page");
-      return NAVIGATION_TYPE_SAME_PAGE;
+      // TODO(creis,avi): Eliminate SAME_ENTRY in https://crbug.com/536102.
+      trace_return.set_return_reason("no pending, same entry");
+      return NAVIGATION_TYPE_SAME_ENTRY;
     }
   }
 
   // Everything below here is assumed to be an existing entry, but if there is
   // no last committed entry, we must consider it a new navigation instead.
   if (!GetLastCommittedEntry()) {
-    trace_return.set_return_reason("no last committed, new page");
-    return NAVIGATION_TYPE_NEW_PAGE;
+    trace_return.set_return_reason("no last committed, new entry");
+    return NAVIGATION_TYPE_NEW_ENTRY;
   }
 
   if (params.intended_as_new_entry) {
     // This was intended to be a navigation to a new entry but the pending entry
-    // got cleared in the meanwhile. Classify as EXISTING_PAGE because we may or
-    // may not have a pending entry.
-    trace_return.set_return_reason("indented as new entry, new page");
-    return NAVIGATION_TYPE_EXISTING_PAGE;
+    // got cleared in the meanwhile. Classify as EXISTING_ENTRY because we may
+    // or may not have a pending entry.
+    trace_return.set_return_reason("indented as new entry, existing entry");
+    return NAVIGATION_TYPE_EXISTING_ENTRY;
   }
 
   if (params.url_is_unreachable && failed_pending_entry_id_ != 0 &&
       nav_entry_id == failed_pending_entry_id_) {
     // If the renderer was going to a new pending entry that got cleared because
     // of an error, this is the case of the user trying to retry a failed load
-    // by pressing return. Classify as EXISTING_PAGE because we probably don't
+    // by pressing return. Classify as EXISTING_ENTRY because we probably don't
     // have a pending entry.
     trace_return.set_return_reason(
-        "unreachable, matching pending, existing page");
-    return NAVIGATION_TYPE_EXISTING_PAGE;
+        "unreachable, matching pending, existing entry");
+    return NAVIGATION_TYPE_EXISTING_ENTRY;
   }
 
-  // Now we know that the notification is for an existing page. Find that entry.
+  // Now we know that the notification is for an existing entry; find it.
   int existing_entry_index = GetEntryIndexWithUniqueID(nav_entry_id);
   trace_return.traced_value()->SetInteger("existing_entry_index",
                                           existing_entry_index);
   if (existing_entry_index == -1) {
     // The renderer has committed a navigation to an entry that no longer
     // exists. Because the renderer is showing that page, resurrect that entry.
-    trace_return.set_return_reason("existing entry -1, new page");
-    return NAVIGATION_TYPE_NEW_PAGE;
+    trace_return.set_return_reason("existing entry -1, new entry");
+    return NAVIGATION_TYPE_NEW_ENTRY;
   }
 
   // Since we weeded out "new" navigations above, we know this is an existing
   // (back/forward) navigation.
-  trace_return.set_return_reason("default return, existing page");
-  return NAVIGATION_TYPE_EXISTING_PAGE;
+  trace_return.set_return_reason("default return, existing entry");
+  return NAVIGATION_TYPE_EXISTING_ENTRY;
 }
 
-void NavigationControllerImpl::RendererDidNavigateToNewPage(
+void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -1486,8 +1486,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
     }
   }
 
-  // Only make a copy of the pending entry if it is appropriate for the new page
-  // that was just loaded. Verify this by checking if the entry corresponds
+  // Only make a copy of the pending entry if it is appropriate for the new
+  // document that just loaded. Verify this by checking if the entry corresponds
   // to the given NavigationRequest. Additionally, coarsely check that:
   // 1. The SiteInstance hasn't been assigned to something else.
   // 2. The pending entry was intended as a new entry, rather than being a
@@ -1513,7 +1513,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
     }
   }
 
-  // For non-in-page commits with no matching pending entry, create a new entry.
+  // For cross-document commits with no matching pending entry, create a new
+  // entry.
   if (!new_entry) {
     new_entry = std::make_unique<NavigationEntryImpl>(
         rfh->GetSiteInstance(), params.url, Referrer(*params.referrer),
@@ -1531,7 +1532,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
         &url, browser_context_, &needs_update);
     new_entry->set_update_virtual_url_with_url(needs_update);
 
-    // When navigating to a new page, give the browser URL handler a chance to
+    // When navigating to a new entry, give the browser URL handler a chance to
     // update the virtual URL based on the new URL. For example, this is needed
     // to show chrome://bookmarks/#1 when the bookmarks webui extension changes
     // the URL.
@@ -1624,7 +1625,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
                        !request->post_commit_error_page_html().empty());
 }
 
-void NavigationControllerImpl::RendererDidNavigateToExistingPage(
+void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -1640,8 +1641,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
   NavigationEntryImpl* entry;
   if (params.intended_as_new_entry) {
     // This was intended as a new entry but the pending entry was lost in the
-    // meanwhile and no new page was created. We are stuck at the last committed
-    // entry.
+    // meanwhile and no new entry was created. We are stuck at the last
+    // committed entry.
     entry = GetLastCommittedEntry();
     // If this is a same document navigation, then there's no SSLStatus in the
     // NavigationRequest so don't overwrite the existing entry's SSLStatus.
@@ -1718,7 +1719,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
     }
   } else {
     // This is renderer-initiated. The only kinds of renderer-initated
-    // navigations that are EXISTING_PAGE are reloads and history.replaceState,
+    // navigations that are EXISTING_ENTRY are reloads and history.replaceState,
     // which land us at the last committed entry.
     entry = GetLastCommittedEntry();
 
@@ -1804,7 +1805,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingPage(
   last_committed_entry_index_ = GetIndexOfEntry(entry);
 }
 
-void NavigationControllerImpl::RendererDidNavigateToSamePage(
+void NavigationControllerImpl::RendererDidNavigateToSameEntry(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -1832,8 +1833,8 @@ void NavigationControllerImpl::RendererDidNavigateToSamePage(
   existing_entry->SetURL(params.url);
 
   // If a user presses enter in the omnibox and the server redirects, the URL
-  // might change (but it's still considered a SAME_PAGE navigation), so we must
-  // update the SSL status if we perform a network request (e.g. a
+  // might change (but it's still considered a SAME_ENTRY navigation), so we
+  // must update the SSL status if we perform a network request (e.g. a
   // non-same-document navigation). Requests that don't result in a network
   // request do not have a valid SSL status, but since the document didn't
   // change, the previous SSLStatus is still valid.
@@ -3258,8 +3259,8 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         params.redirect_chain, blink::PageState(), "GET", -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         // If in NavigateWithoutEntry we later determine that this navigation is
-        // a SAME_PAGE conversion of a new navigation into a reload, we will set
-        // the right document policies there.
+        // a SAME_ENTRY conversion of a new navigation into a reload, we will
+        // set the right document policies there.
         nullptr /* document_policies */);
   } else {
     // Otherwise, create a pending entry for the main frame.

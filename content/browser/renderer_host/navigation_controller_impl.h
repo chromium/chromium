@@ -498,26 +498,26 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // anything if some random subframe is loaded. It will return true if anything
   // changed, or false if not.
   //
-  // The NewPage and NewSubframe functions take in |replace_entry| to pass to
+  // The NewEntry and NewSubframe functions take in |replace_entry| to pass to
   // InsertOrReplaceEntry, in case the newly created NavigationEntry is meant to
   // replace the current one (e.g., for location.replace or successful loads
   // after net errors), in contrast to updating a NavigationEntry in place
   // (e.g., for history.replaceState).
-  void RendererDidNavigateToNewPage(
+  void RendererDidNavigateToNewEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
       NavigationRequest* request);
-  void RendererDidNavigateToExistingPage(
+  void RendererDidNavigateToExistingEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_restored,
       NavigationRequest* request,
       bool keep_pending_entry);
-  void RendererDidNavigateToSamePage(
+  void RendererDidNavigateToSameEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,

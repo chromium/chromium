@@ -393,7 +393,7 @@ void PrintPreviewDialogController::OnNavEntryCommitted(
 void PrintPreviewDialogController::OnInitiatorNavigated(
     WebContents* initiator,
     const content::LoadCommittedDetails& details) {
-  if (details.type == content::NAVIGATION_TYPE_EXISTING_PAGE) {
+  if (details.type == content::NAVIGATION_TYPE_EXISTING_ENTRY) {
     static const ui::PageTransition kTransitions[] = {
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -417,7 +417,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   // New |preview_dialog| is created. Don't update/erase map entry.
   if (waiting_for_new_preview_page_ &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
-      details.type == content::NAVIGATION_TYPE_NEW_PAGE) {
+      details.type == content::NAVIGATION_TYPE_NEW_ENTRY) {
     waiting_for_new_preview_page_ = false;
     SaveInitiatorTitle(preview_dialog);
     return;
@@ -426,7 +426,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   // Cloud print sign-in causes a reload.
   if (!waiting_for_new_preview_page_ &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD) &&
-      details.type == content::NAVIGATION_TYPE_EXISTING_PAGE &&
+      details.type == content::NAVIGATION_TYPE_EXISTING_ENTRY &&
       IsPrintPreviewURL(details.previous_main_frame_url)) {
     return;
   }

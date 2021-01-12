@@ -234,7 +234,7 @@ void PerFrameContentTranslateDriver::NavigationEntryCommitted(
   // If not a reload, return.
   if (!ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
                                     ui::PAGE_TRANSITION_RELOAD) &&
-      load_details.type != content::NAVIGATION_TYPE_SAME_PAGE) {
+      load_details.type != content::NAVIGATION_TYPE_SAME_ENTRY) {
     return;
   }
 

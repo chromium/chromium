@@ -121,7 +121,7 @@ class PrintPreviewDialogController
   PrintPreviewDialogMap preview_dialog_map_;
 
   // True if the controller is waiting for a new preview dialog via
-  // content::NAVIGATION_TYPE_NEW_PAGE.
+  // content::NAVIGATION_TYPE_NEW_ENTRY.
   bool waiting_for_new_preview_page_ = false;
 
   // Whether the PrintPreviewDialogController is in the middle of creating a

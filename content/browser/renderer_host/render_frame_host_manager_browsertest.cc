@@ -4676,9 +4676,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
     // TODO(nasko): Investigate making a failing reload of a successful
-    // navigation be classified as NEW_PAGE instead, since with error page
+    // navigation be classified as NEW_ENTRY instead, since with error page
     // isolation it involves a SiteInstance swap.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_PAGE,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4698,7 +4698,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_PAGE,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(process_id,
@@ -4714,10 +4714,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
-    // The successful reload should be classified as a NEW_PAGE navigation
+    // The successful reload should be classified as a NEW_ENTRY navigation
     // with replacement, since it needs to stay at the same entry in session
     // history, but needs a new entry because of the change in SiteInstance.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_PAGE,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4741,9 +4741,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
     // TODO(nasko): Investigate making a failing reload of a successful
-    // navigation be classified as NEW_PAGE instead, since with error page
+    // navigation be classified as NEW_ENTRY instead, since with error page
     // isolation it involves a SiteInstance swap.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_PAGE,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4764,8 +4764,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
     // TODO(nasko): Investigate making renderer initiated reloads that change
-    // SiteInstance be classified as NEW_PAGE as well.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_PAGE,
+    // SiteInstance be classified as NEW_ENTRY as well.
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -5064,14 +5064,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     EXPECT_EQ(redirect_url, nav_controller.GetLastCommittedEntry()->GetURL());
     EXPECT_EQ(second_url, nav_controller.GetEntryAtIndex(1)->GetURL());
     if (AreAllSitesIsolatedForTesting()) {
-      // The successful reload should be classified as a NEW_PAGE navigation
+      // The successful reload should be classified as a NEW_ENTRY navigation
       // with replacement, since it needs to stay at the same entry in session
       // history, but needs a new entry because of the change in SiteInstance.
       // (the same as expectations in the ErrorPageNavigationReload test above).
-      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_PAGE,
+      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_ENTRY,
                 reload_observer.last_navigation_type());
     } else {
-      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_PAGE,
+      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
                 reload_observer.last_navigation_type());
     }
   }
@@ -6869,12 +6869,12 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteCoopTest,
             site_instance_2_history_nav->GetProcess());
 }
 
-// If the navigation is classified as NAVIGATION_TYPE_SAME_PAGE, or is a same
+// If the navigation is classified as NAVIGATION_TYPE_SAME_ENTRY, or is a same
 // document navigation, we should not do a proactive BrowsingInstance swap.
-// TODO(crbug.com/536102): NAVIGATION_TYPE_SAME_PAGE will be removed in the
+// TODO(crbug.com/536102): NAVIGATION_TYPE_SAME_ENTRY will be removed in the
 // future, so we should update this test.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       SamePageAndSameDocumentNavigationDoesNotSwap) {
+                       SameEntryAndSameDocumentNavigationDoesNotSwap) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -6887,7 +6887,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
           web_contents->GetMainFrame()->GetSiteInstance());
 
   // 2) Navigate from title1.html#foo to title1.html.
-  // This is a different-document, same-page navigation.
+  // This is a different-document, same-entry navigation.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   scoped_refptr<SiteInstanceImpl> site_instance_2 =
@@ -6898,7 +6898,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   EXPECT_EQ(site_instance_1, site_instance_2);
 
   // 3) Navigate from title1.html to title1.html.
-  // This is a different-document, same-page navigation.
+  // This is a different-document, same-entry navigation.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   scoped_refptr<SiteInstanceImpl> site_instance_3 =
@@ -6942,7 +6942,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   EXPECT_EQ(site_instance_5, site_instance_6);
 
   // 7) Do a history navigation from title1.html#bar to title1.html#foo.
-  // This is a different-document, same-page history navigation.
+  // This is a different-document, same-entry history navigation.
   shell()->web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   scoped_refptr<SiteInstanceImpl> site_instance_7 =

@@ -246,14 +246,14 @@ void WebOTPService::Abort() {
 void WebOTPService::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   switch (load_details.type) {
-    case NavigationType::NAVIGATION_TYPE_NEW_PAGE:
+    case NavigationType::NAVIGATION_TYPE_NEW_ENTRY:
       RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateNewPage);
       break;
-    case NavigationType::NAVIGATION_TYPE_EXISTING_PAGE:
+    case NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY:
       RecordDestroyedReason(
           WebOTPServiceDestroyedReason::kNavigateExistingPage);
       break;
-    case NavigationType::NAVIGATION_TYPE_SAME_PAGE:
+    case NavigationType::NAVIGATION_TYPE_SAME_ENTRY:
       RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateSamePage);
       break;
     default:
