@@ -35,6 +35,7 @@
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
+#include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -506,22 +507,10 @@ void AssistantManagerServiceImpl::StartTextInteraction(
     AssistantQuerySource source,
     bool allow_tts) {
   DVLOG(1) << __func__;
-  assistant_client::VoicelessOptions options;
-  options.is_user_initiated = true;
 
-  if (!allow_tts) {
-    options.modality =
-        assistant_client::VoicelessOptions::Modality::TYPING_MODALITY;
-  }
-
-  // Cache metadata about this interaction that can be resolved when the
-  // associated conversation turn starts in LibAssistant.
-  options.conversation_turn_id =
-      NewPendingInteraction(AssistantInteractionType::kText, source, query);
-
-  std::string interaction = CreateTextQueryInteraction(query);
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction, /*description=*/"text_query", options, [](auto) {});
+  conversation_controller_proxy().SendTextQuery(
+      query, allow_tts,
+      NewPendingInteraction(AssistantInteractionType::kText, source, query));
 }
 
 void AssistantManagerServiceImpl::AddAssistantInteractionSubscriber(
@@ -1401,6 +1390,11 @@ AssistantManagerServiceImpl::assistant_manager_internal() {
 void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
   DCHECK(audio_input_host_);
   audio_input_host_->SetMicState(mic_open);
+}
+
+ConversationControllerProxy&
+AssistantManagerServiceImpl::conversation_controller_proxy() {
+  return assistant_proxy_->conversation_controller_proxy();
 }
 
 ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {

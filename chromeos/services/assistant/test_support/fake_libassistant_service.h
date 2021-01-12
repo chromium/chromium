@@ -33,9 +33,11 @@ class FakeLibassistantService
   void BindServiceController(
       mojo::PendingReceiver<libassistant::mojom::ServiceController> receiver)
       override;
+  void BindConversationController(
+      mojo::PendingReceiver<libassistant::mojom::ConversationController>
+          receiver) override {}
   void BindAudioInputController() override {}
   void BindAudioOutputController() override {}
-  void BindInteractionController() override {}
 
  private:
   mojo::Receiver<libassistant::mojom::LibassistantService> receiver_;

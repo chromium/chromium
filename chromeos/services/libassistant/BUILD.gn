@@ -33,6 +33,8 @@ source_set("internal") {
 
   sources = [
     "assistant_manager_observer.h",
+    "conversation_controller.cc",
+    "conversation_controller.h",
     "platform_api.cc",
     "platform_api.h",
     "service_controller.cc",
@@ -40,9 +42,12 @@ source_set("internal") {
   ]
 
   deps = [
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal/proto/google3",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/public",
   ]
 

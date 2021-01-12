@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
+#include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
 
@@ -23,7 +24,9 @@ LibassistantService::LibassistantService(
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),
       service_controller_(
-          std::make_unique<ServiceController>(delegate, platform_api_.get())) {
+          std::make_unique<ServiceController>(delegate, platform_api_.get())),
+      conversation_controller_(
+          std::make_unique<ConversationController>(service_controller_.get())) {
   platform_api_->SetAudioInputProvider(&platform_api->GetAudioInputProvider())
       .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
       .SetAuthProvider(&platform_api->GetAuthProvider())
@@ -41,6 +44,11 @@ void LibassistantService::BindServiceController(
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {
   service_controller().SetInitializeCallback(std::move(callback));
+}
+
+void LibassistantService::BindConversationController(
+    mojo::PendingReceiver<mojom::ConversationController> receiver) {
+  conversation_controller_->Bind(std::move(receiver));
 }
 
 }  // namespace libassistant

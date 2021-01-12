@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -20,6 +21,7 @@ class LibassistantService;
 namespace chromeos {
 namespace assistant {
 
+class ConversationControllerProxy;
 class LibassistantServiceHost;
 class ServiceControllerProxy;
 
@@ -38,6 +40,9 @@ class AssistantProxy {
   // service.
   ServiceControllerProxy& service_controller();
 
+  // Returns the controller that manages conversations with Libassistant.
+  ConversationControllerProxy& conversation_controller_proxy();
+
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
   base::Thread& background_thread() { return background_thread_; }
@@ -47,6 +52,8 @@ class AssistantProxy {
       chromeos::libassistant::mojom::LibassistantService;
   using ServiceControllerMojom =
       chromeos::libassistant::mojom::ServiceController;
+  using ConversationControllerMojom =
+      chromeos::libassistant::mojom::ConversationController;
 
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
 
@@ -57,12 +64,14 @@ class AssistantProxy {
   void StopLibassistantServiceOnBackgroundThread();
 
   mojo::PendingRemote<ServiceControllerMojom> BindServiceController();
+  mojo::PendingRemote<ConversationControllerMojom> BindConversationController();
 
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
   mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
 
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
+  std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

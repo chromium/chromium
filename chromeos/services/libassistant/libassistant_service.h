@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace assistant_client {
@@ -26,6 +28,7 @@ class CrosPlatformApi;
 namespace chromeos {
 namespace libassistant {
 
+class ConversationController;
 class PlatformApi;
 class ServiceController;
 
@@ -52,13 +55,15 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   // mojom::LibassistantService implementation:
   void BindServiceController(
       mojo::PendingReceiver<mojom::ServiceController> receiver) override;
+  void BindConversationController(
+      mojo::PendingReceiver<mojom::ConversationController> receiver) override;
   void BindAudioInputController() override {}
   void BindAudioOutputController() override {}
-  void BindInteractionController() override {}
 
   mojo::Receiver<mojom::LibassistantService> receiver_;
   std::unique_ptr<PlatformApi> platform_api_;
   std::unique_ptr<ServiceController> service_controller_;
+  std::unique_ptr<ConversationController> conversation_controller_;
 };
 
 }  // namespace libassistant

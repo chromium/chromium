@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
@@ -30,6 +31,9 @@ void AssistantProxy::Initialize(LibassistantServiceHost* host) {
 
   service_controller_proxy_ =
       std::make_unique<ServiceControllerProxy>(host, BindServiceController());
+  conversation_controller_proxy_ =
+      std::make_unique<ConversationControllerProxy>(
+          BindConversationController());
 }
 
 void AssistantProxy::LaunchLibassistantService() {
@@ -78,6 +82,14 @@ AssistantProxy::BindServiceController() {
   return pending_remote;
 }
 
+mojo::PendingRemote<AssistantProxy::ConversationControllerMojom>
+AssistantProxy::BindConversationController() {
+  mojo::PendingRemote<ConversationControllerMojom> pending_remote;
+  libassistant_service_remote_->BindConversationController(
+      pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
+}
+
 scoped_refptr<base::SingleThreadTaskRunner>
 AssistantProxy::background_task_runner() {
   return background_thread_.task_runner();
@@ -86,6 +98,11 @@ AssistantProxy::background_task_runner() {
 ServiceControllerProxy& AssistantProxy::service_controller() {
   DCHECK(service_controller_proxy_);
   return *service_controller_proxy_;
+}
+
+ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
+  DCHECK(conversation_controller_proxy_);
+  return *conversation_controller_proxy_;
 }
 
 }  // namespace assistant

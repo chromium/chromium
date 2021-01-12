@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+// Interface for controller in charge of Assistant conversations.
+interface ConversationController {
+  // Sends the specific text query to Libassistant. |conversation_id| is an
+  // identifier that will be propagated through the speech processor event
+  // pipeline to uniquely identify a conversation turn. If omitted, a unique
+  // identifier will be automatically generated.
+  SendTextQuery(string query, bool allow_tts, string? conversation_id);
+};

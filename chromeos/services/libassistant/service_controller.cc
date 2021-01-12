@@ -124,7 +124,7 @@ void ServiceController::RemoveAssistantManagerObserver(
 }
 
 bool ServiceController::IsStarted() const {
-  return state_ != mojom::ServiceState::kStopped;
+  return state_ != ServiceState::kStopped;
 }
 
 bool ServiceController::IsInitialized() const {
