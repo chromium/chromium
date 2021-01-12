@@ -150,6 +150,7 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
           extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
+  EXPECT_CALL(*this, HandleMessageFromExtension).Times(0);
   EXPECT_CALL(client, PostMessageFromNativeHost).Times(0);
   EXPECT_CALL(client, CloseChannel("FILE_ERROR_FAILED: foo"));
   receiver_.set_disconnect_handler(run_loop.QuitClosure());
@@ -158,6 +159,9 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
   extension_port_.ResetWithReason(1u, "foo");
 
   run_loop.Run();
+
+  host->OnMessage("bar");
+  base::RunLoop().RunUntilIdle();
 }
 
 class DriveFsNativeMessageHostTestWithoutFlag

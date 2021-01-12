@@ -64,7 +64,9 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
     DCHECK(client_);
 
     if (UseBidirectionalNativeMessaging()) {
-      drivefs_remote_->HandleMessageFromExtension(message);
+      if (drivefs_remote_) {
+        drivefs_remote_->HandleMessageFromExtension(message);
+      }
     } else {
       if (!drive_service_ || !drive_service_->GetDriveFsInterface()) {
         OnDriveFsResponse(FILE_ERROR_SERVICE_UNAVAILABLE, "");
