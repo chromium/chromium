@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,6 +8,7 @@
 
 import os
 import os.path
+import psutil
 import random
 import re
 import signal
@@ -16,12 +17,6 @@ import sys
 import threading
 import time
 import test_env
-
-try:
-  import psutil
-except ImportError:
-  raise Exception(
-        'Failed to import psutil. Run under vpython or install psutil.')
 
 class _XvfbProcessError(Exception):
   """Exception raised when Xvfb cannot start."""
