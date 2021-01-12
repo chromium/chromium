@@ -1420,6 +1420,11 @@ const char kMobileIdentityConsistencyVarDescription[] =
     "Enables stronger identity consistency on mobile with different UI "
     "variations";
 
+const char kMobilePwaInstallUseBottomSheetName[] =
+    "Mobile PWA Installation bottom sheet";
+const char kMobilePwaInstallUseBottomSheetDescription[] =
+    "Enables use of a rich bottom sheet when offering mobile PWA installation.";
+
 const char kMouseSubframeNoImplicitCaptureName[] =
     "Disable mouse implicit capture for iframe";
 const char kMouseSubframeNoImplicitCaptureDescription[] =

@@ -198,6 +198,7 @@
 #include "chrome/browser/continuous_search/features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
+#include "chrome/browser/webapps/android/features.h"
 #include "components/browser_ui/site_settings/android/features.h"
 #include "components/external_intents/android/external_intents_feature_list.h"
 #else  // OS_ANDROID
@@ -7025,6 +7026,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfWhenSignedInName,
      flag_descriptions::kSendTabToSelfWhenSignedInDescription, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfWhenSignedIn)},
+
+#if defined(OS_ANDROID)
+    {"mobile-pwa-install-use-bottom-sheet",
+     flag_descriptions::kMobilePwaInstallUseBottomSheetName,
+     flag_descriptions::kMobilePwaInstallUseBottomSheetDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kPwaInstallUseBottomSheet)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

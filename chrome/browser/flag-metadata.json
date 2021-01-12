@@ -3363,6 +3363,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "mobile-pwa-install-use-bottom-sheet",
+    "owners": [ "finnur", "hartmanng", "peter" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "modern-tab-strip",
     "owners": [ "nazerke", "bling-flags@google.com" ],
     "expiry_milestone": 92

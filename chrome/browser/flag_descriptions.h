@@ -840,6 +840,9 @@ extern const char kMobileIdentityConsistencyDescription[];
 extern const char kMobileIdentityConsistencyVarName[];
 extern const char kMobileIdentityConsistencyVarDescription[];
 
+extern const char kMobilePwaInstallUseBottomSheetName[];
+extern const char kMobilePwaInstallUseBottomSheetDescription[];
+
 extern const char kMouseSubframeNoImplicitCaptureName[];
 extern const char kMouseSubframeNoImplicitCaptureDescription[];
 

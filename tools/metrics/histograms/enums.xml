@@ -43455,6 +43455,7 @@ from previous Chrome versions.
   <int value="-1033738911" label="enable-mac-views-dialogs"/>
   <int value="-1032884201" label="HeavyAdPrivacyMitigations:enabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
+  <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
   <int value="-1028251580" label="GamepadPollingInterval:disabled"/>
@@ -46674,6 +46675,7 @@ from previous Chrome versions.
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>
   <int value="2050985807" label="AllowPopupsDuringPageUnload:enabled"/>
   <int value="2051403297" label="ShowBluetoothDeviceBattery:disabled"/>
+  <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>
