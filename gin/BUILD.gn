@@ -75,10 +75,6 @@ component("gin") {
 
   defines = [ "GIN_IMPLEMENTATION" ]
 
-  if (use_perfetto_client_library) {
-    defines += [ "V8_USE_PERFETTO" ]
-  }
-
   public_deps = [
     "//base",
     "//v8",
