@@ -92,9 +92,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   // value is 1.0).
   float ValueAsPercentage() const;
 
-  // Returns a number to be used as percentage (so full value is 100)
-  float ValueAsPercentage100() const;
-
   // Scale the input value by this SVGLength. Higher precision than input *
   // valueAsPercentage().
   float ScaleByPercentage(float) const;
