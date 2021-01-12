@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
@@ -241,23 +242,12 @@ bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
 
 base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const FrameNode*> frames;
-  const base::flat_set<FrameNodeImpl*>& frame_impls = frame_nodes();
-  for (auto* frame_impl : frame_impls) {
-    const FrameNode* frame = frame_impl;
-    frames.insert(frame);
-  }
-  return frames;
+  return UpcastNodeSet<FrameNode>(frame_nodes());
 }
 
 base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const WorkerNode*> workers;
-  for (auto* worker_impl : worker_nodes_) {
-    const WorkerNode* worker = worker_impl;
-    workers.insert(worker);
-  }
-  return workers;
+  return UpcastNodeSet<WorkerNode>(worker_nodes_);
 }
 
 bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {

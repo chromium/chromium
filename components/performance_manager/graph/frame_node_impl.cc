@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -414,11 +415,8 @@ bool FrameNodeImpl::VisitChildFrameNodes(
 const base::flat_set<const FrameNode*> FrameNodeImpl::GetChildFrameNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const FrameNode*> children;
-  for (auto* child : child_frame_nodes())
-    children.insert(static_cast<const FrameNode*>(child));
-  DCHECK_EQ(children.size(), child_frame_nodes().size());
-  return children;
+
+  return UpcastNodeSet<FrameNode>(child_frame_nodes());
 }
 
 bool FrameNodeImpl::VisitOpenedPageNodes(const PageNodeVisitor& visitor) const {
@@ -434,11 +432,7 @@ bool FrameNodeImpl::VisitOpenedPageNodes(const PageNodeVisitor& visitor) const {
 const base::flat_set<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const PageNode*> opened;
-  for (auto* page : opened_page_nodes())
-    opened.insert(static_cast<const PageNode*>(page));
-  DCHECK_EQ(opened.size(), opened_page_nodes().size());
-  return opened;
+  return UpcastNodeSet<PageNode>(opened_page_nodes());
 }
 
 FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
@@ -484,11 +478,7 @@ bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
 const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const WorkerNode*> children;
-  for (auto* child : child_worker_nodes())
-    children.insert(static_cast<const WorkerNode*>(child));
-  DCHECK_EQ(children.size(), child_worker_nodes().size());
-  return children;
+  return UpcastNodeSet<WorkerNode>(child_worker_nodes());
 }
 
 bool FrameNodeImpl::VisitChildDedicatedWorkers(
