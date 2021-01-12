@@ -1775,12 +1775,21 @@ CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
     this.addsItems_;
   }
 
+  /** @override */
   execute(event, fileManager) {
     if (this.addsItems_ === undefined) {
       return;
     }
 
-    const entries = fileManager.selectionHandler.selection.entries;
+    // Filter out entries from unsupported volumes.
+    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
+    const entries =
+        fileManager.selectionHandler.selection.entries.filter(entry => {
+          const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+          return volumeInfo &&
+              allowedVolumeTypes.includes(volumeInfo.volumeType);
+        });
+
     chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
         entries, this.addsItems_);
 
@@ -1800,17 +1809,25 @@ CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
     }
 
     const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
-    const currentVolumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
-    if (!currentVolumeInfo ||
-        !allowedVolumeTypes.includes(currentVolumeInfo.volumeType)) {
-      event.canExecute = false;
-      command.setHidden(true);
-      return;
+    const currentRootType = fileManager.directoryModel.getCurrentRootType();
+    if (!util.isRecentRootType(currentRootType)) {
+      const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
+      if (!volumeInfo || !allowedVolumeTypes.includes(volumeInfo.volumeType)) {
+        event.canExecute = false;
+        command.setHidden(true);
+        return;
+      }
     }
 
-    const entries = fileManager.selectionHandler.selection.entries;
+    // Filter out entries from unsupported volumes.
+    const entries =
+        fileManager.selectionHandler.selection.entries.filter(entry => {
+          const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+          return volumeInfo &&
+              allowedVolumeTypes.includes(volumeInfo.volumeType);
+        });
 
-    if (!entries || entries.length === 0) {
+    if (entries.length === 0) {
       event.canExecute = false;
       command.setHidden(true);
       return;
