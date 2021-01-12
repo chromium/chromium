@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/gurl_abstract_tests.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
 #include "url/url_test_utils.h"
@@ -883,70 +884,6 @@ TEST(GURLTest, PathForNonStandardURLs) {
   }
 }
 
-TEST(GURLTest, IsAboutBlank) {
-  // See https://tools.ietf.org/html/rfc6694 which explicitly allows
-  // `about-query` and `about-fragment` parts in about: URLs.
-  const std::string kAboutBlankUrls[] = {"about:blank", "about:blank?foo",
-                                         "about:blank/#foo",
-                                         "about:blank?foo#foo"};
-  for (const auto& url : kAboutBlankUrls)
-    EXPECT_TRUE(GURL(url).IsAboutBlank()) << url;
-
-  const std::string kNotAboutBlankUrls[] = {"",
-                                            "about",
-                                            "about:",
-                                            "about:blanky",
-                                            "about:blan",
-                                            "about:about:blank:",
-                                            "data:blank",
-                                            "http:blank",
-                                            "about://blank",
-                                            "about:blank/foo",
-                                            "about://:8000/blank",
-                                            "about://foo:foo@/blank",
-                                            "foo@about:blank",
-                                            "foo:bar@about:blank",
-                                            "about:blank:8000",
-                                            "about:blANk"};
-  for (const auto& url : kNotAboutBlankUrls)
-    EXPECT_FALSE(GURL(url).IsAboutBlank()) << url;
-}
-
-TEST(GURLTest, IsAboutSrcdoc) {
-  // See https://tools.ietf.org/html/rfc6694 which explicitly allows
-  // `about-query` and `about-fragment` parts in about: URLs.
-  //
-  // `about:srcdoc` is defined in
-  // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#about:srcdoc
-  // which refers to rfc6694 for details.
-  const std::string kAboutSrcdocUrls[] = {
-      "about:srcdoc", "about:srcdoc/", "about:srcdoc?foo", "about:srcdoc/#foo",
-      "about:srcdoc?foo#foo"};
-  for (const auto& url : kAboutSrcdocUrls)
-    EXPECT_TRUE(GURL(url).IsAboutSrcdoc()) << url;
-
-  const std::string kNotAboutSrcdocUrls[] = {"",
-                                             "about",
-                                             "about:",
-                                             "about:srcdocx",
-                                             "about:srcdo",
-                                             "about:about:srcdoc:",
-                                             "data:srcdoc",
-                                             "http:srcdoc",
-                                             "about:srcdo",
-                                             "about://srcdoc",
-                                             "about://srcdoc\\",
-                                             "about:srcdoc/foo",
-                                             "about://:8000/srcdoc",
-                                             "about://foo:foo@/srcdoc",
-                                             "foo@about:srcdoc",
-                                             "foo:bar@about:srcdoc",
-                                             "about:srcdoc:8000",
-                                             "about:srCDOc"};
-  for (const auto& url : kNotAboutSrcdocUrls)
-    EXPECT_FALSE(GURL(url).IsAboutSrcdoc()) << url;
-}
-
 TEST(GURLTest, EqualsIgnoringRef) {
   const struct {
     const char* url_a;
@@ -1054,5 +991,18 @@ TEST(GURLTest, PortZero) {
   url::Origin default_port_origin = url::Origin::Create(default_port);
   EXPECT_FALSE(default_port_origin.IsSameOriginWith(resolved_origin));
 }
+
+class GURLTestTraits final : public UrlTraitsBase<GURL> {
+ public:
+  UrlType CreateUrlFromString(base::StringPiece s) override { return GURL(s); }
+
+  bool IsAboutBlank(const UrlType& url) override { return url.IsAboutBlank(); }
+
+  bool IsAboutSrcdoc(const UrlType& url) override {
+    return url.IsAboutSrcdoc();
+  }
+};
+
+INSTANTIATE_TYPED_TEST_SUITE_P(GURL, AbstractUrlTest, GURLTestTraits);
 
 }  // namespace url

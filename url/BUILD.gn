@@ -174,7 +174,10 @@ if (is_android) {
 source_set("url_test_support") {
   testonly = true
 
-  sources = [ "origin_abstract_tests.h" ]
+  sources = [
+    "gurl_abstract_tests.h",
+    "origin_abstract_tests.h",
+  ]
 
   public_deps = [
     ":url",
