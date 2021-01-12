@@ -349,6 +349,7 @@ TEST_F(PDFiumEngineTest, GetDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_EQ("Sample PDF Document Info", doc_metadata.title);
   EXPECT_EQ("Chromium Authors", doc_metadata.author);
   EXPECT_EQ("Testing", doc_metadata.subject);
@@ -365,11 +366,20 @@ TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_THAT(doc_metadata.title, IsEmpty());
   EXPECT_THAT(doc_metadata.author, IsEmpty());
   EXPECT_THAT(doc_metadata.subject, IsEmpty());
   EXPECT_THAT(doc_metadata.creator, IsEmpty());
   EXPECT_THAT(doc_metadata.producer, IsEmpty());
+}
+
+TEST_F(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("linearized.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_TRUE(engine->GetDocumentMetadata().linearized);
 }
 
 TEST_F(PDFiumEngineTest, GetBadPdfVersion) {

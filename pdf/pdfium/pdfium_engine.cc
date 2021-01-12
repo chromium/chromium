@@ -674,13 +674,13 @@ void PDFiumEngine::OnPendingRequestComplete() {
   if (!fpdf_availability()) {
     document_->file_access().m_FileLen = doc_loader_->GetDocumentSize();
     document_->CreateFPDFAvailability();
-    DCHECK(fpdf_availability());
+
     // Currently engine does not deal efficiently with some non-linearized
     // files.
     // See http://code.google.com/p/chromium/issues/detail?id=59400
     // To improve user experience we download entire file for non-linearized
     // PDF.
-    if (FPDFAvail_IsLinearized(fpdf_availability()) != PDF_LINEARIZED) {
+    if (!IsLinearized()) {
       // Wait complete document.
       process_when_pending_request_complete_ = false;
       document_->ResetFPDFAvailability();
@@ -2752,9 +2752,8 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
   pending_pages_.clear();
   size_t new_page_count = FPDF_GetPageCount(doc());
 
-  bool doc_complete = doc_loader_->IsDocumentComplete();
-  bool is_linear =
-      FPDFAvail_IsLinearized(fpdf_availability()) == PDF_LINEARIZED;
+  const bool doc_complete = doc_loader_->IsDocumentComplete();
+  const bool is_linear = IsLinearized();
   for (size_t i = 0; i < new_page_count; ++i) {
     // Get page availability. If |document_loaded_| == true and the page is not
     // new, then the page has been constructed already. Get page availability
@@ -2805,12 +2804,10 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
 
 void PDFiumEngine::LoadBody() {
   DCHECK(doc());
-  DCHECK(fpdf_availability());
   if (doc_loader_->IsDocumentComplete()) {
     LoadForm();
-  } else if (FPDFAvail_IsLinearized(fpdf_availability()) == PDF_LINEARIZED &&
-             FPDF_GetPageCount(doc()) == 1) {
-    // If we have only one page we should load form first, bacause it is may be
+  } else if (IsLinearized() && FPDF_GetPageCount(doc()) == 1) {
+    // If we have only one page we should load form first, because it may be an
     // XFA document. And after loading form the page count and its contents may
     // be changed.
     LoadForm();
@@ -2863,6 +2860,11 @@ void PDFiumEngine::LoadForm() {
       DCHECK(ret);
     }
   }
+}
+
+bool PDFiumEngine::IsLinearized() {
+  DCHECK(fpdf_availability());
+  return FPDFAvail_IsLinearized(fpdf_availability()) == PDF_LINEARIZED;
 }
 
 void PDFiumEngine::CalculateVisiblePages() {
@@ -3948,8 +3950,10 @@ void PDFiumEngine::LoadDocumentAttachmentInfoList() {
 void PDFiumEngine::LoadDocumentMetadata() {
   DCHECK(document_loaded_);
 
-  // Document information dictionary entries
   doc_metadata_.version = GetDocumentVersion();
+  doc_metadata_.linearized = IsLinearized();
+
+  // Document information dictionary entries
   doc_metadata_.title = GetTrimmedMetadataByField("Title");
   doc_metadata_.author = GetTrimmedMetadataByField("Author");
   doc_metadata_.subject = GetTrimmedMetadataByField("Subject");

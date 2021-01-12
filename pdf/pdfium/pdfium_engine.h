@@ -302,6 +302,9 @@ class PDFiumEngine : public PDFEngine,
 
   void LoadForm();
 
+  // Checks whether the document is optimized by linearization.
+  bool IsLinearized();
+
   // Calculates which pages should be displayed right now.
   void CalculateVisiblePages();
 

@@ -30,8 +30,8 @@ enum class PdfVersion {
 // dictionary (see section 14.3.3 "Document Information Dictionary" of the ISO
 // 32000-1 standard), as well as other properties about the file.
 // TODO(crbug.com/93619): Finish adding information dictionary fields like
-// |keywords|, |creation_date|, and |mod_date|. Also add fields like
-// |size_bytes|, |is_encrypted|, and |is_linearized|.
+// `keywords`, `creation_date`, and `mod_date`. Also add fields like
+// `size_bytes` and `is_encrypted`.
 struct DocumentMetadata {
   DocumentMetadata();
   DocumentMetadata(const DocumentMetadata&) = delete;
@@ -40,6 +40,9 @@ struct DocumentMetadata {
 
   // Version of the document
   PdfVersion version = PdfVersion::kUnknown;
+
+  // Whether the document is optimized by linearization.
+  bool linearized = false;
 
   // The document's title.
   std::string title;
