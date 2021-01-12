@@ -21,6 +21,7 @@
 #include "base/atomicops.h"
 #include "base/base_paths_win.h"
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/file_version_info.h"
@@ -38,12 +39,19 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image_backing_d3d.h"
+#include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_frame.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/filters/vp9_parser.h"
+#include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/dxva_picture_buffer_win.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
@@ -59,6 +67,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 
@@ -171,6 +180,36 @@ HRESULT g_last_device_removed_reason;
                                error_code, ret);
 
 namespace media {
+
+bool VideoPixelFormatToVizFormat(
+    VideoPixelFormat pixel_format,
+    size_t textures_per_picture,
+    std::array<viz::ResourceFormat, VideoFrame::kMaxPlanes>& texture_formats) {
+  switch (pixel_format) {
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_BGRA:
+      DCHECK_EQ(textures_per_picture, 1u);
+      texture_formats[0] =
+          (pixel_format == PIXEL_FORMAT_ABGR) ? viz::RGBA_8888 : viz::BGRA_8888;
+      return true;
+    case PIXEL_FORMAT_NV12:
+      DCHECK_EQ(textures_per_picture, 2u);
+      texture_formats[0] = viz::RED_8;  // Y
+      texture_formats[1] = viz::RG_88;  // UV
+      return true;
+    case PIXEL_FORMAT_P016LE:
+      // TODO(crbug.com/1011555): P010 formats are not fully supported.
+      // The required Viz formats (viz::R16_EXT and viz::RG16_EXT) are not yet
+      // supported.
+      DCHECK_EQ(textures_per_picture, 2u);
+      return false;
+    default:  // Unsupported
+      NOTREACHED();
+      return false;
+  }
+}
 
 constexpr VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE,    H264PROFILE_MAIN,        H264PROFILE_HIGH,
@@ -1325,6 +1364,13 @@ GLenum DXVAVideoDecodeAccelerator::GetSurfaceInternalFormat() const {
   return GL_BGRA_EXT;
 }
 
+bool DXVAVideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
+  // Shared image is needed to display overlays which can be used directly
+  // by the video processor.
+  // TODO(crbug.com/1011555): Support for non-bind cases.
+  return GetPictureBufferMechanism() == PictureBufferMechanism::BIND;
+}
+
 // static
 VideoDecodeAccelerator::SupportedProfiles
 DXVAVideoDecodeAccelerator::GetSupportedProfiles(
@@ -2118,12 +2164,18 @@ void DXVAVideoDecodeAccelerator::NotifyPictureReady(
     int input_buffer_id,
     const gfx::Rect& visible_rect,
     const gfx::ColorSpace& color_space,
-    bool allow_overlay) {
+    bool allow_overlay,
+    std::vector<scoped_refptr<Picture::ScopedSharedImage>> shared_images) {
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
   // This task could execute after the decoder has been torn down.
   if (GetState() != kUninitialized && client_) {
     Picture picture(picture_buffer_id, input_buffer_id, visible_rect,
                     color_space, allow_overlay);
+
+    for (uint32_t i = 0; i < shared_images.size(); i++) {
+      picture.set_scoped_shared_image(shared_images[i], i);
+    }
+
     client_->PictureReady(picture);
   }
 }
@@ -2591,13 +2643,100 @@ void DXVAVideoDecodeAccelerator::BindPictureBufferToSample(
 
   DCHECK(!output_picture_buffers_.empty());
 
+  // BindSampleToTexture configures GLImage with the DX11 output texture.
+  // The DX11 texture is then accessed through the GLImage to create a shared
+  // image backing below.
   bool result = picture_buffer->BindSampleToTexture(this, sample);
-  RETURN_AND_NOTIFY_ON_FAILURE(result, "Failed to complete copying surface",
+  RETURN_AND_NOTIFY_ON_FAILURE(result, "Failed to bind sample to texture",
                                PLATFORM_FAILURE, );
+
+  // Create the DX11 texture backed shared images (texture per plane).
+  std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
+  if (SupportsSharedImagePictureBuffers()) {
+    gl::GLImageDXGI* gl_image_dxgi =
+        gl::GLImageDXGI::FromGLImage(picture_buffer->gl_image().get());
+    DCHECK(gl_image_dxgi);
+
+    const size_t textures_per_picture =
+        picture_buffer->service_texture_ids().size();
+
+    // Get the viz resource format per texture.
+    std::array<viz::ResourceFormat, VideoFrame::kMaxPlanes> viz_formats;
+    {
+      const bool result = VideoPixelFormatToVizFormat(
+          picture_buffer->pixel_format(), textures_per_picture, viz_formats);
+      RETURN_AND_NOTIFY_ON_FAILURE(
+          result, "Could not convert pixel format to viz format",
+          PLATFORM_FAILURE, );
+    }
+
+    CommandBufferHelper* helper = client_->GetCommandBufferHelper();
+    DCHECK(helper);
+
+    for (uint32_t texture_idx = 0; texture_idx < textures_per_picture;
+         texture_idx++) {
+      // Usage flags to allow the display compositor to draw from it, video
+      // to decode, and allow webgl/canvas access.
+      constexpr uint32_t shared_image_usage =
+          gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
+          gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
+          gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+      // Create a shared image
+      // TODO(crbug.com/1011555): Need key shared mutex if shared image is ever
+      // used by another device.
+      scoped_refptr<gpu::gles2::TexturePassthrough> gl_texture =
+          gpu::gles2::TexturePassthrough::CheckedCast(helper->GetTexture(
+              picture_buffer->service_texture_ids()[texture_idx]));
+
+      // Create a new shared image mailbox. The existing mailbox belonging to
+      // this |picture_buffer| will be updated when the video frame is created.
+      const auto& mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+      auto shared_image = std::make_unique<gpu::SharedImageBackingD3D>(
+          mailbox, viz_formats[texture_idx],
+          picture_buffer->texture_size(texture_idx),
+          picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, shared_image_usage,
+          /*swap_chain=*/nullptr, std::move(gl_texture),
+          picture_buffer->gl_image(),
+          /*buffer_index=*/0, gl_image_dxgi->texture(),
+          base::win::ScopedHandle(),
+          /*dxgi_keyed_mutex=*/nullptr);
+
+      // Caller is assumed to provide cleared d3d textures.
+      shared_image->SetCleared();
+
+      gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
+      DCHECK(shared_image_stub);
+      const bool success = shared_image_stub->factory()->RegisterBacking(
+          std::move(shared_image), /* legacy_mailbox */ true);
+      if (!success) {
+        RETURN_AND_NOTIFY_ON_FAILURE(false, "Failed to register shared image",
+                                     PLATFORM_FAILURE, );
+      }
+
+      auto destroy_shared_image_callback = base::BindPostTask(
+          main_thread_task_runner_,
+          base::BindOnce(
+              shared_image_stub->GetSharedImageDestructionCallback(mailbox),
+              gpu::SyncToken()));
+
+      // Wrap the factory ref with a scoped shared image. The factory ref
+      // is used instead of requiring a destruction call-back.
+      auto scoped_shared_image =
+          base::MakeRefCounted<Picture::ScopedSharedImage>(
+              mailbox, GetTextureTarget(),
+              std::move(destroy_shared_image_callback));
+
+      scoped_shared_images.push_back(std::move(scoped_shared_image));
+    }
+  }
 
   NotifyPictureReady(
       picture_buffer->id(), input_buffer_id, picture_buffer->visible_rect(),
-      picture_buffer->color_space(), picture_buffer->AllowOverlay());
+      picture_buffer->color_space(), picture_buffer->AllowOverlay(),
+      std::move(scoped_shared_images));
 
   {
     base::AutoLock lock(decoder_lock_);

@@ -494,6 +494,8 @@ bool EGLStreamPictureBuffer::BindSampleToTexture(
   DCHECK_EQ(BOUND, state_);
   state_ = IN_CLIENT;
 
+  shared_images_.resize(picture_buffer_.service_texture_ids().size());
+
   current_d3d_sample_ = sample;
   EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
 

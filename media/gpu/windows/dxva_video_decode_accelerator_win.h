@@ -112,6 +112,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
       const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
       override;
   GLenum GetSurfaceInternalFormat() const override;
+  bool SupportsSharedImagePictureBuffers() const override;
 
   static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
@@ -248,7 +249,9 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
                           int input_buffer_id,
                           const gfx::Rect& visible_rect,
                           const gfx::ColorSpace& color_space,
-                          bool allow_overlay);
+                          bool allow_overlay,
+                          std::vector<scoped_refptr<Picture::ScopedSharedImage>>
+                              shared_images = {});
 
   // Sends pending input buffer processed acks to the client if we don't have
   // output samples waiting to be processed.

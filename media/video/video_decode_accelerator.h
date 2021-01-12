@@ -38,6 +38,8 @@ class SharedImageStub;
 
 namespace media {
 
+class CommandBufferHelper;
+
 // Video decoder interface.
 // This interface is extended by the various components that ultimately
 // implement the backend of PPB_VideoDecoder_Dev.
@@ -261,6 +263,10 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // Return the SharedImageStub through which SharedImages may be created.
     // Default implementation returns nullptr.
     virtual gpu::SharedImageStub* GetSharedImageStub() const;
+
+    // Return the CommandBufferHelper through which GL passthrough textures may
+    // be created. Default implementation returns nullptr.
+    virtual CommandBufferHelper* GetCommandBufferHelper() const;
 
    protected:
     virtual ~Client() {}
