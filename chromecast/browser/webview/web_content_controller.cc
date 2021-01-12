@@ -338,17 +338,24 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
       if (ev.has_key()) {
         ui::DomKey dom_key =
             ui::KeycodeConverter::KeyStringToDomKey(ev.key().key_string());
-        bool is_char = dom_key.IsCharacter();
-        int32_t key_code = is_char ? dom_key.ToCharacter()
-                                   : NonPrintableDomKeyToKeyboardCode(dom_key);
+
+        // Backspace, delete, and tab have to be treated specially as they are
+        // characters according to DomKey, but they are non-printable.
+        bool is_printable_character =
+            dom_key.IsCharacter() && dom_key != ui::DomKey::TAB &&
+            dom_key != ui::DomKey::BACKSPACE && dom_key != ui::DomKey::DEL;
+
         ui::KeyboardCode keyboard_code =
-            static_cast<ui::KeyboardCode>(key_code);
+            is_printable_character
+                ? static_cast<ui::KeyboardCode>(dom_key.ToCharacter())
+                : NonPrintableDomKeyToKeyboardCode(dom_key);
         ui::KeyEvent evt(type, keyboard_code,
                          UsLayoutKeyboardCodeToDomCode(keyboard_code),
                          ev.flags() | ui::EF_IS_SYNTHESIZED, dom_key,
                          base::TimeTicks() +
                              base::TimeDelta::FromMicroseconds(ev.timestamp()),
-                         is_char);
+                         is_printable_character);
+
         // Marks the simulated key event is from a Virtual Keyboard.
         ui::Event::Properties properties;
         properties[ui::kPropertyFromVK] =
