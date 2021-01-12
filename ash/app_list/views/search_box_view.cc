@@ -219,6 +219,13 @@ const char* SearchBoxView::GetClassName() const {
   return "SearchBoxView";
 }
 
+void SearchBoxView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SetupAssistantButton();
+  SetupCloseButton();
+  OnWallpaperColorsChanged();
+}
+
 // static
 int SearchBoxView::GetFocusRingSpacing() {
   return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;

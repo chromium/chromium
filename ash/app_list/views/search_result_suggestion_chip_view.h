@@ -49,6 +49,7 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
   void OnFocus() override;
   void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnThemeChanged() override;
 
   // views::InkDropHost:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;

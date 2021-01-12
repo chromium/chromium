@@ -145,6 +145,13 @@ bool SearchResultSuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
   return Button::OnKeyPressed(event);
 }
 
+void SearchResultSuggestionChipView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  text_view_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSuggestionChipTextColor());
+  SchedulePaint();
+}
+
 std::unique_ptr<views::InkDrop>
 SearchResultSuggestionChipView::CreateInkDrop() {
   std::unique_ptr<views::InkDropImpl> ink_drop =

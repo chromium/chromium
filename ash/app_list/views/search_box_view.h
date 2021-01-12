@@ -68,6 +68,7 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.
