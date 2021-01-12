@@ -57,7 +57,6 @@ class Details {
                                            Details* details);
 
   const std::string title() const;
-  int titleMaxLines() const;
   const std::string imageUrl() const;
   const base::Optional<std::string> imageAccessibilityHint() const;
   bool imageAllowClickthrough() const;
@@ -65,7 +64,6 @@ class Details {
   const std::string imagePositiveText() const;
   const std::string imageNegativeText() const;
   const std::string imageClickthroughUrl() const;
-  bool showImagePlaceholder() const;
   const std::string totalPriceLabel() const;
   const std::string totalPrice() const;
   const std::string descriptionLine1() const;
@@ -77,7 +75,7 @@ class Details {
   bool highlightLine1() const;
   bool highlightLine2() const;
   bool highlightLine3() const;
-  bool animatePlaceholders() const;
+  DetailsProto::PlaceholdersConfiguration placeholders() const;
 
   // Clears all change flags.
   void ClearChanges();
@@ -97,9 +95,6 @@ class Details {
 
   DetailsProto proto_;
   DetailsChangesProto change_flags_;
-
-  // Maximum of lines for the title.
-  int title_max_lines_ = 1;
 
   // Content to be shown in description line 1 in the UI.
   std::string description_line_1_content_;

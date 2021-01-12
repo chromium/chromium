@@ -45,6 +45,7 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetails;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
+import org.chromium.chrome.browser.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -53,6 +54,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantDetailsUiTest {
+    public static final AssistantPlaceholdersConfiguration NO_PLACEHOLDERS =
+            new AssistantPlaceholdersConfiguration(
+                    /* showImagePlaceholder= */ false,
+                    /* showTitlePlaceholder= */ false,
+                    /* showDescriptionLine1Placeholder= */ false,
+                    /* showDescriptionLine2Placeholder= */ false,
+                    /* showDescriptionLine3Placeholder= */ false);
+
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
@@ -123,9 +132,9 @@ public class AutofillAssistantDetailsUiTest {
 
         runOnUiThreadBlocking(() -> {
             model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "hint", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
+                    new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                            "line 2", "", "line 3", false, false, false, false, false,
+                            NO_PLACEHOLDERS));
         });
 
         onView(is(viewHolder.mImageView)).check(matches(isDisplayed()));
@@ -148,9 +157,9 @@ public class AutofillAssistantDetailsUiTest {
 
         runOnUiThreadBlocking(() -> {
             model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "hint", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
+                    new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                            "line 2", "", "line 3", false, false, false, false, false,
+                            NO_PLACEHOLDERS));
         });
 
         onView(is(viewHolder.mImageView)).check(matches(withContentDescription("hint")));
@@ -167,9 +176,9 @@ public class AutofillAssistantDetailsUiTest {
 
         runOnUiThreadBlocking(() -> {
             model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
+                    new AssistantDetails("title", "image", "", null, "Total", "$12", "line 1",
+                            "line 2", "", "line 3", false, false, false, false, false,
+                            NO_PLACEHOLDERS));
         });
 
         onView(is(viewHolder.mImageView)).check(matches(withContentDescription("")));
@@ -184,25 +193,73 @@ public class AutofillAssistantDetailsUiTest {
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
 
-        /* All description lines are set, title must be in single line. */
+        /* Description lines 1 and 2 are set, title must be in single line. */
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "", "line 3", false,
-                                        false, false, false, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "line 2", "", "price", false, false, false, false,
+                                        false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(1)));
         onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
 
-        /* titleMaxLines is set to 2, check that it is properly applied. */
+        /* Description line 1 is set, title must be max 2 lines. */
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 2, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "", "", "line 3", false, false,
-                                        false, false, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "", "", "price", false, false, false, false,
+                                        false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(2)));
         onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* Description line 2 is set, title must be max 2 lines. */
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "", "line 2", "", "price", false, false, false, false,
+                                        false, NO_PLACEHOLDERS)));
+        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(2)));
+        onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* None of description line 1 or 2 is set, title must be max 3 lines. */
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "", "", "", "price", false, false, false, false, false,
+                                        NO_PLACEHOLDERS)));
+        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(3)));
+        onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* There is a placeholder for description line 1, title must be max 2 lines. */
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "", "", "", "price", false, false, false, false, false,
+                                        new AssistantPlaceholdersConfiguration(
+                                                /* showImagePlaceholder= */ false,
+                                                /* showTitlePlaceholder= */ false,
+                                                /* showDescriptionLine1Placeholder= */ true,
+                                                /* showDescriptionLine2Placeholder= */ false,
+                                                /* showDescriptionLine3Placeholder= */ false))));
+        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(2)));
+
+        /* There is a placeholder for description line 1 & 2, title must be max 1 line. */
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "", "", "", "price", false, false, false, false, false,
+                                        new AssistantPlaceholdersConfiguration(
+                                                /* showImagePlaceholder= */ false,
+                                                /* showTitlePlaceholder= */ false,
+                                                /* showDescriptionLine1Placeholder= */ true,
+                                                /* showDescriptionLine2Placeholder= */ true,
+                                                /* showDescriptionLine3Placeholder= */ false))));
+        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(1)));
     }
 
     @Test
@@ -215,18 +272,18 @@ public class AutofillAssistantDetailsUiTest {
         /* Description line 1 is set and should be visible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "line 1", "", "", "",
-                                                      false, false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "line 1", "", "", "", false, false,
+                                                      false, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine1View))
                 .check(matches(allOf(withText("line 1"), isDisplayed())));
 
         /* Description line 1 is not set and should be invisible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "", "", "", false, false, false,
+                                                      false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine1View)).check(matches(not(isDisplayed())));
     }
 
@@ -240,18 +297,18 @@ public class AutofillAssistantDetailsUiTest {
         /* Description line 2 is set and should be visible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "line 2", "", "",
-                                                      false, false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "line 2", "", "", false, false,
+                                                      false, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine2View))
                 .check(matches(allOf(withText("line 2"), isDisplayed())));
 
         /* Description line 2 is not set and should be invisible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 2, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "", "", "", false, false, false,
+                                                      false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine2View)).check(matches(not(isDisplayed())));
     }
 
@@ -265,18 +322,18 @@ public class AutofillAssistantDetailsUiTest {
         /* Description line 3 is set and should be visible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "line 3", "",
-                                                      false, false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "", "line 3", "", false, false,
+                                                      false, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine3View))
                 .check(matches(allOf(withText("line 3"), isDisplayed())));
 
         /* Description line 3 is not set and should be invisible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "", "line 3",
-                                                      false, false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "", "", "line 3", false, false,
+                                                      false, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mDescriptionLine3View)).check(matches(not(isDisplayed())));
     }
 
@@ -291,18 +348,18 @@ public class AutofillAssistantDetailsUiTest {
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "", "", "", "price attribution", false,
-                                        false, false, false, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "", "", "", "price attribution", false, false, false, false,
+                                        false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mPriceAttributionView))
                 .check(matches(allOf(withText("price attribution"), isDisplayed())));
 
         /* Price attribution is not set and should be invisible. */
         runOnUiThreadBlocking(()
                                       -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 2, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
+                                              new AssistantDetails("title", "image", "hint", null,
+                                                      "", "", "", "", "", "", false, false, false,
+                                                      false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mPriceAttributionView)).check(matches(not(isDisplayed())));
     }
 
@@ -317,9 +374,9 @@ public class AutofillAssistantDetailsUiTest {
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, true, false, false, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "line 2", "line 3", "Est. total", true, true,
+                                        false, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView)).check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
         onView(is(viewHolder.mDescriptionLine1View))
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
@@ -334,9 +391,9 @@ public class AutofillAssistantDetailsUiTest {
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, true, false, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "line 2", "line 3", "Est. total", true, false,
+                                        true, false, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView))
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
         onView(is(viewHolder.mDescriptionLine1View))
@@ -352,9 +409,9 @@ public class AutofillAssistantDetailsUiTest {
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, false, true, false, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "line 2", "line 3", "Est. total", true, false,
+                                        false, true, false, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView))
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
         onView(is(viewHolder.mDescriptionLine1View))
@@ -370,9 +427,9 @@ public class AutofillAssistantDetailsUiTest {
         runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, false, false, true, false)));
+                                new AssistantDetails("title", "image", "hint", null, "Total", "$12",
+                                        "line 1", "line 2", "line 3", "Est. total", true, false,
+                                        false, false, true, NO_PLACEHOLDERS)));
         onView(is(viewHolder.mTitleView))
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
         onView(is(viewHolder.mDescriptionLine1View))
@@ -394,9 +451,9 @@ public class AutofillAssistantDetailsUiTest {
 
         runOnUiThreadBlocking(() -> {
             model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("<b>title</b>", 1, "image", "hint", null, false,
-                            "<b>Total</b>", "<b>$12</b>", "<b>line 1</b>", "<b>line 2</b>", "",
-                            "<b>line 3</b>", false, false, false, false, false, false));
+                    new AssistantDetails("<b>title</b>", "image", "hint", null, "<b>Total</b>",
+                            "<b>$12</b>", "<b>line 1</b>", "<b>line 2</b>", "", "<b>line 3</b>",
+                            false, false, false, false, false, NO_PLACEHOLDERS));
         });
 
         onView(withText("title"))
@@ -411,5 +468,44 @@ public class AutofillAssistantDetailsUiTest {
                 .check(matches(hasTypefaceSpan(0, "line 2".length() - 1, Typeface.BOLD)));
         onView(withText("line 3"))
                 .check(matches(hasTypefaceSpan(0, "line 3".length() - 1, Typeface.BOLD)));
+    }
+
+    @Test
+    @MediumTest
+    public void testPlaceholders() throws Exception {
+        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+
+        // Without placeholders, the image and descriptions are hidden. The title is always
+        // displayed.
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "", "hint", null, "", "", "", "", "",
+                                        "", false, false, false, false, false, NO_PLACEHOLDERS)));
+        onView(is(viewHolder.mTitleView)).check(matches(isDisplayed()));
+        onView(is(viewHolder.mImageView)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mDescriptionLine1View)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mDescriptionLine2View)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mDescriptionLine3View)).check(matches(not(isDisplayed())));
+
+        // With placeholders, the image and descriptions are displayed.
+        runOnUiThreadBlocking(
+                ()
+                        -> model.set(AssistantDetailsModel.DETAILS,
+                                new AssistantDetails("title", "", "hint", null, "", "", "", "", "",
+                                        "", false, false, false, false, false,
+                                        new AssistantPlaceholdersConfiguration(
+                                                /* showImagePlaceholder= */ true,
+                                                /* showTitlePlaceholder= */ true,
+                                                /* showDescriptionLine1Placeholder= */ true,
+                                                /* showDescriptionLine2Placeholder= */ true,
+                                                /* showDescriptionLine3Placeholder= */ true))));
+        onView(is(viewHolder.mTitleView)).check(matches(isDisplayed()));
+        onView(is(viewHolder.mImageView)).check(matches(isDisplayed()));
+        onView(is(viewHolder.mDescriptionLine1View)).check(matches(isDisplayed()));
+        onView(is(viewHolder.mDescriptionLine2View)).check(matches(isDisplayed()));
+        onView(is(viewHolder.mDescriptionLine3View)).check(matches(isDisplayed()));
     }
 }

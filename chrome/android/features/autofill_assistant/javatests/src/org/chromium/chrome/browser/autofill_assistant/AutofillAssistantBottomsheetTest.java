@@ -153,7 +153,10 @@ public class AutofillAssistantBottomsheetTest {
                              .setShowDetails(ShowDetailsProto.newBuilder().setDetails(
                                      DetailsProto.newBuilder()
                                              .setTitle("Details title")
-                                             .setShowImagePlaceholder(true)))
+                                             .setPlaceholders(DetailsProto.PlaceholdersConfiguration
+                                                                      .newBuilder()
+                                                                      .setShowImagePlaceholder(true)
+                                                                      .build())))
                              .build());
         }
         // Add "Done" button.

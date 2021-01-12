@@ -253,10 +253,9 @@ bool Details::UpdateFromParameters(const TriggerContext& context) {
   if (show_initial.value_or("true") == "false") {
     return false;
   }
-  // Whenever details are updated from parameters we want to animate missing
-  // data.
-  proto_.set_animate_placeholders(true);
-  proto_.set_show_image_placeholder(true);
+  // Whenever details are updated from parameters we want to show a placeholder
+  // for the image.
+  proto_.mutable_placeholders()->set_show_image_placeholder(true);
   if (MaybeUpdateFromDetailsParameters(context)) {
     Update();
     return true;
@@ -370,10 +369,6 @@ const std::string Details::title() const {
   return proto_.title();
 }
 
-int Details::titleMaxLines() const {
-  return title_max_lines_;
-}
-
 const std::string Details::imageUrl() const {
   return proto_.image_url();
 }
@@ -403,10 +398,6 @@ const std::string Details::imageNegativeText() const {
 
 const std::string Details::imageClickthroughUrl() const {
   return proto_.image_clickthrough_data().clickthrough_url();
-}
-
-bool Details::showImagePlaceholder() const {
-  return proto_.show_image_placeholder();
 }
 
 const std::string Details::totalPriceLabel() const {
@@ -453,8 +444,8 @@ bool Details::highlightLine3() const {
   return change_flags_.highlight_line3();
 }
 
-bool Details::animatePlaceholders() const {
-  return proto_.animate_placeholders();
+DetailsProto::PlaceholdersConfiguration Details::placeholders() const {
+  return proto_.placeholders();
 }
 
 void Details::ClearChanges() {
@@ -473,16 +464,6 @@ void Details::Update() {
   price_attribution_content_.assign(proto_.total_price().empty()
                                         ? std::string()
                                         : proto_.description_line_3());
-
-  bool isDescriptionLine1Empty = descriptionLine1().empty();
-  bool isDescriptionLine2Empty = descriptionLine2().empty();
-  if (isDescriptionLine1Empty && isDescriptionLine2Empty) {
-    title_max_lines_ = 3;
-  } else if (isDescriptionLine1Empty || isDescriptionLine2Empty) {
-    title_max_lines_ = 2;
-  } else {
-    title_max_lines_ = 1;
-  }
 }
 
 }  // namespace autofill_assistant

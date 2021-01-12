@@ -144,19 +144,33 @@ class AssistantDetailsViewBinder
         AssistantTextUtils.applyVisualAppearanceTags(
                 viewHolder.mPriceAttributionView, details.getPriceAttribution(), null);
 
+        AssistantPlaceholdersConfiguration placeholders = details.getPlaceholdersConfiguration();
+        boolean hideDescriptionLine1 = details.getDescriptionLine1().isEmpty()
+                && !placeholders.getShowDescriptionLine1Placeholder();
+        boolean hideDescriptionLine2 = details.getDescriptionLine2().isEmpty()
+                && !placeholders.getShowDescriptionLine2Placeholder();
+        boolean hideDescriptionLine3 = details.getDescriptionLine3().isEmpty()
+                && !placeholders.getShowDescriptionLine3Placeholder();
+
         // Allow title line wrapping according to number of maximum allowed lines.
-        if (details.getTitleMaxLines() == 1) {
+        // TODO(crbug.com/806868): Should we move the hide/placeholders/maxLines logic to C++?
+        int titleMaxLines = 1;
+        if (hideDescriptionLine1) titleMaxLines++;
+        if (hideDescriptionLine2) titleMaxLines++;
+
+        if (titleMaxLines == 1) {
             viewHolder.mTitleView.setSingleLine(true);
             viewHolder.mTitleView.setEllipsize(null);
         } else {
             viewHolder.mTitleView.setSingleLine(false);
-            viewHolder.mTitleView.setMaxLines(details.getTitleMaxLines());
+            viewHolder.mTitleView.setMaxLines(titleMaxLines);
             viewHolder.mTitleView.setEllipsize(TextUtils.TruncateAt.END);
         }
 
-        hideIfEmpty(viewHolder.mDescriptionLine1View);
-        hideIfEmpty(viewHolder.mDescriptionLine2View);
-        hideIfEmpty(viewHolder.mDescriptionLine3View);
+        // Hide views without text or placeholders.
+        hideIf(viewHolder.mDescriptionLine1View, hideDescriptionLine1);
+        hideIf(viewHolder.mDescriptionLine2View, hideDescriptionLine2);
+        hideIf(viewHolder.mDescriptionLine3View, hideDescriptionLine3);
         hideIfEmpty(viewHolder.mPriceAttributionView);
 
         // If no price provided, hide the price view (containing separator, price label, and price).
@@ -167,7 +181,7 @@ class AssistantDetailsViewBinder
         setAccessibility(viewHolder.mImageView, details.getImageAccessibilityHint());
 
         if (details.getImageUrl().isEmpty()) {
-            if (details.getShowImagePlaceholder()) {
+            if (placeholders.getShowImagePlaceholder()) {
                 viewHolder.mImageView.setImageDrawable(viewHolder.mDefaultImage);
                 viewHolder.mImageView.setOnClickListener(null);
             } else {
@@ -197,7 +211,11 @@ class AssistantDetailsViewBinder
     }
 
     private void hideIfEmpty(TextView view) {
-        view.setVisibility(view.length() == 0 ? View.GONE : View.VISIBLE);
+        hideIf(view, view.length() == 0);
+    }
+
+    private void hideIf(TextView view, boolean hide) {
+        view.setVisibility(hide ? View.GONE : View.VISIBLE);
     }
 
     private void setTextStyles(AssistantDetails details, ViewHolder viewHolder) {
@@ -217,21 +235,19 @@ class AssistantDetailsViewBinder
         setTextStyle(viewHolder.mTotalPriceView, details.getUserApprovalRequired(),
                 /* highlight= */ false, R.style.TextAppearance_AssistantDetailsPrice);
 
-        if (shouldStartOrContinuePlaceholderAnimation(details, viewHolder)) {
-            startOrContinuePlaceholderAnimations(viewHolder);
+        if (shouldStartOrContinuePlaceholderAnimation(details.getPlaceholdersConfiguration())) {
+            startOrContinuePlaceholderAnimations(details, viewHolder);
         } else {
             stopPlaceholderAnimations();
         }
     }
 
     private boolean shouldStartOrContinuePlaceholderAnimation(
-            AssistantDetails details, ViewHolder viewHolder) {
-        boolean isAtLeastOneFieldEmpty = viewHolder.mTitleView.length() == 0
-                || viewHolder.mDescriptionLine1View.length() == 0
-                || viewHolder.mDescriptionLine2View.length() == 0
-                || viewHolder.mDescriptionLine3View.length() == 0
-                || viewHolder.mImageView.getDrawable() == viewHolder.mDefaultImage;
-        return details.getAnimatePlaceholders() && isAtLeastOneFieldEmpty;
+            AssistantPlaceholdersConfiguration placeholders) {
+        return placeholders.getShowImagePlaceholder() || placeholders.getShowTitlePlaceholder()
+                || placeholders.getShowDescriptionLine1Placeholder()
+                || placeholders.getShowDescriptionLine2Placeholder()
+                || placeholders.getShowDescriptionLine3Placeholder();
     }
 
     private void setTextStyle(
@@ -258,7 +274,8 @@ class AssistantDetailsViewBinder
         return roundedBitmap;
     }
 
-    private void startOrContinuePlaceholderAnimations(ViewHolder viewHolder) {
+    private void startOrContinuePlaceholderAnimations(
+            AssistantDetails details, ViewHolder viewHolder) {
         if (mPulseAnimation != null) {
             return;
         }
@@ -278,23 +295,23 @@ class AssistantDetailsViewBinder
                 viewHolder.mDefaultImage.setColor(Color.TRANSPARENT);
             }
         });
+
+        AssistantPlaceholdersConfiguration placeholders = details.getPlaceholdersConfiguration();
         mPulseAnimation.addUpdateListener(animation -> {
             int animatedValue = (int) animation.getAnimatedValue();
             viewHolder.mTitleView.setBackgroundColor(
-                    viewHolder.mTitleView.length() == 0 ? animatedValue : Color.TRANSPARENT);
+                    placeholders.getShowTitlePlaceholder() ? animatedValue : Color.TRANSPARENT);
             viewHolder.mDescriptionLine1View.setBackgroundColor(
-                    viewHolder.mDescriptionLine1View.length() == 0 ? animatedValue
-                                                                   : Color.TRANSPARENT);
+                    placeholders.getShowDescriptionLine1Placeholder() ? animatedValue
+                                                                      : Color.TRANSPARENT);
             viewHolder.mDescriptionLine2View.setBackgroundColor(
-                    viewHolder.mDescriptionLine2View.length() == 0 ? animatedValue
-                                                                   : Color.TRANSPARENT);
+                    placeholders.getShowDescriptionLine2Placeholder() ? animatedValue
+                                                                      : Color.TRANSPARENT);
             viewHolder.mDescriptionLine3View.setBackgroundColor(
-                    viewHolder.mDescriptionLine3View.length() == 0 ? animatedValue
-                                                                   : Color.TRANSPARENT);
+                    placeholders.getShowDescriptionLine3Placeholder() ? animatedValue
+                                                                      : Color.TRANSPARENT);
             viewHolder.mDefaultImage.setColor(
-                    viewHolder.mImageView.getDrawable() == viewHolder.mDefaultImage
-                            ? animatedValue
-                            : Color.TRANSPARENT);
+                    placeholders.getShowImagePlaceholder() ? animatedValue : Color.TRANSPARENT);
         });
         mPulseAnimation.start();
     }
