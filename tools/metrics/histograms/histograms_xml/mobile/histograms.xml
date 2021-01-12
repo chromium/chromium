@@ -200,7 +200,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2021-03-20">
+    expires_after="2021-07-11">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>

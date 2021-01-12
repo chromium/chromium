@@ -1053,7 +1053,7 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.FetchIdentitiesWithCallback.Duration"
-    units="ms" expires_after="2021-04-19">
+    units="ms" expires_after="2021-07-11">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1116,7 +1116,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.CookieCount" units="cookies"
-    expires_after="2021-04-19">
+    expires_after="2021-07-11">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

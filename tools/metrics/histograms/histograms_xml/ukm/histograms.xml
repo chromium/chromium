@@ -135,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.IOSLog.OnSuccess" units="records"
-    expires_after="2021-04-11">
+    expires_after="2021-07-11">
   <owner>eugenebut@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <summary>
