@@ -170,7 +170,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     void SendMessage(network::mojom::WebSocketMessageType type,
                      uint64_t length) override {
       if (!peer_ || !peer_->connected_) {
-        pending_messages_.emplace_back(std::make_tuple(type, length));
+        pending_messages_.emplace_back(std::make_pair(type, length));
       } else {
         peer_->client_receiver_->OnDataFrame(/*final=*/true, type, length);
       }
