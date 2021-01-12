@@ -23,6 +23,12 @@ ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() {
   SetUpLabs();
 }
 
+ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel(
+    const std::vector<LabInfo>& lab_info)
+    : lab_info_(lab_info) {
+  SetUpLabs();
+}
+
 ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
 
 const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {

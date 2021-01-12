@@ -15,6 +15,8 @@ ChromeLabsButton::ChromeLabsButton()
       views::ButtonController::NotifyAction::kOnPress);
 }
 
+ChromeLabsButton::~ChromeLabsButton() = default;
+
 void ChromeLabsButton::UpdateIcon() {
   UpdateIconsWithStandardColors(kChromeLabsIcon);
 }
@@ -23,11 +25,17 @@ const char* ChromeLabsButton::GetClassName() const {
   return "ChromeLabsButton";
 }
 
+void ChromeLabsButton::SetLabInfoForTesting(
+    const std::vector<LabInfo>& test_lab_info) {
+  test_lab_info_ = test_lab_info;
+}
+
 void ChromeLabsButton::ButtonPressed() {
   if (ChromeLabsBubbleView::IsShowing()) {
     ChromeLabsBubbleView::Hide();
     return;
   }
-  ChromeLabsBubbleView::Show(this,
-                             std::make_unique<ChromeLabsBubbleViewModel>());
+  std::unique_ptr<ChromeLabsBubbleViewModel> model =
+      std::make_unique<ChromeLabsBubbleViewModel>(test_lab_info_);
+  ChromeLabsBubbleView::Show(this, std::move(model));
 }
