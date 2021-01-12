@@ -46,9 +46,10 @@ export class CrMenuSelector extends HTMLElement {
     // If the focus was moved by keyboard and is coming in from a relatedTarget
     // that is not within this menu, move the focus to the first menu item. This
     // ensures that the first menu item is always the first focused item when
-    // focusing into the menu.
+    // focusing into the menu. A null relatedTarget means the focus was moved
+    // from outside the WebContents.
     const focusMovedWithKeyboard = this.focusOutlineManager_.visible;
-    const focusMovedFromOutside = e.relatedTarget &&
+    const focusMovedFromOutside = e.relatedTarget === null ||
         !this.contains(/** @type {!HTMLElement} */ (e.relatedTarget));
     if (focusMovedWithKeyboard && focusMovedFromOutside) {
       this.getItems_()[0].focus();
