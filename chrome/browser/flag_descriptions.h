@@ -1705,17 +1705,8 @@ extern const char kOfflinePagesDescriptivePendingStatusDescription[];
 extern const char kOfflinePagesInDownloadHomeOpenInCctName[];
 extern const char kOfflinePagesInDownloadHomeOpenInCctDescription[];
 
-extern const char kOfflinePagesLoadSignalCollectingName[];
-extern const char kOfflinePagesLoadSignalCollectingDescription[];
-
 extern const char kOfflinePagesPrefetchingName[];
 extern const char kOfflinePagesPrefetchingDescription[];
-
-extern const char kOfflinePagesResourceBasedSnapshotName[];
-extern const char kOfflinePagesResourceBasedSnapshotDescription[];
-
-extern const char kOfflinePagesRenovationsName[];
-extern const char kOfflinePagesRenovationsDescription[];
 
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];

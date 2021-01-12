@@ -5976,9 +5976,7 @@ static_library("browser") {
     deps += [
       "//chrome/common:offline_page_auto_fetcher_mojom",
       "//components/offline_pages/content/background_loader",
-      "//components/offline_pages/content/renovations",
       "//components/offline_pages/core/downloads:offline_pages_ui_adapter",
-      "//components/offline_pages/core/renovations",
       "//components/offline_pages/core/request_header",
     ]
 

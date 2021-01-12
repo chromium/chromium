@@ -3528,11 +3528,6 @@
     "expiry_milestone": 86
   },
   {
-    "name": "offline-pages-load-signal-collecting",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "offline-pages-pending-download",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76
@@ -3541,16 +3536,6 @@
     "name": "offline-pages-prefetching",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-renovations",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 86
-  },
-  {
-    "name": "offline-pages-resource-based-snapshot",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 86
   },
   {
     "name": "offlining-recent-pages",

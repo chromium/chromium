@@ -180,7 +180,6 @@ source_set("unit_tests") {
     ":switches",
     ":test_support",
     "prefetch:unit_tests",
-    "renovations:unit_tests",
     "//base",
     "//base/test:test_support",
     "//components/offline_pages/task:test_support",

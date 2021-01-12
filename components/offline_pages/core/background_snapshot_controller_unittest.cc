@@ -30,7 +30,6 @@ class BackgroundSnapshotControllerTest
 
   // BackgroundSnapshotController::Client
   void StartSnapshot() override;
-  void RunRenovations() override;
 
   // Utility methods.
   // Runs until all of the tasks that are not delayed are gone from the task
@@ -66,10 +65,6 @@ void BackgroundSnapshotControllerTest::TearDown() {
 
 void BackgroundSnapshotControllerTest::StartSnapshot() {
   snapshot_count_++;
-}
-
-void BackgroundSnapshotControllerTest::RunRenovations() {
-  controller_->RenovationsCompleted();
 }
 
 void BackgroundSnapshotControllerTest::PumpLoop() {

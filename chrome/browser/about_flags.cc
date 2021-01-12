@@ -3488,12 +3488,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemKeyboardLockDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSystemKeyboardLock)},
 #if defined(OS_ANDROID)
-    {"offline-pages-load-signal-collecting",
-     flag_descriptions::kOfflinePagesLoadSignalCollectingName,
-     flag_descriptions::kOfflinePagesLoadSignalCollectingDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesLoadSignalCollectingFeature)},
     {"offline-pages-live-page-sharing",
      flag_descriptions::kOfflinePagesLivePageSharingName,
      flag_descriptions::kOfflinePagesLivePageSharingDescription, kOsAndroid,
@@ -3514,16 +3508,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          offline_pages::kOfflinePagesDescriptivePendingStatusFeature)},
-    {"offline-pages-resource-based-snapshot",
-     flag_descriptions::kOfflinePagesResourceBasedSnapshotName,
-     flag_descriptions::kOfflinePagesResourceBasedSnapshotDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesResourceBasedSnapshotFeature)},
-    {"offline-pages-renovations",
-     flag_descriptions::kOfflinePagesRenovationsName,
-     flag_descriptions::kOfflinePagesRenovationsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(offline_pages::kOfflinePagesRenovationsFeature)},
     {"offline-pages-in-downloads-home-open-in-cct",
      flag_descriptions::kOfflinePagesInDownloadHomeOpenInCctName,
      flag_descriptions::kOfflinePagesInDownloadHomeOpenInCctDescription,

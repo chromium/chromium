@@ -2921,30 +2921,11 @@ const char kOfflinePagesInDownloadHomeOpenInCctDescription[] =
     "When enabled offline pages launched from the Downloads Home will be "
     "opened in Chrome Custom Tabs (CCT) instead of regular tabs.";
 
-const char kOfflinePagesLoadSignalCollectingName[] =
-    "Enables collecting load timing data for offline page snapshots.";
-const char kOfflinePagesLoadSignalCollectingDescription[] =
-    "Enables loading completeness data collection while writing an offline "
-    "page.  This data is collected in the snapshotted offline page to allow "
-    "data analysis to improve deciding when to make the offline snapshot.";
-
 const char kOfflinePagesPrefetchingName[] =
     "Enables suggested offline pages to be prefetched.";
 const char kOfflinePagesPrefetchingDescription[] =
     "Enables suggested offline pages to be prefetched, so useful content is "
     "available while offline.";
-
-const char kOfflinePagesResourceBasedSnapshotName[] =
-    "Enables offline page snapshots to be based on percentage of page loaded.";
-const char kOfflinePagesResourceBasedSnapshotDescription[] =
-    "Enables offline page snapshots to use a resource percentage based "
-    "approach for determining when the page is loaded as opposed to a time "
-    "based approach";
-
-const char kOfflinePagesRenovationsName[] = "Enables offline page renovations.";
-const char kOfflinePagesRenovationsDescription[] =
-    "Enables offline page renovations which correct issues with dynamic "
-    "content that occur when offlining pages that use JavaScript.";
 
 const char kOfflinePagesLivePageSharingName[] =
     "Enables live page sharing of offline pages";

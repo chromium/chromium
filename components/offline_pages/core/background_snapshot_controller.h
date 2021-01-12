@@ -47,11 +47,6 @@ class BackgroundSnapshotController {
     // Invoked at a good moment to start a snapshot.
     virtual void StartSnapshot() = 0;
 
-    // Invoked when the page is sufficiently loaded for running
-    // renovations. The client should call the RenovationsCompleted()
-    // when they finish.
-    virtual void RunRenovations() = 0;
-
    protected:
     virtual ~Client() {}
   };
@@ -90,7 +85,6 @@ class BackgroundSnapshotController {
   BackgroundSnapshotController::State state_;
   int64_t delay_after_document_on_load_completed_ms_;
   int64_t delay_after_renovations_completed_ms_;
-  bool renovations_enabled_;
 
   base::WeakPtrFactory<BackgroundSnapshotController> weak_ptr_factory_{this};
 

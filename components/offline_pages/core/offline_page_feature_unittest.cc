@@ -31,17 +31,6 @@ TEST(OfflinePageFeatureTest, OfflinePagesLivePageSharing) {
   EXPECT_TRUE(offline_pages::IsOfflinePagesLivePageSharingEnabled());
 }
 
-TEST(OfflinePageFeatureTest, OfflinePagesLoadSignalCollecting) {
-  // Disabled by default.
-  EXPECT_FALSE(offline_pages::IsOfflinePagesLoadSignalCollectingEnabled());
-
-  // Check if helper method works correctly when the features is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kOfflinePagesLoadSignalCollectingFeature);
-  EXPECT_TRUE(offline_pages::IsOfflinePagesLoadSignalCollectingEnabled());
-}
-
 TEST(OfflinePageFeatureTest, OfflinePagesPrefetching) {
   // Enabled by default.
   EXPECT_TRUE(offline_pages::IsPrefetchingOfflinePagesEnabled());
