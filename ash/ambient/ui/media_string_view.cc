@@ -36,6 +36,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ namespace {
 // zones.
 class FadeoutLayerDelegate : public ui::LayerDelegate {
  public:
-  explicit FadeoutLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
+  FadeoutLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
     layer_.set_delegate(this);
     layer_.SetFillsBoundsOpaquely(false);
   }
@@ -123,10 +124,6 @@ MediaStringView::MediaStringView() {
 }
 
 MediaStringView::~MediaStringView() = default;
-
-const char* MediaStringView::GetClassName() const {
-  return "MediaStringView";
-}
 
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
@@ -343,5 +340,8 @@ void MediaStringView::StartScrolling(bool is_initial) {
     text_layer->SetTransform(transform);
   }
 }
+
+BEGIN_METADATA(MediaStringView, views::View)
+END_METADATA
 
 }  // namespace ash

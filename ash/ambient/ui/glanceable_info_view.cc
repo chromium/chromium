@@ -30,6 +30,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -86,11 +87,6 @@ GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate)
 }
 
 GlanceableInfoView::~GlanceableInfoView() = default;
-
-const char* GlanceableInfoView::GetClassName() const {
-  return "GlanceableInfoView";
-}
-
 void GlanceableInfoView::OnWeatherInfoUpdated() {
   Show();
 }
@@ -173,5 +169,8 @@ void GlanceableInfoView::InitLayout() {
   temperature_->SetBorder(views::CreateEmptyBorder(
       0, 0, GetTimeFontDescent() - GetTemperatureFontDescent(), 0));
 }
+
+BEGIN_METADATA(GlanceableInfoView, views::View)
+END_METADATA
 
 }  // namespace ash

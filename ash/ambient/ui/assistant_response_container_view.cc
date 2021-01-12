@@ -15,6 +15,7 @@
 #include "ash/assistant/ui/main_stage/assistant_text_element_view.h"
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -33,10 +34,6 @@ AssistantResponseContainerView::AssistantResponseContainerView(
 }
 
 AssistantResponseContainerView::~AssistantResponseContainerView() = default;
-
-const char* AssistantResponseContainerView::GetClassName() const {
-  return "AssistantResponseContainerView";
-}
 
 gfx::Size AssistantResponseContainerView::CalculatePreferredSize() const {
   return gfx::Size(kPreferredWidthDip,
@@ -87,5 +84,8 @@ void AssistantResponseContainerView::AddErrorElementView(
   content_view()->AddChildView(
       std::make_unique<AssistantErrorElementView>(error_element));
 }
+
+BEGIN_METADATA(AssistantResponseContainerView, AnimatedContainerView)
+END_METADATA
 
 }  //  namespace ash

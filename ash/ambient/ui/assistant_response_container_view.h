@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -18,11 +17,16 @@ class AssistantViewDelegate;
 
 class AssistantResponseContainerView : public AnimatedContainerView {
  public:
+  METADATA_HEADER(AssistantResponseContainerView);
+
   explicit AssistantResponseContainerView(AssistantViewDelegate* delegate);
+  AssistantResponseContainerView(const AssistantResponseContainerView&) =
+      delete;
+  AssistantResponseContainerView& operator=(
+      const AssistantResponseContainerView&) = delete;
   ~AssistantResponseContainerView() override;
 
   // AnimatedContainerView:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnContentsPreferredSizeChanged(views::View* content_view) override;
 
@@ -34,8 +38,6 @@ class AssistantResponseContainerView : public AnimatedContainerView {
   // AnimatedContainerView:
   std::unique_ptr<ElementAnimator> HandleUiElement(
       const AssistantUiElement* ui_element) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantResponseContainerView);
 };
 
 }  //  namespace ash

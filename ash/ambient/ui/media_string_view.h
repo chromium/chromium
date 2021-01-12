@@ -34,13 +34,12 @@ class MediaStringView : public views::View,
                         public media_session::mojom::MediaControllerObserver,
                         public ui::ImplicitAnimationObserver {
  public:
+  METADATA_HEADER(MediaStringView);
+
   MediaStringView();
   MediaStringView(const MediaStringView&) = delete;
   MediaStringView& operator=(const MediaStringView&) = delete;
   ~MediaStringView() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;

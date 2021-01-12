@@ -22,6 +22,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -45,10 +46,6 @@ PhotoView::PhotoView(AmbientViewDelegate* delegate) : delegate_(delegate) {
 }
 
 PhotoView::~PhotoView() = default;
-
-const char* PhotoView::GetClassName() const {
-  return "PhotoView";
-}
 
 void PhotoView::OnImageAdded() {
   // If NeedToAnimate() is true, will start transition animation and
@@ -151,5 +148,8 @@ bool PhotoView::NeedToAnimateTransition() const {
 const gfx::ImageSkia& PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
 }
+
+BEGIN_METADATA(PhotoView, views::View)
+END_METADATA
 
 }  // namespace ash
