@@ -200,6 +200,9 @@ const unsigned int kResolveTimeZoneTimeoutSeconds = 60;
 constexpr const char kDefaultExitReason[] = "Next";
 constexpr const char kResetScreenExitReason[] = "Cancel";
 
+// TODO(https://crbug.com/1161535) Remove after stepping stone is set after M87.
+constexpr char kLegacyUpdateScreenName[] = "update";
+
 // Stores the list of all screens that should be shown when resuming OOBE.
 const chromeos::StaticOobeScreenId kResumableScreens[] = {
     chromeos::WelcomeView::kScreenId,
@@ -331,6 +334,12 @@ GetSharedURLLoaderFactoryForTesting() {
   return *loader;
 }
 
+chromeos::OobeScreenId PrefToScreenId(const std::string& pref_value) {
+  if (pref_value == kLegacyUpdateScreenName)
+    return chromeos::UpdateView::kScreenId;
+  return chromeos::OobeScreenId(pref_value);
+}
+
 }  // namespace
 
 namespace chromeos {
@@ -459,7 +468,7 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
     const std::string screen_pref =
         GetLocalState()->GetString(prefs::kOobeScreenPending);
     if (!screen_pref.empty())
-      actual_first_screen = OobeScreenId(screen_pref);
+      actual_first_screen = PrefToScreenId(screen_pref);
     else
       actual_first_screen = WelcomeView::kScreenId;
   }
