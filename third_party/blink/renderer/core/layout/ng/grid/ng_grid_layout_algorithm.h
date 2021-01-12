@@ -225,7 +225,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
       const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
       Vector<GridItemData>* out_of_flow_items,
-      LayoutUnit* intrinsic_block_size);
+      LayoutUnit* intrinsic_block_size,
+      LayoutUnit* block_size);
 
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,
@@ -235,10 +236,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   Vector<LayoutUnit> ComputeSetOffsets(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       LayoutUnit grid_gap) const;
-
-  // Tests whether the row gap is unresolvable based on its type and the
-  // available size.
-  bool IsRowGridGapUnresolvable(LayoutUnit available_size) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const Vector<GridItemData>& grid_items,
@@ -255,7 +252,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const Vector<LayoutUnit>& row_set_offsets,
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
       const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      LayoutUnit intrinsic_block_size,
+      LayoutUnit block_size,
       LayoutUnit column_grid_gap,
       LayoutUnit row_grid_gap,
       Vector<GridItemData>* out_of_flow_items);
@@ -268,7 +265,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       LayoutUnit* start_offset,
       LayoutUnit* size,
       GridTrackSizingDirection track_direction = kForColumns,
-      const LayoutUnit intrinsic_block_size = LayoutUnit()) const;
+      const LayoutUnit block_size = LayoutUnit()) const;
 
   // Determines the position of the out of flow item's container.
   void DeterminePositionOfOutOfFlowContainer(

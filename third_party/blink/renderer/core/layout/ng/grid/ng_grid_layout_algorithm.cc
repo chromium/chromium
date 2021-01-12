@@ -64,18 +64,12 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // Place grid and out of flow items.
   LayoutUnit intrinsic_block_size;
+  LayoutUnit block_size;
   PlaceItems(grid_items, algorithm_column_track_collection,
              algorithm_row_track_collection, &out_of_flow_items,
-             &intrinsic_block_size);
+             &intrinsic_block_size, &block_size);
 
-  intrinsic_block_size =
-      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                              BorderScrollbarPadding(), intrinsic_block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
-
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
-      border_box_size_.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
@@ -1252,8 +1246,10 @@ void NGGridLayoutAlgorithm::PlaceItems(
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
     const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
     Vector<GridItemData>* out_of_flow_items,
-    LayoutUnit* intrinsic_block_size) {
+    LayoutUnit* intrinsic_block_size,
+    LayoutUnit* block_size) {
   DCHECK(intrinsic_block_size);
+  DCHECK(block_size);
   LayoutUnit column_grid_gap =
       GridGap(kForColumns, ChildAvailableSize().inline_size);
   LayoutUnit row_grid_gap = GridGap(kForRows, ChildAvailableSize().block_size);
@@ -1269,20 +1265,35 @@ void NGGridLayoutAlgorithm::PlaceItems(
       (row_set_offsets.size() == 1 ? LayoutUnit() : row_grid_gap) +
       BorderScrollbarPadding().block_end;
 
+  *intrinsic_block_size =
+      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                              BorderScrollbarPadding(), *intrinsic_block_size);
+
+  *block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), *intrinsic_block_size,
+      border_box_size_.inline_size);
+
   // If the row gap is percent or calc, it should be computed now that the
   // intrinsic size is known. However, the gap should not be added to the
   // intrinsic block size.
-  if (IsRowGridGapUnresolvable(ChildAvailableSize().block_size)) {
-    row_grid_gap = GridGap(kForRows, *intrinsic_block_size);
+  const bool is_row_gap_unresolvable =
+      Style().RowGap() && Style().RowGap()->IsPercentOrCalc() &&
+      ChildAvailableSize().block_size == kIndefiniteSize;
+  if (is_row_gap_unresolvable) {
+    const LayoutUnit resolved_available_block_size =
+        (*block_size - BorderScrollbarPadding().BlockSum())
+            .ClampNegativeToZero();
+
+    row_grid_gap = GridGap(kForRows, resolved_available_block_size);
     row_set_offsets = ComputeSetOffsets(row_track_collection, row_grid_gap);
   }
 
-  PlaceGridItems(grid_items, column_set_offsets, row_set_offsets,
-                 *intrinsic_block_size, column_grid_gap, row_grid_gap);
+  PlaceGridItems(grid_items, column_set_offsets, row_set_offsets, *block_size,
+                 column_grid_gap, row_grid_gap);
 
   PlaceOutOfFlowItems(column_set_offsets, row_set_offsets,
                       column_track_collection, row_track_collection,
-                      *intrinsic_block_size, column_grid_gap, row_grid_gap,
+                      *block_size, column_grid_gap, row_grid_gap,
                       out_of_flow_items);
 }
 
@@ -1292,10 +1303,14 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
   const base::Optional<Length>& gap =
       track_direction == kForColumns ? Style().ColumnGap() : Style().RowGap();
 
+  if (!gap)
+    return LayoutUnit();
+
   // TODO(ansollan): Update behavior based on outcome of working group
   // discussions. See https://github.com/w3c/csswg-drafts/issues/5566.
-  if (!gap || IsRowGridGapUnresolvable(available_size))
-    return LayoutUnit();
+  if (available_size == kIndefiniteSize)
+    available_size = LayoutUnit();
+
   return MinimumValueForLength(*gap, available_size);
 }
 
@@ -1314,13 +1329,6 @@ Vector<LayoutUnit> NGGridLayoutAlgorithm::ComputeSetOffsets(
     set_offsets.push_back(set_offset);
   }
   return set_offsets;
-}
-
-bool NGGridLayoutAlgorithm::IsRowGridGapUnresolvable(
-    LayoutUnit available_size) const {
-  const base::Optional<Length>& row_gap = Style().RowGap();
-  return row_gap && row_gap->IsPercentOrCalc() &&
-         available_size == kIndefiniteSize;
 }
 
 namespace {
@@ -1390,7 +1398,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     const Vector<GridItemData>& grid_items,
     const Vector<LayoutUnit>& column_set_offsets,
     const Vector<LayoutUnit>& row_set_offsets,
-    LayoutUnit intrinsic_block_size,
+    LayoutUnit block_size,
     LayoutUnit column_grid_gap,
     LayoutUnit row_grid_gap) {
   for (const GridItemData& grid_item : grid_items) {
@@ -1400,7 +1408,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
                          &offset.inline_offset, &size.inline_size);
     ComputeOffsetAndSize(grid_item, row_set_offsets, row_grid_gap,
                          &offset.block_offset, &size.block_size, kForRows,
-                         intrinsic_block_size);
+                         block_size);
     const auto& item_style = grid_item.node.Style();
     NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                      item_style.GetWritingDirection(),
@@ -1439,7 +1447,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const Vector<LayoutUnit>& row_set_offsets,
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
     const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-    LayoutUnit intrinsic_block_size,
+    LayoutUnit block_size,
     LayoutUnit column_grid_gap,
     LayoutUnit row_grid_gap,
     Vector<GridItemData>* out_of_flow_items) {
@@ -1455,7 +1463,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     ComputeOffsetAndSize(out_of_flow_item, row_set_offsets, row_grid_gap,
                          &containing_block_rect.offset.block_offset,
                          &containing_block_rect.size.block_size, kForRows,
-                         intrinsic_block_size);
+                         block_size);
     NGLogicalStaticPosition::InlineEdge inline_edge;
     NGLogicalStaticPosition::BlockEdge block_edge;
     LogicalOffset child_offset = containing_block_rect.offset;
@@ -1477,7 +1485,7 @@ void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     LayoutUnit* start_offset,
     LayoutUnit* size,
     GridTrackSizingDirection track_direction,
-    LayoutUnit intrinsic_block_size) const {
+    LayoutUnit block_size) const {
   wtf_size_t start_index, end_index;
   LayoutUnit border;
   // The default padding box value of the |size| will only be used in out of
@@ -1493,7 +1501,7 @@ void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     end_index = item.rows_end_set_index;
     border = container_builder_.Borders().block_start;
     *size = border_box_size_.block_size == kIndefiniteSize
-                ? intrinsic_block_size
+                ? block_size
                 : border_box_size_.block_size;
     *size -= container_builder_.Borders().BlockSum();
   }
