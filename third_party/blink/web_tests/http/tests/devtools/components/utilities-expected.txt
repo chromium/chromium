@@ -3,8 +3,6 @@ This test checks Web Inspector utilities.
 
 Running: orderedMergeIntersect
 
-Running: binaryIndexOfTest
-
 Running: lowerBoundTest
 
 Running: upperBoundTest

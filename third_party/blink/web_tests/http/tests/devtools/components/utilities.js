@@ -44,29 +44,6 @@
       next();
     },
 
-    function binaryIndexOfTest(next) {
-      var testArrays = [
-        [], [1], [1, 10], [1, 10, 11, 12, 13, 14, 100], [-100, -50, 0, 50, 100], [-100, -14, -13, -12, -11, -10, -1]
-      ];
-
-      function testArray(array) {
-        function comparator(a, b) {
-          return a < b ? -1 : (a > b ? 1 : 0);
-        }
-
-        for (var i = -100; i <= 100; ++i) {
-          var reference = array.indexOf(i);
-          var actual = array.binaryIndexOf(i, comparator);
-          TestRunner.assertEquals(reference, actual, 'binaryIndexOf');
-        }
-        return true;
-      }
-
-      for (var i = 0, l = testArrays.length; i < l; ++i)
-        testArray(testArrays[i]);
-      next();
-    },
-
     function lowerBoundTest(next) {
       var testArrays = [[], [1], [-1, -1, 0, 0, 0, 0, 2, 3, 4, 4, 4, 7, 9, 9, 9]];
 
