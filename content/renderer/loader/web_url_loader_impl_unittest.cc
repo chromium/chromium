@@ -248,6 +248,7 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
   }
 
   void DidFail(const blink::WebURLError& error,
+               base::TimeTicks finishTime,
                int64_t totalEncodedDataLength,
                int64_t totalEncodedBodyLength,
                int64_t totalDecodedBodyLength) override {
