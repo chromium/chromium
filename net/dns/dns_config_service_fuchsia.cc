@@ -15,7 +15,11 @@ namespace internal {
 DnsConfigServiceFuchsia::DnsConfigServiceFuchsia() = default;
 DnsConfigServiceFuchsia::~DnsConfigServiceFuchsia() = default;
 
-void DnsConfigServiceFuchsia::ReadNow() {
+void DnsConfigServiceFuchsia::ReadConfigNow() {
+  // TODO(crbug.com/950717): Implement this method.
+}
+
+void DnsConfigServiceFuchsia::ReadHostsNow() {
   // TODO(crbug.com/950717): Implement this method.
 }
 

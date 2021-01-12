@@ -20,7 +20,8 @@ class TestDnsConfigService : public DnsConfigService {
   TestDnsConfigService();
   ~TestDnsConfigService() override;
 
-  void ReadNow() override {}
+  void ReadConfigNow() override {}
+  void ReadHostsNow() override {}
   bool StartWatching() override;
 
   // Expose the protected methods to this test suite.
@@ -34,10 +35,6 @@ class TestDnsConfigService : public DnsConfigService {
 
   void OnHostsRead(const DnsHosts& hosts) {
     DnsConfigService::OnHostsRead(hosts);
-  }
-
-  void set_watch_failed(bool value) {
-    DnsConfigService::set_watch_failed(value);
   }
 
   void RefreshConfig() override;

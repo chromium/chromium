@@ -6,8 +6,14 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/optional.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace net {
 
@@ -15,12 +21,14 @@ namespace net {
 const base::TimeDelta DnsConfigService::kInvalidationTimeout =
     base::TimeDelta::FromMilliseconds(150);
 
-DnsConfigService::DnsConfigService()
+DnsConfigService::DnsConfigService(
+    base::Optional<base::TimeDelta> config_change_delay)
     : watch_failed_(false),
       have_config_(false),
       have_hosts_(false),
       need_update_(false),
-      last_sent_empty_(true) {
+      last_sent_empty_(true),
+      config_change_delay_(config_change_delay) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -33,7 +41,8 @@ void DnsConfigService::ReadConfig(const CallbackType& callback) {
   DCHECK(!callback.is_null());
   DCHECK(callback_.is_null());
   callback_ = callback;
-  ReadNow();
+  ReadConfigNow();
+  ReadHostsNow();
 }
 
 void DnsConfigService::WatchConfig(const CallbackType& callback) {
@@ -42,12 +51,34 @@ void DnsConfigService::WatchConfig(const CallbackType& callback) {
   DCHECK(callback_.is_null());
   callback_ = callback;
   watch_failed_ = !StartWatching();
-  ReadNow();
+  ReadConfigNow();
+  ReadHostsNow();
 }
 
 void DnsConfigService::RefreshConfig() {
   // Overridden on supported platforms.
   NOTREACHED();
+}
+
+DnsConfigService::Watcher::Watcher(DnsConfigService* service)
+    : service_(service) {}
+
+DnsConfigService::Watcher::~Watcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void DnsConfigService::Watcher::OnConfigChanged(bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  service_->OnConfigChanged(succeeded);
+}
+
+void DnsConfigService::Watcher::OnHostsChanged(bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  service_->OnHostsChanged(succeeded);
+}
+
+void DnsConfigService::Watcher::CheckOnCorrectSequence() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void DnsConfigService::InvalidateConfig() {
@@ -132,6 +163,39 @@ void DnsConfigService::OnCompleteConfig() {
     callback_.Run(DnsConfig());
   } else {
     callback_.Run(dns_config_);
+  }
+}
+
+void DnsConfigService::OnConfigChanged(bool succeeded) {
+  if (config_change_delay_) {
+    // Ignore transient flutter of config source by delaying the signal a bit.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DnsConfigService::OnConfigChangedDelayed,
+                       weak_factory_.GetWeakPtr(), succeeded),
+        config_change_delay_.value());
+  } else {
+    OnConfigChangedDelayed(succeeded);
+  }
+}
+
+void DnsConfigService::OnHostsChanged(bool succeeded) {
+  InvalidateHosts();
+  if (succeeded) {
+    ReadHostsNow();
+  } else {
+    LOG(ERROR) << "DNS hosts watch failed.";
+    watch_failed_ = true;
+  }
+}
+
+void DnsConfigService::OnConfigChangedDelayed(bool succeeded) {
+  InvalidateConfig();
+  if (succeeded) {
+    ReadConfigNow();
+  } else {
+    LOG(ERROR) << "DNS config watch failed.";
+    watch_failed_ = true;
   }
 }
 

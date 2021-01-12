@@ -574,14 +574,18 @@ bool ConvertSettingsToDnsConfig(const DnsSystemSettings& settings,
 // Watches registry and HOSTS file for changes. Must live on a sequence which
 // allows IO.
 class DnsConfigServiceWin::Watcher
-    : public NetworkChangeNotifier::IPAddressObserver {
+    : public NetworkChangeNotifier::IPAddressObserver,
+      public DnsConfigService::Watcher {
  public:
-  explicit Watcher(DnsConfigServiceWin* service) : service_(service) {}
+  explicit Watcher(DnsConfigServiceWin* service)
+      : DnsConfigService::Watcher(service) {}
   ~Watcher() override { NetworkChangeNotifier::RemoveIPAddressObserver(this); }
 
-  bool Watch() {
-    RegistryWatcher::CallbackType callback = base::BindRepeating(
-        &DnsConfigServiceWin::OnConfigChanged, base::Unretained(service_));
+  bool Watch() override {
+    CheckOnCorrectSequence();
+
+    RegistryWatcher::CallbackType callback =
+        base::BindRepeating(&Watcher::OnConfigChanged, base::Unretained(this));
 
     bool success = true;
 
@@ -603,10 +607,10 @@ class DnsConfigServiceWin::Watcher
     dnscache_watcher_.Watch(kDnscachePath, callback);
     policy_watcher_.Watch(kPolicyPath, callback);
 
-    if (!hosts_watcher_.Watch(GetHostsPath(),
-                              base::FilePathWatcher::Type::kNonRecursive,
-                              base::BindRepeating(&Watcher::OnHostsChanged,
-                                                  base::Unretained(this)))) {
+    if (!hosts_watcher_.Watch(
+            GetHostsPath(), base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&Watcher::OnHostsFilePathWatcherChange,
+                                base::Unretained(this)))) {
       LOG(ERROR) << "DNS hosts watch failed to start.";
       success = false;
     } else {
@@ -617,19 +621,17 @@ class DnsConfigServiceWin::Watcher
   }
 
  private:
-  void OnHostsChanged(const base::FilePath& path, bool error) {
+  void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
     if (error)
       NetworkChangeNotifier::RemoveIPAddressObserver(this);
-    service_->OnHostsChanged(!error);
+    OnHostsChanged(!error);
   }
 
   // NetworkChangeNotifier::IPAddressObserver:
   void OnIPAddressChanged() override {
     // Need to update non-loopback IP of local host.
-    service_->OnHostsChanged(true);
+    OnHostsChanged(true);
   }
-
-  DnsConfigServiceWin* service_;
 
   RegistryWatcher tcpip_watcher_;
   RegistryWatcher tcpip6_watcher_;
@@ -716,7 +718,8 @@ class DnsConfigServiceWin::HostsReader : public SerialWorker {
   DISALLOW_COPY_AND_ASSIGN(HostsReader);
 };
 
-DnsConfigServiceWin::DnsConfigServiceWin() {
+DnsConfigServiceWin::DnsConfigServiceWin()
+    : DnsConfigService(base::nullopt /* config_change_delay */) {
   // Allow constructing on one sequence and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -728,8 +731,11 @@ DnsConfigServiceWin::~DnsConfigServiceWin() {
     hosts_reader_->Cancel();
 }
 
-void DnsConfigServiceWin::ReadNow() {
+void DnsConfigServiceWin::ReadConfigNow() {
   config_reader_->WorkNow();
+}
+
+void DnsConfigServiceWin::ReadHostsNow() {
   hosts_reader_->WorkNow();
 }
 
@@ -741,25 +747,6 @@ bool DnsConfigServiceWin::StartWatching() {
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_.reset(new Watcher(this));
   return watcher_->Watch();
-}
-
-void DnsConfigServiceWin::OnConfigChanged(bool succeeded) {
-  InvalidateConfig();
-  config_reader_->WorkNow();
-  if (!succeeded) {
-    LOG(ERROR) << "DNS config watch failed.";
-    set_watch_failed(true);
-  }
-}
-
-void DnsConfigServiceWin::OnHostsChanged(bool succeeded) {
-  InvalidateHosts();
-  if (succeeded) {
-    hosts_reader_->WorkNow();
-  } else {
-    LOG(ERROR) << "DNS hosts watch failed.";
-    set_watch_failed(true);
-  }
 }
 
 }  // namespace internal

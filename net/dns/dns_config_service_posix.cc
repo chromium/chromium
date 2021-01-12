@@ -15,9 +15,9 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
@@ -224,12 +224,15 @@ bool ReadDnsConfig(DnsConfig* dns_config) {
 
 }  // namespace
 
-class DnsConfigServicePosix::Watcher {
+class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
  public:
-  explicit Watcher(DnsConfigServicePosix* service) : service_(service) {}
-  ~Watcher() = default;
+  explicit Watcher(DnsConfigServicePosix* service)
+      : DnsConfigService::Watcher(service) {}
+  ~Watcher() override = default;
 
-  bool Watch() {
+  bool Watch() override {
+    CheckOnCorrectSequence();
+
     bool success = true;
     if (!config_watcher_.Watch(base::BindRepeating(&Watcher::OnConfigChanged,
                                                    base::Unretained(this)))) {
@@ -239,10 +242,11 @@ class DnsConfigServicePosix::Watcher {
 // Hosts file should never change on Android or iOS (and watching it on Android
 // is problematic; see http://crbug.com/600442), so don't watch it there.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
-    if (!hosts_watcher_.Watch(base::FilePath(service_->file_path_hosts_),
-                              base::FilePathWatcher::Type::kNonRecursive,
-                              base::BindRepeating(&Watcher::OnHostsChanged,
-                                                  base::Unretained(this)))) {
+    if (!hosts_watcher_.Watch(
+            base::FilePath(kFilePathHosts),
+            base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&Watcher::OnHostsFilePathWatcherChange,
+                                base::Unretained(this)))) {
       LOG(ERROR) << "DNS hosts watch failed to start.";
       success = false;
     }
@@ -251,31 +255,16 @@ class DnsConfigServicePosix::Watcher {
   }
 
  private:
-  void OnConfigChanged(bool succeeded) {
-    // Ignore transient flutter of resolv.conf by delaying the signal a bit.
-    const base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(50);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&Watcher::OnConfigChangedDelayed,
-                       weak_factory_.GetWeakPtr(), succeeded),
-        kDelay);
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
+    OnHostsChanged(!error);
   }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
-  void OnConfigChangedDelayed(bool succeeded) {
-    service_->OnConfigChanged(succeeded);
-  }
-
-  void OnHostsChanged(const base::FilePath& path, bool error) {
-    service_->OnHostsChanged(!error);
-  }
-
-  DnsConfigServicePosix* const service_;
   DnsConfigWatcher config_watcher_;
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   base::FilePathWatcher hosts_watcher_;
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
-
-  base::WeakPtrFactory<Watcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
@@ -321,9 +310,7 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
 class DnsConfigServicePosix::HostsReader : public SerialWorker {
  public:
   explicit HostsReader(DnsConfigServicePosix* service)
-      : service_(service),
-        file_path_hosts_(service->file_path_hosts_),
-        success_(false) {
+      : service_(service), success_(false) {
     // Allow execution on another thread; nothing thread-specific about
     // constructor.
     DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -335,7 +322,7 @@ class DnsConfigServicePosix::HostsReader : public SerialWorker {
   void DoWork() override {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    success_ = ParseHostsFile(file_path_hosts_, &hosts_);
+    success_ = ParseHostsFile(base::FilePath(kFilePathHosts), &hosts_);
   }
 
   void OnWorkFinished() override {
@@ -350,8 +337,6 @@ class DnsConfigServicePosix::HostsReader : public SerialWorker {
   // DoWork(), since service may be destroyed while SerialWorker is running
   // on worker thread.
   DnsConfigServicePosix* const service_;
-  // Hosts file path to parse.
-  const base::FilePath file_path_hosts_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
   DnsHosts hosts_;
   bool success_;
@@ -359,8 +344,7 @@ class DnsConfigServicePosix::HostsReader : public SerialWorker {
   DISALLOW_COPY_AND_ASSIGN(HostsReader);
 };
 
-DnsConfigServicePosix::DnsConfigServicePosix()
-    : file_path_hosts_(kFilePathHosts) {
+DnsConfigServicePosix::DnsConfigServicePosix() {
   // Allow constructing on one thread and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -373,11 +357,15 @@ DnsConfigServicePosix::~DnsConfigServicePosix() {
 void DnsConfigServicePosix::RefreshConfig() {
   InvalidateConfig();
   InvalidateHosts();
-  ReadNow();
+  ReadConfigNow();
+  ReadHostsNow();
 }
 
-void DnsConfigServicePosix::ReadNow() {
+void DnsConfigServicePosix::ReadConfigNow() {
   config_reader_->WorkNow();
+}
+
+void DnsConfigServicePosix::ReadHostsNow() {
   hosts_reader_->WorkNow();
 }
 
@@ -386,26 +374,6 @@ bool DnsConfigServicePosix::StartWatching() {
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_.reset(new Watcher(this));
   return watcher_->Watch();
-}
-
-void DnsConfigServicePosix::OnConfigChanged(bool succeeded) {
-  InvalidateConfig();
-  if (succeeded) {
-    config_reader_->WorkNow();
-  } else {
-    LOG(ERROR) << "DNS config watch failed.";
-    set_watch_failed(true);
-  }
-}
-
-void DnsConfigServicePosix::OnHostsChanged(bool succeeded) {
-  InvalidateHosts();
-  if (succeeded) {
-    hosts_reader_->WorkNow();
-  } else {
-    LOG(ERROR) << "DNS hosts watch failed.";
-    set_watch_failed(true);
-  }
 }
 
 void DnsConfigServicePosix::CreateReaders() {

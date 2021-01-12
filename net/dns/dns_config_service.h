@@ -9,6 +9,8 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -38,7 +40,13 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // reading system DNS settings is not supported on the current platform.
   static std::unique_ptr<DnsConfigService> CreateSystemService();
 
-  DnsConfigService();
+  // On detecting config change, will post and wait `config_change_delay` before
+  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
+  // Useful for platforms where multiple changes may be made and detected before
+  // the config is stabilized and ready to be read.
+  explicit DnsConfigService(
+      base::Optional<base::TimeDelta> config_change_delay =
+          base::TimeDelta::FromMilliseconds(50));
   virtual ~DnsConfigService();
 
   // Attempts to read the configuration. Will run |callback| when succeeded.
@@ -56,9 +64,47 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // network-stack-external notifications of DNS config changes.
   virtual void RefreshConfig();
 
+  void set_watch_failed_for_testing(bool watch_failed) {
+    watch_failed_ = watch_failed;
+  }
+
  protected:
+  // Watcher to observe for changes to DNS config or HOSTS (via overriding
+  // `Watch()` with platform specifics) and trigger necessary refreshes on
+  // changes.
+  class Watcher {
+   public:
+    // `service` is expected to own the created Watcher and thus stay valid for
+    // the lifetime of the created Watcher.
+    explicit Watcher(DnsConfigService* service);
+    virtual ~Watcher();
+
+    Watcher(const Watcher&) = delete;
+    Watcher& operator=(const Watcher&) = delete;
+
+    virtual bool Watch() = 0;
+
+   protected:
+    // Hooks for detected changes. `succeeded` false to indicate that there was
+    // an error watching for the change.
+    void OnConfigChanged(bool succeeded);
+    void OnHostsChanged(bool succeeded);
+
+    void CheckOnCorrectSequence();
+
+   private:
+    void OnConfigChangedDelayed(bool success);
+
+    // Back pointer. `this` is expected to be owned by `service_`, making this
+    // raw pointer safe.
+    DnsConfigService* const service_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+  };
+
   // Immediately attempts to read the current configuration.
-  virtual void ReadNow() = 0;
+  virtual void ReadConfigNow() = 0;
+  virtual void ReadHostsNow() = 0;
   // Registers system watchers. Returns true iff succeeds.
   virtual bool StartWatching() = 0;
 
@@ -72,8 +118,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Called with new hosts. Rest of the config is assumed unchanged.
   void OnHostsRead(const DnsHosts& hosts);
 
-  void set_watch_failed(bool value) { watch_failed_ = value; }
-
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
@@ -82,6 +126,12 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   void OnTimeout();
   // Called when the config becomes complete. Stops the timer.
   void OnCompleteConfig();
+
+  // Hooks for Watcher change notifications. `succeeded` false to indicate that
+  // there was an error watching for the change.
+  void OnConfigChanged(bool succeeded);
+  void OnHostsChanged(bool succeeded);
+  void OnConfigChangedDelayed(bool succeeded);
 
   CallbackType callback_;
 
@@ -99,8 +149,12 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Set when |timer_| expires.
   bool last_sent_empty_;
 
+  const base::Optional<base::TimeDelta> config_change_delay_;
+
   // Started in Invalidate*, cleared in On*Read.
   base::OneShotTimer timer_;
+
+  base::WeakPtrFactory<DnsConfigService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DnsConfigService);
 };

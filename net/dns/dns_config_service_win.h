@@ -137,11 +137,9 @@ class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
   class HostsReader;
 
   // DnsConfigService:
-  void ReadNow() override;
+  void ReadConfigNow() override;
+  void ReadHostsNow() override;
   bool StartWatching() override;
-
-  void OnConfigChanged(bool succeeded);
-  void OnHostsChanged(bool succeeded);
 
   std::unique_ptr<Watcher> watcher_;
   scoped_refptr<ConfigReader> config_reader_;

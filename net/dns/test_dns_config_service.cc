@@ -6,7 +6,8 @@
 
 namespace net {
 
-TestDnsConfigService::TestDnsConfigService() = default;
+TestDnsConfigService::TestDnsConfigService()
+    : DnsConfigService(base::nullopt /* config_change_delay */) {}
 
 TestDnsConfigService::~TestDnsConfigService() = default;
 

@@ -41,7 +41,8 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
 
  protected:
   // DnsConfigService:
-  void ReadNow() override;
+  void ReadConfigNow() override;
+  void ReadHostsNow() override;
   bool StartWatching() override;
 
   // Create |config_reader_| and |hosts_reader_|.
@@ -54,12 +55,7 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
   class ConfigReader;
   class HostsReader;
 
-  void OnConfigChanged(bool succeeded);
-  void OnHostsChanged(bool succeeded);
-
   std::unique_ptr<Watcher> watcher_;
-  // Allow a mock hosts file for testing purposes.
-  const base::FilePath::CharType* file_path_hosts_;
   scoped_refptr<ConfigReader> config_reader_;
   scoped_refptr<HostsReader> hosts_reader_;
 
