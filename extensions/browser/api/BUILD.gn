@@ -134,9 +134,6 @@ source_set("api") {
       "media_perception_private/media_perception_private_api.h",
     ]
 
-    # TODO(crbug/1158984): as above, remove these deps.
-    public_deps += [ "//extensions/browser/api/webcam_private" ]
-
     deps += [
       "//chromeos",
       "//chromeos/dbus",
@@ -209,6 +206,7 @@ group("api_implementations") {
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/virtual_keyboard",
       "//extensions/browser/api/vpn_provider",
+      "//extensions/browser/api/webcam_private",
     ]
   }
 }
