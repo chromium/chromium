@@ -30,6 +30,9 @@ import android.view.WindowManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleRegistry;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
@@ -39,6 +42,7 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -327,6 +331,32 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getTabModelSelector().getModel(true).closeAllTabs(false, false);
         }
     };
+
+    /**
+     * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
+     * more info
+     */
+    @UsedByReflection("SplitChromeApplication.java")
+    public static class Preload extends ChromeTabbedActivity {
+        private LifecycleRegistry mLifecycleRegistry;
+
+        @UsedByReflection("SplitChromeApplication.java")
+        public Preload() {}
+
+        @Override
+        public Lifecycle getLifecycle() {
+            if (mLifecycleRegistry == null) {
+                // LifecycleRegistry normally enforces it is called on the main thread, but this
+                // class will be preloaded in a background thread. The only method that gets called
+                // in the activity constructor is addObserver(), so just override that.
+                mLifecycleRegistry = new LifecycleRegistry(null) {
+                    @Override
+                    public void addObserver(LifecycleObserver observer) {}
+                };
+            }
+            return mLifecycleRegistry;
+        }
+    }
 
     /**
      * Return whether the passed in component name matches any of the supported tabbed mode

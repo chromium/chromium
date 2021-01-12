@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.SystemClock;
 
 import org.chromium.base.ActivityState;
@@ -92,18 +94,46 @@ public class SplitChromeApplication extends SplitCompatApplication {
         // If the chrome module is not enabled or isolated splits are not supported (e.g. in Android
         // N), the onComplete function will run immediately so it must handle the case where the
         // base context of the application has not been set yet.
-        sSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
-            // When installed, the vr module is always loaded on startup, so preload here.
-            sSplitPreloader.preload("vr", null);
-            // If the chrome module is not enabled or isolated splits are not supported,
-            // chromeContext will have the same ClassLoader as the base context, so no need to
-            // replace the ClassLoaders here.
-            if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
-                // Replace the application Context's ClassLoader with the chrome ClassLoader,
-                // because the application ClassLoader is expected to be able to access all chrome
-                // classes.
-                BundleUtils.replaceClassLoader(this, chromeContext.getClassLoader());
-                JNIUtils.setClassLoader(chromeContext.getClassLoader());
+        sSplitPreloader.preload(CHROME_SPLIT_NAME, new SplitPreloader.OnComplete() {
+            @Override
+            public void runImmediatelyInBackgroundThread(Context chromeContext) {
+                // A new thread is started here because we do not want to delay returning the chrome
+                // Context, since that slows down startup. This thread must be a HandlerThread
+                // because AsyncInitializationActivity (a base class of ChromeTabbedActivity)
+                // creates a Handler, so needs to have a Looper prepared.
+                HandlerThread thread = new HandlerThread("ActivityPreload");
+                thread.start();
+                new Handler(thread.getLooper()).post(() -> {
+                    try {
+                        // Create a throwaway instance of ChromeTabbedActivity. This will warm up
+                        // the chrome ClassLoader, and perform loading of classes used early in
+                        // startup in the background.
+                        chromeContext.getClassLoader()
+                                .loadClass(
+                                        "org.chromium.chrome.browser.ChromeTabbedActivity$Preload")
+                                .newInstance();
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                    thread.quit();
+                });
+            }
+
+            @Override
+            public void runInUiThread(Context chromeContext) {
+                // When installed, the vr module is always loaded on startup, so preload here.
+                sSplitPreloader.preload("vr", null);
+                // If the chrome module is not enabled or isolated splits are not supported,
+                // chromeContext will have the same ClassLoader as the base context, so no need to
+                // replace the ClassLoaders here.
+                if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
+                    // Replace the application Context's ClassLoader with the chrome ClassLoader,
+                    // because the application ClassLoader is expected to be able to access all
+                    // chrome classes.
+                    BundleUtils.replaceClassLoader(
+                            SplitChromeApplication.this, chromeContext.getClassLoader());
+                    JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                }
             }
         });
     }
