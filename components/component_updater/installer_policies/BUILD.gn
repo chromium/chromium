@@ -6,6 +6,8 @@ static_library("installer_policies") {
   sources = [
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
+    "optimization_hints_component_installer.cc",
+    "optimization_hints_component_installer.h",
     "safety_tips_component_installer.cc",
     "safety_tips_component_installer.h",
   ]
@@ -15,7 +17,23 @@ static_library("installer_policies") {
     "//components/component_updater",
     "//components/omnibox/browser",
     "//components/omnibox/common",
+    "//components/optimization_guide/core",
     "//components/reputation/core",
     "//components/reputation/core:proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "optimization_hints_component_installer_unittest.cc" ]
+
+  deps = [
+    ":installer_policies",
+    "//base",
+    "//base/test:test_support",
+    "//components/component_updater:test_support",
+    "//components/optimization_guide/core",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

@@ -321,8 +321,6 @@ static_library("browser") {
     "component_updater/games_component_installer.h",
     "component_updater/mei_preload_component_installer.cc",
     "component_updater/mei_preload_component_installer.h",
-    "component_updater/optimization_hints_component_installer.cc",
-    "component_updater/optimization_hints_component_installer.h",
     "component_updater/origin_trials_component_installer.cc",
     "component_updater/origin_trials_component_installer.h",
     "component_updater/pepper_flash_component_installer.cc",

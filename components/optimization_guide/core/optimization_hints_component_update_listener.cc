@@ -2,47 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
-#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 
 namespace optimization_guide {
 
-OptimizationGuideService::OptimizationGuideService(
-    const scoped_refptr<base::SingleThreadTaskRunner>& ui_thread_task_runner)
-    : ui_thread_task_runner_(ui_thread_task_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+// static
+OptimizationHintsComponentUpdateListener*
+OptimizationHintsComponentUpdateListener::GetInstance() {
+  static base::NoDestructor<OptimizationHintsComponentUpdateListener> service;
+  return service.get();
 }
 
-OptimizationGuideService::~OptimizationGuideService() {}
+OptimizationHintsComponentUpdateListener::
+    OptimizationHintsComponentUpdateListener() = default;
+OptimizationHintsComponentUpdateListener::
+    ~OptimizationHintsComponentUpdateListener() = default;
 
-void OptimizationGuideService::AddObserver(
-    OptimizationGuideServiceObserver* observer) {
+void OptimizationHintsComponentUpdateListener::AddObserver(
+    OptimizationHintsComponentObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
+
   if (hints_component_info_) {
     observer->OnHintsComponentAvailable(*hints_component_info_);
   }
 }
 
-void OptimizationGuideService::RemoveObserver(
-    OptimizationGuideServiceObserver* observer) {
+void OptimizationHintsComponentUpdateListener::RemoveObserver(
+    OptimizationHintsComponentObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
-void OptimizationGuideService::MaybeUpdateHintsComponent(
-    const HintsComponentInfo& info) {
-  ui_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &OptimizationGuideService::MaybeUpdateHintsComponentOnUIThread,
-          weak_ptr_factory_.GetWeakPtr(), info));
-}
-
-void OptimizationGuideService::MaybeUpdateHintsComponentOnUIThread(
+void OptimizationHintsComponentUpdateListener::MaybeUpdateHintsComponent(
     const HintsComponentInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(info.version.IsValid());
@@ -64,6 +58,10 @@ void OptimizationGuideService::MaybeUpdateHintsComponentOnUIThread(
   for (auto& observer : observers_) {
     observer.OnHintsComponentAvailable(*hints_component_info_);
   }
+}
+
+void OptimizationHintsComponentUpdateListener::ResetStateForTesting() {
+  hints_component_info_ = base::nullopt;
 }
 
 }  // namespace optimization_guide
