@@ -87,8 +87,8 @@ source_set("app_sources") {
       "update_client_win.h",
     ]
     deps += [
+      "//chrome/updater:lib",
       "//chrome/updater/app/server/win:updater_idl_idl",
-      "//chrome/updater/win:lib",
     ]
   }
 }
