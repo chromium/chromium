@@ -89,6 +89,7 @@ AXNode* AXNode::GetLastUnignoredChild() const {
 }
 
 AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (!GetUnignoredChildCount())
     return nullptr;
 
@@ -101,6 +102,7 @@ AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
 }
 
 AXNode* AXNode::GetDeepestLastUnignoredChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (!GetUnignoredChildCount())
     return nullptr;
 
@@ -287,6 +289,7 @@ AXNode* AXNode::GetPreviousUnignoredSibling() const {
 }
 
 AXNode* AXNode::GetNextUnignoredInTreeOrder() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (GetUnignoredChildCount())
     return GetFirstUnignoredChild();
 
@@ -303,6 +306,7 @@ AXNode* AXNode::GetNextUnignoredInTreeOrder() const {
 }
 
 AXNode* AXNode::GetPreviousUnignoredInTreeOrder() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   AXNode* sibling = GetPreviousUnignoredSibling();
   if (!sibling)
     return GetUnignoredParent();
@@ -419,6 +423,7 @@ bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
 }
 
 std::vector<int> AXNode::GetOrComputeLineStartOffsets() {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   std::vector<int> line_offsets;
   if (data().GetIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
                                  &line_offsets)) {
@@ -434,6 +439,7 @@ std::vector<int> AXNode::GetOrComputeLineStartOffsets() {
 
 void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
                                      int* start_offset) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   DCHECK(line_offsets);
   DCHECK(start_offset);
   for (const AXNode* child : children()) {
@@ -487,6 +493,7 @@ void AXNode::ClearLanguageInfo() {
 }
 
 std::string AXNode::GetHypertext() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (IsLeaf())
     return GetInnerText();
 
@@ -509,6 +516,7 @@ std::string AXNode::GetHypertext() const {
 }
 
 std::string AXNode::GetInnerText() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   // If a text field has no descendants, then we compute its inner text from its
   // value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
@@ -569,6 +577,7 @@ std::string AXNode::GetInnerText() const {
 }
 
 std::string AXNode::GetLanguage() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   // Walk up tree considering both detected and author declared languages.
   for (const AXNode* cur = this; cur; cur = cur->parent()) {
     // If language detection has assigned a language then we prefer that.
@@ -588,6 +597,7 @@ std::string AXNode::GetLanguage() const {
 }
 
 std::string AXNode::GetValueForControl() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (data().IsTextField())
     return GetValueForTextField();
   if (data().IsRangeValueSupported())
@@ -608,6 +618,7 @@ bool AXNode::IsTable() const {
 }
 
 base::Optional<int> AXNode::GetTableColCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -615,6 +626,7 @@ base::Optional<int> AXNode::GetTableColCount() const {
 }
 
 base::Optional<int> AXNode::GetTableRowCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -622,6 +634,7 @@ base::Optional<int> AXNode::GetTableRowCount() const {
 }
 
 base::Optional<int> AXNode::GetTableAriaColCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -629,6 +642,7 @@ base::Optional<int> AXNode::GetTableAriaColCount() const {
 }
 
 base::Optional<int> AXNode::GetTableAriaRowCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -636,6 +650,7 @@ base::Optional<int> AXNode::GetTableAriaRowCount() const {
 }
 
 base::Optional<int> AXNode::GetTableCellCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -644,6 +659,7 @@ base::Optional<int> AXNode::GetTableCellCount() const {
 }
 
 base::Optional<bool> AXNode::GetTableHasColumnOrRowHeaderNode() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return base::nullopt;
@@ -652,6 +668,7 @@ base::Optional<bool> AXNode::GetTableHasColumnOrRowHeaderNode() const {
 }
 
 AXNode* AXNode::GetTableCellFromIndex(int index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return nullptr;
@@ -665,6 +682,7 @@ AXNode* AXNode::GetTableCellFromIndex(int index) const {
 }
 
 AXNode* AXNode::GetTableCaption() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return nullptr;
@@ -673,6 +691,7 @@ AXNode* AXNode::GetTableCaption() const {
 }
 
 AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return nullptr;
@@ -688,6 +707,7 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
 }
 
 std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::vector<AXNode::AXID>();
@@ -705,6 +725,7 @@ std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds() const {
 
 std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds(
     int col_index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::vector<AXNode::AXID>();
@@ -717,6 +738,7 @@ std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds(
 
 std::vector<AXNode::AXID> AXNode::GetTableRowHeaderNodeIds(
     int row_index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::vector<AXNode::AXID>();
@@ -728,6 +750,7 @@ std::vector<AXNode::AXID> AXNode::GetTableRowHeaderNodeIds(
 }
 
 std::vector<AXNode::AXID> AXNode::GetTableUniqueCellIds() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::vector<AXNode::AXID>();
@@ -736,6 +759,7 @@ std::vector<AXNode::AXID> AXNode::GetTableUniqueCellIds() const {
 }
 
 const std::vector<AXNode*>* AXNode::GetExtraMacNodes() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   // Should only be available on the table node itself, not any of its children.
   const AXTableInfo* table_info = tree_->GetTableInfo(this);
   if (!table_info)
