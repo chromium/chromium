@@ -569,10 +569,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       is_webpage = true;
       break;
     case Feature::BLESSED_EXTENSION_CONTEXT:
-      if (context->IsForServiceWorker())
-        DCHECK(ExtensionsClient::Get()
-                   ->ExtensionAPIEnabledInExtensionServiceWorkers());
-      FALLTHROUGH;
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
     case Feature::UNBLESSED_EXTENSION_CONTEXT:
     case Feature::CONTENT_SCRIPT_CONTEXT:

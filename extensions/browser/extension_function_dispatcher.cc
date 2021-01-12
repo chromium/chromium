@@ -42,7 +42,6 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/extensions_client.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -131,9 +130,6 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
         observer_(this),
         render_process_host_(render_process_host) {
     observer_.Add(render_process_host_);
-
-    DCHECK(ExtensionsClient::Get()
-               ->ExtensionAPIEnabledInExtensionServiceWorkers());
   }
 
   ~WorkerResponseCallbackWrapper() override = default;

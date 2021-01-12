@@ -30,7 +30,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -116,10 +115,6 @@ bool ChromeExtensionsRendererClient::ExtensionAPIEnabledForServiceWorkerScript(
     const GURL& scope,
     const GURL& script_url) const {
   if (!script_url.SchemeIs(extensions::kExtensionScheme))
-    return false;
-
-  if (!extensions::ExtensionsClient::Get()
-           ->ExtensionAPIEnabledInExtensionServiceWorkers())
     return false;
 
   const Extension* extension =

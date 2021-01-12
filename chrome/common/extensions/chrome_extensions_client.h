@@ -43,7 +43,6 @@ class ChromeExtensionsClient : public ExtensionsClient {
   bool IsBlacklistUpdateURL(const GURL& url) const override;
   std::set<base::FilePath> GetBrowserImagePaths(
       const Extension* extension) override;
-  bool ExtensionAPIEnabledInExtensionServiceWorkers() const override;
   void AddOriginAccessPermissions(
       const Extension& extension,
       bool is_extension_active,

@@ -102,10 +102,6 @@ std::set<base::FilePath> ExtensionsClient::GetBrowserImagePaths(
   return paths;
 }
 
-bool ExtensionsClient::ExtensionAPIEnabledInExtensionServiceWorkers() const {
-  return false;
-}
-
 void ExtensionsClient::AddOriginAccessPermissions(
     const Extension& extension,
     bool is_extension_active,

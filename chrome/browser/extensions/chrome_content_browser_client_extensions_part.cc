@@ -63,7 +63,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -642,11 +641,8 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
   host->AddFilter(new ExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionsGuestViewMessageFilter(id, profile));
-  if (extensions::ExtensionsClient::Get()
-          ->ExtensionAPIEnabledInExtensionServiceWorkers()) {
-    host->AddFilter(new ExtensionServiceWorkerMessageFilter(
-        id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
-  }
+  host->AddFilter(new ExtensionServiceWorkerMessageFilter(
+      id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
 }
 
 void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
