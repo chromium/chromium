@@ -12,7 +12,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {EmojiData} from './types.js';
 
-const EMOJI_ORDERING_JSON = '/emoji_ordering.json';
+const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
 class EmojiPicker extends PolymerElement {
   static get is() {
@@ -41,7 +41,6 @@ class EmojiPicker extends PolymerElement {
     xhr.send();
 
     this.emojiData = [];
-    this.emoji = loadTimeData.getString('emoji').split(',');
     this.search = '';
   }
 
