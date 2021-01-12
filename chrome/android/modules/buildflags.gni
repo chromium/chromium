@@ -11,10 +11,7 @@ declare_args() {
   # Whether //chrome code and resources are in a DFM for Monochrome and
   # Trichrome bundles. This module will also include code and resources from all
   # other DFMs.
-  # TODO(crbug.com/1126301): The binary size tools need to be updated to include
-  # DFM code before this can be enabled on stable.
-  enable_chrome_module = android_channel == "default" ||
-                         android_channel == "canary" || android_channel == "dev"
+  enable_chrome_module = true
 
   # Whether to enable DFMs which depend on the chrome DFM. These will be split
   # out of the chrome DFM using DexSplitter.
