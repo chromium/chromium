@@ -33,6 +33,7 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
   button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DARK_THEME));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_DARK_THEME_SETTINGS_TOOLTIP));
+  button_->ShowDetailedViewArrow();
   // TODO(minch): Add the logic for login screen.
   button_->SetVisible(
       Shell::Get()->session_controller()->IsActiveUserSessionStarted());
