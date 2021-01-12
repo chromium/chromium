@@ -17,6 +17,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kBackgroundMode";
     case ProfileKeepAliveOrigin::kOffTheRecordProfile:
       return out << "kOffTheRecordProfile";
+    case ProfileKeepAliveOrigin::kDownloadInProgress:
+      return out << "kDownloadInProgress";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

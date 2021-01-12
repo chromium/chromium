@@ -31,7 +31,10 @@ enum class ProfileKeepAliveOrigin {
   // A child off-the-record profile holds a strong reference to its parent.
   kOffTheRecordProfile = 3,
 
-  kMaxValue = kOffTheRecordProfile,
+  // This Profile is downloading a file.
+  kDownloadInProgress = 4,
+
+  kMaxValue = kDownloadInProgress,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -8,7 +8,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_status_updater.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
@@ -48,7 +56,9 @@ class TestDownloadStatusUpdater : public DownloadStatusUpdater {
 
 class DownloadStatusUpdaterTest : public testing::Test {
  public:
-  DownloadStatusUpdaterTest() : updater_(new TestDownloadStatusUpdater()) {}
+  DownloadStatusUpdaterTest()
+      : updater_(new TestDownloadStatusUpdater()),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   ~DownloadStatusUpdaterTest() override {
     for (size_t mgr_idx = 0; mgr_idx < managers_.size(); ++mgr_idx) {
@@ -65,6 +75,8 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
     base::RunLoop().RunUntilIdle();  // Allow DownloadManager destruction.
   }
+
+  void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
  protected:
   // Attach some number of DownloadManagers to the updater.
@@ -91,6 +103,10 @@ class DownloadStatusUpdaterTest : public testing::Test {
     EXPECT_CALL(*mgr, AddObserver(_))
         .WillOnce(WithArg<0>(Invoke(
             this, &DownloadStatusUpdaterTest::SetObserver)));
+    TestingProfile* profile = profile_manager_.CreateTestingProfile(
+        base::StringPrintf("Profile %d", i + 1));
+    testing_profiles_.push_back(profile);
+    EXPECT_CALL(*mgr, GetBrowserContext()).WillRepeatedly(Return(profile));
     updater_->AddManager(mgr);
   }
 
@@ -185,6 +201,10 @@ class DownloadStatusUpdaterTest : public testing::Test {
   // TODO(rdsmith): This can be removed when the DownloadManager
   // is no longer required to be deleted on the UI thread.
   content::BrowserTaskEnvironment task_environment_;
+
+  // To test ScopedProfileKeepAlive behavior.
+  TestingProfileManager profile_manager_;
+  std::vector<TestingProfile*> testing_profiles_;
 };
 
 // Test null updater.
@@ -341,4 +361,35 @@ TEST_F(DownloadStatusUpdaterTest, ManyManagersMixedItems) {
   EXPECT_TRUE(updater_->GetProgress(&progress, &download_count));
   EXPECT_FLOAT_EQ((10+50+80)/(20.0f+60+90), progress);
   EXPECT_EQ(3, download_count);
+}
+
+// Test that it prevents Profile deletion.
+TEST_F(DownloadStatusUpdaterTest, HoldsKeepAlive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_NE(nullptr, profile_manager);
+
+  SetupManagers(2);
+  AddItems(0, 2, 1);
+  LinkManager(0);
+  AddItems(1, 2, 0);
+  LinkManager(1);
+
+  // Profile 1 has a download in progress.
+  Profile* profile1 = testing_profiles_[0];
+  SetItemValues(0, 0, 10, 20, true);
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
+
+  // Profile 2 doesn't have a download in progress.
+  Profile* profile2 = testing_profiles_[1];
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile2, ProfileKeepAliveOrigin::kDownloadInProgress));
+
+  // Complete Profile 1's download. It should release its keepalive.
+  CompleteItem(0, 0);
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
 }

@@ -268,6 +268,11 @@ class ProfileManager : public content::NotificationObserver,
                         bool success,
                         bool is_new_profile) override;
 
+  // Used for testing. Returns true if |profile| has at least one ref of type
+  // |origin|.
+  bool HasKeepAliveForTesting(const Profile* profile,
+                              ProfileKeepAliveOrigin origin);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead

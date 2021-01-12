@@ -1282,6 +1282,14 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
                                 Profile::CREATE_MODE_ASYNCHRONOUS);
 }
 
+bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
+                                            ProfileKeepAliveOrigin origin) {
+  DCHECK(profile);
+  ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
+  DCHECK(info);
+  return info->keep_alives[origin] > 0;
+}
+
 void ProfileManager::AddKeepAlive(const Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
