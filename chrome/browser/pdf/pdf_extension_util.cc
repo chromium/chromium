@@ -71,6 +71,8 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"propertiesDialogClose", IDS_CLOSE},
     {"propertiesDialogTitle", IDS_PDF_PROPERTIES_DIALOG_TITLE},
     {"propertiesFastWebView", IDS_PDF_PROPERTIES_FAST_WEB_VIEW},
+    {"propertiesFastWebViewNo", IDS_PDF_PROPERTIES_FAST_WEB_VIEW_NO},
+    {"propertiesFastWebViewYes", IDS_PDF_PROPERTIES_FAST_WEB_VIEW_YES},
     {"propertiesFileName", IDS_PDF_PROPERTIES_FILE_NAME},
     {"propertiesFileSize", IDS_PDF_PROPERTIES_FILE_SIZE},
     {"propertiesKeywords", IDS_PDF_PROPERTIES_KEYWORDS},

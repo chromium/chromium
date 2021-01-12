@@ -63,7 +63,7 @@ const tests = [
      ['pdf-version', '1.7'],
      ['page-count', '-'],
      ['page-size', '-'],
-     ['fast-web-view', '-'],
+     ['fast-web-view', 'No'],
     ].forEach(([field, expectedValue]) => assertField(field, expectedValue));
 
     await ensurePropertiesDialogClose();

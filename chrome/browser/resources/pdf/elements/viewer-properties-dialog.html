@@ -102,7 +102,11 @@
       </tr>
       <tr>
         <td class="name">$i18n{propertiesFastWebView}</td>
-        <td class="value" id="fast-web-view">-</td>
+        <td class="value" id="fast-web-view">
+          [[getFastWebViewValue_('$i18nPolymer{propertiesFastWebViewYes}',
+              '$i18nPolymer{propertiesFastWebViewNo}',
+              documentMetadata.linearized)]]
+        </td>
       </tr>
     </table>
   </div>

@@ -36,6 +36,17 @@ export class ViewerPropertiesDialogElement extends PolymerElement {
   }
 
   /**
+   * @param {string} yesLabel
+   * @param {string} noLabel
+   * @param {boolean} linearized
+   * @return {string}
+   * @private
+   */
+  getFastWebViewValue_(yesLabel, noLabel, linearized) {
+    return linearized ? yesLabel : noLabel;
+  }
+
+  /**
    * @param {string} value
    * @return {string}
    * @private

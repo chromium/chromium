@@ -88,6 +88,12 @@
     <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW" desc="Name of the property describing whether the PDF document is organized to be viewed efficiently in network environments.">
       Fast web view:
     </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_NO" desc="Label indicating that the PDF document is not organized to be viewed efficiently in network environments.">
+      No
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_YES" desc="Label indicating that the PDF document is organized to be viewed efficiently in network environments.">
+      Yes
+    </message>
 
     <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
       Rotate clockwise

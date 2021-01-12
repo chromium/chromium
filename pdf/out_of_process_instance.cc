@@ -132,6 +132,7 @@ constexpr char kJSBookmarksData[] = "bookmarksData";
 constexpr char kJSMetadataType[] = "metadata";
 constexpr char kJSMetadataData[] = "metadataData";
 constexpr char kJSVersion[] = "version";
+constexpr char kJSLinearized[] = "linearized";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSAuthor[] = "author";
 constexpr char kJSSubject[] = "subject";
@@ -2428,6 +2429,9 @@ void OutOfProcessInstance::SendMetadata() {
   base::string16 version = GetFormattedVersion(document_metadata.version);
   if (!version.empty())
     metadata_data.Set(pp::Var(kJSVersion), pp::Var(base::UTF16ToUTF8(version)));
+
+  metadata_data.Set(pp::Var(kJSLinearized),
+                    pp::Var(document_metadata.linearized));
 
   if (!document_metadata.title.empty())
     metadata_data.Set(pp::Var(kJSTitle), pp::Var(document_metadata.title));
