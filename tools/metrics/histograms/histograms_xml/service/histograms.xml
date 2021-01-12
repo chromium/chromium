@@ -423,7 +423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.InternalsPageAccessed"
-    enum="ServiceWorkerInternalsLinkQuery" expires_after="M90">
+    enum="ServiceWorkerInternalsLinkQuery" expires_after="M94">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1080,7 +1080,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.Storage.DeleteAndStartOverResult"
-    enum="ServiceWorkerDeleteAndStartOverResult" expires_after="M90">
+    enum="ServiceWorkerDeleteAndStartOverResult" expires_after="M94">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
