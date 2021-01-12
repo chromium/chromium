@@ -26,8 +26,6 @@
 
 namespace subresource_filter {
 
-class SubresourceFilterClient;
-
 // Enum representing a position in the redirect chain. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
@@ -46,9 +44,32 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       public base::SupportsWeakPtr<
           SubresourceFilterSafeBrowsingActivationThrottle> {
  public:
+  // Interface that allows the client of this class to adjust activation
+  // decisions if/as desired.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when the initial activation decision has been computed by the
+    // safe browsing activation throttle. Returns
+    // the effective activation for this navigation.
+    //
+    // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
+    // this method if any decision changes.
+    //
+    // Precondition: The navigation must be a main frame navigation.
+    virtual mojom::ActivationLevel OnPageActivationComputed(
+        content::NavigationHandle* navigation_handle,
+        mojom::ActivationLevel initial_activation_level,
+        ActivationDecision* decision) = 0;
+  };
+
+  // |delegate| is allowed to be null, in which case the client creating this
+  // throttle will not be able to adjust activation decisions made by the
+  // throttle.
   SubresourceFilterSafeBrowsingActivationThrottle(
       content::NavigationHandle* handle,
-      SubresourceFilterClient* client,
+      Delegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
@@ -110,8 +131,8 @@ class SubresourceFilterSafeBrowsingActivationThrottle
                   base::OnTaskRunnerDeleter>
       database_client_;
 
-  // Must outlive this class.
-  SubresourceFilterClient* client_;
+  // May be null. If non-null, must outlive this class.
+  Delegate* delegate_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.
