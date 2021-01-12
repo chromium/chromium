@@ -1495,21 +1495,6 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   return kExpandedUndefined;
 }
 
-bool AXNodeObject::IsModal() const {
-  if (RoleValue() != ax::mojom::blink::Role::kDialog &&
-      RoleValue() != ax::mojom::blink::Role::kAlertDialog)
-    return false;
-
-  bool modal = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kModal, modal))
-    return modal;
-
-  if (GetNode() && IsA<HTMLDialogElement>(*GetNode()))
-    return To<Element>(GetNode())->IsInTopLayer();
-
-  return false;
-}
-
 bool AXNodeObject::IsRequired() const {
   auto* form_control = DynamicTo<HTMLFormControlElement>(GetNode());
   if (form_control && form_control->IsRequired())

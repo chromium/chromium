@@ -1690,6 +1690,22 @@ bool AXObject::ComputeIsInertOrAriaHidden(
   return false;
 }
 
+bool AXObject::IsModal() const {
+  if (RoleValue() != ax::mojom::blink::Role::kDialog &&
+      RoleValue() != ax::mojom::blink::Role::kAlertDialog)
+    return false;
+
+  bool modal = false;
+  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kModal, modal)) {
+    return modal;
+  }
+
+  if (GetNode() && IsA<HTMLDialogElement>(*GetNode()))
+    return To<Element>(GetNode())->IsInTopLayer();
+
+  return false;
+}
+
 bool AXObject::IsBlockedByAriaModalDialog(
     IgnoredReasons* ignored_reasons) const {
   AXObject* active_aria_modal_dialog =

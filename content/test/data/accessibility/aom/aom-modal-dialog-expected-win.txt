@@ -1,0 +1,6 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Content outside modal dialog. '
+++++ROLE_SYSTEM_PUSHBUTTON name='Button outside modal dialog.' FOCUSABLE
+++ROLE_SYSTEM_DIALOG name='Modal dialog.' IA2_STATE_MODAL
+++++ROLE_SYSTEM_PUSHBUTTON name='Button inside modal dialog.'

@@ -1,0 +1,6 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='Content outside modal dialog. '
+++++AXButton AXTitle='Button outside modal dialog.'
+++AXGroup AXSubrole=AXApplicationDialog AXDescription='Modal dialog.'
+++++AXButton AXDescription='Button inside modal dialog.'

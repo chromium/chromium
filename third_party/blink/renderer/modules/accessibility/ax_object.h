@@ -473,7 +473,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsLineBreakingObject() const { return false; }
   virtual bool IsLinked() const { return false; }
   virtual bool IsLoaded() const { return false; }
-  virtual bool IsModal() const { return false; }
+  virtual bool IsModal() const;
   virtual bool IsMultiSelectable() const { return false; }
   virtual bool IsOffScreen() const { return false; }
   virtual bool IsRequired() const { return false; }
