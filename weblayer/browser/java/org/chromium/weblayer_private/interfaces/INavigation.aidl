@@ -38,5 +38,7 @@ interface INavigation {
   boolean isUserDecidingIntentLaunch() = 14;
   boolean isKnownProtocol() = 15;
   boolean isServedFromBackForwardCache() = 16;
+
+  // @since 88
   void disableNetworkErrorAutoReload() = 17;
 }

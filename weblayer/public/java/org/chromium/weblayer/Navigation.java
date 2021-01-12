@@ -261,12 +261,12 @@ public class Navigation extends IClientNavigation.Stub {
      *
      * @throws IllegalStateException If not called during start.
      *
-     * @since 89
+     * @since 88
      */
     public void disableNetworkErrorAutoReload() {
         ThreadCheck.ensureOnUiThread();
         if (WebLayer.shouldPerformVersionChecks()
-                && WebLayer.getSupportedMajorVersionInternal() < 89) {
+                && WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         try {
