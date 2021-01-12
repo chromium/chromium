@@ -62,8 +62,7 @@ public final class ForcedSigninProcessor {
      */
     private static void signinAndEnableSync(final Account childAccount) {
         final Profile profile = Profile.getLastUsedRegularProfile();
-        if (FirstRunUtils.canAllowSync()
-                && IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
+        if (IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
             // TODO(https://crbug.com/1044206): Remove this.
             ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         }
@@ -71,7 +70,7 @@ public final class ForcedSigninProcessor {
                 IdentityServicesProvider.get().getSigninManager(profile);
         // By definition we have finished all the checks for first run.
         signinManager.onFirstRunCheckDone();
-        if (FirstRunUtils.canAllowSync() && signinManager.isSignInAllowed()) {
+        if (signinManager.isSignInAllowed()) {
             signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, childAccount,
                     new SigninManager.SignInCallback() {
                         @Override
