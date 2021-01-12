@@ -20,7 +20,6 @@
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {updateListProperty} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {afterNextRender, DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -93,9 +92,9 @@ export class InfiniteList extends PolymerElement {
 
   /** @private */
   getDomItems_() {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    const selectorChildren = this.$.selector.children;
     return Array.prototype.slice.call(
-        selector.children, 0, selector.children.length - 1);
+        selectorChildren, 0, selectorChildren.length - 1);
   }
 
   /**
@@ -156,7 +155,6 @@ export class InfiniteList extends PolymerElement {
       if (aboveScrollTopItemCount + this.chunkItemThreshold >
           this.domRepeat_.items.length) {
         this.ensureDomItemsAvailableStartingAt_(aboveScrollTopItemCount);
-        this.updateScrollerSize_();
       }
     }
   }
@@ -191,13 +189,12 @@ export class InfiniteList extends PolymerElement {
    * @private
    */
   domItemAverageHeight_() {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
-    if (!selector.items || selector.items.length === 0) {
+    if (!this.$.selector.items || this.$.selector.items.length === 0) {
       return 0;
     }
 
-    const domItemCount = selector.items.length;
-    const lastDomItem = selector.items[domItemCount - 1];
+    const domItemCount = this.$.selector.items.length;
+    const lastDomItem = this.$.selector.items[domItemCount - 1];
     return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItemCount;
   }
 
@@ -205,32 +202,17 @@ export class InfiniteList extends PolymerElement {
    * Ensures that when the items property changes, only a chunk of the items
    * needed to fill the current scroll position view are added to the DOM, thus
    * improving rendering performance.
-   *
-   * @param {!Array} newItems
-   * @param {!Array} oldItems
    * @private
    */
-  onItemsChanged_(newItems, oldItems) {
-    if (!this.domRepeat_) {
-      return;
-    }
+  onItemsChanged_() {
+    if (this.domRepeat_ && this.items) {
+      const domItemAvgHeight = this.domItemAverageHeight_();
+      const aboveScrollTopItemCount = domItemAvgHeight !== 0 ?
+          Math.round(this.scrollTop / domItemAvgHeight) :
+          0;
 
-    if (!oldItems || oldItems.length === 0) {
       this.domRepeat_.set('items', []);
-      this.ensureDomItemsAvailableStartingAt_(0);
-      listenOnce(this.$.selector, 'iron-items-changed', () => {
-        this.updateScrollerSize_();
-      });
-
-      return;
-    }
-
-    updateListProperty(
-        this.domRepeat_, 'items', tabData => tabData,
-        newItems.slice(0, this.domRepeat_.items.length),
-        true /* identityBasedUpdate= */);
-
-    if (newItems.length !== oldItems.length) {
+      this.ensureDomItemsAvailableStartingAt_(aboveScrollTopItemCount);
       this.updateScrollerSize_();
     }
   }

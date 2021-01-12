@@ -58,7 +58,7 @@
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
 <div hidden="[[!filteredOpenTabs_.length]]">
-  <infinite-list id="tabsList" items="[[filteredOpenTabs_]]">
+  <infinite-list id="tabsList" items="[[filteredOpenTabs_]]" >
     <template is="dom-repeat">
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
           class="mwb-list-item" data="[[item]]" on-click="onItemClick_"
