@@ -72,7 +72,6 @@ bool Allow48kHzApmProcessing() {
       features::kWebRtcAllow48kHzProcessingOnArm);
 }
 
-constexpr int kAudioProcessingNumberOfChannels = 1;
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
 
 }  // namespace
@@ -89,6 +88,7 @@ class MediaStreamAudioBus {
   MediaStreamAudioBus(int channels, int frames)
       : bus_(media::AudioBus::Create(channels, frames)),
         channel_ptrs_(new float*[channels]) {
+    bus_->Zero();
     // May be created in the main render thread and used in the audio threads.
     DETACH_FROM_THREAD(thread_checker_);
   }
@@ -288,6 +288,7 @@ void MediaStreamAudioProcessor::PushCaptureData(
 
 bool MediaStreamAudioProcessor::ProcessAndConsumeData(
     int volume,
+    int num_preferred_channels,
     bool key_pressed,
     media::AudioBus** processed_data,
     base::TimeDelta* capture_delay,
@@ -308,9 +309,10 @@ bool MediaStreamAudioProcessor::ProcessAndConsumeData(
   *new_volume = 0;
   if (audio_processing_) {
     output_bus = output_bus_.get();
-    *new_volume = ProcessData(process_bus->channel_ptrs(),
-                              process_bus->bus()->frames(), *capture_delay,
-                              volume, key_pressed, output_bus->channel_ptrs());
+    *new_volume =
+        ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
+                    *capture_delay, volume, key_pressed, num_preferred_channels,
+                    output_bus->channel_ptrs());
   }
 
   // Swap channels before interleaving the data.
@@ -664,26 +666,43 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
 #endif  // BUILDFLAG(IS_CHROMECAST)
                                      : input_format.sample_rate();
 
-  media::ChannelLayout output_channel_layout;
-  if (!audio_processing_ || use_capture_multi_channel_processing_) {
-    output_channel_layout = input_format.channel_layout();
-  } else {
-    output_channel_layout =
-        media::GuessChannelLayout(kAudioProcessingNumberOfChannels);
-  }
-
   // The output channels from the fifo is normally the same as input.
   int fifo_output_channels = input_format.channels();
 
-  // Special case for if we have a keyboard mic channel on the input and no
-  // audio processing is used. We will then have the fifo strip away that
-  // channel. So we use stereo as output layout, and also change the output
-  // channels for the fifo.
-  if (input_format.channel_layout() ==
-          media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
-      !audio_processing_) {
-    output_channel_layout = media::CHANNEL_LAYOUT_STEREO;
-    fifo_output_channels = ChannelLayoutToChannelCount(output_channel_layout);
+  media::ChannelLayout output_channel_layout;
+  if (!audio_processing_) {
+    if (input_format.channel_layout() ==
+        media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
+      // Special case for if we have a keyboard mic channel on the input and no
+      // audio processing is used. We will then have the fifo strip away that
+      // channel. So we use stereo as output layout, and also change the output
+      // channels for the fifo.
+      output_channel_layout = media::CHANNEL_LAYOUT_STEREO;
+      fifo_output_channels = ChannelLayoutToChannelCount(output_channel_layout);
+    } else {
+      output_channel_layout = input_format.channel_layout();
+    }
+  } else if (use_capture_multi_channel_processing_) {
+    // The number of output channels is equal to the number of input channels.
+    // If the media stream audio processor receives stereo input it will output
+    // stereo. To reduce computational complexity, APM will not perform full
+    // multichannel processing unless any sink requests more than one channel.
+    // If the input is multichannel but the sinks are not interested in more
+    // than one channel, APM will internally downmix the signal to mono and
+    // process it. The processed mono signal will then be upmixed to same number
+    // of channels as the input before leaving the media stream audio processor.
+    // If a sink later requests stereo, APM will start performing true stereo
+    // processing. There will be no need to change the output format.
+
+    // The keyboard mic channel shall not be part of the output.
+    if (input_format.channel_layout() ==
+        media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
+      output_channel_layout = media::CHANNEL_LAYOUT_STEREO;
+    } else {
+      output_channel_layout = input_format.channel_layout();
+    }
+  } else {
+    output_channel_layout = media::CHANNEL_LAYOUT_MONO;
   }
 
   // webrtc::AudioProcessing requires a 10 ms chunk size. We use this native
@@ -723,6 +742,7 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
                                            base::TimeDelta capture_delay,
                                            int volume,
                                            bool key_pressed,
+                                           int num_preferred_channels,
                                            float* const* output_ptrs) {
   DCHECK(audio_processing_);
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
@@ -751,13 +771,46 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
   webrtc::AudioProcessing* ap = audio_processing_.get();
   ap->set_stream_delay_ms(total_delay_ms);
 
+  // Keep track of the maximum number of preferred channels. The number of
+  // output channels of APM can increase if preferred by the sinks, but
+  // never decrease.
+  max_num_preferred_output_channels_ =
+      std::max(max_num_preferred_output_channels_, num_preferred_channels);
+
   DCHECK_LE(volume, WebRtcAudioDeviceImpl::kMaxVolumeLevel);
   ap->set_stream_analog_level(volume);
   ap->set_stream_key_pressed(key_pressed);
 
+  // Depending on how many channels the sinks prefer, the number of APM output
+  // channels is allowed to vary between 1 and the number of channels of the
+  // output format. The output format in turn depends on the input format.
+  // Example: With a stereo mic the output format will have 2 channels, and APM
+  // will produce 1 or 2 output channels depending on the sinks.
+  int num_apm_output_channels =
+      std::min(max_num_preferred_output_channels_, output_format_.channels());
+
+  // Limit number of apm output channels to 2 to avoid potential problems with
+  // discrete channel mapping.
+  num_apm_output_channels = std::min(num_apm_output_channels, 2);
+
+  CHECK_GE(num_apm_output_channels, 1);
+  const webrtc::StreamConfig apm_output_config = webrtc::StreamConfig(
+      output_format_.sample_rate(), num_apm_output_channels, false);
+
   int err = ap->ProcessStream(process_ptrs, CreateStreamConfig(input_format_),
-                              CreateStreamConfig(output_format_), output_ptrs);
+                              apm_output_config, output_ptrs);
   DCHECK_EQ(err, 0) << "ProcessStream() error: " << err;
+
+  // Upmix if the number of channels processed by APM is less than the number
+  // specified in the output format. Channels above stereo will be set to zero.
+  if (num_apm_output_channels < output_format_.channels()) {
+    if (num_apm_output_channels == 1) {
+      // The right channel is a copy of the left channel. Remaining channels
+      // have already been set to zero at initialization.
+      memcpy(&output_ptrs[1][0], &output_ptrs[0][0],
+             output_format_.frames_per_buffer() * sizeof(output_ptrs[0][0]));
+    }
+  }
 
   if (typing_detector_) {
     // Ignore remote tracks to avoid unnecessary stats computation.
