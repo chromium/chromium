@@ -7,6 +7,6 @@
     android:shape="rectangle">
   <corners android:radius="8dp" />
   <stroke
-      android:color="@color/default_chip_outline_color"
+      android:color="@color/autofill_assistant_details_divider_color"
       android:width="1dp" />
 </shape>

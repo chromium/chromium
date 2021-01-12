@@ -187,6 +187,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         // Set children top margins to have a spacing between them.
         int childSpacing = activity.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_vertical_spacing);
+        setChildMarginTop(mDetailsCoordinator.getView(), childSpacing);
         setChildMarginTop(mPaymentRequestCoordinator.getView(), childSpacing);
         setChildMarginTop(mFormCoordinator.getView(), childSpacing);
         setChildMarginTop(mGenericUiCoordinator.getView(), childSpacing);

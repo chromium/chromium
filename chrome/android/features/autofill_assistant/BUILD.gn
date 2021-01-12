@@ -357,6 +357,7 @@ android_resources("java_resources") {
     "java/res/drawable/autofill_assistant_circle_background.xml",
     "java/res/drawable/autofill_assistant_default_details.xml",
     "java/res/drawable/autofill_assistant_details_bg.xml",
+    "java/res/drawable/autofill_assistant_details_list_divider.xml",
     "java/res/drawable/autofill_assistant_lightblue_rect_bg.xml",
     "java/res/drawable/autofill_assistant_rounded_corner_background.xml",
     "java/res/drawable/autofill_assistant_swipe_indicator.xml",
