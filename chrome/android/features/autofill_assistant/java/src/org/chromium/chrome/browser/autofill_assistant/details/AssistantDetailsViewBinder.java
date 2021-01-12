@@ -21,7 +21,9 @@ import android.media.ThumbnailUtils;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.StyleRes;
@@ -90,6 +92,8 @@ class AssistantDetailsViewBinder
     private final int mImageHeight;
     private final int mPulseAnimationStartColor;
     private final int mPulseAnimationEndColor;
+    private final int mTextPlaceholdersHeight;
+    private final int mTextPlaceholdersMargin;
 
     private ValueAnimator mPulseAnimation;
     private ImageFetcher mImageFetcher;
@@ -102,6 +106,10 @@ class AssistantDetailsViewBinder
                 R.dimen.autofill_assistant_details_image_size);
         mPulseAnimationStartColor = context.getResources().getColor(R.color.modern_grey_300);
         mPulseAnimationEndColor = context.getResources().getColor(R.color.modern_grey_200);
+        mTextPlaceholdersHeight = context.getResources().getDimensionPixelSize(
+                R.dimen.autofill_assistant_details_text_placeholders_height);
+        mTextPlaceholdersMargin = context.getResources().getDimensionPixelSize(
+                R.dimen.autofill_assistant_details_text_placeholders_margin);
         mImageFetcher = imageFetcher;
     }
 
@@ -173,6 +181,15 @@ class AssistantDetailsViewBinder
         hideIf(viewHolder.mDescriptionLine3View, hideDescriptionLine3);
         hideIfEmpty(viewHolder.mPriceAttributionView);
 
+        // Set the height of the potential placeholders next to the image.
+        setTextHeightAndMargin(viewHolder.mTitleView, placeholders.getShowTitlePlaceholder());
+        setTextHeightAndMargin(viewHolder.mDescriptionLine1View,
+                placeholders.getShowDescriptionLine1Placeholder());
+        setTextHeightAndMargin(viewHolder.mDescriptionLine2View,
+                placeholders.getShowDescriptionLine2Placeholder());
+        setTextHeightAndMargin(viewHolder.mDescriptionLine3View,
+                placeholders.getShowDescriptionLine3Placeholder());
+
         // If no price provided, hide the price view (containing separator, price label, and price).
         viewHolder.mPriceView.setVisibility(
                 details.getTotalPrice().isEmpty() ? View.GONE : View.VISIBLE);
@@ -216,6 +233,22 @@ class AssistantDetailsViewBinder
 
     private void hideIf(TextView view, boolean hide) {
         view.setVisibility(hide ? View.GONE : View.VISIBLE);
+    }
+
+    private void setTextHeightAndMargin(TextView view, boolean isPlaceholder) {
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
+
+        if (isPlaceholder) {
+            layoutParams.height = mTextPlaceholdersHeight;
+            layoutParams.topMargin = mTextPlaceholdersMargin;
+            layoutParams.bottomMargin = mTextPlaceholdersMargin;
+        } else {
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            layoutParams.topMargin = 0;
+            layoutParams.bottomMargin = 0;
+        }
+
+        view.setLayoutParams(layoutParams);
     }
 
     private void setTextStyles(AssistantDetails details, ViewHolder viewHolder) {

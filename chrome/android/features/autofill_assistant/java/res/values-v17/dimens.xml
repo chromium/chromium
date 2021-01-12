@@ -6,6 +6,8 @@
     <dimen name="autofill_assistant_bottombar_horizontal_spacing">24dp</dimen>
     <dimen name="autofill_assistant_bottombar_vertical_spacing">20dp</dimen>
     <dimen name="autofill_assistant_details_image_size">60dp</dimen>
+    <dimen name="autofill_assistant_details_text_placeholders_height">12dp</dimen>
+    <dimen name="autofill_assistant_details_text_placeholders_margin">4dp</dimen>
     <dimen name="autofill_assistant_poodle_size">32dp</dimen>
     <dimen name="autofill_assistant_profile_size">32dp</dimen>
     <dimen name="autofill_assistant_info_box_spacing">16dp</dimen>
