@@ -196,12 +196,6 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFullscreenMagnifier}},
-      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
-       mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
       {IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -321,6 +315,19 @@ const std::vector<SearchConcept>& GetA11yCursorColorSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>&
+GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
+  });
+  return *tags;
+}
+
 bool AreExperimentalA11yLabelsAllowed() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityLabels);
@@ -332,6 +339,10 @@ bool AreLiveCaptionsAllowed() {
 
 bool IsCursorColorAllowed() {
   return features::IsAccessibilityCursorColorEnabled();
+}
+
+bool IsMagnifierPanningImprovementsEnabled() {
+  return features::IsMagnifierPanningImprovementsEnabled();
 }
 
 bool IsSwitchAccessTextAllowed() {
@@ -644,6 +655,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("showExperimentalAccessibilityCursorColor",
                           IsCursorColorAllowed());
 
+  html_source->AddBoolean("isMagnifierPanningImprovementsEnabled",
+                          IsMagnifierPanningImprovementsEnabled());
+
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 
@@ -829,6 +843,14 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.AddSearchTags(GetA11yCursorColorSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yCursorColorSearchConcepts());
+  }
+
+  if (IsMagnifierPanningImprovementsEnabled()) {
+    updater.AddSearchTags(
+        GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+  } else {
+    updater.RemoveSearchTags(
+        GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(

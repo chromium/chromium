@@ -158,6 +158,14 @@ Polymer({
       },
     },
 
+    /** @private */
+    isMagnifierPanningImprovementsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isMagnifierPanningImprovementsEnabled');
+      },
+    },
+
     /**
      * Whether the user is in kiosk mode.
      * @private
