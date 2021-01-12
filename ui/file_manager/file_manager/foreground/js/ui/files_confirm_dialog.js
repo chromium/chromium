@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {util} from '../../../common/js/util.m.js';
+// #import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
 /**
  * Confirm dialog.
  */
-class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
+/* #export */ class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
   /**
    * @param {!Element} parentElement
    */

@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
+import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+
+import {ProvidersModel} from './providers_model.m.js';
+
 /**
  * Providing extension which has a mounted file system and doesn't support
  * multiple mounts.
@@ -103,6 +115,9 @@ const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
   multipleMounts: true,
 };
 
+/** @type {!VolumeManager} */
+let volumeManager;
+
 function addProvidedVolume(volumeManager, providerId, volumeId) {
   const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
   fileSystem.entries['/'] = MockDirectoryEntry.create(fileSystem, '');
@@ -129,7 +144,7 @@ function addProvidedVolume(volumeManager, providerId, volumeId) {
   volumeManager.volumeInfoList.add(volumeInfo);
 }
 
-function setUp() {
+export function setUp() {
   window.loadTimeData.getString = id => id;
 
   // Create and install a mock fileManagerPrivate API for fetching the list of
@@ -152,9 +167,8 @@ function setUp() {
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
 
-  // Create and install a volume manager.
-  const volumeManager = new MockVolumeManager();
-  MockVolumeManager.installMockSingleton(volumeManager);
+  // Install mock volume manager.
+  volumeManager = new MockVolumeManager();
 
   // Add provided test volumes.
   const single = MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId;
@@ -163,79 +177,68 @@ function setUp() {
   addProvidedVolume(volumeManager, multiple, 'volume-2');
 }
 
-function testGetInstalledProviders(callback) {
+export function testGetInstalledProviders(callback) {
+  const model = new ProvidersModel(volumeManager);
   reportPromise(
-      volumeManagerFactory.getInstance()
-          .then(volumeManager => {
-            const model = new ProvidersModel(volumeManager);
-            return model.getInstalledProviders();
-          })
-          .then(providers => {
-            assertEquals(5, providers.length);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-                providers[0].providerId);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet,
-                providers[0].iconSet);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.name, providers[0].name);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.configurable,
-                providers[0].configurable);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.watchable,
-                providers[0].watchable);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.multipleMounts,
-                providers[0].multipleMounts);
-            assertEquals(
-                MOUNTED_SINGLE_PROVIDING_EXTENSION.source, providers[0].source);
+      model.getInstalledProviders().then(providers => {
+        assertEquals(5, providers.length);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
+            providers[0].providerId);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet, providers[0].iconSet);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.name, providers[0].name);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.configurable,
+            providers[0].configurable);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.watchable,
+            providers[0].watchable);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.multipleMounts,
+            providers[0].multipleMounts);
+        assertEquals(
+            MOUNTED_SINGLE_PROVIDING_EXTENSION.source, providers[0].source);
 
-            assertEquals(
-                NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-                providers[1].providerId);
-            assertEquals(
-                MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
-                providers[2].providerId);
-            assertEquals(
-                NOT_MOUNTED_FILE_PROVIDING_EXTENSION.providerId,
-                providers[3].providerId);
-            assertEquals(
-                NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.providerId,
-                providers[4].providerId);
+        assertEquals(
+            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
+            providers[1].providerId);
+        assertEquals(
+            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
+            providers[2].providerId);
+        assertEquals(
+            NOT_MOUNTED_FILE_PROVIDING_EXTENSION.providerId,
+            providers[3].providerId);
+        assertEquals(
+            NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.providerId,
+            providers[4].providerId);
 
-            assertEquals(
-                NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet,
-                providers[1].iconSet);
-            assertEquals(
-                MOUNTED_MULTIPLE_PROVIDING_EXTENSION.iconSet,
-                providers[2].iconSet);
-            assertEquals(
-                NOT_MOUNTED_FILE_PROVIDING_EXTENSION.iconSet,
-                providers[3].iconSet);
-            assertEquals(
-                NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.iconSet,
-                providers[4].iconSet);
-          }),
+        assertEquals(
+            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.iconSet,
+            providers[1].iconSet);
+        assertEquals(
+            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.iconSet, providers[2].iconSet);
+        assertEquals(
+            NOT_MOUNTED_FILE_PROVIDING_EXTENSION.iconSet, providers[3].iconSet);
+        assertEquals(
+            NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION.iconSet,
+            providers[4].iconSet);
+      }),
       callback);
 }
 
-function testGetMountableProviders(callback) {
+export function testGetMountableProviders(callback) {
+  const model = new ProvidersModel(volumeManager);
   reportPromise(
-      volumeManagerFactory.getInstance()
-          .then(volumeManager => {
-            const model = new ProvidersModel(volumeManager);
-            return model.getMountableProviders();
-          })
-          .then(providers => {
-            assertEquals(2, providers.length);
-            assertEquals(
-                NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
-                providers[0].providerId);
-            assertEquals(
-                MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
-                providers[1].providerId);
-          }),
+      model.getMountableProviders().then(providers => {
+        assertEquals(2, providers.length);
+        assertEquals(
+            NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION.providerId,
+            providers[0].providerId);
+        assertEquals(
+            MOUNTED_MULTIPLE_PROVIDING_EXTENSION.providerId,
+            providers[1].providerId);
+      }),
       callback);
 }

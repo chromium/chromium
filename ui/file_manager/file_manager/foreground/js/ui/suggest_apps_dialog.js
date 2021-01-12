@@ -3,16 +3,28 @@
 // found in the LICENSE file.
 
 /**
- * SuggestAppsDialog contains a list box to select an app to be opened the file
- * with. This dialog should be used as action picker for file operations.
+ * @fileoverview SuggestAppsDialog contains a list box to select an app to be
+ * opened the file with. This dialog should be used as action picker for file
+ * operations.
  */
 
+// clang-format off
+// #import {SuggestAppDialogState} from '../launch_param.m.js';
+// #import {ProvidersModel} from '../providers_model.m.js';
+// #import {CWSWidgetContainerPlatformDelegate} from '../../../cws_widget/cws_widget_container_platform_delegate.m.js';
+// #import {FileManagerDialogBase} from './file_manager_dialog_base.m.js';
+// #import {CWSWidgetContainer} from '../../../cws_widget/cws_widget_container.m.js';
+// #import {webStoreUtils} from '../web_store_utils.m.js';
+// #import {str, util} from '../../../common/js/util.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
 
 /**
  * Creates dialog in DOM tree.
  *
  */
-class SuggestAppsDialog extends FileManagerDialogBase {
+/* #export */ class SuggestAppsDialog extends FileManagerDialogBase {
   /**
    * @param {!ProvidersModel} providersModel Model for providers.
    * @param {!HTMLElement} parentNode Node to be parent for this dialog.

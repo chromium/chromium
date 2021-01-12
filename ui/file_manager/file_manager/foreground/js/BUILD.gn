@@ -41,11 +41,14 @@ js_type_check("closure_compile_jsmodules") {
     ":file_list_model.m",
     ":file_watcher.m",
     ":folder_shortcuts_data_model.m",
+    ":launch_param.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
     ":mock_navigation_list_model.m",
     ":navigation_list_model.m",
+    ":providers_model.m",
     ":thumbnail_loader.m",
+    ":web_store_utils.m",
   ]
 }
 
@@ -827,6 +830,16 @@ js_library("launch_param") {
   ]
 }
 
+js_library("launch_param.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/launch_param.m.js" ]
+  deps = [
+    ":dialog_type.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("list_thumbnail_loader") {
   deps = [
     ":directory_model",
@@ -962,13 +975,28 @@ js_library("providers_model") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
 
-js_unittest("providers_model_unittest") {
+js_library("providers_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/providers_model.m.js" ]
   deps = [
-    ":providers_model",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("providers_model_unittest.m") {
+  deps = [
+    ":providers_model.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
+    "//ui/file_manager/file_manager/background/js:volume_info_impl.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
   ]
 }
 
@@ -1126,6 +1154,13 @@ js_library("web_store_utils") {
   deps = [ ":constants" ]
 }
 
+js_library("web_store_utils.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/web_store_utils.m.js" ]
+  deps = [ ":constants.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("webui_command_extender") {
   deps = [
     "//ui/webui/resources/js:cr",
@@ -1138,6 +1173,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":directory_contents_unittest.m",
     ":file_list_model_unittest.m",
     ":navigation_list_model_unittest.m",
+    ":providers_model_unittest.m",
     ":thumbnail_loader_unittest.m",
   ]
   js_module = true
@@ -1160,7 +1196,6 @@ js_test_gen_html("js_test_gen_html") {
     ":file_type_filters_controller_unittest",
     ":import_controller_unittest",
     ":list_thumbnail_loader_unittest",
-    ":providers_model_unittest",
     ":spinner_controller_unittest",
     ":task_controller_unittest",
   ]
@@ -1182,11 +1217,14 @@ js_modulizer("modulize") {
     "file_list_model.js",
     "file_watcher.js",
     "folder_shortcuts_data_model.js",
+    "launch_param.js",
     "mock_directory_model.js",
     "mock_folder_shortcut_data_model.js",
     "mock_navigation_list_model.js",
     "navigation_list_model.js",
+    "providers_model.js",
     "thumbnail_loader.js",
+    "web_store_utils.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

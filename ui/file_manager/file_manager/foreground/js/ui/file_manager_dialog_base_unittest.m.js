@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function setUp() {
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {assertFalse} from 'chrome://test/chai_assert.js';
+import {waitUntil} from '../../../../base/js/test_error_reporting.m.js';
+import {FileManagerDialogBase} from './file_manager_dialog_base.m.js';
+
+export function setUp() {
   // Polyfill chrome.app.window.current().
   /** @suppress {duplicate,checkTypes,const} */
   chrome.app = {window: {current: () => null}};
@@ -12,7 +17,7 @@ function setUp() {
   };
 }
 
-async function testShowDialogAfterHide(done) {
+export async function testShowDialogAfterHide(done) {
   const container =
       assertInstanceof(document.createElement('div'), HTMLElement);
 
