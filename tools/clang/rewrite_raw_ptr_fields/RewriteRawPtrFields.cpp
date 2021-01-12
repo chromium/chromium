@@ -1086,7 +1086,7 @@ int main(int argc, const char* argv[]) {
   // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
   // be removed if https://bugs.llvm.org/show_bug.cgi?id=46287 is fixed.
   match_finder.addMatcher(
-      traverse(clang::ast_type_traits::TK_AsIs,
+      traverse(clang::TraversalKind::TK_AsIs,
                cxxConstructExpr(templated_function_arg_matcher)),
       &affected_expr_rewriter);
 
