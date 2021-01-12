@@ -159,13 +159,6 @@ public class SyncController
     }
 
     /**
-     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
-     */
-    public boolean isSyncingUrlsWithKeystorePassphrase() {
-        return mProfileSyncService.isSyncingUrlsWithKeystorePassphrase();
-    }
-
-    /**
      * Returns the SyncNotificationController.
      */
     public SyncNotificationController getSyncNotificationController() {
