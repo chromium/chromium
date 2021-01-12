@@ -48,7 +48,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Tracks UI events related to the translate bubble.</summary>
 </histogram>
 
-<histogram name="Translate.CaptureText" units="ms" expires_after="M88">
+<histogram name="Translate.CaptureText" units="ms" expires_after="M99">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
