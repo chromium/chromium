@@ -17,6 +17,9 @@ class TabSearchStorySet(story.StorySet):
       tab_search_story.TabSearchStoryCloseAndOpen,
       tab_search_story.TabSearchStoryCloseAndOpenLoading,
       tab_search_story.TabSearchStoryScrollUpAndDown,
+      tab_search_story.TabSearchStoryCleanSlate,
+      tab_search_story.TabSearchStoryMeasureMemoryBefore,
+      tab_search_story.TabSearchStoryMeasureMemoryAfter,
   ]
 
   def __init__(self):

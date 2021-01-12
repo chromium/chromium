@@ -75,7 +75,8 @@ class TabSearchStory(page.Page):
   def RunNavigateSteps(self, action_runner):
     url_list = self.URL_LIST
     tabs = action_runner.tab.browser.tabs
-    tabs[0].Navigate('https://' + url_list[0])
+    if len(url_list) > 0:
+      tabs[0].Navigate('https://' + url_list[0])
     for url in url_list[1:]:
       new_tab = tabs.New()
       new_tab.Navigate('https://' + url)
@@ -253,6 +254,50 @@ class TabSearchStoryScrollUpAndDown(TabSearchStory):
 
   def InteractWithPage(self, action_runner):
     self.ScrollUpAndDown(action_runner)
+
+
+class TabSearchStoryCleanSlate(TabSearchStory):
+  NAME = 'tab_search:clean_slate'
+  URL_LIST = []
+  URL = 'about:blank'
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+  def InteractWithPage(self, action_runner):
+    action_runner.Wait(1)
+
+
+class TabSearchStoryMeasureMemory(TabSearchStory):
+  URL_LIST = []
+  URL = 'about:blank'
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+  def WillStartTracing(self, chrome_trace_config):
+    chrome_trace_config.category_filter.AddExcludedCategory('*')
+    chrome_trace_config.category_filter.AddIncludedCategory('blink.console')
+    chrome_trace_config.category_filter.AddDisabledByDefault(
+        'disabled-by-default-memory-infra')
+
+  def GetExtraTracingMetrics(self):
+    return ['memoryMetric']
+
+
+class TabSearchStoryMeasureMemoryBefore(TabSearchStoryMeasureMemory):
+  NAME = 'tab_search:measure_memory:before'
+
+  def RunNavigateSteps(self, action_runner):
+    super(TabSearchStoryMeasureMemoryBefore,
+          self).RunNavigateSteps(action_runner)
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+  def InteractWithPage(self, action_runner):
+    action_runner.Wait(1)
+
+
+class TabSearchStoryMeasureMemoryAfter(TabSearchStoryMeasureMemory):
+  NAME = 'tab_search:measure_memory:after'
+
+  def InteractWithPage(self, action_runner):
+    action_runner.MeasureMemory(deterministic_mode=True)
 
 
 SCROLL_ELEMENT_FUNCTION = '''
