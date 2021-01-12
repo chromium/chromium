@@ -685,7 +685,9 @@ void WebLocalFrameImpl::Close() {
   if (print_context_)
     PrintEnd();
   print_client_.reset();
+#if DCHECK_IS_ON()
   is_in_printing_ = false;
+#endif
 }
 
 WebString WebLocalFrameImpl::AssignedName() const {
@@ -1574,10 +1576,12 @@ WebPlugin* WebLocalFrameImpl::FocusedPluginIfInputMethodSupported() {
 
 void WebLocalFrameImpl::DispatchBeforePrintEvent(
     base::WeakPtr<WebPrintClient> print_client) {
-  CHECK(!is_in_printing_) << "DispatchAfterPrintEvent() should have been "
-                             "called after the previous "
-                             "DispatchBeforePrintEvent() call.";
+#if DCHECK_IS_ON()
+  DCHECK(!is_in_printing_) << "DispatchAfterPrintEvent() should have been "
+                              "called after the previous "
+                              "DispatchBeforePrintEvent() call.";
   is_in_printing_ = true;
+#endif
 
   print_client_ = print_client;
 
@@ -1593,9 +1597,11 @@ void WebLocalFrameImpl::DispatchBeforePrintEvent(
 }
 
 void WebLocalFrameImpl::DispatchAfterPrintEvent() {
-  CHECK(is_in_printing_) << "DispatchBeforePrintEvent() should be called "
-                            "before DispatchAfterPrintEvent().";
+#if DCHECK_IS_ON()
+  DCHECK(is_in_printing_) << "DispatchBeforePrintEvent() should be called "
+                             "before DispatchAfterPrintEvent().";
   is_in_printing_ = false;
+#endif
 
   print_client_.reset();
 
