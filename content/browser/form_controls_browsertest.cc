@@ -101,7 +101,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // - Slight differences in radio and checkbox rendering in 10.15
     cc::FuzzyPixelComparator comparator(
         /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 9.f,
+        /* error_pixels_percentage_limit */ 11.f,
         /* small_error_pixels_percentage_limit */ 0.f,
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 79.f,
@@ -156,6 +156,25 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           "</script>",
           /* screenshot_width */ 140,
           /* screenshot_height */ 40);
+}
+
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
+  RunTest("form_controls_browsertest_input",
+          "<!-- text inputs -->"
+          "<style>input {width: 150px;}</style>"
+          "<input type=\"text\" /><br><br>"
+          "<input type=\"number\" /><br><br>"
+          "<input type=\"search\" /><br><br>"
+          "<input type=\"email\" /><br><br>"
+          "<input type=\"password\" /><br><br>"
+          "<!-- border -->"
+          "<input type=\"text\" style=\"border: 3px solid lime;\"/><br><br>"
+          "<!-- shadow -->"
+          "<input type=\"text\" style=\"box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);\"/><br><br>"
+          "<!-- disabled -->"
+          "<input type=\"text\" disabled/>",
+          /* screenshot_width */ 200,
+          /* screenshot_height */ 330);
 }
 
 // TODO(jarhar): Add tests for other elements from
