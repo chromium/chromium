@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
+#include <iterator>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
@@ -639,6 +640,77 @@ TEST(HashMapTest, IsValidKey) {
 
 static_assert(!IsTraceable<HashMap<int, int>>::value,
               "HashMap<int, int> must not be traceable.");
+
+static_assert(
+    std::is_convertible<
+        std::iterator_traits<HashMap<int, int>::iterator>::iterator_category,
+        std::bidirectional_iterator_tag>(),
+    "hash map iterators should be bidirectional");
+static_assert(
+    std::is_same<std::iterator_traits<HashMap<int, int>::iterator>::value_type,
+                 KeyValuePair<int, int>>(),
+    "hash map iterators should be over key-value pairs");
+
+static_assert(std::is_convertible<
+                  std::iterator_traits<
+                      HashMap<int, int>::const_iterator>::iterator_category,
+                  std::bidirectional_iterator_tag>(),
+              "hash map const iterators should be bidirectional");
+static_assert(
+    std::is_same<
+        std::iterator_traits<HashMap<int, int>::const_iterator>::value_type,
+        KeyValuePair<int, int>>(),
+    "hash map const iterators should be over key-value pairs");
+
+static_assert(
+    std::is_convertible<
+        std::iterator_traits<
+            HashMap<int, unsigned>::iterator::KeysIterator>::iterator_category,
+        std::bidirectional_iterator_tag>(),
+    "hash map key iterators should be bidirectional");
+static_assert(
+    std::is_same<
+        std::iterator_traits<
+            HashMap<int, unsigned>::iterator::KeysIterator>::value_type,
+        int>(),
+    "hash map key iterators should be over keys");
+
+static_assert(std::is_convertible<
+                  std::iterator_traits<HashMap<int, unsigned>::const_iterator::
+                                           KeysIterator>::iterator_category,
+                  std::bidirectional_iterator_tag>(),
+              "hash map const key iterators should be bidirectional");
+static_assert(
+    std::is_same<
+        std::iterator_traits<
+            HashMap<int, unsigned>::const_iterator::KeysIterator>::value_type,
+        int>(),
+    "hash map const key iterators should be over keys");
+
+static_assert(
+    std::is_convertible<
+        std::iterator_traits<HashMap<int, unsigned>::iterator::ValuesIterator>::
+            iterator_category,
+        std::bidirectional_iterator_tag>(),
+    "hash map value iterators should be bidirectional");
+static_assert(
+    std::is_same<
+        std::iterator_traits<
+            HashMap<int, unsigned>::iterator::ValuesIterator>::value_type,
+        unsigned>(),
+    "hash map value iterators should be over values");
+
+static_assert(std::is_convertible<
+                  std::iterator_traits<HashMap<int, unsigned>::const_iterator::
+                                           ValuesIterator>::iterator_category,
+                  std::bidirectional_iterator_tag>(),
+              "hash map const value iterators should be bidirectional");
+static_assert(
+    std::is_same<
+        std::iterator_traits<
+            HashMap<int, unsigned>::const_iterator::ValuesIterator>::value_type,
+        unsigned>(),
+    "hash map const value iterators should be over values");
 
 }  // anonymous namespace
 
