@@ -341,8 +341,6 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   }
 
   root_window_ = root_window;
-  if (base::FeatureList::IsEnabled(features::kForce60HzRefreshRate))
-    root_window_->SetForce60HzRefreshRate();
   root_window_->SetLayer(root_layer ? root_layer : cc::Layer::Create());
   root_window_->GetLayer()->SetBounds(size_);
   root_window->AttachCompositor(this);

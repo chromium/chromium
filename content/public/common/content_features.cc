@@ -877,10 +877,6 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Force display to tick at ~60Hz refresh rate.
-const base::Feature kForce60HzRefreshRate{"Force60HzRefreshRate",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Screen Capture API support for Android
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
