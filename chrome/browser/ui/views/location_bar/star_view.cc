@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,6 +30,25 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_runner.h"
+
+namespace {
+
+// Enumeration of all actions in the star menu.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class Action {
+  kAddBookmarkButton = 0,
+  kEditBookmarkButton = 1,
+  kAddToReadingListButton = 2,
+  kMarkAsReadButton = 3,
+  kMaxValue = kMarkAsReadButton,
+};
+
+void RecordClick(Action item) {
+  base::UmaHistogramEnumeration("Bookmarks.StarEntryPoint.ClickedAction", item);
+}
+
+}  // namespace
 
 StarView::StarView(CommandUpdater* command_updater,
                    Browser* browser,
@@ -114,12 +134,16 @@ void StarView::EditBookmarksPrefUpdated() {
 void StarView::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case StarMenuModel::CommandBookmark:
+      RecordClick(GetActive() ? Action::kEditBookmarkButton
+                              : Action::kAddBookmarkButton);
       chrome::BookmarkCurrentTab(browser_);
       break;
     case StarMenuModel::CommandMoveToReadLater:
+      RecordClick(Action::kAddToReadingListButton);
       chrome::MoveCurrentTabToReadLater(browser_);
       break;
     case StarMenuModel::CommandMarkAsRead:
+      RecordClick(Action::kMarkAsReadButton);
       chrome::MarkCurrentTabAsReadInReadLater(browser_);
       break;
     default:

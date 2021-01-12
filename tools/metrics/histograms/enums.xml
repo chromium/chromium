@@ -71397,6 +71397,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="OTHER"/>
 </enum>
 
+<enum name="StarEntryPointAction">
+  <int value="0" label="Add bookmark"/>
+  <int value="1" label="Edit bookmark"/>
+  <int value="2" label="Add to reading list"/>
+  <int value="3" label="Mark as read"/>
+</enum>
+
 <enum name="StarsLaunchLocation">
   <obsolete>
     Removed 01/2020 as we no longer record this metric.
