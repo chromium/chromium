@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -52,6 +53,10 @@ public class PermissionDialogController
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
 
+    // Array with ints of type {@link ContentSettingsType}.
+    private int[] mLastPermissions;
+    private @ContentSettingValues int mLastResult;
+
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
     // when either:
@@ -90,6 +95,22 @@ public class PermissionDialogController
     }
 
     /**
+     * Returns whether this PropertyModel is for the permission dialog.
+     * @param model The PropertyModel to be checked.
+     */
+    public static boolean isPermissionDialogModel(PropertyModel model) {
+        return model.get(ModalDialogProperties.CONTROLLER) instanceof PermissionDialogController;
+    }
+
+    public int[] getLastDialogPermissions() {
+        return mLastPermissions.clone();
+    }
+
+    public @ContentSettingValues int getLastDialogResult() {
+        return mLastResult;
+    }
+
+    /**
      * Queues a modal permission dialog for display. If there are currently no dialogs on screen, it
      * will be displayed immediately. Otherwise, it will be displayed as soon as the user responds
      * to the current dialog.
@@ -115,7 +136,7 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
         } else {
             mDialogDelegate.onAccept();
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.ALLOW);
         }
         scheduleDisplay();
     }
@@ -129,7 +150,7 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
         } else {
             mDialogDelegate.onDismiss();
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.BLOCK);
         }
         scheduleDisplay();
     }
@@ -152,7 +173,7 @@ public class PermissionDialogController
             // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
             // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
             mDialogDelegate.onDismiss();
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.DEFAULT);
             return;
         }
 
@@ -260,7 +281,7 @@ public class PermissionDialogController
                 assert mState == State.PROMPT_OPEN;
                 mDialogDelegate.onDismiss();
             }
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.BLOCK);
             scheduleDisplay();
         }
     }
@@ -284,7 +305,11 @@ public class PermissionDialogController
         }
     }
 
-    private void destroyDelegate() {
+    private void destroyDelegate(@ContentSettingValues int result) {
+        if (result != ContentSettingValues.DEFAULT) {
+            mLastPermissions = mDialogDelegate.getContentSettingsTypes();
+            mLastResult = result;
+        }
         mDialogDelegate.destroy();
         mDialogDelegate = null;
         mState = State.NOT_SHOWING;
