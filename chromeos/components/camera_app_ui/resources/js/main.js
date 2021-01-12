@@ -112,6 +112,14 @@ export class App {
 
     document.body.addEventListener('keydown', this.onKeyPressed_.bind(this));
 
+    // Disable the zoom in-out gesture which is triggered by wheel and pinch on
+    // trackpad.
+    document.body.addEventListener('wheel', (event) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+      }
+    }, {passive: false, capture: true});
+
     document.title = browserProxy.getI18nMessage('name');
     util.setupI18nElements(document.body);
     this.setupToggles_();
