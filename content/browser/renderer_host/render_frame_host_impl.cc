@@ -2919,6 +2919,15 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   DCHECK(GetLastCommittedOrigin().opaque());
   DCHECK(isolation_info_.IsEmpty());
 
+  // If the document has a non-secure parent, then it is non-secure. Otherwise
+  // it depends if the creator has a potentially-trustworthy origin.
+  if (parent_ && !parent_->is_web_secure_context()) {
+    is_web_secure_context_ = false;
+  } else {
+    is_web_secure_context_ =
+        network::IsOriginPotentiallyTrustworthy(new_frame_creator);
+  }
+
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
       network::mojom::WebSandboxFlags::kOrigin ==
@@ -8493,7 +8502,7 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityState() const {
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->is_web_secure_context = is_web_secure_context_;
+  client_security_state->is_web_secure_context = is_web_secure_context();
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
   client_security_state->ip_address_space =
@@ -8933,8 +8942,13 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
+
+  // Only apply some parameters if this is not the fake initial navigation,
+  // because the values set at construction time should remain unmodified.
   if (navigation_request->IsWaitingToCommit()) {
-    is_web_secure_context_ = navigation_request->is_web_secure_context();
+    // IsWebSecureContext() must only be called on ready-to-commit navigations.
+    is_web_secure_context_ = navigation_request->IsWebSecureContext();
+
     private_network_request_policy_ =
         navigation_request->private_network_request_policy();
     cross_origin_embedder_policy_ =

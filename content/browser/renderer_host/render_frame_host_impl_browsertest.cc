@@ -5546,12 +5546,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5562,6 +5563,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5579,12 +5582,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
 
+  EXPECT_TRUE(window->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5595,6 +5599,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
+
+  EXPECT_FALSE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -5612,12 +5618,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5628,6 +5635,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5645,12 +5654,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
 
+  EXPECT_TRUE(window->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1136028): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5661,6 +5671,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
+
+  EXPECT_FALSE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -5678,12 +5690,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5694,6 +5707,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5711,11 +5726,23 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  // A document loaded from a `data:` URL is never a secure context according to
+  // the spec [1] unless it is origin-sandboxed and its parent is a secure
+  // context itself.
+  // That being said, there exists a web platform test [2] that asserts the
+  // contrary. Then again, it is failing on all major browsers as of
+  // 2021-01-08...
+  //
+  // [1]
+  // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
+  // [2]
+  // https://wpt.fyi/results/secure-contexts/basic-popup-and-iframe-tests.https.html
+  EXPECT_FALSE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
   EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
@@ -5727,6 +5754,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5745,12 +5774,13 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5761,6 +5791,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
+
+  EXPECT_FALSE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -5778,12 +5810,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
 
+  EXPECT_TRUE(window->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1136028): Expect true once inheritance is fixed.
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5795,6 +5828,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5812,6 +5847,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -5827,6 +5864,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -5844,6 +5883,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
 
+  EXPECT_TRUE(window->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -5859,6 +5900,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
+
+  EXPECT_FALSE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -5876,6 +5919,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
+  EXPECT_TRUE(child_frame->is_web_secure_context());
+
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -5891,6 +5936,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
+
+  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();

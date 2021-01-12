@@ -657,7 +657,7 @@ class CONTENT_EXPORT NavigationRequest
     return response_should_be_rendered_;
   }
 
-  network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
+  network::mojom::ClientSecurityStatePtr BuildClientSecurityState();
 
   bool ua_change_requires_reload() const { return ua_change_requires_reload_; }
 
@@ -780,7 +780,14 @@ class CONTENT_EXPORT NavigationRequest
   //          NavigationThrottle.
   bool NeedsUrlLoader();
 
-  bool is_web_secure_context() const { return is_web_secure_context_; }
+  // Returns whether the navigation will yield a secure context.
+  //
+  // This navigation's state should be at least |READY_TO_COMMIT|.
+  //
+  // See also |RenderFrameHostImpl::is_web_secure_context()|, which this value
+  // feeds into upon this navigation committing.
+  bool IsWebSecureContext();
+
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
   }
@@ -1056,14 +1063,6 @@ class CONTENT_EXPORT NavigationRequest
   // Updates the state of the navigation handle after encountering a server
   // redirect.
   void UpdateStateFollowingRedirect(const GURL& new_referrer_url);
-
-  // Returns whether the ready-to-commit navigation will yield a secure context.
-  //
-  // Helper for UpdateClientSecurityStateInternals().
-  //
-  // Implements the following algorithm:
-  // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
-  bool IsWebSecureContext() const;
 
   // Updates the internals used to construct a ClientSecurityState during
   // ReadyToCommitNavigation().
@@ -1566,7 +1565,6 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(ahemery, titouan): Move some elements to the policy container or
   // rework inheritance.
   // https://crbug.com/1154729
-  bool is_web_secure_context_ = false;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kAllow;

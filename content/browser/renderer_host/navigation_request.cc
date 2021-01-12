@@ -664,7 +664,8 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
   DCHECK(navigation_request);
 
   // Check if this is loadDataWithBaseUrl (which needs special treatment).
-  auto& common_params = navigation_request->common_params();
+  const mojom::CommonNavigationParams& common_params =
+      navigation_request->common_params();
   if (NavigationRequest::IsLoadDataWithBaseURL(common_params)) {
     // A (potentially attacker-controlled) renderer process should not be able
     // to use loadDataWithBaseUrl code path to initiate fetches on behalf of a
@@ -4373,7 +4374,7 @@ bool NavigationRequest::NeedsUrlLoader() {
          !is_mhtml_subframe_loaded_from_achive;
 }
 
-bool NavigationRequest::IsWebSecureContext() const {
+bool NavigationRequest::IsWebSecureContext() {
   // Parent document, if it exists, must also be a secure context.
   RenderFrameHostImpl* parent = frame_tree_node_->parent();
   if (parent && !parent->is_web_secure_context()) {
@@ -4383,8 +4384,8 @@ bool NavigationRequest::IsWebSecureContext() const {
   // For both regular and origin-sandboxed documents, the origin to use is the
   // origin of the URL to-be-committed. The spec makes a distinction between the
   // two only because it works backwards from a committed document.
-  return network::IsOriginPotentiallyTrustworthy(
-      url::Origin::Create(common_params_->url));
+  url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+  return network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 void NavigationRequest::UpdateClientSecurityStateInternals() {
@@ -4400,8 +4401,6 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
       CalculateClientAddressSpace(common_params_->url, response_head_.get());
   if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
     policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
-
-  is_web_secure_context_ = IsWebSecureContext();
 
   if (!base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequests)) {
@@ -5214,9 +5213,9 @@ NavigationRequest::TakePeakGpuMemoryTracker() {
 }
 
 network::mojom::ClientSecurityStatePtr
-NavigationRequest::BuildClientSecurityState() const {
+NavigationRequest::BuildClientSecurityState() {
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->is_web_secure_context = is_web_secure_context_;
+  client_security_state->is_web_secure_context = IsWebSecureContext();
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
   client_security_state->ip_address_space =
