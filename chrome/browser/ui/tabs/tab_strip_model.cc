@@ -1419,6 +1419,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandAddToReadLater: {
+      base::RecordAction(
+          UserMetricsAction("DesktopReadingList.AddItem.FromTabContextMenu"));
       AddToReadLater(GetIndicesForCommand(context_index));
       break;
     }

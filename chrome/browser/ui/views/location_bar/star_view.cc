@@ -8,6 +8,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
@@ -140,6 +142,8 @@ void StarView::ExecuteCommand(int command_id, int event_flags) {
       break;
     case StarMenuModel::CommandMoveToReadLater:
       RecordClick(Action::kAddToReadingListButton);
+      base::RecordAction(base::UserMetricsAction(
+          "DesktopReadingList.AddItem.FromBookmarkIcon"));
       chrome::MoveCurrentTabToReadLater(browser_);
       break;
     case StarMenuModel::CommandMarkAsRead:

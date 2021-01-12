@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/read_later/read_later_button.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -119,6 +121,8 @@ void ReadLaterButton::ButtonPressed() {
     if (webui_bubble_manager_->GetBubbleWidget()) {
       webui_bubble_manager_->CloseBubble();
     } else {
+      base::RecordAction(
+          base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
       webui_bubble_manager_->ShowBubble();
     }
   }

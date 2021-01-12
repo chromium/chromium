@@ -5893,6 +5893,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopReadingList.AddItem.FromBookmarkIcon">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user added to the reading list from the Bookmark icon entry point
+    (Desktop only).
+  </description>
+</action>
+
+<action name="DesktopReadingList.AddItem.FromTabContextMenu">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user added to the reading list from the tab context menu entry point
+    (Desktop only).
+  </description>
+</action>
+
+<action name="DesktopReadingList.OpenReadingList">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user clicked the Desktop reading list button to open the reading list.
+  </description>
+</action>
+
 <action name="DesktopSearch">
   <obsolete>
     Deprecated 05/2016 because desktop searches are no longer opened in the
