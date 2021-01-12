@@ -40,10 +40,10 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -61,8 +61,8 @@
 namespace {
 
 // The component version used with a manual config. This ensures that any hint
-// component received from the OptimizationGuideService on a subsequent startup
-// will have a newer version than it.
+// component received from the Optimization Hints component on a subsequent
+// startup will have a newer version than it.
 constexpr char kManualConfigComponentVersion[] = "0.0.0";
 
 // Delay until successfully fetched hints should be updated by requesting from
@@ -252,14 +252,12 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
 }  // namespace
 
 OptimizationGuideHintsManager::OptimizationGuideHintsManager(
-    optimization_guide::OptimizationGuideService* optimization_guide_service,
     Profile* profile,
     PrefService* pref_service,
     optimization_guide::OptimizationGuideStore* hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : optimization_guide_service_(optimization_guide_service),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       profile_(profile),
       pref_service_(pref_service),
@@ -300,8 +298,8 @@ OptimizationGuideHintsManager::~OptimizationGuideHintsManager() {
 }
 
 void OptimizationGuideHintsManager::Shutdown() {
-  if (optimization_guide_service_)
-    optimization_guide_service_->RemoveObserver(this);
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->RemoveObserver(this);
 
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
@@ -563,8 +561,8 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
 
   // Register as an observer regardless of hint proto override usage. This is
   // needed as a signal during testing.
-  if (optimization_guide_service_)
-    optimization_guide_service_->AddObserver(this);
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->AddObserver(this);
 }
 
 void OptimizationGuideHintsManager::UpdateComponentHints(

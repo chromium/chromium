@@ -1,5 +1,6 @@
 include_rules = [
   "+components/omnibox/browser",
   "+components/omnibox/common",
+  "+components/optimization_guide/core",
   "+components/reputation/core",
 ]

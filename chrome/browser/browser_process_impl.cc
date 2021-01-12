@@ -100,8 +100,6 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/json_pref_store.h"
@@ -1009,14 +1007,6 @@ BrowserProcessImpl::floc_sorting_lsh_clusters_service() {
   return floc_sorting_lsh_clusters_service_.get();
 }
 
-optimization_guide::OptimizationGuideService*
-BrowserProcessImpl::optimization_guide_service() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!created_optimization_guide_service_)
-    CreateOptimizationGuideService();
-  return optimization_guide_service_.get();
-}
-
 StartupData* BrowserProcessImpl::startup_data() {
   return startup_data_;
 }
@@ -1273,19 +1263,6 @@ void BrowserProcessImpl::CreateFlocSortingLshClustersService() {
   DCHECK(!floc_sorting_lsh_clusters_service_);
   floc_sorting_lsh_clusters_service_ =
       std::make_unique<federated_learning::FlocSortingLshClustersService>();
-}
-
-void BrowserProcessImpl::CreateOptimizationGuideService() {
-  DCHECK(!created_optimization_guide_service_);
-  DCHECK(!optimization_guide_service_);
-  created_optimization_guide_service_ = true;
-
-  if (!optimization_guide::features::IsOptimizationHintsEnabled())
-    return;
-
-  optimization_guide_service_ =
-      std::make_unique<optimization_guide::OptimizationGuideService>(
-          content::GetUIThreadTaskRunner({}));
 }
 
 #if !defined(OS_ANDROID)

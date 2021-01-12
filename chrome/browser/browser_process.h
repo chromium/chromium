@@ -90,10 +90,6 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
-namespace optimization_guide {
-class OptimizationGuideService;
-}
-
 namespace policy {
 class ChromeBrowserPolicyConnector;
 class PolicyService;
@@ -228,11 +224,6 @@ class BrowserProcess {
   // for calculating the floc based on SortingLSH.
   virtual federated_learning::FlocSortingLshClustersService*
   floc_sorting_lsh_clusters_service() = 0;
-
-  // Returns the service used to provide hints for what optimizations can be
-  // performed on slow page loads.
-  virtual optimization_guide::OptimizationGuideService*
-  optimization_guide_service() = 0;
 
   // Returns the StartupData which owns any pre-created objects in //chrome
   // before the full browser starts.

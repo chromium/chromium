@@ -25,7 +25,6 @@
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/top_host_provider.h"
@@ -172,8 +171,7 @@ void OptimizationGuideKeyedService::Initialize() {
   }
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-      g_browser_process->optimization_guide_service(), profile,
-      profile->GetPrefs(), hint_store, top_host_provider_.get(),
+      profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, top_host_provider_.get(),

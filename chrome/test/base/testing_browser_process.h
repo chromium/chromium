@@ -103,8 +103,6 @@ class TestingBrowserProcess : public BrowserProcess {
       override;
   federated_learning::FlocSortingLshClustersService*
   floc_sorting_lsh_clusters_service() override;
-  optimization_guide::OptimizationGuideService* optimization_guide_service()
-      override;
   BrowserProcessPlatformPart* platform_part() override;
 
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -157,9 +155,6 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetFlocSortingLshClustersService(
       std::unique_ptr<federated_learning::FlocSortingLshClustersService>
           service);
-  void SetOptimizationGuideService(
-      std::unique_ptr<optimization_guide::OptimizationGuideService>
-          optimization_guide_service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   void SetNotificationUIManager(
@@ -211,8 +206,6 @@ class TestingBrowserProcess : public BrowserProcess {
       subresource_filter_ruleset_service_;
   std::unique_ptr<federated_learning::FlocSortingLshClustersService>
       floc_sorting_lsh_clusters_service_;
-  std::unique_ptr<optimization_guide::OptimizationGuideService>
-      optimization_guide_service_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 

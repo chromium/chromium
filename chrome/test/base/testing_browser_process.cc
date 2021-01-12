@@ -30,7 +30,6 @@
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
@@ -286,11 +285,6 @@ TestingBrowserProcess::floc_sorting_lsh_clusters_service() {
   return floc_sorting_lsh_clusters_service_.get();
 }
 
-optimization_guide::OptimizationGuideService*
-TestingBrowserProcess::optimization_guide_service() {
-  return optimization_guide_service_.get();
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
@@ -512,12 +506,6 @@ void TestingBrowserProcess::SetFlocSortingLshClustersService(
     std::unique_ptr<federated_learning::FlocSortingLshClustersService>
         service) {
   floc_sorting_lsh_clusters_service_.swap(service);
-}
-
-void TestingBrowserProcess::SetOptimizationGuideService(
-    std::unique_ptr<optimization_guide::OptimizationGuideService>
-        optimization_guide_service) {
-  optimization_guide_service_.swap(optimization_guide_service);
 }
 
 void TestingBrowserProcess::SetRapporServiceImpl(

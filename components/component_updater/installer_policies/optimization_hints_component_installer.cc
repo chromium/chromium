@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/optimization_hints_component_installer.h"
+#include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 
 #include <utility>
 
@@ -12,12 +12,10 @@
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/version.h"
-#include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -88,15 +86,15 @@ void OptimizationHintsComponentInstallerPolicy::ComponentReady(
     DVLOG(1) << "Got incompatible ruleset_format. Bailing out.";
     return;
   }
-  optimization_guide::OptimizationGuideService* optimization_guide_service =
-      g_browser_process->optimization_guide_service();
-  if (optimization_guide_service &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDisableInstallerUpdate)) {
+  optimization_guide::OptimizationHintsComponentUpdateListener*
+      update_listener = optimization_guide::
+          OptimizationHintsComponentUpdateListener::GetInstance();
+  if (update_listener && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                             kDisableInstallerUpdate)) {
     optimization_guide::HintsComponentInfo info(
         version,
         install_dir.Append(optimization_guide::kUnindexedHintsFileName));
-    optimization_guide_service->MaybeUpdateHintsComponent(info);
+    update_listener->MaybeUpdateHintsComponent(info);
   }
 }
 
@@ -135,15 +133,9 @@ OptimizationHintsComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void RegisterOptimizationHintsComponent(ComponentUpdateService* cus,
-                                        bool is_off_the_record_profile) {
-  if (is_off_the_record_profile) {
+void RegisterOptimizationHintsComponent(ComponentUpdateService* cus) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled())
     return;
-  }
-
-  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
-    return;
-  }
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationHintsComponentInstallerPolicy>());

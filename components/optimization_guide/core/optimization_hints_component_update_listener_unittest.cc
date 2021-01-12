@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
 #include <memory>
 #include <string>
@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -23,7 +24,7 @@ namespace optimization_guide {
 const base::FilePath::CharType kFileName1[] = FILE_PATH_LITERAL("somefile1.pb");
 const base::FilePath::CharType kFileName2[] = FILE_PATH_LITERAL("somefile2.pb");
 
-class TestObserver : public OptimizationGuideServiceObserver {
+class TestObserver : public OptimizationHintsComponentObserver {
  public:
   TestObserver()
       : hints_component_notification_count_(0),
@@ -55,34 +56,37 @@ class TestObserver : public OptimizationGuideServiceObserver {
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
-class OptimizationGuideServiceTest : public testing::Test {
+class OptimizationHintsComponentUpdateListenerTest : public testing::Test {
  public:
-  OptimizationGuideServiceTest() {}
-
-  ~OptimizationGuideServiceTest() override {}
+  OptimizationHintsComponentUpdateListenerTest() = default;
+  ~OptimizationHintsComponentUpdateListenerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    optimization_guide_service_ = std::make_unique<OptimizationGuideService>(
-        task_environment_.GetMainThreadTaskRunner());
+
+    OptimizationHintsComponentUpdateListener::GetInstance()
+        ->ResetStateForTesting();
 
     observer_ = std::make_unique<TestObserver>();
   }
 
-  OptimizationGuideService* optimization_guide_service() {
-    return optimization_guide_service_.get();
-  }
+  void TearDown() override { RemoveObserver(); }
 
   TestObserver* observer() { return observer_.get(); }
 
-  void AddObserver() { optimization_guide_service_->AddObserver(observer()); }
+  void AddObserver() {
+    OptimizationHintsComponentUpdateListener::GetInstance()->AddObserver(
+        observer());
+  }
 
   void RemoveObserver() {
-    optimization_guide_service_->RemoveObserver(observer());
+    OptimizationHintsComponentUpdateListener::GetInstance()->RemoveObserver(
+        observer());
   }
 
   void MaybeUpdateHintsComponent(const HintsComponentInfo& info) {
-    optimization_guide_service_->MaybeUpdateHintsComponent(info);
+    OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent(info);
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
@@ -93,13 +97,13 @@ class OptimizationGuideServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 
-  std::unique_ptr<OptimizationGuideService> optimization_guide_service_;
   std::unique_ptr<TestObserver> observer_;
 
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideServiceTest);
+  DISALLOW_COPY_AND_ASSIGN(OptimizationHintsComponentUpdateListenerTest);
 };
 
-TEST_F(OptimizationGuideServiceTest, ProcessHintsIssuesNotification) {
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
+       ProcessHintsIssuesNotification) {
   base::HistogramTester histogram_tester;
 
   AddObserver();
@@ -116,7 +120,8 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsIssuesNotification) {
       "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
 }
 
-TEST_F(OptimizationGuideServiceTest, ProcessHintsNewVersionProcessed) {
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
+       ProcessHintsNewVersionProcessed) {
   base::HistogramTester histogram_tester;
 
   AddObserver();
@@ -141,7 +146,8 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsNewVersionProcessed) {
       "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
-TEST_F(OptimizationGuideServiceTest, ProcessHintsPastVersionIgnored) {
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
+       ProcessHintsPastVersionIgnored) {
   base::HistogramTester histogram_tester;
 
   AddObserver();
@@ -163,7 +169,8 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsPastVersionIgnored) {
       "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
-TEST_F(OptimizationGuideServiceTest, ProcessHintsSameVersionIgnored) {
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
+       ProcessHintsSameVersionIgnored) {
   base::HistogramTester histogram_tester;
 
   AddObserver();
@@ -183,7 +190,7 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsSameVersionIgnored) {
       "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
-TEST_F(OptimizationGuideServiceTest,
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
        UnregisteredObserverDoesNotReceiveNotification) {
   base::HistogramTester histogram_tester;
 
@@ -203,7 +210,7 @@ TEST_F(OptimizationGuideServiceTest,
       "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
 }
 
-TEST_F(OptimizationGuideServiceTest,
+TEST_F(OptimizationHintsComponentUpdateListenerTest,
        RegisteredObserverReceivesNotificationForCurrentComponent) {
   base::HistogramTester histogram_tester;
 
