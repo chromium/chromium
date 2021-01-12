@@ -56,6 +56,6 @@
       return;
     }
     TestRunner.addResult('Both headers and uiSourceCode content:');
-    TestRunner.addResult(dedup.firstValue());
+    TestRunner.addResult(dedup.size ? dedup.values().next().value : null);
   }
 })();
