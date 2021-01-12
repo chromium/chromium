@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxCo
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -143,7 +145,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         // Instantiate child components.
         mHeaderCoordinator = new AssistantHeaderCoordinator(activity, model.getHeaderModel());
         mInfoBoxCoordinator = new AssistantInfoBoxCoordinator(activity, model.getInfoBoxModel());
-        mDetailsCoordinator = new AssistantDetailsCoordinator(activity, model.getDetailsModel());
+        mDetailsCoordinator = new AssistantDetailsCoordinator(activity, model.getDetailsModel(),
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
+                        AutofillAssistantUiController.getProfile()));
         mPaymentRequestCoordinator =
                 new AssistantCollectUserDataCoordinator(activity, model.getCollectUserDataModel());
         mFormCoordinator = new AssistantFormCoordinator(activity, model.getFormModel());
@@ -183,7 +187,6 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         // Set children top margins to have a spacing between them.
         int childSpacing = activity.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_vertical_spacing);
-        setChildMarginTop(mDetailsCoordinator.getView(), childSpacing);
         setChildMarginTop(mPaymentRequestCoordinator.getView(), childSpacing);
         setChildMarginTop(mFormCoordinator.getView(), childSpacing);
         setChildMarginTop(mGenericUiCoordinator.getView(), childSpacing);

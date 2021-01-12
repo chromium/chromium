@@ -44,6 +44,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
   void SetDetails(std::unique_ptr<Details> details) override;
+  void AppendDetails(std::unique_ptr<Details> details) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
   void SetProgress(int progress) override;
@@ -126,7 +127,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
                                   : state_history_.back();
   }
 
-  Details* GetDetails() { return details_.get(); }
+  const std::vector<Details>& GetDetails() { return details_; }
 
   InfoBox* GetInfoBox() { return info_box_.get(); }
 
@@ -158,7 +159,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::string status_message_;
-  std::unique_ptr<Details> details_;
+  std::vector<Details> details_;
   std::unique_ptr<InfoBox> info_box_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
   std::unique_ptr<CollectUserDataOptions> last_payment_request_options_;

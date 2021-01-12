@@ -382,7 +382,7 @@ TEST_F(ScriptExecutorTest, ClearDetailsWhenFinished) {
 
   delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(nullptr, delegate_.GetDetails());
+  EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
 }
 
 TEST_F(ScriptExecutorTest, DontClearDetailsIfOtherActionsAreLeft) {
@@ -402,7 +402,7 @@ TEST_F(ScriptExecutorTest, DontClearDetailsIfOtherActionsAreLeft) {
 
   delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_NE(nullptr, delegate_.GetDetails());
+  EXPECT_THAT(delegate_.GetDetails(), Not(IsEmpty()));
 }
 
 TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
@@ -414,9 +414,10 @@ TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
       .WillOnce(RunOnceCallback<5>(net::HTTP_UNAUTHORIZED, ""));
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, false)));
+
   delegate_.SetDetails(std::make_unique<Details>());  // empty, but not null
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(nullptr, delegate_.GetDetails());
+  EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
 }
 
 TEST_F(ScriptExecutorTest, UpdateScriptStateWhileRunning) {

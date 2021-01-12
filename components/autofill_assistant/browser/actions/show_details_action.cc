@@ -60,7 +60,11 @@ void ShowDetailsAction::InternalProcessAction(ProcessActionCallback callback) {
     VLOG(1) << "Failed to fill the details";
     UpdateProcessedAction(INVALID_ACTION);
   } else {
-    delegate_->SetDetails(std::move(details));
+    if (proto_.show_details().append()) {
+      delegate_->AppendDetails(std::move(details));
+    } else {
+      delegate_->SetDetails(std::move(details));
+    }
     UpdateProcessedAction(ACTION_APPLIED);
   }
 

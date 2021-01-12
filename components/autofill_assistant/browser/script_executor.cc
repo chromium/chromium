@@ -751,6 +751,10 @@ void ScriptExecutor::SetDetails(std::unique_ptr<Details> details) {
   return delegate_->SetDetails(std::move(details));
 }
 
+void ScriptExecutor::AppendDetails(std::unique_ptr<Details> details) {
+  return delegate_->AppendDetails(std::move(details));
+}
+
 void ScriptExecutor::ClearInfoBox() {
   delegate_->ClearInfoBox();
 }

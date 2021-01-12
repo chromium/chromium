@@ -94,7 +94,18 @@ std::string FakeScriptExecutorDelegate::GetBubbleMessage() const {
 }
 
 void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details) {
-  details_ = std::move(details);
+  if (details) {
+    details_ = {*details};
+  } else {
+    details_ = {};
+  }
+}
+
+void FakeScriptExecutorDelegate::AppendDetails(
+    std::unique_ptr<Details> details) {
+  if (details) {
+    details_.push_back(*details);
+  }
 }
 
 void FakeScriptExecutorDelegate::SetInfoBox(const InfoBox& info_box) {

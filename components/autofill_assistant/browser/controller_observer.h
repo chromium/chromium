@@ -55,9 +55,9 @@ class ControllerObserver : public base::CheckedObserver {
   virtual void OnUserDataChanged(const UserData* state,
                                  UserData::FieldChange field_change) = 0;
 
-  // Called when details have changed. Details will be null if they have been
+  // Called when details have changed. Details will be empty if they have been
   // cleared.
-  virtual void OnDetailsChanged(const Details* details) = 0;
+  virtual void OnDetailsChanged(const std::vector<Details>& details) = 0;
 
   // Called when info box has changed. |info_box| will be null if it has been
   // cleared.

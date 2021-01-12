@@ -204,14 +204,30 @@ std::string Controller::GetBubbleMessage() const {
 }
 
 void Controller::SetDetails(std::unique_ptr<Details> details) {
-  details_ = std::move(details);
+  if (details) {
+    details_ = {*details};
+  } else {
+    details_ = {};
+  }
+
   for (ControllerObserver& observer : observers_) {
-    observer.OnDetailsChanged(details_.get());
+    observer.OnDetailsChanged(details_);
   }
 }
 
-const Details* Controller::GetDetails() const {
-  return details_.get();
+void Controller::AppendDetails(std::unique_ptr<Details> details) {
+  if (!details) {
+    return;
+  }
+
+  details_.push_back(*details);
+  for (ControllerObserver& observer : observers_) {
+    observer.OnDetailsChanged(details_);
+  }
+}
+
+const std::vector<Details>& Controller::GetDetails() const {
+  return details_;
 }
 
 int Controller::GetProgress() const {
@@ -1252,8 +1268,11 @@ std::string Controller::GetDebugContext() {
   }
   dict.SetKey("scripts", script_tracker()->GetDebugContext());
 
-  if (details_)
-    dict.SetKey("details", details_->GetDebugContext());
+  std::vector<base::Value> details_list;
+  for (const auto& details : details_) {
+    details_list.push_back(details.GetDebugContext());
+  }
+  dict.SetKey("details", base::Value(details_list));
 
   std::string output_js;
   base::JSONWriter::Write(dict, &output_js);

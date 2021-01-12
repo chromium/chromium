@@ -1766,54 +1766,59 @@ UiControllerAndroid::GetDetailsModel() {
   return Java_AssistantModel_getDetailsModel(AttachCurrentThread(), GetModel());
 }
 
-void UiControllerAndroid::OnDetailsChanged(const Details* details) {
+void UiControllerAndroid::OnDetailsChanged(
+    const std::vector<Details>& details_list) {
   JNIEnv* env = AttachCurrentThread();
+
+  auto jdetails_list = Java_AssistantDetailsModel_createDetailsList(env);
+  for (const auto& details : details_list) {
+    auto opt_image_accessibility_hint = details.imageAccessibilityHint();
+    base::android::ScopedJavaLocalRef<jstring> jimage_accessibility_hint =
+        nullptr;
+    if (opt_image_accessibility_hint.has_value()) {
+      jimage_accessibility_hint =
+          ConvertUTF8ToJavaString(env, opt_image_accessibility_hint.value());
+    }
+
+    // Create the placeholders configuration. We check here that the associated
+    // texts/urls are empty, so that on the Java side we can just check the
+    // placeholders configuration to know whether a placeholder should be shown
+    // or not.
+    auto placeholders = details.placeholders();
+    auto jplaceholders = Java_AssistantPlaceholdersConfiguration_Constructor(
+        env,
+        placeholders.show_image_placeholder() && details.imageUrl().empty(),
+        placeholders.show_title_placeholder() && details.title().empty(),
+        placeholders.show_description_line_1_placeholder() &&
+            details.descriptionLine1().empty(),
+        placeholders.show_description_line_2_placeholder() &&
+            details.descriptionLine2().empty(),
+        placeholders.show_description_line_3_placeholder() &&
+            details.descriptionLine3().empty());
+
+    auto jdetails = Java_AssistantDetails_create(
+        env, ConvertUTF8ToJavaString(env, details.title()),
+        ConvertUTF8ToJavaString(env, details.imageUrl()),
+        jimage_accessibility_hint, details.imageAllowClickthrough(),
+        ConvertUTF8ToJavaString(env, details.imageDescription()),
+        ConvertUTF8ToJavaString(env, details.imagePositiveText()),
+        ConvertUTF8ToJavaString(env, details.imageNegativeText()),
+        ConvertUTF8ToJavaString(env, details.imageClickthroughUrl()),
+        ConvertUTF8ToJavaString(env, details.totalPriceLabel()),
+        ConvertUTF8ToJavaString(env, details.totalPrice()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine1()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine2()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine3()),
+        ConvertUTF8ToJavaString(env, details.priceAttribution()),
+        details.userApprovalRequired(), details.highlightTitle(),
+        details.highlightLine1(), details.highlightLine2(),
+        details.highlightLine3(), jplaceholders);
+
+    Java_AssistantDetailsModel_addDetails(env, jdetails_list, jdetails);
+  }
+
   auto jmodel = GetDetailsModel();
-  if (!details) {
-    Java_AssistantDetailsModel_clearDetails(env, jmodel);
-    return;
-  }
-  auto opt_image_accessibility_hint = details->imageAccessibilityHint();
-  base::android::ScopedJavaLocalRef<jstring> jimage_accessibility_hint =
-      nullptr;
-  if (opt_image_accessibility_hint.has_value()) {
-    jimage_accessibility_hint =
-        ConvertUTF8ToJavaString(env, opt_image_accessibility_hint.value());
-  }
-
-  // Create the placeholders configuration. We check here that the associated
-  // texts/urls are empty, so that on the Java side we can just check the
-  // placeholders configuration to know whether a placeholder should be shown or
-  // not.
-  auto placeholders = details->placeholders();
-  auto jplaceholders = Java_AssistantPlaceholdersConfiguration_Constructor(
-      env, placeholders.show_image_placeholder() && details->imageUrl().empty(),
-      placeholders.show_title_placeholder() && details->title().empty(),
-      placeholders.show_description_line_1_placeholder() &&
-          details->descriptionLine1().empty(),
-      placeholders.show_description_line_2_placeholder() &&
-          details->descriptionLine2().empty(),
-      placeholders.show_description_line_3_placeholder() &&
-          details->descriptionLine3().empty());
-
-  auto jdetails = Java_AssistantDetails_create(
-      env, ConvertUTF8ToJavaString(env, details->title()),
-      ConvertUTF8ToJavaString(env, details->imageUrl()),
-      jimage_accessibility_hint, details->imageAllowClickthrough(),
-      ConvertUTF8ToJavaString(env, details->imageDescription()),
-      ConvertUTF8ToJavaString(env, details->imagePositiveText()),
-      ConvertUTF8ToJavaString(env, details->imageNegativeText()),
-      ConvertUTF8ToJavaString(env, details->imageClickthroughUrl()),
-      ConvertUTF8ToJavaString(env, details->totalPriceLabel()),
-      ConvertUTF8ToJavaString(env, details->totalPrice()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine1()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine2()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine3()),
-      ConvertUTF8ToJavaString(env, details->priceAttribution()),
-      details->userApprovalRequired(), details->highlightTitle(),
-      details->highlightLine1(), details->highlightLine2(),
-      details->highlightLine3(), jplaceholders);
-  Java_AssistantDetailsModel_setDetails(env, jmodel, jdetails);
+  Java_AssistantDetailsModel_setDetailsList(env, jmodel, jdetails_list);
 }
 
 // InfoBox related method.

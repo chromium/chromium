@@ -5,70 +5,38 @@
 package org.chromium.chrome.browser.autofill_assistant.details;
 
 import android.content.Context;
-import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsViewBinder.ViewHolder;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator responsible for showing details.
  */
 public class AssistantDetailsCoordinator {
-    private final View mView;
-    private final AssistantDetailsModel mModel;
+    private final RecyclerView mView;
 
-    public AssistantDetailsCoordinator(Context context, AssistantDetailsModel model) {
-        this(context, model,
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
-                        AutofillAssistantUiController.getProfile()));
-    }
-
-    @VisibleForTesting
     public AssistantDetailsCoordinator(
             Context context, AssistantDetailsModel model, ImageFetcher imageFetcher) {
-        mView = LayoutUtils.createInflater(context).inflate(
-                R.layout.autofill_assistant_details, /* root= */ null);
-        mModel = model;
-        ViewHolder viewHolder = new ViewHolder(context, mView);
-        AssistantDetailsViewBinder viewBinder =
-                new AssistantDetailsViewBinder(context, imageFetcher);
-        PropertyModelChangeProcessor.create(model, viewHolder, viewBinder);
+        mView = new RecyclerView(context);
+        mView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mView.setLayoutManager(new LinearLayoutManager(
+                context, LinearLayoutManager.VERTICAL, /* reverseLayout= */ false));
+        AssistantDetailsAdapter adapter = new AssistantDetailsAdapter(context, imageFetcher);
+        mView.setAdapter(adapter);
 
-        // Details view is initially hidden.
-        updateVisibility();
-
-        // Observe details in model to hide or show this coordinator view.
+        // Listen to the model and set the details on the adapter when they change.
         model.addObserver((source, propertyKey) -> {
-            if (AssistantDetailsModel.DETAILS == propertyKey) {
-                updateVisibility();
+            if (propertyKey == AssistantDetailsModel.DETAILS) {
+                adapter.setDetails(model.get(AssistantDetailsModel.DETAILS));
             }
         });
     }
 
-    /**
-     * Return the view associated to the details.
-     */
-    public View getView() {
+    public RecyclerView getView() {
         return mView;
-    }
-
-    /**
-     * Show or hide the details within its parent and call the {@code mOnVisibilityChanged}
-     * listener.
-     */
-    private void updateVisibility() {
-        int visibility =
-                mModel.get(AssistantDetailsModel.DETAILS) != null ? View.VISIBLE : View.GONE;
-        if (mView.getVisibility() != visibility) {
-            mView.setVisibility(visibility);
-        }
     }
 }

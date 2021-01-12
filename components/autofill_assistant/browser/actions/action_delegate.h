@@ -344,6 +344,10 @@ class ActionDelegate {
   // Passing nullptr clears the contextual information.
   virtual void SetDetails(std::unique_ptr<Details> details) = 0;
 
+  // Append |details| to the current contextual information.
+  // Passing nullptr does nothing.
+  virtual void AppendDetails(std::unique_ptr<Details> details) = 0;
+
   // Clears the info box.
   virtual void ClearInfoBox() = 0;
 

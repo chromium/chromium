@@ -121,6 +121,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
   void SetDetails(std::unique_ptr<Details> details) override;
+  void AppendDetails(std::unique_ptr<Details> details) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
   void SetProgress(int progress) override;
@@ -186,7 +187,7 @@ class Controller : public ScriptExecutorDelegate,
   // Overrides autofill_assistant::UiDelegate:
   AutofillAssistantState GetState() const override;
   void OnUserInteractionInsideTouchableArea() override;
-  const Details* GetDetails() const override;
+  const std::vector<Details>& GetDetails() const override;
   const InfoBox* GetInfoBox() const override;
   int GetProgress() const override;
   base::Optional<int> GetProgressActiveStep() const override;
@@ -416,8 +417,8 @@ class Controller : public ScriptExecutorDelegate,
   // Current bubble / tooltip message, may be empty.
   std::string bubble_message_;
 
-  // Current details, may be null.
-  std::unique_ptr<Details> details_;
+  // Current details, may be empty.
+  std::vector<Details> details_;
 
   // Current info box, may be null.
   std::unique_ptr<InfoBox> info_box_;

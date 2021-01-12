@@ -27,12 +27,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.StyleRes;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -41,25 +45,24 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This class is responsible for pushing updates to the Autofill Assistant details view. These
- * updates are pulled from the {@link AssistantDetailsModel} when a notification of an update is
- * received.
+ * This class is responsible for binding details to their associated view.
  */
-class AssistantDetailsViewBinder
-        implements PropertyModelChangeProcessor.ViewBinder<AssistantDetailsModel,
-                AssistantDetailsViewBinder.ViewHolder, PropertyKey> {
+class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapter.ViewHolder> {
+    private final List<AssistantDetails> mDetails = new ArrayList<>();
+
     private static final int IMAGE_BORDER_RADIUS = 8;
     private static final int PULSING_DURATION_MS = 1_000;
 
     /**
      * A wrapper class that holds the different views of the header.
      */
-    static class ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         final GradientDrawable mDefaultImage;
         final ImageView mImageView;
         final TextView mTitleView;
@@ -72,8 +75,10 @@ class AssistantDetailsViewBinder
         final TextView mTotalPriceView;
 
         ViewHolder(Context context, View detailsView) {
-            mDefaultImage = (GradientDrawable) context.getResources().getDrawable(
-                    R.drawable.autofill_assistant_default_details);
+            super(detailsView);
+
+            mDefaultImage = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(),
+                    R.drawable.autofill_assistant_default_details, /* theme= */ null);
             mImageView = detailsView.findViewById(R.id.details_image);
             mTitleView = detailsView.findViewById(R.id.details_title);
             mDescriptionLine1View = detailsView.findViewById(R.id.details_line1);
@@ -98,7 +103,7 @@ class AssistantDetailsViewBinder
     private ValueAnimator mPulseAnimation;
     private ImageFetcher mImageFetcher;
 
-    AssistantDetailsViewBinder(Context context, ImageFetcher imageFetcher) {
+    AssistantDetailsAdapter(Context context, ImageFetcher imageFetcher) {
         mContext = context;
         mImageWidth = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_details_image_size);
@@ -121,22 +126,70 @@ class AssistantDetailsViewBinder
         mImageFetcher = null;
     }
 
-    @Override
-    public void bind(AssistantDetailsModel model, ViewHolder view, PropertyKey propertyKey) {
-        if (AssistantDetailsModel.DETAILS == propertyKey) {
-            AssistantDetails details = model.get(AssistantDetailsModel.DETAILS);
-            if (details == null) {
-                // Handled by the AssistantDetailsCoordinator.
-                return;
+    /** Set the details. */
+    void setDetails(List<AssistantDetails> details) {
+        // Compute the diff.
+        int oldSize = mDetails.size();
+        int newSize = details.size();
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return oldSize;
             }
 
-            setDetails(details, view);
-        } else {
-            assert false : "Unhandled property detected in AssistantDetailsViewBinder!";
-        }
+            @Override
+            public int getNewListSize() {
+                return newSize;
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                // Assume that oldList[i] == newList[j] only if i == j, to minimize the number of
+                // add/remove animations when replacing or appending details.
+                return oldItemPosition == newItemPosition;
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                // Assume contents are never the same, that way we always update each details view.
+                return false;
+            }
+
+            @Override
+            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                // We need to return a non-null payload, otherwise the whole details view will
+                // fade-out then fade-in when changing.
+                return details.get(newItemPosition);
+            }
+        }, /* detectMoves= */ false);
+
+        // Set the details.
+        mDetails.clear();
+        mDetails.addAll(details);
+
+        // Notify the change.
+        diffResult.dispatchUpdatesTo(this);
     }
 
-    private void setDetails(AssistantDetails details, ViewHolder viewHolder) {
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        Context context = viewGroup.getContext();
+        View detailsView = LayoutUtils.createInflater(context).inflate(
+                R.layout.autofill_assistant_details, viewGroup, /* attachToRoot= */ false);
+        return new ViewHolder(context, detailsView);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        bindDetails(mDetails.get(i), viewHolder);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mDetails.size();
+    }
+
+    private void bindDetails(AssistantDetails details, ViewHolder viewHolder) {
         AssistantTextUtils.applyVisualAppearanceTags(
                 viewHolder.mTitleView, details.getTitle(), null);
         AssistantTextUtils.applyVisualAppearanceTags(
@@ -208,20 +261,19 @@ class AssistantDetailsViewBinder
             // Download image and then set it in the view.
             ImageFetcher.Params params = ImageFetcher.Params.create(
                     details.getImageUrl(), ImageFetcher.ASSISTANT_DETAILS_UMA_CLIENT_NAME);
-            mImageFetcher.fetchImage(
-                    params, image -> {
-                        if (image != null) {
-                            viewHolder.mImageView.setImageDrawable(getRoundedImage(image));
-                            if (details.hasImageClickthroughData()
-                                    && details.getImageClickthroughData().getAllowClickthrough()) {
-                                viewHolder.mImageView.setOnClickListener(unusedView
-                                        -> onImageClicked(mContext, details.getImageUrl(),
-                                                details.getImageClickthroughData()));
-                            } else {
-                                viewHolder.mImageView.setOnClickListener(null);
-                            }
-                        }
-                    });
+            mImageFetcher.fetchImage(params, image -> {
+                if (image != null) {
+                    viewHolder.mImageView.setImageDrawable(getRoundedImage(image));
+                    if (details.hasImageClickthroughData()
+                            && details.getImageClickthroughData().getAllowClickthrough()) {
+                        viewHolder.mImageView.setOnClickListener(unusedView
+                                -> onImageClicked(mContext, details.getImageUrl(),
+                                        details.getImageClickthroughData()));
+                    } else {
+                        viewHolder.mImageView.setOnClickListener(null);
+                    }
+                }
+            });
         }
 
         setTextStyles(details, viewHolder);

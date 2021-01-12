@@ -237,6 +237,7 @@ class ScriptExecutor : public ActionDelegate,
   std::string GetEmailAddressForAccessTokenAccount() override;
   std::string GetLocale() override;
   void SetDetails(std::unique_ptr<Details> details) override;
+  void AppendDetails(std::unique_ptr<Details> details) override;
   void ClearInfoBox() override;
   void SetInfoBox(const InfoBox& info_box) override;
   void SetProgress(int progress) override;

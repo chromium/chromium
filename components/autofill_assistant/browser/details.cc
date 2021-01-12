@@ -89,6 +89,10 @@ base::string16 FullName(const autofill::AutofillProfile& profile) {
 
 Details::Details() = default;
 Details::~Details() = default;
+Details::Details(Details&& other) = default;
+Details& Details::operator=(Details&& other) = default;
+Details::Details(const Details& other) = default;
+Details& Details::operator=(const Details& other) = default;
 
 // static
 bool Details::UpdateFromProto(const ShowDetailsProto& proto, Details* details) {

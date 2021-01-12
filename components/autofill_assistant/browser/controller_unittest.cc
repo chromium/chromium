@@ -2955,4 +2955,17 @@ TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {
   Start();
   EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
 }
+
+TEST_F(ControllerTest, Details) {
+  EXPECT_THAT(controller_->GetDetails(), IsEmpty());
+
+  controller_->SetDetails(std::make_unique<Details>());
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(1));
+
+  controller_->AppendDetails(std::make_unique<Details>());
+  EXPECT_THAT(controller_->GetDetails(), SizeIs(2));
+
+  controller_->SetDetails(nullptr);
+  EXPECT_THAT(controller_->GetDetails(), IsEmpty());
+}
 }  // namespace autofill_assistant

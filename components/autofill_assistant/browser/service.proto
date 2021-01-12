@@ -2361,6 +2361,10 @@ message ShowDetailsProto {
   // Flags indicating which parts of the details (if any) have changed.
   // This field is taken into account only if |details| is filled.
   optional DetailsChangesProto change_flags = 2;
+
+  // Whether the details should be added/appended instead of replacing the
+  // current details.
+  optional bool append = 6;
 }
 
 // Set the value of an form element.
