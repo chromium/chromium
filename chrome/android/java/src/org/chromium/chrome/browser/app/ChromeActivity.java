@@ -37,6 +37,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -1398,7 +1399,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             VrModuleProvider.getDelegate().onNewIntentWithNative(this, getIntent());
         }
 
+        // The first launch of the screenshot feature benefits from this DFM being installed
+        // proactively. However without the isolated split feature there are performance regressions
+        // as a result of adding this extra code.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
+                && BundleUtils.isolatedSplitsEnabled()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && AppHooks.get().getImageEditorModuleProvider() != null) {
             AppHooks.get().getImageEditorModuleProvider().maybeInstallModuleDeferred();
         }
