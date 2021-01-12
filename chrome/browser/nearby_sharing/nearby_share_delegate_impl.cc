@@ -137,6 +137,10 @@ void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
   }
 }
 
+void NearbyShareDelegateImpl::OnHighVisibilityChangeRequested() {
+  is_enable_high_visibility_request_active_ = true;
+}
+
 void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
   is_enable_high_visibility_request_active_ = false;
 

@@ -1643,11 +1643,22 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   // updated API referenced in the bug which allows setting a per-advertisement
   // interval.
 
+  // TODO(crbug/1155669): This will suppress the system notification that
+  // alerts the user that their device is discoverable, but it exposes Nearby
+  // Share logic to external components. We should clean this up with a better
+  // abstraction.
+  bool used_device_name = device_name.has_value();
+  if (used_device_name) {
+    for (auto& observer : observers_) {
+      observer.OnHighVisibilityChangeRequested();
+    }
+  }
+
   nearby_connections_manager_->StartAdvertising(
       *endpoint_info,
       /*listener=*/this, power_level, data_usage,
       base::BindOnce(&NearbySharingServiceImpl::OnStartAdvertisingResult,
-                     weak_ptr_factory_.GetWeakPtr(), device_name.has_value()));
+                     weak_ptr_factory_.GetWeakPtr(), used_device_name));
 
   advertising_power_level_ = power_level;
   NS_LOG(VERBOSE) << __func__

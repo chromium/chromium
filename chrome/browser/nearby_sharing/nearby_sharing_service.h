@@ -70,6 +70,7 @@ class NearbySharingService : public KeyedService {
 
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnHighVisibilityChangeRequested() {}
     virtual void OnHighVisibilityChanged(bool in_high_visibility) = 0;
 
     // Called during the |KeyedService| shutdown, but before everything has been

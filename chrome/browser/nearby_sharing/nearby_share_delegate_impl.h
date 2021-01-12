@@ -76,6 +76,7 @@ class NearbyShareDelegateImpl
       const std::vector<std::string>& visible_contact_ids) override {}
 
   // NearbyShareService::Observer
+  void OnHighVisibilityChangeRequested() override;
   void OnHighVisibilityChanged(bool high_visibility_on) override;
   void OnShutdown() override;
 
