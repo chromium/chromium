@@ -34,14 +34,6 @@ bool AndroidImageReader::IsSupported() {
   return is_supported_;
 }
 
-// static
-bool AndroidImageReader::LimitAImageReaderMaxSizeToOne() {
-  // Using MIBOX for both MiBox 4k and MiBox S 4k devices.
-  constexpr char kDisabledModel[] = "MIBOX";
-  return StartsWith(BuildInfo::GetInstance()->model(), kDisabledModel,
-                    CompareCase::INSENSITIVE_ASCII);
-}
-
 AndroidImageReader::AndroidImageReader() : is_supported_(LoadFunctions()) {}
 
 bool AndroidImageReader::LoadFunctions() {
