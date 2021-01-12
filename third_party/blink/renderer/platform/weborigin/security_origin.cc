@@ -88,6 +88,10 @@ KURL SecurityOrigin::ExtractInnerURL(const KURL& url) {
   return KURL(url.GetPath());
 }
 
+// Note: When changing ShouldTreatAsOpaqueOrigin, consider also updating
+// IsValidInput in //url/scheme_host_port.cc (there might be existing
+// differences in behavior between these 2 layers, but we should avoid
+// introducing new differences).
 static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   if (!url.IsValid())
     return true;

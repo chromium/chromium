@@ -745,6 +745,7 @@ TEST_F(SecurityOriginTest, CanonicalizeHost) {
 
 TEST_F(SecurityOriginTest, UrlOriginConversions) {
   url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddNoAccessScheme("no-access");
   url::AddLocalScheme("nonstandard-but-local");
   struct TestCases {
     const char* const url;
@@ -779,6 +780,9 @@ TEST_F(SecurityOriginTest, UrlOriginConversions) {
       {"unrecognized-scheme://localhost/", "", "", 0, true},
       {"mailto:localhost/", "", "", 0, true},
       {"about:blank", "", "", 0, true},
+
+      // Custom no-access scheme.
+      {"no-access:blah", "", "", 0, true},
 
       // Registered URLs
       {"ftp://example.com/", "ftp", "example.com", 21},
@@ -956,6 +960,23 @@ TEST_F(SecurityOriginTest, ToTokenForFastCheck) {
       expected_token = test.token + String(agent_cluster_id.ToString().c_str());
     EXPECT_EQ(expected_token, origin->ToTokenForFastCheck()) << expected_token;
   }
+}
+
+// See also OriginTest.ConstructFromGURL_OpaqueOrigin and
+// NavigationUrlRewriteBrowserTest.RewriteToNoAccess.
+TEST_F(SecurityOriginTest, StandardNoAccessScheme) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("std-no-access", url::SCHEME_WITH_HOST);
+  url::AddNoAccessScheme("std-no-access");
+  url::AddStandardScheme("std", url::SCHEME_WITH_HOST);
+
+  scoped_refptr<const SecurityOrigin> custom_standard_noaccess_origin =
+      SecurityOrigin::CreateFromString("std-no-access://host");
+  EXPECT_TRUE(custom_standard_noaccess_origin->IsOpaque());
+
+  scoped_refptr<const SecurityOrigin> custom_standard_origin =
+      SecurityOrigin::CreateFromString("std://host");
+  EXPECT_FALSE(custom_standard_origin->IsOpaque());
 }
 
 TEST_F(SecurityOriginTest, NonStandardScheme) {

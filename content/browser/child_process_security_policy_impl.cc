@@ -1533,19 +1533,6 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
       return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
     }
 
-    // Allow "no access" schemes to commit even though |url_origin| and
-    // |origin| tuples don't match. We have to allow this because Blink's
-    // SecurityOrigin::CreateWithReferenceOrigin() and url::Origin::Resolve()
-    // handle "no access" URLs differently. CreateWithReferenceOrigin() treats
-    // "no access" like data: URLs and returns an opaque origin with |origin|
-    // as a precursor. Resolve() returns a non-opaque origin consisting of the
-    // scheme and host portions of the original URL.
-    //
-    // TODO(1020201): Make CreateWithReferenceOrigin() & Resolve() consistent
-    // with each other and then remove this exception.
-    if (base::Contains(url::GetNoAccessSchemes(), url_info.url.scheme()))
-      return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
-
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
   }
 

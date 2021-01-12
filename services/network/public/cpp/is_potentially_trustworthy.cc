@@ -199,6 +199,27 @@ bool IsAllowlisted(const std::vector<std::string>& allowlist,
   return false;
 }
 
+bool IsSchemeConsideredAuthenticated(base::StringPiece scheme) {
+  // The code below is based on the specification at
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
+
+  // 7. If origin’s scheme component is one which the user agent considers to be
+  //    authenticated, return "Potentially Trustworthy".
+  //    Note: See §7.1 Packaged Applications for detail here.
+  //
+  // Note that this ignores some schemes that are considered trustworthy by
+  // higher layers (e.g. see GetSchemesBypassingSecureContextCheck in //chrome).
+  //
+  // See also
+  // - content::ContentClient::AddAdditionalSchemes and
+  //   content::ContentClient::Schemes::local_schemes and
+  //   content::ContentClient::Schemes::secure_schemes
+  // - url::AddLocalScheme
+  // - url::AddSecureScheme
+  return base::Contains(url::GetSecureSchemes(), scheme) ||
+         base::Contains(url::GetLocalSchemes(), scheme);
+}
+
 }  // namespace
 
 bool IsOriginPotentiallyTrustworthy(const url::Origin& origin) {
@@ -228,27 +249,16 @@ bool IsOriginPotentiallyTrustworthy(const url::Origin& origin) {
 
   // 6. If origin’s scheme component is file, return "Potentially Trustworthy".
   //
-  // This is somewhat redundant with the GetLocalSchemes-based check below.
+  // This is somewhat redundant with the GetLocalSchemes-based
+  // IsSchemeConsideredAuthenticated check below.
   if (origin.scheme() == url::kFileScheme)
     return true;
 
   // 7. If origin’s scheme component is one which the user agent considers to be
   //    authenticated, return "Potentially Trustworthy".
   //    Note: See §7.1 Packaged Applications for detail here.
-  //
-  // Note that this ignores some schemes that are considered trustworthy by
-  // higher layers (e.g. see GetSchemesBypassingSecureContextCheck in //chrome).
-  //
-  // See also
-  // - content::ContentClient::AddAdditionalSchemes and
-  //   content::ContentClient::Schemes::local_schemes and
-  //   content::ContentClient::Schemes::secure_schemes
-  // - url::AddLocalScheme
-  // - url::AddSecureScheme
-  if (base::Contains(url::GetSecureSchemes(), origin.scheme()) ||
-      base::Contains(url::GetLocalSchemes(), origin.scheme())) {
+  if (IsSchemeConsideredAuthenticated(origin.scheme()))
     return true;
-  }
 
   // 8. If origin has been configured as a trustworthy origin, return
   //    "Potentially Trustworthy".
@@ -278,7 +288,15 @@ bool IsUrlPotentiallyTrustworthy(const GURL& url) {
   //    Note: The origin of blob: and filesystem: URLs is the origin of the
   //    context in which they were created. Therefore, blobs created in a
   //    trustworthy origin will themselves be potentially trustworthy.
-  return IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque() && IsSchemeConsideredAuthenticated(url.scheme_piece())) {
+    // Authenticated schemes should be treated as trustworthy, even if they
+    // translate into an opaque origin (e.g. because some of them might also be
+    // registered as a no-access, like the //content-layer chrome-error:// or
+    // the //chrome-layer chrome-native://).
+    return true;
+  }
+  return IsOriginPotentiallyTrustworthy(origin);
 }
 
 // static

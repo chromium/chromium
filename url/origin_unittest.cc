@@ -229,8 +229,14 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
       "local-but-nonstandar:foo",  // Prefix of registered scheme.
       "but-nonstandard:foo",       // Suffix of registered scheme.
       "local-and-standard:",       // Standard scheme needs a hostname.
-      "standard-but-noaccess:",    // Standard scheme needs a hostname.
       "blob:blob:http://www.example.com/guid-goes-here",  // Double blob.
+
+      // Scheme (registered in SetUp()) that's standard but marked as noaccess.
+      // See also SecurityOriginTest.StandardNoAccessScheme and
+      // NavigationUrlRewriteBrowserTest.RewriteToNoAccess.
+      "standard-but-noaccess:",     // Standard scheme needs a hostname.
+      "standard-but-noaccess:foo",  // Standard scheme needs a hostname.
+      "standard-but-noaccess://bar",
   };
 
   for (auto* test_url : urls) {
@@ -348,12 +354,6 @@ TEST_F(OriginTest, ConstructFromGURL) {
       {"local-but-nonstandard:foo", "local-but-nonstandard", "", 0},
       {"local-but-nonstandard://bar", "local-but-nonstandard", "", 0},
       {"also-local-but-nonstandard://bar", "also-local-but-nonstandard", "", 0},
-
-      // Scheme (registered in SetUp()) that's standard but marked as noaccess.
-      // url::Origin doesn't currently take the noaccess property into account,
-      // so these aren't expected to result in opaque origins.
-      {"standard-but-noaccess:foo", "standard-but-noaccess", "foo", 0},
-      {"standard-but-noaccess://bar", "standard-but-noaccess", "bar", 0},
 
       // file: URLs
       {"file:///etc/passwd", "file", "", 0},
@@ -814,10 +814,10 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
       {"standard-but-noaccess://a.com/foo", &regular_origin, false},
       {"standard-but-noaccess://a.com/foo", &opaque_precursor_origin, false},
       {"standard-but-noaccess://a.com/foo", &opaque_unique_origin, true},
-      {"standard-but-noaccess://a.com/foo", &no_access_origin, false},
+      {"standard-but-noaccess://a.com/foo", &no_access_origin, true},
       {"standard-but-noaccess://a.com/foo", &no_access_opaque_precursor_origin,
-       false},
-      {"standard-but-noaccess://b.com/foo", &no_access_origin, false},
+       true},
+      {"standard-but-noaccess://b.com/foo", &no_access_origin, true},
       {"standard-but-noaccess://b.com/foo", &no_access_opaque_precursor_origin,
        true},
 

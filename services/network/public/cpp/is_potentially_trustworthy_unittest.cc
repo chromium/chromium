@@ -66,7 +66,7 @@ TEST(IsPotentiallyTrustworthy, Url) {
   EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:srcdoc#ref"));
   EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:srcdoc?x=2#ref"));
 
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("about:about"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:mumble"));
 
   EXPECT_TRUE(IsUrlPotentiallyTrustworthy("data:test/plain;blah"));
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("javascript:alert('blah')"));
@@ -151,37 +151,39 @@ TEST(IsPotentiallyTrustworthy, Url) {
       IsUrlPotentiallyTrustworthy("quic-transport://example.com/counter"));
 }
 
-// Tests the trustworthiness of an URL and origin whose scheme was added to the
-// custom sets of standard and secure schemes. A scheme must be added to both
-// to be considered trustworthy.
-TEST(IsPotentiallyTrustworthy, CustomScheme) {
-  const char* custom_scheme = "custom-scheme";
-  const char* custom_scheme_example = "custom-scheme://example.com";
+TEST(IsPotentiallyTrustworthy, CustomSchemes) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddSecureScheme("sec-nonstd-scheme");
+  url::AddSecureScheme("sec-std-scheme");
+  url::AddStandardScheme("sec-std-scheme", url::SCHEME_WITH_HOST);
+  url::AddSecureScheme("sec-noaccess-scheme");
+  url::AddNoAccessScheme("sec-noaccess-scheme");
+  url::AddNoAccessScheme("nonsec-noaccess-scheme");
 
-  EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
+  // Unrecognized / unknown schemes are not trustworthy.
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy("unknown-scheme://example.com"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("unknown-scheme://example.com"));
 
-  {
-    url::ScopedSchemeRegistryForTests scoped_registry;
-    url::AddSecureScheme(custom_scheme);
-    EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
-    EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
-  }
+  // Secure URLs are trustworthy, even if their scheme is also marked as
+  // no-access, or are not marked as standard.  See also //chrome-layer
+  // ChromeContentClientTest.AdditionalSchemes test and
+  // https://crbug.com/734581.
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("sec-nonstd-scheme://blah/x.js"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("sec-std-scheme://blah/x.js"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("sec-noaccess-scheme://blah/x.js"));
+  EXPECT_TRUE(IsOriginPotentiallyTrustworthy("sec-std-scheme://blah/x.js"));
+  // No-access and non-standard/non-local schemes translate into an
+  // untrustworthy, opaque origin.
+  // TODO(lukasza): Maybe if the spec had a notion of an origin *precursor*,
+  // then it could inspect the scheme of the precursor.  After this, it may be
+  // possible to EXPECT_TRUE below...
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy("sec-nonstd-scheme://blah/x.js"));
+  EXPECT_FALSE(
+      IsOriginPotentiallyTrustworthy("sec-noaccess-scheme://blah/x.js"));
 
-  {
-    url::ScopedSchemeRegistryForTests scoped_registry;
-    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
-    EXPECT_FALSE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
-    EXPECT_FALSE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
-  }
-
-  {
-    url::ScopedSchemeRegistryForTests scoped_registry;
-    url::AddStandardScheme(custom_scheme, url::SchemeType::SCHEME_WITH_HOST);
-    url::AddSecureScheme(custom_scheme);
-    EXPECT_TRUE(IsOriginPotentiallyTrustworthy(custom_scheme_example));
-    EXPECT_TRUE(IsUrlPotentiallyTrustworthy(custom_scheme_example));
-  }
+  // No-access, non-secure schemes are untrustworthy.
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("nonsec-noaccess-scheme:blah"));
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy("nonsec-noaccess-scheme:blah"));
 }
 
 // Tests that were for the removed blink::network_utils::IsOriginSecure.
