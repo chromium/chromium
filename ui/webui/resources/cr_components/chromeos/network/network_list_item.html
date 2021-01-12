@@ -24,11 +24,26 @@
       }
 
       #divOuter {
-        margin-bottom: 8px;
-        margin-top: 8px;
-        min-height: 48px;
+        height: var(--cr-network-row-height, 48px);
         overflow: auto;
+        padding-bottom: var(--cr-network-row-padding-bottom, 0);
         padding-inline-end: var(--cr-icon-ripple-padding);
+        padding-top: var(--cr-network-row-padding-bottom, 0);
+      }
+
+      :host([is-e-sim-pending-profile_]) #divText {
+        opacity: 0.4;
+      }
+
+      :host(:not([is-e-sim-pending-profile_])) #divIcon {
+        height: 24px;
+        width: 24px;
+      }
+
+      :host([is-e-sim-pending-profile_]) #divIcon {
+        height: 20px;
+        opacity: 0.4;
+        width: 20px;
       }
 
       #divDetail {
@@ -53,22 +68,8 @@
         color: var(--google-green-500);
       }
 
-      iron-icon :not(.esim-pending-profile) {
-        height: 24px;
-        width: 24px;
-      }
-
-      iron-icon .esim-pending-profile {
-        height: 20px;
-        width: 20px;
-      }
-
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
-      }
-
-      .esim-pending-profile {
-        opacity: 0.4;
       }
 
       #wrapper {
@@ -106,11 +107,9 @@
           </network-icon>
         </template>
         <template is="dom-if" if="[[item.polymerIcon]]">
-          <iron-icon icon="[[item.polymerIcon]]"
-              class$="[[getItemClassName_(item, item.customItemType]]"></iron-icon>
+          <iron-icon id="divIcon" icon="[[item.polymerIcon]]"></iron-icon>
         </template>
-        <div id="divText" class$="layout horizontal flex
-            [[getItemClassName_(item, item.customItemType)]]">
+        <div id="divText" class="layout horizontal flex">
           <div id="networkName" aria-hidden="true">
             [[getItemName_(item)]]
           </div>
@@ -144,7 +143,7 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-if" if="[[isESimPendingProfile_(item, item.customItemType)]]" restamp>
+        <template is="dom-if" if="[[isESimPendingProfile_]]" restamp>
           <cr-button id="installButton"
               aria-label$="[[getItemName_(item)]], $i18n{networkListItemDownload}"
               on-click="onInstallButtonClick_">

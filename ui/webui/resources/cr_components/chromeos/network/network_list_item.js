@@ -72,6 +72,17 @@ Polymer({
     },
 
     /**
+     * Whether the network item is a cellular one and is of an esim
+     * pending profile.
+     */
+    isESimPendingProfile_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsESimPendingProfile_(item, item.customItemType)',
+    },
+
+    /**
      * The cached ConnectionState for the network.
      * @type {!chromeos.networkConfig.mojom.ConnectionStateType|undefined}
      */
@@ -368,7 +379,7 @@ Polymer({
             'networkListItemLabelWifi', index, total, this.getItemName_(),
             secured, this.item.typeState.wifi.signalStrength);
       default:
-        if (this.isESimPendingProfile_()) {
+        if (this.isESimPendingProfile_) {
           if (this.subtitle_) {
             return this.i18n(
                 'networkListItemLabelESimPendingProfileWithProviderName', index,
@@ -504,7 +515,7 @@ Polymer({
     if (this.isSubpageButtonVisible_(this.networkState, this.showButtons) &&
         this.$$('#subpage-button') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
-    } else if (this.isESimPendingProfile_()) {
+    } else if (this.isESimPendingProfile_) {
       this.onInstallButtonClick_();
     } else if (this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
@@ -572,18 +583,10 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isESimPendingProfile_() {
+  computeIsESimPendingProfile_() {
     return !!this.item && this.item.hasOwnProperty('customItemType') &&
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getItemClassName_() {
-    return this.isESimPendingProfile_() ? 'esim-pending-profile' : '';
   },
 
   /**

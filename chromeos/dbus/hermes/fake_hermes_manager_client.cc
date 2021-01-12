@@ -88,6 +88,9 @@ void FakeHermesManagerClient::ParseCommandLineSwitch() {
   euicc_client_test->AddFakeCarrierProfile(dbus::ObjectPath(kDefaultEuiccPath),
                                            hermes::profile::State::kInactive,
                                            "");
+  euicc_client_test->AddFakeCarrierProfile(dbus::ObjectPath(kDefaultEuiccPath),
+                                           hermes::profile::State::kPending,
+                                           "");
 }
 
 void FakeHermesManagerClient::NotifyAvailableEuiccListChanged() {
