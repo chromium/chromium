@@ -319,7 +319,7 @@ public class AutofillProvider {
             assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
             mAutofillManager = manager;
             mContainerView = containerView;
-            mAutofillUMA = new AutofillProviderUMA(context);
+            mAutofillUMA = new AutofillProviderUMA(context, manager.isAwGCurrentAutofillService());
             mInputUIObserver = new AutofillManagerWrapper.InputUIObserver() {
                 @Override
                 public void onInputUIShown() {
@@ -440,6 +440,9 @@ public class AutofillProvider {
         int virtualId = mRequest.getVirtualId((short) focus);
         notifyVirtualViewEntered(mContainerView, virtualId, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
+        if (hasServerPrediction) {
+            mAutofillUMA.onServerTypeAvailable(formData, /*afterSessionStarted=*/false);
+        }
         mAutofillTriggeredTimeMillis = System.currentTimeMillis();
 
         mAutofillManager.notifyNewSessionStarted();
@@ -756,10 +759,12 @@ public class AutofillProvider {
     @CalledByNative
     private void onQueryDone(boolean success) {
         mRequest.onQueryDone(success);
+        mAutofillUMA.onServerTypeAvailable(
+                success ? mRequest.mFormData : null, /*afterSessionStarted*/ true);
         mAutofillManager.onQueryDone(success);
     }
 
-    private static boolean isQueryServerFieldTypesEnabled() {
+    public static boolean isQueryServerFieldTypesEnabled() {
         if (sIsQueryServerFieldTypesEnabled == null) {
             sIsQueryServerFieldTypesEnabled =
                     AutofillProviderJni.get().isQueryServerFieldTypesEnabled();

@@ -71,9 +71,10 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     }
     if (found_fields_count > 0) {
       signatures = autofill::test::GetEncodedSignatures(*(j.second));
-      CHECK(found_fields_count == field_ids.size());
+      break;
     }
   }
+  CHECK(found_fields_count == field_ids.size());
 
   std::string response_string;
   CHECK(response.SerializeToString(&response_string));

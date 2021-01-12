@@ -2019,6 +2019,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the state of an autofill session.</summary>
 </histogram>
 
+<histogram name="Autofill.WebView.AwGIsCurrentService" enum="BooleanYesNo"
+    expires_after="2021-06-08">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether Autofill with Google is the current Android autofill
+    service. It is recorded on AutofillProvider initialization. Only recorded in
+    Android P and beyond.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.CreatedByActivityContext"
     enum="BooleanEnabled" expires_after="2021-06-08">
   <owner>michaelbai@chromium.org</owner>
@@ -2032,6 +2043,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether the autofill service is enabled in Android platform.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.WebView.ServerPrediction.AwGSuggestionAvailability"
+    enum="AutofillAwGSuggestionAvailability" expires_after="2021-06-08">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether Autofill with Google has suggestions and if the user selects
+    any suggestion. It is recorded when the form is submitted. Only recorded in
+    Android P and beyond.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.WebView.ServerPredicton.HasValidServerPrediction"
+    enum="BooleanYesNo" expires_after="2021-06-08">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the server prediction of any field isn't NO_SERVER_DATA.
+    This histogram is recorded when the server prediction is available for the
+    current form, and only if AndroidAutofillQueryServerFieldTypes feature is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.WebView.ServerPredicton.PredictionAvailability"
+    enum="AutofillServerPredictionAvailability" expires_after="2021-06-08">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether and when the server prediction response of current autofill
+    session is available even if query failed or there is no server data. This
+    histogram is recorded when the prediction becomes available or the new
+    session starts, and only if AndroidAutofillQueryServerFieldTypes feature is
+    enabled.
   </summary>
 </histogram>
 

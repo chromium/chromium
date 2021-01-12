@@ -490,6 +490,11 @@ public class AwAutofillTest {
             return mDisabled;
         }
 
+        @Override
+        public boolean isAwGCurrentAutofillService() {
+            return sIsAwGCurrentAutofillService;
+        }
+
         public boolean isQuerySucceed() {
             return mQuerySucceed;
         }
@@ -584,6 +589,7 @@ public class AwAutofillTest {
         private static final int TOTAL_CONTROLS = 1; // text1
 
         public static final int NO_FORM_SUBMISSION = -1;
+        public static final int NO_RECORD = -1;
 
         private int mCnt;
         private AwAutofillTest mTest;
@@ -596,8 +602,16 @@ public class AwAutofillTest {
         private MetricsUtils.HistogramDelta mUserChangedNonAutofilledField;
         private MetricsUtils.HistogramDelta mAutofillWebViewCreatedByActivityContext;
         private MetricsUtils.HistogramDelta mAutofillWebViewCreatedByAppContext;
+        private MetricsUtils.HistogramDelta mAutofillHasInvalidServerPrediction;
+        private MetricsUtils.HistogramDelta mAutofillHasValidServerPrediction;
+        private MetricsUtils.HistogramDelta mAwGIsCurrentService;
+        private MetricsUtils.HistogramDelta mAwGIsNotCurrentService;
         private volatile Integer mSourceValue;
+        private volatile Integer mServerPredictionAvailabilityValue;
+        private volatile Integer mAwGSuggestionAvailabilityValue;
         private HashMap<MetricsUtils.HistogramDelta, Integer> mSubmissionSourceDelta;
+        private HashMap<MetricsUtils.HistogramDelta, Integer> mServerPredictionAvailablityDelta;
+        private HashMap<MetricsUtils.HistogramDelta, Integer> mAwGSuggestionAvailablityDelta;
         private volatile Integer mHistogramSimpleCount;
 
         public AwAutofillSessionUMATestHelper(AwAutofillTest test, TestWebServer webServer) {
@@ -608,25 +622,44 @@ public class AwAutofillTest {
 
         public int getSessionValue() {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { mSessionValue = getUMAEnumerateValue(mSessionDelta); });
+                    () -> { mSessionValue = getUMAEnumerateValue(mSessionDelta, null); });
             return mSessionValue;
         }
 
         public int getSubmissionSourceValue() {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { mSourceValue = getUMAEnumerateValue(mSubmissionSourceDelta); });
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mSourceValue = getUMAEnumerateValue(mSubmissionSourceDelta, NO_FORM_SUBMISSION);
+            });
             return mSourceValue;
         }
 
-        private int getUMAEnumerateValue(HashMap<MetricsUtils.HistogramDelta, Integer> deltas) {
-            int value = NO_FORM_SUBMISSION;
+        public int getServerPredictionAvailabilityValue() {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mServerPredictionAvailabilityValue =
+                        getUMAEnumerateValue(mServerPredictionAvailablityDelta, null);
+            });
+            return mServerPredictionAvailabilityValue;
+        }
+
+        public int getAwGSuggestionAvailabilityValue() {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mAwGSuggestionAvailabilityValue =
+                        getUMAEnumerateValue(mAwGSuggestionAvailablityDelta, NO_RECORD);
+            });
+            return mAwGSuggestionAvailabilityValue;
+        }
+
+        private int getUMAEnumerateValue(
+                HashMap<MetricsUtils.HistogramDelta, Integer> deltas, Integer defaultValue) {
+            Integer value = null;
             for (MetricsUtils.HistogramDelta delta : deltas.keySet()) {
                 if (delta.getDelta() != 0) {
-                    assertEquals(NO_FORM_SUBMISSION, value);
+                    assertNull(value);
                     value = deltas.get(delta);
                 }
             }
-            return value;
+            if (defaultValue == null) assertNotNull(value);
+            return value != null ? value : defaultValue;
         }
 
         public void triggerAutofill() throws Throwable {
@@ -637,6 +670,27 @@ public class AwAutofillTest {
             mCnt += mTest.waitForCallbackAndVerifyTypes(mCnt,
                     new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED});
+        }
+
+        public void simulateServerPredictionBeforeTriggeringAutofill(int serverType)
+                throws Throwable {
+            final String url = mWebServer.setResponse(FILE, DATA, null);
+            mTest.loadUrlSync(url);
+            simulateServerPrediction(serverType);
+            mTest.executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+            mTest.dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+            mCnt += mTest.waitForCallbackAndVerifyTypes(mCnt,
+                    new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                            AUTOFILL_VALUE_CHANGED});
+        }
+
+        public void simulateServerPrediction(int serverType) throws Throwable {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> AutofillProviderTestHelper
+                                       .simulateMainFrameAutofillServerResponseForTesting(
+                                               mTest.mAwContents.getWebContents(),
+                                               new String[] {"text1"}, new int[] {serverType}));
         }
 
         public void simulateUserSelectSuggestion() throws Throwable {
@@ -701,6 +755,23 @@ public class AwAutofillTest {
                                     AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE, i),
                             i);
                 }
+                mServerPredictionAvailablityDelta =
+                        new HashMap<MetricsUtils.HistogramDelta, Integer>();
+                for (int i = 0; i < AutofillProviderUMA.SERVER_PREDICTION_AVAILABLE_COUNT; i++) {
+                    mServerPredictionAvailablityDelta.put(
+                            new MetricsUtils.HistogramDelta(
+                                    AutofillProviderUMA.UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY,
+                                    i),
+                            i);
+                }
+                mAwGSuggestionAvailablityDelta =
+                        new HashMap<MetricsUtils.HistogramDelta, Integer>();
+                for (int i = 0; i < AutofillProviderUMA.AWG_SUGGSTION_AVAILABLE_COUNT; i++) {
+                    mAwGSuggestionAvailablityDelta.put(
+                            new MetricsUtils.HistogramDelta(
+                                    AutofillProviderUMA.UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY, i),
+                            i);
+                }
                 mAutofillWebViewViewEnabled = new MetricsUtils.HistogramDelta(
                         AutofillProviderUMA.UMA_AUTOFILL_ENABLED, 1 /*true*/);
                 mAutofillWebViewViewDisabled = new MetricsUtils.HistogramDelta(
@@ -713,7 +784,15 @@ public class AwAutofillTest {
                         AutofillProviderUMA.UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD, 1 /*true*/);
                 mUserChangedNonAutofilledField = new MetricsUtils.HistogramDelta(
                         AutofillProviderUMA.UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD,
-                        0 /*falsTe*/);
+                        0 /*false*/);
+                mAutofillHasInvalidServerPrediction = new MetricsUtils.HistogramDelta(
+                        AutofillProviderUMA.UMA_AUTOFILL_VALID_SERVER_PREDICTION, 0 /*false*/);
+                mAutofillHasValidServerPrediction = new MetricsUtils.HistogramDelta(
+                        AutofillProviderUMA.UMA_AUTOFILL_VALID_SERVER_PREDICTION, 1 /*true*/);
+                mAwGIsNotCurrentService = new MetricsUtils.HistogramDelta(
+                        AutofillProviderUMA.UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, 0 /*false*/);
+                mAwGIsCurrentService = new MetricsUtils.HistogramDelta(
+                        AutofillProviderUMA.UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, 1 /*true*/);
             });
         }
 
@@ -736,6 +815,20 @@ public class AwAutofillTest {
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 assertEquals(0, mAutofillWebViewViewEnabled.getDelta());
                 assertEquals(1, mAutofillWebViewViewDisabled.getDelta());
+            });
+        }
+
+        public void verifyAwGIsCurrentService(boolean current) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assertEquals(current ? 0 : 1, mAwGIsNotCurrentService.getDelta());
+                assertEquals(current ? 1 : 0, mAwGIsCurrentService.getDelta());
+            });
+        }
+
+        public void verifyServerPredictionValid(boolean valid) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assertEquals(valid ? 0 : 1, mAutofillHasInvalidServerPrediction.getDelta());
+                assertEquals(valid ? 1 : 0, mAutofillHasValidServerPrediction.getDelta());
             });
         }
 
@@ -770,6 +863,8 @@ public class AwAutofillTest {
         }
     }
 
+    private static boolean sIsAwGCurrentAutofillService = true;
+
     @Rule
     public AwActivityTestRule mRule = new AwActivityTestRule();
 
@@ -803,6 +898,13 @@ public class AwAutofillTest {
                 });
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+    }
+
+    public void setUpAwGNotCurrent() throws Exception {
+        sIsAwGCurrentAutofillService = false;
+        mWebServer.shutdown();
+        // Initialize everything again.
+        setUp();
     }
 
     @After
@@ -1637,6 +1739,8 @@ public class AwAutofillTest {
                 mUMATestHelper.getSessionValue());
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
+        assertEquals(AutofillProviderUMA.AWG_HAS_SUGGESTION_AUTOFILLED,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1653,6 +1757,8 @@ public class AwAutofillTest {
                 mUMATestHelper.getSessionValue());
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1674,6 +1780,8 @@ public class AwAutofillTest {
         assertEquals(count + 1,
                 mUMATestHelper.getHistogramSampleCount(
                         AutofillProviderUMA.UMA_AUTOFILL_SUGGESTION_TIME));
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1689,6 +1797,8 @@ public class AwAutofillTest {
                 mUMATestHelper.getSessionValue());
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
+        assertEquals(AutofillProviderUMA.AWG_HAS_SUGGESTION_NO_AUTOFILL,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1704,6 +1814,8 @@ public class AwAutofillTest {
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserChangedNonAutofilledField();
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1719,6 +1831,8 @@ public class AwAutofillTest {
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserChangedNonAutofilledField();
+        assertEquals(AutofillProviderUMA.AWG_NO_SUGGESTION,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1735,6 +1849,8 @@ public class AwAutofillTest {
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AutofillProviderUMA.AWG_HAS_SUGGESTION_AUTOFILLED,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1752,12 +1868,14 @@ public class AwAutofillTest {
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testUMAUserSelectNotSuggestionUserNotChangeFormNoFormSubmitted() throws Throwable {
+    public void testUMAUserNotSelectSuggestionUserNotChangeFormNoFormSubmitted() throws Throwable {
         mUMATestHelper.triggerAutofill();
         invokeOnProvideAutoFillVirtualStructure();
         invokeOnInputUIShown();
@@ -1768,6 +1886,8 @@ public class AwAutofillTest {
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1784,6 +1904,8 @@ public class AwAutofillTest {
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AutofillProviderUMA.AWG_HAS_SUGGESTION_NO_AUTOFILL,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1798,6 +1920,8 @@ public class AwAutofillTest {
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AwAutofillSessionUMATestHelper.NO_RECORD,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1812,6 +1936,8 @@ public class AwAutofillTest {
         assertEquals(
                 AutofillProviderUMA.FORM_SUBMISSION, mUMATestHelper.getSubmissionSourceValue());
         mUMATestHelper.verifyUserDidntChangeForm();
+        assertEquals(AutofillProviderUMA.AWG_NO_SUGGESTION,
+                mUMATestHelper.getAwGSuggestionAvailabilityValue());
     }
 
     @Test
@@ -1824,6 +1950,59 @@ public class AwAutofillTest {
                 AutofillProviderUMA.NO_CALLBACK_FORM_FRAMEWORK, mUMATestHelper.getSessionValue());
         assertEquals(AwAutofillSessionUMATestHelper.NO_FORM_SUBMISSION,
                 mUMATestHelper.getSubmissionSourceValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testUMAAwGIsCurrentService() throws Throwable {
+        mUMATestHelper.triggerAutofill();
+        mUMATestHelper.verifyAwGIsCurrentService(/*current=*/true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testUMAAwGIsNotCurrentService() throws Throwable {
+        setUpAwGNotCurrent();
+        mUMATestHelper.triggerAutofill();
+        mUMATestHelper.verifyAwGIsCurrentService(/*current=*/false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testUMANoServerPrediction() throws Throwable {
+        mUMATestHelper.triggerAutofill();
+        mUMATestHelper.startNewSession();
+        assertEquals(AutofillProviderUMA.SERVER_PREDICTION_NOT_AVAILABLE,
+                mUMATestHelper.getServerPredictionAvailabilityValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testUMAServerPredictionArriveBeforeSessionStart() throws Throwable {
+        mUMATestHelper.simulateServerPredictionBeforeTriggeringAutofill(/*USERNAME*/ 86);
+        assertEquals(AutofillProviderUMA.SERVER_PREDICTION_AVAILABLE_ON_SESSION_STARTS,
+                mUMATestHelper.getServerPredictionAvailabilityValue());
+        mUMATestHelper.verifyServerPredictionValid(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testUMAServerPredictionArriveAfterSessionStart() throws Throwable {
+        mUMATestHelper.triggerAutofill();
+        mUMATestHelper.simulateServerPrediction(/*NO_SERVER_DATA*/ 0);
+        assertEquals(AutofillProviderUMA.SERVER_PREDICTION_AVAILABLE_AFTER_SESSION_STARTS,
+                mUMATestHelper.getServerPredictionAvailabilityValue());
+        mUMATestHelper.verifyServerPredictionValid(false);
     }
 
     @Test

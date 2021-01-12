@@ -4749,6 +4749,12 @@ others/histograms.xml -->
   <int value="3" label="Initially incomplete &amp; Failure"/>
 </enum>
 
+<enum name="AutofillAwGSuggestionAvailability">
+  <int value="0" label="No suggestion"/>
+  <int value="1" label="Has suggestion, user doesn't select it"/>
+  <int value="2" label="Has suggestion, user selects it"/>
+</enum>
+
 <enum name="AutofillCardholderNameFixFlowPromptEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Accepted"/>
@@ -5798,6 +5804,12 @@ others/histograms.xml -->
   <int value="97" label="SEARCH_TERM"/>
   <int value="98" label="PRICE"/>
   <int value="99" label="NOT_PASSWORD"/>
+</enum>
+
+<enum name="AutofillServerPredictionAvailability">
+  <int value="0" label="Not available"/>
+  <int value="1" label="Available on session start"/>
+  <int value="2" label="Available after session start"/>
 </enum>
 
 <enum name="AutofillSessionStates">

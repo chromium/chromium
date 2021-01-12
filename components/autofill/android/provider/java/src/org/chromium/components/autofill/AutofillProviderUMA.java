@@ -5,6 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.content.Context;
+import android.os.Build;
 
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
@@ -26,6 +27,10 @@ public class AutofillProviderUMA {
     public static final String UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT =
             "Autofill.WebView.CreatedByActivityContext";
 
+    // Records whether the current autofill service is AwG.
+    public static final String UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE =
+            "Autofill.WebView.AwGIsCurrentService";
+
     // Records what happened in an autofill session.
     public static final String UMA_AUTOFILL_AUTOFILL_SESSION = "Autofill.WebView.AutofillSession";
     // The possible value of UMA_AUTOFILL_AUTOFILL_SESSION.
@@ -44,6 +49,25 @@ public class AutofillProviderUMA {
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 12;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED = 13;
     public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 14;
+
+    // The possible values for the server prediction availability.
+    public static final String UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY =
+            "Autofill.WebView.ServerPredicton.PredictionAvailability";
+    public static final int SERVER_PREDICTION_NOT_AVAILABLE = 0;
+    public static final int SERVER_PREDICTION_AVAILABLE_ON_SESSION_STARTS = 1;
+    public static final int SERVER_PREDICTION_AVAILABLE_AFTER_SESSION_STARTS = 2;
+    public static final int SERVER_PREDICTION_AVAILABLE_COUNT = 3;
+
+    // The possible values for the AwG suggestion availability.
+    public static final String UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY =
+            "Autofill.WebView.ServerPrediction.AwGSuggestionAvailability";
+    public static final int AWG_NO_SUGGESTION = 0;
+    public static final int AWG_HAS_SUGGESTION_NO_AUTOFILL = 1;
+    public static final int AWG_HAS_SUGGESTION_AUTOFILLED = 2;
+    public static final int AWG_SUGGSTION_AVAILABLE_COUNT = 3;
+
+    public static final String UMA_AUTOFILL_VALID_SERVER_PREDICTION =
+            "Autofill.WebView.ServerPredicton.HasValidServerPrediction";
 
     // Records whether user changed autofilled field if user ever changed the form. The action isn't
     // recorded if user didn't change form at all.
@@ -120,6 +144,31 @@ public class AutofillProviderUMA {
             if (mSuggestionTimeMillis != null) {
                 recordTimesHistogram(UMA_AUTOFILL_SUGGESTION_TIME, mSuggestionTimeMillis);
             }
+            if (!mServerPredictionAvailable && AutofillProvider.isQueryServerFieldTypesEnabled()) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY,
+                        SERVER_PREDICTION_NOT_AVAILABLE, SERVER_PREDICTION_AVAILABLE_COUNT);
+            }
+        }
+
+        public void onServerTypeAvailable(FormData formData, boolean afterSessionStarted) {
+            if (!AutofillProvider.isQueryServerFieldTypesEnabled()) return;
+            mServerPredictionAvailable = true;
+            RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY,
+                    afterSessionStarted ? SERVER_PREDICTION_AVAILABLE_AFTER_SESSION_STARTS
+                                        : SERVER_PREDICTION_AVAILABLE_ON_SESSION_STARTS,
+                    SERVER_PREDICTION_AVAILABLE_COUNT);
+            if (formData != null) {
+                boolean hasValidServerData = false;
+                for (FormFieldData fieldData : formData.mFields) {
+                    if (!fieldData.getServerType().equals("NO_SERVER_DATA")) {
+                        hasValidServerData = true;
+                        break;
+                    }
+                }
+                RecordHistogram.recordBooleanHistogram(
+                        UMA_AUTOFILL_VALID_SERVER_PREDICTION, hasValidServerData);
+            }
         }
 
         private int toUMAAutofillSessionValue() {
@@ -174,19 +223,62 @@ public class AutofillProviderUMA {
 
         private int mState;
         private Boolean mUserChangedAutofilledField;
+
+        // Indicates whether the server prediction arrives.
+        private boolean mServerPredictionAvailable;
+    }
+
+    /**
+     * The class to record Autofill.WebView.ServerPrediction.AwGSuggestion, is only instantiated
+     * when the Android platform AutofillServcie is AwG, This will give us more actual result in
+     * A/B experiment while only AwG supports the server prediction.
+     */
+    private static class ServerPredictionRecorder {
+        private boolean mHasSuggestions;
+        private boolean mAutofilled;
+        private boolean mRecorded;
+
+        public void onSuggestionDisplayed() {
+            mHasSuggestions = true;
+        }
+
+        public void onAutofill() {
+            mAutofilled = true;
+        }
+
+        public void recordHistograms() {
+            if (mRecorded) return;
+            mRecorded = true;
+            int sample = AWG_NO_SUGGESTION;
+            if (mHasSuggestions) {
+                sample = mAutofilled ? AWG_HAS_SUGGESTION_AUTOFILLED
+                                     : AWG_HAS_SUGGESTION_NO_AUTOFILL;
+            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY, sample, AWG_SUGGSTION_AVAILABLE_COUNT);
+        }
     }
 
     private SessionRecorder mRecorder;
     private Boolean mAutofillDisabled;
 
-    public AutofillProviderUMA(Context context) {
+    private final boolean mIsAwGCurrentAutofillService;
+    private ServerPredictionRecorder mServerPredictionRecorder;
+
+    public AutofillProviderUMA(Context context, boolean isAwGCurrentAutofillService) {
         RecordHistogram.recordBooleanHistogram(UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
                 ContextUtils.activityFromContext(context) != null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            RecordHistogram.recordBooleanHistogram(
+                    UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, isAwGCurrentAutofillService);
+        }
+        mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
     }
 
     public void onFormSubmitted(int submissionSource) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
         recordSession();
+        if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
         // We record this no matter autofill service is disabled or not.
         RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_SUBMISSION_SOURCE,
                 toUMASubmissionSource(submissionSource), SUBMISSION_SOURCE_HISTOGRAM_COUNT);
@@ -201,6 +293,9 @@ public class AutofillProviderUMA {
 
         if (mRecorder != null) recordSession();
         mRecorder = new SessionRecorder();
+        if (mIsAwGCurrentAutofillService) {
+            mServerPredictionRecorder = new ServerPredictionRecorder();
+        }
     }
 
     public void onVirtualStructureProvided() {
@@ -212,10 +307,12 @@ public class AutofillProviderUMA {
             mRecorder.record(SessionRecorder.EVENT_SUGGESTION_DISPLAYED);
             mRecorder.setSuggestionTimeMillis(suggestionTimeMillis);
         }
+        if (mServerPredictionRecorder != null) mServerPredictionRecorder.onSuggestionDisplayed();
     }
 
     public void onAutofill() {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_AUTOFILLED);
+        if (mServerPredictionRecorder != null) mServerPredictionRecorder.onAutofill();
     }
 
     public void onUserChangeFieldValue(boolean isPreviouslyAutofilled) {
@@ -225,6 +322,17 @@ public class AutofillProviderUMA {
         } else {
             mRecorder.record(SessionRecorder.EVENT_USER_CHANGED_FIELD_VALUE);
         }
+    }
+
+    /**
+     * Invoked when the server query was done or has arrived when the autofill sension starts.
+     *
+     * @param formData the form of the current session, is null if the query failed.
+     * @param afterSessionStarted true if the server type predication arrive after the session
+     *         starts.
+     */
+    public void onServerTypeAvailable(FormData formData, boolean afterSessionStarted) {
+        mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
     }
 
     private void recordSession() {

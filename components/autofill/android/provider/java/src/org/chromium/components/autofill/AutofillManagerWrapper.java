@@ -5,6 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -29,7 +30,8 @@ public class AutofillManagerWrapper {
     // NOTE: As a result of the above, the tag below still references the name of this class from
     // when it was originally developed specifically for Android WebView.
     public static final String TAG = "AwAutofillManager";
-
+    private static final String AWG_COMPONENT_NAME =
+            "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
     /**
      * The observer of suggestion window.
      */
@@ -58,17 +60,32 @@ public class AutofillManagerWrapper {
     private boolean mDestroyed;
     private boolean mDisabled;
     private ArrayList<WeakReference<InputUIObserver>> mInputUIObservers;
+    // Indicates if AwG is the current Android autofill service.
+    private final boolean mIsAwGCurrentAutofillService;
 
     public AutofillManagerWrapper(Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
         mAutofillManager = context.getSystemService(AutofillManager.class);
         mDisabled = mAutofillManager == null || !mAutofillManager.isEnabled();
+
         if (mDisabled) {
+            mIsAwGCurrentAutofillService = false;
             if (isLoggable()) log("disabled");
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ComponentName componentName = mAutofillManager.getAutofillServiceComponentName();
+            if (componentName != null) {
+                mIsAwGCurrentAutofillService =
+                        AWG_COMPONENT_NAME.equals(componentName.flattenToString());
+            } else {
+                mIsAwGCurrentAutofillService = false;
+            }
+        } else {
+            mIsAwGCurrentAutofillService = false;
+        }
         mMonitor = new AutofillInputUIMonitor(this);
         mAutofillManager.registerCallback(mMonitor);
     }
@@ -140,6 +157,14 @@ public class AutofillManagerWrapper {
 
     public boolean isDisabled() {
         return mDisabled;
+    }
+
+    /**
+     * Only work for Android P and beyond. Always return false for Android O.
+     * @return if the Autofill with Google is the current autofill service.
+     */
+    public boolean isAwGCurrentAutofillService() {
+        return mIsAwGCurrentAutofillService;
     }
 
     private boolean checkAndWarnIfDestroyed() {
