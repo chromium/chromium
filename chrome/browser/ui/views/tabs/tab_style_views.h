@@ -20,6 +20,7 @@ struct views::metadata::TypeConverter<TabStyle::TabColors> {
       views::metadata::ArgType<TabStyle::TabColors> source_value);
   static base::Optional<TabStyle::TabColors> FromString(
       const base::string16& source_value);
+  static views::metadata::ValidStrings GetValidStrings();
 };
 
 class Tab;

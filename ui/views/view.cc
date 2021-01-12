@@ -96,6 +96,13 @@ constexpr int kDefaultHorizontalDragThreshold = 8;
 // Same as what gtk uses.
 constexpr int kDefaultVerticalDragThreshold = 8;
 
+// The following are used to offset the keys for the callbacks associated with
+// the bounds element callbacks.
+constexpr int kXChangedKey = sizeof(int) * 0;
+constexpr int kYChangedKey = sizeof(int) * 1;
+constexpr int kWidthChangedKey = sizeof(int) * 2;
+constexpr int kHeightChangedKey = sizeof(int) * 3;
+
 // Returns the top view in |view|'s hierarchy.
 const View* GetHierarchyRoot(const View* view) {
   const View* root = view;
@@ -394,6 +401,17 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
 
   for (ViewObserver& observer : observers_)
     observer.OnViewBoundsChanged(this);
+
+  // The property effects have already been taken into account above. No need to
+  // redo them here.
+  if (prev.x() != bounds_.x())
+    OnPropertyChanged(&bounds_ + kXChangedKey, kPropertyEffectsNone);
+  if (prev.y() != bounds_.y())
+    OnPropertyChanged(&bounds_ + kYChangedKey, kPropertyEffectsNone);
+  if (prev.width() != bounds_.width())
+    OnPropertyChanged(&bounds_ + kWidthChangedKey, kPropertyEffectsNone);
+  if (prev.height() != bounds_.height())
+    OnPropertyChanged(&bounds_ + kHeightChangedKey, kPropertyEffectsNone);
 }
 
 void View::SetSize(const gfx::Size& size) {
@@ -562,6 +580,10 @@ base::CallbackListSubscription View::AddVisibleChangedCallback(
 
 bool View::IsDrawn() const {
   return visible_ && parent_ ? parent_->IsDrawn() : false;
+}
+
+bool View::GetIsDrawn() const {
+  return IsDrawn();
 }
 
 bool View::GetEnabled() const {
@@ -2243,6 +2265,34 @@ void View::OnPropertyChanged(PropertyKey property,
   property_changed_callbacks->Notify();
 }
 
+int View::GetX() const {
+  return x();
+}
+
+int View::GetY() const {
+  return y();
+}
+
+int View::GetWidth() const {
+  return width();
+}
+
+int View::GetHeight() const {
+  return height();
+}
+
+void View::SetWidth(int width) {
+  SetBounds(x(), y(), width, height());
+}
+
+void View::SetHeight(int height) {
+  SetBounds(x(), y(), width(), height);
+}
+
+base::string16 View::GetTooltip() const {
+  return GetTooltipText(gfx::Point());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // View, private:
 
@@ -3171,14 +3221,20 @@ ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
 ADD_PROPERTY_METADATA(bool, FlipCanvasOnPaintForRTLUI)
 ADD_PROPERTY_METADATA(int, Group)
+ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(int, ID)
+ADD_READONLY_PROPERTY_METADATA(bool, IsDrawn);
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Tooltip)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(bool, CanProcessEventsWithinSubtree)
 ADD_PROPERTY_METADATA(bool, UseDefaultFillLayout)
+ADD_PROPERTY_METADATA(int, Width)
+ADD_PROPERTY_METADATA(int, X)
+ADD_PROPERTY_METADATA(int, Y)
 END_METADATA
 
 }  // namespace views

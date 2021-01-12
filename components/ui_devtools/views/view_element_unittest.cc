@@ -203,7 +203,7 @@ TEST_F(ViewElementTest, GetCustomProperties) {
   // the vector.
   DCHECK_EQ(indices.first, 0U);
 
-  indices = GetPropertyIndices(element(), "tooltip");
+  indices = GetPropertyIndices(element(), "Tooltip");
   // The tooltip property should be in the second ClassProperties object in the
   // vector.
   DCHECK_EQ(indices.first, 1U);
@@ -211,7 +211,7 @@ TEST_F(ViewElementTest, GetCustomProperties) {
   std::vector<UIElement::UIProperty> ui_props =
       props[indices.first].properties_;
 
-  EXPECT_EQ(ui_props[indices.second].name_, "tooltip");
+  EXPECT_EQ(ui_props[indices.second].name_, "Tooltip");
   EXPECT_EQ(ui_props[indices.second].value_, "This is the tooltip");
 }
 

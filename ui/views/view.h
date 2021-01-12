@@ -1902,6 +1902,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // function is NOT called if effects == kPropertyEffectsNone.
   void HandlePropertyChangeEffects(PropertyEffects effects);
 
+  // The following methods are used by the property access system described in
+  // the comments above. They follow the required naming convention in order to
+  // allow them to be visible via the metadata.
+  int GetX() const;
+  int GetY() const;
+  int GetWidth() const;
+  int GetHeight() const;
+  void SetWidth(int width);
+  void SetHeight(int height);
+  bool GetIsDrawn() const;
+
+  // Special property accessor used by metadata to get the ToolTip text.
+  base::string16 GetTooltip() const;
+
   //////////////////////////////////////////////////////////////////////////////
 
   // Creation and lifetime -----------------------------------------------------

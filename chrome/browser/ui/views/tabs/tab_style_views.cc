@@ -971,6 +971,12 @@ base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
              : base::nullopt;
 }
 
+// static
+views::metadata::ValidStrings
+views::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
+  return ValidStrings();
+}
+
 // TabStyle --------------------------------------------------------------------
 
 TabStyleViews::~TabStyleViews() = default;

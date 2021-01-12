@@ -78,6 +78,12 @@ class ClassPropertyMetaData
     }
   }
 
+  MemberMetaDataBase::ValueStrings GetValidValues() const override {
+    if (!kIsSerializable)
+      return {};
+    return TypeConverter<TValue>::GetValidStrings();
+  }
+
   PropertyFlags GetPropertyFlags() const override {
     return kIsSerializable
                ? (PropertyFlags::kEmpty | PropertyFlags::kSerializable)

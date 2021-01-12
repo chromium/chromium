@@ -142,5 +142,9 @@ void MemberMetaDataBase::SetValueAsString(void* obj,
   NOTREACHED();
 }
 
+MemberMetaDataBase::ValueStrings MemberMetaDataBase::GetValidValues() const {
+  return ValueStrings();
+}
+
 }  // namespace metadata
 }  // namespace views

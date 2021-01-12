@@ -65,6 +65,10 @@ base::string16 TypeConverter<bool>::ToString(bool source_value) {
   return base::ASCIIToUTF16(source_value ? "true" : "false");
 }
 
+ValidStrings TypeConverter<bool>::GetValidStrings() {
+  return {base::ASCIIToUTF16("false"), base::ASCIIToUTF16("true")};
+}
+
 base::string16 TypeConverter<const char*>::ToString(const char* source_value) {
   return base::UTF8ToUTF16(source_value);
 }
