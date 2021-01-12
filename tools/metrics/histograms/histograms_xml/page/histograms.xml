@@ -1231,9 +1231,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"
-    enum="CrossOriginCreativeStatus" expires_after="2020-12-31">
+    enum="CrossOriginCreativeStatus" expires_after="2021-06-30">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For each identified ad frame, whether the origin of the ad creative frame
     matches or differs from the origin of the main frame.
@@ -1247,9 +1248,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"
-    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2020-12-31">
+    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-06-30">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     For each identified ad frame, whether the origin of the ad creative frame
     matches or differs from the origin of the main frame, further split by
