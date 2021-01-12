@@ -22,4 +22,7 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
     Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
+    Can't download speech files. Try again later.
+  </message>
 </grit-part>

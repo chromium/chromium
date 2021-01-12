@@ -318,9 +318,8 @@ void MediaDialogView::OnSodaInstaller() {
 
 void MediaDialogView::OnSodaError() {
   ToggleLiveCaption(false);
-  live_caption_title_->SetText(
-      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
-  // TODO(crbug.com/1055150): Show an error message as a toast.
+  live_caption_title_->SetText(l10n_util::GetStringUTF16(
+      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR));
 }
 
 void MediaDialogView::OnSodaProgress(int progress) {
