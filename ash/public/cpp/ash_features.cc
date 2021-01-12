@@ -187,8 +187,7 @@ bool IsFullRestoreEnabled() {
 }
 
 bool IsHideArcMediaNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kMediaSessionNotification) &&
-         base::FeatureList::IsEnabled(kHideArcMediaNotifications);
+  return base::FeatureList::IsEnabled(kHideArcMediaNotifications);
 }
 
 bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
