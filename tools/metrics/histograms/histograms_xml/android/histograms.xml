@@ -364,6 +364,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.CompressedResources.ExtractionBlockingTime" units="ms"
     expires_after="M82">
+  <obsolete>
+    Removed in M82.
+  </obsolete>
   <owner>estevenson@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
@@ -375,6 +378,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.CompressedResources.ExtractionStatus"
     enum="AndroidResourceExtractionStatus" expires_after="2021-01-24">
+  <obsolete>
+    Removed in M82.
+  </obsolete>
   <owner>estevenson@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
@@ -385,6 +391,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.CompressedResources.ExtractionTime" units="ms"
     expires_after="2021-01-24">
+  <obsolete>
+    Removed in M82.
+  </obsolete>
   <owner>estevenson@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
