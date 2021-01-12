@@ -210,6 +210,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
   if (is_initial_block_size_indefinite) {
+    LayoutUnit intrinsic_block_size = layout_result.IntrinsicBlockSize();
+
     if (node.IsFlexibleBox()) {
       // Flex-boxes can have their children calculate their size based in their
       // parent's final block-size. E.g.
@@ -227,8 +229,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       // </div>
       //
       // If the previous |layout_result| was produced by a space which had a
-      // fixed block-size we can't use |NGLayoutResult::IntrinsicBlockSize()|,
-      // and need to layout.
+      // fixed block-size we can't use |intrinsic_block_size| for determining
+      // the new block-size.
       //
       // TODO(ikilpatrick): Similar to %-block-size descendants we could store
       // a bit on the |NGLayoutResult| which indicates if it had a child which
@@ -238,7 +240,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       // TODO(ikilaptrick): This may occur for other layout modes, e.g.
       // grid/custom-layout/etc.
       if (old_space.IsFixedBlockSize())
-        return NGLayoutCacheStatus::kNeedsLayout;
+        intrinsic_block_size = kIndefiniteSize;
 
       // The intrinsic size of flex-boxes can depend on the %-block-size. This
       // occurs when:
@@ -246,21 +248,22 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       //  - A row flex-box has "height: 100%" (or similar) and children which
       //    stretch to this size.
       //
-      // Due to this we can't use cached |NGLayoutResult::IntrinsicBlockSize|
-      // value, as the following |block_size| calculation would be incorrect.
+      // Due to this we can't use the |intrinsic_block_size| value, as the
+      // following |block_size| calculation would be incorrect.
       // TODO(dgrogan): We can hit the cache here for row flexboxes when they
       // don't have stretchy children.
-      if (physical_fragment.DependsOnPercentageBlockSize()) {
-        if (new_space.PercentageResolutionBlockSize() !=
-            old_space.PercentageResolutionBlockSize())
-          return NGLayoutCacheStatus::kNeedsLayout;
-      }
+      if (physical_fragment.DependsOnPercentageBlockSize() &&
+          new_space.PercentageResolutionBlockSize() !=
+              old_space.PercentageResolutionBlockSize())
+        intrinsic_block_size = kIndefiniteSize;
     }
 
     block_size = ComputeBlockSizeForFragment(
         new_space, style, fragment_geometry.border + fragment_geometry.padding,
-        layout_result.IntrinsicBlockSize(),
-        fragment_geometry.border_box_size.inline_size);
+        intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
+
+    if (block_size == kIndefiniteSize)
+      return NGLayoutCacheStatus::kNeedsLayout;
   }
 
   bool is_block_size_equal = block_size == fragment.BlockSize();
