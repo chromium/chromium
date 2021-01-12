@@ -361,6 +361,11 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   DCHECK_NE(animation_type_, AnimationType::kLinear)
       << "UpdateTarget is not supported on linear scroll animations.";
 
+  // UpdateTarget is still called for linear animations occasionally. This is
+  // tracked via crbug.com/1164008.
+  if (animation_type_ == AnimationType::kLinear)
+    return;
+
   // If the new UpdateTarget actually happened before the previous one, keep
   // |t| as the most recent, but reduce the duration of any generated
   // animation.
