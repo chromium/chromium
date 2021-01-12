@@ -392,6 +392,10 @@ void MostVisitedSites::UndoCustomLinkAction() {
     BuildCurrentTiles();
 }
 
+size_t MostVisitedSites::GetCustomLinkNum() {
+  return custom_links_->GetLinks().size();
+}
+
 void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
   if (add_url) {
     base::RecordAction(base::UserMetricsAction("Suggestions.Site.Removed"));

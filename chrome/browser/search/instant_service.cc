@@ -375,7 +375,10 @@ bool InstantService::ToggleMostVisitedOrCustomLinks() {
   // user has never customized their shortcuts.
   //
   // For more details, see custom_links_mananger.h and most_visited_sites.h.
-  if (!was_initialized && !most_visited_sites_->IsCustomLinksInitialized()) {
+  if ((!was_initialized && !most_visited_sites_->IsCustomLinksInitialized()) ||
+      // Ensure that the add shortcut button status is correct when there is no
+      // custom link.
+      most_visited_sites_->GetCustomLinkNum() == 0) {
     NotifyAboutMostVisitedInfo();
   }
 
