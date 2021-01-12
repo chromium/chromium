@@ -29,7 +29,13 @@ int NumberOfFiles(const base::FilePath& path) {
 
 namespace disk_cache {
 
-TEST_F(DiskCacheTest, BlockFiles_Grow) {
+// Flaky on ChromeOS: https://crbug.com/1156795
+#if defined(OS_CHROMEOS)
+#define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
+#else
+#define MAYBE_BlockFiles_Grow BlockFiles_Grow
+#endif
+TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
