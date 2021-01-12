@@ -4064,6 +4064,30 @@ TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaContextMenu) {
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
 }
 
+// Tests that when a window that is visible on all desks is destroyed it is
+// removed from DesksController.visible_on_all_desks_windows_.
+TEST_F(DesksBentoTest, VisibleOnAllDesksWindowDestruction) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  auto* root = Shell::GetPrimaryRootWindow();
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  // Assign |window| to all desks.
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
+  EXPECT_EQ(1u, desk_1->GetDeskContainerForRoot(root)->children().size());
+
+  // Destroy |window|. It should be removed from
+  // DesksController.visible_on_all_desks_windows_.
+  window.reset();
+  EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
+  EXPECT_EQ(0u, desk_1->GetDeskContainerForRoot(root)->children().size());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

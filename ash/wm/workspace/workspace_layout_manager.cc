@@ -329,7 +329,7 @@ void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
     if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey))
       desks_controller->AddVisibleOnAllDesksWindow(window);
     else
-      desks_controller->RemoveVisibleOnAllDesksWindow(window);
+      desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
   }
 }
 
@@ -348,6 +348,7 @@ void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
     settings_bubble_container_ = nullptr;
   if (accessibility_bubble_container_ == window)
     accessibility_bubble_container_ = nullptr;
+  Shell::Get()->desks_controller()->MaybeRemoveVisibleOnAllDesksWindow(window);
 }
 
 void WorkspaceLayoutManager::OnWindowBoundsChanged(

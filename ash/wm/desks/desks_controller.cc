@@ -550,7 +550,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   DCHECK(added);
 }
 
-void DesksController::RemoveVisibleOnAllDesksWindow(aura::Window* window) {
+void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   visible_on_all_desks_windows_.erase(window);
 }
 
