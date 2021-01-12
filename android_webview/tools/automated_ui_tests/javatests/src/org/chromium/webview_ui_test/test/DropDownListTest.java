@@ -43,6 +43,8 @@ import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 /**
  * Tests for WebView ActionMode.
  */
+// TODO(aluo): Re-enable once crbug.com/947352 is fixed.
+@DisableIf.Build(message = "crbug.com/947352", sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DropDownListTest {
     @Rule
@@ -86,9 +88,6 @@ public class DropDownListTest {
     /**
      * Test Drop Down List works in ViewPort Scale Factor > 1 in wideViewPortMode
      */
-    // TODO(aluo): Re-enable once crbug.com/947352 is fixed.
-    @DisableIf.
-    Build(message = "crbug.com/947352", sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP)
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
