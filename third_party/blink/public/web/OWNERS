@@ -1,7 +1,7 @@
-per-file web_ax_enums.h=dmazzoni@chromium.org
-per-file web_ax_enums.h=aboxhall@chromium.org
+# Accessibility
+per-file web_ax_object.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
+per-file web_ax_enums.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 per-file web_ax_enums.h=dtseng@chromium.org
-per-file web_ax_enums.h=nektar@chromium.org
 
 # Page load metrics
 per-file web_performance.h=bmcquade@chromium.org
