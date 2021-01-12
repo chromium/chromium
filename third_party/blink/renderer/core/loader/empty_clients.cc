@@ -184,6 +184,4 @@ EmptyLocalFrameClient::CreateServiceWorkerProvider() {
   return nullptr;
 }
 
-EmptyRemoteFrameClient::EmptyRemoteFrameClient() = default;
-
 }  // namespace blink

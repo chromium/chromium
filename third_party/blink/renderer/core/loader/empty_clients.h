@@ -400,37 +400,6 @@ class EmptySpellCheckPanelHostClient : public WebSpellCheckPanelHostClient {
   DISALLOW_COPY_AND_ASSIGN(EmptySpellCheckPanelHostClient);
 };
 
-class CORE_EXPORT EmptyRemoteFrameClient : public RemoteFrameClient {
- public:
-  EmptyRemoteFrameClient();
-
-  // RemoteFrameClient implementation.
-  void Navigate(const ResourceRequest&,
-                blink::WebLocalFrame* initiator_frame,
-                bool should_replace_current_entry,
-                bool is_opener_navigation,
-                bool initiator_frame_has_download_sandbox_flag,
-                bool initiator_frame_is_ad,
-                mojo::PendingRemote<mojom::blink::BlobURLToken>,
-                const base::Optional<WebImpression>&) override {}
-  unsigned BackForwardLength() override { return 0; }
-  void FrameRectsChanged(const IntRect& local_frame_rect,
-                         const IntRect& transformed_frame_rect) override {}
-  void SynchronizeVisualProperties() override {}
-  AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
-    return AssociatedInterfaceProvider::GetEmptyAssociatedInterfaceProvider();
-  }
-
-  // FrameClient implementation.
-  bool InShadowTree() const override { return false; }
-  void Detached(FrameDetachType) override {}
-  base::UnguessableToken GetDevToolsFrameToken() const override {
-    return base::UnguessableToken::Create();
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyRemoteFrameClient);
-};
-
 CORE_EXPORT void FillWithEmptyClients(Page::PageClients&);
 
 }  // namespace blink
