@@ -67,7 +67,8 @@ enum class GaiaCookieStateOnSignedInNavigation {
   kGaiaCookiePresentOnNavigation = 0,
   kGaiaCookieAbsentOnGoogleAssociatedDomainNavigation = 1,
   kGaiaCookieAbsentOnAddSessionNavigation = 2,
-  kMaxValue = kGaiaCookieAbsentOnAddSessionNavigation
+  kGaiaCookieRestoredOnShowInfobar = 3,
+  kMaxValue = kGaiaCookieRestoredOnShowInfobar
 };
 
 // Records the state of Gaia cookies for a navigation in UMA histogram.
@@ -329,6 +330,8 @@ void AccountConsistencyHandler::PageLoaded(
   // condition in which the infobar is dismissed prior to the page load.
   if (gaia_cookies_restored_) {
     [delegate_ onRestoreGaiaCookies];
+    LogIOSGaiaCookiesState(
+        GaiaCookieStateOnSignedInNavigation::kGaiaCookieRestoredOnShowInfobar);
     gaia_cookies_restored_ = false;
   }
 
