@@ -78,6 +78,7 @@ class ScrollState;
 class SequenceTest;
 class ShadowRoot;
 class StaticSelection;
+class Text;
 class TypeConversions;
 class UnionTypesTest;
 
@@ -179,21 +180,21 @@ class Internals final : public ScriptWrappable {
   DOMRectReadOnly* boundingBox(Element*);
 
   void setMarker(Document*, const Range*, const String&, ExceptionState&);
-  unsigned markerCountForNode(Node*, const String&, ExceptionState&);
-  unsigned activeMarkerCountForNode(Node*);
-  Range* markerRangeForNode(Node*,
+  unsigned markerCountForNode(Text*, const String&, ExceptionState&);
+  unsigned activeMarkerCountForNode(Text*);
+  Range* markerRangeForNode(Text*,
                             const String& marker_type,
                             unsigned index,
                             ExceptionState&);
-  String markerDescriptionForNode(Node*,
+  String markerDescriptionForNode(Text*,
                                   const String& marker_type,
                                   unsigned index,
                                   ExceptionState&);
-  unsigned markerBackgroundColorForNode(Node*,
+  unsigned markerBackgroundColorForNode(Text*,
                                         const String& marker_type,
                                         unsigned index,
                                         ExceptionState&);
-  unsigned markerUnderlineColorForNode(Node*,
+  unsigned markerUnderlineColorForNode(Text*,
                                        const String& marker_type,
                                        unsigned index,
                                        ExceptionState&);
@@ -625,7 +626,7 @@ class Internals final : public ScriptWrappable {
                    int height,
                    Document*);
 
-  DocumentMarker* MarkerAt(Node*,
+  DocumentMarker* MarkerAt(Text*,
                            const String& marker_type,
                            unsigned index,
                            ExceptionState&);
