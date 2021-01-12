@@ -103,6 +103,7 @@ class FragmentTreeDumper {
 
     bool has_content = false;
     if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
+      const LayoutObject* layout_object = box->GetLayoutObject();
       if (flags_ & NGPhysicalFragment::DumpType) {
         builder_->Append("Box");
         String box_type = StringForBoxType(*fragment);
@@ -121,11 +122,10 @@ class FragmentTreeDumper {
       }
       has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
 
-      if (flags_ & NGPhysicalFragment::DumpNodeName &&
-          fragment->GetLayoutObject()) {
+      if (flags_ & NGPhysicalFragment::DumpNodeName && layout_object) {
         if (has_content)
           builder_->Append(" ");
-        builder_->Append(fragment->GetLayoutObject()->DebugName());
+        builder_->Append(layout_object->DebugName());
       }
       builder_->Append("\n");
 
@@ -138,6 +138,27 @@ class FragmentTreeDumper {
         }
       }
       if (flags_ & NGPhysicalFragment::DumpSubtree) {
+        if (flags_ & NGPhysicalFragment::DumpLegacyDescendants &&
+            layout_object && !layout_object->IsLayoutNGObject()) {
+          DCHECK(box->Children().empty());
+          for (const LayoutObject* descendant = layout_object->SlowFirstChild();
+               descendant;) {
+            if (!descendant->IsLayoutNGObject()) {
+              descendant = descendant->NextInPreOrder(layout_object);
+              continue;
+            }
+            if (flags_ & NGPhysicalFragment::DumpHeaderText) {
+              AppendIndentation(indent + 2);
+              builder_->Append("(NG fragment root inside legacy subtree:)\n");
+            }
+            const LayoutBox* box_descendant = To<LayoutBox>(descendant);
+            DCHECK_EQ(box_descendant->PhysicalFragmentCount(), 1u);
+            Append(box_descendant->GetPhysicalFragment(0), base::nullopt,
+                   indent + 4);
+            descendant = descendant->NextInPreOrderAfterChildren(layout_object);
+          }
+          return;
+        }
         for (auto& child : box->Children()) {
           if (has_fragment_items && child->IsLineBox())
             continue;
