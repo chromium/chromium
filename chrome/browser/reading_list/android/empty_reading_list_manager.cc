@@ -4,7 +4,6 @@
 
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
 
-#include "base/logging.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 EmptyReadingListManager::EmptyReadingListManager() = default;
@@ -18,7 +17,6 @@ void EmptyReadingListManager::RemoveObserver(Observer* observer) {}
 const bookmarks::BookmarkNode* EmptyReadingListManager::Add(
     const GURL& url,
     const std::string& title) {
-  LOG(ERROR) << "Try to add reading list with empty reading list backend.";
   return nullptr;
 }
 
