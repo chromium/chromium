@@ -61,6 +61,33 @@ class HyphenationTest : public testing::Test {
     return nullptr;
   }
 #endif
+
+#if defined(USE_MINIKIN_HYPHENATION)
+  void TestWordToHyphenate(StringView text,
+                           StringView expected,
+                           unsigned expected_num_leading_chars) {
+    unsigned num_leading_chars;
+    const StringView result =
+        HyphenationMinikin::WordToHyphenate(text, &num_leading_chars);
+    EXPECT_EQ(result, expected);
+    EXPECT_EQ(num_leading_chars, expected_num_leading_chars);
+
+    // |WordToHyphenate| has separate codepaths for 8 and 16 bits. Make sure
+    // both codepaths return the same results. When a paragraph has at least one
+    // 16 bits character (e.g., Emoji), there will be 8 bits words in 16 bits
+    // string.
+    if (!text.Is8Bit()) {
+      // If |text| is 16 bits, 16 bits codepath is already tested.
+      return;
+    }
+    String text16 = text.ToString();
+    text16.Ensure16Bit();
+    const StringView result16 =
+        HyphenationMinikin::WordToHyphenate(text16, &num_leading_chars);
+    EXPECT_EQ(result16, expected);
+    EXPECT_EQ(num_leading_chars, expected_num_leading_chars);
+  }
+#endif
 };
 
 TEST_F(HyphenationTest, Get) {
@@ -141,6 +168,18 @@ TEST_F(HyphenationTest, HyphenLocations) {
   EXPECT_THAT(actual, ElementsAreArray(locations));
 }
 
+#if defined(USE_MINIKIN_HYPHENATION)
+TEST_F(HyphenationTest, WordToHyphenate) {
+  TestWordToHyphenate("word", "word", 0);
+  TestWordToHyphenate(" word", "word", 1);
+  TestWordToHyphenate("  word", "word", 2);
+  TestWordToHyphenate("  word..", "word", 2);
+  TestWordToHyphenate(" ( word. ).", "word", 3);
+  TestWordToHyphenate(u" ( \u3042. ).", u"\u3042", 3);
+  TestWordToHyphenate(u" ( \U00020B9F. ).", u"\U00020B9F", 3);
+}
+#endif
+
 TEST_F(HyphenationTest, LeadingSpaces) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
 #if defined(OS_ANDROID)
@@ -163,12 +202,6 @@ TEST_F(HyphenationTest, LeadingSpaces) {
   String only_spaces("   ");
   EXPECT_THAT(hyphenation->HyphenLocations(only_spaces), ElementsAre());
   EXPECT_EQ(0u, hyphenation->LastHyphenLocation(only_spaces, 3));
-
-  // Line breaker is not supposed to pass with trailing spaces.
-  String trailing_space("principle ");
-  EXPECT_THAT(hyphenation->HyphenLocations(trailing_space),
-              testing::AnyOf(ElementsAre(), ElementsAre(6, 4)));
-  EXPECT_EQ(0u, hyphenation->LastHyphenLocation(trailing_space, 10));
 }
 
 TEST_F(HyphenationTest, English) {
