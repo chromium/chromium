@@ -12,7 +12,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

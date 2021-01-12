@@ -33,9 +33,9 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -210,8 +210,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     base::HistogramTester histogram_tester;
 
-    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
-        ->MaybeUpdateHintsComponent(component_info);
+    g_browser_process->optimization_guide_service()->MaybeUpdateHintsComponent(
+        component_info);
 
     RetryForHistogramUntilCountReached(
         &histogram_tester,

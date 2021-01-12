@@ -21,6 +21,7 @@
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"

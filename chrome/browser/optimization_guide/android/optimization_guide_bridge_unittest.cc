@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,8 +34,12 @@ namespace android {
 
 class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
  public:
-  MockOptimizationGuideHintsManager(Profile* profile, PrefService* pref_service)
-      : OptimizationGuideHintsManager(profile,
+  MockOptimizationGuideHintsManager(
+      optimization_guide::OptimizationGuideService* optimization_guide_service,
+      Profile* profile,
+      PrefService* pref_service)
+      : OptimizationGuideHintsManager(optimization_guide_service,
+                                      profile,
                                       pref_service,
                                       /*hint_store=*/nullptr,
                                       /*top_host_provider=*/nullptr,
@@ -86,14 +91,18 @@ class OptimizationGuideBridgeTest : public testing::Test {
                       return std::make_unique<
                           MockOptimizationGuideKeyedService>(context);
                     })));
+    optimization_guide_service_ =
+        std::make_unique<optimization_guide::OptimizationGuideService>(
+            task_environment_.GetMainThreadTaskRunner());
     optimization_guide_hints_manager_ =
         std::make_unique<MockOptimizationGuideHintsManager>(
-            profile_, pref_service_.get());
+            optimization_guide_service_.get(), profile_, pref_service_.get());
   }
 
   void TearDown() override {
     optimization_guide_hints_manager_->Shutdown();
     optimization_guide_hints_manager_.reset();
+    optimization_guide_service_.reset();
   }
 
   void RegisterOptimizationTypes() {
@@ -114,6 +123,8 @@ class OptimizationGuideBridgeTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
+  std::unique_ptr<optimization_guide::OptimizationGuideService>
+      optimization_guide_service_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };

@@ -21,6 +21,7 @@
 #include "chrome/browser/component_updater/games_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
+#include "chrome/browser/component_updater/optimization_hints_component_installer.h"
 #include "chrome/browser/component_updater/origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/pepper_flash_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
@@ -35,7 +36,6 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/crl_set_remover.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
-#include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/nacl/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -118,7 +118,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
                         g_browser_process->floc_sorting_lsh_clusters_service());
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());
-  RegisterOptimizationHintsComponent(cus);
+  RegisterOptimizationHintsComponent(cus, is_off_the_record_profile);
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
   RegisterFirstPartySetsComponent(cus);
 

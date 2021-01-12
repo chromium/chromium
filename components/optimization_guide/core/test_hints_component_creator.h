@@ -11,12 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace optimization_guide {
-
-struct HintsComponentInfo;
-
 namespace testing {
 
 // Helper class to create test OptimizationHints components for testing.

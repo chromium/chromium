@@ -25,7 +25,7 @@
 #include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
-#include "components/optimization_guide/core/optimization_hints_component_observer.h"
+#include "components/optimization_guide/core/optimization_guide_service_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
@@ -44,6 +44,7 @@ class HintCache;
 class HintsFetcherFactory;
 class OptimizationFilter;
 class OptimizationMetadata;
+class OptimizationGuideService;
 class OptimizationGuideStore;
 enum class OptimizationTargetDecision;
 enum class OptimizationTypeDecision;
@@ -56,11 +57,12 @@ class PrefService;
 class Profile;
 
 class OptimizationGuideHintsManager
-    : public optimization_guide::OptimizationHintsComponentObserver,
+    : public optimization_guide::OptimizationGuideServiceObserver,
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
       public NavigationPredictorKeyedService::Observer {
  public:
   OptimizationGuideHintsManager(
+      optimization_guide::OptimizationGuideService* optimization_guide_service,
       Profile* profile,
       PrefService* pref_service,
       optimization_guide::OptimizationGuideStore* hint_store,
@@ -77,7 +79,7 @@ class OptimizationGuideHintsManager
   GetOptimizationGuideDecisionFromOptimizationTypeDecision(
       optimization_guide::OptimizationTypeDecision optimization_type_decision);
 
-  // optimization_guide::OptimizationHintsComponentObserver implementation:
+  // optimization_guide::OptimizationGuideServiceObserver implementation:
   void OnHintsComponentAvailable(
       const optimization_guide::HintsComponentInfo& info) override;
 
@@ -374,6 +376,10 @@ class OptimizationGuideHintsManager
   bool HasAllInformationForDecisionAvailable(
       const GURL& navigation_url,
       optimization_guide::proto::OptimizationType optimization_type);
+
+  // The OptimizationGuideService that this guide is listening to. Not owned.
+  optimization_guide::OptimizationGuideService* const
+      optimization_guide_service_;
 
   // The information of the latest component delivered by
   // |optimization_guide_service_|.

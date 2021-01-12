@@ -175,6 +175,8 @@ class BrowserProcessImpl : public BrowserProcess,
       override;
   federated_learning::FlocSortingLshClustersService*
   floc_sorting_lsh_clusters_service() override;
+  optimization_guide::OptimizationGuideService* optimization_guide_service()
+      override;
 
   StartupData* startup_data() override;
 
@@ -327,6 +329,10 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<federated_learning::FlocSortingLshClustersService>
       floc_sorting_lsh_clusters_service_;
+
+  bool created_optimization_guide_service_ = false;
+  std::unique_ptr<optimization_guide::OptimizationGuideService>
+      optimization_guide_service_;
 
   bool shutting_down_ = false;
 
