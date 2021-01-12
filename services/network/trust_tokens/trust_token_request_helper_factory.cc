@@ -154,7 +154,8 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
           std::make_unique<BoringsslTrustTokenIssuanceCryptographer>(),
           std::make_unique<LocalTrustTokenOperationDelegateImpl>(
               context_client_provider_),
-          base::BindRepeating(&IsCurrentOperatingSystem), std::move(net_log));
+          base::BindRepeating(&IsCurrentOperatingSystem),
+          metrics_recorder.get(), std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
           std::make_unique<OperationTimingRequestHelperWrapper>(
               std::move(metrics_recorder), std::move(helper))));

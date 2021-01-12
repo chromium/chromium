@@ -57,6 +57,52 @@ TEST(TrustTokenOperationMetricsRecorder, Success) {
       /*expected_count=*/1);
 }
 
+TEST(TrustTokenOperationMetricsRecorder, SuccessPlatformProvided) {
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TrustTokenOperationMetricsRecorder recorder(
+      mojom::TrustTokenOperationType::kIssuance);
+  recorder.WillExecutePlatformProvidedOperation();
+  base::HistogramTester histograms;
+
+  recorder.BeginBegin();
+  env.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  recorder.FinishBegin(mojom::TrustTokenOperationStatus::kOk);
+
+  env.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  recorder.BeginFinalize();
+  env.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  recorder.FinishFinalize(mojom::TrustTokenOperationStatus::kOk);
+
+  histograms.ExpectUniqueTimeSample(
+      base::JoinString({internal::kTrustTokenBeginTimeHistogramNameBase,
+                        "Success", "Issuance", "PlatformProvided"},
+                       "."),
+      base::TimeDelta::FromSeconds(1),
+      /*expected_count=*/1);
+
+  histograms.ExpectUniqueTimeSample(
+      base::JoinString({internal::kTrustTokenServerTimeHistogramNameBase,
+                        "Success", "Issuance", "PlatformProvided"},
+                       "."),
+      base::TimeDelta::FromSeconds(2),
+      /*expected_count=*/1);
+
+  histograms.ExpectUniqueTimeSample(
+      base::JoinString({internal::kTrustTokenFinalizeTimeHistogramNameBase,
+                        "Success", "Issuance", "PlatformProvided"},
+                       "."),
+      base::TimeDelta::FromSeconds(3),
+      /*expected_count=*/1);
+
+  histograms.ExpectUniqueTimeSample(
+      base::JoinString({internal::kTrustTokenTotalTimeHistogramNameBase,
+                        "Success", "Issuance", "PlatformProvided"},
+                       "."),
+      base::TimeDelta::FromSeconds(1 + 2 + 3),
+      /*expected_count=*/1);
+}
+
 TEST(TrustTokenOperationMetricsRecorder, BeginFailure) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);

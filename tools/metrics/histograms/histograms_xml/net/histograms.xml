@@ -4896,54 +4896,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Net.TrustTokens.OperationBeginTime" units="ms"
-    expires_after="2021-05-30">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
+<histogram base="true"
+    name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}{OptionalPlatformProvided}"
+    units="ms" expires_after="2021-07-30">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
-    Time taken to execute a Trust Tokens operation's outbound Begin half (see
-    network::TrustTokenRequestHelper).
+    Time taken to execute various parts of a Trust Tokens operation: 1. Begin =
+    time taken to execute the operation's outbound Begin half 2. Server = time
+    from the end of the outbound Begin half to the beginning of the inbound
+    Finalize half 3. Finalize = time taken to execute the inbound Finalize half
+    4. Total = Begin + Server + Finalize (only recorded for operations that see
+    server responses)
+
+    The other variants (see histogram_suffixes_list's TrustTokenOperationType
+    entry): 1. Outcome (Success or Failure) 2. The type of Trust Tokens
+    operation 3. Whether the operation was platform-provided (i.e. executed by a
+    method other than a direct HTTP request to the issuer's server)
   </summary>
-</histogram>
-
-<histogram base="true" name="Net.TrustTokens.OperationFinalizeTime" units="ms"
-    expires_after="2021-03-30">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    Time time to taken a Trust Tokens operation's inbound Finalize half (see
-    network::TrustTokenRequestHelper).
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.TrustTokens.OperationServerTime" units="ms"
-    expires_after="2021-07-04">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    Time between finishing a Trust Tokens Tokens operation's outbound Begin half
-    and beginning its inbound Finalize half (see
-    network::TrustTokenRequestHelper).
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.TrustTokens.OperationTotalTime" units="ms"
-    expires_after="2021-06-06">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    Time elapsed from the beginning of a Trust Tokens operation's outbound Begin
-    half to the end of its inbound Finalize half (see
-    network::TrustTokenRequestHelper), when the operation succeeded overall.
-  </summary>
+  <token key="TimeSpan">
+    <variant name="Begin"/>
+    <variant name="Finalize"/>
+    <variant name="Server"/>
+    <variant name="Total"/>
+  </token>
+  <token key="Outcome">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Type">
+    <variant name="Issuance"/>
+    <variant name="Redemption"/>
+    <variant name="Signing"/>
+  </token>
+  <token key="OptionalPlatformProvided">
+    <variant name=""/>
+    <variant name=".PlatformProvided"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"

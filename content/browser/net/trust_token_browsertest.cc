@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -1698,6 +1699,8 @@ void HandlerWrappingLocalTrustTokenFulfiller::Bind(
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
                        EndToEndAndroidPlatformIssuance) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
@@ -1732,10 +1735,18 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Success.Issuance."
+                    "PlatformProvided"}),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
                        PlatformIssuanceWithoutEmbedderSupport) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
@@ -1776,6 +1787,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
   // resolve.
   EXPECT_EQ("OperationError", EvalJs(shell(), command));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Failure.Issuance."
+                    "PlatformProvided"}),
+      1);
 }
 #endif  // defined(OS_ANDROID)
 #if !defined(OS_ANDROID)
@@ -1822,6 +1839,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TrustTokenBrowsertestWithPlatformIssuance,
     IssuanceOnOsNotSpecifiedInKeyCommitmentsFallsBackToWebIssuanceIfSpecified) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
@@ -1860,6 +1879,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Failure.Issuance."
+                    "PlatformProvided"}),
+      0);  // No platform-provided operation was attempted.
 }
 #endif  // !defined(OS_ANDROID)
 

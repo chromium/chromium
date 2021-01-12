@@ -19276,10 +19276,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Success" label="The operation or partial operation succeeded."/>
   <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
   <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TrustTokenOperationType" separator=".">
@@ -19292,14 +19288,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
   <affected-histogram
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime.Success"/>
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
 </histogram_suffixes>
 
