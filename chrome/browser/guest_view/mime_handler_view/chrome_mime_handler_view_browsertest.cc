@@ -62,10 +62,6 @@ using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-namespace {
-constexpr char kTestExtensionId[] = "oickdpebdnfbgkcaoklfcdhjniefkcji";
-}
-
 // Note: This file contains several old WebViewGuest tests which were for
 // certain BrowserPlugin features and no longer made sense for the new
 // WebViewGuest which is based on cross-process frames. Since
@@ -123,7 +119,8 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("mime_handler_view"));
     ASSERT_TRUE(extension);
-    CHECK_EQ(kTestExtensionId, extension->id());
+    ASSERT_EQ(std::string(extension_misc::kMimeHandlerPrivateTestExtensionId),
+              extension->id());
 
     extensions::ResultCatcher catcher;
     ui_test_utils::NavigateToURL(browser(), url);
@@ -156,11 +153,13 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
     transferrable_loader->head->mime_type = "application/pdf";
     transferrable_loader->head->headers =
         base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK");
+    const std::string extension_id =
+        extension_misc::kMimeHandlerPrivateTestExtensionId;
     return std::make_unique<extensions::StreamContainer>(
         0 /* tab_id */, false /* embedded */,
-        GURL(std::string(extensions::kExtensionScheme) +
-             kTestExtensionId) /* handler_url */,
-        kTestExtensionId, std::move(transferrable_loader), url);
+        extensions::Extension::GetBaseURLFromExtensionId(
+            extension_id) /* handler_url */,
+        extension_id, std::move(transferrable_loader), url);
   }
 
  private:
