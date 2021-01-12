@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -80,6 +81,7 @@ public class AssistantVoiceSearchServiceRenderTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1165682")
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/true"})
     @Feature({"RenderTest"})
     public void testAssistantColorfulMic() throws IOException {
