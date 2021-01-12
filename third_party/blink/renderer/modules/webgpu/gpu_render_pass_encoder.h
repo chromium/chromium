@@ -18,6 +18,7 @@ class DoubleSequenceOrGPUColorDict;
 class GPURenderBundle;
 class GPURenderPipeline;
 class GPUQuerySet;
+class V8GPUIndexFormat;
 
 class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                              public GPUProgrammablePassEncoder {
@@ -54,7 +55,7 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                    float maxDepth);
   void setScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
   void setIndexBuffer(GPUBuffer* buffer,
-                      const WTF::String& format,
+                      const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size);
   void setVertexBuffer(uint32_t slot,

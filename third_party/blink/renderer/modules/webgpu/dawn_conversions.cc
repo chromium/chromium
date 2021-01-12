@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/double_sequence_or_gpu_color_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_copy_view.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_data_layout.h"
@@ -433,6 +434,15 @@ WGPUIndexFormat AsDawnEnum<WGPUIndexFormat>(const WTF::String& webgpu_enum) {
   }
   NOTREACHED();
   return WGPUIndexFormat_Force32;
+}
+
+WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUIndexFormat::Enum::kUint16:
+      return WGPUIndexFormat_Uint16;
+    case V8GPUIndexFormat::Enum::kUint32:
+      return WGPUIndexFormat_Uint32;
+  }
 }
 
 template <>

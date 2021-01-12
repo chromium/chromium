@@ -26,6 +26,7 @@ class GPUTextureCopyView;
 class GPUTextureDataLayout;
 class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
+class V8GPUIndexFormat;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
 template <typename DawnEnum>
@@ -36,6 +37,7 @@ DawnEnum AsDawnEnum(uint32_t webgpu_enum) {
 // Convert WebGPU string enums to Dawn enums.
 template <typename DawnEnum>
 DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
+WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined

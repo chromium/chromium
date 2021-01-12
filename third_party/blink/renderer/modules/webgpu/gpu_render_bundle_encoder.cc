@@ -110,12 +110,11 @@ void GPURenderBundleEncoder::setPipeline(GPURenderPipeline* pipeline) {
 }
 
 void GPURenderBundleEncoder::setIndexBuffer(GPUBuffer* buffer,
-                                            const WTF::String& format,
+                                            const V8GPUIndexFormat& format,
                                             uint64_t offset,
                                             uint64_t size) {
   GetProcs().renderBundleEncoderSetIndexBufferWithFormat(
-      GetHandle(), buffer->GetHandle(), AsDawnEnum<WGPUIndexFormat>(format),
-      offset, size);
+      GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
 }
 
 void GPURenderBundleEncoder::setVertexBuffer(uint32_t slot,

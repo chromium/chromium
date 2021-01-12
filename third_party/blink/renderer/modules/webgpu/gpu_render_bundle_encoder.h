@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_BUNDLE_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_BUNDLE_ENCODER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -48,7 +49,7 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   void setPipeline(GPURenderPipeline* pipeline);
 
   void setIndexBuffer(GPUBuffer* buffer,
-                      const WTF::String& format,
+                      const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size);
   void setVertexBuffer(uint32_t slot,
