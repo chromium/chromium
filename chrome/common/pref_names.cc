@@ -2273,17 +2273,6 @@ const char kCachedMultiProfileUserBehavior[] = "CachedMultiProfileUserBehavior";
 // A string pref with initial locale set in VPD or manifest.
 const char kInitialLocale[] = "intl.initial_locale";
 
-// A boolean pref of the OOBE complete flag (first OOBE part before login).
-const char kOobeComplete[] = "OobeComplete";
-
-// The name of the screen that has to be shown if OOBE has been interrupted.
-const char kOobeScreenPending[] = "OobeScreenPending";
-
-// A boolean pref to indicate if the marketing opt-in screen in OOBE is finished
-// for the user.
-const char kOobeMarketingOptInScreenFinished[] =
-    "OobeMarketingOptInScreenFinished";
-
 // A boolean pref of the device registered flag (second part after first login).
 const char kDeviceRegistered[] = "DeviceRegistered";
 

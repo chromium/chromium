@@ -46,6 +46,7 @@
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/chromeos/login/hwid_checker.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/screens/active_directory_login_screen.h"
@@ -1717,8 +1718,8 @@ void WizardController::PerformOOBECompletedActions() {
 
   UMA_HISTOGRAM_COUNTS_100(
       "HIDDetection.TimesDialogShownPerOOBECompleted",
-      GetLocalState()->GetInteger(prefs::kTimesHIDDialogShown));
-  GetLocalState()->ClearPref(prefs::kTimesHIDDialogShown);
+      GetLocalState()->GetInteger(::prefs::kTimesHIDDialogShown));
+  GetLocalState()->ClearPref(::prefs::kTimesHIDDialogShown);
   StartupUtils::MarkOobeCompleted();
   oobe_marked_completed_ = true;
 }
@@ -2078,7 +2079,7 @@ void WizardController::PrepareFirstRunPrefs() {
   bool shouldShowParentalControl =
       wizard_context_->sign_in_as_child && !profile->IsChild() &&
       !profile->GetProfilePolicyConnector()->IsManaged();
-  profile->GetPrefs()->SetBoolean(prefs::kHelpAppShouldShowParentalControl,
+  profile->GetPrefs()->SetBoolean(::prefs::kHelpAppShouldShowParentalControl,
                                   shouldShowParentalControl);
 }
 

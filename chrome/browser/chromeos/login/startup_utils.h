@@ -64,8 +64,11 @@ class StartupUtils {
   // Sets initial locale in local settings.
   static void SetInitialLocale(const std::string& locale);
 
-  // Registers OOBE preferences.
+  // Registers OOBE local state preferences .
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Registers OOBE preferences that are associated with a profile.
+  static void RegisterOobeProfilePrefs(PrefRegistrySimple* registry);
 };
 
 }  // namespace chromeos

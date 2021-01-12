@@ -15,6 +15,14 @@ namespace prefs {
 // Last input user method which could be used on the login/lock screens.
 const char kLastLoginInputMethod[] = "login.last_input_method";
 
+// A boolean pref to indicate if the marketing opt-in screen in OOBE is finished
+// for the user.
+const char kOobeMarketingOptInScreenFinished[] =
+    "OobeMarketingOptInScreenFinished";
+
+// Whether the user has chosen to sign up for marketing emails.
+const char kOobeMarketingOptInChoice[] = "OobeMarketingOptInChoice";
+
 // Time when new user has finished onboarding.
 const char kOobeOnboardingTime[] = "oobe.onboarding_time";
 
@@ -50,6 +58,14 @@ const char kSamlLockScreenReauthenticationEnabled[] =
 
 // SAML password sync token fetched from the external API.
 const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
+
+// *************** OOBE LOCAL STATE PREFS ***************
+
+// A boolean pref of the OOBE complete flag (first OOBE part before login).
+const char kOobeComplete[] = "OobeComplete";
+
+// The name of the screen that has to be shown if OOBE has been interrupted.
+const char kOobeScreenPending[] = "OobeScreenPending";
 
 }  // namespace prefs
 

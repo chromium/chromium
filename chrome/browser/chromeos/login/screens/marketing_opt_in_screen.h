@@ -64,6 +64,10 @@ class MarketingOptInScreen : public BaseScreen {
     exit_callback_ = exit_callback;
   }
 
+  void set_ingore_pref_sync_for_testing(bool ignore_sync) {
+    ignore_pref_sync_for_testing_ = ignore_sync;
+  }
+
   const ScreenExitCallback& get_exit_callback_for_testing() {
     return exit_callback_;
   }
@@ -83,6 +87,14 @@ class MarketingOptInScreen : public BaseScreen {
   // Sets the country to be used if the feature is available in this region.
   void SetCountryFromTimezoneIfAvailable(const std::string& timezone_id);
 
+  // Whether the screen should be shown depending if it was shown before and if
+  // the user had the option to subscribe to emails.
+  bool ShouldShowOptionToSubscribe();
+
+  // Initializes the screen and determines if it should be visible based on the
+  // country.
+  void Initialize();
+
   bool IsDefaultOptInCountry() {
     return default_opt_in_countries_.count(country_);
   }
@@ -96,6 +108,15 @@ class MarketingOptInScreen : public BaseScreen {
 
   // Country code. Unknown IFF empty.
   std::string country_;
+
+  // Whether the screen has been initialized. Determines the country based on
+  // the available geolocation information and whether the screen will support
+  // showing the toggle.
+  bool initialized_ = false;
+
+  // Set by tests so that the sync status of preferences does not interfere when
+  // showing the opt-in option.
+  bool ignore_pref_sync_for_testing_ = false;
 
   // Default country list.
   const std::unordered_set<std::string> default_countries_{"us", "ca", "gb"};

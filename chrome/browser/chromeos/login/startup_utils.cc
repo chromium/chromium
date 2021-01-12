@@ -17,10 +17,12 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -92,15 +94,25 @@ namespace chromeos {
 void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOobeComplete, false);
   registry->RegisterStringPref(prefs::kOobeScreenPending, "");
-  registry->RegisterIntegerPref(prefs::kDeviceRegistered, -1);
-  registry->RegisterBooleanPref(prefs::kEnrollmentRecoveryRequired, false);
-  registry->RegisterStringPref(prefs::kInitialLocale, "en-US");
+  registry->RegisterIntegerPref(::prefs::kDeviceRegistered, -1);
+  registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
+  registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
 }
 
 // static
+void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kOobeMarketingOptInScreenFinished, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOobeMarketingOptInChoice, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
+// static
 bool StartupUtils::IsEulaAccepted() {
-  return g_browser_process->local_state()->GetBoolean(prefs::kEulaAccepted);
+  return g_browser_process->local_state()->GetBoolean(::prefs::kEulaAccepted);
 }
 
 // static
@@ -110,7 +122,7 @@ bool StartupUtils::IsOobeCompleted() {
 
 // static
 void StartupUtils::MarkEulaAccepted() {
-  SaveBoolPreferenceForced(prefs::kEulaAccepted, true);
+  SaveBoolPreferenceForced(::prefs::kEulaAccepted, true);
 }
 
 // static
@@ -122,7 +134,7 @@ void StartupUtils::MarkOobeCompleted() {
   SaveBoolPreferenceForced(prefs::kOobeComplete, true);
 
   // Successful enrollment implies that recovery is not required.
-  SaveBoolPreferenceForced(prefs::kEnrollmentRecoveryRequired, false);
+  SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, false);
 }
 
 // static
@@ -142,7 +154,7 @@ base::TimeDelta StartupUtils::GetTimeSinceOobeFlagFileCreation() {
 // static
 bool StartupUtils::IsDeviceRegistered() {
   int value =
-      g_browser_process->local_state()->GetInteger(prefs::kDeviceRegistered);
+      g_browser_process->local_state()->GetInteger(::prefs::kDeviceRegistered);
   if (value > 0) {
     // Recreate flag file in case it was lost.
     base::ThreadPool::PostTask(
@@ -157,14 +169,15 @@ bool StartupUtils::IsDeviceRegistered() {
     base::ThreadRestrictions::ScopedAllowIO allow_io;
     const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
     bool file_exists = base::PathExists(oobe_complete_flag_path);
-    SaveIntegerPreferenceForced(prefs::kDeviceRegistered, file_exists ? 1 : 0);
+    SaveIntegerPreferenceForced(::prefs::kDeviceRegistered,
+                                file_exists ? 1 : 0);
     return file_exists;
   }
 }
 
 // static
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
-  SaveIntegerPreferenceForced(prefs::kDeviceRegistered, 1);
+  SaveIntegerPreferenceForced(::prefs::kDeviceRegistered, 1);
   if (done_callback.is_null()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -178,7 +191,7 @@ void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
 
 // static
 void StartupUtils::MarkEnrollmentRecoveryRequired() {
-  SaveBoolPreferenceForced(prefs::kEnrollmentRecoveryRequired, true);
+  SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, true);
 }
 
 // static
@@ -195,7 +208,7 @@ bool StartupUtils::IsHIDDetectionScreenDisabledForTests() {
 // static
 std::string StartupUtils::GetInitialLocale() {
   std::string locale =
-      g_browser_process->local_state()->GetString(prefs::kInitialLocale);
+      g_browser_process->local_state()->GetString(::prefs::kInitialLocale);
   if (!l10n_util::IsValidLocaleSyntax(locale))
     locale = "en-US";
   return locale;
@@ -204,7 +217,7 @@ std::string StartupUtils::GetInitialLocale() {
 // static
 void StartupUtils::SetInitialLocale(const std::string& locale) {
   if (l10n_util::IsValidLocaleSyntax(locale))
-    SaveStringPreferenceForced(prefs::kInitialLocale, locale);
+    SaveStringPreferenceForced(::prefs::kInitialLocale, locale);
   else
     NOTREACHED();
 }

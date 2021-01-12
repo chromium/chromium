@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -163,7 +164,7 @@ TEST_P(DeviceCloudPolicyInitializerTest,
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
-  local_state_.SetBoolean(prefs::kOobeComplete, true);
+  local_state_.SetBoolean(chromeos::prefs::kOobeComplete, true);
   EnrollmentConfig config =
       device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
