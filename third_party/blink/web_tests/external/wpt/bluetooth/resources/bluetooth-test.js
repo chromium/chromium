@@ -29,19 +29,13 @@ function loadScript(path) {
  * @returns {Promise<void>} Resolves when Chromium specific setup is complete.
  */
 async function performChromiumSetup() {
-  const chromiumResources = [
-    '/gen/content/test/data/mojo_web_test_helper_test.mojom.js',
-    '/gen/device/bluetooth/public/mojom/uuid.mojom.js',
-    '/gen/url/mojom/origin.mojom.js',
-    '/gen/device/bluetooth/public/mojom/test/fake_bluetooth.mojom.js',
-    '/gen/content/web_test/common/fake_bluetooth_chooser.mojom.js',
-  ];
   // Determine path prefixes.
   let resPrefix = '/resources';
-  const extra = ['/resources/chromium/web-bluetooth-test.js'];
+  const chromiumResources = ['/resources/chromium/web-bluetooth-test.js'];
   const pathname = window.location.pathname;
   if (pathname.includes('/wpt_internal/')) {
-    extra.push('/wpt_internal/bluetooth/resources/bluetooth-fake-adapter.js');
+    chromiumResources.push(
+        '/wpt_internal/bluetooth/resources/bluetooth-fake-adapter.js');
   }
 
   await loadScript(`${resPrefix}/test-only-api.js`);
@@ -49,10 +43,11 @@ async function performChromiumSetup() {
     return;
   }
 
-  await loadMojoResources(chromiumResources);
-  for (const path of extra) {
+  for (const path of chromiumResources) {
     await loadScript(path);
   }
+
+  await initializeChromiumResources();
 
   // Call setBluetoothFakeAdapter() to clean up any fake adapters left over by
   // legacy tests. Legacy tests that use setBluetoothFakeAdapter() sometimes
