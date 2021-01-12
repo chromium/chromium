@@ -14,7 +14,7 @@
 #include "base/guid.h"
 #include "base/strings/string16.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/color_helpers.h"

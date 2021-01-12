@@ -14,7 +14,7 @@
 #include "chrome/browser/android/webapps/add_to_homescreen_data_fetcher.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 #include "chrome/browser/banners/app_banner_manager.h"
-#include "components/webapps/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 

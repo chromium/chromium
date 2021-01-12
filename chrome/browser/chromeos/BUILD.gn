@@ -354,7 +354,7 @@ source_set("chromeos") {
 
     # TODO: care about enable_basic_printing and enable_print_preview.
     "//ash/keyboard/ui",
-    "//components/webapps",
+    "//components/webapps/browser",
     "//printing",
     "//printing/mojom",
     "//remoting/host/it2me:chrome_os_host",

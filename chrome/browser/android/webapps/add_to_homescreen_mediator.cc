@@ -16,9 +16,9 @@
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "components/url_formatter/elide_url.h"
-#include "components/webapps/android/add_to_homescreen_params.h"
-#include "components/webapps/installable/installable_metrics.h"
-#include "components/webapps/webapps_client.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 

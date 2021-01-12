@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
@@ -17,7 +17,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/webapps/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #endif
 
 namespace webapps {

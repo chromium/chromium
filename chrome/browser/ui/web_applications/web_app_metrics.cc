@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;

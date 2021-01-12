@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 
 #include <tuple>
 
@@ -23,9 +23,9 @@
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/webapps/installable/installable_logging.h"
-#include "components/webapps/installable/installable_manager.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

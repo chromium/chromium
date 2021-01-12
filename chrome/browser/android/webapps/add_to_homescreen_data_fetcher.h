@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"

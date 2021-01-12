@@ -20,7 +20,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

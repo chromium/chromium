@@ -1,0 +1,100 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_ios)
+
+source_set("browser") {
+  sources = [
+    "installable/installable_data.cc",
+    "installable/installable_data.h",
+    "installable/installable_logging.cc",
+    "installable/installable_logging.h",
+    "installable/installable_manager.cc",
+    "installable/installable_manager.h",
+    "installable/installable_metrics.cc",
+    "installable/installable_metrics.h",
+    "installable/installable_params.cc",
+    "installable/installable_params.h",
+    "installable/installable_task_queue.cc",
+    "installable/installable_task_queue.h",
+    "webapps_client.cc",
+    "webapps_client.h",
+  ]
+  deps = [
+    "//base",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/add_to_homescreen_params.cc",
+      "android/add_to_homescreen_params.h",
+      "android/features.cc",
+      "android/features.h",
+      "android/installable/installable_ambient_badge_infobar.cc",
+      "android/installable/installable_ambient_badge_infobar.h",
+      "android/installable/installable_ambient_badge_infobar_delegate.cc",
+      "android/installable/installable_ambient_badge_infobar_delegate.h",
+      "android/shortcut_info.cc",
+      "android/shortcut_info.h",
+      "android/webapps_icon_utils.cc",
+      "android/webapps_icon_utils.h",
+      "android/webapps_utils.cc",
+      "android/webapps_utils.h",
+    ]
+
+    public_deps = [ "android:webapps_jni_headers" ]
+
+    deps += [
+      "//base",
+      "//components/infobars/android",
+      "//components/infobars/content",
+      "//components/strings",
+      "//services/device/public/mojom",
+      "//skia",
+      "//third_party/blink/public/common:common",
+      "//ui/base",
+      "//ui/gfx",
+      "//url",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "installable/fake_installable_manager.cc",
+    "installable/fake_installable_manager.h",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//skia",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "installable/installable_manager_unittest.cc",
+    "installable/installable_task_queue_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//content/public/common",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+  ]
+}

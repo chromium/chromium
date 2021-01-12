@@ -34,7 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"

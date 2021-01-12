@@ -472,7 +472,7 @@ static_library("test_support") {
       "//build:chromeos_buildflags",
       "//chrome/browser/web_applications:web_applications_on_extensions_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//components/webapps",
+      "//components/webapps/browser",
     ]
     allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_on_extensions_test_support",

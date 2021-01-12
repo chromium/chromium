@@ -20,9 +20,9 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "components/webapps/installable/installable_manager.h"
-#include "components/webapps/installable/installable_metrics.h"
-#include "components/webapps/installable/installable_params.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {

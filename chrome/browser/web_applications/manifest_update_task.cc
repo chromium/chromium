@@ -20,7 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
 #include "ui/gfx/skia_util.h"
 

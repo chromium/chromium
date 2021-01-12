@@ -15,7 +15,7 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 #include "chrome/browser/banners/app_banner_manager.h"
-#include "components/webapps/android/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"

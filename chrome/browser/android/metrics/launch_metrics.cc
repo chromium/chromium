@@ -10,7 +10,7 @@
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"

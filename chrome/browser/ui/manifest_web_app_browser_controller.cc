@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"

@@ -9,7 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/webapps/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
 
 namespace webapps {

@@ -10,7 +10,7 @@
 #include "chrome/android/chrome_jni_headers/AddToHomescreenInstaller_jni.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
-#include "components/webapps/webapps_client.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 
 namespace webapps {

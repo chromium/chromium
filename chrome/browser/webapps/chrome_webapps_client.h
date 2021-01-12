@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "components/webapps/webapps_client.h"
+#include "components/webapps/browser/webapps_client.h"
 
 namespace webapps {
 

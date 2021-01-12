@@ -1,0 +1,70 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.components.webapps"
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/infobars/android:java",
+    "//components/webapk/android/libs/client:java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
+    "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
+  ]
+  srcjar_deps = [ ":webapps_java_enums_srcjar" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("webapps_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
+    "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
+  ]
+}
+
+java_cpp_enum("webapps_java_enums_srcjar") {
+  sources = [
+    "add_to_homescreen_params.h",
+    "shortcut_info.h",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
+    "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
+    "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
+    "java/res/mipmap-xxhdpi/shortcut_icon_shadow.png",
+    "java/res/mipmap-xxxhdpi/shortcut_icon_shadow.png",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [ "//components/webapk/android/libs/common:splash_resources" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shortcut_info_unittest.cc",
+    "webapps_utils_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//components/webapps/browser",
+    "//testing/gtest",
+    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url",
+  ]
+}

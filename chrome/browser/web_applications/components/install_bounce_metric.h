@@ -9,7 +9,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 class PrefService;
 class PrefRegistrySimple;

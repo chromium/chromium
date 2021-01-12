@@ -92,7 +92,7 @@ source_set("web_applications") {
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/sync",
     "//components/user_manager",
-    "//components/webapps",
+    "//components/webapps/browser",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
@@ -226,7 +226,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/webapps",
+    "//components/webapps/browser",
     "//content/public/browser",
     "//content/test:test_support",
     "//services/metrics/public/cpp:ukm_builders",
@@ -288,7 +288,7 @@ source_set("web_applications_browser_tests") {
     "//components/permissions:permissions",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
-    "//components/webapps",
+    "//components/webapps/browser",
     "//extensions/browser:test_support",
   ]
 

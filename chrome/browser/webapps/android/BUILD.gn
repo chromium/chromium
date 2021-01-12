@@ -17,7 +17,7 @@ source_set("android") {
     "//base",
     "//chrome/browser/webapps/android:jni_headers",
     "//components/url_formatter:url_formatter",
-    "//components/webapps:webapps",
+    "//components/webapps/browser",
     "//content/public/browser:browser",
     "//services/device/public/mojom",
     "//skia",
