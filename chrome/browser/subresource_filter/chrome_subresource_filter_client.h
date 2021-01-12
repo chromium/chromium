@@ -15,11 +15,13 @@
 class GURL;
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace subresource_filter {
 class ContentSubresourceFilterThrottleManager;
+class ProfileInteractionManager;
 class SubresourceFilterProfileContext;
 }  // namespace subresource_filter
 
@@ -45,13 +47,15 @@ class ChromeSubresourceFilterClient
 
   // SubresourceFilterClient:
   void ShowNotification() override;
+  subresource_filter::mojom::ActivationLevel OnPageActivationComputed(
+      content::NavigationHandle* navigation_handle,
+      subresource_filter::mojom::ActivationLevel initial_activation_level,
+      subresource_filter::ActivationDecision* decision) override;
   void OnAdsViolationTriggered(
       content::RenderFrameHost* rfh,
       subresource_filter::mojom::AdsViolation triggered_violation) override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
-  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
-      override;
   void OnReloadRequested() override;
 
  private:
