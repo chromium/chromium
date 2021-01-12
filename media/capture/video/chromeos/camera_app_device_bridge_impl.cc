@@ -39,6 +39,11 @@ void CameraAppDeviceBridgeImpl::SetCameraInfoGetter(
   camera_info_getter_ = std::move(camera_info_getter);
 }
 
+void CameraAppDeviceBridgeImpl::SetVirtualDeviceController(
+    VirtualDeviceController virtual_device_controller) {
+  virtual_device_controller_ = std::move(virtual_device_controller);
+}
+
 void CameraAppDeviceBridgeImpl::UnsetCameraInfoGetter() {
   camera_info_getter_ = {};
 }
@@ -79,6 +84,14 @@ media::CameraAppDeviceImpl* CameraAppDeviceBridgeImpl::CreateCameraAppDevice(
 
 void CameraAppDeviceBridgeImpl::IsSupported(IsSupportedCallback callback) {
   std::move(callback).Run(is_supported_);
+}
+
+void CameraAppDeviceBridgeImpl::SetMultipleStreamsEnabled(
+    const std::string& device_id,
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback) {
+  virtual_device_controller_.Run(device_id, enabled);
+  std::move(callback).Run(true);
 }
 
 }  // namespace media
