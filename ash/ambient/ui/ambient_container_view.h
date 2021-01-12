@@ -26,26 +26,16 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   explicit AmbientContainerView(AmbientViewDelegate* delegate);
   ~AmbientContainerView() override;
 
-  gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
-
  private:
   friend class AmbientAshTestBase;
 
   void Init();
-
-  // Layouts its child views.
-  // TODO(meilinw): Use LayoutManagers to lay out children instead of overriding
-  // Layout(). See b/163170162.
-  void LayoutPhotoView();
-  void LayoutAssistantView();
 
   AmbientViewDelegate* delegate_ = nullptr;
 
   // Owned by view hierarchy.
   PhotoView* photo_view_ = nullptr;
   AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
-
 };
 
 }  // namespace ash

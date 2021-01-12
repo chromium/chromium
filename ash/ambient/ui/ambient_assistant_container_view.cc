@@ -24,8 +24,11 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -33,6 +36,8 @@ namespace {
 
 // Appearance.
 constexpr int kAvatarImageSizeDip = 32;
+
+constexpr int kAssistantPreferredHeightDip = 128;
 
 // Greeting message.
 base::string16 GetGreetingMessage(const UserSession* user_session) {
@@ -80,25 +85,37 @@ void AmbientAssistantContainerView::OnUiVisibilityChanged(
 }
 
 void AmbientAssistantContainerView::InitLayout() {
-  SetPaintToLayer();
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  views::FlexLayout* outer_layout =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  outer_layout->SetOrientation(views::LayoutOrientation::kVertical);
+  outer_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  outer_layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
+  auto* container = AddChildView(std::make_unique<views::View>());
+
+  // Set a placeholder value for width. |CrossAxisAlignment::kStretch| will
+  // expand the width to 100% of the parent.
+  container->SetPreferredSize(
+      {/*width=*/1, /*height=*/kAssistantPreferredHeightDip});
+  container->SetPaintToLayer();
+  container->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+
+  views::FlexLayout* container_layout =
+      container->SetLayoutManager(std::make_unique<views::FlexLayout>());
   constexpr int kRightPaddingDip = 8;
-  views::BoxLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, 0, 0, kRightPaddingDip)));
+  container_layout->SetInteriorMargin({0, 0, 0, kRightPaddingDip});
 
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  container_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  container_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  container_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Mic button and input query view.
-  ambient_assistant_dialog_plate_ =
-      AddChildView(std::make_unique<AmbientAssistantDialogPlate>(delegate_));
+  ambient_assistant_dialog_plate_ = container->AddChildView(
+      std::make_unique<AmbientAssistantDialogPlate>(delegate_));
 
   // Response container view.
-  assistant_response_container_view_ =
-      AddChildView(std::make_unique<AssistantResponseContainerView>(delegate_));
+  assistant_response_container_view_ = container->AddChildView(
+      std::make_unique<AssistantResponseContainerView>(delegate_));
 
   // Greeting label.
   const UserSession* active_user_session =
@@ -106,7 +123,7 @@ void AmbientAssistantContainerView::InitLayout() {
   // TODO(meilinw): uses login user info instead as no active user session is
   // available on lock screen.
   if (active_user_session) {
-    greeting_label_ = AddChildView(std::make_unique<views::Label>(
+    greeting_label_ = container->AddChildView(std::make_unique<views::Label>(
         GetGreetingMessage(active_user_session)));
     greeting_label_->SetEnabledColor(kTextColorSecondary);
     greeting_label_->SetFontList(
@@ -118,12 +135,17 @@ void AmbientAssistantContainerView::InitLayout() {
   }
 
   // Spacer.
-  views::View* spacer = AddChildView(std::make_unique<views::View>());
-  // Sets the flex weight to be 1 so the spacer view can be resized.
-  layout_manager->SetFlexForView(spacer, 1);
+  views::View* spacer =
+      container->AddChildView(std::make_unique<views::View>());
+  // Allow the spacer to expand to push the avatar image to the end of the
+  // container.
+  spacer->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   // Rounded avatar image view.
-  avatar_view_ = AddChildView(std::make_unique<views::ImageView>());
+  avatar_view_ = container->AddChildView(std::make_unique<views::ImageView>());
   avatar_view_->SetImageSize(
       gfx::Size(kAvatarImageSizeDip, kAvatarImageSizeDip));
   avatar_view_->SetPreferredSize(
