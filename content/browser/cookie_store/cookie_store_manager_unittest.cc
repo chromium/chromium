@@ -19,6 +19,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_access_result.h"
@@ -1755,6 +1756,23 @@ TEST_P(CookieStoreManagerTest, GetSubscriptionsFromWrongOrigin) {
       google_service_->GetSubscriptions(example_registration_id);
   EXPECT_FALSE(wrong_subscriptions_opt.has_value());
   EXPECT_EQ("Invalid service worker", bad_mesage_observer.WaitForBadMessage());
+}
+
+TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
+  mojo::Remote<blink::mojom::CookieStore> untrustworthy_service_remote;
+
+  // Create a fake dispatch context to trigger a bad message in.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_mesage_observer;
+
+  cookie_store_context_->CreateServiceForTesting(
+      url::Origin::Create(GURL("http://insecure.com")),
+      untrustworthy_service_remote.BindNewPipeAndPassReceiver());
+
+  untrustworthy_service_remote.FlushForTesting();
+  EXPECT_FALSE(untrustworthy_service_remote.is_connected());
+  EXPECT_EQ("Cookie Store access from an insecure origin",
+            bad_mesage_observer.WaitForBadMessage());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

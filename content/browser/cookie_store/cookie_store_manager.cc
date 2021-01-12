@@ -18,6 +18,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
@@ -48,6 +49,11 @@ void CookieStoreManager::CreateService(
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    mojo::ReportBadMessage("Cookie Store access from an insecure origin");
+    return;
+  }
 
   receivers_.Add(std::make_unique<CookieStoreHost>(this, origin),
                  std::move(receiver));
