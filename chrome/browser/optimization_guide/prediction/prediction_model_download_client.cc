@@ -9,8 +9,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "components/download/public/background_service/download_metadata.h"
-#include "components/optimization_guide/core/prediction_model_download_manager.h"
 
 namespace optimization_guide {
 

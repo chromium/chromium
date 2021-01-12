@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/prediction_model_download_manager.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -14,13 +14,14 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/download_service.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/prediction_model_download_observer.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -88,13 +89,11 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
 PredictionModelDownloadManager::PredictionModelDownloadManager(
     download::DownloadService* download_service,
     const base::FilePath& models_dir,
-    LaunchUnzipperCallback unzipper_launcher_callback,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(download_service),
       models_dir_(models_dir),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
-      unzipper_launcher_callback_(std::move(unzipper_launcher_callback)),
       background_task_runner_(background_task_runner) {}
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
@@ -249,8 +248,8 @@ void PredictionModelDownloadManager::StartUnzipping(
     return;
 
   unzip::UnzipWithFilter(
-      unzipper_launcher_callback_.Run(), unzip_paths->first,
-      unzip_paths->second, base::BindRepeating(&IsRelevantFile),
+      unzip::LaunchUnzipper(), unzip_paths->first, unzip_paths->second,
+      base::BindRepeating(&IsRelevantFile),
       base::BindOnce(&PredictionModelDownloadManager::OnDownloadUnzipped,
                      ui_weak_ptr_factory_.GetWeakPtr(), unzip_paths->first,
                      unzip_paths->second));

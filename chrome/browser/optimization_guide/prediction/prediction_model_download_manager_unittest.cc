@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/prediction_model_download_manager.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,12 +15,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/core/prediction_model_download_observer.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
@@ -69,8 +70,10 @@ class PredictionModelDownloadManagerTest : public testing::Test {
         std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
         mock_download_service_.get(), temp_dir_.GetPath(),
-        base::BindRepeating(&unzip::LaunchInProcessUnzipper),
         task_environment_.GetMainThreadTaskRunner());
+
+    unzip::SetUnzipperLaunchOverrideForTesting(
+        base::BindRepeating(&unzip::LaunchInProcessUnzipper));
   }
 
   void TearDown() override {
