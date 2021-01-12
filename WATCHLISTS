@@ -118,6 +118,7 @@
       'filepath': 'chrome/browser/apps/app_service/'\
                   '|chrome/browser/ui/app_list/app_service/'\
                   '|chrome/browser/ui/ash/launcher/app_service/'\
+                  '|chrome/browser/ui/views/apps/app_dialog/' \
                   '|components/services/app_service/',
     },
     'app_shortcuts': {
@@ -1037,6 +1038,10 @@
     },
     'fuchsia': {
       'filepath': 'fuchsia',
+    },
+    'full_restore': {
+      'filepath': 'chrome/browser/chromeos/full_restore/|' \
+                  'components/full_restore/'
     },
     'fuzzing': {
       'filepath': 'fuzz|Fuzz',
@@ -2517,6 +2522,7 @@
                         'thestig@chromium.org'],
     'fsp': ['mtomasz+watch@chromium.org'],
     'fuchsia': ['fuchsia-reviews@chromium.org'],
+    'full_restore': ['nancylingwang@chromium.org'],
     'fuzzing': ['fuzzing@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org'],
