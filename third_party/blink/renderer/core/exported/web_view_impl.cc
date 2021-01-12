@@ -3402,6 +3402,9 @@ void WebViewImpl::InvalidateRect(const IntRect& rect) {
 }
 
 void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
+  // TODO(https://crbug.com/1160652): Figure out if Page is null.
+  CHECK(page_);
+
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
 
   // Store the desired offsets the visual viewport before setting the top
