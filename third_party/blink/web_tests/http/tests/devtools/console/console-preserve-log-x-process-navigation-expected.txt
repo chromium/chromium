@@ -1,5 +1,5 @@
 Tests that the console can preserve log messages across cross-process navigations.
-console-preserve-log…ss-navigation.js:11 before navigation
-Navigated to empty.html
-console-preserve-log…ss-navigation.js:13 after navigation
+log-message.html:5 before navigation
+Navigated to log-message.html
+log-message.html:5 after navigation
 

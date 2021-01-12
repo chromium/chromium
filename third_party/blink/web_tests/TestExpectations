@@ -2298,8 +2298,6 @@ crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element
 # css-pseudo-4 opacity not applied to ::first-line
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
 
-crbug.com/1165324 http/tests/devtools/console/console-preserve-log-x-process-navigation.js [ Pass Failure ]
-
 # motion-1 issues
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-002.html [ Failure ]
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-003.html [ Failure ]
