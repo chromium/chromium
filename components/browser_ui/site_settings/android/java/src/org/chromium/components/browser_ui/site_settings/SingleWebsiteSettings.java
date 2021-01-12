@@ -682,12 +682,16 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             return;
         }
         if (requestCode == REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS) {
+            @ContentSettingValues
+            int newPermission =
+                    mSite.getContentSetting(getSiteSettingsDelegate().getBrowserContextHandle(),
+                            ContentSettingsType.NOTIFICATIONS);
             // User has navigated back from system channel settings on O+. Ensure notification
             // preference is up to date, since they might have toggled it from channel settings.
             Preference notificationsPreference =
                     findPreference(getPreferenceKey(ContentSettingsType.NOTIFICATIONS));
             if (notificationsPreference != null) {
-                setUpNotificationsPreference(notificationsPreference, false /* isEmbargoed */);
+                onPreferenceChange(notificationsPreference, (Object) newPermission);
             }
 
             // To ensure UMA receives notification revocations, we detect if the setting has changed
@@ -695,10 +699,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             // permission, but do not return immediately to Chrome (e.g. they close the permissions
             // activity, instead of hitting the back button), but prevents us from having to check
             // for changes each time Chrome becomes active.
-            @ContentSettingValues
-            int newPermission =
-                    mSite.getContentSetting(getSiteSettingsDelegate().getBrowserContextHandle(),
-                            ContentSettingsType.NOTIFICATIONS);
             if (mPreviousNotificationPermission == ContentSettingValues.ALLOW
                     && newPermission != ContentSettingValues.ALLOW) {
                 WebsitePreferenceBridgeJni.get().reportNotificationRevokedForOrigin(
@@ -936,10 +936,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             preference.setIcon(getContentSettingsIcon(contentType, value, true));
         }
 
-        preference.setOrder(++mMaxPermissionOrder);
         // These preferences are persisted elsewhere, using SharedPreferences
-        //  can cause issues with keys matching up with value.
+        // can cause issues with keys matching up with value.
         preference.setPersistent(false);
+        preference.setOrder(++mMaxPermissionOrder);
         getPreferenceScreen().addPreference(preference);
     }
 
@@ -1117,11 +1117,14 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
         @ContentSettingValues
         int permission;
-        if (preference instanceof ListPreference) {
-            permission = ContentSetting.fromString((String) newValue);
-        } else {
+        if (newValue instanceof Boolean) {
             permission =
                     (Boolean) newValue ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+            // TODO(crbug.com/1165765): Remove when ListPreferences are no longer used.
+        } else if (newValue instanceof String) {
+            permission = ContentSetting.fromString((String) newValue);
+        } else {
+            permission = (Integer) newValue;
         }
 
         mSite.setContentSetting(browserContextHandle, type, permission);
