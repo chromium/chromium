@@ -186,6 +186,7 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
+  void OnThemeChanged() override;
 
   // WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;
