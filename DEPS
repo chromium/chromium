@@ -1417,16 +1417,6 @@ deps = {
   'src/third_party/ruy/src':
     Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '34ea9f4993955fa1ff4eb58e504421806b7f2e8f',
 
-  'src/third_party/shaka-player/dist': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/shaka-player',
-              'version': '82FcUTdHazqTIVQG-bKn_oXNI5880G2k_rL0bICTeDgC',
-          },
-      ],
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
 
