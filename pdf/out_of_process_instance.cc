@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/i18n/number_formatting.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -130,6 +131,7 @@ constexpr char kJSBookmarksData[] = "bookmarksData";
 // Metadata (Plugin -> Page)
 constexpr char kJSMetadataType[] = "metadata";
 constexpr char kJSMetadataData[] = "metadataData";
+constexpr char kJSVersion[] = "version";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSAuthor[] = "author";
 constexpr char kJSSubject[] = "subject";
@@ -533,6 +535,48 @@ PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
     pp_text_runs.push_back(std::move(pp_text_run));
   }
   return pp_text_runs;
+}
+
+// Converts |version| to a formatted string.
+base::string16 GetFormattedVersion(PdfVersion version) {
+  double value = 0;
+  switch (version) {
+    case PdfVersion::k1_0:
+      value = 1.0;
+      break;
+    case PdfVersion::k1_1:
+      value = 1.1;
+      break;
+    case PdfVersion::k1_2:
+      value = 1.2;
+      break;
+    case PdfVersion::k1_3:
+      value = 1.3;
+      break;
+    case PdfVersion::k1_4:
+      value = 1.4;
+      break;
+    case PdfVersion::k1_5:
+      value = 1.5;
+      break;
+    case PdfVersion::k1_6:
+      value = 1.6;
+      break;
+    case PdfVersion::k1_7:
+      value = 1.7;
+      break;
+    case PdfVersion::k2_0:
+      value = 2.0;
+      break;
+    case PdfVersion::kUnknown:
+    case PdfVersion::k1_8:  // Not an actual version
+      return base::string16();
+  }
+  // The default case is excluded from the above switch statement to ensure that
+  // all supported versions are determinantly handled.
+
+  DCHECK_NE(0, value);
+  return base::FormatDouble(value, 1);
 }
 
 }  // namespace
@@ -2380,6 +2424,10 @@ void OutOfProcessInstance::SendMetadata() {
 
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
   pp::VarDictionary metadata_data;
+
+  base::string16 version = GetFormattedVersion(document_metadata.version);
+  if (!version.empty())
+    metadata_data.Set(pp::Var(kJSVersion), pp::Var(base::UTF16ToUTF8(version)));
 
   if (!document_metadata.title.empty())
     metadata_data.Set(pp::Var(kJSTitle), pp::Var(document_metadata.title));

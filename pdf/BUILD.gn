@@ -253,6 +253,7 @@ if (enable_pdf) {
       ":internal",
       ":ppapi_migration",
       "//base",
+      "//base:i18n",
       "//build:chromeos_buildflags",
       "//net",
       "//ppapi/cpp:objects",

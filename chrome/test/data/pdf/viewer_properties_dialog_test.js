@@ -60,7 +60,7 @@ const tests = [
      ['modified', '-'],
      ['application', 'Your Preferred Text Editor'],
      ['pdf-producer', 'fixup_pdf_template.py'],
-     ['pdf-version', '-'],
+     ['pdf-version', '1.7'],
      ['page-count', '-'],
      ['page-size', '-'],
      ['fast-web-view', '-'],

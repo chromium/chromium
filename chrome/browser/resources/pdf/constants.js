@@ -19,12 +19,13 @@ export const DisplayAnnotationsAction = {
 
 /**
  * @typedef {{
- *   title: string,
  *   author: string,
- *   subject: string,
+ *   canSerializeDocument: boolean,
  *   creator: string,
  *   producer: string,
- *   canSerializeDocument: boolean,
+ *   subject: string,
+ *   title: string,
+ *   version: string,
  * }}
  */
 export let DocumentMetadata;
