@@ -29,6 +29,8 @@ import android.webkit.WebViewFactory;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
+import dalvik.system.DexFile;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
@@ -42,10 +44,13 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.NativeLibraryPreloader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
@@ -88,6 +93,7 @@ import org.chromium.weblayer_private.metrics.UmaUtils;
 import org.chromium.weblayer_private.settings.SettingsFragmentImpl;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -316,6 +322,8 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 return false;
             }
         });
+
+        performDexFixIfNecessary(packageInfo);
 
         TraceEvent.end("WebLayer init");
     }
@@ -914,6 +922,40 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Nullable
     private static String getEmbedderName() {
         return getClientApplicationName();
+    }
+
+    /*
+     * Android O MR1 has a bug where bg-dexopt-job will break optimized dex files for isolated
+     * splits. This leads to *very* slow startup on those devices. To mitigate this, we attempt
+     * to force a dex compile if necessary.
+     */
+    private static void performDexFixIfNecessary(PackageInfo packageInfo) {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1) {
+            return;
+        }
+
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+            ApplicationInfo appInfo = packageInfo.applicationInfo;
+            String[] splitNames = ApiHelperForO.getSplitNames(appInfo);
+            for (int i = 0; i < splitNames.length; i++) {
+                String splitName = splitNames[i];
+                // WebLayer depends on the "weblayer" split and "chrome" split (if running in
+                // Monochrome).
+                if (!splitName.equals("chrome") && !splitName.equals("weblayer")) {
+                    continue;
+                }
+                String splitDir = appInfo.splitSourceDirs[i];
+                try {
+                    if (DexFile.isDexOptNeeded(splitDir)) {
+                        String cmd = String.format("cmd package compile -r shared --split %s %s",
+                                new File(splitDir).getName(), packageInfo.packageName);
+                        Runtime.getRuntime().exec(cmd);
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Error fixing dex files.", e);
+                }
+            }
+        });
     }
 
     @NativeMethods
