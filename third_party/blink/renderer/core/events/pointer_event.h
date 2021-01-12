@@ -7,7 +7,6 @@
 
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -29,10 +28,6 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
         type, initializer, platform_time_stamp, synthetic_event_type,
         menu_source_type);
   }
-  static PointerEvent* Create(const AtomicString& event_type,
-                              AbstractView*,
-                              const Event* underlying_event,
-                              SimulatedClickCreationScope);
 
   PointerEvent(const AtomicString&,
                const PointerEventInit*,

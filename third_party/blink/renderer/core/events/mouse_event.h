@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/platform/geometry/double_point.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -66,16 +65,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   static MouseEvent* Create(ScriptState*,
                             const AtomicString& event_type,
                             const MouseEventInit*);
-
-  static MouseEvent* Create(const AtomicString& event_type,
-                            AbstractView*,
-                            const Event* underlying_event,
-                            SimulatedClickCreationScope);
-
-  static void PopulateMouseEventInit(const AtomicString& event_type,
-                                     AbstractView* view,
-                                     const Event* underlying_event,
-                                     MouseEventInit* initializer);
 
   MouseEvent(const AtomicString& type,
              const MouseEventInit*,
@@ -189,6 +178,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
+  void InitCoordinates(const double client_x, const double client_y);
+
   void Trace(Visitor*) const override;
 
   DoublePoint screen_location_;
@@ -202,8 +193,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   void ReceivedTarget() override;
 
   void ComputeRelativePosition();
-
-  void InitCoordinates(const double client_x, const double client_y);
 
   bool has_cached_relative_position_ = false;
 

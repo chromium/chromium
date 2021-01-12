@@ -13,34 +13,6 @@
 
 namespace blink {
 
-PointerEvent* PointerEvent::Create(const AtomicString& event_type,
-                                   AbstractView* view,
-                                   const Event* underlying_event,
-                                   SimulatedClickCreationScope creation_scope) {
-  PointerEventInit* initializer = PointerEventInit::Create();
-  MouseEvent::PopulateMouseEventInit(event_type, view, underlying_event,
-                                     initializer);
-  base::TimeTicks timestamp = underlying_event
-                                  ? underlying_event->PlatformTimeStamp()
-                                  : base::TimeTicks::Now();
-  SyntheticEventType synthetic_type = kPositionless;
-  if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
-    synthetic_type = kRealOrIndistinguishable;
-  }
-  PointerEvent* created_event = MakeGarbageCollected<PointerEvent>(
-      event_type, initializer, timestamp, synthetic_type);
-  created_event->SetTrusted(creation_scope ==
-                            SimulatedClickCreationScope::kFromUserAgent);
-  created_event->SetUnderlyingEvent(underlying_event);
-  if (synthetic_type == kRealOrIndistinguishable) {
-    auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
-    created_event->InitCoordinates(mouse_event->client_location_.X(),
-                                   mouse_event->client_location_.Y());
-  }
-
-  return created_event;
-}
-
 PointerEvent::PointerEvent(const AtomicString& type,
                            const PointerEventInit* initializer,
                            base::TimeTicks platform_time_stamp,

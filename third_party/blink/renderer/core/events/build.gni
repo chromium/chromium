@@ -67,6 +67,8 @@ blink_core_sources_events = [
   "resource_progress_event.h",
   "security_policy_violation_event.cc",
   "security_policy_violation_event.h",
+  "simulated_event_util.cc",
+  "simulated_event_util.h",
   "text_event.cc",
   "text_event.h",
   "text_event_input_type.h",

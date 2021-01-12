@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/simulated_event_util.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -53,27 +53,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-namespace {
-Event* CreateEvent(const AtomicString& event_type,
-                   Node& node,
-                   const Event* underlying_event,
-                   SimulatedClickCreationScope creation_scope) {
-  DCHECK(event_type == event_type_names::kClick ||
-         event_type == event_type_names::kMousedown ||
-         event_type == event_type_names::kMouseup);
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      event_type == event_type_names::kClick) {
-    // TODO(crbug.com/1150979): Should we also fire pointer events for
-    // mousedown/mouseup events?  These mouse events are used for accessibility.
-    return PointerEvent::Create(event_type_names::kClick,
-                                node.GetDocument().domWindow(),
-                                underlying_event, creation_scope);
-  } else {
-    return MouseEvent::Create(event_type, node.GetDocument().domWindow(),
-                              underlying_event, creation_scope);
-  }
-}
-}  // namespace
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
@@ -120,14 +99,20 @@ void EventDispatcher::DispatchSimulatedClick(
   nodes_dispatching_simulated_clicks->insert(&node);
 
   Element* element = DynamicTo<Element>(node);
+  LocalDOMWindow* dom_window = node.GetDocument().domWindow();
+
+  // TODO(crbug.com/1150979): Should we also fire pointer events for
+  // mousedown/mouseup events?  These mouse events are used for accessibility.
   if (mouse_event_options != kSendNoEvents) {
-    EventDispatcher(node, *CreateEvent(event_type_names::kMousedown, node,
-                                       underlying_event, creation_scope))
+    EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                              event_type_names::kMousedown, dom_window,
+                              underlying_event, creation_scope))
         .Dispatch();
     if (element)
       element->SetActive(true);
-    EventDispatcher(node, *CreateEvent(event_type_names::kMouseup, node,
-                                       underlying_event, creation_scope))
+    EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                              event_type_names::kMouseup, dom_window,
+                              underlying_event, creation_scope))
         .Dispatch();
   }
   // Some elements (e.g. the color picker) may set active state to true before
@@ -135,9 +120,10 @@ void EventDispatcher::DispatchSimulatedClick(
   if (element)
     element->SetActive(false);
 
-  // always send click
-  EventDispatcher(node, *CreateEvent(event_type_names::kClick, node,
-                                     underlying_event, creation_scope))
+  // Always send click.
+  EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                            event_type_names::kClick, dom_window,
+                            underlying_event, creation_scope))
       .Dispatch();
 
   nodes_dispatching_simulated_clicks->erase(&node);
