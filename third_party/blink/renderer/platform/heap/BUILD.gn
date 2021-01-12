@@ -103,7 +103,7 @@ blink_platform_sources("heap") {
       "v8_wrapper/garbage_collected.h",
       "v8_wrapper/gc_task_runner.h",
       "v8_wrapper/heap.h",
-      "v8_wrapper/heap_allocator.h",
+      "v8_wrapper/heap_allocator_impl.h",
       "v8_wrapper/heap_stats_collector.h",
       "v8_wrapper/heap_traits.h",
       "v8_wrapper/member.h",

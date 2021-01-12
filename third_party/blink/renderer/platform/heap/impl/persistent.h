@@ -808,17 +808,6 @@ Persistent<T> WrapPersistentInternal(T* value) {
 #define WrapPersistent(value) WrapPersistentInternal(value)
 #endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 
-template <typename T,
-          typename = std::enable_if_t<WTF::IsGarbageCollectedType<T>::value>>
-Persistent<T> WrapPersistentIfNeeded(T* value) {
-  return Persistent<T>(value);
-}
-
-template <typename T>
-T& WrapPersistentIfNeeded(T& value) {
-  return value;
-}
-
 template <typename T>
 WeakPersistent<T> WrapWeakPersistent(T* value) {
   return WeakPersistent<T>(value);

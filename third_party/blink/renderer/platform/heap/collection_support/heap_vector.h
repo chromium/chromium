@@ -69,10 +69,6 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 };
 
-template <typename T, wtf_size_t inlineCapacity>
-struct GCInfoTrait<HeapVector<T, inlineCapacity>>
-    : public GCInfoTrait<Vector<T, inlineCapacity, HeapAllocator>> {};
-
 }  // namespace blink
 
 namespace WTF {

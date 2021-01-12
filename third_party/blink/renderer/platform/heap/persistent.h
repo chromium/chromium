@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 #if BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/persistent.h"
@@ -13,24 +16,44 @@
 #include "third_party/blink/renderer/platform/heap/impl/persistent.h"
 #endif  // !USE_V8_OILPAN
 
+namespace blink {
+
+template <typename T,
+          typename = std::enable_if_t<WTF::IsGarbageCollectedType<T>::value>>
+Persistent<T> WrapPersistentIfNeeded(T* value) {
+  return Persistent<T>(value);
+}
+
+template <typename T>
+T& WrapPersistentIfNeeded(T& value) {
+  return value;
+}
+
+}  // namespace blink
+
 namespace WTF {
 
-template <
-    typename T,
-    blink::WeaknessPersistentConfiguration weaknessConfiguration,
-    blink::CrossThreadnessPersistentConfiguration crossThreadnessConfiguration>
-struct VectorTraits<blink::PersistentBase<T,
-                                          weaknessConfiguration,
-                                          crossThreadnessConfiguration>>
-    : VectorTraitsBase<blink::PersistentBase<T,
-                                             weaknessConfiguration,
-                                             crossThreadnessConfiguration>> {
-  STATIC_ONLY(VectorTraits);
-  static const bool kNeedsDestruction = true;
+template <typename T>
+struct PersistentVectorTraitsBase : VectorTraitsBase<T> {
+  STATIC_ONLY(PersistentVectorTraitsBase);
   static const bool kCanInitializeWithMemset = true;
-  static const bool kCanClearUnusedSlotsWithMemset = false;
-  static const bool kCanMoveWithMemcpy = true;
 };
+
+template <typename T>
+struct VectorTraits<blink::Persistent<T>>
+    : PersistentVectorTraitsBase<blink::Persistent<T>> {};
+
+template <typename T>
+struct VectorTraits<blink::WeakPersistent<T>>
+    : PersistentVectorTraitsBase<blink::WeakPersistent<T>> {};
+
+template <typename T>
+struct VectorTraits<blink::CrossThreadPersistent<T>>
+    : PersistentVectorTraitsBase<blink::CrossThreadPersistent<T>> {};
+
+template <typename T>
+struct VectorTraits<blink::CrossThreadWeakPersistent<T>>
+    : PersistentVectorTraitsBase<blink::CrossThreadWeakPersistent<T>> {};
 
 template <typename T, typename H>
 struct HandleHashTraits : SimpleClassHashTraits<H> {

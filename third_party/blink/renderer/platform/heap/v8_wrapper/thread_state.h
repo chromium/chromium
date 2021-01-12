@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
+#include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -74,6 +75,15 @@ class ThreadState final {
     // TODO(1056170): Refer to cpp_heap_ once getter for v8::Isolate is
     // implemented.
     return nullptr;
+  }
+
+  // Forced garbage collection for testing:
+  //
+  // Collects garbage as long as live memory decreases (capped at 5).
+  void CollectAllGarbageForTesting(
+      BlinkGC::StackState stack_state =
+          BlinkGC::StackState::kNoHeapPointersOnStack) {
+    // TODO(1056170): Implement.
   }
 
  private:

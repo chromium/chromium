@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 #if BUILDFLAG(USE_V8_OILPAN)
-// TODO(1056170): Add wrapper version.
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/heap_allocator_impl.h"
 #else  // !USE_V8_OILPAN
 #include "third_party/blink/renderer/platform/heap/impl/heap_allocator_impl.h"
 #endif  // !USE_V8_OILPAN
