@@ -21,7 +21,10 @@ constexpr char kBaseDataDir[] = "chrome/test/data/federated_learning";
 
 class FlocOriginTrialBrowserTest : public InProcessBrowserTest {
  public:
-  FlocOriginTrialBrowserTest() = default;
+  FlocOriginTrialBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kInterestCohortAPIOriginTrial);
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -71,6 +74,9 @@ class FlocOriginTrialBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
@@ -84,6 +90,25 @@ IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTest, OriginTrialEnabled) {
 IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTest, OriginTrialDisabled) {
   ui_test_utils::NavigateToURL(browser(), OriginTrialDisabledURL());
 
+  EXPECT_FALSE(HasInterestCohortApi(web_contents()));
+}
+
+class FlocOriginTrialBrowserTestBaseFeatureDisabled
+    : public FlocOriginTrialBrowserTest {
+ public:
+  FlocOriginTrialBrowserTestBaseFeatureDisabled() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kInterestCohortAPIOriginTrial);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTestBaseFeatureDisabled,
+                       OriginTrialEnabled) {
+  ui_test_utils::NavigateToURL(browser(), OriginTrialEnabledURL());
+
+  // If the base::Feature is disabled, the OT / API is disabled regardless of
+  // the OT config.
   EXPECT_FALSE(HasInterestCohortApi(web_contents()));
 }
 

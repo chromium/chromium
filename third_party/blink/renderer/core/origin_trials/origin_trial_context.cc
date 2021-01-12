@@ -384,7 +384,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
       !base::FeatureList::IsEnabled(network::features::kTrustTokens)) {
     return false;
   }
-
+  if (trial_name == "InterestCohortAPI" &&
+      !base::FeatureList::IsEnabled(features::kInterestCohortAPIOriginTrial)) {
+    return false;
+  }
   return true;
 }
 

@@ -769,6 +769,11 @@
     "args": [ "--enable-features=BackForwardCacheABExperimentControl" ]
   },
   {
+    "prefix": "interest-cohort-api-origin-trial",
+    "bases": [ "http/tests/origin_trials/webexposed/interest-cohort-origin-trial-interfaces.html" ],
+    "args": [ "--enable-features=InterestCohortAPIOriginTrial" ]
+  },
+  {
     "prefix": "threaded-composited-iframes",
     "bases": ["external/wpt/is-input-pending"],
     "args": ["--enable-threaded-compositing",
