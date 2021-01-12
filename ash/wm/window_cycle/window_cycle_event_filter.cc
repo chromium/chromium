@@ -7,11 +7,15 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/display/screen_ash.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "base/bind.h"
+#include "components/prefs/pref_service.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -19,6 +23,21 @@ namespace ash {
 // The distance a user has to move their mouse from |initial_mouse_location_|
 // before this stops filtering mouse events.
 constexpr int kMouseMovementThreshold = 5;
+
+// Is the reverse scrolling for touchpad on.
+bool IsNaturalScrollOn() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
+         pref->GetBoolean(prefs::kNaturalScroll);
+}
+
+// Is reverse scrolling for mouse wheel on.
+bool IsReverseScrollOn() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref->GetBoolean(prefs::kMouseReverseScroll);
+}
 
 WindowCycleEventFilter::WindowCycleEventFilter()
     : initial_mouse_location_(
@@ -117,6 +136,87 @@ void WindowCycleEventFilter::SetHasUserUsedMouse(ui::MouseEvent* event) {
   }
 }
 
+void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
+  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+  if (event->type() == ui::ET_MOUSE_PRESSED &&
+      !window_cycle_controller->IsEventInCycleView(event)) {
+    // Close the window cycle list if a user clicks outside of it.
+    window_cycle_controller->CancelCycling();
+    return;
+  }
+
+  if (event->IsMouseWheelEvent()) {
+    if (!scroll_data_)
+      scroll_data_ = ScrollData();
+    const ui::MouseWheelEvent* wheel_event = event->AsMouseWheelEvent();
+    const float y_offset = wheel_event->y_offset();
+    // Convert mouse wheel events into three-finger scrolls for window cycle
+    // list and also swap y offset with x offset.
+    if (ProcessEventImpl(/*finger_count=*/3,
+                         IsReverseScrollOn() ? y_offset : -y_offset,
+                         wheel_event->x_offset())) {
+      event->SetHandled();
+      event->StopPropagation();
+    }
+  }
+}
+
+bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,
+                                              float delta_x,
+                                              float delta_y) {
+  if (!scroll_data_ || !features::IsInteractiveWindowCycleListEnabled())
+    return false;
+
+  if (finger_count != 2 && finger_count != 3) {
+    scroll_data_.reset();
+    return false;
+  }
+
+  if (scroll_data_->finger_count != 0 &&
+      scroll_data_->finger_count != finger_count) {
+    scroll_data_.reset();
+    return false;
+  }
+
+  if (finger_count == 2 && !IsNaturalScrollOn()) {
+    // Two finger swipe from left to right should move the list right regardless
+    // of natural scroll settings.
+    delta_x = -delta_x;
+  }
+
+  scroll_data_->scroll_x += delta_x;
+  scroll_data_->scroll_y += delta_y;
+
+  const bool moved = CycleWindowCycleList(finger_count, scroll_data_->scroll_x,
+                                          scroll_data_->scroll_y);
+
+  if (moved)
+    scroll_data_ = ScrollData();
+  scroll_data_->finger_count = finger_count;
+  return moved;
+}
+
+bool WindowCycleEventFilter::CycleWindowCycleList(int finger_count,
+                                                  float scroll_x,
+                                                  float scroll_y) {
+  if (!features::IsInteractiveWindowCycleListEnabled() ||
+      (finger_count != 2 && finger_count != 3)) {
+    return false;
+  }
+
+  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+  if (!window_cycle_controller->IsCycling() ||
+      std::fabs(scroll_x) < std::fabs(scroll_y) ||
+      std::fabs(scroll_x) < kHorizontalThresholdDp) {
+    return false;
+  }
+
+  window_cycle_controller->HandleCycleWindow(
+      scroll_x > 0 ? WindowCycleController::FORWARD
+                   : WindowCycleController::BACKWARD);
+  return true;
+}
+
 WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
     ui::KeyEvent* event) const {
   DCHECK(IsTriggerKey(event));
@@ -134,19 +234,17 @@ void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   if (!has_user_used_mouse_)
     SetHasUserUsedMouse(event);
 
-  if (features::IsInteractiveWindowCycleListEnabled()) {
+  if (features::IsInteractiveWindowCycleListEnabled() && has_user_used_mouse_) {
     WindowCycleController* window_cycle_controller =
         Shell::Get()->window_cycle_controller();
     const bool cycle_list_is_visible =
         window_cycle_controller->IsWindowListVisible();
-    const bool event_should_not_be_filtered =
-        has_user_used_mouse_ &&
-        window_cycle_controller->IsEventInCycleView(event);
-    if (event_should_not_be_filtered || !cycle_list_is_visible) {
+    if (cycle_list_is_visible)
+      ProcessMouseEvent(event);
+
+    if (window_cycle_controller->IsEventInCycleView(event) ||
+        !cycle_list_is_visible) {
       return;
-    } else if (event->type() == ui::ET_MOUSE_PRESSED && cycle_list_is_visible) {
-      // Close the window cycle list if a user clicks outside of it.
-      window_cycle_controller->CancelCycling();
     }
   }
 
@@ -155,6 +253,28 @@ void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   // <crbug.com/660945>.
   if (event->type() != ui::ET_MOUSE_DRAGGED &&
       event->type() != ui::ET_MOUSE_RELEASED) {
+    event->StopPropagation();
+  }
+}
+
+void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
+  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
+  if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+    scroll_data_ = ScrollData();
+    return;
+  }
+
+  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
+  if (event->type() == ui::ET_SCROLL_FLING_START) {
+    scroll_data_.reset();
+    return;
+  }
+
+  DCHECK_EQ(ui::ET_SCROLL, event->type());
+
+  if (ProcessEventImpl(event->finger_count(), event->x_offset(),
+                       event->y_offset())) {
+    event->SetHandled();
     event->StopPropagation();
   }
 }

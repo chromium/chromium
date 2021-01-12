@@ -13,6 +13,7 @@
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -26,13 +27,18 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_cycle/window_cycle_event_filter.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
@@ -51,6 +57,9 @@
 namespace ash {
 
 namespace {
+
+constexpr int kNumFingersForMouseWheel = 2;
+constexpr int kNumFingersForTrackpad = 3;
 
 class EventCounter : public ui::EventHandler {
  public:
@@ -82,6 +91,37 @@ class EventCounter : public ui::EventHandler {
 
 bool IsWindowMinimized(aura::Window* window) {
   return WindowState::Get(window)->IsMinimized();
+}
+
+bool InOverviewSession() {
+  return Shell::Get()->overview_controller()->InOverviewSession();
+}
+
+const aura::Window* GetHighlightedWindow() {
+  return InOverviewSession() ? GetOverviewHighlightedWindow() : nullptr;
+}
+
+bool IsNaturalScrollOn() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
+         pref->GetBoolean(prefs::kNaturalScroll);
+}
+
+int GetOffsetX(int offset) {
+  // The handler code uses the new directions which is the reverse of the old
+  // handler code. Reverse the offset if the ReverseScrollGestures feature is
+  // disabled so that the unit tests test the old behavior.
+  return features::IsReverseScrollGesturesEnabled() ? offset : -offset;
+}
+
+int GetOffsetY(int offset) {
+  // The handler code uses the new directions which is the reverse of the old
+  // handler code. Reverse the offset if the ReverseScrollGestures feature is
+  // disabled so that the unit tests test the old behavior.
+  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+    return -offset;
+  return offset;
 }
 
 }  // namespace
@@ -906,6 +946,75 @@ TEST_F(WindowCycleControllerTest, CycleShowsAllDesksWindows) {
   }
 }
 
+// Tests that frame throttling starts and ends accordingly when window cycling
+// starts and ends.
+TEST_F(WindowCycleControllerTest, FrameThrottling) {
+  MockFrameThrottlingObserver observer;
+  FrameThrottlingController* frame_throttling_controller =
+      Shell::Get()->frame_throttling_controller();
+  uint8_t throttled_fps = frame_throttling_controller->throttled_fps();
+  frame_throttling_controller->AddObserver(&observer);
+  const int window_count = 5;
+  std::unique_ptr<aura::Window> created_windows[window_count];
+  std::vector<aura::Window*> windows(window_count, nullptr);
+  for (int i = 0; i < window_count; ++i) {
+    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
+    windows[i] = created_windows[i].get();
+  }
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps));
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps))
+      .Times(0);
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_CALL(observer, OnThrottlingEnded());
+  controller->CompleteCycling();
+
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps));
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_CALL(observer, OnThrottlingEnded());
+  controller->CancelCycling();
+  frame_throttling_controller->RemoveObserver(&observer);
+}
+
+// Tests that pressing Alt+Tab while there is an on-going desk animation
+// prevents a new window cycle from starting.
+TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  auto win0 = CreateAppWindow(gfx::Rect(250, 100));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_0 = desks_controller->desks()[0].get();
+  const Desk* desk_1 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_1);
+  EXPECT_EQ(desk_1, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(300, 200));
+  ASSERT_EQ(win1.get(), window_util::GetActiveWindow());
+  auto desk_1_windows = desk_1->windows();
+  EXPECT_EQ(1u, desk_1_windows.size());
+  EXPECT_TRUE(base::Contains(desk_1_windows, win1.get()));
+
+  DeskSwitchAnimationWaiter waiter;
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  cycle_controller->CompleteCycling();
+  EXPECT_FALSE(cycle_controller->CanCycle());
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_FALSE(cycle_controller->IsCycling());
+  waiter.Wait();
+  EXPECT_EQ(desk_0, desks_controller->active_desk());
+  EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+}
+
 class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
  public:
   LimitedWindowCycleControllerTest() = default;
@@ -1002,6 +1111,18 @@ class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kInteractiveWindowCycleList);
     WindowCycleControllerTest::SetUp();
+  }
+
+  void Scroll(float x_offset, float y_offset, int fingers) {
+    GetEventGenerator()->ScrollSequence(
+        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
+        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
+  }
+
+  void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
+    auto* generator = GetEventGenerator();
+    for (int i = 0; i < num_of_times; i++)
+      generator->MoveMouseWheel(delta_x, delta_y);
   }
 
  private:
@@ -1284,73 +1405,302 @@ TEST_F(InteractiveWindowCycleControllerTest,
   EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
 }
 
-// Tests that frame throttling starts and ends accordingly when window cycling
-// starts and ends.
-TEST_F(WindowCycleControllerTest, FrameThrottling) {
-  MockFrameThrottlingObserver observer;
-  FrameThrottlingController* frame_throttling_controller =
-      Shell::Get()->frame_throttling_controller();
-  uint8_t throttled_fps = frame_throttling_controller->throttled_fps();
-  frame_throttling_controller->AddObserver(&observer);
-  const int window_count = 5;
-  std::unique_ptr<aura::Window> created_windows[window_count];
-  std::vector<aura::Window*> windows(window_count, nullptr);
-  for (int i = 0; i < window_count; ++i) {
-    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
-    windows[i] = created_windows[i].get();
-  }
+// Tests three finger horizontal scroll gesture to move selection left or right.
+TEST_F(InteractiveWindowCycleControllerTest,
+       ThreeFingerHorizontalScrollInWindowCycleList) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
 
-  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-  EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
-                                  throttled_fps));
-  controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
-                                  throttled_fps))
-      .Times(0);
-  controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_CALL(observer, OnThrottlingEnded());
-  controller->CompleteCycling();
+  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
+                                                            float y_offset) {
+    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+    controller->StartCycling();
+    Scroll(GetOffsetX(x_offset), GetOffsetY(y_offset), kNumFingersForTrackpad);
+    controller->CompleteCycling();
+  };
 
-  EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
-                                  throttled_fps));
-  controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_CALL(observer, OnThrottlingEnded());
-  controller->CancelCycling();
-  frame_throttling_controller->RemoveObserver(&observer);
+  // Start cycle, simulating alt key being held down. Scroll right to fourth
+  // item.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll * 3, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Start cycle. Scroll left to third item.
+  // Current order is [2,5,4,3,1].
+  scroll_until_window_highlighted_and_confirm(-horizontal_scroll * 3, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle. Scroll right to second item.
+  // Current order is [4,2,5,3,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Open an overview session and window cycle list. Scroll right to second
+  // item. Scroll should only go to the window cycle list.
+  // Current order is [2,4,5,3,1].
+  Shell::Get()->overview_controller()->StartOverview();
+  EXPECT_TRUE(InOverviewSession());
+
+  Shell::Get()->window_cycle_controller()->StartCycling();
+  Scroll(GetOffsetX(horizontal_scroll), 0, kNumFingersForTrackpad);
+  EXPECT_EQ(nullptr, GetHighlightedWindow());
+
+  Shell::Get()->window_cycle_controller()->CompleteCycling();
+  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
 }
 
-// Tests that pressing Alt+Tab while there is an on-going desk animation
-// prevents a new window cycle from starting.
-TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
-  WindowCycleController* cycle_controller =
-      Shell::Get()->window_cycle_controller();
+// Tests two finger horizontal scroll gesture to move selection left or right.
+TEST_F(InteractiveWindowCycleControllerTest,
+       TwoFingerHorizontalScrollInWindowCycleList) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
 
-  auto win0 = CreateAppWindow(gfx::Rect(250, 100));
-  auto* desks_controller = DesksController::Get();
-  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_0 = desks_controller->desks()[0].get();
-  const Desk* desk_1 = desks_controller->desks()[1].get();
-  ActivateDesk(desk_1);
-  EXPECT_EQ(desk_1, desks_controller->active_desk());
-  auto win1 = CreateAppWindow(gfx::Rect(300, 200));
-  ASSERT_EQ(win1.get(), window_util::GetActiveWindow());
-  auto desk_1_windows = desk_1->windows();
-  EXPECT_EQ(1u, desk_1_windows.size());
-  EXPECT_TRUE(base::Contains(desk_1_windows, win1.get()));
+  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
+                                                            float y_offset) {
+    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+    controller->StartCycling();
+    // Since two finger swipes are negated, negate in tests to mimic how this
+    // actually behaves on devices.
+    Scroll(GetOffsetX(-x_offset), GetOffsetY(y_offset),
+           kNumFingersForMouseWheel);
+    controller->CompleteCycling();
+  };
 
-  DeskSwitchAnimationWaiter waiter;
-  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  cycle_controller->CompleteCycling();
-  EXPECT_FALSE(cycle_controller->CanCycle());
-  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_FALSE(cycle_controller->IsCycling());
-  waiter.Wait();
-  EXPECT_EQ(desk_0, desks_controller->active_desk());
-  EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+  // Start cycle, simulating alt key being held down. Scroll right to fourth
+  // item.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll * 3, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Start cycle. Scroll left to third item.
+  // Current order is [2,5,4,3,1].
+  scroll_until_window_highlighted_and_confirm(-horizontal_scroll * 3, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle. Scroll right to second item.
+  // Current order is [4,2,5,3,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests mouse wheel scroll gesture to move selection left or right.
+TEST_F(InteractiveWindowCycleControllerTest,
+       MouseWheelScrollInWindowCycleList) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
+
+  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
+                                                            float y_offset,
+                                                            int num_of_times) {
+    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+    controller->StartCycling();
+    MouseWheelScroll(x_offset, y_offset, num_of_times);
+    controller->CompleteCycling();
+  };
+
+  // Start cycle, simulating alt key being held down. Scroll right to fourth
+  // item.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 3);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Start cycle. Scroll left to third item.
+  // Current order is [2,5,4,3,1].
+  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 3);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle. Scroll right to second item.
+  // Current order is [4,2,5,3,1].
+  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 1);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests that swiping up closes window cycle if it's open and starts overview
+// mode.
+TEST_F(InteractiveWindowCycleControllerTest, VerticalScroll) {
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  const float vertical_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
+  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+
+  // Start cycling and then swipe up to open up overview.
+  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  Scroll(0, vertical_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  EXPECT_FALSE(window_cycle_controller->IsCycling());
+
+  // Start cycling and then swipe down.
+  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  Scroll(0, -vertical_scroll, 3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+
+  // Swipe diagonally with horizontal bias.
+  Scroll(horizontal_scroll * 3, vertical_scroll, 3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  EXPECT_FALSE(InOverviewSession());
+
+  // Swipe diagonally with vertical bias.
+  Scroll(horizontal_scroll, vertical_scroll, 3);
+  EXPECT_FALSE(window_cycle_controller->IsCycling());
+  EXPECT_TRUE(InOverviewSession());
+}
+
+class ReverseGestureWindowCycleControllerTest
+    : public InteractiveWindowCycleControllerTest {
+ public:
+  ReverseGestureWindowCycleControllerTest() = default;
+  ReverseGestureWindowCycleControllerTest(
+      const ReverseGestureWindowCycleControllerTest&) = delete;
+  ReverseGestureWindowCycleControllerTest& operator=(
+      const ReverseGestureWindowCycleControllerTest&) = delete;
+  ~ReverseGestureWindowCycleControllerTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kReverseScrollGestures);
+    AshTestBase::SetUp();
+
+    // Set natural scroll on.
+    PrefService* pref =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    pref->SetBoolean(prefs::kTouchpadEnabled, true);
+    pref->SetBoolean(prefs::kNaturalScroll, true);
+    pref->SetBoolean(prefs::kMouseReverseScroll, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests mouse wheel scroll gesture to move selection left or right. Mouse
+// reverse scroll should reverse its direction.
+TEST_F(ReverseGestureWindowCycleControllerTest,
+       MouseWheelScrollInWindowCycleList) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
+
+  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
+                                                            float y_offset,
+                                                            int num_of_times) {
+    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+    controller->StartCycling();
+    MouseWheelScroll(x_offset, y_offset, num_of_times);
+    controller->CompleteCycling();
+  };
+
+  // Start cycle, simulating alt key being held down. Scroll right to fourth
+  // item.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 3);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Start cycle. Scroll left to third item.
+  // Current order is [2,5,4,3,1].
+  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 3);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle. Scroll right to second item.
+  // Current order is [4,2,5,3,1].
+  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 1);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Turn mouse reverse scroll off.
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref->SetBoolean(prefs::kMouseReverseScroll, false);
+
+  // Start cycle. Scroll left once.
+  // Current order is [2,4,5,3,1].
+  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 1);
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  // Start cycle. Scroll right once.
+  // Current order is [1,2,4,5,3].
+  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 1);
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests that natural scroll doesn't affect two and three finger horizontal
+// scroll gestures for cycling window cycle list.
+TEST_F(ReverseGestureWindowCycleControllerTest,
+       WindowCycleListTrackpadGestures) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  const float horizontal_scroll =
+      WindowCycleEventFilter::kHorizontalThresholdDp;
+
+  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
+                                                            float y_offset,
+                                                            int num_fingers) {
+    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+    controller->StartCycling();
+    Scroll(x_offset, y_offset, num_fingers);
+    controller->CompleteCycling();
+  };
+
+  // Start cycle, scroll right with two finger gesture.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
+                                              kNumFingersForMouseWheel);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle, scroll right with three finger gesture.
+  // Current order is [4,5,3,2,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
+                                              kNumFingersForTrackpad);
+  EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
+
+  // Turn natural scroll off.
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref->SetBoolean(prefs::kNaturalScroll, false);
+
+  // Start cycle, scroll right with two finger gesture. Note: two figner swipes
+  // are negated, so negate in tests to mimic how this actually behaves on
+  // devices.
+  // Current order is [5,4,3,2,1].
+  scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
+                                              kNumFingersForMouseWheel);
+  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+
+  // Start cycle, scroll right with three finger gesture.
+  // Current order is [4,5,3,2,1].
+  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
+                                              kNumFingersForTrackpad);
+  EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
 }
 
 class ModeSelectionWindowCycleControllerTest

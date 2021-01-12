@@ -53,13 +53,6 @@ bool IsNaturalScrollOn() {
          pref->GetBoolean(prefs::kNaturalScroll);
 }
 
-// Is reverse scrolling for mouse wheel on.
-bool IsReverseScrollOn() {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return pref->GetBoolean(prefs::kMouseReverseScroll);
-}
-
 // Reverse an offset when the reverse scrolling is on.
 float GetOffset(float offset) {
   // The handler code uses the new directions which is the reverse of the old
@@ -204,24 +197,6 @@ WmGestureHandler::WmGestureHandler()
 
 WmGestureHandler::~WmGestureHandler() = default;
 
-bool WmGestureHandler::ProcessWheelEvent(const ui::MouseEvent& event) {
-  if (event.IsMouseWheelEvent() &&
-      Shell::Get()->window_cycle_controller()->IsCycling()) {
-    if (!scroll_data_)
-      scroll_data_ = ScrollData();
-
-    // Convert mouse wheel events into three-finger scrolls for window cycle
-    // list and also swap y offset with x offset.
-    return ProcessEventImpl(
-        /*finger_count=*/3,
-        IsReverseScrollOn() ? event.AsMouseWheelEvent()->y_offset()
-                            : -event.AsMouseWheelEvent()->y_offset(),
-        event.AsMouseWheelEvent()->x_offset());
-  }
-
-  return false;
-}
-
 bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
   // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
   if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
@@ -248,8 +223,8 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
   if (!scroll_data_)
     return false;
 
-  // Only two, three or four finger scrolls are supported.
-  if (finger_count != 2 && finger_count != 3 && finger_count != 4) {
+  // Only three or four finger scrolls are supported.
+  if (finger_count != 3 && finger_count != 4) {
     scroll_data_.reset();
     return false;
   }
@@ -261,21 +236,12 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
     return false;
   }
 
-  if (finger_count == 2 && !IsNaturalScrollOn()) {
-    // Two finger swipe from left to right should move the list right regardless
-    // of natural scroll settings.
-    delta_x = -delta_x;
-  }
-
   scroll_data_->scroll_x += delta_x;
   scroll_data_->scroll_y += delta_y;
 
-  // If the requirements to cycle the window cycle list or  move the overview
-  // selector are met, reset |scroll_data_|. If both are open, cycle the window
-  // cycle list.
-  const bool moved = CycleWindowCycleList(finger_count, scroll_data_->scroll_x,
-                                          scroll_data_->scroll_y) ||
-                     MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
+  // If the requirements to move the overview selector are met, reset
+  // |scroll_data_|.
+  const bool moved = MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
                                            scroll_data_->scroll_y);
 
   if (is_enhanced_desk_animations_ && finger_count == 4) {
@@ -355,25 +321,6 @@ bool WmGestureHandler::MoveOverviewSelection(int finger_count,
     return false;
 
   overview_controller->IncrementSelection(/*forward=*/scroll_x > 0);
-  return true;
-}
-
-bool WmGestureHandler::CycleWindowCycleList(int finger_count,
-                                            float scroll_x,
-                                            float scroll_y) {
-  if (!features::IsInteractiveWindowCycleListEnabled() ||
-      (finger_count != 2 && finger_count != 3)) {
-    return false;
-  }
-
-  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
-  const bool is_cycling = window_cycle_controller->IsCycling();
-  if (!ShouldHorizontallyScroll(is_cycling, scroll_x, scroll_y))
-    return false;
-
-  window_cycle_controller->HandleCycleWindow(
-      scroll_x > 0 ? WindowCycleController::FORWARD
-                   : WindowCycleController::BACKWARD);
   return true;
 }
 
