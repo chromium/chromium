@@ -46,8 +46,7 @@ SessionMetricsRecorder::SessionMetricsRecorder()
       last_channel_layout_(CHANNEL_LAYOUT_NONE),
       last_sample_rate_(0),
       last_video_codec_(kUnknownVideoCodec),
-      last_video_profile_(VIDEO_CODEC_PROFILE_UNKNOWN),
-      remote_playback_is_disabled_(false) {}
+      last_video_profile_(VIDEO_CODEC_PROFILE_UNKNOWN) {}
 
 SessionMetricsRecorder::~SessionMetricsRecorder() = default;
 
@@ -171,6 +170,21 @@ void SessionMetricsRecorder::OnRemotePlaybackDisabled(bool disabled) {
   remote_playback_is_disabled_ = disabled;
 }
 
+void SessionMetricsRecorder::RecordVideoPixelRateSupport(
+    PixelRateSupport support) {
+  if (did_record_pixel_rate_support_) {
+    return;
+  }
+  did_record_pixel_rate_support_ = true;
+  base::UmaHistogramEnumeration("Media.Remoting.VideoPixelRateSupport",
+                                support);
+}
+
+void SessionMetricsRecorder::RecordCompatibility(
+    RemotingCompatibility compatibility) {
+  base::UmaHistogramEnumeration("Media.Remoting.Compatibility", compatibility);
+}
+
 void SessionMetricsRecorder::RecordAudioConfiguration() {
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.AudioCodec", last_audio_codec_,
                             kAudioCodecMax + 1);
@@ -219,7 +233,7 @@ void SessionMetricsRecorder::RecordTrackConfiguration() {
 }
 
 RendererMetricsRecorder::RendererMetricsRecorder()
-    : start_time_(base::TimeTicks::Now()), did_record_first_playout_(false) {}
+    : start_time_(base::TimeTicks::Now()) {}
 
 RendererMetricsRecorder::~RendererMetricsRecorder() = default;
 

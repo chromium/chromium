@@ -64109,6 +64109,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="User refused to terminate process"/>
 </enum>
 
+<enum name="RemotingCompatibility">
+  <int value="0" label="Compatible"/>
+  <int value="1" label="Incompatible, no audio nor video"/>
+  <int value="2" label="Incompatible, encrypted video"/>
+  <int value="3" label="Incompatible video codec"/>
+  <int value="4" label="Incompatible, encrypted audio"/>
+  <int value="5" label="Incompatible audio codec"/>
+  <int value="6" label="Incompatible, disabled by page"/>
+  <int value="7" label="Incompatible, duration below threshold"/>
+</enum>
+
 <enum name="RemotingStartTrigger">
   <int value="0" label="Unknown start trigger"/>
   <int value="1" label="Entered fullscreen"/>
@@ -64149,6 +64160,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Audio only"/>
   <int value="2" label="Video only"/>
   <int value="3" label="Audio and video"/>
+</enum>
+
+<enum name="RemotingVideoPixelRateSupport">
+  <int value="0"
+      label="Supported; pixels-per-second is equivalent to at most 1080p
+             30fps"/>
+  <int value="1"
+      label="Supported; equivalent to more than 1080p 30fps and at most 2160p
+             30fps"/>
+  <int value="2"
+      label="Not supported; equivalent to more than 1080p 30fps and at most
+             2160p 30fps"/>
+  <int value="3" label="Not supported; equivalent to more than 2160p 30fps"/>
 </enum>
 
 <enum name="RemoveCompromisedCredentialsReason">

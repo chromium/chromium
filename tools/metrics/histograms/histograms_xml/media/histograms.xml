@@ -2993,6 +2993,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
+    expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Whether the given media is compatible with media remoting. Recorded whenever
+    the conditions are met to start remoting (e.g. the media element is the
+    dominant page content and is not paused).
+  </summary>
+</histogram>
+
 <histogram name="Media.Remoting.SessionDuration" units="ms"
     expires_after="2021-07-01">
   <owner>miu@chromium.org</owner>
@@ -3099,6 +3110,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video width while remoting content.</summary>
+</histogram>
+
+<histogram name="Media.Remoting.VideoPixelRateSupport"
+    enum="RemotingVideoPixelRateSupport" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Pixels-per-second in a video and whether the receiver supports its playback.
+    Recorded whenever we are about to start media remoting a video.
+  </summary>
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.AverageQueueLengthX10"

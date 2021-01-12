@@ -125,6 +125,7 @@ source_set("media_remoting_tests") {
       "fake_media_resource.cc",
       "fake_media_resource.h",
       "integration_test.cc",
+      "metrics_unittest.cc",
       "proto_utils_unittest.cc",
       "rpc_broker_unittest.cc",
     ]

@@ -117,11 +117,14 @@ class RendererController final : public mojom::RemotingSource,
   bool IsAudioCodecSupported() const;
   bool IsAudioOrVideoSupported() const;
 
-  // Returns true if all of the technical requirements for the media pipeline
-  // and remote rendering are being met. This does not include environmental
-  // conditions, such as the content being dominant in the viewport, available
-  // network bandwidth, etc.
-  bool CanBeRemoting() const;
+  // Returns |kCompatible| if all of the technical requirements for the media
+  // pipeline and remote rendering are being met, and the first detected
+  // reason if incompatible. This does not include environmental conditions,
+  // such as the content being dominant in the viewport, available network
+  // bandwidth, etc.
+  RemotingCompatibility GetVideoCompatibility() const;
+  RemotingCompatibility GetAudioCompatibility() const;
+  RemotingCompatibility GetCompatibility() const;
 
   // Determines whether to enter or leave Remoting mode and switches if
   // necessary. Each call to this method could cause a remoting session to be
@@ -145,6 +148,10 @@ class RendererController final : public mojom::RemotingSource,
   void OnDelayedStartTimerFired(StartTrigger start_trigger,
                                 unsigned decoded_frame_count_before_delay,
                                 base::TimeTicks delayed_start_time);
+
+  // Records in a histogram and returns whether the receiver supports the given
+  // pixel rate.
+  bool RecordPixelRateSupport(double pixels_per_second);
 
   // Queries on remoting sink capabilities.
   bool HasVideoCapability(mojom::RemotingSinkVideoCapability capability) const;
