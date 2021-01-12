@@ -206,7 +206,7 @@ void GetAndroidId(
 std::string AppIdToArcPackageName(const std::string& app_id, Profile* profile);
 
 // Returns the AppID for the specified package_name, which must be the package
-// name of an ARC app.
+// name of an ARC app or an empty string if name not found.
 std::string ArcPackageNameToAppId(const std::string& package_name,
                                   Profile* profile);
 

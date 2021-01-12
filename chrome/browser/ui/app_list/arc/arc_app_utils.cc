@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
@@ -705,8 +706,10 @@ std::string AppIdToArcPackageName(const std::string& app_id, Profile* profile) {
 
 std::string ArcPackageNameToAppId(const std::string& package_name,
                                   Profile* profile) {
+  DCHECK(profile);
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
-  return arc_prefs->GetAppIdByPackageName(package_name);
+  return arc_prefs ? arc_prefs->GetAppIdByPackageName(package_name)
+                   : std::string();
 }
 
 void AddAppLaunchObserver(content::BrowserContext* context,
