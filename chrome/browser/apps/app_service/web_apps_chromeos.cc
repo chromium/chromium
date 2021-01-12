@@ -70,7 +70,7 @@ std::string GetDesktopPWAsAttentionBadgingFlag() {
     return cmdline->GetSwitchValueASCII(
         switches::kDesktopPWAsAttentionBadgingCrOS);
   }
-  return "";
+  return switches::kDesktopPWAsAttentionBadgingCrOSApiOnly;
 }
 
 }  // namespace
@@ -556,9 +556,8 @@ apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
     // Show a badge only if a notification is showing.
     return has_notification;
   } else {
-    // When the flag is not set or set to "api-and-notifications" we show a
-    // badge if either a notification is showing or the Web Badging API has a
-    // badge set.
+    // When the flag is set to "api-and-notifications" we show a badge if either
+    // a notification is showing or the Web Badging API has a badge set.
     return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
                ? apps::mojom::OptionalBool::kTrue
                : has_notification;
