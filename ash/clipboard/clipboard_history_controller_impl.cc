@@ -70,19 +70,6 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   return false;
 }
 
-void SendSyntheticKeyEvent(ui::KeyboardCode key_code, int flags) {
-  ui::KeyEvent key_pressed(/*type=*/ui::ET_KEY_PRESSED, key_code,
-                           /*code=*/static_cast<ui::DomCode>(0), flags);
-  auto* host = GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
-  DCHECK(host);
-  host->DeliverEventToSink(&key_pressed);
-
-  ui::KeyEvent key_released(/*type=*/ui::ET_KEY_RELEASED, key_code,
-                            /*code=*/static_cast<ui::DomCode>(0), flags);
-  host->DeliverEventToSink(&key_released);
-}
-
 }  // namespace
 
 // ClipboardHistoryControllerImpl::AcceleratorTarget ---------------------------
@@ -496,7 +483,28 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     original_data = clipboard->WriteClipboardData(std::move(temp_data));
   }
 
-  SendSyntheticKeyEvent(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
+                             /*code=*/static_cast<ui::DomCode>(0), /*flags=*/0);
+  auto* host = GetWindowTreeHostForDisplay(
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+  DCHECK(host);
+  host->DeliverEventToSink(&control_press);
+
+  ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
+                       /*code=*/static_cast<ui::DomCode>(0),
+                       /*flags=*/ui::EF_CONTROL_DOWN);
+
+  host->DeliverEventToSink(&v_press);
+
+  ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
+                         /*code=*/static_cast<ui::DomCode>(0),
+                         /*flags=*/ui::EF_CONTROL_DOWN);
+  host->DeliverEventToSink(&v_release);
+
+  ui::KeyEvent control_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+                               /*code=*/static_cast<ui::DomCode>(0),
+                               /*flags=*/0);
+  host->DeliverEventToSink(&control_release);
 
   for (auto& observer : observers_)
     observer.OnClipboardHistoryPasted();
