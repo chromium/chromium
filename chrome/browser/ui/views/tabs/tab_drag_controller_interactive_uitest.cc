@@ -951,8 +951,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabs joining the same group as the tab in the second position. Then dragging
 // the tabs over two to the right will result in the tabs joining the same group
 // as the last tab.
+// Flaky on windows. http://crbug.com/1164561
+#if defined(OS_WIN)
+#define MAYBE_DragMultipleTabsRightIntoGroup \
+  DISABLED_DragMultipleTabsRightIntoGroup
+#else
+#define MAYBE_DragMultipleTabsRightIntoGroup DragMultipleTabsRightIntoGroup
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragMultipleTabsRightIntoGroup) {
+                       MAYBE_DragMultipleTabsRightIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   TabGroupModel* group_model = model->group_model();
@@ -2052,7 +2059,8 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
+// Flaky. http://crbug.com/1128774
+#if defined(OS_MAC) || defined(OS_WIN)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
