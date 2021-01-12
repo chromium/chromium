@@ -3026,6 +3026,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
     return;
 
   auto params = mojom::blink::DownloadURLParams::New();
+  params->is_context_menu_save = true;
   params->data_url_blob = DataURLToBlob(url);
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
 }

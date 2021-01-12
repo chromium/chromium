@@ -113,6 +113,9 @@ struct DownloadURLParams {
 
   // Non-null when |url| is for "data:", eg. when saving an image.
   pending_remote<Blob>? data_url_blob;
+
+  // Whether the download is from context menu.
+  bool is_context_menu_save = false;
 };
 
 // Actions browser can ask renderer to perform on a Plugin.

@@ -3874,10 +3874,10 @@ void RenderFrameHostImpl::DownloadURL(
       new download::DownloadUrlParameters(blink_parameters->url,
                                           GetProcess()->GetID(),
                                           GetRoutingID(), traffic_annotation));
-  parameters->set_content_initiated(true);
+  parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
   parameters->set_suggested_name(
       blink_parameters->suggested_name.value_or(base::string16()));
-  parameters->set_prompt(false);
+  parameters->set_prompt(blink_parameters->is_context_menu_save);
   parameters->set_cross_origin_redirects(
       blink_parameters->cross_origin_redirects);
   parameters->set_referrer(
