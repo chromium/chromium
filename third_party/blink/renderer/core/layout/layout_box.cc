@@ -1989,7 +1989,8 @@ MinMaxSizes LayoutBox::PreferredLogicalWidths() const {
 
 MinMaxSizes LayoutBox::IntrinsicLogicalWidths(MinMaxSizesType type) const {
   NOT_DESTROYED();
-  if (type == MinMaxSizesType::kContent && !StyleRef().AspectRatio().IsAuto()) {
+  if (!ShouldComputeSizeAsReplaced() && type == MinMaxSizesType::kContent &&
+      !StyleRef().AspectRatio().IsAuto()) {
     MinMaxSizes sizes;
     if (ComputeLogicalWidthFromAspectRatio(&sizes.min_size)) {
       sizes.max_size = sizes.min_size;
