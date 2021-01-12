@@ -14,6 +14,12 @@
 namespace viz {
 namespace {
 
+// The minimum number of frames for which a frame interval preference should
+// persist before we toggle to it. This is only applied when lowering the frame
+// rate. If the new preference is higher than the current setting, it is applied
+// immediately.
+constexpr size_t kMinNumOfFramesToToggleInterval = 6;
+
 bool AreAlmostEqual(base::TimeDelta a, base::TimeDelta b) {
   if (a.is_min() || b.is_min() || a.is_max() || b.is_max())
     return a == b;
@@ -36,10 +42,9 @@ FrameRateDecider::ScopedAggregate::~ScopedAggregate() {
 FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
                                    Client* client,
                                    bool hw_support_for_multiple_refresh_rates,
-                                   bool supports_set_frame_rate,
-                                   size_t num_of_frames_to_toggle_interval)
+                                   bool supports_set_frame_rate)
     : supported_intervals_{BeginFrameArgs::DefaultInterval()},
-      min_num_of_frames_to_toggle_interval_(num_of_frames_to_toggle_interval),
+      min_num_of_frames_to_toggle_interval_(kMinNumOfFramesToToggleInterval),
       surface_manager_(surface_manager),
       client_(client),
       hw_support_for_multiple_refresh_rates_(

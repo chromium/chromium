@@ -111,8 +111,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void Initialize(DisplayClient* client,
                   SurfaceManager* surface_manager,
                   bool enable_shared_images = kEnableSharedImages,
-                  bool hw_support_for_multiple_refresh_rates = false,
-                  size_t num_of_frames_to_toggle_interval = 60);
+                  bool hw_support_for_multiple_refresh_rates = false);
 
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);

@@ -113,8 +113,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
       bool use_preferred_interval_for_video,
-      bool hw_support_for_multiple_refresh_rates,
-      size_t num_of_frames_to_toggle_interval);
+      bool hw_support_for_multiple_refresh_rates);
 
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;

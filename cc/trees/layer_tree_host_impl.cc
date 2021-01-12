@@ -2481,8 +2481,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
 
-  if (settings_.force_preferred_interval_for_video ||
-      enable_frame_rate_throttling_) {
+  if (enable_frame_rate_throttling_) {
     metadata.preferred_frame_interval = viz::BeginFrameArgs::MaxInterval();
   } else {
     metadata.preferred_frame_interval =

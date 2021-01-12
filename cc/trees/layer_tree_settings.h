@@ -196,11 +196,6 @@ class CC_EXPORT LayerTreeSettings {
   // When enabled, enforces new interoperable semantics for 3D transforms.
   // See crbug.com/1008483.
   bool enable_transform_interop = false;
-
-  // When enabled, the compositor specifies a frame rate preference that would
-  // allow the display to run at a low refresh rate matching the playback rate
-  // for videos updating onscreen.
-  bool force_preferred_interval_for_video = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

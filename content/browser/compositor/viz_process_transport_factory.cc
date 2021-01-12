@@ -438,8 +438,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
 
   root_params->use_preferred_interval_for_video =
       features::IsUsingPreferredIntervalForVideo();
-  root_params->num_of_frames_to_toggle_interval =
-      features::NumOfFramesToToggleInterval();
 #if defined(OS_WIN)
   root_params->set_present_duration_allowed =
       features::ShouldUseSetPresentDuration();

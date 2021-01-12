@@ -30,7 +30,6 @@ struct RootCompositorFrameSinkParams {
   // Disables begin frame rate limiting for the display compositor.
   bool disable_frame_rate_limit = false;
   bool use_preferred_interval_for_video = false;
-  uint32 num_of_frames_to_toggle_interval = 60;
 
   [EnableIf=is_android]
   float refresh_rate;

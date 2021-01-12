@@ -161,8 +161,7 @@ RootCompositorFrameSinkImpl::Create(
       std::move(synthetic_begin_frame_source),
       std::move(external_begin_frame_source), std::move(display),
       params->use_preferred_interval_for_video,
-      hw_support_for_multiple_refresh_rates,
-      params->num_of_frames_to_toggle_interval));
+      hw_support_for_multiple_refresh_rates));
 
 #if !defined(OS_APPLE)
   // On Mac vsync parameter updates come from the browser process. We don't need
@@ -397,8 +396,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
     std::unique_ptr<Display> display,
     bool use_preferred_interval_for_video,
-    bool hw_support_for_multiple_refresh_rates,
-    size_t num_of_frames_to_toggle_interval)
+    bool hw_support_for_multiple_refresh_rates)
     : compositor_frame_sink_client_(std::move(frame_sink_client)),
       compositor_frame_sink_receiver_(this, std::move(frame_sink_receiver)),
       display_client_(std::move(display_client)),
@@ -417,8 +415,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
                                                support_->frame_sink_id());
   display_->Initialize(this, support_->frame_sink_manager()->surface_manager(),
                        Display::kEnableSharedImages,
-                       hw_support_for_multiple_refresh_rates,
-                       num_of_frames_to_toggle_interval);
+                       hw_support_for_multiple_refresh_rates);
   support_->SetUpHitTest(display_.get());
   if (use_preferred_interval_for_video &&
       !hw_support_for_multiple_refresh_rates) {

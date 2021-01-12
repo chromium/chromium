@@ -2735,11 +2735,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "force-preferred-interval-for-video",
-    "owners": [ "khushalsagar" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "force-secure-payment-confirmation-dialog",
     "owners": [ "//components/payments/OWNERS" ],
     "expiry_milestone": 90
@@ -4890,11 +4885,6 @@
     "name": "use-of-hash-affiliation-fetcher",
     "owners": [ "vsemeniuk", "vasilii"],
     "expiry_milestone": 90
-  },
-  {
-    "name": "use-preferred-interval-for-video",
-    "owners": [ "jiahe.zhang@intel.com", "khushalsagar" ],
-    "expiry_milestone": 85
   },
   {
     "name": "use-search-click-for-right-click",

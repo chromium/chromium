@@ -4710,17 +4710,6 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableWebAuthenticationChromeOSAuthenticatorDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(device::kWebAuthCrosPlatformAuthenticator)},
 #endif
-
-    {"use-preferred-interval-for-video",
-     flag_descriptions::kUsePreferredIntervalForVideoName,
-     flag_descriptions::kUsePreferredIntervalForVideoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kUsePreferredIntervalForVideo)},
-
-    {"force-preferred-interval-for-video",
-     flag_descriptions::kForcePreferredIntervalForVideoName,
-     flag_descriptions::kForcePreferredIntervalForVideoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kForcePreferredIntervalForVideo)},
-
 #if BUILDFLAG(ENABLE_PDF)
     {"accessible-pdf-form", flag_descriptions::kAccessiblePDFFormName,
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,

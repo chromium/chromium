@@ -278,9 +278,6 @@ extern const char kForceColorProfileHDR10[];
 extern const char kForceColorProfileName[];
 extern const char kForceColorProfileDescription[];
 
-extern const char kForcePreferredIntervalForVideoName[];
-extern const char kForcePreferredIntervalForVideoDescription[];
-
 extern const char kDynamicColorGamutName[];
 extern const char kDynamicColorGamutDescription[];
 
@@ -1408,9 +1405,6 @@ extern const char kUiPartialSwapDescription[];
 
 extern const char kUseFirstPartySetName[];
 extern const char kUseFirstPartySetDescription[];
-
-extern const char kUsePreferredIntervalForVideoName[];
-extern const char kUsePreferredIntervalForVideoDescription[];
 
 extern const char kUseSearchClickForRightClickName[];
 extern const char kUseSearchClickForRightClickDescription[];

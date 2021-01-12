@@ -29,9 +29,6 @@ const base::Feature kEnableOverlayPrioritization {
 #endif
 };
 
-const base::Feature kForcePreferredIntervalForVideo{
-    "ForcePreferredIntervalForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Use the SkiaRenderer.
 const base::Feature kUseSkiaRenderer {
   "UseSkiaRenderer",
@@ -98,10 +95,6 @@ const base::Feature kUseSkiaOutputDeviceBufferQueue{
 const base::Feature kWebRtcLogCapturePipeline{
     "WebRtcLogCapturePipeline", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// The number of frames to wait before toggling to a lower frame rate.
-const base::FeatureParam<int> kNumOfFramesToToggleInterval{
-    &kUsePreferredIntervalForVideo, "NumOfFramesToToggleInterval", 6};
-
 #if defined(OS_WIN)
 // Enables swap chains to call SetPresentDuration to request DWM/OS to reduce
 // vsync.
@@ -122,10 +115,6 @@ const base::Feature kWebViewVulkanIntermediateBuffer{
 
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
-}
-
-bool IsForcePreferredIntervalForVideoEnabled() {
-  return base::FeatureList::IsEnabled(kForcePreferredIntervalForVideo);
 }
 
 bool IsVizHitTestingDebugEnabled() {
@@ -193,12 +182,7 @@ bool IsUsingVizFrameSubmissionForWebView() {
 }
 
 bool IsUsingPreferredIntervalForVideo() {
-  return IsForcePreferredIntervalForVideoEnabled() ||
-         base::FeatureList::IsEnabled(kUsePreferredIntervalForVideo);
-}
-
-int NumOfFramesToToggleInterval() {
-  return kNumOfFramesToToggleInterval.Get();
+  return base::FeatureList::IsEnabled(kUsePreferredIntervalForVideo);
 }
 
 bool ShouldUseRealBuffersForPageFlipTest() {

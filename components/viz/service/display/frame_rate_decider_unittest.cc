@@ -30,7 +30,9 @@ class FrameRateDeciderTest : public testing::Test,
     bool hw_support_for_multiple_refresh_rates = true;
     frame_rate_decider_ = std::make_unique<FrameRateDecider>(
         surface_manager_.get(), this, hw_support_for_multiple_refresh_rates,
-        false, 0);
+        false);
+    frame_rate_decider_->set_min_num_of_frames_to_toggle_interval_for_testing(
+        0u);
   }
 
   void TearDown() override {
@@ -326,8 +328,9 @@ TEST_F(FrameRateDeciderTest, TogglesAfterMinNumOfFrames) {
 TEST_F(FrameRateDeciderTest, TogglesWithSyntheticBFS) {
   bool hw_support_for_multiple_refresh_rate = false;
   frame_rate_decider_ = std::make_unique<FrameRateDecider>(
-      surface_manager_.get(), this, hw_support_for_multiple_refresh_rate, false,
-      0);
+      surface_manager_.get(), this, hw_support_for_multiple_refresh_rate,
+      false);
+  frame_rate_decider_->set_min_num_of_frames_to_toggle_interval_for_testing(0u);
   base::TimeDelta min_supported_interval = base::TimeDelta::FromSeconds(1);
   const std::vector<base::TimeDelta> supported_intervals = {
       min_supported_interval * 2, min_supported_interval};
@@ -431,8 +434,9 @@ TEST_F(FrameRateDeciderTest, NoFixedIntervalSurfaces) {
 TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
   bool hw_support_for_multiple_refresh_rate = false;
   frame_rate_decider_ = std::make_unique<FrameRateDecider>(
-      surface_manager_.get(), this, hw_support_for_multiple_refresh_rate, false,
-      0);
+      surface_manager_.get(), this, hw_support_for_multiple_refresh_rate,
+      false);
+  frame_rate_decider_->set_min_num_of_frames_to_toggle_interval_for_testing(0u);
   base::TimeDelta min_supported_interval = base::TimeDelta::FromSeconds(1);
   const std::vector<base::TimeDelta> supported_intervals = {
       min_supported_interval * 3, min_supported_interval * 2,

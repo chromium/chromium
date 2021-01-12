@@ -432,12 +432,6 @@ const char kForceColorProfileDescription[] =
     "Forces Chrome to use a specific color profile instead of the color "
     "of the window's current monitor, as specified by the operating system.";
 
-const char kForcePreferredIntervalForVideoName[] =
-    "Force preferred interval for video";
-const char kForcePreferredIntervalForVideoDescription[] =
-    "When enabled, the composition rate is reduced to match the video playback "
-    "rate irrespective of the update frequency of other page content";
-
 const char kDynamicColorGamutName[] = "Dynamic color gamut";
 const char kDynamicColorGamutDescription[] =
     "Displays in wide color when the content is wide. When the content is "
@@ -2431,12 +2425,6 @@ const char kUsernameFirstFlowDescription[] =
     "Support of username saving and filling on username first flow i.e. login "
     "flows where a user has to type username first on one page and then "
     "password on another page";
-
-const char kUsePreferredIntervalForVideoName[] =
-    "Use preferred interval for video";
-const char kUsePreferredIntervalForVideoDescription[] =
-    "When enabled, the composition rate will be changed based on the videos' "
-    "actual fps.";
 
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
