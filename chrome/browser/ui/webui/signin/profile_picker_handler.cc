@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -444,6 +445,11 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
     DCHECK(shortcut_manager);
     if (shortcut_manager)
       shortcut_manager->CreateProfileShortcut(profile->GetPath());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSignInProfileCreation)) {
+    // Skip the FRE for this profile if sign-in was offered as part of the flow.
+    profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   }
 
   RecordNewProfileSpec(profile_color, create_shortcut);
