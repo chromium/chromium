@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace performance_hints {
 namespace features {
@@ -27,9 +28,6 @@ constexpr base::FeatureParam<bool> kUseLinkPerformanceHints{
 
 const base::Feature kContextMenuPerformanceInfo{
     "ContextMenuPerformanceInfo", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching{
-    "ContextMenuPerformanceInfoAndRemoteHintFetching",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kPageInfoPerformanceHints{
     "PageInfoPerformanceHints", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -61,13 +59,8 @@ bool AreLinkPerformanceHintsEnabled() {
 
 bool IsContextMenuPerformanceInfoEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuPerformanceInfo) ||
-         base::FeatureList::IsEnabled(
-             kContextMenuPerformanceInfoAndRemoteHintFetching);
-}
-
-bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo() {
-  return base::FeatureList::IsEnabled(
-      kContextMenuPerformanceInfoAndRemoteHintFetching);
+         optimization_guide::features::
+             IsRemoteFetchingExplicitlyAllowedForPerformanceInfo();
 }
 
 }  // namespace features

@@ -103,6 +103,7 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/paint_preview/features/features.h"
@@ -6309,7 +6310,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kContextMenuPerformanceInfoAndRemoteHintFetchingDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(performance_hints::features::
+     FEATURE_VALUE_TYPE(optimization_guide::features::
                             kContextMenuPerformanceInfoAndRemoteHintFetching)},
 #endif  // !defined(OS_ANDROID)
 

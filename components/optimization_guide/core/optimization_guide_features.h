@@ -23,6 +23,7 @@ extern const base::Feature kOptimizationHints;
 extern const base::Feature kOptimizationHintsFieldTrials;
 extern const base::Feature kRemoteOptimizationGuideFetching;
 extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
+extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
 extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
 
@@ -82,6 +83,10 @@ bool IsRemoteFetchingEnabled();
 // Returns true if the feature to fetch data for users that have consented to
 // anonymous data collection is enabled but are not Data Saver users.
 bool IsRemoteFetchingForAnonymousDataConsentEnabled();
+
+// Returns true if a feature that explicitly allows remote fetching has been
+// enabled.
+bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo();
 
 // The maximum data byte size for a server-provided bloom filter. This is
 // a client-side safety limit for RAM use in case server sends too large of

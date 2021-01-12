@@ -51,10 +51,6 @@ bool AreLinkPerformanceHintsEnabled();
 // Returns true if performance info should be shown in the context menu.
 bool IsContextMenuPerformanceInfoEnabled();
 
-// Returns true if a feature that explicitly allows remote fetching has been
-// enabled.
-bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo();
-
 }  // namespace features
 }  // namespace performance_hints
 

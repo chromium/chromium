@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -33,6 +32,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -629,7 +629,8 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
   // Top hosts and active field trials convey some sort of user information, so
   // ensure that the user has opted into the right permissions before adding
   // these fields to the request.
-  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_)) {
+  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
     if (top_host_provider_) {
       top_hosts = top_host_provider_->GetTopHosts();
 

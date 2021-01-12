@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -100,8 +100,9 @@ void ResetTopHostBlacklistState(PrefService* pref_service) {
 std::unique_ptr<OptimizationGuideTopHostProvider>
 OptimizationGuideTopHostProvider::CreateIfAllowed(
     content::BrowserContext* browser_context) {
-  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          Profile::FromBrowserContext(browser_context))) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs())) {
     return base::WrapUnique(new OptimizationGuideTopHostProvider(
         browser_context, base::DefaultClock::GetInstance()));
   }
@@ -211,7 +212,8 @@ void OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlacklist(
   PrefService* pref_service = profile->GetPrefs();
 
   bool is_user_permitted_to_fetch_hints =
-      IsUserPermittedToFetchFromRemoteOptimizationGuide(profile);
+      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), pref_service);
   if (!is_user_permitted_to_fetch_hints) {
     // User toggled state during the session. Make sure the blacklist is
     // cleared.
@@ -253,7 +255,8 @@ std::vector<std::string> OptimizationGuideTopHostProvider::GetTopHosts() {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   // The user toggled state during the session. Return empty.
-  if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile))
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), pref_service_))
     return std::vector<std::string>();
 
   // It's possible that the blacklist is initialized but

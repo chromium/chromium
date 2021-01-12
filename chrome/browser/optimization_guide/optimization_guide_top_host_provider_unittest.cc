@@ -8,10 +8,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/previews/previews_https_notification_infobar_decider.h"
-#include "chrome/browser/previews/previews_service.h"
-#include "chrome/browser/previews/previews_service_factory.h"
-#include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
@@ -195,64 +191,23 @@ TEST_F(OptimizationGuideTopHostProviderTest, CreateIfAllowedNonDataSaverUser) {
   ASSERT_FALSE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
 }
 
-TEST_F(OptimizationGuideTopHostProviderTest,
-       CreateIfAllowedDataSaverUserInfobarNotSeen) {
+TEST_F(OptimizationGuideTopHostProviderTest, CreateIfAllowedDataSaverUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       {optimization_guide::features::kRemoteOptimizationGuideFetching});
 
   SetDataSaverEnabled(true);
-
-  // Make sure infobar not shown.
-  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  PreviewsHTTPSNotificationInfoBarDecider* decider =
-      previews_service->previews_https_notification_infobar_decider();
-  // Initialize settings here so |decider| checks for the Data Saver bit.
-  decider->OnSettingsInitialized();
-  EXPECT_TRUE(decider->NeedsToNotifyUser());
-
-  ASSERT_FALSE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
-}
-
-TEST_F(OptimizationGuideTopHostProviderTest,
-       CreateIfAllowedDataSaverUserInfobarSeen) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching});
-
-  SetDataSaverEnabled(true);
-
-  // Navigate so infobar is shown.
-  PreviewsUITabHelper::CreateForWebContents(web_contents());
-  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  PreviewsHTTPSNotificationInfoBarDecider* decider =
-      previews_service->previews_https_notification_infobar_decider();
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("http://whatever.com"));
-  EXPECT_FALSE(decider->NeedsToNotifyUser());
 
   ASSERT_TRUE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
 }
 
 TEST_F(OptimizationGuideTopHostProviderTest,
-       CreateIfAllowedDataSaverUserInfobarSeenButHintsFetchingNotEnabled) {
+       CreateIfAllowedDataSaverUserButHintsFetchingNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {optimization_guide::features::kRemoteOptimizationGuideFetching});
 
   SetDataSaverEnabled(true);
-
-  // Navigate so infobar is shown.
-  PreviewsUITabHelper::CreateForWebContents(web_contents());
-  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  PreviewsHTTPSNotificationInfoBarDecider* decider =
-      previews_service->previews_https_notification_infobar_decider();
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("http://whatever.com"));
-  EXPECT_FALSE(decider->NeedsToNotifyUser());
 
   ASSERT_FALSE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
 }

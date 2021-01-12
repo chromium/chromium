@@ -50,6 +50,12 @@ const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent{
     "OptimizationHintsFetchingAnonymousDataConsent",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables performance info in the context menu and fetching from a remote
+// Optimization Guide Service.
+const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching{
+    "ContextMenuPerformanceInfoAndRemoteHintFetching",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the prediction of optimization targets.
 const base::Feature kOptimizationTargetPrediction{
     "OptimizationTargetPrediction", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -177,6 +183,11 @@ bool IsRemoteFetchingEnabled() {
 bool IsRemoteFetchingForAnonymousDataConsentEnabled() {
   return base::FeatureList::IsEnabled(
       kRemoteOptimizationGuideFetchingAnonymousDataConsent);
+}
+
+bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo() {
+  return base::FeatureList::IsEnabled(
+      kContextMenuPerformanceInfoAndRemoteHintFetching);
 }
 
 int MaxServerBloomFilterByteSize() {

@@ -25,8 +25,6 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/optimization_guide_decider.h"
@@ -39,6 +37,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -622,7 +621,8 @@ void OptimizationGuideHintsManager::SetClockForTesting(
 
 void OptimizationGuideHintsManager::MaybeScheduleTopHostsHintsFetch() {
   if (!top_host_provider_ ||
-      !IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_)) {
+      !optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
     return;
   }
 
@@ -1257,8 +1257,10 @@ bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
   if (!HasOptimizationTypeToFetchFor())
     return false;
 
-  if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
     return false;
+  }
   DCHECK(!profile_->IsOffTheRecord());
 
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())

@@ -20,6 +20,7 @@
 #include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "components/optimization_guide/core/hints_component_util.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/core/top_host_provider.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -261,17 +263,19 @@ class OptimizationGuideHintsManagerTest
   }
 
   void TearDown() override {
-    optimization_guide::ProtoDatabaseProviderTestBase::TearDown();
     ResetHintsManager();
+    optimization_guide::ProtoDatabaseProviderTestBase::TearDown();
   }
 
   void CreateHintsManager(
       optimization_guide::TopHostProvider* top_host_provider) {
-    if (hints_manager_) {
+    if (hints_manager_)
       ResetHintsManager();
-    }
+
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
+    pref_service_->registry()->RegisterBooleanPref(
+        data_reduction_proxy::prefs::kDataSaverEnabled, false);
 
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -295,6 +299,7 @@ class OptimizationGuideHintsManagerTest
     hints_manager_->Shutdown();
     hints_manager_.reset();
     hint_store_.reset();
+    pref_service_.reset();
     RunUntilIdle();
   }
 
