@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/files/file_path.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -53,7 +54,7 @@ ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
 }
 
 bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
-  return true;
+  return !ash::TabletMode::Get()->InTabletMode();
 }
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
