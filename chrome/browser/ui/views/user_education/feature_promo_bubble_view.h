@@ -15,9 +15,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-namespace gfx {
-class Rect;
-}
 
 namespace ui {
 class MouseEvent;
@@ -89,7 +86,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  gfx::Rect GetBubbleBounds() override;
   ax::mojom::Role GetAccessibleWindowRole() override;
   base::string16 GetAccessibleWindowTitle() const override;
   void UpdateHighlightedButton(bool highlighted) override {

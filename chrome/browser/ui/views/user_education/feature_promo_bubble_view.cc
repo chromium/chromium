@@ -316,17 +316,6 @@ void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
     feature_promo_bubble_timeout_->OnMouseExited();
 }
 
-gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
-  gfx::Rect bounds = BubbleDialogDelegateView::GetBubbleBounds();
-  if (!focusable_) {
-    if (base::i18n::IsRTL())
-      bounds.Offset(5, 0);
-    else
-      bounds.Offset(-5, 0);
-  }
-  return bounds;
-}
-
 ax::mojom::Role FeaturePromoBubbleView::GetAccessibleWindowRole() {
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
