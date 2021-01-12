@@ -21,17 +21,24 @@ IdentityManagerObserverBridge::~IdentityManagerObserverBridge() {
   identity_manager_->RemoveObserver(this);
 }
 
-void IdentityManagerObserverBridge::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  if ([delegate_ respondsToSelector:@selector(onPrimaryAccountSet:)]) {
-    [delegate_ onPrimaryAccountSet:primary_account_info];
-  }
-}
-
-void IdentityManagerObserverBridge::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  if ([delegate_ respondsToSelector:@selector(onPrimaryAccountCleared:)]) {
-    [delegate_ onPrimaryAccountCleared:previous_primary_account_info];
+void IdentityManagerObserverBridge::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if ([delegate_ respondsToSelector:@selector(onPrimaryAccountSet:)]) {
+        [delegate_ onPrimaryAccountSet:event.GetCurrentState().primary_account];
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if ([delegate_ respondsToSelector:@selector(onPrimaryAccountCleared:)]) {
+        [delegate_
+            onPrimaryAccountCleared:event.GetPreviousState().primary_account];
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED() << "ConsentLevel::kNotRequired is not yet supported on iOS. "
+                      "This code needs to be updated when it is supported.";
+      break;
   }
 }
 

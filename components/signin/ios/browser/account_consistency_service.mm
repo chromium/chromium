@@ -556,14 +556,20 @@ void AccountConsistencyService::OnBrowsingDataRemoved() {
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
 }
 
-void AccountConsistencyService::OnPrimaryAccountSet(
-    const CoreAccountInfo& account_info) {
-  AddChromeConnectedCookies();
-}
-
-void AccountConsistencyService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_account_info) {
-  RemoveAllChromeConnectedCookies(base::OnceClosure());
+void AccountConsistencyService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      AddChromeConnectedCookies();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      RemoveAllChromeConnectedCookies(base::OnceClosure());
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED() << "ConsentLevel::kNotRequired is not yet supported on iOS. "
+                      "This code needs to be updated when it is supported.";
+      break;
+  }
 }
 
 void AccountConsistencyService::OnAccountsInCookieUpdated(
