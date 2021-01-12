@@ -1563,10 +1563,8 @@ test("content_browsertests") {
       "../browser/site_per_process_mac_browsertest.mm",
       "../renderer/render_view_browsertest_mac.mm",
     ]
-    deps += [
-      "//content/shell:content_shell",
-      "//third_party/ocmock",
-    ]
+    deps += [ "//third_party/ocmock" ]
+    data_deps += [ "//content/shell:content_shell" ]
     data += [ "$root_out_dir/Content Shell.app/" ]
   }
 
