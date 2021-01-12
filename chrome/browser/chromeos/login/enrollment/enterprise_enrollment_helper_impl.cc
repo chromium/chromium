@@ -259,7 +259,13 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   // Re-enrollment is not implemented for Active Directory.
-  if (connector->IsCloudManaged() &&
+  // If an enrollment domain is already fixed in install attributes and
+  // re-enrollment happens via login, domains need to be equal.
+  // If there is a mismatch between domain set in install attributes and
+  // auto re-enrollment domain provided by the server, policy validation will
+  // fail later in the process.
+  if (connector->IsCloudManaged() && !enrolling_user_domain_.empty() &&
+      !enrollment_config_.is_mode_attestation() &&
       connector->GetEnterpriseEnrollmentDomain() != enrolling_user_domain_) {
     LOG(ERROR) << "Trying to re-enroll to a different domain than "
                << connector->GetEnterpriseEnrollmentDomain();
