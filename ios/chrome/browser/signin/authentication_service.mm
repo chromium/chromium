@@ -435,7 +435,7 @@ void AuthenticationService::OnEndBatchOfRefreshTokenStateChanges() {
   StoreKnownAccountsWhileInForeground();
 }
 
-void AuthenticationService::OnIdentityListChanged() {
+void AuthenticationService::OnIdentityListChanged(bool keychainReload) {
   // The list of identities may change while in an authorized call. Signing out
   // the authenticated user at this time may lead to crashes (e.g.
   // http://crbug.com/398431 ).

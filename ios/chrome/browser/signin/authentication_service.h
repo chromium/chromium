@@ -196,7 +196,7 @@ class AuthenticationService : public KeyedService,
   void OnEndBatchOfRefreshTokenStateChanges() override;
 
   // ChromeIdentityServiceObserver implementation.
-  void OnIdentityListChanged() override;
+  void OnIdentityListChanged(bool keychainReload) override;
   void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
                                   NSDictionary* user_info) override;
   void OnChromeIdentityServiceWillBeDestroyed() override;

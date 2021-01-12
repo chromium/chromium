@@ -15,6 +15,13 @@
 
 namespace ios {
 
+void ChromeIdentityService::Observer::OnIdentityListChanged(
+    bool keychainReload) {
+  // Call to OnIdentityListChanged() is temporary, until all classes in
+  // ios_internal have migrated to this method.
+  OnIdentityListChanged();
+}
+
 ChromeIdentityService::ChromeIdentityService() {}
 
 ChromeIdentityService::~ChromeIdentityService() {
@@ -157,8 +164,12 @@ bool ChromeIdentityService::IsInvalidGrantError(NSDictionary* user_info) {
 }
 
 void ChromeIdentityService::FireIdentityListChanged() {
+  FireIdentityListChanged(true);
+}
+
+void ChromeIdentityService::FireIdentityListChanged(bool keychainReload) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityListChanged();
+    observer.OnIdentityListChanged(keychainReload);
 }
 
 void ChromeIdentityService::FireAccessTokenRefreshFailed(

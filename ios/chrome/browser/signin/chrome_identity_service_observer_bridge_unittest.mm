@@ -97,7 +97,7 @@ class ChromeIdentityServiceObserverBridgeTest : public PlatformTest {
 // Tests that |onIdentityListChanged| is forwarded.
 TEST_F(ChromeIdentityServiceObserverBridgeTest, onIdentityListChanged) {
   ASSERT_FALSE(GetTestObserver().onIdentityListChangedCalled);
-  GetObserverBridge()->OnIdentityListChanged();
+  GetObserverBridge()->OnIdentityListChanged(false);
   EXPECT_TRUE(GetTestObserver().onIdentityListChangedCalled);
   EXPECT_FALSE(GetTestObserver().onAccessTokenRefreshFailedCalled);
   EXPECT_FALSE(GetTestObserver().onProfileUpdateCalled);

@@ -21,7 +21,8 @@ ChromeIdentityServiceObserverBridge::ChromeIdentityServiceObserverBridge(
 
 ChromeIdentityServiceObserverBridge::~ChromeIdentityServiceObserverBridge() {}
 
-void ChromeIdentityServiceObserverBridge::OnIdentityListChanged() {
+void ChromeIdentityServiceObserverBridge::OnIdentityListChanged(
+    bool keychainReload) {
   if ([observer_ respondsToSelector:@selector(identityListChanged)])
     [observer_ identityListChanged];
 }

@@ -208,7 +208,7 @@ void FakeChromeIdentityService::ForgetIdentity(
     ChromeIdentity* identity,
     ForgetIdentityCallback callback) {
   [identities_ removeObject:identity];
-  FireIdentityListChanged();
+  FireIdentityListChanged(false);
   if (callback) {
     // Forgetting an identity is normally an asynchronous operation (that
     // require some network calls), this is replicated here by dispatching
@@ -326,7 +326,7 @@ void FakeChromeIdentityService::AddIdentity(ChromeIdentity* identity) {
   if (![identities_ containsObject:identity]) {
     [identities_ addObject:identity];
   }
-  FireIdentityListChanged();
+  FireIdentityListChanged(false);
 }
 
 void FakeChromeIdentityService::SetFakeMDMError(bool fakeMDMError) {
