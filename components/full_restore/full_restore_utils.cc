@@ -17,13 +17,13 @@ namespace full_restore {
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
 
-void SaveAppLaunchInfo(const base::FilePath& profile_dir,
+void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {
   if (!ash::features::IsFullRestoreEnabled() || !app_launch_info)
     return;
 
   FullRestoreSaveHandler::GetInstance()->SaveAppLaunchInfo(
-      profile_dir, std::move(app_launch_info));
+      profile_path, std::move(app_launch_info));
 }
 
 void SaveWindowInfo(const WindowInfo& window_info) {

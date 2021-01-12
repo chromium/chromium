@@ -124,6 +124,10 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
 
   profile_path_to_restore_data_[it->second.first].ModifyWindowInfo(
       it->second.second, window_id, window_info);
+
+  pending_save_profile_paths_.insert(it->second.first);
+
+  MaybeStartSaveTimer();
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
@@ -173,23 +177,24 @@ void FullRestoreSaveHandler::Save() {
   pending_save_profile_paths_.clear();
 }
 
-void FullRestoreSaveHandler::OnSaveFinished(const base::FilePath& file_path) {
-  save_running_.erase(file_path);
+void FullRestoreSaveHandler::OnSaveFinished(
+    const base::FilePath& profile_path) {
+  save_running_.erase(profile_path);
 }
 
 FullRestoreFileHandler* FullRestoreSaveHandler::GetFileHandler(
-    const base::FilePath& file_path) {
-  if (profile_path_to_file_handler_.find(file_path) ==
+    const base::FilePath& profile_path) {
+  if (profile_path_to_file_handler_.find(profile_path) ==
       profile_path_to_file_handler_.end()) {
-    profile_path_to_file_handler_[file_path] =
-        base::MakeRefCounted<FullRestoreFileHandler>(file_path);
+    profile_path_to_file_handler_[profile_path] =
+        base::MakeRefCounted<FullRestoreFileHandler>(profile_path);
   }
-  return profile_path_to_file_handler_[file_path].get();
+  return profile_path_to_file_handler_[profile_path].get();
 }
 
 base::SequencedTaskRunner* FullRestoreSaveHandler::BackendTaskRunner(
-    const base::FilePath& file_path) {
-  return GetFileHandler(file_path)->owning_task_runner();
+    const base::FilePath& profile_path) {
+  return GetFileHandler(profile_path)->owning_task_runner();
 }
 
 }  // namespace full_restore

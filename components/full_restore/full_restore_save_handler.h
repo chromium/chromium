@@ -54,11 +54,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
 
-  // Save |app_launch_info| to the full restore file in |profile_path|.
+  // Saves |app_launch_info| to the full restore file in |profile_path|.
   void SaveAppLaunchInfo(const base::FilePath& profile_path,
                          std::unique_ptr<AppLaunchInfo> app_launch_info);
 
-  // Save |window_info| to |profile_path_to_restore_data_|.
+  // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const WindowInfo& window_info);
 
   // Flushes the full restore file in |profile_path| with the current restore
@@ -78,12 +78,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // Passes |profile_path_to_restore_data_| to the backend for saving.
   void Save();
 
-  // Invoked when write to file operation for |file_path| is finished.
-  void OnSaveFinished(const base::FilePath& file_path);
+  // Invoked when write to file operation for |profile_path| is finished.
+  void OnSaveFinished(const base::FilePath& profile_path);
 
-  FullRestoreFileHandler* GetFileHandler(const base::FilePath& file_path);
+  FullRestoreFileHandler* GetFileHandler(const base::FilePath& profile_path);
 
-  base::SequencedTaskRunner* BackendTaskRunner(const base::FilePath& file_path);
+  base::SequencedTaskRunner* BackendTaskRunner(
+      const base::FilePath& profile_path);
 
   // Records whether there are new updates for saving between each saving delay.
   // |pending_save_profile_paths_| is cleared when Save is invoked.

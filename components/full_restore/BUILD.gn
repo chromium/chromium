@@ -52,5 +52,6 @@ source_set("unit_tests") {
     ":full_restore",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/aura:test_support",
   ]
 }
