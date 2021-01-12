@@ -4530,7 +4530,7 @@ void RenderFrameImpl::WillSendRequestInternal(
   url_request_extra_data->set_is_main_frame(IsMainFrame());
   url_request_extra_data->set_transition_type(transition_type);
   bool is_for_no_state_prefetch =
-      GetContentClient()->renderer()->IsPrefetchOnly(this, request);
+      GetContentClient()->renderer()->IsPrefetchOnly(this);
   url_request_extra_data->set_is_for_no_state_prefetch(
       is_for_no_state_prefetch);
   url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);

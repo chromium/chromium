@@ -125,9 +125,7 @@ void ContentRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {}
 
-bool ContentRendererClient::IsPrefetchOnly(
-    RenderFrame* render_frame,
-    const blink::WebURLRequest& request) {
+bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }
 

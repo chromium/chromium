@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 
@@ -38,9 +37,6 @@ class PrerenderHelper
 
   // Returns true if |render_frame| is currently prerendering.
   static bool IsPrerendering(const content::RenderFrame* render_frame);
-
-  static mojom::PrerenderMode GetPrerenderMode(
-      const content::RenderFrame* render_frame);
 
   std::string histogram_prefix() const { return histogram_prefix_; }
 

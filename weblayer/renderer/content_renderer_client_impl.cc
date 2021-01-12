@@ -12,7 +12,6 @@
 #include "components/error_page/common/error.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/js_injection/renderer/js_communication.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 #include "components/no_state_prefetch/renderer/prerender_helper.h"
@@ -198,10 +197,8 @@ void ContentRendererClientImpl::
 }
 
 bool ContentRendererClientImpl::IsPrefetchOnly(
-    content::RenderFrame* render_frame,
-    const blink::WebURLRequest& request) {
-  return prerender::PrerenderHelper::GetPrerenderMode(render_frame) ==
-         prerender::mojom::PrerenderMode::kPrefetchOnly;
+    content::RenderFrame* render_frame) {
+  return prerender::PrerenderHelper::IsPrerendering(render_frame);
 }
 
 bool ContentRendererClientImpl::DeferMediaLoad(

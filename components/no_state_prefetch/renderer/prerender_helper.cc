@@ -51,17 +51,7 @@ std::unique_ptr<blink::URLLoaderThrottle> PrerenderHelper::MaybeCreateThrottle(
 
 // static.
 bool PrerenderHelper::IsPrerendering(const content::RenderFrame* render_frame) {
-  return PrerenderHelper::GetPrerenderMode(render_frame) !=
-         mojom::PrerenderMode::kNoPrerender;
-}
-
-// static.
-mojom::PrerenderMode PrerenderHelper::GetPrerenderMode(
-    const content::RenderFrame* render_frame) {
-  PrerenderHelper* helper = PrerenderHelper::Get(render_frame);
-  if (!helper)
-    return mojom::PrerenderMode::kNoPrerender;
-  return mojom::PrerenderMode::kPrefetchOnly;
+  return PrerenderHelper::Get(render_frame) != nullptr;
 }
 
 void PrerenderHelper::DidFinishDocumentLoad() {

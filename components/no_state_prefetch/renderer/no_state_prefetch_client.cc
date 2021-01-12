@@ -22,9 +22,7 @@ NoStatePrefetchClient::NoStatePrefetchClient(content::RenderView* render_view)
 NoStatePrefetchClient::~NoStatePrefetchClient() = default;
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
-  return PrerenderHelper::GetPrerenderMode(
-             render_view()->GetMainRenderFrame()) ==
-         prerender::mojom::PrerenderMode::kPrefetchOnly;
+  return PrerenderHelper::IsPrerendering(render_view()->GetMainRenderFrame());
 }
 
 void NoStatePrefetchClient::OnDestruct() {
