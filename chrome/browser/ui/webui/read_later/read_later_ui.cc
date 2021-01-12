@@ -34,7 +34,10 @@ void AddLocalizedString(content::WebUIDataSource* source,
 }  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "ReadingList.WebUI.LoadDocumentTime",
+                        "ReadingList.WebUI.LoadCompletedTime") {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

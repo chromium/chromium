@@ -12676,6 +12676,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Number of unread entries in reading list.</summary>
 </histogram>
 
+<histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
+    expires_after="M92">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the Read Later WebUI
+    page.
+  </summary>
+</histogram>
+
+<histogram name="ReadingList.WebUI.LoadDocumentTime" units="ms"
+    expires_after="M92">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the Read Later WebUI page.
+  </summary>
+</histogram>
+
 <histogram name="RecoveryComponent.Event" enum="RecoveryComponentEvent"
     expires_after="M77">
   <owner>robertshield@chromium.org</owner>
