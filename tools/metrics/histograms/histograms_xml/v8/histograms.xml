@@ -337,8 +337,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.DebugFeatureUsage" enum="V8DebugFeature"
-    expires_after="2021-01-10">
+    expires_after="2022-01-10">
   <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <summary>
     Debugger feature used at least once per isolate, recorded on first use.
   </summary>
