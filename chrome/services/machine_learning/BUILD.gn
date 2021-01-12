@@ -14,6 +14,7 @@ source_set("machine_learning") {
     ":metrics",
     "//base",
     "//chrome:strings",
+    "//chrome/common:buildflags",
     "//mojo/public/cpp/bindings",
   ]
 
@@ -69,6 +70,8 @@ source_set("unit_tests") {
     ":metrics",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
     "//chrome/services/machine_learning/public/cpp:cpp",
     "//chrome/services/machine_learning/public/cpp:test_support",
     "//testing/gtest",

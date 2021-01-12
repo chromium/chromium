@@ -5,6 +5,7 @@
 #include "chrome/browser/tflite_experiment/tflite_experiment_keyed_service.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -110,7 +111,8 @@ class TFLiteExperimentKeyedServiceBrowserTest : public InProcessBrowserTest {
 
     // Set TFLite model path.
     base::PathService::Get(chrome::DIR_TEST_DATA, &g_test_data_directory);
-    g_test_data_directory = g_test_data_directory.Append(kTFLiteModelName);
+    g_test_data_directory =
+        g_test_data_directory.Append(FILE_PATH_LITERAL(kTFLiteModelName));
     cmd->AppendSwitchASCII(tflite_experiment::switches::kTFLiteModelPath,
                            g_test_data_directory.value());
 

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/tflite_experiment/tflite_experiment_observer.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tflite_experiment/tflite_experiment_keyed_service.h"
 #include "chrome/browser/tflite_experiment/tflite_experiment_keyed_service_factory.h"
@@ -124,7 +127,11 @@ void TFLiteExperimentObserver::Log(base::Optional<std::string> log_path,
                                    const std::string& data) {
   if (!log_path)
     return;
+#if defined(OS_WIN)
+  base::FilePath log_file = base::FilePath(base::UTF8ToWide(log_path.value()));
+#else
   base::FilePath log_file = base::FilePath(log_path.value());
+#endif
   base::AppendToFile(log_file, data.c_str(), data.size());
 }
 
@@ -133,7 +140,11 @@ void TFLiteExperimentObserver::LogWriteHeader(
     base::Optional<std::string> log_path) {
   if (!log_path)
     return;
+#if defined(OS_WIN)
+  base::FilePath log_file = base::FilePath(base::UTF8ToWide(log_path.value()));
+#else
   base::FilePath log_file = base::FilePath(log_path.value());
+#endif
   base::WriteFile(log_file, "", 0);
 }
 
