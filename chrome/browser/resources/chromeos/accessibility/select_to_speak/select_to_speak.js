@@ -736,7 +736,6 @@ export class SelectToSpeak {
   stopAll_() {
     chrome.tts.stop();
     this.clearFocusRing_();
-    this.overrideSpeechRate_ = null;  // Reset speech rate to system default
     this.onStateChanged_(SelectToSpeakState.INACTIVE);
   }
 

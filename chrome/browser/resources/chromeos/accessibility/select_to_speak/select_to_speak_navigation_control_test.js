@@ -481,7 +481,6 @@ TEST_F(
           });
     });
 
-// TODO(https://crbug.com/1157817): Fix Flaky Test.
 TEST_F(
     'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
     function() {
@@ -523,6 +522,31 @@ TEST_F(
                 0);
           });
     });
+
+TEST_F('SelectToSpeakNavigationControlTest', 'RetainsSpeedChange', function() {
+  chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
+  const bodyHtml = `
+    <p id="p1">Paragraph 1</p>'
+  `;
+  this.runWithLoadedTree(
+      this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+        this.triggerReadSelectedText();
+
+        // Changing speed then exit.
+        selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction.CHANGE_SPEED,
+            1.5);
+        selectToSpeak.onSelectToSpeakPanelAction_(
+            chrome.accessibilityPrivate.SelectToSpeakPanelAction.EXIT);
+        assertFalse(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+        // Next TTS session should remember previous rate.
+        this.triggerReadSelectedText();
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertEquals(this.mockTts.getOptions().rate, 1.5);
+      });
+});
 
 TEST_F(
     'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePaused', function() {
