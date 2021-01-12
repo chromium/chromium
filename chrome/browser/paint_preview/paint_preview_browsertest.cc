@@ -45,11 +45,16 @@ class NoOpPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   NoOpPaintPreviewRecorder(const NoOpPaintPreviewRecorder&) = delete;
   NoOpPaintPreviewRecorder& operator=(const NoOpPaintPreviewRecorder&) = delete;
 
+  void SetRequestedClosure(base::OnceClosure requested) {
+    requested_ = std::move(requested);
+  }
+
   void CapturePaintPreview(
       mojom::PaintPreviewCaptureParamsPtr params,
       mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
       override {
     callback_ = std::move(callback);
+    std::move(requested_).Run();
   }
 
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -58,6 +63,7 @@ class NoOpPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   }
 
  private:
+  base::OnceClosure requested_;
   mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback_;
   mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
 };
@@ -384,7 +390,9 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   content::WebContents* web_contents = GetWebContents();
 
   // Override remote interfaces with a no-op.
+  base::RunLoop started_loop;
   NoOpPaintPreviewRecorder noop_recorder;
+  noop_recorder.SetRequestedClosure(started_loop.QuitClosure());
   OverrideInterface(&noop_recorder);
 
   CreateClient();
@@ -395,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
 
   // A callback that causes the frame to reload and end up in an invalid state
   // if it is allowed to run during crash handling.
-  base::RunLoop loop;
+  base::RunLoop finished_loop;
   auto params = MakeParams();
   bool did_run = false;
   client->CapturePaintPreview(
@@ -414,7 +422,13 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
             *did_run_ptr = true;
           },
           web_contents, &did_run)
-          .Then(loop.QuitClosure()));
+          .Then(finished_loop.QuitClosure()));
+  // Wait for the request to execute before crashing the renderer. Otherwise in
+  // the FileSystem variant it is possible there will be a race during creation
+  // of the file with the renderer crash. If this happens the callback for
+  // `finished_loop` will not be run as no request to capture succeeded leading
+  // to a timeout.
+  started_loop.Run();
 
   // Crash the renderer.
   content::RenderProcessHost* process =
@@ -427,7 +441,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   // The browser would have crashed before the loop exited if the callback was
   // not posted.
   if (!did_run)
-    loop.Run();
+    finished_loop.Run();
 
   // Now navigate away and ensure that the frame unloads successfully.
   LoadPage(http_server_.GetURL("a.com", "/title2.html"));
