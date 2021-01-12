@@ -396,12 +396,11 @@ class TabHoverCardBubbleView::FadeLabel : public views::Label {
 // Maintains a set of thumbnails to watch, ensuring the capture count on the
 // associated WebContents stays nonzero until a valid thumbnail has been
 // captured.
-class TabHoverCardBubbleView::ThumbnailObserver
-    : public ThumbnailImage::Observer {
+class TabHoverCardBubbleView::ThumbnailObserver {
  public:
   explicit ThumbnailObserver(TabHoverCardBubbleView* hover_card)
       : hover_card_(hover_card) {}
-  ~ThumbnailObserver() override = default;
+  ~ThumbnailObserver() = default;
 
   // Begin watching the specified thumbnail image for updates. Ideally, should
   // trigger the associated WebContents to load (if not loaded already) and
@@ -411,13 +410,17 @@ class TabHoverCardBubbleView::ThumbnailObserver
     if (current_image_ == thumbnail_image)
       return;
 
-    scoped_observation_.Reset();
+    subscription_.reset();
     current_image_ = std::move(thumbnail_image);
+    if (!current_image_)
+      return;
 
-    if (current_image_) {
-      scoped_observation_.Observe(current_image_.get());
-      current_image_->RequestThumbnailImage();
-    }
+    subscription_ = current_image_->Subscribe();
+    subscription_->SetSizeHint(TabStyle::GetPreviewImageSize());
+    subscription_->SetUncompressedImageCallback(base::BindRepeating(
+        &ThumbnailObserver::ThumbnailImageCallback, base::Unretained(this)));
+
+    current_image_->RequestThumbnailImage();
   }
 
   // Returns the current (most recent) thumbnail being watched.
@@ -425,18 +428,13 @@ class TabHoverCardBubbleView::ThumbnailObserver
     return current_image_;
   }
 
-  base::Optional<gfx::Size> GetThumbnailSizeHint() const override {
-    return TabStyle::GetPreviewImageSize();
-  }
-
-  void OnThumbnailImageAvailable(gfx::ImageSkia preview_image) override {
+  void ThumbnailImageCallback(gfx::ImageSkia preview_image) {
     hover_card_->OnThumbnailImageAvailable(std::move(preview_image));
   }
 
   scoped_refptr<ThumbnailImage> current_image_;
+  std::unique_ptr<ThumbnailImage::Subscription> subscription_;
   TabHoverCardBubbleView* const hover_card_;
-  base::ScopedObservation<ThumbnailImage, ThumbnailImage::Observer>
-      scoped_observation_{this};
 };
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
