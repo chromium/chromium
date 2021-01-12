@@ -67,6 +67,7 @@ Polymer({
     /** @type {boolean} */
     isTestRunning: {
       type: Boolean,
+      value: false,
       notify: true,
     },
 
