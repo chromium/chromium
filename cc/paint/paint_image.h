@@ -239,11 +239,10 @@ class CC_PAINT_EXPORT PaintImage {
                   int src_x,
                   int src_y) const;
 
-  // Returned mailbox must not outlive this PaintImage.
-  gpu::Mailbox GetMailbox() const;
+  SkImageInfo GetSkImageInfo() const;
 
   Id stable_id() const { return id_; }
-  SkImageInfo GetSkImageInfo() const;
+  gpu::Mailbox GetMailbox() const;
   AnimationType animation_type() const { return animation_type_; }
   CompletionState completion_state() const { return completion_state_; }
   bool is_multipart() const { return is_multipart_; }
@@ -266,6 +265,7 @@ class CC_PAINT_EXPORT PaintImage {
   // Skia internally buffers commands and flushes them as necessary but there
   // are some cases where we need to force a flush.
   void FlushPendingSkiaOps();
+  bool HasExclusiveTextureAccess() const;
   int width() const;
   int height() const;
   SkColorSpace* color_space() const {
