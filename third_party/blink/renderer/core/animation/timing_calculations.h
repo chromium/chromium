@@ -56,8 +56,12 @@ static inline bool IsWithinAnimationTimeEpsilon(double a, double b) {
   return std::abs(a - b) <= TimingCalculationEpsilon();
 }
 
-inline bool LessThanOrEqualToWithinEpsilon(double a, double b) {
+static inline bool LessThanOrEqualToWithinEpsilon(double a, double b) {
   return a <= b + TimingCalculationEpsilon();
+}
+
+static inline bool GreaterThanOrEqualToWithinEpsilon(double a, double b) {
+  return a >= b - TimingCalculationEpsilon();
 }
 
 static inline double MultiplyZeroAlwaysGivesZero(double x, double y) {

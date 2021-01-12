@@ -299,8 +299,12 @@ double Animation::EffectEnd() const {
 }
 
 bool Animation::Limited(base::Optional<double> current_time) const {
+  if (!current_time)
+    return false;
+
   return (EffectivePlaybackRate() < 0 && current_time <= 0) ||
-         (EffectivePlaybackRate() > 0 && current_time >= EffectEnd());
+         (EffectivePlaybackRate() > 0 &&
+          GreaterThanOrEqualToWithinEpsilon(current_time.value(), EffectEnd()));
 }
 
 Document* Animation::GetDocument() const {
