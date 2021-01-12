@@ -783,14 +783,20 @@ void DeviceSyncImpl::Shutdown() {
   clock_ = nullptr;
 }
 
-void DeviceSyncImpl::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& primary_account_info) {
-  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnUnconsentedPrimaryAccountChanged";
-  // We're only interested when the account is set.
-  if (primary_account_info.account_id.empty())
-    return;
-  identity_manager_->RemoveObserver(this);
-  ProcessPrimaryAccountInfo(primary_account_info);
+void DeviceSyncImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnPrimaryAccountChanged";
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      identity_manager_->RemoveObserver(this);
+      ProcessPrimaryAccountInfo(event.GetCurrentState().primary_account);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      FALLTHROUGH;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      // Ignored
+      break;
+  }
 }
 
 void DeviceSyncImpl::RunNextInitializationStep() {
