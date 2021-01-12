@@ -146,6 +146,7 @@ js_library("fullscreen_test") {
 js_library("navigator_test") {
   deps = [
     ":test_util",
+    "../webui:test_browser_proxy.m",
     "//chrome/browser/resources/pdf:navigator",
     "//chrome/browser/resources/pdf:open_pdf_params_parser",
     "//chrome/browser/resources/pdf:pdf_scripting_api",

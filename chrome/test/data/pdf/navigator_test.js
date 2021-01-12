@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestBrowserProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_browser_proxy.m.js';
 import {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/navigator.js';
 import {OpenPdfParamsParser} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/open_pdf_params_parser.js';
 import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
@@ -9,37 +10,28 @@ import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehj
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
 /** @implements {NavigatorDelegate} */
-class MockNavigatorDelegate {
+class MockNavigatorDelegate extends TestBrowserProxy {
   constructor() {
-    this.navigateInCurrentTabCalled = false;
-    this.navigateInNewTabCalled = false;
-    this.navigateInNewWindowCalled = false;
-    this.url = undefined;
+    super([
+      'navigateInCurrentTab',
+      'navigateInNewTab',
+      'navigateInNewWindow',
+    ]);
   }
 
   /** @override */
   navigateInCurrentTab(url) {
-    this.navigateInCurrentTabCalled = true;
-    this.url = url || '<called, but no url set>';
+    this.methodCalled('navigateInCurrentTab', url);
   }
 
   /** @override */
   navigateInNewTab(url) {
-    this.navigateInNewTabCalled = true;
-    this.url = url || '<called, but no url set>';
+    this.methodCalled('navigateInNewTab', url);
   }
 
   /** @override */
   navigateInNewWindow(url) {
-    this.navigateInNewWindowCalled = true;
-    this.url = url || '<called, but no url set>';
-  }
-
-  reset() {
-    this.navigateInCurrentTabCalled = false;
-    this.navigateInNewTabCalled = false;
-    this.navigateInNewWindowCalled = false;
-    this.url = undefined;
+    this.methodCalled('navigateInNewWindow', url);
   }
 }
 
@@ -62,23 +54,26 @@ async function doNavigationUrlTest(
   navigatorDelegate.reset();
   await navigator.navigate(url, disposition);
   chrome.test.assertFalse(viewportChangedCallback.wasCalled);
-  chrome.test.assertEq(expectedResultUrl, navigatorDelegate.url);
   if (expectedResultUrl === undefined) {
     return;
   }
+
+  let actualUrl = null;
   switch (disposition) {
     case WindowOpenDisposition.CURRENT_TAB:
-      chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+      actualUrl = await navigatorDelegate.whenCalled('navigateInCurrentTab');
       break;
     case WindowOpenDisposition.NEW_BACKGROUND_TAB:
-      chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+      actualUrl = await navigatorDelegate.whenCalled('navigateInNewTab');
       break;
     case WindowOpenDisposition.NEW_WINDOW:
-      chrome.test.assertTrue(navigatorDelegate.navigateInNewWindowCalled);
+      actualUrl = await navigatorDelegate.whenCalled('navigateInNewWindow');
       break;
     default:
       break;
   }
+
+  chrome.test.assertEq(expectedResultUrl, actualUrl);
 }
 
 /**
@@ -166,7 +161,7 @@ const tests = [
     await navigator.navigate(
         url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+    await navigatorDelegate.whenCalled('navigateInNewTab');
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(0, viewport.position.y);
 
@@ -184,7 +179,7 @@ const tests = [
     // navigating results, as this link will open in the same tab.
     await navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+    await navigatorDelegate.whenCalled('navigateInCurrentTab');
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(300, viewport.position.y);
     chrome.test.succeed();
