@@ -34,7 +34,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
  * Unit test suite for DataReductionStatsPreference.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class DataReductionStatsPreferenceTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();

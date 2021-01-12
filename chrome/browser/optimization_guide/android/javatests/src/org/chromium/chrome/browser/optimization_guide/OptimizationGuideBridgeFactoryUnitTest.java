@@ -34,7 +34,7 @@ import java.util.Arrays;
  * Unit tests for OptimizationGuideBridgeFactory
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class OptimizationGuideBridgeFactoryUnitTest {
     @Rule
     public JniMocker mocker = new JniMocker();

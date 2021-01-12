@@ -32,7 +32,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
  * Unit test suite for DataReductionPromoUtils.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class DataReductionPromoUtilsTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
