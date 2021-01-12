@@ -102312,6 +102312,19 @@
         {}
        ]
       ],
+      "intrinsic-size-009.html": [
+       "139c4de6447a7e59145a969f0c0e2b21e383b3f2",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "percentage-resolution-001.html": [
        "d606bfc65e340f95fbbc355b764a7de5e7aeb6a1",
        [
@@ -173853,7 +173866,7 @@
      []
     ],
     "beacon-common.sub.js": [
-     "3635da73b75400ed3699576e2eac6329c39bba1b",
+     "279ad2229ba3e9f4c343733809c60e31fcd492e9",
      []
     ],
     "headers": {
@@ -201411,6 +201424,10 @@
        ]
       },
       "support": {
+       "100x100-green.png": [
+        "25b76c3c6f216793a36b1f29287dafd993898c67",
+        []
+       ],
        "1x1-green.png": [
         "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
         []
@@ -238349,7 +238366,7 @@
      []
     ],
     "README.md": [
-     "953611f93037cfebe0459d5f67599b727539ae40",
+     "d80c0e067f965e241f9ee652cb0eb6563c7939b8",
      []
     ],
     "detached.https.window.js.headers": [
