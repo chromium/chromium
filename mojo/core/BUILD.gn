@@ -309,6 +309,7 @@ source_set("test_sources") {
       "data_pipe_unittest.cc",
       "invitation_unittest.cc",
       "multiprocess_message_pipe_unittest.cc",
+      "node_controller_unittest.cc",
       "platform_wrapper_unittest.cc",
     ]
   }

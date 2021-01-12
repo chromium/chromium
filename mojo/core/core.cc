@@ -137,7 +137,7 @@ void Core::SetIOTaskRunner(
 NodeController* Core::GetNodeController() {
   base::AutoLock lock(node_controller_lock_);
   if (!node_controller_)
-    node_controller_.reset(new NodeController(this));
+    node_controller_ = std::make_unique<NodeController>();
   return node_controller_.get();
 }
 
