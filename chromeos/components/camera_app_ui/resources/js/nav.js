@@ -179,7 +179,16 @@ export function onKeyPressed(event) {
   const key = util.getShortcutIdentifier(event);
   switch (key) {
     case 'BrowserBack':
-      windowController.minimize();
+      // Only works for non-intent instance.
+      if (!state.get(state.State.INTENT)) {
+        windowController.minimize();
+      }
+      break;
+    case 'Alt--':
+      // Prevent intent window from minimizing.
+      if (state.get(state.State.INTENT)) {
+        event.preventDefault();
+      }
       break;
     case 'Ctrl-=':
     case 'Ctrl--':

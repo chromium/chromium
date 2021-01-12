@@ -223,6 +223,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
 
   delegate_->SetLaunchDirectory();
 
+  window()->SetProperty(ash::kMinimizeOnBackKey, false);
+
   // Set up the data source.
   content::WebUIDataSource::Add(browser_context,
                                 CreateCameraAppUIHTMLSource(delegate_.get()));

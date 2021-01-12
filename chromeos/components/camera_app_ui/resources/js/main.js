@@ -363,6 +363,8 @@ let instance = null;
     bgOps = createFakeBackgroundOps();
   }
 
+  state.set(state.State.INTENT, bgOps.getIntent() !== null);
+
   browserProxy.setupUnloadListener(() => {
     // For SWA, we don't cancel the unhandled intent here since there is no
     // guarantee that asynchronous calls in unload listener can be executed
