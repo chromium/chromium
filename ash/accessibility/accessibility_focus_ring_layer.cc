@@ -23,8 +23,8 @@ namespace {
 // transparent.
 constexpr int kGradientWidth = 6;
 constexpr int kDefaultStrokeWidth = 2;
-constexpr float kDashLengthDip = 3.f;
-constexpr float kGapLengthDip = 5.f;
+constexpr float kDashLengthDip = 4.f;
+constexpr float kGapLengthDip = 2.f;
 
 int sign(int x) {
   return ((x > 0) ? 1 : (x == 0) ? 0 : -1);
@@ -182,23 +182,20 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
 
-  SkScalar intervals[] = {kDashLengthDip, kGapLengthDip};
-  int intervals_length = 2;
-  flags.setPathEffect(SkDashPathEffect::Make(intervals, intervals_length, 0));
-
-  // To keep the dashes properly lined up, we will draw the outside line first,
-  // and cover it with the inner line.
-  flags.setColor(secondary_color_);
-  flags.setStrokeWidth(3 * kDefaultStrokeWidth);
-
-  path = MakePath(ring_, 0, offset);
-  recorder.canvas()->DrawPath(path, flags);
-
   flags.setColor(custom_color());
   flags.setStrokeWidth(kDefaultStrokeWidth);
 
   path = MakePath(ring_, 0, offset);
   recorder.canvas()->DrawPath(path, flags);
+
+  SkScalar intervals[] = {kDashLengthDip, kGapLengthDip};
+  int intervals_length = 2;
+  flags.setPathEffect(SkDashPathEffect::Make(intervals, intervals_length, 0));
+  flags.setColor(secondary_color_);
+
+  path = MakePath(ring_, kDefaultStrokeWidth, offset);
+  recorder.canvas()->DrawPath(path, flags);
+
 }
 
 void AccessibilityFocusRingLayer::DrawGlowFocusRing(ui::PaintRecorder& recorder,
