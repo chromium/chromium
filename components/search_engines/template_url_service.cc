@@ -480,7 +480,25 @@ TemplateURL* TemplateURLService::AddWithOverrides(
 }
 
 void TemplateURLService::Remove(const TemplateURL* template_url) {
-  DCHECK_NE(template_url, default_search_provider_);
+  // CHECK that we aren't trying to Remove() the default search provider.
+  // This has happened before, and causes permanent damage to the user Profile,
+  // which can then be Synced to other installations. It's better to crash
+  // immediately, and that's why this isn't a DCHECK. https://crbug.com/1164024
+  {
+    const TemplateURL* default_provider = GetDefaultSearchProvider();
+
+    // TODO(tommycli): Once we are sure this never happens in practice, we can
+    // remove this CrashKeyString, but we should keep the CHECK.
+    static base::debug::CrashKeyString* crash_key =
+        base::debug::AllocateCrashKeyString("removed_turl_keyword",
+                                            base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString auto_clear(
+        crash_key, base::UTF16ToUTF8(template_url->keyword()));
+
+    CHECK_NE(template_url, default_provider);
+    if (default_provider)
+      CHECK_NE(template_url->sync_guid(), default_provider->sync_guid());
+  }
 
   auto i = FindTemplateURL(&template_urls_, template_url);
   if (i == template_urls_.end())
@@ -2175,6 +2193,14 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     best = candidate;
   }
 
+  // Use a GUID comparison rather than a pointer comparison, because while the
+  // model is being loaded, the DSE may be sourced from prefs, and we still want
+  // to protect the corresponding database entry from deletion.
+  // https://crbug.com/1164024
+  const TemplateURL* default_provider = GetDefaultSearchProvider();
+  std::string default_provider_guid =
+      default_provider ? default_provider->sync_guid() : "";
+
   // Remove all the replaceable TemplateURLs that are not the best.
   for (TemplateURL* turl : replaceable_turls) {
     DCHECK_NE(turl, candidate);
@@ -2182,7 +2208,7 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     // Never actually remove the DSE during this phase. This handling defers
     // deleting the DSE until it's no longer set as the DSE, analagous to how
     // we handle ACTION_DELETE of the DSE in ProcessSyncChanges().
-    if (turl != best && turl != default_search_provider_) {
+    if (turl != best && turl->sync_guid() != default_provider_guid) {
       Remove(turl);
     }
   }

@@ -37,11 +37,13 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
 using base::Time;
 using base::TimeDelta;
+using testing::NotNull;
 
 namespace {
 
@@ -931,6 +933,38 @@ TEST_F(TemplateURLServiceTest, DefaultSearchProviderLoadedFromPrefs) {
 
   ASSERT_TRUE(model()->GetDefaultSearchProvider());
   AssertEquals(*cloned_url, *model()->GetDefaultSearchProvider());
+}
+
+TEST_F(TemplateURLServiceTest,
+       DefaultSearchProviderShouldBeProtectedFromKeywordConflictDuringLoad) {
+  // Start with the model unloaded, with the DSE provided purely from prefs.
+  ASSERT_FALSE(model()->loaded());
+  const TemplateURL* initial_default_search_provider =
+      model()->GetDefaultSearchProvider();
+  ASSERT_THAT(initial_default_search_provider, NotNull());
+
+  // Now simulate loading from the keyword table, where the DSE is added as a
+  // a TemplateURL to the vector.
+  TemplateURL* in_vector_dse_engine = model()->Add(
+      std::make_unique<TemplateURL>(initial_default_search_provider->data()));
+  ASSERT_THAT(in_vector_dse_engine, NotNull());
+  ASSERT_EQ(in_vector_dse_engine,
+            model()->GetTemplateURLForGUID(
+                initial_default_search_provider->sync_guid()));
+
+  // Then simulate loading a conflicting user engine with the same keyword.
+  TemplateURL* user_engine = AddKeywordWithDate(
+      "user_engine",
+      base::UTF16ToUTF8(initial_default_search_provider->keyword()),
+      "http://test2", std::string(), std::string(), std::string(), false,
+      "UTF-8", base::Time::FromTimeT(20));
+  EXPECT_THAT(user_engine, NotNull());
+
+  // Now verify that the in-vector DSE entry was not removed due to the keyword
+  // conflict. It should be protected by virtue of matching the initial DSE.
+  EXPECT_EQ(in_vector_dse_engine,
+            model()->GetTemplateURLForGUID(
+                initial_default_search_provider->sync_guid()));
 }
 
 TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {

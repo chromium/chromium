@@ -730,6 +730,11 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Once loaded, the default search provider.  This is a pointer to a
   // TemplateURL owned by |template_urls_|.
+  //
+  // TODO(tommycli): Can we combine this with initial_default_search_provider_?
+  // Essentially all direct usages of this variable need to first check that
+  // |loading_| is true, and should call GetDefaultSearchProvider() instead.
+  // Example of a regression due to this mistake: https://crbug.com/1164024.
   TemplateURL* default_search_provider_ = nullptr;
 
   // A temporary location for the DSE until Web Data has been loaded and it can
