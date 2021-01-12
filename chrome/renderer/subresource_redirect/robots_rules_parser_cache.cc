@@ -25,10 +25,16 @@ void RobotsRulesParserCache::UpdateRobotsRules(
 
 base::Optional<RobotsRulesParser::CheckResult>
 RobotsRulesParserCache::CheckRobotsRules(
+    int routing_id,
     const GURL& url,
     RobotsRulesParser::CheckResultCallback callback) {
   return GetRobotsRulesParserForOrigin(url::Origin::Create(url))
-      .CheckRobotsRules(url, std::move(callback));
+      .CheckRobotsRules(routing_id, url, std::move(callback));
+}
+
+void RobotsRulesParserCache::InvalidatePendingRequests(int routing_id) {
+  for (auto& entry : parsers_cache_)
+    entry.second->InvalidatePendingRequests(routing_id);
 }
 
 RobotsRulesParser& RobotsRulesParserCache::GetRobotsRulesParserForOrigin(

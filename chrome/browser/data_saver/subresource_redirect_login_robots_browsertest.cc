@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/login_detection/login_detection_type.h"
+#include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/ui/browser.h"
@@ -301,6 +303,8 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
       params["robots_rules_receive_timeout"] = "1000";
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
+      enabled_features.emplace_back(login_detection::kLoginDetection,
+                                    base::FieldTrialParams());
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     InProcessBrowserTest::SetUp();
@@ -746,6 +750,52 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestNoCompressionOnLoggedInPage)) {
+  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
+                                      {{kRuleTypeAllow, "*"}});
+  // Trigger OAuth login by triggering OAuth start and complete.
+  ui_test_utils::NavigateToURL(browser(),
+                               GetHttpsTestURL("/simple.html?initial"));
+  histogram_tester_.ExpectUniqueSample(
+      "Login.PageLoad.DetectionType",
+      login_detection::LoginDetectionType::kNoLogin, 1);
+  ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("oauth_server.com",
+                                           "/simple.html?client_id=user"));
+  histogram_tester_.ExpectBucketCount(
+      "Login.PageLoad.DetectionType",
+      login_detection::LoginDetectionType::kNoLogin, 2);
+
+  ui_test_utils::NavigateToURL(browser(),
+                               GetHttpsTestURL("/simple.html?code=123"));
+  histogram_tester_.ExpectBucketCount(
+      "Login.PageLoad.DetectionType",
+      login_detection::LoginDetectionType::kOauthFirstTimeLoginFlow, 1);
+
+  // The next navigation will be treated as logged-in.
+  NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
+  histogram_tester_.ExpectBucketCount(
+      "Login.PageLoad.DetectionType",
+      login_detection::LoginDetectionType::kOauthLogin, 1);
+
+  // No image compression will be triggered.
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+
+  robots_rules_server_.VerifyRequestedOrigins({});
+  image_compression_server_.VerifyRequestedImagePaths({});
 }
 
 }  // namespace subresource_redirect

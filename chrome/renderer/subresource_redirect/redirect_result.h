@@ -57,7 +57,10 @@ enum class RedirectResult {
   // Because the robots rules fetch timedout.
   kIneligibleRobotsTimeout,
 
-  kMaxValue = RedirectResult::kIneligibleRobotsTimeout
+  // Because the page was detected to be logged-in.
+  kIneligibleLoginDetected,
+
+  kMaxValue = RedirectResult::kIneligibleLoginDetected
 };
 
 }  // namespace subresource_redirect

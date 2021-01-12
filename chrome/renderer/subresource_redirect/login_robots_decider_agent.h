@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_LOGIN_ROBOTS_DECIDER_AGENT_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
@@ -37,9 +38,14 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   void UpdateRobotsRulesForTesting(const url::Origin& origin,
                                    const base::Optional<std::string>& rules);
 
+  // content::RenderFrameObserver:
+  void ReadyToCommitNavigation(
+      blink::WebDocumentLoader* document_loader) override;
+
   // mojom::SubresourceRedirectHintsReceiver:
   void SetCompressPublicImagesHints(
       mojom::CompressPublicImagesHintsPtr images_hints) override;
+  void SetLoggedInState(bool is_logged_in) override;
 
   // PublicResourceDeciderAgent:
   base::Optional<RedirectResult> ShouldRedirectSubresource(
@@ -49,9 +55,21 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
                                    int64_t content_length,
                                    RedirectResult redirect_result) override;
 
+  // Callback invoked when should redirect check result is available.
+  void OnShouldRedirectSubresourceResult(
+      ShouldRedirectDecisionCallback callback,
+      RobotsRulesParser::CheckResult check_result);
+
   bool IsMainFrame() const;
 
+  // Current state of the redirect compression that should be used for the
+  // current navigation.
+  RedirectResult redirect_result_ = RedirectResult::kUnknown;
+
   THREAD_CHECKER(thread_checker_);
+
+  // Used to get a weak pointer to |this|.
+  base::WeakPtrFactory<LoginRobotsDeciderAgent> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_redirect
