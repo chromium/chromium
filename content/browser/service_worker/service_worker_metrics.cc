@@ -569,8 +569,4 @@ void ServiceWorkerMetrics::RecordLookupRegistrationTime(
   }
 }
 
-void ServiceWorkerMetrics::RecordGetAllOriginsInfoTime(base::TimeDelta time) {
-  base::UmaHistogramMediumTimes("ServiceWorker.GetAllOriginsInfoTime", time);
-}
-
 }  // namespace content

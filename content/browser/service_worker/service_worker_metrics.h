@@ -242,8 +242,6 @@ class ServiceWorkerMetrics {
       blink::ServiceWorkerStatusCode status,
       base::TimeDelta duration);
 
-  static void RecordGetAllOriginsInfoTime(base::TimeDelta time);
-
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerMetrics);
 };

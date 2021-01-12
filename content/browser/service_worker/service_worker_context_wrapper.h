@@ -415,7 +415,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void DidDeleteAndStartOver(blink::ServiceWorkerStatusCode status);
 
   void DidGetAllRegistrationsForGetAllOrigins(
-      base::TimeTicks start_time,
       GetUsageInfoCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner,
       blink::ServiceWorkerStatusCode status,

@@ -28,7 +28,6 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_host.h"
-#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_quota_client.h"
@@ -618,8 +617,7 @@ void ServiceWorkerContextWrapper::GetAllOriginsInfoOnCoreThread(
   }
   context()->registry()->GetAllRegistrationsInfos(base::BindOnce(
       &ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins,
-      this, base::TimeTicks::Now(), std::move(callback),
-      std::move(callback_runner)));
+      this, std::move(callback), std::move(callback_runner)));
 }
 
 void ServiceWorkerContextWrapper::DeleteForOrigin(const url::Origin& origin,
@@ -1660,7 +1658,6 @@ void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
 }
 
 void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins(
-    base::TimeTicks start_time,
     GetUsageInfoCallback callback,
     scoped_refptr<base::TaskRunner> callback_runner,
     blink::ServiceWorkerStatusCode status,
@@ -1686,9 +1683,6 @@ void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins(
   for (const auto& origin_info_pair : origins) {
     usage_infos.push_back(origin_info_pair.second);
   }
-
-  ServiceWorkerMetrics::RecordGetAllOriginsInfoTime(base::TimeTicks::Now() -
-                                                    start_time);
 
   callback_runner->PostTask(FROM_HERE,
                             base::BindOnce(std::move(callback), usage_infos));

@@ -371,6 +371,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.GetAllOriginsInfoTime" units="ms"
     expires_after="2021-01-24">
+  <obsolete>
+    Removed 2021-01-12.
+  </obsolete>
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
