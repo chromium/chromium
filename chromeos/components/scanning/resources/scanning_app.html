@@ -96,8 +96,15 @@
 
   #container {
     flex: 1;
-    max-height: 445px;
     overflow: overlay;
+  }
+
+  :host([opened_]) #container {
+    max-height: 445px;
+  }
+
+  :host(:not([opened_])) #container {
+    max-height: 277px;
   }
 
   .scan-button-container {
@@ -185,13 +192,13 @@
                 selected-file-type="{{selectedFileType}}"></file-type-select>
             <div id="more-settings-line-separator"></div>
             <cr-button id="moreSettingsButton" on-click="toggleClicked_"
-                aria-expanded="[[opened]]"
+                aria-expanded="[[opened_]]"
                 disabled="[[settingsDisabled_]]">
               <span>[[i18n('moreSettings')]]</span>
-              <iron-icon icon="[[getArrowIcon_(opened)]]">
+              <iron-icon icon="[[getArrowIcon_(opened_)]]">
               </iron-icon>
             </cr-button>
-            <iron-collapse id="collapse" opened="{{opened}}">
+            <iron-collapse id="collapse" opened="{{opened_}}">
               <color-mode-select id="colorModeSelect"
                   color-modes="[[capabilities_.colorModes]]"
                   disabled="[[settingsDisabled_]]"

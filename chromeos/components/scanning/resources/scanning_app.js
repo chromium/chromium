@@ -207,6 +207,16 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Indicates whether the More settings section is expanded.
+     * @private {boolean}
+     */
+    opened_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
   },
 
   /** @override */
@@ -421,12 +431,11 @@ Polymer({
   },
 
   /**
-   * @param {boolean} opened Whether the section is expanded or not.
    * @return {string} Icon name.
    * @private
    */
-  getArrowIcon_(opened) {
-    return opened ? 'cr:expand-less' : 'cr:expand-more';
+  getArrowIcon_() {
+    return this.opened_ ? 'cr:expand-less' : 'cr:expand-more';
   },
 
   /**
