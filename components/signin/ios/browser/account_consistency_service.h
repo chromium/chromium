@@ -44,9 +44,6 @@ class AccountConsistencyService : public KeyedService,
   // Google authentication cookies are managed by |AccountReconcilor|).
   static const char kChromeConnectedCookieName[];
 
-  // Name of the Google authentication cookie.
-  static const char kGaiaCookieName[];
-
   AccountConsistencyService(
       web::BrowserState* browser_state,
       AccountReconcilor* account_reconcilor,

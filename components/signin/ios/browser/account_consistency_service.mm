@@ -22,6 +22,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/browser_state.h"
@@ -357,8 +358,6 @@ void AccountConsistencyHandler::WebStateDestroyed() {
 const char AccountConsistencyService::kChromeConnectedCookieName[] =
     "CHROME_CONNECTED";
 
-const char AccountConsistencyService::kGaiaCookieName[] = "SAPISID";
-
 AccountConsistencyService::AccountConsistencyService(
     web::BrowserState* browser_state,
     AccountReconcilor* account_reconcilor,
@@ -428,7 +427,7 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& unused_excluded_cookies) {
   for (const auto& cookie : cookie_list) {
-    if (cookie.cookie.Name() == kGaiaCookieName) {
+    if (cookie.cookie.Name() == GaiaConstants::kGaiaSigninCookieName) {
       LogIOSGaiaCookiesState(
           GaiaCookieStateOnSignedInNavigation::kGaiaCookiePresentOnNavigation);
       return;

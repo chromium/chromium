@@ -107,4 +107,8 @@ const char kClientOAuthEmailKey[] = "email";
 
 // Used as an Invalid refresh token.
 const char kInvalidRefreshToken[] = "invalid_refresh_token";
+
+// Name of the Google authentication cookie.
+const char kGaiaSigninCookieName[] = "SAPISID";
+
 }  // namespace GaiaConstants

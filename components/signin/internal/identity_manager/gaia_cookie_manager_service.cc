@@ -80,10 +80,6 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
     false,
 };
 
-// Name of the GAIA cookie that is being observed to detect when available
-// accounts have changed in the content-area.
-const char* const kGaiaCookieName = "SAPISID";
-
 // State of requests to Gaia logout endpoint. Used as entry for histogram
 // |Signin.GaiaCookieManager.Logout|.
 enum LogoutRequestState {
@@ -482,7 +478,8 @@ void GaiaCookieManagerService::InitCookieListener() {
   // testing contexts.
   if (cookie_manager) {
     cookie_manager->AddCookieChangeListener(
-        GaiaUrls::GetInstance()->secure_google_url(), kGaiaCookieName,
+        GaiaUrls::GetInstance()->secure_google_url(),
+        GaiaConstants::kGaiaSigninCookieName,
         cookie_listener_receiver_.BindNewPipeAndPassRemote());
     cookie_listener_receiver_.set_disconnect_handler(base::BindOnce(
         &GaiaCookieManagerService::OnCookieListenerConnectionError,
@@ -602,10 +599,11 @@ void GaiaCookieManagerService::ForceOnCookieChangeProcessing() {
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
-          google_url, kGaiaCookieName, std::string(), "." + google_url.host(),
-          "/", base::Time(), base::Time(), base::Time(), true /* secure */,
-          false /* httponly */, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, false /* same_party */);
+          google_url, GaiaConstants::kGaiaSigninCookieName, std::string(),
+          "." + google_url.host(), "/", base::Time(), base::Time(),
+          base::Time(), true /* secure */, false /* httponly */,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          false /* same_party */);
   OnCookieChange(
       net::CookieChangeInfo(*cookie, net::CookieAccessResult(),
                             net::CookieChangeCause::UNKNOWN_DELETION));
@@ -693,7 +691,7 @@ void GaiaCookieManagerService::MarkListAccountsStale() {
 
 void GaiaCookieManagerService::OnCookieChange(
     const net::CookieChangeInfo& change) {
-  DCHECK_EQ(kGaiaCookieName, change.cookie.Name());
+  DCHECK_EQ(GaiaConstants::kGaiaSigninCookieName, change.cookie.Name());
   DCHECK(change.cookie.IsDomainMatch(
       GaiaUrls::GetInstance()->google_url().host()));
   list_accounts_stale_ = true;
