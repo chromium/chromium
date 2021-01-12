@@ -164,12 +164,8 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
 };
 
 // The status tray is not active on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_SpeakStatusTray DISABLED_SpeakStatusTray
-#else
-#define MAYBE_SpeakStatusTray SpeakStatusTray
-#endif
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SpeakStatusTray) {
+// Disable the test on Chromium due to flaky: crbug.com/1165749
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
   gfx::Rect tray_bounds = ash::Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
