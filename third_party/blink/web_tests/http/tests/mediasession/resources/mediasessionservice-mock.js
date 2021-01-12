@@ -1,8 +1,9 @@
 /*
- * mediasessionservice-mock contains a mock implementation of MediaSessionService.
+ * mediasessionservice-mock contains a mock implementation of
+ * MediaSessionService.
  */
 
-"use strict";
+import {MediaSessionService, MediaSessionServiceReceiver} from '/gen/third_party/blink/public/mojom/mediasession/media_session.mojom.m.js';
 
 function mojoString16ToJS(mojoString16) {
   return String.fromCharCode.apply(null, mojoString16.data);
@@ -11,15 +12,15 @@ function mojoString16ToJS(mojoString16) {
 function mojoImageToJS(mojoImage) {
   var src = mojoImage.src.url;
   var type = mojoString16ToJS(mojoImage.type);
-  var sizes = "";
+  var sizes = '';
   for (var i = 0; i < mojoImage.sizes.length; i++) {
     if (i > 0)
-      sizes += " ";
+      sizes += ' ';
 
     var mojoSize = mojoImage.sizes[i];
-    sizes += mojoSize.width.toString() + "x" + mojoSize.height.toString();
+    sizes += mojoSize.width.toString() + 'x' + mojoSize.height.toString();
   }
-  return { src: src, type: type, sizes: sizes };
+  return {src, type, sizes};
 }
 
 function mojoMetadataToJS(mojoMetadata) {
@@ -33,22 +34,18 @@ function mojoMetadataToJS(mojoMetadata) {
   for (var i = 0; i < mojoMetadata.artwork.length; i++)
     artwork.push(mojoImageToJS(mojoMetadata.artwork[i]));
 
-  return new MediaMetadata({title: title, artist: artist, album: album, artwork: artwork});
+  return new MediaMetadata({title, artist, album, artwork});
 }
 
-var MediaSessionAction = blink.mojom.MediaSessionAction;
-var MediaSessionPlaybackState = blink.mojom.MediaSessionPlaybackState;
-
-class MediaSessionServiceMock {
+export class MediaSessionServiceMock {
   constructor() {
     this.pendingResponse_ = null;
-    this.bindingSet_ = new mojo.BindingSet(
-        blink.mojom.MediaSessionService);
+    this.receiver_ = new MediaSessionServiceReceiver(this);
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.MediaSessionService.name);
-    this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        new MojoInterfaceInterceptor(MediaSessionService.$interfaceName);
+    this.interceptor_.oninterfacerequest = e =>
+        this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
@@ -107,5 +104,3 @@ class MediaSessionServiceMock {
     return this.client_;
   }
 }
-
-let mediaSessionServiceMock = new MediaSessionServiceMock();

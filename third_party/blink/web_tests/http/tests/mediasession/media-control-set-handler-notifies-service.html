@@ -2,12 +2,9 @@
 <title>Test that setting MediaSession event handler should notify the service</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/media_session/public/mojom/media_session.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
-<script src="resources/mediasessionservice-mock.js"></script>
-<script src="resources/utils.js"></script>
-<script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {MediaSessionAction} from '/gen/services/media_session/public/mojom/media_session.mojom.m.js';
 
 var expectations;
 
@@ -17,34 +14,34 @@ var nextExpectation = 0;
 function getExpectations() {
   if (!expectations) {
     expectations = [
-      [ mediaSession.mojom.MediaSessionAction.kPlay, true ],
-      [ mediaSession.mojom.MediaSessionAction.kPause, true ],
-      [ mediaSession.mojom.MediaSessionAction.kPreviousTrack, true ],
-      [ mediaSession.mojom.MediaSessionAction.kNextTrack, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekBackward, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekForward, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekTo, true ],
-      [ mediaSession.mojom.MediaSessionAction.kPlay, false ],
-      [ mediaSession.mojom.MediaSessionAction.kPause, false ],
-      [ mediaSession.mojom.MediaSessionAction.kPreviousTrack, false ],
-      [ mediaSession.mojom.MediaSessionAction.kNextTrack, false ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekBackward, false ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekForward, false ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekTo, false ],
-      [ mediaSession.mojom.MediaSessionAction.kPlay, true ],
-      [ mediaSession.mojom.MediaSessionAction.kPause, true ],
-      [ mediaSession.mojom.MediaSessionAction.kPreviousTrack, true ],
-      [ mediaSession.mojom.MediaSessionAction.kNextTrack, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekBackward, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekForward, true ],
-      [ mediaSession.mojom.MediaSessionAction.kSeekTo, true ],
+      [ MediaSessionAction.kPlay, true ],
+      [ MediaSessionAction.kPause, true ],
+      [ MediaSessionAction.kPreviousTrack, true ],
+      [ MediaSessionAction.kNextTrack, true ],
+      [ MediaSessionAction.kSeekBackward, true ],
+      [ MediaSessionAction.kSeekForward, true ],
+      [ MediaSessionAction.kSeekTo, true ],
+      [ MediaSessionAction.kPlay, false ],
+      [ MediaSessionAction.kPause, false ],
+      [ MediaSessionAction.kPreviousTrack, false ],
+      [ MediaSessionAction.kNextTrack, false ],
+      [ MediaSessionAction.kSeekBackward, false ],
+      [ MediaSessionAction.kSeekForward, false ],
+      [ MediaSessionAction.kSeekTo, false ],
+      [ MediaSessionAction.kPlay, true ],
+      [ MediaSessionAction.kPause, true ],
+      [ MediaSessionAction.kPreviousTrack, true ],
+      [ MediaSessionAction.kNextTrack, true ],
+      [ MediaSessionAction.kSeekBackward, true ],
+      [ MediaSessionAction.kSeekForward, true ],
+      [ MediaSessionAction.kSeekTo, true ],
     ];
   }
   return expectations;
 }
 
 async_test(function(t) {
-  let m = mediaSessionServiceMock;
+  const m = new MediaSessionServiceMock();
   m.setEnableDisableActionCallback(t.step_func(function(action, isEnabled) {
     var expectedAction = getExpectations()[nextExpectation][0];
     var expectedIsEnabled = getExpectations()[nextExpectation][1];

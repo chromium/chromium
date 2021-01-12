@@ -2,11 +2,10 @@
 <title>MediaSession Mojo Test</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
-<script src="resources/mediasessionservice-mock.js"></script>
-<script src="resources/utils.js"></script>
-<script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+
+import {MediaSessionPlaybackState} from '/gen/third_party/blink/public/mojom/mediasession/media_session.mojom.m.js';
 
 var inputStates = ["none", "paused", "playing", "invalid", "none"];
 var expectations;
@@ -26,7 +25,7 @@ function getExpectations() {
 }
 
 async_test(function(t) {
-  let m = mediaSessionServiceMock;
+  const m = new MediaSessionServiceMock();
   m.setPlaybackStateCallback(t.step_func(function(state) {
     assert_equals(state, getExpectations()[nextExpectation++]);
     if (nextExpectation == getExpectations().length)

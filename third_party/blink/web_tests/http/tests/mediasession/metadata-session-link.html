@@ -2,11 +2,9 @@
 <title>MediaMetadata / MediaSession link Mojo Test</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
-<script src="resources/mediasessionservice-mock.js"></script>
-<script src="resources/utils.js"></script>
-<script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {assert_metadata_equals} from './resources/utils.js';
 
 async_test(t => {
   // The following are expected results.
@@ -24,7 +22,7 @@ async_test(t => {
   ];
   var resultId = 0;
 
-  let m = mediaSessionServiceMock;
+  const m = new MediaSessionServiceMock();
   m.setMetadataCallback(t.step_func(receivedMetadata => {
     assert_metadata_equals(receivedMetadata, results[resultId]);
     ++resultId;

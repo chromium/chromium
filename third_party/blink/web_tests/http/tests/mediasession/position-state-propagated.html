@@ -2,11 +2,9 @@
 <title>MediaSession Mojo Test</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
-<script src="resources/mediasessionservice-mock.js"></script>
-<script src="resources/utils.js"></script>
-<script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+
 const inputPositions = [
   { duration: 10 },
   { duration: 10, playbackRate: 2.0, position: 5 },
@@ -20,14 +18,14 @@ const expectations = [
 ];
 
 function toSecs(timeDelta) {
-  return timeDelta.microseconds / 1000000;
+  return Number(timeDelta.microseconds / 1000000n);
 }
 
 async_test((t) => {
-  let m = mediaSessionServiceMock;
+  const m = new MediaSessionServiceMock();
   let nextExpectation = 0;
 
-  mediaSessionServiceMock.setPositionStateCallback(t.step_func((position) => {
+  m.setPositionStateCallback(t.step_func((position) => {
     const expectation = expectations[nextExpectation++];
 
     if (expectation === null) {

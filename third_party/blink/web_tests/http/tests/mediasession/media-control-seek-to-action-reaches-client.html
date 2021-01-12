@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {MediaSessionAction} from '/gen/services/media_session/public/mojom/media_session.mojom.m.js';
+
+async_test((t) => {
+  const mediaSessionServiceMock = new MediaSessionServiceMock();
+  mediaSessionServiceMock.setClientCallback(t.step_func(() => {
+    mediaSessionServiceMock.getClient().didReceiveAction(
+        MediaSessionAction.kSeekTo,
+        {seekTo: {seekTime: {microseconds: 10000000}, fastSeek: true}});
+  }));
+
+  window.navigator.mediaSession.setActionHandler("seekto", t.step_func_done((e) => {
+    assert_equals(e.action, "seekto");
+    assert_equals(e.seekTime, 10);
+    assert_true(e.fastSeek);
+  }));
+}, "test that the seek to action reaches client");
+</script>
