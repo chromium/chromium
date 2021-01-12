@@ -10,6 +10,7 @@ source_set("js_messaging") {
   ]
 
   sources = [
+    "java_script_feature.h",
     "web_frame.h",
     "web_frame_user_data.h",
     "web_frame_util.h",

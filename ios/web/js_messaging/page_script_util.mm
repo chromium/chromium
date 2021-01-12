@@ -18,29 +18,6 @@
 
 namespace {
 
-// Make sure that script is injected only once. For example, content of
-// WKUserScript can be injected into the same page multiple times
-// without notifying WKNavigationDelegate (e.g. after window.document.write
-// JavaScript call). Injecting the script multiple times invalidates the
-// __gCrWeb.windowId variable and will break the ability to send messages from
-// JS to the native code. Wrapping injected script into "if (!injected)" check
-// prevents multiple injections into the same page. |script_identifier| should
-// identify the script being injected in order to enforce the injection of
-// |script| to only once.
-// NOTE: |script_identifier| will be used as the prefix for a JavaScript var, so
-// it must adhere to JavaScript var naming rules.
-NSString* MakeScriptInjectableOnce(NSString* script_identifier,
-                                   NSString* script) {
-  NSString* kOnceWrapperTemplate =
-      @"if (typeof %@ === 'undefined') { var %@ = true; %%@ }";
-  NSString* injected_var_name =
-      [NSString stringWithFormat:@"%@_injected", script_identifier];
-  NSString* once_wrapper =
-      [NSString stringWithFormat:kOnceWrapperTemplate, injected_var_name,
-                                 injected_var_name];
-  return [NSString stringWithFormat:once_wrapper, script];
-}
-
 // Returns a string with \ and ' escaped.
 // This is used instead of GetQuotedJSONString because that will convert
 // UTF-16 to UTF-8, which can cause problems when injecting scripts depending
@@ -70,6 +47,18 @@ NSString* GetPageScript(NSString* script_file_name) {
                  << base::SysNSStringToUTF8(error.description);
   DCHECK(content);
   return content;
+}
+
+NSString* MakeScriptInjectableOnce(NSString* script_identifier,
+                                   NSString* script) {
+  NSString* kOnceWrapperTemplate =
+      @"if (typeof %@ === 'undefined') { var %@ = true; %%@ }";
+  NSString* injected_var_name =
+      [NSString stringWithFormat:@"_injected_%@", script_identifier];
+  NSString* once_wrapper =
+      [NSString stringWithFormat:kOnceWrapperTemplate, injected_var_name,
+                                 injected_var_name];
+  return [NSString stringWithFormat:once_wrapper, script];
 }
 
 NSString* GetDocumentStartScriptForMainFrame(BrowserState* browser_state) {
