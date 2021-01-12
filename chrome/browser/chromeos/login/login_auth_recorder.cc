@@ -136,19 +136,29 @@ LoginAuthRecorder::~LoginAuthRecorder() {
 
 void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
   DCHECK_NE(method, AuthMethod::kNothing);
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::LOCKED) {
-    return;
-  }
 
-  // Record usage of the authentication method in lock screen.
+  bool is_locked;
+  switch (session_manager::SessionManager::Get()->session_state()) {
+    case session_manager::SessionState::LOGIN_PRIMARY:
+    case session_manager::SessionState::LOGIN_SECONDARY:
+      is_locked = false;
+      break;
+    case session_manager::SessionState::LOCKED:
+      is_locked = true;
+      break;
+    default:
+      return;
+  }
+  const std::string prefix =
+      is_locked ? "Ash.Login.Lock.AuthMethod." : "Ash.Login.Login.AuthMethod.";
+
+  // Record usage of the authentication method in login/lock screen.
   const bool is_tablet_mode = ash::TabletMode::Get()->InTabletMode();
+  std::string used_metric_name;
   if (is_tablet_mode) {
-    base::UmaHistogramEnumeration("Ash.Login.Lock.AuthMethod.Used.TabletMode",
-                                  method);
+    base::UmaHistogramEnumeration(prefix + "Used.TabletMode", method);
   } else {
-    base::UmaHistogramEnumeration(
-        "Ash.Login.Lock.AuthMethod.Used.ClamShellMode", method);
+    base::UmaHistogramEnumeration(prefix + "Used.ClamShellMode", method);
   }
 
   if (last_auth_method_ != method) {
@@ -156,8 +166,7 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
     const base::Optional<AuthMethodSwitchType> switch_type =
         FindSwitchType(last_auth_method_, method);
     if (switch_type) {
-      base::UmaHistogramEnumeration("Ash.Login.Lock.AuthMethod.Switched",
-                                    *switch_type);
+      base::UmaHistogramEnumeration(prefix + "Switched", *switch_type);
     }
 
     last_auth_method_ = method;

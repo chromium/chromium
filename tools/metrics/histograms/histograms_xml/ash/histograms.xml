@@ -1035,7 +1035,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    The count of auth method switching actions in ChromeOS lock screen.
+    The count of auth method switching actions on ChromeOS lock screen.
   </summary>
 </histogram>
 
@@ -1046,7 +1046,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-oac@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
-    Fingerprint / Challenge response) in ChromeOS lock screen clamshell mode.
+    Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
+    other form-factors.
   </summary>
 </histogram>
 
@@ -1057,7 +1058,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-oac@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
-    Fingerprint / Challenge response) in ChromeOS lock screen tablet mode.
+    Fingerprint / Challenge response) on Chromebooks in tablet mode.
   </summary>
 </histogram>
 
@@ -1089,6 +1090,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The numbers of times that users click on the shelf buttons, trays and lock
     screen note on the ChromeOS lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Switched"
+    enum="AuthMethodSwitchType" expires_after="2021-05-16">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The count of auth method switching actions on ChromeOS login screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Used.ClamShellMode"
+    enum="AuthMethod" expires_after="2021-05-16">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
+    other form-factors.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Used.TabletMode" enum="AuthMethod"
+    expires_after="2021-05-16">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in tablet mode.
   </summary>
 </histogram>
 
