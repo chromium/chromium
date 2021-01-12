@@ -60,6 +60,8 @@ struct CompromisedCredentials {
   CompromisedCredentials& operator=(CompromisedCredentials&& rhs);
   ~CompromisedCredentials();
 
+  // The primary key of an affected Login.
+  FormPrimaryKey parent_key{-1};
   // The signon_realm of the website where the credentials were compromised.
   std::string signon_realm;
   // The value of the compromised username.

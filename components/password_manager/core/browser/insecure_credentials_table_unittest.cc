@@ -65,6 +65,15 @@ class InsecureCredentialsTableTest : public testing::Test {
     ASSERT_TRUE(login_db_->Init());
   }
 
+  std::vector<int> GetParentIds(
+      base::span<const CompromisedCredentials> credentials) {
+    std::vector<int> ids;
+    ids.reserve(credentials.size());
+    for (const auto& credential : credentials)
+      ids.push_back(credential.parent_key.value());
+    return ids;
+  }
+
   CompromisedCredentials& test_data() { return test_data_; }
   PasswordForm& test_form() { return test_form_; }
   InsecureCredentialsTable* db() {
@@ -118,6 +127,7 @@ TEST_F(InsecureCredentialsTableTest, SameSignonRealmDifferentUsername) {
               ElementsAre(compromised_credentials1, compromised_credentials2));
   EXPECT_THAT(db()->GetRows(test_data().signon_realm),
               ElementsAre(compromised_credentials1, compromised_credentials2));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 2));
 }
 
 TEST_F(InsecureCredentialsTableTest, SameUsernameDifferentSignonRealm) {
@@ -135,6 +145,7 @@ TEST_F(InsecureCredentialsTableTest, SameUsernameDifferentSignonRealm) {
               ElementsAre(compromised_credentials1, compromised_credentials2));
   EXPECT_THAT(db()->GetRows(test_data().signon_realm),
               ElementsAre(compromised_credentials1));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 2));
 }
 
 TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
@@ -147,6 +158,7 @@ TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
   // It should return false because of unique constraints.
   EXPECT_FALSE(db()->AddRow(compromised_credentials2));
   EXPECT_THAT(db()->GetAllRows(), ElementsAre(compromised_credentials1));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
 }
 
 TEST_F(InsecureCredentialsTableTest,
@@ -167,6 +179,7 @@ TEST_F(InsecureCredentialsTableTest,
   EXPECT_THAT(db()->GetRows(test_data().signon_realm),
               ElementsAre(compromised_credentials1, compromised_credentials2,
                           compromised_credentials3));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1, 1));
 }
 
 TEST_F(InsecureCredentialsTableTest, RemoveRow) {
@@ -174,6 +187,7 @@ TEST_F(InsecureCredentialsTableTest, RemoveRow) {
   EXPECT_TRUE(db()->AddRow(test_data()));
   EXPECT_THAT(db()->GetRows(test_data().signon_realm),
               ElementsAre(test_data()));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
 
   EXPECT_TRUE(db()->RemoveRow(test_data().signon_realm, test_data().username,
                               RemoveCompromisedCredentialsReason::kUpdate));
@@ -204,6 +218,7 @@ TEST_F(InsecureCredentialsTableTest, RemoveRowsCreatedBetween) {
   EXPECT_THAT(db()->GetAllRows(),
               ElementsAre(compromised_credentials1, compromised_credentials2,
                           compromised_credentials3));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 2, 3));
 
   EXPECT_TRUE(db()->RemoveRowsByUrlAndTime(base::NullCallback(),
                                            base::Time::FromTimeT(15),
@@ -366,6 +381,7 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   EXPECT_THAT(
       db()->GetRows(FormPrimaryKey(1)),
       UnorderedElementsAre(compromised_credentials1, compromised_credentials2));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1));
 
   test_form().username_value = base::ASCIIToUTF16(kUsername2);
   test_data().username = test_form().username_value;
@@ -377,6 +393,7 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   EXPECT_TRUE(db()->AddRow(compromised_credentials1));
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)),
               UnorderedElementsAre(compromised_credentials1));
+  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1, 2));
 }
 
 }  // namespace

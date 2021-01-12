@@ -19,16 +19,19 @@ std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
     sql::Statement* s) {
   std::vector<CompromisedCredentials> results;
   while (s->Step()) {
-    std::string signon_realm = s->ColumnString(0);
-    base::string16 username = s->ColumnString16(1);
+    int parent_key = s->ColumnInt64(0);
+    std::string signon_realm = s->ColumnString(1);
+    base::string16 username = s->ColumnString16(2);
     CompromiseType insecurity_type =
-        static_cast<CompromiseType>(s->ColumnInt64(2));
+        static_cast<CompromiseType>(s->ColumnInt64(3));
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
-        (base::TimeDelta::FromMicroseconds(s->ColumnInt64(3))));
-    bool is_muted = !!s->ColumnInt64(4);
-
-    results.emplace_back(std::move(signon_realm), std::move(username),
-                         create_time, insecurity_type, IsMuted(is_muted));
+        (base::TimeDelta::FromMicroseconds(s->ColumnInt64(4))));
+    bool is_muted = !!s->ColumnInt64(5);
+    CompromisedCredentials issue(std::move(signon_realm), std::move(username),
+                                 create_time, insecurity_type,
+                                 IsMuted(is_muted));
+    issue.parent_key = FormPrimaryKey(parent_key);
+    results.emplace_back(std::move(issue));
   }
   return results;
 }
@@ -163,7 +166,7 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      base::StringPrintf("SELECT signon_realm, username_value, "
+      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
                          "insecurity_type, create_time, is_muted FROM %s "
                          "INNER JOIN logins ON parent_id = logins.id "
                          "WHERE signon_realm = ? ",
@@ -180,7 +183,7 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      base::StringPrintf("SELECT signon_realm, username_value, "
+      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
                          "insecurity_type, create_time, is_muted FROM %s "
                          "INNER JOIN logins ON parent_id = logins.id "
                          "WHERE parent_id = ? ",
@@ -258,7 +261,7 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetAllRows() {
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      base::StringPrintf("SELECT signon_realm, username_value, "
+      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
                          "insecurity_type, create_time, is_muted FROM %s "
                          "INNER JOIN logins ON parent_id = logins.id",
                          kTableName)
