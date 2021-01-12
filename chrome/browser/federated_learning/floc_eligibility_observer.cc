@@ -1,0 +1,71 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/federated_learning/floc_eligibility_observer.h"
+
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/history/content/browser/history_context_helper.h"
+#include "components/history/core/browser/history_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+
+namespace federated_learning {
+
+FlocEligibilityObserver::~FlocEligibilityObserver() = default;
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FlocEligibilityObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  // At this point the add-page-to-history decision should have been made,
+  // because history is added in HistoryTabHelper::DidFinishNavigation, and this
+  // OnEligibleCommit method is invoked in the same broadcasting family through
+  // MetricsWebContentsObserver::DidFinishNavigation.
+
+  // TODO(yaoxia): Perhaps we want an explicit signal for "the page was added
+  // to history or was ineligible". This way we don't need to count on the above
+  // relation, and can also stop observing if the history was not added.
+
+  // If the IP was not publicly routable, the navigation history is not eligible
+  // for floc. We can stop observing now.
+  if (!navigation_handle->GetSocketAddress().address().IsPubliclyRoutable())
+    return ObservePolicy::STOP_OBSERVING;
+
+  DCHECK(!eligible_commit_);
+  eligible_commit_ = true;
+
+  return ObservePolicy::CONTINUE_OBSERVING;
+}
+
+void FlocEligibilityObserver::OnAdResource() {
+  MaybeSetFlocAllowedInHistory();
+}
+
+void FlocEligibilityObserver::OnInterestCohortApiUsed() {
+  MaybeSetFlocAllowedInHistory();
+}
+
+FlocEligibilityObserver::FlocEligibilityObserver(content::RenderFrameHost* rfh)
+    : web_contents_(content::WebContents::FromRenderFrameHost(rfh)) {}
+
+void FlocEligibilityObserver::MaybeSetFlocAllowedInHistory() {
+  if (!eligible_commit_ || did_set_floc_allowed_)
+    return;
+
+  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      ServiceAccessType::IMPLICIT_ACCESS);
+
+  hs->SetFlocAllowed(
+      history::ContextIDForWebContents(web_contents_),
+      web_contents_->GetController().GetLastCommittedEntry()->GetUniqueID(),
+      web_contents_->GetLastCommittedURL());
+
+  did_set_floc_allowed_ = true;
+}
+
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FlocEligibilityObserver)
+
+}  // namespace federated_learning

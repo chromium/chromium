@@ -462,6 +462,24 @@ void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
   UpdateVisitDuration(visit_id, end_ts);
 }
 
+void HistoryBackend::SetFlocAllowed(ContextID context_id,
+                                    int nav_entry_id,
+                                    const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetFlocAllowed");
+
+  if (!db_)
+    return;
+
+  VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    visit_row.floc_allowed = true;
+    db_->UpdateVisitRow(visit_row);
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
     return;

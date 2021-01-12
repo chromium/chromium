@@ -62,6 +62,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/federated_learning/floc_eligibility_observer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/font_access/chrome_font_access_delegate.h"
@@ -5747,12 +5748,16 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
 }
 
 std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
-    content::BrowserContext* browser_context,
+    content::WebContents* web_contents,
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) {
+  federated_learning::FlocEligibilityObserver::GetOrCreateForCurrentDocument(
+      web_contents->GetMainFrame())
+      ->OnInterestCohortApiUsed();
+
   federated_learning::FlocIdProvider* floc_id_provider =
       federated_learning::FlocIdProviderFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
   if (!floc_id_provider)
     return std::string();

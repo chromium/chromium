@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -33,12 +32,10 @@ void FlocServiceImpl::CreateMojoService(
 }
 
 void FlocServiceImpl::GetInterestCohort(GetInterestCohortCallback callback) {
-  BrowserContext* browser_context = render_frame_host_->GetBrowserContext();
-  DCHECK(browser_context);
-
   std::string interest_cohort =
       GetContentClient()->browser()->GetInterestCohortForJsApi(
-          browser_context, render_frame_host_->GetLastCommittedURL(),
+          WebContents::FromRenderFrameHost(render_frame_host_),
+          render_frame_host_->GetLastCommittedURL(),
           render_frame_host_->GetIsolationInfoForSubresources()
               .top_frame_origin());
 

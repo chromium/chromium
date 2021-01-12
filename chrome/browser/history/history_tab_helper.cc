@@ -96,18 +96,16 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                                                 page_transition);
   }
 
-  // In the future, this may encapsulate more conditions, e.g. page level
-  // opt-in, opt-out, etc.
-  bool floc_allowed =
-      navigation_handle->GetSocketAddress().address().IsPubliclyRoutable();
-
+  // Note: floc_allowed is set to false initially and is later updated by the
+  // floc eligibility observer. Eventually it will be removed from the history
+  // service API.
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
       navigation_handle->GetReferrer().url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
-      !content_suggestions_navigation, floc_allowed,
+      !content_suggestions_navigation, /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
           ? base::Optional<base::string16>(
                 navigation_handle->GetWebContents()->GetTitle())

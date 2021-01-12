@@ -165,6 +165,8 @@ class HistoryService : public KeyedService {
   //
   // |floc_allowed| indicates whether this URL visit can be included in FLoC
   // computation. See VisitRow::floc_allowed for details.
+  // TODO(yaoxia): Remove the floc_allowed param from this API as well as from
+  // HistoryAddPageArgs. This bit will never be set at this point.
   //
   // TODO(avi): This is no longer true. 'page id' was removed years ago, and
   // their uses replaced by globally-unique nav_entry_ids. Is ContextID still
@@ -213,6 +215,11 @@ class HistoryService : public KeyedService {
                              int nav_entry_id,
                              const GURL& url,
                              base::Time end_ts);
+
+  // Updates the history database by setting the floc allowed bit. The page can
+  // be identified by the combination of the context id, the navigation entry id
+  // and the url. No-op if the page is not found.
+  void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
 
   // Querying ------------------------------------------------------------------
 

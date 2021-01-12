@@ -242,6 +242,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              int nav_entry_id,
                              const GURL& url,
                              base::Time end_ts);
+  void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
 
   // Querying ------------------------------------------------------------------
 

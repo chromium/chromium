@@ -1814,9 +1814,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool user_gesture,
       NavigationDownloadPolicy* download_policy);
 
-  // Returns the interest cohort associated with the |browser_context|.
+  // Returns the interest cohort associated with the browser context of
+  // |web_contents|.
   virtual std::string GetInterestCohortForJsApi(
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin);
 

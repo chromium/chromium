@@ -639,7 +639,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationDownloadPolicy* download_policy) override;
 
   std::string GetInterestCohortForJsApi(
-      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) override;
 

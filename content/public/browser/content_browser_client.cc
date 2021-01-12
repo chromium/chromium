@@ -1045,7 +1045,7 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     NavigationDownloadPolicy* download_policy) {}
 
 std::string ContentBrowserClient::GetInterestCohortForJsApi(
-    content::BrowserContext* browser_context,
+    WebContents* web_contents,
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) {
   return std::string();

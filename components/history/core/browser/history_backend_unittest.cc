@@ -1465,6 +1465,36 @@ TEST_F(HistoryBackendTest, AddPageArgsSource) {
   EXPECT_EQ(history::SOURCE_SYNCED, visit_sources.begin()->second);
 }
 
+TEST_F(HistoryBackendTest, SetFlocAllowed) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://test-set-floc-allowed.com");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), history::RedirectList(),
+                             ui::PAGE_TRANSITION_TYPED, false,
+                             history::SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitRow visit = visits[0];
+  EXPECT_FALSE(visit.floc_allowed);
+
+  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+
+  id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  visit = visits[0];
+  EXPECT_TRUE(visit.floc_allowed);
+}
+
 TEST_F(HistoryBackendTest, AddVisitsSource) {
   ASSERT_TRUE(backend_.get());
 

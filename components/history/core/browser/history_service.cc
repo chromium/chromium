@@ -413,6 +413,17 @@ void HistoryService::UpdateWithPageEndTime(ContextID context_id,
                      context_id, nav_entry_id, url, end_ts));
 }
 
+void HistoryService::SetFlocAllowed(ContextID context_id,
+                                    int nav_entry_id,
+                                    const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryService::SetFlocAllowed");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::SetFlocAllowed, history_backend_,
+                              context_id, nav_entry_id, url));
+}
+
 void HistoryService::AddPageWithDetails(const GURL& url,
                                         const base::string16& title,
                                         int visit_count,
