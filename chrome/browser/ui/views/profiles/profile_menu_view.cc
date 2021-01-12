@@ -695,11 +695,9 @@ void ProfileMenuView::BuildSelectableProfiles() {
                              ->GetProfileAttributesStorage()
                              .GetAllProfilesAttributesSortedByName();
   for (ProfileAttributesEntry* profile_entry : profile_entries) {
-    // Guest profile and the current profile are excluded.
-    if (profile_entry->IsGuest() ||
-        profile_entry->GetPath() == browser()->profile()->GetPath()) {
+    // The current profile is excluded.
+    if (profile_entry->GetPath() == browser()->profile()->GetPath())
       continue;
-    }
 
     AddSelectableProfile(
         ui::ImageModel::FromImage(

@@ -245,7 +245,7 @@ ProfileAttributesStorage::~ProfileAttributesStorage() {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributes() {
+ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
   std::vector<ProfileAttributesEntry*> ret;
   for (const auto& path_and_entry : profile_attributes_entries_) {
     ProfileAttributesEntry* entry;
@@ -253,7 +253,8 @@ ProfileAttributesStorage::GetAllProfilesAttributes() {
     bool success = GetProfileAttributesWithPath(
         base::FilePath(path_and_entry.first), &entry);
     DCHECK(success);
-    ret.push_back(entry);
+    if (!entry->IsGuest() || include_guest_profile)
+      ret.push_back(entry);
   }
   return ret;
 }
@@ -261,7 +262,8 @@ ProfileAttributesStorage::GetAllProfilesAttributes() {
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSorted(
     bool use_local_profile_name) {
-  std::vector<ProfileAttributesEntry*> ret = GetAllProfilesAttributes();
+  std::vector<ProfileAttributesEntry*> ret =
+      GetAllProfilesAttributes(/*include_guest_profile=*/false);
   // Do not allocate the collator and sort if it is not necessary.
   if (ret.size() < 2)
     return ret;
@@ -317,7 +319,8 @@ base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
 
     // Loop through previously named profiles to ensure we're not duplicating.
     std::vector<ProfileAttributesEntry*> entries =
-        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
+        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
+            /*include_guest_profile=*/false);
 
     if (std::none_of(entries.begin(), entries.end(),
                      [name](ProfileAttributesEntry* entry) {
@@ -364,7 +367,8 @@ size_t ProfileAttributesStorage::ChooseAvatarIconIndexForNewProfile() const {
   std::unordered_set<size_t> used_icon_indices;
 
   std::vector<ProfileAttributesEntry*> entries =
-      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
+      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
+          /*include_guest_profile=*/false);
   for (const ProfileAttributesEntry* entry : entries)
     used_icon_indices.insert(entry->GetAvatarIconIndex());
 
@@ -423,15 +427,14 @@ void ProfileAttributesStorage::RecordDeletedProfileState(
 #endif
 
 void ProfileAttributesStorage::RecordProfilesState() {
-  std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
+  std::vector<ProfileAttributesEntry*> entries =
+      GetAllProfilesAttributes(/*include_guest_profile=*/false);
   if (entries.size() == 0)
     return;
 
   MultiProfileUserType type = GetMultiProfileUserType(entries);
 
   for (ProfileAttributesEntry* entry : entries) {
-    if (entry->IsGuest())
-      continue;
     RecordProfileState(entry, profile_metrics::StateSuffix::kAll);
 
     switch (type) {

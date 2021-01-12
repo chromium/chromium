@@ -69,9 +69,13 @@ class ProfileAttributesStorage
 
   // Returns a vector containing one attributes entry per known profile. They
   // are not sorted in any particular order.
-  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes();
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes(
+      bool include_guest_profile = false);
 
+  // Returns all non-Guest profile attributes sorted by name.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName();
+
+  // Returns all non-Guest profile attributes sorted by local profile name.
   std::vector<ProfileAttributesEntry*>
   GetAllProfilesAttributesSortedByLocalProfilName();
 

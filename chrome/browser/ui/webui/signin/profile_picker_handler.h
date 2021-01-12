@@ -91,7 +91,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
 
   // Returns the list of profiles in the same order as when the picker
-  // was first shown.
+  // was first shown. Guest profile is not included here.
   std::vector<ProfileAttributesEntry*> GetProfileAttributes();
 
   // Creation time of the handler, to measure performance on startup. Only set

@@ -637,9 +637,6 @@ ProfilePickerHandler::GetProfileAttributes() {
   // Vector of nullptr entries.
   std::vector<ProfileAttributesEntry*> entries(number_of_profiles);
   for (ProfileAttributesEntry* entry : ordered_entries) {
-    if (entry->IsGuest())
-      continue;
-
     DCHECK(profiles_order_.find(entry->GetPath()) != profiles_order_.end());
     size_t index = profiles_order_[entry->GetPath()];
     DCHECK_LT(index, number_of_profiles);
@@ -655,8 +652,6 @@ base::Value ProfilePickerHandler::GetProfilesList() {
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {
-    if (entry->IsGuest())
-      continue;
     auto profile_entry = std::make_unique<base::DictionaryValue>();
     profile_entry->SetKey("profilePath",
                           util::FilePathToValue(entry->GetPath()));
