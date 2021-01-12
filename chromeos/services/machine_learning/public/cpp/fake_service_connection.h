@@ -204,29 +204,29 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void HandleFindLanguagesCall(
       std::string text,
       mojom::TextClassifier::FindLanguagesCallback callback);
-  void HandleLoadHandwritingModel(
+  void HandleLoadHandwritingModelCall(
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback callback);
-  void HandleLoadHandwritingModelWithSpec(
+  void HandleLoadHandwritingModelWithSpecCall(
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           callback);
-  void HandleRecognize(
+  void HandleRecognizeCall(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback);
-  void HandleLoadGrammarChecker(
+  void HandleLoadGrammarCheckerCall(
       mojo::PendingReceiver<mojom::GrammarChecker> receiver,
       mojom::MachineLearningService::LoadGrammarCheckerCallback callback);
-  void HandleGrammarCheckerQuery(mojom::GrammarCheckerQueryPtr query,
+  void HandleGrammarCheckerQueryCall(mojom::GrammarCheckerQueryPtr query,
                                  mojom::GrammarChecker::CheckCallback callback);
-  void HandleLoadSpeechRecognizer(
+  void HandleLoadSpeechRecognizerCall(
       mojo::PendingRemote<mojom::SodaClient> soda_client,
       mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
       mojom::MachineLearningService::LoadSpeechRecognizerCallback callback);
 
-  void HandleStop();
-  void HandleStart();
-  void HandleMarkDone();
+  void HandleStopCall();
+  void HandleStartCall();
+  void HandleMarkDoneCall();
 
   mojo::ReceiverSet<mojom::Model> model_receivers_;
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;
