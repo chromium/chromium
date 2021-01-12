@@ -48,9 +48,7 @@
 -ContentIndexTest.MetricsCollected
 -ContentSettingsTest.AllowCookiesForASessionUsingExceptions
 -ContentVerifierTest.PolicyCorrupted
-# https://crbug.com/1150200 - "Open link as" does not appear.
--ContextMenuBrowserTest.OpenLinkInProfile
--ContextMenuBrowserTest.OpenLinkInProfileEntryPresent
+-ContextMenuBrowserTest.*
 -CrComponentsCertificateManagerV3Test.All
 -CrComponentsManagedFootnoteV3Test.All
 -CreativeOriginAdsPageLoadMetricsObserverBrowserTest.CreativeOriginStatusWithThrottlingNestedThrottled
