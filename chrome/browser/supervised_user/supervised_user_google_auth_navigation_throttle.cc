@@ -148,7 +148,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     ReauthenticateChildAccount(
         web_contents, account_info.email,
         base::BindRepeating(&SupervisedUserGoogleAuthNavigationThrottle::
-                                OnReauthenticationResult,
+                                OnReauthenticationFailed,
                             weak_ptr_factory_.GetWeakPtr()));
   }
   return content::NavigationThrottle::DEFER;
@@ -161,14 +161,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
 #endif
 }
 
-void SupervisedUserGoogleAuthNavigationThrottle::OnReauthenticationResult(
-    bool reauth_successful) {
-  if (reauth_successful) {
-    // If reauthentication was not successful, wait until the cookies are
-    // refreshed, which will call us back separately.
-    return;
-  }
-
-  // Otherwise cancel immediately.
+void SupervisedUserGoogleAuthNavigationThrottle::OnReauthenticationFailed() {
+  // Cancel the navifation if reauthentication failed.
   CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
 }

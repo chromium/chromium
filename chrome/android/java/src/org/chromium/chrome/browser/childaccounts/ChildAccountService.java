@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -68,28 +69,28 @@ public class ChildAccountService {
         });
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static void reauthenticateChildAccount(
-            WindowAndroid windowAndroid, String accountName, final long nativeCallback) {
+    static void reauthenticateChildAccount(
+            WindowAndroid windowAndroid, String accountName, final long nativeOnFailureCallback) {
         ThreadUtils.assertOnUiThread();
-
-        Activity activity = windowAndroid.getActivity().get();
+        final Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    ()
-                            -> ChildAccountServiceJni.get().onReauthenticationResult(
-                                    nativeCallback, false));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                ChildAccountServiceJni.get().onReauthenticationFailed(nativeOnFailureCallback);
+            });
             return;
         }
-
         Account account = AccountUtils.createAccountFromName(accountName);
-        AccountManagerFacadeProvider.getInstance().updateCredentials(account, activity,
-                result
-                -> ChildAccountServiceJni.get().onReauthenticationResult(nativeCallback, result));
+        AccountManagerFacadeProvider.getInstance().updateCredentials(account, activity, success -> {
+            if (!success) {
+                ChildAccountServiceJni.get().onReauthenticationFailed(nativeOnFailureCallback);
+            }
+        });
     }
 
     @NativeMethods
     interface Natives {
-        void onReauthenticationResult(long callbackPtr, boolean reauthSuccessful);
+        void onReauthenticationFailed(long onFailureCallbackPtr);
     }
 }

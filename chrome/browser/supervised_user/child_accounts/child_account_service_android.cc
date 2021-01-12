@@ -25,14 +25,14 @@ using base::android::ScopedJavaGlobalRef;
 void ReauthenticateChildAccount(
     content::WebContents* web_contents,
     const std::string& email,
-    const base::RepeatingCallback<void(bool)>& callback) {
+    const base::RepeatingCallback<void()>& on_failure_callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
 
   // Make a copy of the callback which can be passed as a pointer through
   // to Java.
   auto callback_copy =
-      std::make_unique<base::RepeatingCallback<void(bool)>>(callback);
+      std::make_unique<base::RepeatingCallback<void()>>(on_failure_callback);
 
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
@@ -40,13 +40,11 @@ void ReauthenticateChildAccount(
       reinterpret_cast<jlong>(callback_copy.release()));
 }
 
-void JNI_ChildAccountService_OnReauthenticationResult(
-    JNIEnv* env,
-    jlong jcallbackPtr,
-    jboolean result) {
+void JNI_ChildAccountService_OnReauthenticationFailed(JNIEnv* env,
+                                                      jlong jcallbackPtr) {
   // Cast the pointer value back to a Callback and take ownership of it.
-  std::unique_ptr<base::RepeatingCallback<void(bool)>> callback(
-      reinterpret_cast<base::RepeatingCallback<void(bool)>*>(jcallbackPtr));
+  std::unique_ptr<base::RepeatingCallback<void()>> callback(
+      reinterpret_cast<base::RepeatingCallback<void()>*>(jcallbackPtr));
 
-  callback->Run(result);
+  callback->Run();
 }

@@ -42,7 +42,7 @@ class SupervisedUserGoogleAuthNavigationThrottle
 
   ThrottleCheckResult ShouldProceed();
 
-  void OnReauthenticationResult(bool reauth_successful);
+  void OnReauthenticationFailed();
 
   ChildAccountService* child_account_service_;
   base::CallbackListSubscription google_auth_state_subscription_;
