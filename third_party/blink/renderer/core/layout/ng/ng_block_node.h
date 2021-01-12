@@ -283,10 +283,10 @@ struct HashTraits<blink::NGBlockNode>
   }
   static blink::NGBlockNode EmptyValue() { return nullptr; }
   static void ConstructDeletedValue(blink::NGBlockNode& slot, bool) {
-    slot = nullptr;
+    slot = blink::NGBlockNode(reinterpret_cast<blink::LayoutBox*>(-1));
   }
   static bool IsDeletedValue(const blink::NGBlockNode& value) {
-    return IsEmptyValue(value);
+    return value.GetLayoutBox() == reinterpret_cast<blink::LayoutBox*>(-1);
   }
 };
 

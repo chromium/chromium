@@ -312,9 +312,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   }
 
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
-  const WritingModeConverter empty_outer_size(GetWritingDirection(),
-                                              PhysicalSize());
-
   const auto& out_of_flow_fragmentainer_descendants =
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
@@ -323,8 +320,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     if (!containing_block_fragment)
       containing_block_fragment = box_fragment;
 
-    LogicalOffset containing_block_offset =
-        converter.ToLogical(descendant.containing_block_offset, PhysicalSize());
+    LogicalOffset containing_block_offset = converter.ToLogical(
+        descendant.containing_block_offset, containing_block_fragment->Size());
     if (!fragment.IsFragmentainerBox())
       containing_block_offset.block_offset += offset.block_offset;
     if (IsBlockFragmentationContextRoot()) {
@@ -332,8 +329,12 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           fragmentainer_consumed_block_size_;
     }
 
+    // The static position should remain relative to its containing block
+    // fragment.
+    const WritingModeConverter containing_block_converter(
+        GetWritingDirection(), containing_block_fragment->Size());
     NGLogicalStaticPosition static_position =
-        descendant.static_position.ConvertToLogical(empty_outer_size);
+        descendant.static_position.ConvertToLogical(containing_block_converter);
     AddOutOfFlowFragmentainerDescendant(
         {descendant.node, static_position, descendant.inline_container,
          /* needs_block_offset_adjustment */ false, containing_block_offset,

@@ -102,6 +102,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGLogicalOutOfFlowPositionedNode&,
       const LayoutBox* only_layout);
 
+  void LayoutOOFsInMulticol(const NGBlockNode& multicol);
+
   void LayoutFragmentainerDescendants(
       Vector<NGLogicalOutOfFlowPositionedNode>* descendants);
 

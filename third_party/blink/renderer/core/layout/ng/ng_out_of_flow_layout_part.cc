@@ -135,14 +135,23 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
 
 void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
   if (container_builder_->IsBlockFragmentationContextRoot() &&
-      !has_block_fragmentation_ &&
-      container_builder_->HasOutOfFlowFragmentainerDescendants()) {
-    Vector<NGLogicalOutOfFlowPositionedNode> fragmentainer_descendants;
-    container_builder_->SwapOutOfFlowFragmentainerDescendants(
-        &fragmentainer_descendants);
-
-    if (!fragmentainer_descendants.IsEmpty())
+      !has_block_fragmentation_) {
+    if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
+      Vector<NGLogicalOutOfFlowPositionedNode> fragmentainer_descendants;
+      container_builder_->SwapOutOfFlowFragmentainerDescendants(
+          &fragmentainer_descendants);
+      DCHECK(!fragmentainer_descendants.IsEmpty());
       LayoutFragmentainerDescendants(&fragmentainer_descendants);
+    }
+
+    if (container_builder_->HasMulticolsWithPendingOOFs()) {
+      HashSet<NGBlockNode> multicols_with_pending_oofs;
+      container_builder_->SwapMulticolsWithPendingOOFs(
+          &multicols_with_pending_oofs);
+      DCHECK(!multicols_with_pending_oofs.IsEmpty());
+      for (const NGBlockNode& multicol : multicols_with_pending_oofs)
+        LayoutOOFsInMulticol(multicol);
+    }
   }
 
   const LayoutObject* current_container = container_builder_->GetLayoutObject();
@@ -628,6 +637,60 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 
     return layout_result;
   } while (true);
+}
+
+// TODO(almaher): Look into moving this to NGColumnLayoutAlgorithm instead.
+void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
+  Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
+
+  // Accumulate all of the pending OOF positioned nodes that are stored inside
+  // |multicol|.
+  for (auto& multicol_fragment : multicol.GetLayoutBox()->PhysicalFragments()) {
+    const NGPhysicalBoxFragment* multicol_box_fragment =
+        To<NGPhysicalBoxFragment>(&multicol_fragment);
+    if (!multicol_box_fragment
+             ->HasOutOfFlowPositionedFragmentainerDescendants())
+      continue;
+
+    WritingDirectionMode writing_direction =
+        multicol_box_fragment->Style().GetWritingDirection();
+    const WritingModeConverter converter(writing_direction,
+                                         multicol_box_fragment->Size());
+
+    // Convert the OOF fragmentainer descendants to the logical coordinate space
+    // and store the resulting nodes inside |oof_nodes_to_layout|.
+    for (const auto& descendant :
+         multicol_box_fragment->OutOfFlowPositionedFragmentainerDescendants()) {
+      const NGPhysicalContainerFragment* containing_block_fragment =
+          descendant.containing_block_fragment.get();
+      LogicalOffset containing_block_offset =
+          converter.ToLogical(descendant.containing_block_offset,
+                              containing_block_fragment->Size());
+
+      // The static position should remain relative to its containing block
+      // fragment.
+      const WritingModeConverter containing_block_converter(
+          writing_direction, containing_block_fragment->Size());
+      NGLogicalStaticPosition static_position =
+          descendant.static_position.ConvertToLogical(
+              containing_block_converter);
+
+      NGLogicalOutOfFlowPositionedNode node = {
+          descendant.node,
+          static_position,
+          descendant.inline_container,
+          /* needs_block_offset_adjustment */ false,
+          containing_block_offset,
+          containing_block_fragment};
+      oof_nodes_to_layout.push_back(node);
+    }
+  }
+  DCHECK(!oof_nodes_to_layout.IsEmpty());
+
+  // TODO(almaher): This lays out the OOF nodes in the outer fragmentation
+  // context. We want to lay these out inside the column children of |multicol|
+  // instead.
+  LayoutFragmentainerDescendants(&oof_nodes_to_layout);
 }
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
