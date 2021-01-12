@@ -16,9 +16,11 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/output_protection_delegate.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -26,6 +28,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -36,6 +40,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
@@ -291,6 +296,14 @@ class CaptureModeTest : public AshTestBase {
         FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
         base::TimeDelta::FromSeconds(seconds));
     loop.Run();
+  }
+
+  void WaitForCaptureFileToBeSaved() {
+    base::RunLoop run_loop;
+    CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+        base::BindLambdaForTesting(
+            [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
  private:
@@ -1373,6 +1386,170 @@ TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
   histogram_tester.ExpectBucketCount(
       kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
 }
+
+// Tests the behavior of screen recording with the presence of HDCP secure
+// content on the screen in all capture mode sources (fullscreen, region, and
+// window) depending on the test param.
+class CaptureModeHdcpTest
+    : public CaptureModeTest,
+      public ::testing::WithParamInterface<CaptureModeSource> {
+ public:
+  CaptureModeHdcpTest() = default;
+  ~CaptureModeHdcpTest() override = default;
+
+  // CaptureModeTest:
+  void SetUp() override {
+    CaptureModeTest::SetUp();
+    window_ = CreateTestWindow(gfx::Rect(200, 200));
+    protection_delegate_ =
+        std::make_unique<OutputProtectionDelegate>(window_.get());
+    CaptureModeController::Get()->set_user_capture_region(gfx::Rect(20, 50));
+  }
+
+  void TearDown() override {
+    protection_delegate_.reset();
+    window_.reset();
+    CaptureModeTest::TearDown();
+  }
+
+  // Enters the capture mode session.
+  void StartSessionForVideo() {
+    StartCaptureSession(GetParam(), CaptureModeType::kVideo);
+  }
+
+  // Starts video recording from the capture mode source set by the test param.
+  void StartRecording() {
+    auto* controller = CaptureModeController::Get();
+    ASSERT_TRUE(controller->IsActive());
+
+    switch (GetParam()) {
+      case CaptureModeSource::kFullscreen:
+      case CaptureModeSource::kRegion:
+        controller->StartVideoRecordingImmediatelyForTesting();
+        break;
+
+      case CaptureModeSource::kWindow:
+        // Window capture mode selects the window under the cursor as the
+        // capture source.
+        auto* event_generator = GetEventGenerator();
+        event_generator->MoveMouseToCenterOf(window_.get());
+        controller->StartVideoRecordingImmediatelyForTesting();
+        break;
+    }
+  }
+
+ protected:
+  std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<OutputProtectionDelegate> protection_delegate_;
+};
+
+TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedWhileRecording) {
+  StartSessionForVideo();
+  StartRecording();
+
+  auto* controller = CaptureModeController::Get();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // The window becomes HDCP protected, which should end video recording.
+  base::HistogramTester histogram_tester;
+  protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
+                                      base::DoNothing());
+
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kHdcpInterruption, 1);
+}
+
+TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
+  auto window_2 = CreateTestWindow(gfx::Rect(100, 50));
+  OutputProtectionDelegate protection_delegate_2(window_2.get());
+  protection_delegate_2.SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
+                                      base::DoNothing());
+
+  StartSessionForVideo();
+  StartRecording();
+
+  // Recording cannot start because of another protected window on the screen,
+  // except when we're capturing a different |window_|.
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+  if (GetParam() == CaptureModeSource::kWindow) {
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    EXPECT_FALSE(controller->is_recording_in_progress());
+    // Wait for the video file to be saved so that we can start a new recording.
+    WaitForCaptureFileToBeSaved();
+  } else {
+    EXPECT_FALSE(controller->is_recording_in_progress());
+  }
+
+  // When the protected window is destroyed, it's possbile now to record from
+  // all capture sources.
+  window_2.reset();
+  StartSessionForVideo();
+  StartRecording();
+
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+}
+
+TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedBeforeRecording) {
+  protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
+                                      base::DoNothing());
+  StartSessionForVideo();
+  StartRecording();
+
+  // Recording cannot even start.
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
+  UpdateDisplay("400x400,401+0-400x400");
+  auto roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
+                                      base::DoNothing());
+
+  // Move the cursor to the secondary display before starting the session to
+  // make sure the session starts on that display.
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(roots[1]->GetBoundsInScreen().CenterPoint(),
+                                    event_generator);
+  StartSessionForVideo();
+  // Also, make sure the selected region is in the secondary display.
+  auto* controller = CaptureModeController::Get();
+  EXPECT_EQ(controller->capture_mode_session()->current_root(), roots[1]);
+  StartRecording();
+
+  // Recording should be able to start (since the protected window is on the
+  // first display) unless the protected window itself is the one being
+  // recorded.
+  if (GetParam() == CaptureModeSource::kWindow) {
+    EXPECT_FALSE(controller->is_recording_in_progress());
+  } else {
+    EXPECT_TRUE(controller->is_recording_in_progress());
+
+    // Moving the protected window to the display being recorded should
+    // terminate the recording.
+    base::HistogramTester histogram_tester;
+    window_util::MoveWindowToDisplay(window_.get(),
+                                     roots[1]->GetHost()->GetDisplayId());
+    ASSERT_EQ(window_->GetRootWindow(), roots[1]);
+    EXPECT_FALSE(controller->is_recording_in_progress());
+    histogram_tester.ExpectBucketCount(
+        kEndRecordingReasonInClamshellHistogramName,
+        EndRecordingReason::kHdcpInterruption, 1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptureModeHdcpTest,
+                         testing::Values(CaptureModeSource::kFullscreen,
+                                         CaptureModeSource::kRegion,
+                                         CaptureModeSource::kWindow));
 
 TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
