@@ -24,7 +24,7 @@ class GaiaScreen : public BaseScreen {
 
   enum class Result {
     BACK,
-    CLOSE_DIALOG,
+    CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,
   };
@@ -50,8 +50,6 @@ class GaiaScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
-
-  void HandleCancel();
 
   GaiaView* view_ = nullptr;
 

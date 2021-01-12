@@ -957,10 +957,22 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
     case GaiaScreen::Result::BACK:
-      AdvanceToScreen(UserCreationView::kScreenId);
-      break;
-    case GaiaScreen::Result::CLOSE_DIALOG:
-      LoginDisplayHost::default_host()->HideOobeDialog();
+    case GaiaScreen::Result::CANCEL:
+      if (result == GaiaScreen::Result::BACK &&
+          wizard_context_->is_user_creation_enabled) {
+        // `Result::BACK` is only triggered when pressing back button. It goes
+        // back to UserCreationScreen if screen is enabled; otherwise, it
+        // behaves the same as `Result::CANCEL` which is triggered by pressing
+        // ESC key.
+        AdvanceToScreen(UserCreationView::kScreenId);
+        break;
+      }
+      if (LoginDisplayHost::default_host()->HasUserPods() &&
+          !wizard_context_->is_user_creation_enabled) {
+        LoginDisplayHost::default_host()->HideOobeDialog();
+      } else {
+        GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+      }
       break;
     case GaiaScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();

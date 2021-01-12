@@ -25,8 +25,8 @@ std::string GaiaScreen::GetResultString(Result result) {
   switch (result) {
     case Result::BACK:
       return "Back";
-    case Result::CLOSE_DIALOG:
-      return "CloseDialog";
+    case Result::CANCEL:
+      return "Cancel";
     case Result::ENTERPRISE_ENROLL:
       return "EnterpriseEnroll";
     case Result::START_CONSUMER_KIOSK:
@@ -83,21 +83,15 @@ void GaiaScreen::HideImpl() {
 }
 
 void GaiaScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionBack || action_id == kUserActionCancel) {
-    // `kUserActionBack` will go back to user creation screen if possible.
-    // `kUserActionCancel` will stay at the gaia screen and reload the screen.
-    if (action_id == kUserActionBack && context()->is_user_creation_enabled) {
-      exit_callback_.Run(Result::BACK);
-    } else {
-      HandleCancel();
-    }
-    return;
-  }
-  if (action_id == kUserActionStartEnrollment) {
+  if (action_id == kUserActionBack) {
+    exit_callback_.Run(Result::BACK);
+  } else if (action_id == kUserActionCancel) {
+    exit_callback_.Run(Result::CANCEL);
+  } else if (action_id == kUserActionStartEnrollment) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
-    return;
+  } else {
+    BaseScreen::OnUserAction(action_id);
   }
-  BaseScreen::OnUserAction(action_id);
 }
 
 bool GaiaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
@@ -110,17 +104,6 @@ bool GaiaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
     return true;
   }
   return false;
-}
-
-void GaiaScreen::HandleCancel() {
-  // Close the user pod if it exists and gaia is the first screen, or reload
-  // the page.
-  if (LoginDisplayHost::default_host()->HasUserPods() &&
-      !context()->is_user_creation_enabled) {
-    exit_callback_.Run(Result::CLOSE_DIALOG);
-  } else {
-    LoadOnline(EmptyAccountId());
-  }
 }
 
 }  // namespace chromeos
