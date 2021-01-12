@@ -276,10 +276,6 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
 
-  // Only used in webkitGetDatabaseNames(), which is deprecated and hopefully
-  // going away soon.
-  void EnqueueResponse(const Vector<String>&);
-
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }
   virtual void EnqueueUpgradeNeeded(int64_t old_version,
