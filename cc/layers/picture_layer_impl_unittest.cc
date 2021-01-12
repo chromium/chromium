@@ -2981,6 +2981,47 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
                  page_scale * device_scale);
 }
 
+TEST_F(LegacySWPictureLayerImplTest, ViewportSizeChangeDuringAnimation) {
+  gfx::Size layer_bounds(100, 100);
+  SetupDefaultTrees(layer_bounds);
+
+  host_impl()->pending_tree()->SetDeviceViewportRect(gfx::Rect());
+
+  float contents_scale = 1.f;
+  float device_scale = 1.f;
+  float page_scale = 1.f;
+  float maximum_animation_scale = 1.f;
+  float starting_animation_scale = kNotScaled;
+  bool animating_transform = false;
+
+  EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 1.f);
+
+  animating_transform = true;
+  maximum_animation_scale = 20.f;
+
+  // Starting an animation should cause tiling resolution to get set to the
+  // maximum animation scale factor, clamped by the viewport size (using default
+  // minimum 500x500 as the viewport is empty for now).
+  SetupDrawPropertiesAndUpdateTiles(
+      pending_layer(), contents_scale, device_scale, page_scale,
+      maximum_animation_scale, starting_animation_scale, animating_transform);
+  EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 5.f);
+
+  // Setting viewport rect smaller than the minimum won't change raster scale.
+  host_impl()->pending_tree()->SetDeviceViewportRect(gfx::Rect(400, 400));
+  SetupDrawPropertiesAndUpdateTiles(
+      pending_layer(), contents_scale, device_scale, page_scale,
+      maximum_animation_scale, starting_animation_scale, animating_transform);
+  EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 5.f);
+
+  // For a larger viewport size, the clamped scale is also larger.
+  host_impl()->pending_tree()->SetDeviceViewportRect(gfx::Rect(1000, 200));
+  SetupDrawPropertiesAndUpdateTiles(
+      pending_layer(), contents_scale, device_scale, page_scale,
+      maximum_animation_scale, starting_animation_scale, animating_transform);
+  EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 10.f);
+}
+
 TEST_F(LegacySWPictureLayerImplTest,
        AnimationTilingChangesWithWillChangeTransformHint) {
   gfx::Size viewport_size(1000, 1000);

@@ -1194,6 +1194,7 @@ void LayerTreeImpl::SetDeviceViewportRect(
   if (device_viewport_rect == device_viewport_rect_)
     return;
   device_viewport_rect_ = device_viewport_rect;
+  device_viewport_rect_changed_ = true;
 
   set_needs_update_draw_properties();
   if (!IsActiveTree())
@@ -1449,6 +1450,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
   if (update_image_animation_controller && image_animation_controller()) {
     image_animation_controller()->UpdateStateFromDrivers();
   }
+
+  device_viewport_rect_changed_ = false;
 
   DCHECK(!needs_update_draw_properties_)
       << "CalcDrawProperties should not set_needs_update_draw_properties()";

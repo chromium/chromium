@@ -745,6 +745,10 @@ class CC_EXPORT LayerTreeImpl {
     return events_metrics_from_main_thread_.size();
   }
 
+  bool device_viewport_rect_changed() const {
+    return device_viewport_rect_changed_;
+  }
+
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,
@@ -796,6 +800,7 @@ class CC_EXPORT LayerTreeImpl {
   bool new_local_surface_id_request_ = false;
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
+  bool device_viewport_rect_changed_ = false;
   gfx::Rect device_viewport_rect_;
 
   scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;

@@ -1352,13 +1352,15 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   if (raster_contents_scale_ < MinimumContentsScale())
     return true;
 
-  // Don't change the raster scale if any of the following are true:
-  //  - We have an animating transform.
-  //  - The raster scale is already ideal.
-  if (draw_properties().screen_space_transform_is_animating ||
-      raster_source_scale_ == ideal_source_scale_) {
+  // Don't change the raster scale if we have an animating transform, except
+  // when the device viewport rect has changed because the raster scale may
+  // depend on the rect.
+  if (draw_properties().screen_space_transform_is_animating)
+    return layer_tree_impl()->device_viewport_rect_changed();
+
+  // Don't change the raster scale if the raster scale is already ideal.
+  if (raster_source_scale_ == ideal_source_scale_)
     return false;
-  }
 
   // Don't update will-change: transform layers if the raster contents scale is
   // bigger than the minimum scale.
@@ -1496,12 +1498,6 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
     float preserved_raster_contents_scale) {
   DCHECK(draw_properties().screen_space_transform_is_animating);
 
-  // We will cap the adjusted scale with the viewport area, which is impossible
-  // if the viewport is empty.
-  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
-  if (viewport.IsEmpty())
-    return;
-
   CombinedAnimationScale animation_scales =
       layer_tree_impl()->property_trees()->GetAnimationScales(
           transform_tree_index(), layer_tree_impl());
@@ -1520,7 +1516,11 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
 
   // However we want to avoid excessive memory use. Choose a scale at which this
   // layer's rastered content is not larger than the viewport.
-  float max_viewport_dimension = std::max(viewport.width(), viewport.height());
+  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
+  // To avoid too small scale in a small viewport.
+  constexpr int kMinViewportDimension = 500;
+  float max_viewport_dimension =
+      std::max({viewport.width(), viewport.height(), kMinViewportDimension});
   DCHECK(max_viewport_dimension);
   // Use square to compensate for viewports with different aspect ratios.
   float squared_viewport_area = max_viewport_dimension * max_viewport_dimension;
