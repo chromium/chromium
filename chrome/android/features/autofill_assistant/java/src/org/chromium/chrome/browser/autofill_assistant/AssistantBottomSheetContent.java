@@ -11,9 +11,11 @@ import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * The {@link BottomSheetContent} for the Autofill Assistant. It supports notifying the
@@ -27,6 +29,9 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
     private ScrollView mContentScrollableView;
     private Supplier<AssistantBottomBarDelegate> mBottomBarDelegateSupplier;
     private boolean mPeekModeDisabled;
+    private BottomSheetController mController;
+    @Nullable
+    private Callback<Integer> mOffsetController;
 
     public AssistantBottomSheetContent(
             Context context, Supplier<AssistantBottomBarDelegate> supplier) {
@@ -150,5 +155,19 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
         }
 
         return bottomBarDelegate.onBackButtonPressed();
+    }
+
+    @Override
+    public boolean contentControlsOffset() {
+        return true;
+    }
+
+    @Override
+    public void setOffsetController(Callback<Integer> offsetController) {
+        mOffsetController = offsetController;
+    }
+
+    public Callback<Integer> getOffsetController() {
+        return mOffsetController;
     }
 }

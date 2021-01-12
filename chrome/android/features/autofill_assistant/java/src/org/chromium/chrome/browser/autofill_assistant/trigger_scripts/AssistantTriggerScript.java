@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetConten
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.chrome.browser.autofill_assistant.ScrollToHideGestureListener;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipViewHolder;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
@@ -60,6 +62,7 @@ public class AssistantTriggerScript {
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
     private AssistantHeaderModel mHeaderModel;
+    private ScrollToHideGestureListener mGestureListener;
     private LinearLayout mChipsContainer;
     private final int mInnerChipSpacing;
     /** Height of the bottom sheet's shadow, used to compute the viewport resize offset. */
@@ -152,6 +155,7 @@ public class AssistantTriggerScript {
     }
 
     public void destroy() {
+        disableScrollToHide();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         if (mHeaderCoordinator != null) {
             mHeaderCoordinator.destroy();
@@ -250,7 +254,7 @@ public class AssistantTriggerScript {
         addChipsToContainer(mChipsContainer, mRightAlignedChips);
     }
 
-    public boolean show(boolean resizeVisualViewport) {
+    public boolean show(boolean resizeVisualViewport, boolean scrollToHide) {
         if (mHeaderModel == null || mHeaderCoordinator == null) {
             assert false : "createHeaderAndGetModel() must be called before show()";
             return false;
@@ -262,10 +266,14 @@ public class AssistantTriggerScript {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         BottomSheetUtils.showContentAndMaybeExpand(mBottomSheetController, mContent,
                 /* shouldExpand = */ true, /* animate = */ mAnimateBottomSheet);
+
+        if (scrollToHide) enableScrollToHide();
+
         return true;
     }
 
     public void hide() {
+        disableScrollToHide();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mContent, /* animate = */ mAnimateBottomSheet);
         mResizeVisualViewport = false;
@@ -296,5 +304,19 @@ public class AssistantTriggerScript {
         }
 
         mInsetSupplier.set(resizing);
+    }
+
+    private void disableScrollToHide() {
+        if (mGestureListener == null) return;
+
+        GestureListenerManager.fromWebContents(mWebContents).removeListener(mGestureListener);
+        mGestureListener = null;
+    }
+
+    private void enableScrollToHide() {
+        if (mGestureListener != null) return;
+
+        mGestureListener = new ScrollToHideGestureListener(mBottomSheetController, mContent);
+        GestureListenerManager.fromWebContents(mWebContents).addListener(mGestureListener);
     }
 }

@@ -143,7 +143,7 @@ public class AssistantTriggerScriptBridge {
     private boolean showTriggerScript(String[] cancelPopupMenuItems, int[] cancelPopupMenuActions,
             List<AssistantChip> leftAlignedChips, int[] leftAlignedChipsActions,
             List<AssistantChip> rightAlignedChips, int[] rightAlignedChipsActions,
-            boolean resizeVisualViewport) {
+            boolean resizeVisualViewport, boolean scrollToHide) {
         // Trigger scripts currently do not support switching activities (such as CCT->tab).
         // TODO(b/171776026): Re-inject dependencies on activity change to support CCT->tab.
         if (TabUtils.getActivity(TabUtils.fromWebContents(mWebContents)) != mContext) {
@@ -154,7 +154,7 @@ public class AssistantTriggerScriptBridge {
         mTriggerScript.setCancelPopupMenu(cancelPopupMenuItems, cancelPopupMenuActions);
         mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
         mTriggerScript.setRightAlignedChips(rightAlignedChips, rightAlignedChipsActions);
-        boolean shown = mTriggerScript.show(resizeVisualViewport);
+        boolean shown = mTriggerScript.show(resizeVisualViewport, scrollToHide);
 
         // A trigger script was displayed, users are no longer considered first-time users.
         if (shown) {
