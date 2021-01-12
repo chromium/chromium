@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/policy/cached_policy_key_loader_chromeos.h"
 #include "chrome/browser/chromeos/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -281,6 +282,17 @@ void UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated(
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (crosapi::BrowserManager::Get()) {
+    std::string policy_blob;
+    // Since the policy have passed all the validations, the serialization must
+    // succeed.
+    bool success = validator->policy()->SerializeToString(&policy_blob);
+    DCHECK(success);
+    crosapi::BrowserManager::Get()->SetDeviceAccountPolicy(policy_blob);
+  }
+#endif
 
   NotifyStoreLoaded();
 }

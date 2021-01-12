@@ -106,6 +106,11 @@ class BrowserManager : public session_manager::SessionManagerObserver {
     lacros_version_ = version;
   }
 
+  // Set the data of device account policy. It is the serialized blob of
+  // PolicyFetchResponse received from the server, or parsed from the file after
+  // is was validated by Ash.
+  void SetDeviceAccountPolicy(const std::string& policy_blob);
+
  protected:
   // Notifies Mojo connection to lacros-chrome has been disconnected.
   void NotifyMojoDisconnected();

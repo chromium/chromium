@@ -98,4 +98,13 @@ std::string EnvironmentProvider::GetDeviceAccountGaiaId() {
   return account_id.GetGaiaId();
 }
 
+void EnvironmentProvider::SetDeviceAccountPolicy(
+    const std::string& policy_blob) {
+  device_account_policy_blob_ = policy_blob;
+}
+
+std::string EnvironmentProvider::GetDeviceAccountPolicy() {
+  return device_account_policy_blob_;
+}
+
 }  // namespace crosapi

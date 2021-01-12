@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
@@ -60,6 +61,10 @@
 
 #if defined(OS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 namespace policy {
@@ -203,6 +208,12 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
       new MacPreferences(), bundle_id);
+  return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
+                                               std::move(loader));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto loader = std::make_unique<PolicyLoaderLacros>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)

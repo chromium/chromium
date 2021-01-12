@@ -1,4 +1,7 @@
 include_rules = [
+  "+chromeos/crosapi",
+  "+chromeos/lacros",
+  "+chromeos/startup",
   "+chromeos/system",
   "+components/account_id",
   "-components/policy/core/browser",

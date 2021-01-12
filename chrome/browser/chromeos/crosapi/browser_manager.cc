@@ -505,4 +505,8 @@ void BrowserManager::OnLacrosChromeServiceVersionReady(uint32_t version) {
   lacros_chrome_service_version_ = version;
 }
 
+void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
+  environment_provider_->SetDeviceAccountPolicy(policy_blob);
+}
+
 }  // namespace crosapi

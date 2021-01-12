@@ -70,6 +70,23 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+// Returns the vector containing policy data of the device account. In case of
+// an error, returns nullopt.
+base::Optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
+    EnvironmentProvider* environment_provider) {
+  if (!user_manager::UserManager::IsInitialized()) {
+    LOG(ERROR) << "User not initialized.";
+    return base::nullopt;
+  }
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user) {
+    LOG(ERROR) << "No primary user.";
+    return base::nullopt;
+  }
+  std::string policy_data = environment_provider->GetDeviceAccountPolicy();
+  return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
+}
+
 using InterfaceVersions = base::flat_map<base::Token, uint32_t>;
 template <typename T>
 void AddVersion(InterfaceVersions* map) {
@@ -102,6 +119,7 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
       crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
   params->cros_user_id_hash = chromeos::ProfileHelper::GetUserIdHashFromProfile(
       ProfileManager::GetPrimaryUserProfile());
+  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
 
   return params;
 }
@@ -239,8 +257,8 @@ SendMojoInvitationToLacrosChrome(
       std::move(mojo_disconnected_callback));
 
   // This is for backward compatibility.
-  // TODO(crbug.com/1156033): Remove InitDeperecated() invocation when lacros
-  // becomes new enough.
+  // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
+  // becomes mature enough.
   lacros_chrome_service->InitDeprecated(
       GetLacrosInitParams(environment_provider));
 

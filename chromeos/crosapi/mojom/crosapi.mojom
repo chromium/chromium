@@ -215,7 +215,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than lacros-chrome, then some fields may not be
 // processed by lacros-chrome.
 //
-// Next version: 11
+// Next version: 12
 [Stable]
 struct LacrosInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
@@ -282,6 +282,14 @@ struct LacrosInitParams {
   // Do not use this to construct paths, use DefaultPaths for that purpose.
   [MinVersion=10]
   string? cros_user_id_hash@10;
+
+  // Policy blob of the device account. If present, it's a managed account with
+  // policy data. If empty, it's unmanaged account. If absent, an error occurred
+  // while loading policy data. The format is serialized PolicyFetchResponse
+  // object. See components/policy/proto/device_management_backend.proto for
+  // details.
+  [MinVersion=11]
+  array<uint8>? device_account_policy@11;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and
