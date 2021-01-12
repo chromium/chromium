@@ -658,10 +658,9 @@ bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  // Synchronously reading files in /proc is safe.
-  ThreadRestrictions::ScopedAllowIO allow_io;
-
   // Used memory is: total - free - buffers - caches
+  // ReadFileToStringNonBlocking doesn't require ScopedAllowIO, and reading
+  // /proc/meminfo is fast. See crbug.com/1160988 for details.
   FilePath meminfo_file("/proc/meminfo");
   std::string meminfo_data;
   if (!ReadFileToStringNonBlocking(meminfo_file, &meminfo_data)) {
