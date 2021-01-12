@@ -25,7 +25,6 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -79,14 +78,7 @@ class PageCaptureSaveAsMHTMLDelegate
 class ExtensionPageCaptureApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionPageCaptureApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
@@ -123,9 +115,6 @@ class ExtensionPageCaptureApiTest
     if (GetParam() != ContextType::kServiceWorker)
       delegate->WaitForFinalRelease();
   }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

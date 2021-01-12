@@ -6,7 +6,6 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -24,16 +23,8 @@ constexpr char kManifestStub[] =
 
 }  // namespace
 
-class TestAPITest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<ExtensionApiTest::ContextType> {
+class TestAPITest : public ExtensionApiTest {
  public:
-  TestAPITest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
   ~TestAPITest() override = default;
 
   // Loads and returns an extension with the given |background_script|.
@@ -42,7 +33,6 @@ class TestAPITest
 
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 const Extension* TestAPITest::LoadExtensionWithBackgroundScript(
@@ -56,13 +46,13 @@ const Extension* TestAPITest::LoadExtensionWithBackgroundScript(
 }
 
 // TODO(devlin): This test name should be more descriptive.
-IN_PROC_BROWSER_TEST_P(TestAPITest, ApiTest) {
+IN_PROC_BROWSER_TEST_F(TestAPITest, ApiTest) {
   ASSERT_TRUE(RunExtensionTest("apitest")) << message_;
 }
 
 // Verifies that failing an assert in a promise will properly fail and end the
 // test.
-IN_PROC_BROWSER_TEST_P(TestAPITest, FailedAssertsInPromises) {
+IN_PROC_BROWSER_TEST_F(TestAPITest, FailedAssertsInPromises) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -80,7 +70,7 @@ IN_PROC_BROWSER_TEST_P(TestAPITest, FailedAssertsInPromises) {
 }
 
 // Verifies that using await and assert'ing aspects of the results succeeds.
-IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_Succeed) {
+IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Succeed) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -98,7 +88,7 @@ IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_Succeed) {
 
 // Verifies that using await and having failed assertions properly fails the
 // test.
-IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_Failed) {
+IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Failed) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -117,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_Failed) {
 
 // Verifies that we can assert values on chrome.runtime.lastError after using
 // await with an API call.
-IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_LastError) {
+IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_LastError) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -134,15 +124,5 @@ IN_PROC_BROWSER_TEST_P(TestAPITest, AsyncAwaitAssertions_LastError) {
   ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    EventPage,
-    TestAPITest,
-    ::testing::Values(ExtensionApiTest::ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    TestAPITest,
-    ::testing::Values(ExtensionApiTest::ContextType::kServiceWorker));
 
 }  // namespace extensions

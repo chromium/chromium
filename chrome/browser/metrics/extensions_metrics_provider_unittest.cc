@@ -28,7 +28,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
@@ -367,7 +366,6 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
   }
   {
     // Test that service worker scripts are reported correctly.
-    extensions::ScopedWorkerBasedExtensionsChannel worker_channel_override;
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("service worker")
             .SetBackgroundContext(

@@ -25,7 +25,6 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/result_catcher.h"
 
 namespace extensions {
@@ -52,14 +51,6 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingApiTest, UserLevelNativeMessaging) {
 class NativeMessagingLazyApiTest
     : public NativeMessagingApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  NativeMessagingLazyApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
  protected:
   bool RunLazyTest(const std::string& extension_name) {
     if (GetParam() == ContextType::kEventPage) {
@@ -68,8 +59,6 @@ class NativeMessagingLazyApiTest
     return RunExtensionTestWithFlags(
         extension_name, kFlagRunAsServiceWorkerBasedExtension, kFlagNone);
   }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,

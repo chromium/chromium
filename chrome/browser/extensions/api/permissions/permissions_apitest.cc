@@ -16,7 +16,6 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -52,15 +51,6 @@ class PermissionsApiTest : public ExtensionApiTest {
 class PermissionsApiTestWithContextType
     : public PermissionsApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  PermissionsApiTestWithContextType() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker) {
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-    }
-  }
-
  protected:
   bool RunTest(const std::string& extension_name) {
     int browser_test_flags = kFlagNone;
@@ -69,10 +59,6 @@ class PermissionsApiTestWithContextType
     return RunExtensionTestWithFlags(extension_name, browser_test_flags,
                                      kFlagNone);
   }
-
- private:
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, PermissionsFail) {

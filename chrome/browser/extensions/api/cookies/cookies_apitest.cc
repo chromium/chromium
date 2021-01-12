@@ -6,7 +6,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "net/cookies/cookie_util.h"
 
 namespace extensions {
@@ -21,14 +20,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 
 class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
- public:
-  CookiesApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
  protected:
   bool RunTest(const std::string& extension_name) {
     return RunTestWithFlags(extension_name, kFlagNone);
@@ -56,8 +47,6 @@ class CookiesApiTest : public ExtensionApiTest,
     return RunExtensionTestWithFlags(extension_name, browser_test_flags,
                                      kFlagNone);
   }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,

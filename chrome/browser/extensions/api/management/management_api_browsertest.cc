@@ -31,7 +31,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,24 +63,13 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class ExtensionManagementApiTestWithBackgroundType
     : public ExtensionManagementApiBrowserTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionManagementApiTestWithBackgroundType() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
+ protected:
   const Extension* LoadExtensionWithParamFlags(const base::FilePath& path) {
     int flags = kFlagEnableFileAccess;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
     return LoadExtensionWithFlags(path, flags);
   }
-
- private:
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

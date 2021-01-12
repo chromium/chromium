@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -33,13 +32,7 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class RuntimeApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
  public:
-  RuntimeApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
+  RuntimeApiTest() = default;
   RuntimeApiTest(const RuntimeApiTest&) = delete;
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
 
@@ -58,10 +51,6 @@ class RuntimeApiTest : public ExtensionApiTest,
 
     return RunExtensionTestWithFlags(extension_name, flags, kFlagNone);
   }
-
- private:
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

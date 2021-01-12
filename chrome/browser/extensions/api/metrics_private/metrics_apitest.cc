@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 
 namespace extensions {
 
@@ -138,13 +137,6 @@ class ExtensionMetricsApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionMetricsApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
   bool RunComponentTestWithParamFlag(const std::string& extension_name) {
     int flags = kFlagNone;
     if (GetParam() == ContextType::kServiceWorker)
@@ -153,9 +145,6 @@ class ExtensionMetricsApiTest
     return RunExtensionTestWithFlags(extension_name, flags,
                                      kFlagLoadAsComponent);
   }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

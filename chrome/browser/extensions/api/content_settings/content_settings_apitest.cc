@@ -41,7 +41,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 
 namespace extensions {
 
@@ -222,14 +221,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 class ExtensionContentSettingsApiLazyTest
     : public ExtensionContentSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionContentSettingsApiLazyTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
  protected:
   bool RunLazyTest(const std::string& extension_name) {
     int browser_test_flags = kFlagNone;
@@ -239,8 +230,6 @@ class ExtensionContentSettingsApiLazyTest
     return RunExtensionTestWithFlagsAndArg(extension_name, nullptr,
                                            browser_test_flags, kFlagNone);
   }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,

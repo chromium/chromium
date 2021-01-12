@@ -9,7 +9,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -31,13 +30,6 @@ class ExecuteScriptApiTestBase : public ExtensionApiTest {
 class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
                              public testing::WithParamInterface<ContextType> {
  protected:
-  ExecuteScriptApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
   bool RunTest(const std::string& extension_name) {
     int browser_test_flags = kFlagNone;
     if (GetParam() == ContextType::kServiceWorker)
@@ -55,9 +47,6 @@ class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
     return RunExtensionTestWithFlags(extension_name, browser_test_flags,
                                      kFlagNone);
   }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

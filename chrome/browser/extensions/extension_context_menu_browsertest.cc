@@ -37,7 +37,6 @@
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -260,15 +259,6 @@ class ExtensionContextMenuLazyTest
     : public ExtensionContextMenuBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionContextMenuLazyTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker) {
-      current_channel_ =
-          std::make_unique<extensions::ScopedWorkerBasedExtensionsChannel>();
-    }
-  }
-
   void SetUpOnMainThread() override {
     ExtensionContextMenuBrowserTest::SetUpOnMainThread();
     // Set shorter delays to prevent test timeouts.
@@ -349,10 +339,6 @@ class ExtensionContextMenuLazyTest
     ASSERT_TRUE(update.WaitUntilSatisfied());
     ASSERT_EQ(!enabled, menu->IsCommandIdEnabled(command_id));
   }
-
- private:
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 class ExtensionContextMenuPersistentTest

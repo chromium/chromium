@@ -422,8 +422,6 @@ if (enable_extensions) {
       "api/extension_action/action_info_test_util.h",
       "file_test_util.cc",
       "file_test_util.h",
-      "scoped_worker_based_extensions_channel.cc",
-      "scoped_worker_based_extensions_channel.h",
     ]
 
     deps = [

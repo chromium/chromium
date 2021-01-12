@@ -20,7 +20,6 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
@@ -383,7 +382,6 @@ TEST_F(EventRouterTest, TestReportEvent) {
                      true /** did_enqueue */);
   ExpectHistogramCounts(7, 3, 2, 2, 2, 0);
 
-  ScopedWorkerBasedExtensionsChannel current_channel_override;
   scoped_refptr<const Extension> service_worker_extension =
       CreateServiceWorkerExtension();
   router.ReportEvent(events::HistogramValue::FOR_TEST,

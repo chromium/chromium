@@ -70,7 +70,6 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/common/verifier_formats.h"
 #include "extensions/test/background_page_watcher.h"
@@ -153,19 +152,15 @@ class ErrorObserver : public ErrorConsole::Observer {
 };
 
 class ServiceWorkerTest : public ExtensionApiTest {
- public:
-  ServiceWorkerTest() : current_channel_(version_info::Channel::STABLE) {}
-  explicit ServiceWorkerTest(version_info::Channel channel)
-      : current_channel_(channel) {}
-
-  ~ServiceWorkerTest() override {}
+ protected:
+  ServiceWorkerTest() = default;
+  ~ServiceWorkerTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
- protected:
   // Returns the ProcessManager for the test's profile.
   ProcessManager* process_manager() { return ProcessManager::Get(profile()); }
 
@@ -252,13 +247,6 @@ class ServiceWorkerTest : public ExtensionApiTest {
   }
 
  private:
-  // Sets the channel to "stable".
-  // Not useful after we've opened extension Service Workers to stable
-  // channel.
-  // TODO(lazyboy): Remove this when ExtensionServiceWorkersEnabled() is
-  // removed.
-  ScopedCurrentChannel current_channel_;
-
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerTest);
 };
 
@@ -306,8 +294,6 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
   }
 
  private:
-  ScopedWorkerBasedExtensionsChannel channel_;
-
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerBasedBackgroundTest);
 };
 
@@ -903,8 +889,6 @@ class ServiceWorkerLazyBackgroundTest : public ServiceWorkerTest {
   }
 
  private:
-  ScopedWorkerBasedExtensionsChannel channel_;
-
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerLazyBackgroundTest);
 };
 
@@ -2512,8 +2496,8 @@ class ServiceWorkerCheckBindingsTest
     : public ServiceWorkerTest,
       public testing::WithParamInterface<version_info::Channel> {
  public:
-  ServiceWorkerCheckBindingsTest() : ServiceWorkerTest(GetParam()) {}
-  ~ServiceWorkerCheckBindingsTest() override {}
+  ServiceWorkerCheckBindingsTest() = default;
+  ~ServiceWorkerCheckBindingsTest() override = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerCheckBindingsTest);
