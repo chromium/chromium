@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -66,8 +67,6 @@ void ClipboardHistory::OnClipboardDataChanged() {
   if (!ClipboardHistoryUtil::IsEnabledInCurrentMode())
     return;
 
-  // TODO(newcomer): Prevent Clipboard from recording metrics when pausing
-  // observation.
   if (num_pause_ > 0)
     return;
 
@@ -87,6 +86,15 @@ void ClipboardHistory::OnClipboardDataChanged() {
     return;
   }
 
+  // Debounce calls to `OnClipboardOperation()`. Certain surfaces
+  // (Omnibox) may Read/Write to the clipboard multiple times in one user
+  // initiated operation.
+  clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ClipboardHistory::OnClipboardOperation,
+                                clipboard_histogram_weak_factory_.GetWeakPtr(),
+                                /*copy=*/true));
+
   // We post commit |clipboard_data| at the end of the current task sequence to
   // debounce the case where multiple copies are programmatically performed.
   // Since only the most recent copy will be at the top of the clipboard, the
@@ -100,6 +108,39 @@ void ClipboardHistory::OnClipboardDataChanged() {
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::MaybeCommitData,
                      commit_data_weak_factory_.GetWeakPtr(), *clipboard_data));
+}
+
+void ClipboardHistory::OnClipboardDataRead() {
+  if (num_pause_ > 0)
+    return;
+
+  // Debounce calls to `OnClipboardOperation()`. Certain surfaces
+  // (Omnibox) may Read/Write to the clipboard multiple times in one user
+  // initiated operation.
+  clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ClipboardHistory::OnClipboardOperation,
+                                clipboard_histogram_weak_factory_.GetWeakPtr(),
+                                /*copy=*/false));
+}
+
+void ClipboardHistory::OnClipboardOperation(bool copy) {
+  if (copy) {
+    consecutive_copies_++;
+    if (consecutive_pastes_ > 0) {
+      base::UmaHistogramCounts100("Ash.Clipboard.ConsecutivePastes",
+                                  consecutive_pastes_);
+      consecutive_pastes_ = 0;
+    }
+    return;
+  }
+
+  consecutive_pastes_++;
+  if (consecutive_copies_ > 0) {
+    base::UmaHistogramCounts100("Ash.Clipboard.ConsecutiveCopies",
+                                consecutive_copies_);
+    consecutive_copies_ = 0;
+  }
 }
 
 base::WeakPtr<ClipboardHistory> ClipboardHistory::GetWeakPtr() {
