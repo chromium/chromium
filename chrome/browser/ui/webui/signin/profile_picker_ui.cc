@@ -129,9 +129,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
               prefs::kBrowserProfilePickerAvailabilityOnStartup));
-  html_source->AddBoolean("disableAskOnStartup",
-                          availability_on_startup !=
-                              ProfilePicker::AvailabilityOnStartup::kEnabled);
+  bool disable_ask_on_startup =
+      availability_on_startup !=
+          ProfilePicker::AvailabilityOnStartup::kEnabled ||
+      !base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature);
+  html_source->AddBoolean("disableAskOnStartup", disable_ask_on_startup);
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));

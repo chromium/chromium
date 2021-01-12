@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -50,11 +49,20 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 
 }  // namespace
 
+const base::Feature kEnableProfilePickerOnStartupFeature{
+    "EnableProfilePickerOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // static
 bool ProfilePicker::ShouldShowAtLaunch() {
   AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
 
   if (!base::FeatureList::IsEnabled(features::kNewProfilePicker))
+    return false;
+
+  if (!base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature))
+    return false;
+
+  if (availability_on_startup == AvailabilityOnStartup::kDisabled)
     return false;
 
   // TODO (crbug/1155158): Move this over the urls check (in

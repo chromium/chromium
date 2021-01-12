@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -26,6 +27,10 @@ namespace views {
 class View;
 class WebView;
 }  // namespace views
+
+// Kill switch to disable showing the picker on startup. Has no effect if
+// features::kNewProfilePicker is disabled.
+extern const base::Feature kEnableProfilePickerOnStartupFeature;
 
 class ProfilePicker {
  public:

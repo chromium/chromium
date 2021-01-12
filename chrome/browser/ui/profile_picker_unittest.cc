@@ -66,6 +66,18 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
   task_environment()->FastForwardBy(base::TimeDelta::FromDays(27));
   EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
 }
+TEST_F(ProfilePickerTest, ShouldShowAtLaunch_KillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableProfilePickerOnStartupFeature);
+
+  TestingProfile* profile1 =
+      testing_profile_manager()->CreateTestingProfile("profile1");
+  GetProfileAttributes(profile1)->SetActiveTimeToNow();
+  TestingProfile* profile2 =
+      testing_profile_manager()->CreateTestingProfile("profile2");
+  GetProfileAttributes(profile2)->SetActiveTimeToNow();
+  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+}
 
 TEST_F(ProfilePickerTest,
        ShouldShowAtLaunch_MultipleProfiles_Inactive_SeenPicker) {
