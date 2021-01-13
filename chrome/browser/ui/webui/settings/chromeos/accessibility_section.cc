@@ -368,6 +368,10 @@ AccessibilitySection::AccessibilitySection(
       ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled,
       base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ash::prefs::kAccessibilityScreenMagnifierEnabled,
+      base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
+                          base::Unretained(this)));
 
   UpdateSearchTags();
 
@@ -826,7 +830,9 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());
   }
 
-  if (IsMagnifierPanningImprovementsEnabled()) {
+  if (IsMagnifierPanningImprovementsEnabled() &&
+      pref_service_->GetBoolean(
+          ash::prefs::kAccessibilityScreenMagnifierEnabled)) {
     updater.AddSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   } else {
