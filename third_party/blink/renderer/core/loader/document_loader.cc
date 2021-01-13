@@ -136,19 +136,6 @@ Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
   return result;
 }
 
-WebVector<int> CopyInitiatorOriginTrials(
-    const Vector<OriginTrialFeature>& initiator_origin_trial_features) {
-  WebVector<int> result;
-  for (auto feature : initiator_origin_trial_features) {
-    // Convert from OriginTrialFeature to int. These values are passed between
-    // blink navigations. OriginTrialFeature isn't visible outside of blink (and
-    // doesn't need to be) so the values are transferred outside of blink as
-    // ints and casted to OriginTrialFeature once being processed in blink.
-    result.emplace_back(static_cast<int>(feature));
-  }
-  return result;
-}
-
 Vector<String> CopyForceEnabledOriginTrials(
     const WebVector<WebString>& force_enabled_origin_trials) {
   Vector<String> result;
@@ -159,109 +146,10 @@ Vector<String> CopyForceEnabledOriginTrials(
   return result;
 }
 
-WebVector<WebString> CopyForceEnabledOriginTrials(
-    const Vector<String>& force_enabled_origin_trials) {
-  WebVector<String> result;
-  for (const auto& trial : force_enabled_origin_trials)
-    result.emplace_back(trial);
-  return result;
-}
-
 bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
   return frame && frame->GetPage()->GetChromeClient().IsPopup() &&
          WebTestSupport::IsRunningWebTest();
 }
-
-struct SameSizeAsDocumentLoader
-    : public GarbageCollected<SameSizeAsDocumentLoader>,
-      public UseCounter,
-      public WebNavigationBodyLoader::Client {
-  Vector<KURL> redirect_chain;
-  Member<MHTMLArchive> archive;
-  std::unique_ptr<WebNavigationParams> params;
-  KURL url;
-  AtomicString http_method;
-  Referrer referrer;
-  scoped_refptr<EncodedFormData> http_body;
-  AtomicString http_content_type;
-  PreviewsState previews_state;
-  base::Optional<WebOriginPolicy> origin_policy;
-  scoped_refptr<const SecurityOrigin> requestor_origin;
-  KURL unreachable_url;
-  KURL pre_redirect_url_for_failed_navigations;
-  std::unique_ptr<WebNavigationBodyLoader> body_loader;
-  network::mojom::IPAddressSpace ip_address_space;
-  bool grant_load_local_resources;
-  base::Optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
-  FramePolicy frame_policy;
-  Member<LocalFrame> frame;
-  Member<HistoryItem> history_item;
-  Member<DocumentParser> parser;
-  Member<SubresourceFilter> subresource_filter;
-  KURL original_url;
-  Referrer original_referrer;
-  ResourceResponse response;
-  WebFrameLoadType load_type;
-  bool is_client_redirect;
-  bool replaces_current_history_item;
-  bool data_received;
-  bool is_error_page_for_failed_navigation;
-  Member<ContentSecurityPolicy> content_security_policy;
-  mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
-  scoped_refptr<SecurityOrigin> origin_to_commit;
-  WebNavigationType navigation_type;
-  DocumentLoadTiming document_load_timing;
-  base::TimeTicks time_of_last_data_received;
-  Member<ApplicationCacheHostForFrame> application_cache_host;
-  std::unique_ptr<WebServiceWorkerNetworkProvider>
-      service_worker_network_provider;
-  DocumentPolicy::ParsedDocumentPolicy document_policy;
-  bool was_blocked_by_document_policy;
-  Vector<PolicyParserMessageBuffer::Message> document_policy_parsing_messages;
-  ClientHintsPreferences client_hints_preferences;
-  DocumentLoader::InitialScrollState initial_scroll_state;
-  DocumentLoader::State state;
-  int parser_blocked_count;
-  bool finish_loading_when_parser_resumed;
-  bool in_commit_data;
-  scoped_refptr<SharedBuffer> data_buffer;
-  base::UnguessableToken devtools_navigation_token;
-  WebURLLoader::DeferType defers_loading;
-  bool had_sticky_activation;
-  bool had_transient_activation;
-  bool is_browser_initiated;
-  bool is_same_origin_navigation;
-  bool has_text_fragment_token;
-  bool was_discarded;
-  bool listing_ftp_directory;
-  bool loading_main_document_from_mhtml_archive;
-  bool loading_srcdoc;
-  bool loading_url_as_empty_document;
-  CommitReason commit_reason;
-  uint64_t main_resource_identifier;
-  scoped_refptr<ResourceTimingInfo> navigation_timing_info;
-  bool report_timing_info_to_parent;
-  WebScopedVirtualTimePauser virtual_time_pauser;
-  Member<SourceKeyedCachedMetadataHandler> cached_metadata_handler;
-  Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
-  const KURL web_bundle_physical_url;
-  const KURL web_bundle_claimed_url;
-  ukm::SourceId ukm_source_id;
-  UseCounterHelper use_counter;
-  Dactyloscoper dactyloscoper;
-  const base::TickClock* clock;
-  const Vector<OriginTrialFeature> initiator_origin_trial_features;
-  const Vector<String> force_enabled_origin_trials;
-  bool navigation_scroll_allowed;
-  bool origin_isolated;
-  bool is_cross_browsing_context_group_navigation;
-};
-
-// Asserts size of DocumentLoader, so that whenever a new attribute is added to
-// DocumentLoader, the assert will fail. When hitting this assert failure,
-// please ensure that the attribute is copied correctly (if appropriate) in
-// DocumentLoader::CreateWebNavigationParamsToCloneDocument().
-ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 
 }  // namespace
 
@@ -420,69 +308,6 @@ DocumentLoader::DocumentLoader(
 
   if (IsBackForwardLoadType(params_->frame_load_type))
     DCHECK(history_item_);
-}
-
-std::unique_ptr<WebNavigationParams>
-DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
-  // From the browser process point of view, committing the result of evaluating
-  // a javascript URL or an XSLT document are all a no-op. Since we will use the
-  // resulting |params| to create a clone of this DocumentLoader, many
-  // attributes of DocumentLoader should be copied/inherited to the new
-  // DocumentLoader's WebNavigationParams. The current heuristic is largely
-  // based on copying fields that are populated in the DocumentLoader
-  // constructor. Some exclusions:
-  // |history_item_| is set in SetHistoryItemStateForCommit().
-  // |original_url_| will use the newly committed URL.
-  // |response_| will use the newly committed response.
-  // |load_type_| will use default kStandard value.
-  // |replaces_current_history_item_| will be false.
-  // |feature_policy_| and |document_policy_| are set in CommitNavigation(),
-  // with the sandbox flags set in CalculateSandboxFlags().
-  // |is_client_redirect_| and |redirect_chain_| are not copied since future
-  // same-document navigations will clear the redirect chain anyways.
-  // |archive_| and other states might need to be copied, but we need to add
-  // fields to WebNavigationParams and create WebMHTMLArchive, etc.
-  // TODO(https://crbug.com/1151954): Copy |archive_| and other attributes.
-  auto params = std::make_unique<WebNavigationParams>();
-  LocalDOMWindow* window = frame_->DomWindow();
-  params->url = window->Url();
-  params->unreachable_url = unreachable_url_;
-  params->referrer = referrer_.referrer;
-  // All the security properties of the document must be preserved. Note that
-  // sandbox flags and various policies are copied separately during commit in
-  // CommitNavigation() and CalculateSandboxFlags().
-  params->origin_to_commit = window->GetSecurityOrigin();
-  params->origin_isolated = origin_isolated_;
-  params->grant_load_local_resources = grant_load_local_resources_;
-  // Various attributes that relates to the last "real" navigation that is known
-  // by the browser must be carried over.
-  params->http_method = http_method_;
-  params->http_status_code = GetResponse().HttpStatusCode();
-  params->http_body = http_body_;
-  params->pre_redirect_url_for_failed_navigations =
-      pre_redirect_url_for_failed_navigations_;
-  params->ip_address_space = ip_address_space_;
-  params->force_fetch_cache_mode = force_fetch_cache_mode_;
-  params->service_worker_network_provider =
-      std::move(service_worker_network_provider_);
-  params->devtools_navigation_token = devtools_navigation_token_;
-  params->is_user_activated = had_sticky_activation_;
-  params->had_transient_activation = had_transient_activation_;
-  params->is_browser_initiated = is_browser_initiated_;
-  params->was_discarded = was_discarded_;
-  params->web_bundle_physical_url = web_bundle_physical_url_;
-  params->web_bundle_claimed_url = web_bundle_claimed_url_;
-  params->document_ukm_source_id = ukm_source_id_;
-  params->is_cross_browsing_context_group_navigation =
-      is_cross_browsing_context_group_navigation_;
-  params->has_text_fragment_token = has_text_fragment_token_;
-  params->previews_state = previews_state_;
-  // Origin trials must still work on the cloned document.
-  params->initiator_origin_trial_features =
-      CopyInitiatorOriginTrials(initiator_origin_trial_features_);
-  params->force_enabled_origin_trials =
-      CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
-  return params;
 }
 
 FrameLoader& DocumentLoader::GetFrameLoader() const {
@@ -688,8 +513,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   SetHistoryItemStateForCommit(history_item_.Get(), type,
                                is_history_api_navigation
                                    ? HistoryNavigationType::kHistoryApi
-                                   : HistoryNavigationType::kFragment,
-                               CommitReason::kRegular);
+                                   : HistoryNavigationType::kFragment);
   history_item_->SetDocumentState(frame_->GetDocument()->GetDocumentState());
   if (is_history_api_navigation) {
     history_item_->SetStateObject(std::move(data));
@@ -717,19 +541,7 @@ const KURL& DocumentLoader::UrlForHistory() const {
 void DocumentLoader::SetHistoryItemStateForCommit(
     HistoryItem* old_item,
     WebFrameLoadType load_type,
-    HistoryNavigationType navigation_type,
-    CommitReason commit_reason) {
-  if (old_item && (commit_reason == CommitReason::kJavascriptUrl ||
-                   commit_reason == CommitReason::kXSLT)) {
-    // If this is a javascript: URL or XSLT commit and we already have a
-    // HistoryItem, we should reuse it, because even though the Document and
-    // DocumentLoader changed, all other state (URL, origin, history, etc.)
-    // should stay the same.
-    history_item_ = old_item;
-    return;
-  }
-  DCHECK_NE(commit_reason, CommitReason::kXSLT);
-
+    HistoryNavigationType navigation_type) {
   if (!history_item_ || !IsBackForwardLoadType(load_type))
     history_item_ = MakeGarbageCollected<HistoryItem>();
 
@@ -1648,11 +1460,8 @@ network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags() {
                       ~(network::mojom::blink::WebSandboxFlags::kPopups |
                         network::mojom::blink::WebSandboxFlags::
                             kPropagatesToAuxiliaryBrowsingContexts));
-  } else if (commit_reason_ == CommitReason::kXSLT ||
-             commit_reason_ == CommitReason::kJavascriptUrl) {
-    // An XSLT document inherits sandbox flags from the document that create it,
-    // while javascript: URL document reuses the previous document's sandbox
-    // flags.
+  } else if (commit_reason_ == CommitReason::kXSLT) {
+    // An XSLT document inherits sandbox flags from the document that create it.
     sandbox_flags |= frame_->DomWindow()->GetSandboxFlags();
   }
   return sandbox_flags;

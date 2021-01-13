@@ -75,7 +75,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   bool ReplacesCurrentHistoryItem() const override;
   WebNavigationType GetNavigationType() const override;
   ExtraData* GetExtraData() const override;
-  std::unique_ptr<ExtraData> TakeExtraData() override;
   void SetExtraData(std::unique_ptr<ExtraData>) override;
   void SetSubresourceFilter(WebDocumentSubresourceFilter*) override;
   void SetServiceWorkerNetworkProvider(

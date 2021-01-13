@@ -113,11 +113,6 @@ WebDocumentLoader::ExtraData* WebDocumentLoaderImpl::GetExtraData() const {
   return extra_data_.get();
 }
 
-std::unique_ptr<WebDocumentLoader::ExtraData>
-WebDocumentLoaderImpl::TakeExtraData() {
-  return std::move(extra_data_);
-}
-
 void WebDocumentLoaderImpl::SetExtraData(
     std::unique_ptr<ExtraData> extra_data) {
   extra_data_ = std::move(extra_data);

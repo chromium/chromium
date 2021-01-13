@@ -1491,4 +1491,45 @@ TEST_F(MediaControlsOrientationLockAndRotateToFullscreenDelegateTest,
   EXPECT_TRUE(DelegateWillUnlockFullscreen());
 }
 
+TEST_F(MediaControlsOrientationLockAndRotateToFullscreenDelegateTest,
+       DetachBeforeChangeLockToAnyOrientation) {
+  // Naturally portrait device, initially portrait, with landscape video.
+  natural_orientation_is_portrait_ = true;
+  ASSERT_NO_FATAL_FAILURE(
+      RotateScreenTo(mojom::blink::ScreenOrientation::kPortraitPrimary, 0));
+  InitVideo(640, 480);
+  SetIsAutoRotateEnabledByUser(true);
+
+  // Initially inline, unlocked orientation.
+  ASSERT_FALSE(Video().IsFullscreen());
+  CheckStatePendingFullscreen();
+  ASSERT_FALSE(DelegateWillUnlockFullscreen());
+
+  // Simulate user clicking on media controls fullscreen button.
+  SimulateEnterFullscreen();
+  EXPECT_TRUE(Video().IsFullscreen());
+
+  // MediaControlsOrientationLockDelegate should lock to landscape.
+  CheckStateMaybeLockedFullscreen();
+  EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
+            DelegateOrientationLock());
+
+  // This will trigger a screen orientation change to landscape.
+  ASSERT_NO_FATAL_FAILURE(
+      RotateScreenTo(mojom::blink::ScreenOrientation::kLandscapePrimary, 90));
+
+  // Rotate the device to match.
+  RotateDeviceTo(90 /* landscape primary */);
+
+  // And immediately detach the document by synchronously navigating.
+  // One easy way to do this is to replace the document with a JavaScript URL.
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  FrameLoadRequest request(GetFrame().DomWindow(),
+                           ResourceRequest("javascript:'Hello, world!'"));
+  GetFrame().Navigate(request, WebFrameLoadType::kStandard);
+
+  // We should not crash after the unlock delay.
+  test::RunDelayedTasks(GetUnlockDelay());
+}
+
 }  // namespace blink
