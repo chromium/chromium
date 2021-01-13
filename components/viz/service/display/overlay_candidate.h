@@ -81,9 +81,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   ~OverlayCandidate();
 
   // Transformation to apply to layer during composition.
-  gfx::OverlayTransform transform;
+  gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to scanout.
-  gfx::BufferFormat format;
+  gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   // ColorSpace of the buffer for scanout.
   gfx::ColorSpace color_space;
   // Size of the resource, in pixels.
@@ -92,15 +92,15 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // to integer coordinates if setting |overlay_handled| to true.
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
-  gfx::RectF uv_rect;
+  gfx::RectF uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
   // Clip rect in the target content space after composition.
   gfx::Rect clip_rect;
   // If the quad is clipped after composition.
-  bool is_clipped;
+  bool is_clipped = false;
   // If the quad doesn't require blending.
-  bool is_opaque;
+  bool is_opaque = false;
   // Texture resource to present in an overlay.
-  unsigned resource_id;
+  unsigned resource_id = 0;
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
 
@@ -108,11 +108,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // For candidates from StreamVideoDrawQuads, this records whether the quad is
   // marked as being backed by a SurfaceTexture or not.  If so, it's not really
   // promotable to an overlay.
-  bool is_backed_by_surface_texture;
-
-  // Filled in by the OverlayCandidateValidator to indicate whether this is a
-  // promotable candidate or not.
-  bool is_promotable_hint;
+  bool is_backed_by_surface_texture = false;
 #endif
 
   // Stacking order of the overlay plane relative to the main surface,
@@ -121,20 +117,20 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // To be modified by the implementer if this candidate can go into
   // an overlay.
-  bool overlay_handled;
+  bool overlay_handled = false;
 
   // Gpu fence to wait for before overlay is ready for display.
-  unsigned gpu_fence_id;
+  unsigned gpu_fence_id = 0;
 
   // The total area in square pixels of damage for this candidate's quad. This
   // is an estimate when 'EstimateOccludedDamage' function is used.
   int damage_area_estimate = 0;
 
-  // Result of call to 'RequiresOverlay' function w/ associated quad.
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
+  // Damage index for |SurfaceDamageRectList|.
   uint32_t overlay_damage_index = kInvalidDamageIndex;
 
-  // Cached result of call to 'RequiresOverlay' function.
+  // Is true if an HW overlay is required for the quad content.
   bool requires_overlay = false;
 
  private:

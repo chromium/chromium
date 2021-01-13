@@ -2555,6 +2555,28 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   wait_1_frame();
   tracker.AddRecord(frame_counter, 0.0f, get_id(), config);
   EXPECT_FALSE(tracker.IsAbsent());
+
+  // Tracker forced updates were added to support quads that change content but
+  // not resource ids (example here is low latency ink surface). Here we test
+  // this small feature by keeping the resource id constant but passing in true
+  // to the force update param.
+  static const float kDamageRatio = 0.7f;
+  static const int kFakeConstantResourceId = 13;
+  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    wait_1_frame();
+    tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
+                      config, true);
+  }
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
+
+  // Now test the false case for the force update param.
+  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    wait_1_frame();
+    tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, config,
+                      false);
+  }
+  // The damage should remain unchanged.
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
 }
 
 TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {

@@ -16,6 +16,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -285,7 +286,9 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
     track_data.AddRecord(
         frame_sequence_number_,
         static_cast<float>(it->candidate.damage_area_estimate) / display_area,
-        it->candidate.resource_id, tracker_config_);
+        it->candidate.resource_id, tracker_config_,
+        it->candidate.overlay_damage_index !=
+            OverlayCandidate::kInvalidDamageIndex);
 
     // Here a series of criteria are considered for wholesale rejection of a
     // candidate. The rational for rejection is usually power improvements but
@@ -357,7 +360,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
     std::vector<gfx::Rect>* content_bounds,
     gfx::Rect* incoming_damage) {
   last_successful_strategy_ = nullptr;
-
   Strategy::OverlayProposedCandidateList proposed_candidates;
   for (const auto& strategy : strategies_) {
     strategy->ProposePrioritized(
@@ -366,13 +368,20 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
         &proposed_candidates, content_bounds);
   }
 
+  size_t num_proposed_pre_sort = proposed_candidates.size();
   UMA_HISTOGRAM_COUNTS_1000(
       "Viz.DisplayCompositor.OverlayNumProposedCandidates",
-      proposed_candidates.size());
+      num_proposed_pre_sort);
 
   SortProposedOverlayCandidatesPrioritized(&proposed_candidates);
 
   for (auto&& candidate : proposed_candidates) {
+    // Underlays change the material so we save it here to record proper UMA.
+    DrawQuad::Material quad_material =
+        candidate.strategy->GetUMAEnum() != OverlayStrategy::kUnknown
+            ? candidate.quad_iter->material
+            : DrawQuad::Material::kInvalid;
+
     if (candidate.strategy->AttemptPrioritized(
             output_color_matrix, render_pass_backdrop_filters,
             resource_provider, render_pass_list, surface_damage_rect_list,
@@ -383,12 +392,16 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
       LogStrategyEnumUMA(candidate.strategy->GetUMAEnum());
       last_successful_strategy_ = candidate.strategy;
       OnOverlaySwitchUMA(ToProposeKey(candidate));
+      UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayQuadMaterial",
+                                quad_material);
       return true;
     }
   }
 
   if (proposed_candidates.size() == 0) {
-    LogStrategyEnumUMA(OverlayStrategy::kNoStrategyUsed);
+    LogStrategyEnumUMA(num_proposed_pre_sort != 0
+                           ? OverlayStrategy::kNoStrategyFailMin
+                           : OverlayStrategy::kNoStrategyUsed);
   } else {
     LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);
   }

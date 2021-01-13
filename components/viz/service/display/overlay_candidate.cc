@@ -31,8 +31,6 @@ namespace viz {
 constexpr uint32_t OverlayCandidate::kInvalidDamageIndex;
 
 namespace {
-// Tolerance for considering axis vector elements to be zero.
-const SkScalar kEpsilon = std::numeric_limits<float>::epsilon();
 
 const gfx::BufferFormat kOverlayFormats[] = {
     gfx::BufferFormat::RGBX_8888, gfx::BufferFormat::RGBA_8888,
@@ -43,14 +41,14 @@ const gfx::BufferFormat kOverlayFormats[] = {
 enum Axis { NONE, AXIS_POS_X, AXIS_NEG_X, AXIS_POS_Y, AXIS_NEG_Y };
 
 Axis VectorToAxis(const gfx::Vector3dF& vec) {
-  if (std::abs(vec.z()) > kEpsilon)
+  if (!cc::MathUtil::IsWithinEpsilon(vec.z(), 0.f))
     return NONE;
-  const bool x_zero = (std::abs(vec.x()) <= kEpsilon);
-  const bool y_zero = (std::abs(vec.y()) <= kEpsilon);
+  const bool x_zero = cc::MathUtil::IsWithinEpsilon(vec.x(), 0.f);
+  const bool y_zero = cc::MathUtil::IsWithinEpsilon(vec.y(), 0.f);
   if (x_zero && !y_zero)
-    return (vec.y() > 0) ? AXIS_POS_Y : AXIS_NEG_Y;
+    return (vec.y() > 0.f) ? AXIS_POS_Y : AXIS_NEG_Y;
   else if (y_zero && !x_zero)
-    return (vec.x() > 0) ? AXIS_POS_X : AXIS_NEG_X;
+    return (vec.x() > 0.f) ? AXIS_POS_X : AXIS_NEG_X;
   else
     return NONE;
 }
@@ -64,7 +62,7 @@ gfx::OverlayTransform GetOverlayTransform(const gfx::Transform& quad_transform,
   gfx::Vector3dF x_axis = cc::MathUtil::GetXAxis(quad_transform);
   gfx::Vector3dF y_axis = cc::MathUtil::GetYAxis(quad_transform);
   if (y_flipped) {
-    y_axis.Scale(-1);
+    y_axis.Scale(-1.f);
   }
 
   Axis x_to = VectorToAxis(x_axis);
@@ -121,20 +119,7 @@ gfx::Rect GetDamageRect(const DrawQuad* quad,
 
 }  // namespace
 
-OverlayCandidate::OverlayCandidate()
-    : transform(gfx::OVERLAY_TRANSFORM_NONE),
-      format(gfx::BufferFormat::RGBA_8888),
-      uv_rect(0.f, 0.f, 1.f, 1.f),
-      is_clipped(false),
-      is_opaque(false),
-      resource_id(0),
-#if defined(OS_ANDROID)
-      is_backed_by_surface_texture(false),
-      is_promotable_hint(false),
-#endif
-      overlay_handled(false),
-      gpu_fence_id(0) {
-}
+OverlayCandidate::OverlayCandidate() = default;
 
 OverlayCandidate::OverlayCandidate(const OverlayCandidate& other) = default;
 
@@ -153,22 +138,25 @@ bool OverlayCandidate::FromDrawQuad(
   if (!output_color_matrix.isIdentity())
     return false;
 
-  // We don't support an opacity value different than one for an overlay plane.
-  if (quad->shared_quad_state->opacity != 1.f)
-    return false;
+  const SharedQuadState* sqs = quad->shared_quad_state;
 
-  candidate->overlay_damage_index =
-      quad->shared_quad_state->overlay_damage_index.value_or(
-          kInvalidDamageIndex);
+  // We don't support an opacity value different than one for an overlay plane.
+  if (sqs->opacity != 1.f)
+    return false;
 
   // We can't support overlays with mask filter.
-  if (!quad->shared_quad_state->mask_filter_info.IsEmpty())
+  if (!sqs->mask_filter_info.IsEmpty())
     return false;
   // We support only kSrc (no blending) and kSrcOver (blending with premul).
-  if (!(quad->shared_quad_state->blend_mode == SkBlendMode::kSrc ||
-        quad->shared_quad_state->blend_mode == SkBlendMode::kSrcOver)) {
+  if (!(sqs->blend_mode == SkBlendMode::kSrc ||
+        sqs->blend_mode == SkBlendMode::kSrcOver)) {
     return false;
   }
+
+  candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
+
+  candidate->overlay_damage_index =
+      sqs->overlay_damage_index.value_or(kInvalidDamageIndex);
 
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
@@ -192,14 +180,14 @@ bool OverlayCandidate::FromDrawQuad(
 // static
 bool OverlayCandidate::IsInvisibleQuad(const DrawQuad* quad) {
   float opacity = quad->shared_quad_state->opacity;
-  if (opacity < std::numeric_limits<float>::epsilon())
+  if (cc::MathUtil::IsWithinEpsilon(opacity, 0.f))
     return true;
   if (quad->material != DrawQuad::Material::kSolidColor)
     return false;
   const SkColor color = SolidColorDrawQuad::MaterialCast(quad)->color;
-  const float alpha = (SkColorGetA(color) * (1.0f / 255.0f)) * opacity;
+  const float alpha = (SkColorGetA(color) * (1.f / 255.f)) * opacity;
   return quad->ShouldDrawWithBlending() &&
-         alpha < std::numeric_limits<float>::epsilon();
+         cc::MathUtil::IsWithinEpsilon(alpha, 0.f);
 }
 
 // static
@@ -313,17 +301,18 @@ bool OverlayCandidate::FromDrawQuadResource(
   if (!base::Contains(kOverlayFormats, candidate->format))
     return false;
 
-  gfx::OverlayTransform overlay_transform = GetOverlayTransform(
-      quad->shared_quad_state->quad_to_target_transform, y_flipped);
+  const SharedQuadState* sqs = quad->shared_quad_state;
+  gfx::OverlayTransform overlay_transform =
+      GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
   if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
-  auto& transform = quad->shared_quad_state->quad_to_target_transform;
+  auto& transform = sqs->quad_to_target_transform;
   candidate->display_rect = gfx::RectF(quad->rect);
   transform.TransformRect(&candidate->display_rect);
 
-  candidate->clip_rect = quad->shared_quad_state->clip_rect;
-  candidate->is_clipped = quad->shared_quad_state->is_clipped;
+  candidate->clip_rect = sqs->clip_rect;
+  candidate->is_clipped = sqs->is_clipped;
   candidate->is_opaque = !quad->ShouldDrawWithBlending();
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
@@ -333,7 +322,7 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->resource_id = resource_id;
   candidate->transform = overlay_transform;
   candidate->mailbox = resource_provider->GetMailbox(resource_id);
-  candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
+
   return true;
 }
 
@@ -359,7 +348,6 @@ bool OverlayCandidate::FromVideoHoleQuad(
   // damage.
   candidate->damage_area_estimate =
       GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
-  candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
   return true;
 }
 
@@ -375,6 +363,7 @@ bool OverlayCandidate::FromTextureQuad(
       (quad->background_color != SK_ColorBLACK ||
        quad->ShouldDrawWithBlending()))
     return false;
+
   if (!FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
                             quad->resource_id(), quad->y_flipped, candidate)) {
     return false;
@@ -446,15 +435,15 @@ void OverlayCandidate::HandleClipAndSubsampling(OverlayCandidate* candidate) {
       candidate->uv_rect, candidate->resource_size_in_pixels.width(),
       candidate->resource_size_in_pixels.height());
   // Make it an integral multiple of the subsampling factor.
-  constexpr int kSubsamplingFactor = 2;
-  src_rect.set_x(kSubsamplingFactor *
-                 (std::lround(src_rect.x()) / kSubsamplingFactor));
-  src_rect.set_y(kSubsamplingFactor *
-                 (std::lround(src_rect.y()) / kSubsamplingFactor));
-  src_rect.set_width(kSubsamplingFactor *
-                     (std::lround(src_rect.width()) / kSubsamplingFactor));
-  src_rect.set_height(kSubsamplingFactor *
-                      (std::lround(src_rect.height()) / kSubsamplingFactor));
+  auto subsample_round = [](float val) {
+    constexpr int kSubsamplingFactor = 2;
+    return (std::lround(val) / kSubsamplingFactor) * kSubsamplingFactor;
+  };
+
+  src_rect.set_x(subsample_round(src_rect.x()));
+  src_rect.set_y(subsample_round(src_rect.y()));
+  src_rect.set_width(subsample_round(src_rect.width()));
+  src_rect.set_height(subsample_round(src_rect.height()));
   // Scale it back into UV space and set it in the candidate.
   candidate->uv_rect = gfx::ScaleRect(
       src_rect, 1.0f / candidate->resource_size_in_pixels.width(),

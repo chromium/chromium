@@ -17046,6 +17046,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Viz.DisplayCompositor.OverlayQuadMaterial"
+    enum="OverlayQuadMaterial" expires_after="2021-07-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    Quad material for current promoted overlay, per frame. Recorded every time a
+    frame is rendered by the display compositor.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
     enum="OverlayStrategies" expires_after="2021-07-01">
   <owner>dcastagna@chromium.org</owner>
