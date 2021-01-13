@@ -137,8 +137,9 @@ static xmlDocPtr DocLoaderFunc(const xmlChar* uri,
         size_t offset = 0;
         for (const auto& span : *data) {
           bool final_chunk = offset + span.size() == data->size();
-          if (!xmlParseChunk(ctx, span.data(), static_cast<int>(span.size()),
-                             final_chunk))
+          // Stop parsing chunks if xmlParseChunk returns an error.
+          if (xmlParseChunk(ctx, span.data(), static_cast<int>(span.size()),
+                            final_chunk))
             break;
           offset += span.size();
         }
