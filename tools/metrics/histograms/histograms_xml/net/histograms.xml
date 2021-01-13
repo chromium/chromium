@@ -1920,7 +1920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.NetworkErrorLogging.SignedExchangeRequestOutcome"
-    enum="NetNetworkErrorLoggingRequestOutcome" expires_after="2021-01-24">
+    enum="NetNetworkErrorLoggingRequestOutcome" expires_after="M94">
   <owner>horo@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
