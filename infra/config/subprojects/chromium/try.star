@@ -7,6 +7,7 @@ load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
+load("./packager_vars.star", "CHROMIUM_3PP_PROPERTIES")
 
 try_.defaults.set(
     bucket = "try",
@@ -145,6 +146,10 @@ consoles.list_view(
 consoles.list_view(
     name = "tryserver.chromium.mac",
     branch_selector = branches.STANDARD_MILESTONE,
+)
+
+consoles.list_view(
+    name = "tryserver.chromium.packager",
 )
 
 consoles.list_view(
@@ -1577,6 +1582,12 @@ try_.chromium_win_builder(
             ".+/[+]/sandbox/win/.+",
         ],
     ),
+)
+
+try_.cipd_3pp_builder(
+    name = "3pp-linux-amd64-packager",
+    os = os.LINUX_DEFAULT,
+    properties = CHROMIUM_3PP_PROPERTIES["3pp-linux-amd64-packager"],
 )
 
 try_.gpu_chromium_android_builder(

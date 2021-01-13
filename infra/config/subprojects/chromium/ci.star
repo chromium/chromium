@@ -8,6 +8,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//console-header.star", "HEADER")
 load("//project.star", "settings")
+load("./packager_vars.star", "CHROMIUM_3PP_PROPERTIES")
 
 def main_console_if_on_branch():
     return branches.value(for_branches = "main")
@@ -91,10 +92,6 @@ luci.gitiles_poller(
     ("main", "{} Main Console".format(settings.project_title)),
     ("mirrors", "{} CQ Mirrors Console".format(settings.project_title)),
 )]
-
-consoles.console_view(
-    name = "android.packager",
-)
 
 consoles.console_view(
     name = "chromium",
@@ -343,6 +340,10 @@ consoles.console_view(
 )
 
 consoles.console_view(
+    name = "chromium.packager",
+)
+
+consoles.console_view(
     name = "chromium.swangle",
     ordering = {
         None: ["DEPS", "ToT ANGLE", "ToT SwiftShader"],
@@ -438,132 +439,6 @@ consoles.console_view(
 
 # Builders are sorted first lexicographically by the function used to define
 # them, then lexicographically by their name
-
-ci.builder(
-    name = "android-androidx-packager",
-    console_view_entry = consoles.console_view_entry(
-        console_view = "android.packager",
-        short_name = "androidx",
-    ),
-    executable = "recipe:android/androidx_packager",
-    schedule = "0 7,14,22 * * * *",
-    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
-    triggered_by = [],
-)
-
-ci.builder(
-    name = "android-avd-packager",
-    console_view_entry = consoles.console_view_entry(
-        console_view = "android.packager",
-        short_name = "avd",
-    ),
-    executable = "recipe:android/avd_packager",
-    properties = {
-        "avd_configs": [
-            "tools/android/avd/proto/creation/generic_android23.textpb",
-            "tools/android/avd/proto/creation/generic_android27.textpb",
-            "tools/android/avd/proto/creation/generic_android28.textpb",
-            "tools/android/avd/proto/creation/generic_android29.textpb",
-            "tools/android/avd/proto/creation/generic_android30.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android28.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
-        ],
-    },
-    schedule = "0 7 * * 0 *",
-    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
-    triggered_by = [],
-)
-
-ci.builder(
-    name = "android-sdk-packager",
-    console_view_entry = consoles.console_view_entry(
-        console_view = "android.packager",
-        short_name = "sdk",
-    ),
-    executable = "recipe:android/sdk_packager",
-    schedule = "0 7 * * 0 *",
-    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
-    triggered_by = [],
-    properties = {
-        # We still package part of build-tools;25.0.2 to support
-        # http://bit.ly/2KNUygZ
-        "packages": [
-            {
-                "sdk_package_name": "build-tools;25.0.2",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/25.0.2.yaml",
-            },
-            {
-                "sdk_package_name": "build-tools;29.0.2",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/29.0.2.yaml",
-            },
-            {
-                "sdk_package_name": "build-tools;30.0.1",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/30.0.1.yaml",
-            },
-            {
-                "sdk_package_name": "cmdline-tools;latest",
-                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
-            },
-            {
-                "sdk_package_name": "emulator",
-                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
-            },
-            {
-                "sdk_package_name": "extras;google;gcm",
-                "cipd_yaml": "third_party/android_sdk/cipd/extras/google/gcm.yaml",
-            },
-            {
-                "sdk_package_name": "patcher;v4",
-                "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
-            },
-            {
-                "sdk_package_name": "platforms;android-29",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-29.yaml",
-            },
-            {
-                "sdk_package_name": "platforms;android-30",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-30.yaml",
-            },
-            {
-                "sdk_package_name": "platform-tools",
-                "cipd_yaml": "third_party/android_sdk/cipd/platform-tools.yaml",
-            },
-            {
-                "sdk_package_name": "sources;android-29",
-                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-29.yaml",
-            },
-            # Not yet available as R is not released to AOSP.
-            #{
-            #    'sdk_package_name': 'sources;android-30',
-            #    'cipd_yaml': 'third_party/android_sdk/cipd/sources/android-30.yaml'
-            #},
-            {
-                "sdk_package_name": "system-images;android-27;google_apis;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-27;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis_playstore/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-29;google_apis;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-29;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis_playstore/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-30;google_apis;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
-            },
-        ],
-    },
-)
 
 ci.android_builder(
     name = "Android ASAN (dbg)",
@@ -1805,6 +1680,141 @@ ci.chromiumos_builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
+)
+
+ci.cipd_3pp_builder(
+    name = "3pp-linux-amd64-packager",
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "3pp|linux",
+        short_name = "amd64",
+    ),
+    schedule = "0 7 * * 0 *",
+    triggered_by = [],
+    properties = CHROMIUM_3PP_PROPERTIES["3pp-linux-amd64-packager"],
+)
+
+ci.cipd_builder(
+    name = "android-androidx-packager",
+    console_view_entry = consoles.console_view_entry(
+        category = "android",
+        short_name = "androidx",
+    ),
+    executable = "recipe:android/androidx_packager",
+    schedule = "0 7,14,22 * * * *",
+    triggered_by = [],
+)
+
+ci.cipd_builder(
+    name = "android-avd-packager",
+    console_view_entry = consoles.console_view_entry(
+        category = "android",
+        short_name = "avd",
+    ),
+    executable = "recipe:android/avd_packager",
+    schedule = "0 7 * * 0 *",
+    triggered_by = [],
+    properties = {
+        "avd_configs": [
+            "tools/android/avd/proto/creation/generic_android23.textpb",
+            "tools/android/avd/proto/creation/generic_android27.textpb",
+            "tools/android/avd/proto/creation/generic_android28.textpb",
+            "tools/android/avd/proto/creation/generic_android29.textpb",
+            "tools/android/avd/proto/creation/generic_android30.textpb",
+            "tools/android/avd/proto/creation/generic_playstore_android28.textpb",
+            "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
+        ],
+    },
+)
+
+ci.cipd_builder(
+    name = "android-sdk-packager",
+    console_view_entry = consoles.console_view_entry(
+        category = "android",
+        short_name = "sdk",
+    ),
+    executable = "recipe:android/sdk_packager",
+    schedule = "0 7 * * 0 *",
+    triggered_by = [],
+    properties = {
+        # We still package part of build-tools;25.0.2 to support
+        # http://bit.ly/2KNUygZ
+        "packages": [
+            {
+                "sdk_package_name": "build-tools;25.0.2",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/25.0.2.yaml",
+            },
+            {
+                "sdk_package_name": "build-tools;29.0.2",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/29.0.2.yaml",
+            },
+            {
+                "sdk_package_name": "build-tools;30.0.1",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/30.0.1.yaml",
+            },
+            {
+                "sdk_package_name": "cmdline-tools;latest",
+                "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
+            },
+            {
+                "sdk_package_name": "emulator",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+            },
+            {
+                "sdk_package_name": "extras;google;gcm",
+                "cipd_yaml": "third_party/android_sdk/cipd/extras/google/gcm.yaml",
+            },
+            {
+                "sdk_package_name": "patcher;v4",
+                "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-29",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-29.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-30",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-30.yaml",
+            },
+            {
+                "sdk_package_name": "platform-tools",
+                "cipd_yaml": "third_party/android_sdk/cipd/platform-tools.yaml",
+            },
+            {
+                "sdk_package_name": "sources;android-29",
+                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-29.yaml",
+            },
+            # Not yet available as R is not released to AOSP.
+            #{
+            #    'sdk_package_name': 'sources;android-30',
+            #    'cipd_yaml': 'third_party/android_sdk/cipd/sources/android-30.yaml'
+            #},
+            {
+                "sdk_package_name": "system-images;android-27;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-27;google_apis_playstore;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis_playstore/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-29;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-29;google_apis_playstore;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis_playstore/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-30;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
+            },
+        ],
+    },
 )
 
 ci.clang_builder(

@@ -234,6 +234,23 @@ def angle_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
+def cipd_builder(*, name, **kwargs):
+    return ci_builder(
+        name = name,
+        builder_group = "chromium.packager",
+        service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
+def cipd_3pp_builder(*, name, os, properties, **kwargs):
+    return cipd_builder(
+        name = name,
+        executable = "recipe:chromium_3pp",
+        os = os,
+        properties = properties,
+        **kwargs
+    )
+
 def chromium_builder(*, name, tree_closing = True, **kwargs):
     return ci_builder(
         name = name,
@@ -759,6 +776,8 @@ ci = struct(
     angle_windows_builder = angle_windows_builder,
     chromium_builder = chromium_builder,
     chromiumos_builder = chromiumos_builder,
+    cipd_3pp_builder = cipd_3pp_builder,
+    cipd_builder = cipd_builder,
     clang_builder = clang_builder,
     clang_mac_builder = clang_mac_builder,
     dawn_linux_builder = dawn_linux_builder,

@@ -64,6 +64,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_3pp",
+)
+
+build_recipe(
     name = "recipe:chromium_afl",
 )
 

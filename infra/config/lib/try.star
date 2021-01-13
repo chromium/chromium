@@ -414,6 +414,23 @@ def chromium_win_builder(
         **kwargs
     )
 
+def cipd_builder(*, name, **kwargs):
+    return try_builder(
+        name = name,
+        service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
+def cipd_3pp_builder(*, name, os, properties, **kwargs):
+    return cipd_builder(
+        name = name,
+        builder_group = "tryserver.chromium.packager",
+        executable = "recipe:chromium_3pp",
+        os = os,
+        properties = properties,
+        **kwargs
+    )
+
 def gpu_try_builder(*, name, builderless = False, execution_timeout = 6 * time.hour, **kwargs):
     return try_builder(
         name = name,
@@ -485,6 +502,8 @@ try_ = struct(
     chromium_updater_mac_builder = chromium_updater_mac_builder,
     chromium_updater_win_builder = chromium_updater_win_builder,
     chromium_win_builder = chromium_win_builder,
+    cipd_3pp_builder = cipd_3pp_builder,
+    cipd_builder = cipd_builder,
     gpu_chromium_android_builder = gpu_chromium_android_builder,
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
