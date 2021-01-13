@@ -360,7 +360,7 @@ DocumentLoader::DocumentLoader(
           CopyInitiatorOriginTrials(params_->initiator_origin_trial_features)),
       force_enabled_origin_trials_(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
-      origin_isolated_(params_->origin_isolated),
+      origin_agent_cluster_(params_->origin_agent_cluster),
       is_cross_browsing_context_group_navigation_(
           params_->is_cross_browsing_context_group_navigation) {
   DCHECK(frame_);
@@ -1781,8 +1781,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       frame_->DomWindow()->SetOriginPolicyIds(ids);
     }
 
-    // Inheriting cases use their agent's origin-isolated value, which is set by
-    // whatever they're inheriting from.
+    // Inheriting cases use their agent's "is origin-keyed" value, which is set
+    // by whatever they're inheriting from.
     //
     // javascript: URLs use the calling page as their Url() value, so we need to
     // exclude them explicitly.
@@ -1794,7 +1794,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // architecture.
     if (!Document::ShouldInheritSecurityOriginFromOwner(Url()) &&
         commit_reason_ != CommitReason::kJavascriptUrl) {
-      agent->SetIsOriginIsolated(origin_isolated_);
+      agent->SetIsOriginKeyed(origin_agent_cluster_);
     }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
