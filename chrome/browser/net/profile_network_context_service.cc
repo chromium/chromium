@@ -97,7 +97,7 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/client_cert_store_lacros.h"
 #endif
@@ -584,7 +584,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
       std::make_unique<net::ClientCertStoreNSS>(
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializer* cert_db_initializer =
       CertDbInitializerFactory::GetForProfileIfExists(profile_);
   if (!cert_db_initializer || !profile_->IsMainProfile()) {
@@ -595,7 +595,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
                                                   std::move(store));
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return store;
 #elif defined(OS_WIN)

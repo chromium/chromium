@@ -33,7 +33,7 @@ void ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization() {
 
 void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
   auto shutdown_cb = base::BindOnce([] {
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Force a crash so that a crash report is generated.
     LOG(FATAL) << "Wayland protocol error.";
 #else
