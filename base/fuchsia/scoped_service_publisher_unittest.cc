@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ScopedServicePublisherTest : public ServiceDirectoryTestBase {};
 
@@ -42,5 +41,4 @@ TEST_F(ScopedServicePublisherTest, DestructorRemovesService) {
   VerifyTestInterface(&new_client, ZX_ERR_PEER_CLOSED);
 }
 
-}  // namespace fuchsia
 }  // namespace base

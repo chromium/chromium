@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 
 namespace base {
-namespace fuchsia {
 
 template <typename Interface>
 class BASE_EXPORT ScopedServicePublisher {
@@ -48,7 +47,15 @@ class BASE_EXPORT ScopedServicePublisher {
   DISALLOW_COPY_AND_ASSIGN(ScopedServicePublisher);
 };
 
+// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
+// changed to use the non-fuchsia-sub-namespace version.
+namespace fuchsia {
+
+template <typename Interface>
+using ScopedServicePublisher = ::base::ScopedServicePublisher<Interface>;
+
 }  // namespace fuchsia
+
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
