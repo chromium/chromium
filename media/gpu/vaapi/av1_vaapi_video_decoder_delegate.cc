@@ -392,16 +392,10 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
   mode_control.delta_lf_present_flag = frame_header.delta_lf.present;
   mode_control.log2_delta_lf_res = frame_header.delta_lf.scale;
   mode_control.delta_lf_multi = frame_header.delta_lf.multi;
-  switch (frame_header.tx_mode) {
-    case libgav1::TxMode::kTxModeOnly4x4:
-    case libgav1::TxMode::kTxModeLargest:
-    case libgav1::TxMode::kTxModeSelect:
-      mode_control.tx_mode = base::strict_cast<uint32_t>(frame_header.tx_mode);
-      break;
-    default:
-      NOTREACHED() << "Unknown tx mode: "
-                   << base::strict_cast<int>(frame_header.tx_mode);
-  }
+  DCHECK_LE(0u, frame_header.tx_mode);
+  DCHECK_LE(frame_header.tx_mode, 2u);
+  mode_control.tx_mode = frame_header.tx_mode;
+
   mode_control.reference_select = frame_header.reference_mode_select;
   mode_control.reduced_tx_set_used = frame_header.reduced_tx_set;
   mode_control.skip_mode_present = frame_header.skip_mode_present;
@@ -409,7 +403,8 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
 
 void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
                              const libgav1::LoopRestoration& loop_restoration) {
-  auto to_frame_restoration_type = [](libgav1::LoopRestorationType lr_type) {
+  auto to_frame_restoration_type =
+      [](libgav1::LoopRestorationType lr_type) -> uint16_t {
     // Spec. 6.10.15
     switch (lr_type) {
       case libgav1::LoopRestorationType::kLoopRestorationTypeNone:
@@ -420,7 +415,6 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
         return 1;
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
-      case libgav1::LoopRestorationType::kNumLoopRestorationTypes:
       default:
         NOTREACHED() << "Invalid restoration type"
                      << base::strict_cast<int>(lr_type);
@@ -428,7 +422,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
     }
   };
   static_assert(
-      ARRAY_SIZE(loop_restoration.type) == libgav1::kMaxPlanes &&
+      libgav1::kMaxPlanes == 3 &&
+          ARRAY_SIZE(loop_restoration.type) == libgav1::kMaxPlanes &&
           ARRAY_SIZE(loop_restoration.unit_size_log2) == libgav1::kMaxPlanes,
       "Invalid size of loop restoration values");
   auto& va_loop_restoration = va_pic_param.loop_restoration_fields.bits;
@@ -448,9 +443,14 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
                    }) != (loop_restoration.type + num_planes);
   if (!use_loop_restoration)
     return;
+  static_assert(libgav1::kPlaneY == 0u && libgav1::kPlaneU == 1u,
+                "Invalid plane index");
   DCHECK_GE(loop_restoration.unit_size_log2[0], 6);
   DCHECK_GE(loop_restoration.unit_size_log2[0],
             loop_restoration.unit_size_log2[1]);
+  DCHECK_LE(
+      loop_restoration.unit_size_log2[0] - loop_restoration.unit_size_log2[1],
+      1);
   va_loop_restoration.lr_unit_shift = loop_restoration.unit_size_log2[0] - 6;
   va_loop_restoration.lr_uv_shift =
       loop_restoration.unit_size_log2[0] - loop_restoration.unit_size_log2[1];
