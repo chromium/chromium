@@ -122,6 +122,7 @@ void TetherControllerImpl::AttemptConnection() {
   user_action_recorder_->RecordTetherConnectionAttempt();
   util::LogTetherConnectionResult(
       util::TetherConnectionResult::kAttemptConnection);
+  is_attempting_connection_ = true;
 
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kInstantTethering);
@@ -393,11 +394,13 @@ void TetherControllerImpl::UpdateStatus() {
   PA_LOG(INFO) << "TetherController status update: " << status_ << " => "
                << status;
 
-  // Log the connection attempt result if it has succeed.
-  if (status == Status::kConnected)
+  status_ = status;
+
+  if (is_attempting_connection_ && status_ == Status::kConnected)
     util::LogTetherConnectionResult(util::TetherConnectionResult::kSuccess);
 
-  status_ = status;
+  if (status_ != Status::kConnecting)
+    is_attempting_connection_ = false;
 
   NotifyStatusChanged();
 }
