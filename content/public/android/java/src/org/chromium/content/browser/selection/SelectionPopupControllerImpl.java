@@ -796,8 +796,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         Context windowContext = mWindowAndroid.getContext().get();
         if (mClassificationResult != null && mAdditionalMenuItemProvider != null
                 && windowContext != null) {
-            mAdditionalMenuItemProvider.addMenuItems(
-                    windowContext, menu, mClassificationResult.textClassification);
+            mAdditionalMenuItemProvider.addMenuItems(windowContext, menu,
+                    mClassificationResult.textClassification,
+                    mClassificationResult.additionalIcons);
         }
 
         if (!hasSelection() || isSelectionPassword()) return;

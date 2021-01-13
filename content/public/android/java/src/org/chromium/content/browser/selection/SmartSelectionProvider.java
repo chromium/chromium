@@ -130,7 +130,10 @@ public class SmartSelectionProvider {
             mClassificationTask = null;
         }
 
-        mClassificationTask = new ClassificationTask(classifier, requestType, text, start, end);
+        // We checked mWindowAndroid.getContext().get() is not null in getTextClassifier(), so pass
+        // the value directly here.
+        mClassificationTask = new ClassificationTask(
+                classifier, requestType, text, start, end, mWindowAndroid.getContext().get());
         mClassificationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
@@ -141,14 +144,16 @@ public class SmartSelectionProvider {
         private final CharSequence mText;
         private final int mOriginalStart;
         private final int mOriginalEnd;
+        private final Context mContext;
 
         ClassificationTask(TextClassifier classifier, @RequestType int requestType,
-                CharSequence text, int start, int end) {
+                CharSequence text, int start, int end, Context context) {
             mTextClassifier = classifier;
             mRequestType = requestType;
             mText = text;
             mOriginalStart = start;
             mOriginalEnd = end;
+            mContext = context;
         }
 
         @Override
@@ -183,6 +188,11 @@ public class SmartSelectionProvider {
             result.onClickListener = tc.getOnClickListener();
             result.textSelection = ts;
             result.textClassification = tc;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                result.additionalIcons = AdditionalMenuItemProviderImpl.loadIconDrawables(
+                        mContext, result.textClassification);
+            }
 
             return result;
         }
