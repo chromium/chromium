@@ -795,7 +795,7 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
     required_attribs->push_back(
-        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CENC_CTR});
+        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CTR_128});
   }
 #endif
 
@@ -2591,8 +2591,8 @@ bool VaapiWrapper::Initialize(CodecMode mode,
     for (auto& attrib : required_attribs) {
       if (attrib.type == VAConfigAttribEncryption) {
         attrib.value = (encryption_scheme == EncryptionScheme::kCbcs)
-                           ? VA_ENCRYPTION_TYPE_CENC_CBC
-                           : VA_ENCRYPTION_TYPE_CENC_CTR;
+                           ? VA_ENCRYPTION_TYPE_CBC
+                           : VA_ENCRYPTION_TYPE_CTR_128;
       }
     }
   }
