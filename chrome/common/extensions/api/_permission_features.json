@@ -283,7 +283,7 @@
   },
   "enterprise.platformKeys": [{
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension", "platform_app", "legacy_packaged_app"],
     "location": "policy"
   },
@@ -637,7 +637,7 @@
   "platformKeys": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],

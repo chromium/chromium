@@ -84,6 +84,8 @@ if (is_chromeos_ash || is_chromeos_lacros) {
     "enterprise_device_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
+    "platform_keys_internal.idl",
+    "platform_keys.idl",
   ]
 }
 
@@ -107,8 +109,6 @@ if (is_chromeos_ash) {
     "login_screen_storage.idl",
     "login_screen_ui.idl",
     "login_state.idl",
-    "platform_keys.idl",
-    "platform_keys_internal.idl",
     "quick_unlock_private.idl",
     "terminal_private.json",
     "users_private.idl",

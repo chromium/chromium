@@ -352,14 +352,19 @@ static_library("renderer") {
     deps += [ "//third_party/wtl" ]
   }
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [
+      "extensions/platform_keys_natives.cc",
+      "extensions/platform_keys_natives.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "extensions/file_browser_handler_custom_bindings.cc",
       "extensions/file_browser_handler_custom_bindings.h",
       "extensions/file_manager_private_custom_bindings.cc",
       "extensions/file_manager_private_custom_bindings.h",
-      "extensions/platform_keys_natives.cc",
-      "extensions/platform_keys_natives.h",
     ]
     if (use_cups) {
       configs += [ "//printing:cups" ]
