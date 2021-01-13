@@ -325,7 +325,11 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   bool UsesGigaCage() const {
-    return features::IsPartitionAllocGigaCageEnabled() && allow_ref_count;
+    return features::IsPartitionAllocGigaCageEnabled()
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+           && allow_ref_count
+#endif
+        ;
   }
 
   ALWAYS_INLINE bool IsScannable() const {
