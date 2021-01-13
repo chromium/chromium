@@ -223,6 +223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebAudio.OfflineAudioContext.ChannelCount" units="units"
     expires_after="2021-07-06">
+  <obsolete>
+    Removed 2021-01-12. See crbug.com/1165240.
+  </obsolete>
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -234,6 +237,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebAudio.OfflineAudioContext.Length" units="frames"
     expires_after="2021-05-23">
+  <obsolete>
+    Removed 2021-01-12. See crbug.com/1165240.
+  </obsolete>
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -245,6 +251,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebAudio.OfflineAudioContext.SampleRate384kHz" units="Hz"
     expires_after="2021-02-18">
+  <obsolete>
+    Removed 2021-01-12. See crbug.com/1165240.
+  </obsolete>
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
