@@ -2234,7 +2234,6 @@ static_library("browser") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
-    "//components/subresource_redirect/common",
     "//components/suggestions",
     "//components/sync",
     "//components/sync_bookmarks",

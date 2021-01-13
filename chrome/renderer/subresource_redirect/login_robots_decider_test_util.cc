@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_redirect/subresource_redirect_test_util.h"
+#include "chrome/renderer/subresource_redirect/login_robots_decider_test_util.h"
 
 #include "components/data_reduction_proxy/proto/robots_rules.pb.h"
 
 namespace subresource_redirect {
 
-std::string GetRobotsRulesProtoString(const std::vector<RobotsRule>& patterns) {
+std::string GetRobotsRulesProtoString(const std::vector<Rule>& patterns) {
   proto::RobotsRules robots_rules;
   for (const auto& pattern : patterns) {
     auto* new_rule = robots_rules.add_image_ordered_rules();
