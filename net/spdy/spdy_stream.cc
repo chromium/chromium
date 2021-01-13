@@ -600,21 +600,12 @@ void SpdyStream::OnPaddingConsumed(size_t len) {
 
 void SpdyStream::OnFrameWriteComplete(spdy::SpdyFrameType frame_type,
                                       size_t frame_size) {
-  // PRIORITY writes are allowed at any time and do not trigger a state update.
-  if (frame_type == spdy::SpdyFrameType::PRIORITY) {
+  if (frame_type != spdy::SpdyFrameType::HEADERS &&
+      frame_type != spdy::SpdyFrameType::DATA) {
     return;
   }
 
-  // Frame types reserved in
-  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 ought to be
-  // ignored.
-  if (static_cast<uint8_t>(frame_type) % 0x1f == 0x0b)
-    return;
-
   DCHECK_NE(type_, SPDY_PUSH_STREAM);
-  CHECK(frame_type == spdy::SpdyFrameType::HEADERS ||
-        frame_type == spdy::SpdyFrameType::DATA)
-      << frame_type;
 
   int result = (frame_type == spdy::SpdyFrameType::HEADERS)
                    ? OnHeadersSent()
