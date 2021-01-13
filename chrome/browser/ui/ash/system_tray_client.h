@@ -83,6 +83,9 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
 
  private:
+  // Opens cellular setup dialog in os settings
+  void ShowSettingsCellularSetupFlow();
+
   // Helper function shared by ShowNetworkSettings() and ShowNetworkConfigure().
   void ShowNetworkSettingsHelper(const std::string& network_id,
                                  bool show_configure);

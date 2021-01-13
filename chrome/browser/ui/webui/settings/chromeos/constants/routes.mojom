@@ -146,6 +146,7 @@ const string kEthernetDetailsSubpagePath = "networkDetail";
 const string kWifiNetworksSubpagePath = "networks?type=WiFi";
 const string kWifiDetailsSubpagePath = "networkDetail";
 const string kKnownNetworksSubpagePath = "knownNetworks";
+const string kCellularNetworksSubpagePath = "networks?type=Cellular";
 const string kMobileDataNetworksSubpagePath = "networks?type=Tether";
 const string kCellularDetailsSubpagePath = "networkDetail";
 const string kTetherDetailsSubpagePath = "networkDetail";

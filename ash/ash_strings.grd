@@ -1559,6 +1559,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_OTHER_WIFI" desc="The label used for the item to display other Wi-Fi networks.">
         Join other Wi-Fi networks
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL" desc="The label for button in network quick settings that allows user to add new cellular networks.">
+        Add new cellular network
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE" desc="Notification shown when a Bluetooth adapter is discoverable.">
         Your computer is discoverable to nearby Bluetooth devices and will appear as "<ph name="NAME">$1<ex>Chromebook</ex></ph>" with address <ph name="ADDRESS">$2<ex>01:23:45:67:89:0A</ex></ph>
       </message>

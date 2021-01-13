@@ -14,6 +14,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/onc/onc_constants.h"
@@ -272,6 +273,26 @@ void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
 
   // Otherwise the toggle controls the Tether enabled state.
   model()->SetNetworkTypeEnabledState(NetworkType::kTether, is_on);
+}
+
+void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kUpdatedCellularActivationUi)) {
+    return;
+  }
+
+  TopShortcutButton* add_cellular_button = new TopShortcutButton(
+      base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
+                          base::Unretained(this)),
+      vector_icons::kAddCellularNetworkIcon,
+      IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL);
+  add_cellular_button->SetEnabled(enabled);
+  container()->AddView(TriView::Container::END, add_cellular_button);
+}
+
+void MobileSectionHeaderView::AddCellularButtonPressed() {
+  Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+      ::onc::network_type::kCellular);
 }
 
 void MobileSectionHeaderView::EnableBluetooth() {

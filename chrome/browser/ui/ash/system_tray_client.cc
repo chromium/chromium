@@ -370,6 +370,11 @@ void SystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 
 void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   if (type == ::onc::network_type::kCellular) {
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kUpdatedCellularActivationUi)) {
+      ShowSettingsCellularSetupFlow();
+      return;
+    }
     const chromeos::NetworkState* cellular =
         chromeos::NetworkHandler::Get()
             ->network_state_handler()
@@ -380,6 +385,13 @@ void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
     return;
   }
   chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
+}
+
+void SystemTrayClient::ShowSettingsCellularSetupFlow() {
+  // TODO(crbug.com/1093185) Add metrics action recorder
+  std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
+  page += "&showCellularSetup=true";
+  ShowSettingsSubPageForActiveUser(page);
 }
 
 void SystemTrayClient::ShowThirdPartyVpnCreate(

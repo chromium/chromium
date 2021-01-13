@@ -101,6 +101,9 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView {
  private:
   // NetworkListView::NetworkSectionHeaderView:
   void OnToggleToggled(bool is_on) override;
+  void AddExtraButtons(bool enabled) override;
+
+  void AddCellularButtonPressed();
 
   // When Tether is disabled because Bluetooth is off, then enabling Bluetooth
   // will enable Tether. If enabling Bluetooth takes longer than some timeout
