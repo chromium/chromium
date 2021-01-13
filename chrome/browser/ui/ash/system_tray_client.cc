@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/url_constants.h"
@@ -458,6 +459,9 @@ void SystemTrayClient::ShowNetworkSettingsHelper(const std::string& network_id,
     page += net::EscapeUrlEncodedData(
         chromeos::network_util::TranslateShillTypeToONC(network_state->type()),
         true);
+    page += "&settingId=";
+    page += base::NumberToString(static_cast<int32_t>(
+        chromeos::settings::mojom::Setting::kDisconnectWifiNetwork));
     if (show_configure)
       page += "&showConfigure=true";
   }
