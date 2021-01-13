@@ -337,8 +337,9 @@ TEST_F(ConversionHostTest,
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
+// TODO(crbug.com/1165985): Fix Linux ChromiumOS MSan Tests
 TEST_F(ConversionHostTest,
-       ImpressionNavigation_OriginTrustworthyChecksPerformed) {
+       DISABLED_ImpressionNavigation_OriginTrustworthyChecksPerformed) {
   const char kLocalHost[] = "http://localhost";
 
   struct {
