@@ -41673,7 +41673,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -41726,7 +41725,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter"
         ],
-        "experiment_percentage": 50,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -42084,7 +42083,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -42242,7 +42240,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
