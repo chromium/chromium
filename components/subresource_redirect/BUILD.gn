@@ -15,8 +15,8 @@ static_library("test_support") {
   deps = [
     "//base/test:test_support",
     "//chrome/common:constants",
+    "//components/data_reduction_proxy/proto:subresource_redirect_proto",
     "//components/metrics:content",
-    "//components/subresource_redirect/proto:proto",
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest:gtest",

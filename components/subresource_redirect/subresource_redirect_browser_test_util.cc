@@ -9,7 +9,6 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/subresource_redirect/proto/robots_rules.pb.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_request.h"

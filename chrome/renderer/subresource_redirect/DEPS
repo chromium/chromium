@@ -1,8 +1,8 @@
 include_rules = [
   "+components/base32",
   "+services/metrics/public/cpp",
+  "+components/data_reduction_proxy/proto/robots_rules.pb.h",
   "+components/subresource_redirect",
-  "+components/subresource_redirect/proto/robots_rules.pb.h",
   "+services/network/test/test_utils.h",
 ]
 

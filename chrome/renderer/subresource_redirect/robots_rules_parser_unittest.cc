@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
-#include "components/subresource_redirect/proto/robots_rules.pb.h"
+#include "components/data_reduction_proxy/proto/robots_rules.pb.h"
 #include "components/subresource_redirect/subresource_redirect_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
