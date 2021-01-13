@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsModelTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsSubmenuTest) {
-  RunTestURL("foreground/js/ui/actions_submenu_unittest_gen.html");
+  RunTestURL("foreground/js/ui/actions_submenu_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Breadcrumb) {

@@ -1,22 +1,19 @@
 // Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {util} from '../../../common/js/util.m.js';
+import {MockActionModel, MockActionsModel} from '../mock_actions_model.m.js';
+
+import {ActionsSubmenu} from './actions_submenu.m.js';
 
 let menu = null;
 let submenu = null;
 let separator = null;
-
-document.write(`
-    <command id="share" label="Share"></command>
-    <command id="manage-in-drive" label="Manage in Drive"></command>
-    <command id="toggle-pinned" label="Toggle pinned"></command>
-    <command id="unpin-folder" label="Remove folder shortcut">
-    </command>
-
-    <cr-menu id="menu">
-    <hr id="actions-separator" hidden>
-    </cr-menu>`);
 
 function queryRequiredElement(selectors, opt_context) {
   const element = (opt_context || document).querySelector(selectors);
@@ -24,21 +21,23 @@ function queryRequiredElement(selectors, opt_context) {
       element, HTMLElement, 'Missing required element: ' + selectors);
 }
 
-function setUp() {
-  menu = util.queryDecoratedElement('#menu', cr.ui.Menu);
+export function setUp() {
+  document.body.innerHTML = `
+      <command id="share" label="Share"></command>
+      <command id="manage-in-drive" label="Manage in Drive"></command>
+      <command id="toggle-pinned" label="Toggle pinned"></command>
+      <command id="unpin-folder" label="Remove folder shortcut">
+      </command>
+
+      <cr-menu id="menu">
+      <hr id="actions-separator" hidden>
+      </cr-menu>`;
+  menu = util.queryDecoratedElement('#menu', Menu);
   separator = queryRequiredElement('#actions-separator', menu);
   submenu = new ActionsSubmenu(menu);
 }
 
-function tearDown() {
-  const items = document.querySelectorAll('#menu cr-menu-item');
-  for (let i = 0; i < items.length; i++) {
-    items[i].parentNode.removeChild(items[i]);
-  }
-  separator.hidden = true;
-}
-
-function testSeparator() {
+export function testSeparator() {
   assertTrue(separator.hidden);
 
   submenu.setActionsModel(
@@ -49,7 +48,7 @@ function testSeparator() {
   assertTrue(separator.hidden);
 }
 
-function testNullModel() {
+export function testNullModel() {
   submenu.setActionsModel(
       new MockActionsModel({id: new MockActionModel('title', null)}));
   let item = menu.querySelector('cr-menu-item');
@@ -60,7 +59,7 @@ function testNullModel() {
   assertFalse(!!item);
 }
 
-function testCustomActionRendering() {
+export function testCustomActionRendering() {
   submenu.setActionsModel(
       new MockActionsModel({id: new MockActionModel('title', null)}));
   const item = menu.querySelector('cr-menu-item');
@@ -69,7 +68,7 @@ function testCustomActionRendering() {
   assertEquals(null, item.command);
 }
 
-function testCommandActionRendering() {
+export function testCommandActionRendering() {
   submenu.setActionsModel(new MockActionsModel(
       {SHARE: new MockActionModel('share with me!', null)}));
   const item = menu.querySelector('cr-menu-item');

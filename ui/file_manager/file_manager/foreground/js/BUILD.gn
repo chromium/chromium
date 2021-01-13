@@ -47,8 +47,10 @@ js_type_check("closure_compile_jsmodules") {
     ":file_watcher.m",
     ":folder_shortcuts_data_model.m",
     ":holding_space_util.m",
+    ":last_modified_controller.m",
     ":launch_param.m",
     ":list_thumbnail_loader.m",
+    ":metadata_update_controller.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
     ":mock_navigation_list_model.m",
@@ -57,7 +59,9 @@ js_type_check("closure_compile_jsmodules") {
     ":navigation_uma.m",
     ":path_component.m",
     ":providers_model.m",
+    ":quick_view_model.m",
     ":spinner_controller.m",
+    ":task_history.m",
     ":thumbnail_loader.m",
     ":web_store_utils.m",
   ]
@@ -1000,6 +1004,17 @@ js_library("last_modified_controller") {
   ]
 }
 
+js_library("last_modified_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/last_modified_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    "ui:file_table.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("launch_param") {
   deps = [
     ":dialog_type",
@@ -1102,6 +1117,19 @@ js_library("metadata_update_controller") {
     "ui:file_metadata_formatter",
     "ui:list_container",
   ]
+}
+
+js_library("metadata_update_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata_update_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    "metadata:metadata_model.m",
+    "ui:file_metadata_formatter.m",
+    "ui:list_container.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("metrics_start") {
@@ -1242,6 +1270,16 @@ js_library("quick_view_model") {
   ]
 }
 
+js_library("quick_view_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_model.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("quick_view_uma") {
   deps = [
     ":dialog_type",
@@ -1330,6 +1368,16 @@ js_unittest("task_controller_unittest") {
 
 js_library("task_history") {
   deps = [ "//ui/webui/resources/js/cr:event_target" ]
+}
+
+js_library("task_history.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/task_history.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 # TODO(tapted): Move this into //ui/file_manager/base.
@@ -1447,25 +1495,29 @@ js_modulizer("modulize") {
     "file_list_model.js",
     "file_selection.js",
     "file_transfer_controller.js",
+    "file_type_filters_controller.js",
     "file_watcher.js",
     "folder_shortcuts_data_model.js",
     "holding_space_util.js",
+    "last_modified_controller.js",
     "launch_param.js",
     "list_thumbnail_loader.js",
+    "metadata_update_controller.js",
+    "metrics_start.js",
+    "mock_actions_model.js",
     "mock_directory_model.js",
     "mock_folder_shortcut_data_model.js",
     "mock_navigation_list_model.js",
     "mock_thumbnail_loader.js",
     "navigation_list_model.js",
+    "navigation_uma.js",
     "path_component.js",
     "providers_model.js",
+    "quick_view_model.js",
+    "spinner_controller.js",
+    "task_history.js",
     "thumbnail_loader.js",
     "web_store_utils.js",
-    "file_type_filters_controller.js",
-    "navigation_uma.js",
-    "metrics_start.js",
-    "mock_actions_model.js",
-    "spinner_controller.js",
   ]
 
   namespace_rewrites =

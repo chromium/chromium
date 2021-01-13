@@ -26,6 +26,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":a11y_announce.m",
     ":action_model_ui.m",
+    ":actions_submenu.m",
     ":combobutton.m",
     ":commandbutton.m",
     ":default_task_dialog.m",
@@ -159,11 +160,28 @@ js_library("actions_submenu") {
   ]
 }
 
-js_unittest("actions_submenu_unittest") {
+js_library("actions_submenu.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/actions_submenu.m.js" ]
   deps = [
-    ":actions_submenu",
-    "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/js:actions_model.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("actions_submenu_unittest.m") {
+  deps = [
+    ":actions_submenu.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/js:mock_actions_model.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
   ]
 }
 
@@ -927,6 +945,7 @@ js_library("suggest_apps_dialog.m") {
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
+    ":actions_submenu_unittest.m",
     ":directory_tree_unittest.m",
     ":file_list_selection_model_unittest.m",
     ":file_manager_dialog_base_unittest.m",
@@ -949,7 +968,6 @@ js_test_gen_html("js_test_gen_html_modules") {
 
 js_test_gen_html("js_test_gen_html") {
   deps = [
-    ":actions_submenu_unittest",
     ":breadcrumb_unittest",
     ":install_linux_package_dialog_unittest",
   ]
@@ -980,6 +998,7 @@ js_modulizer("modulize") {
     "multi_menu_button.js",
     "progress_center_panel.js",
     "suggest_apps_dialog.js",
+    "actions_submenu.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
