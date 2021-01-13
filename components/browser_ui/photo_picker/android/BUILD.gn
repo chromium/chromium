@@ -5,7 +5,11 @@
 import("//build/config/android/rules.gni")
 
 source_set("android") {
-  sources = [ "photo_picker_sandbox_bridge.cc" ]
+  sources = [
+    "features.cc",
+    "features.h",
+    "photo_picker_sandbox_bridge.cc",
+  ]
   deps = [
     ":photo_picker_jni_headers",
     "//base",

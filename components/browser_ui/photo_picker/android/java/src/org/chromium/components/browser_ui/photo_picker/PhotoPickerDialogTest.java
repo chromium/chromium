@@ -272,9 +272,9 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
                     @Override
                     public PhotoPickerDialog call() {
-                        final PhotoPickerDialog dialog =
-                                new PhotoPickerDialog(mWindowAndroid, contentResolver,
-                                        PhotoPickerDialogTest.this, multiselect, mimeTypes);
+                        final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid,
+                                contentResolver, PhotoPickerDialogTest.this, multiselect,
+                                /* animatedThumbnailsSupported = */ true, mimeTypes);
                         dialog.show();
                         return dialog;
                     }

@@ -49,6 +49,9 @@ public class DecoderServiceHost
     // A tag for logging error messages.
     private static final String TAG = "ImageDecoderHost";
 
+    // The current context.
+    private final Context mContext;
+
     // A content resolver for providing file descriptors for the images.
     private ContentResolver mContentResolver;
 
@@ -76,8 +79,17 @@ public class DecoderServiceHost
     // The number of io failures during video decoding, per batch.
     private int mFailedVideoDecodesUnknown;
 
+    // Whether animated thumbnails should be generated for video clips.
+    private final boolean mAnimatedThumbnailsSupported;
+
     // A worker task for asynchronously handling video decode requests.
     private DecodeVideoTask mWorkerTask;
+
+    // The current processing request.
+    private DecoderServiceParams mProcessingRequest;
+
+    // The callbacks used to notify the clients when the service is ready.
+    private final List<DecoderStatusCallback> mCallbacks = new ArrayList<DecoderStatusCallback>();
 
     // Keeps track of the last decoding ordinal issued.
     static int sLastDecodingOrdinal = 0;
@@ -215,20 +227,17 @@ public class DecoderServiceHost
     PriorityQueue<DecoderServiceParams> mPendingRequests =
             new PriorityQueue<>(/*initialCapacity=*/1, mRequestComparator);
 
-    // The current processing request.
-    private DecoderServiceParams mProcessingRequest;
-
-    // The callbacks used to notify the clients when the service is ready.
-    private final List<DecoderStatusCallback> mCallbacks = new ArrayList<DecoderStatusCallback>();
-
-    private final Context mContext;
-
     /**
      * The DecoderServiceHost constructor.
      * @param callback The callback to use when communicating back to the client.
+     * @param context The current context.
+     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
+     *         clips.
      */
-    public DecoderServiceHost(DecoderStatusCallback callback, Context context) {
+    public DecoderServiceHost(
+            DecoderStatusCallback callback, Context context, boolean animatedThumbnailsSupported) {
         mCallbacks.add(callback);
+        mAnimatedThumbnailsSupported = animatedThumbnailsSupported;
         if (sStatusCallbackForTesting != null) {
             mCallbacks.add(sStatusCallbackForTesting);
         }
@@ -273,7 +282,7 @@ public class DecoderServiceHost
         DecoderServiceParams params = new DecoderServiceParams(
                 uri, width, fullWidth, fileType, /*firstFrame=*/true, callback);
         mPendingRequests.add(params);
-        if (params.mFileType == PickerBitmap.TileTypes.VIDEO) {
+        if (params.mFileType == PickerBitmap.TileTypes.VIDEO && mAnimatedThumbnailsSupported) {
             // Decoding requests for videos are requests for first frames only. Add another
             // low-priority request for decoding the rest of the frames.
             DecoderServiceParams lowPriorityRequest =

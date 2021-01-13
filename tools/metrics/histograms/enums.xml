@@ -46588,7 +46588,6 @@ from previous Chrome versions.
   <int value="1927218315" label="ShelfNewUi:disabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
-  <int value="1928407249" label="NewPhotoPicker:enabled"/>
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
   <int value="1930185502"
       label="EnableBluetoothVerboseLogsForGooglers:enabled"/>
@@ -46628,7 +46627,6 @@ from previous Chrome versions.
       label="AutofillUpstreamEditableExpirationDate:disabled"/>
   <int value="1958387645" label="ScanCardsInWebPayments:enabled"/>
   <int value="1959148757" label="OffMainThreadFetch:enabled"/>
-  <int value="1960169775" label="NewPhotoPicker:disabled"/>
   <int value="1961068026"
       label="EnableEphemeralGuestProfilesOnDesktop:enabled"/>
   <int value="1961425320" label="force-qtkit"/>

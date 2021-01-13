@@ -127,6 +127,9 @@ public class ProcessInitializationHandler {
     private static final Object SNAPSHOT_DATABASE_LOCK = new Object();
     private static final String SNAPSHOT_DATABASE_NAME = "snapshots.db";
 
+    // The feature param for determining whether the PhotoPicker should animate thumbnails.
+    private static final String FEATURE_PARAM_ANIMATE_THUMBNAILS = "animate_thumbnails";
+
     private static ProcessInitializationHandler sInstance;
 
     private boolean mInitializedPreNative;
@@ -223,32 +226,31 @@ public class ProcessInitializationHandler {
         ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_PHOTO_PICKER)) {
-            DecoderServiceHost.setIntentSupplier(() -> {
-                return new Intent(ContextUtils.getApplicationContext(), DecoderService.class);
-            });
+        DecoderServiceHost.setIntentSupplier(() -> {
+            return new Intent(ContextUtils.getApplicationContext(), DecoderService.class);
+        });
 
-            SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {
-                @Override
-                public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
-                        PhotoPickerListener listener, boolean allowMultiple,
-                        List<String> mimeTypes) {
-                    PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
-                            windowAndroid.getContext().get().getContentResolver(), listener,
-                            allowMultiple, mimeTypes);
-                    dialog.getWindow().getAttributes().windowAnimations =
-                            R.style.PickerDialogAnimation;
-                    dialog.show();
-                    return dialog;
-                }
+        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {
+            @Override
+            public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
+                    PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
+                PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
+                        windowAndroid.getContext().get().getContentResolver(), listener,
+                        allowMultiple,
+                        ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.PHOTO_PICKER_VIDEO_SUPPORT,
+                                FEATURE_PARAM_ANIMATE_THUMBNAILS, false),
+                        mimeTypes);
+                dialog.getWindow().getAttributes().windowAnimations = R.style.PickerDialogAnimation;
+                dialog.show();
+                return dialog;
+            }
 
-                @Override
-                public boolean supportsVideos() {
-                    return ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.PHOTO_PICKER_VIDEO_SUPPORT);
-                }
-            });
-        }
+            @Override
+            public boolean supportsVideos() {
+                return ChromeFeatureList.isEnabled(ChromeFeatureList.PHOTO_PICKER_VIDEO_SUPPORT);
+            }
+        });
 
         ContactsPicker.setContactsPickerDelegate(
                 (WindowAndroid windowAndroid, ContactsPickerListener listener,

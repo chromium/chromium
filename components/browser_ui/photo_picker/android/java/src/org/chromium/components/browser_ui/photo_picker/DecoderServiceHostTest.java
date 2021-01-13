@@ -47,6 +47,9 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     // A callback that fires when the decoder is ready.
     public final CallbackHelper mOnDecoderReadyCallback = new CallbackHelper();
 
+    // A callback that fires when the decoder is idle.
+    public final CallbackHelper mOnDecoderIdleCallback = new CallbackHelper();
+
     // A callback that fires when something is finished decoding in the dialog.
     public final CallbackHelper mOnDecodedCallback = new CallbackHelper();
 
@@ -77,7 +80,9 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     }
 
     @Override
-    public void decoderIdle() {}
+    public void decoderIdle() {
+        mOnDecoderIdleCallback.notifyCalled();
+    }
 
     // DecoderServiceHost.ImagesDecodedCallback:
 
@@ -98,6 +103,11 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         int callCount = mOnDecoderReadyCallback.getCallCount();
         mOnDecoderReadyCallback.waitForCallback(
                 callCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    }
+
+    private void waitForDecoderIdle(int lastCount) throws Exception {
+        mOnDecoderIdleCallback.waitForCallback(
+                lastCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
     private void waitForThumbnailDecode() throws Exception {
@@ -133,7 +143,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
                 PickerBitmap.TileTypes.VIDEO,
                 /* firstFrame= */ true, callback);
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
         Assert.assertTrue("Still images have priority over requests for initial video frame",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
@@ -191,7 +202,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testDecodingOrder() throws Throwable {
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
         host.bind(mContext);
         waitForDecoder();
 
@@ -254,8 +266,70 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
     @Test
     @LargeTest
+    public void testDecodingOrderNoAnimationSupported() throws Throwable {
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ false);
+        host.bind(mContext);
+        waitForDecoder();
+
+        String video1 = "noogler.mp4";
+        String video2 = "noogler2.mp4";
+        String jpg1 = "blue100x100.jpg";
+        File file1 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + video1));
+        File file2 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + video2));
+        File file3 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + jpg1));
+
+        decodeImage(host, Uri.fromFile(file1), PickerBitmap.TileTypes.VIDEO, 10,
+                /*fullWidth=*/false, this);
+        decodeImage(host, Uri.fromFile(file2), PickerBitmap.TileTypes.VIDEO, 10,
+                /*fullWidth=*/false, this);
+        decodeImage(host, Uri.fromFile(file3), PickerBitmap.TileTypes.PICTURE, 10,
+                /*fullWidth=*/false, this);
+
+        int idleCallCount = mOnDecoderIdleCallback.getCallCount();
+
+        // First decoding result should be first frame of video 1. Even though still images take
+        // priority over video decoding, video 1 will be the only item in the queue when the first
+        // decoding request is kicked off (as a result of calling decodeImage).
+        waitForThumbnailDecode();
+        Assert.assertTrue(mLastDecodedPath.contains(video1));
+        Assert.assertEquals(true, mLastIsVideo);
+        Assert.assertEquals("0:00", mLastVideoDuration);
+        Assert.assertEquals(1, mLastFrameCount);
+
+        // When the decoder is finished with the first frame of video 1, there will be two new
+        // requests available for processing. Video2 was added first, but that will be skipped in
+        // favor of the still image, so the jpg is expected to be decoded next.
+        waitForThumbnailDecode();
+        Assert.assertTrue(mLastDecodedPath.contains(jpg1));
+        Assert.assertEquals(false, mLastIsVideo);
+        Assert.assertEquals(null, mLastVideoDuration);
+        Assert.assertEquals(1, mLastFrameCount);
+
+        // Third and last decoding result is first frame of video 2.
+        waitForThumbnailDecode();
+        Assert.assertTrue(mLastDecodedPath.contains(video2));
+        Assert.assertEquals(true, mLastIsVideo);
+        Assert.assertEquals("0:00", mLastVideoDuration);
+        Assert.assertEquals(1, mLastFrameCount);
+
+        // Make sure nothing else is returned (no animations should be supported).
+        waitForDecoderIdle(idleCallCount);
+
+        // Everything should be as we left it.
+        Assert.assertTrue(mLastDecodedPath.contains(video2));
+        Assert.assertEquals(true, mLastIsVideo);
+        Assert.assertEquals("0:00", mLastVideoDuration);
+        Assert.assertEquals(1, mLastFrameCount);
+
+        host.unbind(mContext);
+    }
+
+    @Test
+    @LargeTest
     public void testDecodingSizes() throws Throwable {
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
         host.bind(mContext);
         waitForDecoder();
 
@@ -334,7 +408,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testCancelation() throws Throwable {
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
         host.bind(mContext);
         waitForDecoder();
 
@@ -370,7 +445,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testNoConnectionFailureMode() throws Throwable {
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
 
         // Try decoding without a connection to the decoder.
         String green = "green100x100.jpg";
@@ -384,7 +460,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testFileNotFoundFailureMode() throws Throwable {
-        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        DecoderServiceHost host =
+                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
         host.bind(mContext);
         waitForDecoder();
 

@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/browser_ui/photo_picker/android/features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
@@ -191,12 +192,9 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kInlineUpdateFlow,
     &kInstantStart,
     &kKitKatSupported,
-    &kNewPhotoPicker,
     &kNotificationSuspender,
     &kOfflineIndicatorV2,
     &kOmniboxSpareRenderer,
-    &kPhotoPickerVideoSupport,
-    &kPhotoPickerZoom,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
@@ -283,6 +281,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &performance_hints::features::kContextMenuPerformanceInfo,
     &performance_hints::features::kPageInfoPerformanceHints,
+    &photo_picker::features::kPhotoPickerVideoSupport,
     &query_tiles::features::kQueryTilesGeoFilter,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,
@@ -542,9 +541,6 @@ const base::Feature kSearchEnginePromoExistingDevice{
 const base::Feature kSearchEnginePromoNewDevice{
     "SearchEnginePromo.NewDevice", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kNewPhotoPicker{"NewPhotoPicker",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // TODO(knollr): This is a temporary kill switch, it can be removed once we feel
 // okay about leaving it on.
 const base::Feature kNotificationSuspender{"NotificationSuspender",
@@ -555,12 +551,6 @@ const base::Feature kOfflineIndicatorV2{"OfflineIndicatorV2",
 
 const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPhotoPickerVideoSupport{"PhotoPickerVideoSupport",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPhotoPickerZoom{"PhotoPickerZoom",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -312,7 +312,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                     PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
                 PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
                         windowAndroid.getContext().get().getContentResolver(), listener,
-                        allowMultiple, mimeTypes);
+                        allowMultiple, /* animatedThumbnailsSupported = */ false, mimeTypes);
                 dialog.show();
                 return dialog;
             }
