@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_P(ChromeScreenshotGrabberBrowserTest,
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
             notification->system_notification_warning_level());
-  EXPECT_EQ(ui::ScreenshotResult::DISABLED, screenshot_result_);
+  EXPECT_EQ(ui::ScreenshotResult::DISABLED_BY_DLP, screenshot_result_);
 
   if (TemporaryHoldingSpaceEnabled()) {
     ash::HoldingSpaceModel* holding_space_model = GetHoldingSpaceModel();

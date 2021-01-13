@@ -27,10 +27,11 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
-  bool IsCaptureModeInitRestricted() const override;
-  bool IsCaptureAllowed(const aura::Window* window,
-                        const gfx::Rect& bounds,
-                        bool for_video) const override;
+  bool IsCaptureModeInitRestrictedByDlp() const override;
+  bool IsCaptureAllowedByDlp(const aura::Window* window,
+                             const gfx::Rect& bounds,
+                             bool for_video) const override;
+  bool IsCaptureAllowedByPolicy() const override;
   void StartObservingRestrictedContent(
       const aura::Window* window,
       const gfx::Rect& bounds,

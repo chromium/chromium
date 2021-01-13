@@ -91,13 +91,17 @@ bool TestCaptureModeDelegate::Uses24HourFormat() const {
   return false;
 }
 
-bool TestCaptureModeDelegate::IsCaptureModeInitRestricted() const {
+bool TestCaptureModeDelegate::IsCaptureModeInitRestrictedByDlp() const {
   return false;
 }
 
-bool TestCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
-                                               const gfx::Rect& bounds,
-                                               bool for_video) const {
+bool TestCaptureModeDelegate::IsCaptureAllowedByDlp(const aura::Window* window,
+                                                    const gfx::Rect& bounds,
+                                                    bool for_video) const {
+  return true;
+}
+
+bool TestCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
   return true;
 }
 

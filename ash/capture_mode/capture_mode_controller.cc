@@ -189,19 +189,6 @@ void ShowNotification(
   message_center->AddNotification(std::move(notification));
 }
 
-// Shows a notification informing the user that Capture Mode operations are
-// currently disabled. If |for_hdcp| is true, then this was due to a content-
-// enforced protection, otherwise it was due to DLP which is admin enforced.
-void ShowDisabledNotification(bool for_hdcp) {
-  ShowNotification(
-      kScreenCaptureNotificationId, IDS_ASH_SCREEN_CAPTURE_DISABLED_TITLE,
-      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE
-               : IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE,
-      /*optional_fields=*/{}, /*delegate=*/nullptr,
-      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
-      for_hdcp ? kCaptureModeIcon : vector_icons::kBusinessIcon);
-}
-
 // Shows a notification informing the user that a Capture Mode operation has
 // failed.
 void ShowFailureNotification() {
@@ -216,9 +203,11 @@ void ShowFailureNotification() {
 // otherwise it was due to DLP which is admin enforced.
 void ShowVideoRecordingStoppedNotification(bool for_hdcp) {
   ShowNotification(
-      kScreenCaptureStoppedNotificationId, IDS_ASH_SCREEN_CAPTURE_STOPPED_TITLE,
+      kScreenCaptureStoppedNotificationId,
+      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_STOPPED_TITLE
+               : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_TITLE,
       for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE
-               : IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE,
+               : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_MESSAGE,
       /*optional_fields=*/{}, /*delegate=*/nullptr,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
       for_hdcp ? kCaptureModeIcon : vector_icons::kBusinessIcon);
@@ -317,8 +306,12 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   if (capture_mode_session_)
     return;
 
-  if (delegate_->IsCaptureModeInitRestricted()) {
-    ShowDisabledNotification(/*for_hdcp=*/false);
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+  if (delegate_->IsCaptureModeInitRestrictedByDlp()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByDlp);
     return;
   }
 
@@ -359,8 +352,12 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
 }
 
 void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
-  if (delegate_->IsCaptureModeInitRestricted()) {
-    ShowDisabledNotification(/*for_hdcp=*/false);
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+  if (delegate_->IsCaptureModeInitRestrictedByDlp()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByDlp);
     return;
   }
   // Get a vector of RootWindowControllers with primary root window at first.
@@ -387,8 +384,10 @@ void CaptureModeController::PerformCapture() {
   if (!capture_params)
     return;
 
-  if (!IsCaptureAllowed(*capture_params)) {
-    ShowDisabledNotification(/*for_hdcp=*/false);
+  const CaptureAllowance allowance =
+      IsCaptureAllowedByEnterprisePolicies(*capture_params);
+  if (allowance != CaptureAllowance::kAllowed) {
+    ShowDisabledNotification(allowance);
     Stop();
     return;
   }
@@ -398,7 +397,7 @@ void CaptureModeController::PerformCapture() {
   } else {
     // HDCP affects only video recording.
     if (ShouldBlockRecordingForContentProtection(capture_params->window)) {
-      ShowDisabledNotification(/*for_hdcp=*/true);
+      ShowDisabledNotification(CaptureAllowance::kDisallowedByHdcp);
       Stop();
       return;
     }
@@ -672,11 +671,19 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
   OnRecordingEnded(/*success=*/false);
 }
 
-bool CaptureModeController::IsCaptureAllowed(
+CaptureModeController::CaptureAllowance
+CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
     const CaptureParams& capture_params) const {
-  return delegate_->IsCaptureAllowed(
-      capture_params.window, capture_params.bounds,
-      /*for_video=*/type_ == CaptureModeType::kVideo);
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    return CaptureAllowance::kDisallowedByPolicy;
+  }
+  if (!delegate_->IsCaptureAllowedByDlp(
+          capture_params.window, capture_params.bounds,
+          /*for_video=*/type_ == CaptureModeType::kVideo)) {
+    return CaptureAllowance::kDisallowedByDlp;
+  }
+
+  return CaptureAllowance::kAllowed;
 }
 
 void CaptureModeController::TerminateRecordingUiElements() {
@@ -694,7 +701,8 @@ void CaptureModeController::TerminateRecordingUiElements() {
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
                                          const base::FilePath& path) {
   DCHECK_EQ(CaptureModeType::kImage, type_);
-  DCHECK(IsCaptureAllowed(capture_params));
+  DCHECK_EQ(CaptureAllowance::kAllowed,
+            IsCaptureAllowedByEnterprisePolicies(capture_params));
 
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
@@ -716,7 +724,8 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
 
 void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
   DCHECK_EQ(CaptureModeType::kVideo, type_);
-  DCHECK(IsCaptureAllowed(capture_params));
+  DCHECK_EQ(CaptureAllowance::kAllowed,
+            IsCaptureAllowedByEnterprisePolicies(capture_params));
 
   if (skip_count_down_ui_) {
     OnVideoRecordCountDownFinished();
@@ -875,6 +884,40 @@ void CaptureModeController::HandleNotificationClicked(
       kScreenCaptureNotificationId, /*by_user=*/false);
 }
 
+/* static */
+int CaptureModeController::GetDisabledNotificationMessageId(
+    CaptureModeController::CaptureAllowance allowance) {
+  switch (allowance) {
+    case CaptureAllowance::kDisallowedByPolicy:
+      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
+    case CaptureAllowance::kDisallowedByDlp:
+      return IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_MESSAGE;
+    case CaptureAllowance::kDisallowedByHdcp:
+      return IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
+    case CaptureAllowance::kAllowed:
+      NOTREACHED();
+      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
+  }
+}
+
+/* static */
+void CaptureModeController::ShowDisabledNotification(
+    CaptureModeController::CaptureAllowance allowance) {
+  DCHECK(allowance != CaptureAllowance::kAllowed);
+  int message_id = GetDisabledNotificationMessageId(allowance);
+  ShowNotification(
+      kScreenCaptureNotificationId,
+      allowance == CaptureAllowance::kDisallowedByDlp
+          ? IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_TITLE
+          : IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE,
+      message_id,
+      /*optional_fields=*/{}, /*delegate=*/nullptr,
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
+      allowance == CaptureAllowance::kDisallowedByHdcp
+          ? kCaptureModeIcon
+          : vector_icons::kBusinessIcon);
+}
+
 base::FilePath CaptureModeController::BuildImagePath() const {
   return BuildPathNoExtension(kScreenshotFileNameFmtStr, base::Time::Now())
       .AddExtension("png");
@@ -938,13 +981,15 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   // During the 3-second count down, screen content might have changed such that
   // admin-restricted or HDCP content became present. We must check again.
-  if (!IsCaptureAllowed(*capture_params)) {
-    ShowDisabledNotification(/*for_hdcp=*/false);
+  const CaptureAllowance allowance =
+      IsCaptureAllowedByEnterprisePolicies(*capture_params);
+  if (allowance != CaptureAllowance::kAllowed) {
+    ShowDisabledNotification(allowance);
     return;
   }
 
   if (ShouldBlockRecordingForContentProtection(capture_params->window)) {
-    ShowDisabledNotification(/*for_hdcp=*/true);
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByHdcp);
     return;
   }
 

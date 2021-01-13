@@ -53,15 +53,18 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // video.
   virtual bool Uses24HourFormat() const = 0;
 
-  // Returns whether initiation of capture mode is restricted because of
-  // currently visible restricted content.
-  virtual bool IsCaptureModeInitRestricted() const = 0;
+  // Returns whether initiation of capture mode is restricted because of Data
+  // Leak Prevention applied to the currently visible content.
+  virtual bool IsCaptureModeInitRestrictedByDlp() const = 0;
 
   // Returns whether capture of the region defined by |window| and |bounds|
-  // is currently allowed or not.
-  virtual bool IsCaptureAllowed(const aura::Window* window,
-                                const gfx::Rect& bounds,
-                                bool for_video) const = 0;
+  // is currently allowed by Data Leak Prevention feature.
+  virtual bool IsCaptureAllowedByDlp(const aura::Window* window,
+                                     const gfx::Rect& bounds,
+                                     bool for_video) const = 0;
+
+  // Returns whether screen capture is allowed by an enterprise policy.
+  virtual bool IsCaptureAllowedByPolicy() const = 0;
 
   // Called when a video capture for |window| and |bounds| area is started, so
   // that Data Leak Prevention can start observing the area.

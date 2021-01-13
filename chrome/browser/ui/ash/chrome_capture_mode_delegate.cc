@@ -116,25 +116,23 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   return base::GetHourClockType() == base::k24HourClock;
 }
 
-bool ChromeCaptureModeDelegate::IsCaptureModeInitRestricted() const {
-  return is_screen_capture_locked_ || IsScreenCaptureDisabledByPolicy() ||
-         policy::DlpContentManager::Get()->IsCaptureModeInitRestricted();
+bool ChromeCaptureModeDelegate::IsCaptureModeInitRestrictedByDlp() const {
+  return policy::DlpContentManager::Get()->IsCaptureModeInitRestricted();
 }
 
-bool ChromeCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
-                                                 const gfx::Rect& bounds,
-                                                 bool for_video) const {
-  if (is_screen_capture_locked_)
-    return false;
-
-  if (IsScreenCaptureDisabledByPolicy())
-    return false;
-
+bool ChromeCaptureModeDelegate::IsCaptureAllowedByDlp(
+    const aura::Window* window,
+    const gfx::Rect& bounds,
+    bool for_video) const {
   policy::DlpContentManager* dlp_content_manager =
       policy::DlpContentManager::Get();
   const ScreenshotArea area = ConvertToScreenshotArea(window, bounds);
   return for_video ? !dlp_content_manager->IsVideoCaptureRestricted(area)
                    : !dlp_content_manager->IsScreenshotRestricted(area);
+}
+
+bool ChromeCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
+  return !is_screen_capture_locked_ && !IsScreenCaptureDisabledByPolicy();
 }
 
 void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
