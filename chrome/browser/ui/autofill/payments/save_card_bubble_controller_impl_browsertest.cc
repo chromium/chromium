@@ -79,8 +79,6 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
       bubble_type = BubbleType::LOCAL_SAVE;
     if (name.find("Server") != std::string::npos)
       bubble_type = BubbleType::UPLOAD_SAVE;
-    if (name.find("Promo") != std::string::npos)
-      bubble_type = BubbleType::SIGN_IN_PROMO;
     if (name.find("Manage") != std::string::npos)
       bubble_type = BubbleType::MANAGE_CARDS;
     if (name.find("Failure") != std::string::npos)
@@ -97,9 +95,6 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
         controller_->OfferUploadSave(test::GetMaskedServerCard(),
                                      GetTestLegalMessage(), options,
                                      base::DoNothing());
-        break;
-      case BubbleType::SIGN_IN_PROMO:
-        controller_->MaybeShowBubbleForSignInPromo();
         break;
       case BubbleType::MANAGE_CARDS:
         controller_->ShowBubbleForManageCardsForTesting(test::GetCreditCard());

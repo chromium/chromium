@@ -24,7 +24,6 @@ class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
 
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;
-  std::unique_ptr<views::View> CreateSigninPromoView();
 
   ~SaveCardManageCardsBubbleViews() override;
 

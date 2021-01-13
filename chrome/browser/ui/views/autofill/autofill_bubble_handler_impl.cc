@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_failure_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_sign_in_promo_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -68,12 +67,6 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
       bubble =
           new SaveCardOfferBubbleViews(anchor_view, web_contents, controller);
       break;
-    case BubbleType::SIGN_IN_PROMO:
-      DCHECK(!base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback));
-      bubble = new SaveCardSignInPromoBubbleViews(anchor_view, web_contents,
-                                                  controller);
-      break;
     case BubbleType::MANAGE_CARDS:
       bubble = new SaveCardManageCardsBubbleViews(anchor_view, web_contents,
                                                   controller);
@@ -94,24 +87,6 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show(is_user_gesture ? SaveCardBubbleViews::USER_GESTURE
                                : SaveCardBubbleViews::AUTOMATIC);
-  return bubble;
-}
-
-SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCardSignInPromoBubble(
-    content::WebContents* web_contents,
-    SaveCardBubbleController* controller) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillCreditCardUploadFeedback));
-  views::Button* avatar_button =
-      toolbar_button_provider_->GetAvatarToolbarButton();
-  DCHECK(avatar_button);
-
-  SaveCardBubbleViews* bubble = new SaveCardSignInPromoBubbleViews(
-      avatar_button, web_contents, controller);
-  bubble->SetHighlightedButton(avatar_button);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(SaveCardBubbleViews::AUTOMATIC);
   return bubble;
 }
 
@@ -154,10 +129,6 @@ void AutofillBubbleHandlerImpl::OnPasswordSaved() {
           features::kAutofillCreditCardUploadFeedback)) {
     ShowAvatarHighlightAnimation();
   }
-}
-
-void AutofillBubbleHandlerImpl::HideSignInPromo() {
-  chrome::ExecuteCommand(browser_, IDC_CLOSE_SIGN_IN_PROMO);
 }
 
 void AutofillBubbleHandlerImpl::OnCreditCardSaved(

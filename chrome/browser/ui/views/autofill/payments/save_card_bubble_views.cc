@@ -35,18 +35,6 @@
 
 namespace autofill {
 
-SaveCardBubbleViews::SyncPromoDelegate::SyncPromoDelegate(
-    SaveCardBubbleController* controller,
-    signin_metrics::AccessPoint access_point)
-    : controller_(controller), access_point_(access_point) {
-  DCHECK(controller_);
-}
-
-void SaveCardBubbleViews::SyncPromoDelegate::OnEnableSync(
-    const AccountInfo& account) {
-  controller_->OnSyncPromoAccepted(account, access_point_);
-}
-
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)

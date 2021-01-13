@@ -19,14 +19,6 @@ SaveCardBubbleView* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
   return save_card_bubble_view_.get();
 }
 
-SaveCardBubbleView* TestAutofillBubbleHandler::ShowSaveCardSignInPromoBubble(
-    content::WebContents* contents,
-    autofill::SaveCardBubbleController* controller) {
-  if (!save_card_bubble_view_)
-    save_card_bubble_view_ = std::make_unique<TestSaveCardBubbleView>();
-  return save_card_bubble_view_.get();
-}
-
 LocalCardMigrationBubble*
 TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
@@ -48,7 +40,5 @@ SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
 }
 
 void TestAutofillBubbleHandler::OnPasswordSaved() {}
-
-void TestAutofillBubbleHandler::HideSignInPromo() {}
 
 }  // namespace autofill

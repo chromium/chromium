@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <message name="IDS_AUTOFILL_SYNC_PROMO_MESSAGE" desc="Promo message for Sign-in Promo bubble (shown after a local save) to get people to sync.">
-    To use your cards on all devices, turn on sync.
-  </message>
-
   <if expr="not use_titlecase">
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="The label for cancel button used in autofill credit card local save bubble on desktop.">
       No thanks

@@ -1114,30 +1114,6 @@ void MigrateLocalCards(Browser* browser) {
   controller->OnUserClickedCreditCardIcon();
 }
 
-void MaybeShowSaveLocalCardSignInPromo(Browser* browser) {
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  autofill::SaveCardBubbleControllerImpl* controller =
-      autofill::SaveCardBubbleControllerImpl::FromWebContents(web_contents);
-
-  // If controller does not exist for the tab, don't show the sign-in promo.
-  if (controller) {
-    // The sign in promo will only be shown when 1) The user is signed out or 2)
-    // The user is signed in through DICe, but did not turn on syncing.
-    controller->MaybeShowBubbleForSignInPromo();
-  }
-}
-
-void CloseSaveLocalCardSignInPromo(Browser* browser) {
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  autofill::SaveCardBubbleControllerImpl* controller =
-      autofill::SaveCardBubbleControllerImpl::FromWebContents(web_contents);
-
-  if (controller)
-    controller->HideBubbleForSignInPromo();
-}
-
 void Translate(Browser* browser) {
   if (!browser->window()->IsActive())
     return;

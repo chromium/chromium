@@ -20,10 +20,6 @@
 
 class Profile;
 
-namespace signin_metrics {
-enum class AccessPoint;
-}
-
 namespace autofill {
 
 class CreditCard;
@@ -79,14 +75,7 @@ class SaveCardBubbleController {
   // allowing the user to provide expiration date.
   virtual bool ShouldRequestExpirationDateFromUser() const = 0;
 
-  // Returns whether or not a sign in / sync promo needs to be shown.
-  virtual bool ShouldShowSignInPromo() const = 0;
-
   // Interaction.
-  // OnSyncPromoAccepted is called when the Dice Sign-in promo is clicked.
-  virtual void OnSyncPromoAccepted(
-      const AccountInfo& account,
-      signin_metrics::AccessPoint access_point) = 0;
   // OnSaveButton takes in a struct representing the cardholder name,
   // expiration date month and expiration date year confirmed/entered by the
   // user if they were requested, or struct with empty strings otherwise.

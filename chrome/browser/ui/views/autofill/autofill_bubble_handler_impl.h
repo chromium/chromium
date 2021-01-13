@@ -39,9 +39,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
       bool is_user_gesture) override;
-  SaveCardBubbleView* ShowSaveCardSignInPromoBubble(
-      content::WebContents* contents,
-      SaveCardBubbleController* controller) override;
   LocalCardMigrationBubble* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
@@ -50,7 +47,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       SaveUPIBubbleController* controller) override;
   void OnPasswordSaved() override;
-  void HideSignInPromo() override;
 
   // PersonalDataManagerObserver:
   void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) override;

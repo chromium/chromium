@@ -739,14 +739,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
 #endif
 
     // Click [Save] should close the offer-to-save bubble and show "Card saved"
-    // animation -- followed by the sign-in promo (if not on Chrome OS).
+    // animation.
     ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // Wait for and then close the promo.
-    WaitForObservedEvent();
-    ClickOnCloseButton();
-#endif
 
     // Open up Manage Cards prompt.
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
@@ -861,30 +855,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
       AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1);
 }
 
-// Tests the sign in promo bubble. Ensures that clicking the [Save] button
-// on the local save bubble successfully causes the sign in promo to show.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       Local_ClickingSaveShowsSigninPromo) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Sign-in promo should be showing and user actions should have recorded
-  // impression.
-  EXPECT_TRUE(
-      FindViewInBubbleById(DialogViewId::SIGN_IN_PROMO_VIEW)->GetVisible());
-}
-#endif
-
 class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
     : public SaveCardBubbleViewsFullFormBrowserTest {
  public:
@@ -896,66 +866,6 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests the sign in promo bubble. Ensures that the sign-in promo
-// is not shown when the user is signed-in and syncing, even if the local save
-// bubble is shown.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Local_NoSigninPromoShowsWhenUserIsSyncing) {
-  // Start sync.
-  harness_->SetupSync();
-
-  // Set up the Payments RPC.
-  SetUploadDetailsRpcPaymentsDeclines();
-
-  // Submitting the form and having Payments decline offering to save should
-  // show the local save bubble.
-  // (Must wait for response from Payments before accessing the controller.)
-  ResetEventWaiterForSequence(
-      {DialogEvent::REQUESTED_UPLOAD_SAVE,
-       DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
-  FillForm();
-  SubmitForm();
-  WaitForObservedEvent();
-  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
-                  ->GetVisible());
-
-  // Click [Save] should close the offer-to-save bubble
-  // but no sign-in promo should show because user is signed in.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-
-  // No bubble should be showing and no sign-in impression should have been
-  // recorded.
-  EXPECT_EQ(nullptr, GetSaveCardBubbleViews());
-  EXPECT_EQ(0, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromSaveCardBubble"));
-}
-
-// Tests the sign in promo bubble. Ensures that signin impression is recorded
-// when promo is shown.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       Local_Metrics_SigninImpressionSigninPromo) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // User actions should have recorded impression.
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromSaveCardBubble"));
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
@@ -966,55 +876,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
-
-// Tests the sign in promo bubble. Ensures that signin action is recorded when
-// user accepts promo.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       Local_Metrics_AcceptingSigninPromo) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Click on [Sign in] button.
-  ClickOnDialogView(static_cast<DiceBubbleSyncPromoView*>(
-                        FindViewInBubbleById(DialogViewId::SIGN_IN_VIEW))
-                        ->GetSigninButtonForTesting());
-
-  // User actions should have recorded impression and click.
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromSaveCardBubble"));
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Signin_Signin_FromSaveCardBubble"));
-}
-
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       DiceBubbleSyncPromoViewAlertAccessibleEvent) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
-  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
-
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-}
-#endif
 
 class SaveCardBubbleViewsFullFormBrowserTestSettings
     : public SaveCardBubbleViewsFullFormBrowserTest {
@@ -2403,51 +2264,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
       AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN, 1);
 }
 
-// Tests the sign in promo bubble. Ensures that clicking the [Save] button
-// on the local save bubble successfully causes the sign in promo to show from
-// the avatar toolbar button.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       Local_ClickingSaveShowsSigninPromo) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Ensures the credit card icon is not visible.
-  EXPECT_FALSE(GetSaveCardIconView()->GetVisible());
-  // Sign-in promo should be showing.
-  EXPECT_TRUE(
-      FindViewInBubbleById(DialogViewId::SIGN_IN_PROMO_VIEW)->GetVisible());
-}
-
-// Tests the manage cards bubble. Ensures that it will not pop up after the
-// sign-in promo is closed.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-    Local_ClosingSigninPromoDoesNotShowNeitherIconNorManageCardsBubble) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Close the sign-in promo.
-  ClickOnCloseButton();
-
-  // Ensures the neither credit card icon nor the manage cards bubble is
-  // showing.
-  EXPECT_FALSE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(GetSaveCardBubbleViews());
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/932818): Remove this once the experiment is fully launched.
@@ -2493,36 +2309,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
 }
 
-// Tests the manage cards bubble. Ensures that sign-in impression is recorded
-// correctly.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
-                       Local_Metrics_SigninImpressionManageCards) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Close promo.
-  ClickOnCloseButton();
-
-  // Open up Manage Cards prompt.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
-
-  // User actions should have recorded impression.
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromManageCardsBubble"));
-}
-#endif
-
 // Tests the manage cards bubble. Ensures that it shows up by clicking the
 // credit card icon.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
@@ -2538,12 +2324,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
   // Click [Save] should close the offer-to-save bubble and show "Card saved"
   // animation -- followed by the sign-in promo (if not on Chrome OS).
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Wait for and then close the promo.
-  WaitForObservedEvent();
-  ClickOnCloseButton();
-#endif
 
   // Open up Manage Cards prompt.
   base::HistogramTester histogram_tester;
@@ -2571,14 +2351,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
 #endif
 
   // Click [Save] should close the offer-to-save bubble and show "Card saved"
-  // animation -- followed by the sign-in promo (if not on Chrome OS).
+  // animation.
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Wait for and then close the promo.
-  WaitForObservedEvent();
-  ClickOnCloseButton();
-#endif
 
   // Open up Manage Cards prompt.
   base::HistogramTester histogram_tester;
@@ -2596,43 +2370,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
       ElementsAre(Bucket(AutofillMetrics::MANAGE_CARDS_SHOWN, 1),
                   Bucket(AutofillMetrics::MANAGE_CARDS_DONE, 1)));
 }
-
-// Tests the Manage Cards bubble. Ensures that signin action is recorded when
-// user accepts footnote promo.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
-                       Local_Metrics_AcceptingFootnotePromoManageCards) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-  ReduceAnimationTime();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-
-  // Click [Save] should close the offer-to-save bubble
-  // and pop up the sign-in promo.
-  base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Close promo.
-  ClickOnCloseButton();
-
-  // Open up Manage Cards prompt.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
-
-  // Click on [Sign in] button in footnote.
-  ClickOnDialogView(static_cast<DiceBubbleSyncPromoView*>(
-                        FindViewInBubbleById(DialogViewId::FOOTNOTE_VIEW))
-                        ->GetSigninButtonForTesting());
-
-  // User actions should have recorded impression and click.
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromManageCardsBubble"));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Signin_FromManageCardsBubble"));
-}
-#endif
 
 // TODO(crbug.com/1070799): Remove the following two tests when the sticky
 // bubble feature is launched.

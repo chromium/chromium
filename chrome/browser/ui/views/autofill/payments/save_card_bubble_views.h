@@ -23,9 +23,8 @@ namespace autofill {
 // This class serves as a base view to any of the bubble views that are part of
 // the flow for when the user submits a form with a credit card number that
 // Autofill has not previously saved. The base view establishes the button
-// handlers, the calculated size, the Super G logo, testing methods, the
-// SyncPromoDelegate and the window title (controller eventually handles the
-// title for each sub-class).
+// handlers, the calculated size, the Super G logo, testing methods, and the
+// window title (controller eventually handles the title for each sub-class).
 class SaveCardBubbleViews : public SaveCardBubbleView,
                             public LocationBarBubbleDelegateView {
  public:
@@ -52,24 +51,6 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   const base::string16 GetCardIdentifierString() const;
 
  protected:
-  // Delegate for the personalized sync promo view used when desktop identity
-  // consistency is enabled.
-  class SyncPromoDelegate : public BubbleSyncPromoDelegate {
-   public:
-    SyncPromoDelegate(SaveCardBubbleController* controller,
-                      signin_metrics::AccessPoint access_point);
-
-    // BubbleSyncPromoDelegate:
-    void OnEnableSync(const AccountInfo& account) override;
-
-   private:
-    SaveCardBubbleController* controller_;
-
-    signin_metrics::AccessPoint access_point_;
-
-    DISALLOW_COPY_AND_ASSIGN(SyncPromoDelegate);
-  };
-
   // Create the dialog's content view containing everything except for the
   // footnote.
   virtual std::unique_ptr<views::View> CreateMainContentView();
@@ -87,8 +68,6 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
 
   void OnDialogAccepted();
   void OnDialogCancelled();
-
-  std::unique_ptr<SyncPromoDelegate> sync_promo_delegate_;
 
   ~SaveCardBubbleViews() override;
 

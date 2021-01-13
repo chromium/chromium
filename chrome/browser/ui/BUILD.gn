@@ -3499,8 +3499,6 @@ static_library("ui") {
       "views/autofill/payments/save_card_manage_cards_bubble_views.h",
       "views/autofill/payments/save_card_offer_bubble_views.cc",
       "views/autofill/payments/save_card_offer_bubble_views.h",
-      "views/autofill/payments/save_card_sign_in_promo_bubble_views.cc",
-      "views/autofill/payments/save_card_sign_in_promo_bubble_views.h",
       "views/autofill/payments/save_payment_icon_view.cc",
       "views/autofill/payments/save_payment_icon_view.h",
       "views/autofill/payments/save_upi_offer_bubble_views.cc",

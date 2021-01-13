@@ -37,9 +37,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
       bool is_user_gesture) override;
-  SaveCardBubbleView* ShowSaveCardSignInPromoBubble(
-      content::WebContents* contents,
-      autofill::SaveCardBubbleController* controller) override;
   LocalCardMigrationBubble* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
@@ -48,7 +45,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       SaveUPIBubbleController* controller) override;
   void OnPasswordSaved() override;
-  void HideSignInPromo() override;
 
  private:
   std::unique_ptr<TestLocalCardMigrationBubbleView>

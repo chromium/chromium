@@ -1221,15 +1221,6 @@ class SaveCardBubbleControllerImplTestWithoutStatusChip
 };
 
 TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
-       Local_FirstShow_SaveButton_SigninPromo) {
-  ShowLocalBubble();
-  ClickSaveButton();
-  // Sign-in promo should be shown after accepting local save.
-  EXPECT_EQ(BubbleType::SIGN_IN_PROMO, controller()->GetBubbleType());
-  EXPECT_NE(nullptr, controller()->GetSaveCardBubbleView());
-}
-
-TEST_F(SaveCardBubbleControllerImplTestWithoutStatusChip,
        Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_Close_Navigate) {
   ShowLocalBubble();
   ClickSaveButton();

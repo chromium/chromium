@@ -3426,8 +3426,6 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(
   if (!avatar_button)
     return;
 
-  GetAutofillBubbleHandler()->HideSignInPromo();
-
   profiles::BubbleViewMode bubble_view_mode;
   profiles::BubbleViewModeFromAvatarBubbleMode(mode, GetProfile(),
                                                &bubble_view_mode);
