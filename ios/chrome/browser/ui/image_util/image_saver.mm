@@ -7,8 +7,10 @@
 #import <Photos/Photos.h>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -27,6 +29,15 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Kill switch guarding a workaround for TCC violations before iOS14.  In case
+// iOS14 starts triggering violations too.  See crbug.com/1159431 for details.
+const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 @interface ImageSaver ()
 // Base view controller for the alerts.
@@ -81,33 +92,31 @@
       return;
     }
 
-    [self savePhoto:data];
+    if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage) &&
+        base::ios::IsRunningOnIOS14OrLater()) {
+      // Dump |data| into the photo library. Requires the usage of
+      // NSPhotoLibraryAddUsageDescription.
+      [[PHPhotoLibrary sharedPhotoLibrary]
+          performChanges:^{
+            PHAssetResourceCreationOptions* options =
+                [[PHAssetResourceCreationOptions alloc] init];
+            [[PHAssetCreationRequest creationRequestForAsset]
+                addResourceWithType:PHAssetResourceTypePhoto
+                               data:data
+                            options:options];
+          }
+          completionHandler:^(BOOL success, NSError* error) {
+            [weakSelf image:savedImage
+                didFinishSavingWithError:error
+                             contextInfo:nil];
+          }];
+    } else {
+      // Fallback for pre-iOS14.
+      UIImageWriteToSavedPhotosAlbum(
+          savedImage, weakSelf,
+          @selector(image:didFinishSavingWithError:contextInfo:), nullptr);
+    }
   });
-}
-
-// Dump |data| into the photo library. Requires the usage of
-// NSPhotoLibraryAddUsageDescription.
-- (void)savePhoto:(NSData*)data {
-  [[PHPhotoLibrary sharedPhotoLibrary]
-      performChanges:^{
-        PHAssetResourceCreationOptions* options =
-            [[PHAssetResourceCreationOptions alloc] init];
-        [[PHAssetCreationRequest creationRequestForAsset]
-            addResourceWithType:PHAssetResourceTypePhoto
-                           data:data
-                        options:options];
-      }
-      completionHandler:^(BOOL success, NSError* error) {
-        if (error) {
-          // Saving photo failed, likely due to a permissions issue.
-          // This code may be executed outside of the main thread. Make sure to
-          // display the error on the main thread.
-          [self displayImageErrorAlertWithSettingsOnMainQueue];
-        } else {
-          // TODO(crbug.com/797277): Provide a way for the user to easily
-          // reach the photos app.
-        }
-      }];
 }
 
 // Called when Chrome has been denied access to add photos or videos and the
@@ -183,6 +192,23 @@
                                       style:UIAlertActionStyleDefault];
     [self.alertCoordinator start];
   });
+}
+
+// Called after the system attempts to write the image to the saved photos
+// album.
+- (void)image:(UIImage*)image
+    didFinishSavingWithError:(NSError*)error
+                 contextInfo:(void*)contextInfo {
+  // Was there an error?
+  if (error) {
+    // Saving photo failed, likely due to a permissions issue.
+    // This code may be execute outside of the main thread. Make sure to display
+    // the error on the main thread.
+    [self displayImageErrorAlertWithSettingsOnMainQueue];
+  } else {
+    // TODO(crbug.com/797277): Provide a way for the user to easily reach the
+    // photos app.
+  }
 }
 
 @end
