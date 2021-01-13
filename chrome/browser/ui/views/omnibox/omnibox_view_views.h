@@ -154,6 +154,10 @@ class OmniboxViewViews : public OmniboxView,
   base::string16 GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
 
+  // views::View:
+  void ShowContextMenu(const gfx::Point& p,
+                       ui::MenuSourceType source_type) override;
+
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* navigation) override;
   void DidFinishNavigation(content::NavigationHandle* navigation) override;
@@ -164,6 +168,7 @@ class OmniboxViewViews : public OmniboxView,
   OmniboxPopupContentsView* GetPopupContentsViewForTesting() const {
     return popup_view_.get();
   }
+  void set_clipboard_text(const base::string16 text) { clipboard_text_ = text; }
 
  protected:
   // Animates the URL to a given range of text, which could be a substring or
@@ -647,9 +652,6 @@ class OmniboxViewViews : public OmniboxView,
   // and gets a tap. So we use this variable to remember focus state before tap.
   bool select_all_on_gesture_tap_ = false;
 
-  // Whether the user should be notified if the clipboard is restricted.
-  bool show_rejection_ui_if_any_ = false;
-
   // Keep track of the word that would be selected if URL is unelided between
   // a single and double click. This is an edge case where the elided URL is
   // selected. On the double click, unelision is performed in between the first
@@ -695,6 +697,12 @@ class OmniboxViewViews : public OmniboxView,
       send_tab_to_self_sub_menu_model_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Clipboard text stored between retrieval in ShowContextMenu() and use in
+  // GetLabelForCommandId() and IsCommandIdEnabled(). This is useful as an
+  // optimization and to avoid additional nested message loop clipboard access
+  // on Linux. See comments in ShowContextMenu() for more details.
+  base::string16 clipboard_text_;
 
   base::WeakPtrFactory<OmniboxViewViews> weak_factory_{this};
 };
