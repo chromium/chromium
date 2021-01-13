@@ -7,7 +7,7 @@
 
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace crosapi {
 
@@ -16,12 +16,10 @@ namespace crosapi {
 // manager, for example to open a folder or highlight a file.
 class FileManagerAsh : public mojom::FileManager {
  public:
-  FileManagerAsh();
+  explicit FileManagerAsh(mojo::PendingReceiver<mojom::FileManager> receiver);
   FileManagerAsh(const FileManagerAsh&) = delete;
   FileManagerAsh& operator=(const FileManagerAsh&) = delete;
   ~FileManagerAsh() override;
-
-  void BindReceiver(mojo::PendingReceiver<mojom::FileManager> receiver);
 
   // crosapi::mojom::FileManager:
   void DeprecatedShowItemInFolder(const base::FilePath& path) override;
@@ -32,7 +30,7 @@ class FileManagerAsh : public mojom::FileManager {
   void OpenFile(const base::FilePath& path, OpenFileCallback callback) override;
 
  private:
-  mojo::ReceiverSet<mojom::FileManager> receivers_;
+  mojo::Receiver<mojom::FileManager> receiver_;
 };
 
 }  // namespace crosapi

@@ -156,14 +156,11 @@ class ForwardingDelegate : public message_center::NotificationDelegate {
 
 }  // namespace
 
-MessageCenterAsh::MessageCenterAsh() = default;
+MessageCenterAsh::MessageCenterAsh(
+    mojo::PendingReceiver<mojom::MessageCenter> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 MessageCenterAsh::~MessageCenterAsh() = default;
-
-void MessageCenterAsh::BindReceiver(
-    mojo::PendingReceiver<mojom::MessageCenter> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
 
 void MessageCenterAsh::DisplayNotification(
     mojom::NotificationPtr notification,
