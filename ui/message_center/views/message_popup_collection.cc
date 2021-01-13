@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center.h"
@@ -24,6 +25,9 @@ constexpr base::TimeDelta kFadeInFadeOutDuration =
 // Animation duration for MOVE_DOWN.
 constexpr base::TimeDelta kMoveDownDuration =
     base::TimeDelta::FromMilliseconds(120);
+
+// Time to wait until we reset |recently_closed_by_user_|.
+constexpr base::TimeDelta kWaitForReset = base::TimeDelta::FromSeconds(10);
 
 }  // namespace
 
@@ -132,7 +136,20 @@ void MessagePopupCollection::OnNotificationAdded(
 void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
+  if (by_user) {
+    recently_closed_by_user_ = true;
+    recently_closed_by_user_timer_ = std::make_unique<base::OneShotTimer>();
+    recently_closed_by_user_timer_->Start(
+        FROM_HERE, kWaitForReset,
+        base::BindOnce(&MessagePopupCollection::ResetRecentlyClosedByUser,
+                       base::Unretained(this)));
+  }
   Update();
+}
+
+void MessagePopupCollection::ResetRecentlyClosedByUser() {
+  recently_closed_by_user_ = false;
+  recently_closed_by_user_timer_.reset();
 }
 
 void MessagePopupCollection::OnNotificationUpdated(
@@ -272,7 +289,9 @@ void MessagePopupCollection::TransitionToAnimation() {
     MarkRemovedPopup();
 
     // Start hot mode to allow a user to continually close many notifications.
-    StartHotMode();
+    // Only start hot mode if there's a notification recently closed by user.
+    if (recently_closed_by_user_)
+      StartHotMode();
 
     if (CloseTransparentPopups()) {
       // If the popup is already transparent, skip FADE_OUT.
