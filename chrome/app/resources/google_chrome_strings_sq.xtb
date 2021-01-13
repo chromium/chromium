@@ -10,13 +10,11 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ka përdorur më parë Chrome</translation>
 <translation id="1097330777386562916">Pastro kukit dhe të dhënat e sajteve kur të mbyllësh Chrome</translation>
 <translation id="110877069173485804">Ky është Chrome për ty</translation>
-<translation id="1125124144982679672">Kush po e përdor Chrome?</translation>
 <translation id="1142745911746664600">Chrome nuk mund të përditësohet</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
 <translation id="123620459398936149">Sistemi operativ Chrome nuk mundi t'i sinkronizonte të dhënat e tua. Përditëso shprehjen tënde të kalimit të sinkronizimit.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh Kushtet e shërbimit më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e sistemit operativ të Google Chrome.</translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
-<translation id="1355000804395496115">Përdor profile të ndryshme në Chrome për të ndarë shfletimin e punës nga ai personal ose nga personat e tjerë që e përdorin këtë pajisje</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Ky kompjuter e ka tashmë një version më të ri të Google Chrome. Nëse softueri nuk punon, çinstaloje Google Chrome dhe provo sërish.</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
@@ -64,6 +62,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2534507159460261402">Google Pay (kopjuar në Chrome)</translation>
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Chrome OS mund t'i restaurojë gjithmonë aplikacionet dhe faqet e tua pas rinisjes pa pyetur çdo herë.</translation>
 <translation id="2622559029861875898">Chrome nuk mund të kontrollojë për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2644798301485385923">Sistemi i Chrome OS</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
@@ -81,7 +80,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2926676257163822632">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chrome <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chrome dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
-<translation id="298099161970687941">Pyet kur të hapet Chrome</translation>
 <translation id="3037838751736561277">Google Chrome është në modalitetin e sfondit.</translation>
 <translation id="3059710691562604940">"Shfletimi i sigurt" është joaktiv. Chrome rekomandon aktivizimin e tij.</translation>
 <translation id="3065168410429928842">Skeda Chrome</translation>
@@ -89,6 +87,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3089968997497233615">Ofrohet një version i ri dhe më i sigurt i Google Chrome.</translation>
 <translation id="3114643501466072395">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Sistemi operativ Chrome nuk mund t'i sinkronizonte të dhënat e tua.</translation>
+<translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
@@ -227,7 +226,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7398801000654795464">Ishe i identifikuar në Chrome si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7408085963519505752">Kushtet e sistemit operativ Chrome</translation>
 <translation id="7419046106786626209">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk mundësohet për domenin tënd.</translation>
-<translation id="7423733001651488593">Kjo do të fshijë në mënyrë të përhershme të dhënat e shfletimit nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si</translation>
 <translation id="7486227612705979895">Chrome do të ketë qasje te "Disku" yt për të dhënë sugjerime në shiritin e adresës</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e sistemit operativ Chrome<ph name="LINK_END" /></translation>

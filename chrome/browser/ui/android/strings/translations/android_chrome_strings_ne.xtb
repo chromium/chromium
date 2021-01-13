@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">ठेगाना पट्टीबाट इतिहास र स्वतः पूर्णतासम्बन्धी सुविधाहरूलाई खाली गर्दछ।</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
+<translation id="2039379262107991683">पेजहरूबारे रिमाइन्डर प्राप्त गर्न ती पेजहरू आफ्नो अध्ययन सूचीमा हाल्नुहोस्।</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> ले Chrome मा पनि डेटा राखेको छ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">इन्टरनेटमा खोज्ने तरिका</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">पाठ स्केलिङ</translation>
 <translation id="2394602618534698961">तपाईंले डाउनलोड गर्ने फाइलहरू यहाँ देखिन्छन्</translation>
 <translation id="2407481962792080328">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय हुन्छ</translation>
-<translation id="2407674018644220013"><ph name="APP_NAME" /> लाई आफ्नो पूर्वनिर्धारित ब्राउजरको रूपमा सेट गर्ने हो?</translation>
 <translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2426805022920575512">कुनै अर्को खाता छनौट गर्नुहोस्‌</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">सेयर गर्नुहोस्</translation>
 <translation id="247737702124049222">'फोटोको वर्णन गर्ने' सुविधा अन छ</translation>
 <translation id="2478076885740497414">एप स्थापना गर्नुहोस्</translation>
-<translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2494974097748878569">Chrome को Google सहायक</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">Safe Browsing अफ छ</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="4378154925671717803">फोन</translation>
-<translation id="4382908510000698092">Chrome मा यो भाषा प्रयोग गर्नुहोस्</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
@@ -652,7 +650,6 @@
 <translation id="5668404140385795438">जूमिङ इनलाई रोक्न वेबसाइटको अनुरोधलाई ओभरराइड गर्नुहोस्</translation>
 <translation id="5683547024293500885">Chrome ले अपडेट उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन</translation>
 <translation id="5686790454216892815">फाइलको नाम ज्यादै लामो छ</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> रिस्टार्ट भएपछि यसले <ph name="LANGUAGE" /> भाषा प्रयोग गर्ने छ।</translation>
 <translation id="569536719314091526">थप विकल्पहरू नामक बटनबाट यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5696597120588531049">Chrome ले तपाईंलाई डेटा चोरीका घटना, असुरक्षित वेबसाइटहरू र थप समस्याहरूबाट जोगिन मद्दत गर्न सक्छ</translation>
 <translation id="5697688514913266141">तपाईंका फाइलहरू <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> मा सुरक्षित गरिने छन्। <ph name="BEGIN_LINK2" />सुरक्षित गरिने स्थान सम्पादन गर्नुहोस्<ph name="END_LINK2" />।</translation>
@@ -734,7 +731,6 @@
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
 <translation id="6154478581116148741">यो यन्त्रबाट आफ्ना पासवर्डहरू निर्यात गर्न सेटिङहरूमा गई स्क्रिन लक सक्रिय गर्नुहोस्</translation>
-<translation id="6157392216611456285"><ph name="APP_NAME" /> छनौट गर्नुहोस्</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
@@ -766,7 +762,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}}</translation>
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
-<translation id="6366047038980456022">सुरक्षित तरिकाले केही काम गर्न, केही नयाँ कुराहरू सिर्जना गर्न र अनलाइनमा कुनै कुरा अन्वेषण गर्नका लागि <ph name="APP_NAME" /> स्मार्ट हुनुका साथै छरितो पनि छ।</translation>
 <translation id="6378173571450987352">विवरणहरू: प्रयोग गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
 <translation id="6381421346744604172">वेबसाइटहरू अँध्यारो पार्नुहोस्</translation>
@@ -790,6 +785,7 @@
 <translation id="6475951671322991020">भिडियो डाउनलोड गर्नुहोस्</translation>
 <translation id="6477928892249167417">यी साइटहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> डाउनलोड भण्डारण ठाउँ कमीको कारण असफल भयो।</translation>
+<translation id="6489610539826642779">अध्ययन सूची <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">पहिलोपटक <ph name="APP_NAME" /> प्रयोग गर्न कृपया इन्टरनेटमा जडान गर्नुहोस्।</translation>
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
@@ -828,7 +824,6 @@
 <translation id="666981079809192359">Chrome गोपनीयता सूचना</translation>
 <translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6676840375528380067">यस यन्त्रबाट तपाईंको Chrome को डेटा हटाउने हो?</translation>
-<translation id="6691888250440401212">१. <ph name="APP_NAME" /> छनौट गर्नुहोस्\n2. “डिफल्ट सेट गर्नुहोस्” मा ट्याप गर्नुहोस्</translation>
 <translation id="6697492270171225480">कुनै पृष्ठ फेला पार्न नसकिएको खण्डमा मिल्दाजुल्दा पृष्ठसम्बन्धी सुझावहरू देखाउनुहोस्</translation>
 <translation id="6698801883190606802">सिंक गरिएका डेटा व्यवस्थित गर्नुहोस्</translation>
 <translation id="6699370405921460408">Google का सर्भरहरूले तपाईंले हेर्ने पृष्ठहरू अप्टिमाइज गर्ने छन्।</translation>
@@ -1069,7 +1064,6 @@
 <translation id="8368027906805972958">अज्ञात वा प्रयोग गर्न नमिल्ने यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> भाषा प्याक तयार छ।</translation>
 <translation id="8393700583063109961">सन्देश पठाउनुहोस्</translation>
-<translation id="8407396331882458341">१. <ph name="APP_NAME" /> छनौट गर्नुहोस्\n2. “सधैँ” मा ट्याप गर्नुहोस्</translation>
 <translation id="8410695015584479363">मूल्यहरू ट्र्याक गर्नुहोस्</translation>
 <translation id="8413126021676339697">पूर्ण इतिहास देखाउनुहोस्</translation>
 <translation id="8427875596167638501">पूर्वावलोकन ट्याब आधा खुला छ</translation>
@@ -1096,7 +1090,6 @@
 <translation id="8555836665334561807">Wi-Fi प्रयोग गरेका बेला</translation>
 <translation id="8559990750235505898">अन्य भाषाहरूमा पृष्ठहरूको अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="8560602726703398413">आफ्नो अध्ययन सूची बुकमार्कहरूमा फेला पार्नुहोस्</translation>
-<translation id="8561196567344536112">१. सेटिङमा जानुहोस्\n2. “ब्राउजर एप” मा ट्याप गर्नुहोस्\n३. <ph name="APP_NAME" /> छनौट गर्नुहोस्</translation>
 <translation id="8562452229998620586">बचत गरिएका पासवर्डहरू यहाँ देखिनेछन्।</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> देखि</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>

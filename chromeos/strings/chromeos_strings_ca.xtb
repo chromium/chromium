@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
-<translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4835901797422965222">No hi ha cap xarxa activa</translation>
 <translation id="4848429997038228357">EN EXECUCIÓ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4891842000192098784">Estrès</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
@@ -168,8 +168,8 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Més informació al Centre d'ajuda</translation>
 <translation id="5635169860413004179">Mostra l'informe</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Mesura l'ús de la CPU i és una suma de tots els nuclis</translation>
@@ -251,7 +251,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Col·loca el document a l'escàner i selecciona <ph name="SPAN_BEGIN" />Escaneja<ph name="SPAN_END" /> per començar</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
@@ -285,7 +284,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="8930622219860340959">Sense fil</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="9003704114456258138">Freqüència</translation>

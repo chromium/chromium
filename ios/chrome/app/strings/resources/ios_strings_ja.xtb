@@ -238,6 +238,7 @@
 <translation id="3443810440409579745">タブが共有されました。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3448016392200048164">分割表示</translation>
+<translation id="3454224729131972583">敬称</translation>
 <translation id="345565170154308620">パスワードを管理...</translation>
 <translation id="3469166899695866866">ダウンロードを中止しますか？</translation>
 <translation id="3470502288861289375">コピーしています...</translation>
@@ -267,6 +268,7 @@
 <translation id="3670030362669914947">番号</translation>
 <translation id="3691593122358196899">「<ph name="FOLDER_TITLE" />」にブックマークしました</translation>
 <translation id="3709582977625132201">未読にする</translation>
+<translation id="3720541637541300822">Chrome を終了するときにシークレット タブをロックする</translation>
 <translation id="3740397331642243698">入力された URL を Google Chrome のシークレット モードで開きます。</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
 <translation id="3775743491439407556">同期が機能していません</translation>
@@ -381,6 +383,7 @@
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5010803260590204777">ウェブをプライベートモードで閲覧するにはシークレットタブを開きます。</translation>
+<translation id="5017828934289857214">後で通知する</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -597,7 +600,7 @@
 <translation id="7189598951263744875">共有...</translation>
 <translation id="7192050974311852563">ログ記録を開始</translation>
 <translation id="7203585745079012652">回答を音声で聞く</translation>
-<translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、既定のブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
+<translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、デフォルトのブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">無効なカード ニックネーム</translation>
 <translation id="7265758999917665941">このサイトでは保存しない</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>

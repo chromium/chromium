@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">검색주소창의 검색 기록 및 자동 완성 항목을 삭제합니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
+<translation id="2039379262107991683">알림을 받으려면 읽기 목록에 페이지를 추가하세요.</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />도 Chrome에서 데이터를 보유하고 있습니다</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">인터넷 검색하기</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">텍스트 크기 조정</translation>
 <translation id="2394602618534698961">다운로드한 파일이 여기 표시됩니다.</translation>
 <translation id="2407481962792080328">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
-<translation id="2407674018644220013"><ph name="APP_NAME" />을(를) 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">공유</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2478076885740497414">앱 설치</translation>
-<translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2494974097748878569">Chrome의 Google 어시스턴트</translation>
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4378154925671717803">전화기</translation>
-<translation id="4382908510000698092">Chrome 언어로 사용</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
 <translation id="4404568932422911380">북마크 없음</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">웹사이트의 확대 방지 요청 무시</translation>
 <translation id="5683547024293500885">Chrome에서 업데이트를 확인할 수 없음</translation>
 <translation id="5686790454216892815">파일 이름이 너무 깁니다.</translation>
-<translation id="5687809546194252819">다시 시작하면 <ph name="APP_NAME" />에서 <ph name="LANGUAGE" />를 사용합니다.</translation>
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="5697688514913266141">파일이 <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />에 저장됩니다. <ph name="BEGIN_LINK2" />수정<ph name="END_LINK2" /></translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">국가/지역</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
-<translation id="6157392216611456285"><ph name="APP_NAME" /> 선택</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> 데이터 절약</translation>
 <translation id="6186394685773237175">유출된 비밀번호가 없습니다.</translation>
 <translation id="6192907950379606605">이미지 설명 보기</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" />은(는) 인터넷으로 작업과 탐색을 안전하게 진행하는 데 필요한 스마트한 기능과 빠른 속도를 제공합니다.</translation>
 <translation id="6378173571450987352">세부정보: 사용된 데이터 양에 따라 정렬</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="6381421346744604172">웹사이트 어둡게 보기</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">동영상 다운로드</translation>
 <translation id="6477928892249167417">다음 사이트는 중요할 수도 있습니다.</translation>
 <translation id="6482749332252372425">저장공간이 부족하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="6489610539826642779">읽기 목록 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">처음으로 <ph name="APP_NAME" />을(를) 사용하는 경우 인터넷에 연결하세요.</translation>
 <translation id="6508722015517270189">Chrome 다시 시작하기</translation>
 <translation id="6527303717912515753">공유</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Chrome 개인정보처리방침</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6676840375528380067">기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
-<translation id="6691888250440401212">1. <ph name="APP_NAME" />을 선택합니다.\n2. '기본 브라우저로 설정'을 탭합니다.</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6698801883190606802">동기화된 데이터 관리</translation>
 <translation id="6699370405921460408">Google 서버에서 내가 방문하는 페이지를 최적화합니다.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />를 사용할 준비가 되었습니다.</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
-<translation id="8407396331882458341">1. <ph name="APP_NAME" />을 선택합니다.\n2. '항상'을 탭합니다.</translation>
 <translation id="8410695015584479363">가격 추적</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Wi-Fi 이용 시</translation>
 <translation id="8559990750235505898">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="8560602726703398413">북마크에서 읽기 목록 찾기</translation>
-<translation id="8561196567344536112">1. 설정으로 이동합니다.\n2. '브라우저 앱'을 탭합니다.\n3. <ph name="APP_NAME" />을(를) 선택합니다.</translation>
 <translation id="8562452229998620586">저장한 비밀번호가 여기에 표시됩니다.</translation>
 <translation id="8569404424186215731"><ph name="DATE" />부터</translation>
 <translation id="8571213806525832805">지난 4주</translation>

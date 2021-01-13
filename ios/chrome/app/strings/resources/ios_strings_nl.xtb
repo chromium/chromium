@@ -238,6 +238,7 @@ Als je de incognitomodus gebruikt, mogen sites geen cookies gebruiken om je brow
 <translation id="3443810440409579745">Tabblad ontvangen.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3448016392200048164">Gesplitste weergave</translation>
+<translation id="3454224729131972583">Titel</translation>
 <translation id="345565170154308620">Wachtwoorden beheren…</translation>
 <translation id="3469166899695866866">Downloaden stoppen?</translation>
 <translation id="3470502288861289375">Kopiëren...</translation>
@@ -267,6 +268,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bookmark gemaakt in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markeren als ongelezen</translation>
+<translation id="3720541637541300822">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
 <translation id="3740397331642243698">Hiermee worden de ingevoerde URL's in Google Chrome geopend in de incognitomodus.</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
 <translation id="3775743491439407556">Synchronisatie werkt niet</translation>
@@ -301,7 +303,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="4112644173421521737">Zoeken</translation>
 <translation id="4113030288477039509">Beheerd door je beheerder</translation>
 <translation id="4121993058175073134">Als je netto-exportgegevens wilt verzenden, configureer je je e-mailaccount in de app Instellingen.</translation>
-<translation id="4124987746317609294">Tijdsbereik</translation>
+<translation id="4124987746317609294">Periode</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
 <translation id="4152093603141133546">Je organisatie heeft je uitgelogd.</translation>
 <translation id="4172051516777682613">Altijd weergeven</translation>
@@ -316,7 +318,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="430793432425771671">Alles synchroniseren</translation>
 <translation id="4309403553630140242">Dubbeltik voor meer informatie</translation>
-<translation id="430967081421617822">Altijd</translation>
+<translation id="430967081421617822">Alles</translation>
 <translation id="4334428914252001502">1 ongelezen artikel.</translation>
 <translation id="4338650699862464074">Verzendt de URL's van pagina's die je bezoekt naar Google.</translation>
 <translation id="4359125752503270327">Deze pagina wordt geopend in een andere app.</translation>
@@ -381,6 +383,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5010803260590204777">Open een incognitotabblad om privé op internet te surfen.</translation>
+<translation id="5017828934289857214">Later herinneren</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
 <translation id="5059136629401106827">OK</translation>

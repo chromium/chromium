@@ -8,13 +8,11 @@
 <translation id="1088300314857992706">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chrome</translation>
 <translation id="1097330777386562916">Удалять файлы cookie и данные сайтов при выходе из Chrome</translation>
 <translation id="110877069173485804">Ваш персональный Chrome</translation>
-<translation id="1125124144982679672">Кто использует Chrome?</translation>
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
 <translation id="123620459398936149">Не удалось синхронизировать данные. Обновите кодовую фразу в Sync.</translation>
 <translation id="1293325835983155583">Согласно действующим правилам (источник правил: <ph name="MANAGER" />), до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS.</translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
-<translation id="1355000804395496115">Разные профили Chrome нужны для раздельного использования браузера в личных и рабочих целях или если с ним работают разные люди.</translation>
 <translation id="137466361146087520">Google Chrome (бета)</translation>
 <translation id="1399397803214730675">На компьютере уже установлена последняя версия браузера Google Chrome. Если он не работает, удалите его и установите снова.</translation>
 <translation id="1434626383986940139">Приложения Chrome Canary</translation>
@@ -60,6 +58,7 @@
 <translation id="2534507159460261402">Google Pay (скопирована в Chrome)</translation>
 <translation id="2580411288591421699">Не удается установить версию Google Chrome, аналогичную уже выполняемой. Закройте Google Chrome и повторите попытку.</translation>
 <translation id="2586406160782125153">Данные о работе в браузере будут удалены с устройства. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Chrome OS может автоматически восстанавливать ваши приложения и страницы после перезагрузки.</translation>
 <translation id="2622559029861875898">Не удалось проверить наличие обновлений в Chrome. Проверьте подключение к Интернету.</translation>
 <translation id="2644798301485385923">Chrome OS</translation>
 <translation id="2652691236519827073">Открыть ссылку в новой вкладке браузера Chrome</translation>
@@ -77,7 +76,6 @@
 <translation id="2926676257163822632">Простые пароли легко подобрать. Разрешите Chrome <ph name="BEGIN_LINK" />создавать и хранить надежные пароли для вас<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Не удалось обновить Chrome. <ph name="BEGIN_LINK" />Выяснить причины неполадок и устранить их<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">"<ph name="PAGE_TITLE" />" – вход в сеть – Chrome</translation>
-<translation id="298099161970687941">Спрашивать во время запуска Chrome</translation>
 <translation id="3037838751736561277">Google Chrome работает в фоновом режиме</translation>
 <translation id="3059710691562604940">Безопасный просмотр отключен. Chrome рекомендует включить его.</translation>
 <translation id="3065168410429928842">Вкладка Chrome</translation>
@@ -85,6 +83,7 @@
 <translation id="3089968997497233615">Доступна новая, более безопасная версия Google Chrome.</translation>
 <translation id="3114643501466072395">Чтобы проверить, защищены ли другие ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Не удалось синхронизировать данные.</translation>
+<translation id="3140883423282498090">Внесенные изменения станут активны после перезапуска Google Chrome.</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome перезапускается}=1{Chrome перезапустится через 1 секунду}one{Chrome перезапустится через # секунду}few{Chrome перезапустится через # секунды}many{Chrome перезапустится через # секунд}other{Chrome перезапустится через # секунды}}</translation>
@@ -152,6 +151,8 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Перезапуск Chrome OS</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
+<translation id="5139423532931106058">Настроить профиль Chrome</translation>
+<translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
 <translation id="5170938038195470297">Использовать этот профиль невозможно, так как он был создан в более новой версии Google Chrome. Некоторые функции могут быть недоступны. Укажите другой каталог профиля или установите более новую версию Chrome.</translation>
 <translation id="5193136243808726294">Chrome OS не может открыть эту страницу</translation>
 <translation id="5251420635869119124">Используйте Chrome в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
@@ -216,7 +217,6 @@
 <translation id="7398801000654795464">Ранее вы входили в Chrome как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
 <translation id="7408085963519505752">Условия использования Chrome OS</translation>
 <translation id="7419046106786626209">Не удалось синхронизировать данные, поскольку сервис Sync недоступен в вашем домене.</translation>
-<translation id="7423733001651488593">Все данные о работе в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chrome как</translation>
 <translation id="7486227612705979895">Chrome получит доступ к Google Диску, чтобы вы могли просматривать рекомендации в адресной строке</translation>
 <translation id="7535429826459677826">Google Chrome для разработчиков</translation>
 <translation id="7573289029918943991">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chrome OS<ph name="LINK_END" />.</translation>

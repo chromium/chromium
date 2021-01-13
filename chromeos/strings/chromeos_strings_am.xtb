@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2364498172489649528">አልፏል</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ሙከራዎች ቀርተዋል</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">አይነት</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
 <translation id="4848429997038228357">በማሄድ ላይ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4891842000192098784">ጭንቀት</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />፦ <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="5635169860413004179">ሪፖርትን ይመልከቱ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">ይህ የሲፒዩ አጠቃቀምን ይለካል፣ እና የሁሉም ኮሮች ድምር ነው</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
-<translation id="8160445423316272678">ሰነድዎን በመቃኛው ላይ ያስቀምጡትና ለመጀመር <ph name="SPAN_BEGIN" />ቃኝ<ph name="SPAN_END" />ን ይምረጡ</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>
 <translation id="8930622219860340959">ገመድአልባ</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ቅንብሮች ቀርተዋል</translation>
 <translation id="8968751544471797276">ኃይል መሙላት መጠን</translation>
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
 <translation id="9003704114456258138">ተደጋጋሚነት</translation>

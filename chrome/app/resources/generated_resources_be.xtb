@@ -589,7 +589,6 @@
 <translation id="1633947793238301227">Выключыць Памочніка Google</translation>
 <translation id="1634783886312010422">Вы ўжо змянілі гэты пароль на сайце <ph name="WEBSITE" />?</translation>
 <translation id="1637224376458524414">Выкарыстоўвайце гэту закладку на сваім iPhone</translation>
-<translation id="1637246113959718501">Не ўдаецца спампаваць патрэбныя файлы. Паўтарыце спробу пазней.</translation>
 <translation id="1637350598157233081">Пароль захаваны на гэтай прыладзе</translation>
 <translation id="1637765355341780467">Нешта пайшло не так падчас адкрыцця вашага профілю. Некаторыя функцыі могуць быць недаступныя.</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
@@ -668,6 +667,7 @@
 <translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1722687688096767818">Ідзе дадаванне профілю...</translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
 <translation id="1725149567830788547">Паказаць &amp;элементы кіравання</translation>
 <translation id="1726100011689679555">Серверы даменных імён</translation>
@@ -891,6 +891,7 @@
 <translation id="1969654639948595766">Тэкставыя журналы WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Уключаны рэжым відэа</translation>
 <translation id="197288927597451399">Пакінуць</translation>
+<translation id="1973763416111613016">Бяспечна спампаваць файл "<ph name="FILE_NAME" />" нельга. Каб перамяшчацца па панэлі спамповак, націскайце Shift + F6.</translation>
 <translation id="1974043046396539880">Пункты распаўсюджвання CRL</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1974159333077206889">Адзін канал на ўсе дынамікі</translation>
@@ -2607,8 +2608,10 @@
 <translation id="3900789207771372462">Некаторыя пашырэнні маюць доступ да вашых дзеянняў у браўзеры, у тым ліку да асабістай інфармацыі.</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
+<translation id="3903187154317825986">Убудаваная клавіятура</translation>
 <translation id="3904326018476041253">Службы геалакацыі</translation>
 <translation id="3905761538810670789">Выправіць праграму</translation>
+<translation id="3906232975181435906">Ідзе ўсталяванне мабільнага профілю, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3908393983276948098">Убудова <ph name="PLUGIN_NAME" /> састарэла</translation>
 <translation id="3908501907586732282">Уключыць пашырэнне</translation>
 <translation id="3909791450649380159">Вы&amp;разаць</translation>
@@ -2647,6 +2650,7 @@
 
   Запусціць <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394183848452296464">Не ўдалося стварыць ярлык</translation>
+<translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="3943494825379372497">Аднавіць праграмы і старонкі?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
@@ -2902,6 +2906,7 @@
 <translation id="4267924571297947682">Спытайце дазволу ў бацькоў</translation>
 <translation id="4267953847983678297">Падключацца да мабільнай сеткі аўтаматычна</translation>
 <translation id="4268025649754414643">Шыфраванне ключа</translation>
+<translation id="4268670020635416342">Дадайце назву або метку (напрыклад, "Праца", "Асабістае" або "Дзеці")</translation>
 <translation id="4270393598798225102">Версія <ph name="NUMBER" /></translation>
 <translation id="4274667386947315930">Даныя для ўваходу</translation>
 <translation id="4275291496240508082">Гук запуску</translation>
@@ -3217,6 +3222,7 @@
 <translation id="4637083375689622795">Іншыя дзеянні, <ph name="EMAIL" /></translation>
 <translation id="4638930039313743000">Уключыць адладку ADB</translation>
 <translation id="4641539339823703554">Браўзеру Chrome не ўдалося задаць сістэмны час. Праверце ўказаны ніжэй час і пры неабходнасці выправіце яго.</translation>
+<translation id="4642769377300286600">Ідзе ўсталяванне мабільнага профілю, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4643612240819915418">&amp;Адкрыць відэа ў новай укладцы</translation>
 <translation id="4645676300727003670">&amp;Захаваць</translation>
 <translation id="4646675363240786305">Парты</translation>
@@ -3994,7 +4000,6 @@
 <translation id="5565735124758917034">Актыўны</translation>
 <translation id="5567989639534621706">Кэшы праграм</translation>
 <translation id="5568069709869097550">Не ўдалося ўвайсці ў сістэму</translation>
-<translation id="5571832155627049070">Наладзьце свой профіль</translation>
 <translation id="5572851009514199876">Каб Chrome змог праверыць, ці дазволена вам мець доступ да гэтага сайта, запусціце Chrome і ўвайдзіце ў свой уліковы запіс.</translation>
 <translation id="5575473780076478375">Пашырэнне інкогніта: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Узнікла праблема з запытам рэгістрацыі ў дэманстрацыйным рэжыме.</translation>
@@ -4622,6 +4627,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Новы прынтар у сетцы}one{Новыя прынтары ў сетцы}few{Новыя прынтары ў сетцы}many{Новыя прынтары ў сетцы}other{Новыя прынтары ў сетцы}}</translation>
 <translation id="6285770818046456882">Перадача скасавана прыладай, якая ажыццяўляла абагульванне</translation>
 <translation id="6290613030083731160">Няма даступных прылад, якія б ажыццяўлялі абагульванне паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="6291741848715722067">Код пацвярджэння</translation>
 <translation id="6291949900244949761">Пытацца, калі сайт запытвае доступ да USB-прылад (рэкамендуецца)</translation>
 <translation id="6291953229176937411">&amp;Паказаць у акне Finder</translation>
 <translation id="6295158916970320988">Усе сайты</translation>
@@ -4984,7 +4990,6 @@
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
 <translation id="67269783048918309">Адпраўка даных пра выкарыстанне і дыягностыку. Зараз прылада аўтаматычна адпраўляе ў Google даныя дыягностыкі і звесткі аб выкарыстанні прылады і праграм. Яны не будуць выкарыстоўвацца для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і іншых удасканаленнях. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта <ph name="BEGIN_LINK1" />налада<ph name="END_LINK1" /> ўключана ўладальнікам. Калі для вашага дзіцяці ўключана налада дадатковай гісторыі дзеянняў у інтэрнэце і праграмах, то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google. <ph name="BEGIN_LINK2" />Даведацца больш<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="6731877319426971768">Файлы распазнавання маўлення спампаваны</translation>
 <translation id="6732801395666424405">Сертыфікаты не загружаны</translation>
 <translation id="6732900235521116609">Не ўдалося выдаліць ярлык</translation>
 <translation id="6734468588183300211">У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
@@ -5090,6 +5095,7 @@
 <translation id="6850286078059909152">Колер тэксту</translation>
 <translation id="6851181413209322061">Адпраўка даных пра выкарыстанне і дыягностыку. Зараз прылада аўтаматычна адпраўляе ў Google даныя дыягностыкі і даныя пра выкарыстанне прылады і праграм. Яны не будуць выкарыстаны для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і іншых удасканаленнях. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта налада ўключана ўладальнікам. Калі налада "Дадатковыя дзеянні ў інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google дзіцяці.</translation>
 <translation id="6851497530878285708">Праграма ўключана</translation>
+<translation id="6853142139292753691">Ці аднаўляць праграмы і старонкі стандартна?</translation>
 <translation id="6853388645642883916">Сродак абнаўлення ў рэжыме сну</translation>
 <translation id="68541483639528434">Закрыць іншыя ўкладкі</translation>
 <translation id="6855892664589459354">Рэзервовае капіраванне і аднаўленне Crostini</translation>
@@ -5849,6 +5855,7 @@
 <translation id="7719367874908701697">Маштаб старонкі</translation>
 <translation id="7719588063158526969">Назва прылады занадта доўгая</translation>
 <translation id="7721179060400456005">Дазволіць вокнам пашырацца на некалькі дысплэяў</translation>
+<translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7722040605881499779">Для пераносу неабходна <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7728465250249629478">Змяніць мову прылады</translation>
@@ -6032,6 +6039,7 @@
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> можа праглядаць файл <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Дадайце словы, правапіс якіх не трэба правяраць</translation>
 <translation id="7924358170328001543">Памылка пераадрасацыі партоў</translation>
+<translation id="7925108652071887026">Даныя аўтазапаўнення</translation>
 <translation id="792514962475806987">Маштаб прыстыкаванай лупы:</translation>
 <translation id="7925247922861151263">Не ўдалося выканаць праверку AAA</translation>
 <translation id="7925285046818567682">Чакаецца <ph name="HOST_NAME" />...</translation>
@@ -6113,7 +6121,6 @@
 <translation id="8002670234429879764">Прынтар "<ph name="PRINTER_NAME" />" больш не даступны</translation>
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8005600846065423578">Заўсёды дазваляць хосту <ph name="HOST" /> праглядаць буфер абмену</translation>
-<translation id="8006143138282906848">Выдаліць профіль</translation>
 <translation id="8008356846765065031">Інтэрнэт адключаны. Праверце падключэнне да інтэрнэту.</translation>
 <translation id="8009225694047762179">Кіраваць паролямі</translation>
 <translation id="8012647001091218357">Не ўдалося звязацца з вашымі бацькамі. Паўтарыце спробу.</translation>
@@ -6177,6 +6184,7 @@
 <translation id="8074127646604999664">Дазволіць нядаўна закрытым сайтам завяршаць перадачу і прыём даных</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8076835018653442223">Доступ да лакальных файлаў на прыладзе адключаны адміністратарам</translation>
+<translation id="8079153653197012234">Увядзіце код пацвярджэння для профілю "<ph name="PROFILE_NAME" />".</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
 <translation id="8082106343289440791">Спалучыць з прыладай "<ph name="DEVICE_NAME" />"?</translation>
@@ -6185,7 +6193,6 @@
 <translation id="8084114998886531721">Захаваны пароль</translation>
 <translation id="8086015605808120405">Ідзе наладжванне прынтара <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Наладзіць прыладу (<ph name="PRINTER_NAME" />)</translation>
-<translation id="8086550884324762001">Напрыклад: "Праца", "Асабісты", "Дзеці" або імя</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Файл зашыфраваны. Папрасіце ўладальніка файла расшыфраваць яго.}one{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}few{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}many{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}other{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}}</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8090234456044969073">Прагледзець спіс вэб-сайтаў, якія вы наведваеце часцей за ўсё</translation>
@@ -6675,6 +6682,7 @@
 <translation id="8666584013686199826">Пытацца, калі сайт запытвае доступ да USB-прылад</translation>
 <translation id="8667328578593601900">Сайт <ph name="FULLSCREEN_ORIGIN" /> перайшоў у поўнаэкранны рэжым і выключыў вам курсор мышы.</translation>
 <translation id="8669284339312441707">Цяплей</translation>
+<translation id="8670537393737592796">Каб хутка вяртацца сюды, усталюйце праграму "<ph name="APP_NAME" />", націснуўшы кнопку ўсталявання</translation>
 <translation id="867085395664725367">Узнікла часовая памылка сервера.</translation>
 <translation id="8673026256276578048">Пошук па ўсім інтэрнэце...</translation>
 <translation id="8673383193459449849">Праблема з серверам</translation>

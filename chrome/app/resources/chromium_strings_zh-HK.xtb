@@ -11,7 +11,6 @@
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
-<translation id="1357932062193643861">Chromium 開啟時詢問我</translation>
 <translation id="1396446129537741364">Chromium 即將顯示密碼。</translation>
 <translation id="1414495520565016063">您已登入 Chromium！</translation>
 <translation id="1414973082589232775">您必須重新啟動 Chromium，才能使用 Rosetta 播放受保護的媒體。</translation>
@@ -82,6 +81,7 @@
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="3685209450716071127">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用此更新}=1{管理員要求您重新啟動 Chromium，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
+<translation id="371088601698879021">Chromium 作業系統可隨時在重新啟動後自動還原應用程式和網頁，無需每次詢問您。</translation>
 <translation id="3713809861844741608">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="3728336900324680424">Chromium 會存取您的「雲端硬碟」，然後在網址列提出建議</translation>
 <translation id="378917192836375108">Chromium 可讓您按一下網頁上的電話號碼，隨即透過 Skype 撥打電話！</translation>
@@ -114,7 +114,6 @@
 <translation id="4788777615168560705">Chromium 無法檢查密碼，請於 24 小時後再試一次，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
 <translation id="4888717733111232871">允許 mDNS 流量的 Chromium 輸入規則。</translation>
-<translation id="4893632094755846570">這會永久刪除此裝置上的瀏覽資料。如要復原資料，請使用下列身分登入 Chromium：</translation>
 <translation id="4943838377383847465">Chromium 正在背景模式中執行。</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
@@ -174,13 +173,13 @@
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="6570579332384693436">為修正拼字錯誤，Chromium 會將您在文字欄中輸入的文字傳送給 Google</translation>
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>
+<translation id="6613594504749178791">您的變更將於下次重新啟動 Chromium 時生效。</translation>
 <translation id="6676384891291319759">連線到互聯網</translation>
 <translation id="6717134281241384636">由於您的設定檔是來自較新版本的 Chromium，所以系統無法使用這個檔案。
 
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chromium。</translation>
 <translation id="6734080038664603509">更新 Chromium(&amp;C)</translation>
 <translation id="6734291798041940871">已為您電腦上的所有使用者安裝 Chromium。</translation>
-<translation id="6762551859069255163">在 Chromium 使用不同的設定檔，以便將工作和個人瀏覽區分開，或讓不同的使用者共用此裝置</translation>
 <translation id="6774082503108938489">您的家長已停用 Chromium 的「網站、應用程式和擴充程式權限」設定，因此您無法啟用此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -271,6 +270,5 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium 作業系統</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
-<translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

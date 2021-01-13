@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">清除历史记录和地址栏中的自动补全项。</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
+<translation id="2039379262107991683">将网页添加到阅读清单中即可接收提醒</translation>
 <translation id="204321170514947529">Chrome 中也有<ph name="APP_NAME" />的数据</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">在网上搜索</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">文字大小</translation>
 <translation id="2394602618534698961">您下载的文件会显示在此处</translation>
 <translation id="2407481962792080328">当您登录自己的 Google 帐号后，系统即会启用此功能</translation>
-<translation id="2407674018644220013">将 <ph name="APP_NAME" /> 设为您的默认应用？</translation>
 <translation id="2410754283952462441">选择帐号</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2426805022920575512">选择其他帐号</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">分享</translation>
 <translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2478076885740497414">安装应用</translation>
-<translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2494974097748878569">Chrome 中的 Google 助理</translation>
 <translation id="2496180316473517155">浏览记录</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4378154925671717803">电话机</translation>
-<translation id="4382908510000698092">用作 Chrome 的语言</translation>
 <translation id="4384468725000734951">目前使用的搜索引擎是搜狗</translation>
 <translation id="4404568932422911380">没有书签</translation>
 <translation id="4405224443901389797">移动到…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
 <translation id="5683547024293500885">Chrome 无法检查是否有更新</translation>
 <translation id="5686790454216892815">文件名过长</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> 将在重启时使用<ph name="LANGUAGE" />。</translation>
 <translation id="569536719314091526">通过“更多选项”按钮将此页面翻译成任何语言</translation>
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5697688514913266141">您的文件将会保存到<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />。<ph name="BEGIN_LINK2" />修改<ph name="END_LINK2" />。</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">国家/地区</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
-<translation id="6157392216611456285">选择 <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">节省 <ph name="PERCENT" /> 的数据流量</translation>
 <translation id="6186394685773237175">未发现任何已泄露的密码</translation>
 <translation id="6192907950379606605">获取图片说明</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="6345878117466430440">标记为已读</translation>
 <translation id="6364438453358674297">要从历史记录中移除建议吗？</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> 具有非凡的智慧和速度；利用它，您可以安全放心地在网络世界尽情操作、创作和探索</translation>
 <translation id="6378173571450987352">详细信息：按已使用的数据流量排序</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="6381421346744604172">调暗网站颜色</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">下载视频</translation>
 <translation id="6477928892249167417">这些网站似乎对您很重要：</translation>
 <translation id="6482749332252372425">未能成功下载 <ph name="FILE_NAME" />，因为存储空间不足。</translation>
+<translation id="6489610539826642779">阅读清单<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">如果您是首次使用<ph name="APP_NAME" />，则需连接到互联网。</translation>
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Chrome 隐私权声明</translation>
 <translation id="6671495933530132209">复制图片</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
-<translation id="6691888250440401212">1. 选择 <ph name="APP_NAME" />\n2. 点按“设为默认应用”</translation>
 <translation id="6697492270171225480">找不到相应网页时，显示有关类似网页的建议</translation>
 <translation id="6698801883190606802">管理已同步的数据</translation>
 <translation id="6699370405921460408">Google 服务器会优化您访问的网页。</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">可以使用<ph name="LANG" />了。</translation>
 <translation id="8393700583063109961">发送消息</translation>
-<translation id="8407396331882458341">1. 选择 <ph name="APP_NAME" />\n2. 点按“始终”</translation>
 <translation id="8410695015584479363">跟踪价格</translation>
 <translation id="8413126021676339697">显示全部历史记录</translation>
 <translation id="8427875596167638501">预览标签页已在下半屏中打开</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">有 Wi-Fi 可用时</translation>
 <translation id="8559990750235505898">询问是否翻译其他语言版本的网页</translation>
 <translation id="8560602726703398413">您可在“书签”界面中找到自己的阅读清单</translation>
-<translation id="8561196567344536112">1. 转到“设置”\n2. 点按“浏览器应用”\n3. 选择 <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">已保存的密码将显示在这里。</translation>
 <translation id="8569404424186215731">自 <ph name="DATE" />以来</translation>
 <translation id="8571213806525832805">过去 4 周</translation>

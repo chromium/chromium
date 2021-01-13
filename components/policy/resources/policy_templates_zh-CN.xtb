@@ -850,11 +850,6 @@
 
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
-<translation id="2292084646366244343"><ph name="PRODUCT_NAME" />可使用 Google 网络服务帮助解决拼写错误问题。如果启用此设置，那么将一直使用此服务。如果停用此设置，则从不使用此服务。
-
-      使用已下载的字典，仍然可以进行拼写检查，此策略仅控制在线服务的使用情况。
-
-      如果未配置此设置，那么用户可以选择是否使用拼写检查服务。</translation>
 <translation id="229322770310505679">启用政策原子组的概念</translation>
 <translation id="22941467117331786">如果此政策设为 True，当会话处于活动状态且屏幕未锁定时，系统任务栏中会显示一个大的红色退出按钮。
 
@@ -952,6 +947,11 @@
       如果此设置未指定，那么用户可以决定是否使用此功能。
 
       29 版及更高版本的 <ph name="PRODUCT_NAME" /> 中已取消此设置。</translation>
+<translation id="2428819424648741429">如果此政策已启用，系统会使用 Google 网络服务来帮助修正拼写错误。此政策仅控制对在线服务的使用。如果此政策已停用，系统绝不会使用拼写检查服务。
+
+      如果此政策未设置，用户便可自行选择是否使用该服务。
+
+      拼写检查功能始终都能就地使用已下载的字典，除非该功能已被 <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> 停用（在这种情况下，此政策将不会产生任何影响）。</translation>
 <translation id="2435052056904485763">Kerberos 委派服务器许可名单</translation>
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
@@ -3200,6 +3200,11 @@
       此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
 <translation id="5652250453612826983">控制仅应用于未成年人帐号的家长监管政策。
       这些政策不是在管理控制台中设置的，而是通过 Kids API 服务器直接配置的。</translation>
+<translation id="5654682237531873653">如果此政策已启用，系统会开启拼写检查，但用户无法关闭该功能。由于在 <ph name="MS_WIN_NAME" />、<ph name="PRODUCT_OS_NAME" />和 <ph name="LINUX_OS_NAME" /> 中，拼写检查功能的状态（开启/关闭）可因具体语言而异，因此若有语言开启了该功能，用户仍能通过关闭针对每种所涉语言的拼写检查来停用该功能。为避免这种情况，请使用 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 为特定语言强制启用拼写检查。
+
+      如果此政策已停用，系统会从所有来源关闭拼写检查，而且用户无法开启该功能。如果此政策设为 False，<ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />、<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 和 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> 政策都不会产生任何影响。
+
+      如果此政策未设置，用户便可在语言设置中开启或关闭拼写检查。 </translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
 <translation id="5657576769650058122">如果此政策已启用，屏幕虚拟键盘（一种 Chrome 操作系统输入设备）会保持开启状态。如果此政策已停用，该键盘会保持关闭状态。
 
@@ -4183,7 +4188,6 @@
       在此政策中设置一系列网址的效果等同于将 --unsafely-treat-insecure-origin-as-secure 命令行标记设为包含同一系列网址的逗号分隔列表。此政策会覆盖该命令行标记和 UnsafelyTreatInsecureOriginAsSecure（若存在）。
 
       如需详细了解安全上下文，请参阅“安全上下文”( https://www.w3.org/TR/secure-contexts )。</translation>
-<translation id="7033985774616781500">配置要停用的摄像头、浏览器设置、操作系统设置和扫描功能</translation>
 <translation id="703672323011778742">此政策已在 M88 中弃用，并且 Chrome 已不再支持 Flash。如果此政策设为 1，系统会允许您设置是否所有网站都能自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件。如果此政策设为 2，系统会禁止所有网站使用此插件。选中“Click to play”选项会允许 <ph name="FLASH_PLUGIN_NAME" /> 插件运行，但用户必须点击该插件才能启动它。
 
       如果您未设置此政策，系统会使用 <ph name="BLOCK_PLUGINS_POLICY_NAME" />，但用户可以更改此设置。
@@ -5160,12 +5164,6 @@
 <translation id="8455529558077979314">隐私保护屏设置</translation>
 <translation id="8461914792118322307">代理</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
-<translation id="8465746466645315861">如果此政策未设置，则用户可以在语言设置中启用或停用拼写检查。
-
-      如果此政策设为 true，则拼写检查处于启用状态，且用户无法停用此功能。在 <ph name="MS_WIN_NAME" />、<ph name="PRODUCT_OS_NAME" />和 <ph name="LINUX_OS_NAME" /> 上，拼写检查语言可以单独开启或关闭，因此用户仍然可以通过关闭每种语言的拼写检查，达到停用拼写检查的实际效果。为了避免这种情况，可以使用 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 政策强制启用特定语言的拼写检查。
-
-      如果此政策设为 false，则拼写检查处于停用状态，且用户无法启用此功能。当此政策设为 false 时，<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 和 <ph name="SPELLCHECK_LANGUAGE_BLACKLIST_POLICY_NAME" /> 政策不会产生任何效果。
-      </translation>
 <translation id="847472800012384958">不允许任何网站显示弹出式窗口</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8483004350080020634">先剔除 https:// 网址中关乎隐私和安全性的敏感部分，然后再将网址传递给 PAC（代理自动配置）脚本，以供 <ph name="PRODUCT_NAME" /> 在代理解析期间使用。

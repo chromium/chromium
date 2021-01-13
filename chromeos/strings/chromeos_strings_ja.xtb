@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2364498172489649528">成功</translation>
-<translation id="2375079107209812402">あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
 <translation id="4848429997038228357">実行中</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="4891842000192098784">ストレス</translation>
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">ゲストとしてブラウジング</translation>
 <translation id="54609108002486618">管理対象</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{あと {0} 回試行できます}other{あと {0} 回試行できます}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">ヘルプセンターで詳細を確認</translation>
 <translation id="5635169860413004179">レポートを表示</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
-<translation id="8160445423316272678">スキャナにドキュメントを置いて、[<ph name="SPAN_BEGIN" />スキャン<ph name="SPAN_END" />] を選択してスキャンを開始してください</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />: あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
 <translation id="9003704114456258138">周波数</translation>

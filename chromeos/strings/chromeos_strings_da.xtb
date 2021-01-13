@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2364498172489649528">Bestået</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
 <translation id="4848429997038228357">KØRER</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Anvend som gæst</translation>
 <translation id="54609108002486618">Administreret</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøg tilbage}one{{0} forsøg tilbage}other{{0} forsøg tilbage}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Få flere oplysninger i Hjælp</translation>
 <translation id="5635169860413004179">Se rapport</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Dette måler CPU-forbruget og er en sammenlægning af alle kerner</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Placer dit dokument i scanneren, og vælg <ph name="SPAN_BEGIN" />Scan<ph name="SPAN_END" /> for at komme i gang.</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
 <translation id="8930622219860340959">Trådløs</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
 <translation id="8968751544471797276">Opladningshastighed</translation>
 <translation id="8970109610781093811">Kør igen</translation>
 <translation id="9003704114456258138">Frekvens</translation>

@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4835901797422965222">యాక్టివ్‌గా ఉన్న నెట్‌వర్క్‌లు ఏవీ లేవు</translation>
 <translation id="4848429997038228357">రన్ అవుతోంది</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">అతిథి లాగా బ్రౌజ్ చేయండి</translation>
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ప్రయత్నం మిగిలి ఉంది}other{{0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="5635169860413004179">రిపోర్ట్‌ను చూడండి</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">ఇది CPU వినియోగాన్ని లెక్కిస్తుంది, అలాగే ఇది అన్ని కోర్‌ల సముదాయం</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి <ph name="SPAN_BEGIN" />స్కాన్ చేయి<ph name="SPAN_END" />ని ఎంచుకోండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
 <translation id="8930622219860340959">వైర్‌లెస్</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
 <translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>

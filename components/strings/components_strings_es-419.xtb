@@ -70,6 +70,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1236081509407217141">¿Quieres permitir la RV?</translation>
 <translation id="1240347957665416060">Tu nombre de dispositivo</translation>
 <translation id="124116460088058876">Más idiomas</translation>
+<translation id="1243027604378859286">Autor:</translation>
 <translation id="1250759482327835220">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta, nombre y dirección de facturación en tu cuenta de Google.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1256368399071562588">&lt;p&gt;Si intentas visitar un sitio web y no se abre, primero intenta corregir el error con estos pasos para solucionar problemas:&lt;/p&gt;
@@ -307,6 +308,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2114841414352855701">Se ignoró porque fue anulada por <ph name="POLICY_NAME" /> .</translation>
 <translation id="2119505898009119320">Emitida a: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforación en la esquina inferior derecha</translation>
+<translation id="2126374524350484896">Generador de PDF:</translation>
 <translation id="2129079103035905234">Sensores de movimiento</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="213826338245044447">Favoritos del celular</translation>
@@ -416,6 +418,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Lee este artículo y <ph name="OTHER_ARTICLE_COUNT" /> más.</translation>
 <translation id="2587841377698384444">ID de API de directorio:</translation>
+<translation id="2594318783181750337">Vista rápida en Web:</translation>
 <translation id="2595719060046994702">Este dispositivo y esta cuenta no están administrados por una empresa ni otra organización.</translation>
 <translation id="2597378329261239068">Este documento está protegido por contraseña. Ingresa una contraseña.</translation>
 <translation id="2609632851001447353">Variaciones</translation>
@@ -510,6 +513,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2989742184762224133">Grapas dobles en la parte superior</translation>
 <translation id="2991174974383378012">Compartir con los sitios web</translation>
 <translation id="2991571918955627853">No puedes visitar <ph name="SITE" /> ahora porque el sitio web usa HSTS. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
+<translation id="2995517112308048736">Tamaño del archivo:</translation>
 <translation id="2996674880327704673">Sugerencias de Google</translation>
 <translation id="3002501248619246229">Revisar el medio en la bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
@@ -671,9 +675,11 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3633738897356909127">Botón Actualizar Chrome: presiona Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3650584904733503804">Validación correcta</translation>
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, haz clic aquí: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
+<translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3676592649209844519">ID de dispositivo:</translation>
 <translation id="3677008721441257057">¿Quisiste decir &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La solicitud no se pudo firmar</translation>
@@ -760,7 +766,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
-<translation id="4067669230157909013">Se reanudó la captura de pantalla.</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
@@ -1006,6 +1011,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4989542687859782284">No disponible</translation>
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
 <translation id="4995216769782533993">Confirma el código de seguridad para compartir los detalles de la tarjeta con este sitio</translation>
+<translation id="4995474875135717171">Modificado:</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
 <translation id="5015510746216210676">Nombre de la máquina:</translation>
 <translation id="5017554619425969104">Texto que copiaste</translation>
@@ -1052,6 +1058,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="5159010409087891077">Abre la página en una nueva ventana de incógnito (⇧⌘N).</translation>
+<translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Apilador 9</translation>
 <translation id="5164798890604758545">Se ingresó texto</translation>
 <translation id="516920405563544094">Ingresa el CVC de la tarjeta <ph name="CREDIT_CARD" />. Después de confirmarla, los datos de la tarjeta en tu Cuenta de Google se compartirán con este sitio.</translation>
@@ -1083,6 +1090,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5269999699920406580">El propietario es el único que puede configurar las funciones que se aplican a todo el sistema: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se combinó según la política PolicyDictionaryMultipleSourceMergeList porque no es parte de las políticas del diccionario que se pueden combinar.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">Propiedades del documento</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5284909709419567258">Direcciones de red</translation>
 <translation id="5285570108065881030">Mostrar todas las contraseñas guardadas</translation>
@@ -1287,6 +1295,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6047927260846328439">Es posible que este contenido trate de engañarte para que instales software o reveles información personal. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">Entrega de páginas</translation>
 <translation id="6051221802930200923">No puedes visitar <ph name="SITE" /> ahora porque el sitio web usa la fijación de certificados. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
+<translation id="6051898664905071243">Cantidad de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">¿Deseas compartir tu presencia?</translation>
 <translation id="6058977677006700226">¿Quieres usar tus tarjetas en todos los dispositivos?</translation>
@@ -1797,6 +1806,7 @@ Detalles adicionales:
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de IT que corrija este problema.</translation>
 <translation id="8128526133099929547">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda que la cambies ahora en <ph name="WEBSITE_1" /> y otros sitios donde la uses.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">La computadora se suspendió.</translation>
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>
 <translation id="8157295877370077682">Salir del sitio</translation>
@@ -1938,6 +1948,7 @@ Detalles adicionales:
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugerencia de búsqueda</translation>
 <translation id="8719528812645237045">Perforaciones múltiples en la parte superior</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
+<translation id="8726549941689275341">Tamaño de la página:</translation>
 <translation id="8728672262656704056">Estás en modo incógnito</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731544501227493793">Botón Administrar contraseñas: presiona Intro para ver y administrar tus contraseñas en la configuración de Chrome</translation>
@@ -2070,7 +2081,6 @@ Detalles adicionales:
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="945855313015696284">Comprueba la información que se muestra a continuación y borra las tarjetas que no sean válidas</translation>
 <translation id="950736567201356821">Perforación triple en la parte superior</translation>
-<translation id="951941430552851965">El administrador pausó la captura de pantalla debido al contenido que se muestra en ella.</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar apps engañosas que se hagan pasar por otro tipo de contenido o que recopilen datos que se usen para rastrearte. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build oficial</translation>

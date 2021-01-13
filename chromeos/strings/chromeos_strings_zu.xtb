@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Vula i-Bluetooth ukuze uthole amadivayisi aseduze</translation>
 <translation id="2364498172489649528">Kuphumelele</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> imizamo esele</translation>
 <translation id="2391082728065870591">Thumela Umbiko Wempendulo</translation>
 <translation id="2446553403094072641">Ukunemba kwephoyinti elintantayo</translation>
 <translation id="2448312741937722512">Uhlobo</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Khetha ifolda kuhlelo lokusebenza Lamafayela...</translation>
 <translation id="4835901797422965222">Awekho amanethiwekhi atholakalayo</translation>
 <translation id="4848429997038228357">IYAQHUBEKA</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> kusele umzamo ongu-{0}}one{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}other{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}}</translation>
 <translation id="4890353053343094602">Khetha elisha elilodwa ngokushesha</translation>
 <translation id="4891842000192098784">Ukucindezeleka</translation>
 <translation id="4917889632206600977">Imile - Iphepha liphelile</translation>
@@ -168,8 +168,8 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Dlulisa amehlo njengesihambeli</translation>
 <translation id="54609108002486618">Kuphethwe</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{kusele umzamo ongu-{0}}one{kusele imizamo engu-{0}}other{kusele imizamo engu-{0}}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Funda kabanzi Esikhungweni Sosizo</translation>
 <translation id="5635169860413004179">Bona Umbiko</translation>
 <translation id="5670702108860320605">I-BSSID</translation>
 <translation id="5719918614880940190">Lokhu kulinganisela ukusetshenziswa kwe-CPU, futhi kwukuhlanganiswa kwakho konke okuyinhloko</translation>
@@ -251,7 +251,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8075838845814659848">Inkokhelo esele</translation>
 <translation id="808894953321890993">Shintsha iphasiwedi</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Beka idokhumenti yakho kuskena bese ukhetha okuthi <ph name="SPAN_BEGIN" />Skena<ph name="SPAN_END" /> ukuze uqalise</translation>
 <translation id="8206859287963243715">Iselula</translation>
 <translation id="8208861521865154048">Izinzuzo</translation>
 <translation id="8230672074305416752">Yehlulekile ukuqhweba umasango wenethiwekhi yokuzenzakalelayo</translation>
@@ -285,7 +284,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8919837981463578619">Yehlulekile - Itreyi alikho</translation>
 <translation id="8928727111548978589">Yehlulekile - Iphepha liphelile</translation>
 <translation id="8930622219860340959">Okungenantambo</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> imizamo esele</translation>
 <translation id="8968751544471797276">Isilinganisela sokushaja</translation>
 <translation id="8970109610781093811">Sebenzisa futhi</translation>
 <translation id="9003704114456258138">Imvamisa</translation>

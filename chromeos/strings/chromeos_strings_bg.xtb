@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2364498172489649528">Премината</translation>
-<translation id="2375079107209812402">Остават <ph name="ATTEMPTS_LEFT" /> опита</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Сърфиране като гост</translation>
 <translation id="54609108002486618">Управляван</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Остава {0} опит}other{Остават {0} опита}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Научете повече в Помощния център</translation>
 <translation id="5635169860413004179">Преглед на отчета</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Това измерва използването на процесора и е обща стойност за всички ядра</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">За да започнете, поставете документа върху скенера и изберете <ph name="SPAN_BEGIN" />Сканиране<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="8930622219860340959">Безжична</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Оставащи опити: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Скорост на зареждане</translation>
 <translation id="8970109610781093811">Повторно изпълняване</translation>
 <translation id="9003704114456258138">Честота</translation>

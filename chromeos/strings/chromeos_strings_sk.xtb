@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2364498172489649528">Úspešné</translation>
-<translation id="2375079107209812402">Zostávajúce pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Vybrať priečinok v aplikácii Súbory…</translation>
 <translation id="4835901797422965222">Žiadne aktívne siete</translation>
 <translation id="4848429997038228357">PREBIEHA</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov}}</translation>
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
 <translation id="4891842000192098784">Záťaž</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
@@ -168,8 +168,8 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Ďalšie informácie v centre pomoci</translation>
 <translation id="5635169860413004179">Zobraziť prehľad</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Meria využitie procesora a ide o agregáciu všetkých jadier</translation>
@@ -251,7 +251,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Položte dokument na skener a začnite výberom možnosti <ph name="SPAN_BEGIN" />Skenovať<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
@@ -285,7 +284,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Počet zostávajúcich pokusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="9003704114456258138">Frekvencia</translation>

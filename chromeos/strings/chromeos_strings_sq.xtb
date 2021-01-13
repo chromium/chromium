@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
 <translation id="2364498172489649528">Kaloi</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4891842000192098784">Tensioni</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="5635169860413004179">Shiko raportin</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Kjo mat përdorimin e CPU-së dhe është një përmbledhje e të gjitha të dhënave kryesore</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Vendose dokumentin tënd në skaner dhe zgjidh <ph name="SPAN_BEGIN" />Skano<ph name="SPAN_END" /> për të filluar</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">Dështoi - Tabakaja mungon</translation>
 <translation id="8928727111548978589">Dështoi - Nuk ka letër</translation>
 <translation id="8930622219860340959">Me valë</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
 <translation id="9003704114456258138">Frekuenca</translation>

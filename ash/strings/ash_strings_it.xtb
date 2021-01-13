@@ -184,7 +184,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
 <translation id="2617342710774726426">La scheda SIM è bloccata</translation>
 <translation id="2621713457727696555">Protetta</translation>
-<translation id="2633643784040308254">Media</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2658778018866295321">Fai clic e trascina</translation>
 <translation id="2678852583403169292">Menu Seleziona per ascoltare</translation>
@@ -328,6 +327,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="394485226368336402">Impostazioni audio</translation>
+<translation id="3945867833895287237">Connessione all'hotspot in corso…</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -416,7 +416,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
 <translation id="4705716602320768426">Invia feedback</translation>
-<translation id="4730232680256276456">Ciao</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
@@ -534,7 +533,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="5881540930187678962">Configura Phone Hub in un secondo momento</translation>
 <translation id="5895138241574237353">Riavvia</translation>

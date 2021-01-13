@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2364498172489649528">Prošlo</translation>
-<translation id="2375079107209812402">Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4848429997038228357">U TOKU</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
@@ -168,8 +168,8 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5431825016875453137">Otvoreni VPN/L2TP</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostaje {0} pokušaj}one{Preostaje {0} pokušaj}few{Preostaju {0} pokušaja}other{Preostaje {0} pokušaja}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Saznajte više u centru za pomoć</translation>
 <translation id="5635169860413004179">Prikaži izveštaj</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Ovim se meri korišćenje procesora i zbir je svih jezgara</translation>
@@ -251,7 +251,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Postavite dokument na skener i izaberite <ph name="SPAN_BEGIN" />Skeniraj<ph name="SPAN_END" /> da biste započeli</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>
@@ -285,7 +284,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
 <translation id="8930622219860340959">Bežično</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="9003704114456258138">Frekvencija</translation>

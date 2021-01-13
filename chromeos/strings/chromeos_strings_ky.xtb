@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
 <translation id="2446553403094072641">Калкыма чекиттин тактыгы</translation>
 <translation id="2448312741937722512">Түрү</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files колдонмосунда папка тандоо...</translation>
 <translation id="4835901797422965222">Жигердүү тармак жок</translation>
 <translation id="4848429997038228357">АТКАРЫЛУУДА</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
 <translation id="4890353053343094602">Дароо жаңы сырсөз тандаңыз</translation>
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Конок катары серептөө</translation>
 <translation id="54609108002486618">Башкарылуучу</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} аракет калды}other{{0} аракет калды}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Жардам борборунан көбүрөөк маалымат алуу</translation>
 <translation id="5635169860413004179">Отчётту көрүү</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Бул процессордун колдонулушун ченеп, бардык зымдардын бириктирилген жери болуп эсептелет</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">Батареянын кубаты</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Документиңизди сканерге коюп, <ph name="SPAN_BEGIN" />Скандоо<ph name="SPAN_END" /> баскычын басыңыз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
 <translation id="8930622219860340959">Зымсыз</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="8968751544471797276">Батареянын кубатталышы көрсөткүчү</translation>
 <translation id="8970109610781093811">Кайра сыноо</translation>
 <translation id="9003704114456258138">Жыштык</translation>

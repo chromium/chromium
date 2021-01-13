@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2364498172489649528">Passed</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> attempts left</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Types</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4835901797422965222">No active networks</translation>
 <translation id="4848429997038228357">RUNNING</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
@@ -168,8 +168,8 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Browse as Guest</translation>
 <translation id="54609108002486618">Managed</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} attempt left}other{{0} attempts left}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Find out more in the Help Centre</translation>
 <translation id="5635169860413004179">See report</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">This measures the CPU usage, and is an aggregation of all cores</translation>
@@ -251,7 +251,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Place your document on the scanner and select <ph name="SPAN_BEGIN" />Scan<ph name="SPAN_END" /> to get started</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
@@ -285,7 +284,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930622219860340959">Wireless</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> attempts left</translation>
 <translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
 <translation id="9003704114456258138">Frequency:</translation>

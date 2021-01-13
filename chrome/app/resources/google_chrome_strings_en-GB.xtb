@@ -10,13 +10,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chrome</translation>
 <translation id="1097330777386562916">Clear cookies and site data when you quit Chrome</translation>
 <translation id="110877069173485804">This is your Chrome</translation>
-<translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="123620459398936149">Chrome OS could not sync your data. Please update your Sync passphrase.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These Terms do not expand, modify or limit the Google Chrome OS Terms.</translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
-<translation id="1355000804395496115">Use different profiles in Chrome to separate work and personal browsing, or for different people who use this device</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -64,6 +62,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2534507159460261402">Google Pay (copied to Chrome)</translation>
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Chrome OS can always restore your apps and pages after restart without asking every time.</translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2644798301485385923">Chrome OS System</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
@@ -81,7 +80,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
-<translation id="298099161970687941">Ask when Chrome opens</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
@@ -89,6 +87,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3089968997497233615">There's a new, safer version of Google Chrome available.</translation>
 <translation id="3114643501466072395">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS could not sync your data.</translation>
+<translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
@@ -227,7 +226,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7408085963519505752">Chrome OS terms</translation>
 <translation id="7419046106786626209">Chrome OS could not sync your data because Sync is not available for your domain.</translation>
-<translation id="7423733001651488593">This will permanently delete your browsing data from this device. To recover the data, sign in to Chrome as</translation>
 <translation id="7486227612705979895">Chrome will access your Drive to make suggestions in the address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chrome OS Settings<ph name="LINK_END" /></translation>

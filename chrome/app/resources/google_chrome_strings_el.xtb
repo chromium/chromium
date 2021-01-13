@@ -8,13 +8,11 @@
 <translation id="1088300314857992706">Η διεύθυνση <ph name="USER_EMAIL_ADDRESS" /> χρησιμοποιούσε το Chrome στο παρελθόν</translation>
 <translation id="1097330777386562916">Διαγραφή cookie και δεδομένων ιστοτόπου κατά τον τερματισμό του Chrome.</translation>
 <translation id="110877069173485804">Ορίστε το δικό σας Chrome</translation>
-<translation id="1125124144982679672">Ποιος χρησιμοποιεί το Chrome;</translation>
 <translation id="1142745911746664600">Δεν είναι δυνατή η ενημέρωση του Chrome</translation>
 <translation id="1154147086299354128">&amp;Άνοιγμα στο Chrome</translation>
 <translation id="123620459398936149">Το Chrome OS δεν μπόρεσε να συγχρονίσει τα δεδομένα σας. Ενημερώστε τη φράση πρόσβασης συγχρονισμού.</translation>
 <translation id="1293325835983155583">Το <ph name="MANAGER" /> απαιτεί να διαβάσετε και να αποδεχτείτε τους παρακάτω Όρους Παροχής Υπηρεσιών πριν από τη χρήση αυτής της συσκευής. Οι συγκεκριμένοι όροι δεν επεκτείνουν, τροποποιούν ή περιορίζουν τους Όρους του Google Chrome OS.</translation>
 <translation id="1302523850133262269">Περιμένετε μέχρι να γίνει εγκατάσταση των πιο πρόσφατων ενημερώσεων συστήματος από το Chrome.</translation>
-<translation id="1355000804395496115">Χρησιμοποιήστε διαφορετικά προφίλ στο Chrome για να διαχωρίσετε την περιήγηση εργασίας από την προσωπική περιήγηση ή για διαφορετικά άτομα που χρησιμοποιούν αυτήν τη συσκευή.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Αυτός ο υπολογιστής διαθέτει ήδη μια πιο πρόσφατη έκδοση του Google Chrome. Αν το λογισμικό δεν λειτουργεί, απεγκαταστήστε το Google Chrome και δοκιμάστε ξανά.</translation>
 <translation id="1434626383986940139">Εφαρμογές Chrome Canary</translation>
@@ -62,6 +60,7 @@
 <translation id="2534507159460261402">Google Pay (αντιγράφηκε στο Chrome)</translation>
 <translation id="2580411288591421699">Δεν είναι δυνατή η εγκατάσταση της ίδιας έκδοσης του Google Chrome που εκτελείται αυτήν τη στιγμή. Κλείστε το Google Chrome και προσπαθήστε ξανά.</translation>
 <translation id="2586406160782125153">Με αυτήν την ενέργεια θα διαγραφούν τα δεδομένα περιήγησης από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Το Chrome OS μπορεί να επαναφέρει τις εφαρμογές και τις σελίδες σας μετά την επανεκκίνηση χωρίς να ρωτάει κάθε φορά.</translation>
 <translation id="2622559029861875898">Το Chrome δεν μπορεί να ελέγξει για ενημερώσεις. Δοκιμάστε να ελέγξετε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="2644798301485385923">Σύστημα Chrome OS</translation>
 <translation id="2652691236519827073">Άνοιγμα Συνδέσμου σε Νέα καρτέ&amp;λα Chrome</translation>
@@ -79,7 +78,6 @@
 <translation id="2926676257163822632">Είναι εύκολο να μαντέψει κανείς τους ασθενείς κωδικούς πρόσβασης. Επιτρέψτε στο Chrome να <ph name="BEGIN_LINK" />δημιουργεί και να απομνημονεύει ισχυρούς κωδικούς πρόσβασης για εσάς<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Δεν έγινε ενημέρωση του Chrome, παρουσιάστηκε κάποιο σφάλμα. <ph name="BEGIN_LINK" />Επιδιορθώστε τα προβλήματα ενημέρωσης και αποτυχημένων ενημερώσεων του Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Σύνδεση δικτύου - Chrome</translation>
-<translation id="298099161970687941">Να γίνεται ερώτηση όταν ανοίγει το Chrome.</translation>
 <translation id="3037838751736561277">Το Google Chrome εκτελείται στο παρασκήνιο.</translation>
 <translation id="3059710691562604940">Η Ασφαλής περιήγηση είναι απενεργοποιημένη. Το Chrome συνιστά να την ενεργοποιήσετε.</translation>
 <translation id="3065168410429928842">Καρτέλα Chrome</translation>
@@ -87,6 +85,7 @@
 <translation id="3089968997497233615">Υπάρχει μια νέα, ασφαλέστερη έκδοση του Google Chrome.</translation>
 <translation id="3114643501466072395">Για να ελέγξετε αν οι άλλοι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Το Chrome OS δεν μπόρεσε να συγχρονίσει τα δεδομένα σας.</translation>
+<translation id="3140883423282498090">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα επανεκκινήσετε το Google Chrome.</translation>
 <translation id="3149510190863420837">Εφαρμογές Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Η επανεκκίνηση του Chrome θα γίνει τώρα}=1{Η επανεκκίνηση του Chrome θα γίνει σε 1 δευτερόλεπτο}other{Η επανεκκίνηση του Chrome θα γίνει σε # δευτερόλεπτα}}</translation>
@@ -223,7 +222,6 @@
 <translation id="7398801000654795464">Συνδεθήκατε στο Chrome ως <ph name="USER_EMAIL_ADDRESS" />. Χρησιμοποιήστε τον ίδιο λογαριασμό για να συνδεθείτε ξανά.</translation>
 <translation id="7408085963519505752">Όροι Chrome OS</translation>
 <translation id="7419046106786626209">Το Chrome OS δεν μπόρεσε να συγχρονίσει τα δεδομένα σας, επειδή ο συγχρονισμός δεν είναι διαθέσιμος για τον τομέα σας.</translation>
-<translation id="7423733001651488593">Με αυτήν την ενέργεια θα διαγραφούν οριστικά τα δεδομένα περιήγησής σας από αυτήν τη συσκευή. Για να επαναφέρετε τα δεδομένα, συνδεθείτε στο Chrome ως</translation>
 <translation id="7486227612705979895">Το Chrome θα αποκτήσει πρόσβαση στο Drive, για να κάνει προτάσεις στη γραμμή διευθύνσεων</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Για να διαπιστώσετε εάν η συσκευή σας είναι ενημερωμένη, μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις του Chrome OS<ph name="LINK_END" /></translation>

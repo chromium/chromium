@@ -238,6 +238,7 @@
 <translation id="3443810440409579745">ट्याब प्राप्त गरियो।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3448016392200048164">विभाजित दृश्य</translation>
+<translation id="3454224729131972583">शीर्षक</translation>
 <translation id="345565170154308620">पासवर्डहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="3469166899695866866">डाउनलोड रोक्ने हो?</translation>
 <translation id="3470502288861289375">प्रतिलिपि बनाउँदै...</translation>
@@ -267,6 +268,7 @@
 <translation id="3670030362669914947">अङ्क</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="3709582977625132201">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
+<translation id="3720541637541300822">मैले Chrome बन्द गरेपछि इन्कोग्निटो ट्याब लक गरियोस्</translation>
 <translation id="3740397331642243698">प्रविष्टि गरिएका URL हरू Google Chrome को इन्कोग्निटो मोडमा खोलिन्छ।</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
 <translation id="3775743491439407556">सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
@@ -381,6 +383,7 @@
 <translation id="4979397965658815378">आफ्ना सबै यन्त्रहरूमा आफ्ना पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू प्राप्त गर्न आफ्नो Google खाता मार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5010803260590204777">निजीगत रूपमा वेब ब्राउज गर्न एउटा इन्कग्निटो ट्याब खोल्नुहोस्।</translation>
+<translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> वटा समस्या भेटिए।</translation>
 <translation id="5059136629401106827">ठिक छ</translation>

@@ -24,6 +24,7 @@ Para conceder este permiso, haz clic en <ph name="BUTTON_NAME" /> más abajo par
 Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y vuelve a marcarla.</translation>
 <translation id="225614027745146050">Te damos la bienvenida</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Todos los derechos reservados.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">No se puede establecer conexión con el host. Es probable que el error se deba a la configuración de la red que se está utilizando.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Visto por última vez online <ph name="RELATIVE_TIMESTAMP" />.</translation>

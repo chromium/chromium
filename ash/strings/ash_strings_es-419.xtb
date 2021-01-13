@@ -184,7 +184,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
-<translation id="2633643784040308254">Media</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
 <translation id="2678852583403169292">Menú de Seleccionar para pronunciar</translation>
@@ -328,6 +327,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="394485226368336402">Configuración de audio</translation>
+<translation id="3945867833895287237">Estableciendo conexión con el hotspot…</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">No</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -416,7 +416,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
-<translation id="4730232680256276456">Alta</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>

@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Efface l'historique et la saisie semi-automatique de la barre d'adresse.</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
+<translation id="2039379262107991683">Ajoutez des pages à votre liste de lecture pour recevoir un rappel</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> a aussi des données dans Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Effectuer des recherches sur Internet</translation>
@@ -197,7 +198,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2387895666653383613">Mise à l'échelle texte</translation>
 <translation id="2394602618534698961">Les fichiers que vous téléchargez s'affichent ici</translation>
 <translation id="2407481962792080328">Lorsque vous vous connecterez à votre compte Google, cette fonctionnalité sera activée</translation>
-<translation id="2407674018644220013">Définir <ph name="APP_NAME" /> comme application par défaut?</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
@@ -210,7 +210,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="246532703174860178">Partager</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
 <translation id="2478076885740497414">Installer l'application</translation>
-<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2494974097748878569">Assistant Google dans Chrome</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
@@ -462,7 +461,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
-<translation id="4382908510000698092">Utiliser comme langue dans Chrome</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
@@ -653,7 +651,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5668404140385795438">Ignorer la demande d'un site refusant de faire un zoom avant</translation>
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> utilisera la langue suivante au redémarrage : <ph name="LANGUAGE" />.</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
 <translation id="5697688514913266141">Votre fichier sera enregistré dans <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifier<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6140912465461743537">Pays/région</translation>
 <translation id="614940544461990577">Essayez ceci :</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans Paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
-<translation id="6157392216611456285">Sélectionner <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Économies de données de <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis n'a été trouvé</translation>
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
@@ -767,7 +763,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> possède les fonctionnalités et la vitesse dont vous avez besoin pour accomplir des actions, pour créer et pour explorer en ligne</translation>
 <translation id="6378173571450987352">Détails : triés par quantité de données utilisées</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires pour Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Assombrir les sites Web</translation>
@@ -791,6 +786,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
 <translation id="6477928892249167417">Ces sites semblent importants pour vous :</translation>
 <translation id="6482749332252372425">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'un manque d'espace de stockage.</translation>
+<translation id="6489610539826642779">Liste de lecture <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Pour utiliser <ph name="APP_NAME" /> pour la première fois, veuillez vous connecter à Internet.</translation>
 <translation id="6508722015517270189">Redémarrer Google Chrome</translation>
 <translation id="6527303717912515753">Partager</translation>
@@ -829,7 +825,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="666981079809192359">Avis de confidentialité Chrome</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6676840375528380067">Effacer vos données Chrome de cet appareil?</translation>
-<translation id="6691888250440401212">1. Sélectionnez <ph name="APP_NAME" />\n2. Touchez « Définir par défaut »</translation>
 <translation id="6697492270171225480">Afficher des suggestions de pages similaires lorsqu'une page ne peut pas être trouvée</translation>
 <translation id="6698801883190606802">Gérer les données synchronisées</translation>
 <translation id="6699370405921460408">Les serveurs de Google optimiseront les pages que vous consultez.</translation>
@@ -1070,7 +1065,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8368027906805972958">Appareil inconnu ou non pris en charge (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> est prête à être utilisée.</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
-<translation id="8407396331882458341">1. Sélectionnez <ph name="APP_NAME" />\n2. Touchez « Toujours »</translation>
 <translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8427875596167638501">L'onglet d'aperçu est ouvert à moitié</translation>
@@ -1097,7 +1091,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8555836665334561807">Sur connexion Wi-Fi</translation>
 <translation id="8559990750235505898">Proposez des traductions de pages dans d'autres langues</translation>
 <translation id="8560602726703398413">Retrouvez votre liste de lecture dans les favoris</translation>
-<translation id="8561196567344536112">1. Accédez aux paramètres\n2. Touchez « Application de navigateur »\n3. Sélectionnez <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Les mots de passe enregistrés s'affichent ici.</translation>
 <translation id="8569404424186215731">depuis le <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>

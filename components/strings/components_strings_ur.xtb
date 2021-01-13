@@ -70,6 +70,7 @@
 <translation id="1236081509407217141">‏VR کی اجازت دیں؟</translation>
 <translation id="1240347957665416060">آپ کے آلے کا نام</translation>
 <translation id="124116460088058876">مزید زبانیں</translation>
+<translation id="1243027604378859286">مصنف:</translation>
 <translation id="1250759482327835220">‏اگلی بار زیادہ تیزی سے ادائیگی کرنے کیلئے، اپنے کارڈ، نام اور بلنگ پتہ کو اپنے Google اکاؤنٹ میں محفوظ کریں۔</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (مطابقت پذیر کردہ)</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;اگر آپ کوئی ویب سائٹ ملاحظہ کرنے کی کوشش کرتے ہیں اور وہ نہیں کھلتی ہے، تو پہلے ٹربل شوٹنگ کے ان مراحل کی مدد سے خرابی کو ٹھیک کرنے کی کوشش کریں:&lt;/p&gt;
@@ -312,6 +313,7 @@
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> کی جانب سے اسے اوور رائڈ کیے جانے کی وجہ سے نظر انداز کر دیا گیا۔</translation>
 <translation id="2119505898009119320">جاری کردہ بنام: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">نیچے دائیں طرف سوراخ</translation>
+<translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2129079103035905234">موشن سینسرز</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="213826338245044447">موبائل بُک مارکس</translation>
@@ -421,6 +423,7 @@
 <translation id="2586657967955657006">کلپ بورڈ</translation>
 <translation id="2587730715158995865">منجانب <ph name="ARTICLE_PUBLISHER" />۔ یہ اور <ph name="OTHER_ARTICLE_COUNT" /> دوسری کہانیاں پڑھیں۔</translation>
 <translation id="2587841377698384444">‏ڈائرکٹری API ID:</translation>
+<translation id="2594318783181750337">تیز ویب کا منظر:</translation>
 <translation id="2595719060046994702">یہ آلہ اور اکاؤنٹ کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہیں۔</translation>
 <translation id="2597378329261239068">یہ دستاویز پاس ورڈ کے ذریعہ تحفظ یافتہ ہے۔  براہ کرم ایک پاس ورڈ درج کریں۔</translation>
 <translation id="2609632851001447353">تغیرات</translation>
@@ -518,6 +521,7 @@
 <translation id="2989742184762224133">اوپر دُہری سٹیپل</translation>
 <translation id="2991174974383378012">ویب سائٹس کے ساتھ اشتراک کرنا</translation>
 <translation id="2991571918955627853">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے کیونکہ ویب سائٹ HSTS کا استعمال کرتی ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
+<translation id="2995517112308048736">فائل سائز:</translation>
 <translation id="2996674880327704673">‏Google کی تجاویز</translation>
 <translation id="3002501248619246229">ان پٹ ٹرے میڈیا چیک کریں</translation>
 <translation id="3005723025932146533">محفوظ کردہ کاپی دکھائیں</translation>
@@ -640,6 +644,7 @@
 <translation id="3487845404393360112">ٹرے 4</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
 صفحے میں تلاش کریں</translation>
+<translation id="350069200438440499">فائل کا نام:</translation>
 <translation id="3507936815618196901">‏اپنے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کریں</translation>
 <translation id="3512163584740124171">اسی پالیسی گروپ کی طرف سے آنے والی دوسری پالیسی میں ایک اعلی ترجیح ہونے کی وجہ سے یہ پالیسی نظر انداز کی جاتی ہے۔</translation>
 <translation id="3518941727116570328">متعدد آبجیکٹس کو ہینڈل کرنا</translation>
@@ -678,9 +683,11 @@
 <translation id="3633738897356909127">‏Chrome اپ ڈیٹ کریں بٹن، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="3634530185120165534">ٹرے 5</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">ایپلیکیشن:</translation>
 <translation id="3650584904733503804">توثیق کامیاب رہی</translation>
 <translation id="3655670868607891010">اگر یہ آپ کو اکثر نظر آتا ہے تو یہ <ph name="HELP_LINK" /> آزمائیں۔</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
+<translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3676592649209844519">‏آلہ کی ID:</translation>
 <translation id="3677008721441257057">‏کیا آپ کا مطلب &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; تھا؟</translation>
 <translation id="3678029195006412963">درخواست پر دستخط نہیں کیا جا سکا</translation>
@@ -768,7 +775,6 @@
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4058922952496707368">کلید "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 ‎(Envelope‎)‎</translation>
-<translation id="4067669230157909013">اسکرین کیپچر دوبارہ شروع کر دیا گیا۔</translation>
 <translation id="4067947977115446013">درست پتہ شامل کریں</translation>
 <translation id="4072486802667267160">آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آگئی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4075732493274867456">‏کلائنٹ اور سرور عام SSL پروٹوکول ورژن یا سائفر سوئٹ کا تعاون نہیں کرتے ہیں۔</translation>
@@ -1018,6 +1024,7 @@
 <translation id="4989542687859782284">غیر دستیاب</translation>
 <translation id="4989809363548539747">یہ پلگ ان تعاون یافتہ نہیں ہے</translation>
 <translation id="4995216769782533993">اس فائل کے ساتھ اپنے کارڈ کی تفصیلات کا اشتراک کرنے کے لیے سیکیورٹی کوڈ کی تصدیق کریں</translation>
+<translation id="4995474875135717171">ترمیم کردہ:</translation>
 <translation id="5002932099480077015">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="5015510746216210676">مشین کا نام:</translation>
 <translation id="5017554619425969104">آپ کا کاپی کردہ متن</translation>
@@ -1064,6 +1071,7 @@
 <translation id="515292512908731282">C4 ‎(Envelope‎)‎</translation>
 <translation id="5158275234811857234">سر ورق</translation>
 <translation id="5159010409087891077">‏صفحہ کو ایک نئی پوشیدگی ونڈو میں کھولیں (⇧⌘N)</translation>
+<translation id="5161334686036120870">موضوع:</translation>
 <translation id="5161506081086828129">اسٹیکر 9</translation>
 <translation id="5164798890604758545">ٹیکسٹ درج کیا جاتا ہے</translation>
 <translation id="516920405563544094">‏<ph name="CREDIT_CARD" /> کا CVC درج کریں۔ آپ کے توثیق کرنے کے بعد، آپ کے Google اکاؤنٹ سے کارڈ کی تفصیلات کا اس سائٹ کے ساتھ اشتراک کر دیا جائے گا۔</translation>
@@ -1095,6 +1103,7 @@
 <translation id="5269999699920406580">جو خصوصیات پورے سسٹم پر لاگو ہوتی ہیں وہ صرف مالک کے ذریعے سیٹ کی جا سکتی ہیں: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">‏وراننگ: اس پالیسی کو PolicyDictionaryMultipleSourceMergeList کی پالیسی کی وضاحت کے مطابق ضم نہیں کیا گیا ہے کیوں کہ یہ لغت کی ان پالیسیوں کا حصہ نہیں ہے جنہیں ضم کیا جا سکے۔</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">دستاویز کی خصوصیات</translation>
 <translation id="528468243742722775">اختتام</translation>
 <translation id="5284909709419567258">نیٹ ورک کے پتے</translation>
 <translation id="5285570108065881030">سبھی محفوظ پاسورڈز دکھائيں</translation>
@@ -1250,6 +1259,7 @@
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5895187275912066135">تاریخ اجراء</translation>
 <translation id="5901630391730855834">پیلا</translation>
+<translation id="5903264686717710770">عنوان:</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> کی اصل پالیسی کے مطابق مسدود کردہ۔</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
 <translation id="5913377024445952699">اسکرین کیپچر روک دیا گیا</translation>
@@ -1298,6 +1308,7 @@
 <translation id="6047927260846328439">یہ مواد آپ سے دھوکہ سے سافٹ ویئر انسٹال کروا سکتا ہے یا ذاتی معلومات حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">صفحہ کی ڈیلیوری</translation>
 <translation id="6051221802930200923">آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ سرٹیفکیٹ پننگ کا استعمال کرتی ہے۔ نیٹ ورک کی خرابیاں اور حملے عام طور پر عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
+<translation id="6051898664905071243">صفحے کی تعداد:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">آپ کی موجودگی کا اشتراک کریں؟</translation>
 <translation id="6058977677006700226">اپنے تمام آلات پر اپنے کارڈز استعمال کریں؟</translation>
@@ -1809,6 +1820,7 @@
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
 <translation id="8128526133099929547">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome <ph name="WEBSITE_1" /> اور دیگر ایسی سائٹس پر جا کر ابھی پاس ورڈ بدلنے کی تجویز کرتا ہے جہاں آپ اسے استعمال کرتے ہیں۔</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
+<translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
 <translation id="8157295877370077682">سائٹ چھوڑیں</translation>
@@ -1949,6 +1961,7 @@
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، تلاش کی تجویز</translation>
 <translation id="8719528812645237045">اوپر متعدد سوراخ</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
+<translation id="8726549941689275341">صفحے کا سائز:</translation>
 <translation id="8728672262656704056">آپ پرائیویٹ براؤزنگ کر رہے ہیں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731544501227493793">‏'پاس ورڈز کا نظم کریں' بٹن، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے اینٹر دبائیں</translation>
@@ -2082,7 +2095,6 @@
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
-<translation id="951941430552851965">آپ کی اسکرین پر موجود مواد کی وجہ سے آپ کے منتظم کی جانب سے اسکرین کیپچر روک دیا گیا۔</translation>
 <translation id="961663415146723894">نیچے باندھیں</translation>
 <translation id="962484866189421427">ہو سکتا ہے کہ یہ مواد ایسی پُر فریب ایپس انسٹال کرنے کی کوشش کرے جو کچھ اور ہونے کا دکھاوا کریں یا آپ کی براؤزنگ سرگرمیوں پر نظر رکھنے کیلئے استعمال کیا جانے والا ڈیٹا جمع کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>

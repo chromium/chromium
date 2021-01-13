@@ -184,7 +184,6 @@
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2617342710774726426">ซิมการ์ดถูกล็อก</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
-<translation id="2633643784040308254">ปานกลาง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2658778018866295321">คลิกแล้วลาก</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
@@ -327,6 +326,7 @@
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="394485226368336402">การตั้งค่าเสียง</translation>
+<translation id="3945867833895287237">กำลังเชื่อมต่อฮอตสปอต...</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3969043077941541451">ปิด</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
@@ -415,7 +415,6 @@
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4705716602320768426">ความคิดเห็นเกี่ยวกับไฟล์</translation>
-<translation id="4730232680256276456">สูง</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>

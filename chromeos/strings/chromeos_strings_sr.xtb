@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
 <translation id="2364498172489649528">Прошло</translation>
-<translation id="2375079107209812402">Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4835901797422965222">Нема активних мрежа</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="4890353053343094602">Одмах одаберите нову</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">Отворени VPN/L2TP</translation>
 <translation id="5457599981699367932">Прегледајте као гост</translation>
 <translation id="54609108002486618">Управљани</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Преостаје {0} покушај}one{Преостаје {0} покушај}few{Преостају {0} покушаја}other{Преостаје {0} покушаја}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Сазнајте више у центру за помоћ</translation>
 <translation id="5635169860413004179">Прикажи извештај</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Овим се мери коришћење процесора и збир је свих језгара</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Поставите документ на скенер и изаберите <ph name="SPAN_BEGIN" />Скенирај<ph name="SPAN_END" /> да бисте започели</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>
 <translation id="8928727111548978589">Није успело – нема више папира</translation>
 <translation id="8930622219860340959">Бежично</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
 <translation id="9003704114456258138">Фреквенција</translation>

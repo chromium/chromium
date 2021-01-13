@@ -10,13 +10,11 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> usaba Chrome anteriormente</translation>
 <translation id="1097330777386562916">Borrar las cookies y los datos de sitios web al salir de Chrome</translation>
 <translation id="110877069173485804">Este es tu navegador Chrome</translation>
-<translation id="1125124144982679672">¿Quién usa Chrome?</translation>
 <translation id="1142745911746664600">No se puede actualizar Chrome</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="123620459398936149">Chrome OS no ha podido sincronizar tus datos. Actualiza tu frase de contraseña de sincronización.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de Google Chrome OS.</translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
-<translation id="1355000804395496115">Usa distintos perfiles en Chrome para separar tu información de navegación personal y de trabajo, o para diferenciar a las distintas personas que usan este dispositivo</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador tiene instalada una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y vuelve a intentarlo.</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
@@ -64,6 +62,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2534507159460261402">Google Pay (copiada en Chrome)</translation>
 <translation id="2580411288591421699">No se puede instalar la misma versión de Google Chrome que se está ejecutando. Cierra el navegador y vuelve a intentarlo.</translation>
 <translation id="2586406160782125153">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Chrome OS puede restaurar tus aplicaciones y páginas cada vez que reinicies sin tener que preguntártelo cada vez.</translation>
 <translation id="2622559029861875898">Chrome no puede comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="2644798301485385923">Sistema Chrome OS</translation>
 <translation id="2652691236519827073">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
@@ -81,7 +80,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2926676257163822632">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chrome <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras por ti<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome no se ha actualizado, algo no va bien. <ph name="BEGIN_LINK" />Soluciona los problemas y errores de actualización de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chrome</translation>
-<translation id="298099161970687941">Preguntar al abrir Chrome</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano.</translation>
 <translation id="3059710691562604940">La función Navegación segura está desactivada. Chrome recomienda activarla.</translation>
 <translation id="3065168410429928842">Pestaña de Chrome</translation>
@@ -89,6 +87,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3089968997497233615">Hay una nueva versión más segura de Google Chrome disponible.</translation>
 <translation id="3114643501466072395">Para comprobar si tus otras contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS no ha podido sincronizar los datos.</translation>
+<translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3360895254066713204">Ayudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se reiniciará ahora}=1{Chrome se reiniciará dentro de 1 segundo}other{Chrome se reiniciará dentro de # segundos}}</translation>
@@ -108,7 +107,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3718181793972440140">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al iniciar Chrome.</translation>
-<translation id="3779473566290487688">Para recibir actualizaciones de Google Chrome, debes tener OS X 10.11 o una versión posterior. Este ordenador utiliza OS X 10.10.</translation>
+<translation id="3779473566290487688">Para recibir actualizaciones de Google Chrome en el futuro, deberás tener OS X 10.11 o una versión posterior. Este ordenador utiliza OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="386202838227397562">Cierra todas las ventanas de Google Chrome y vuelve a intentarlo.</translation>
 <translation id="3865754807470779944">Está instalada la versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
@@ -156,6 +155,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Reiniciar Chrome OS</translation>
 <translation id="5132929315877954718">Descubre formidables aplicaciones, juegos, extensiones y temas para Google Chrome.</translation>
+<translation id="5139423532931106058">Personaliza tu perfil de Chrome</translation>
+<translation id="5163087008893166964">Te damos la bienvenida a Chrome. Se ha abierto una nueva ventana del navegador.</translation>
 <translation id="5170938038195470297">No se puede usar tu perfil porque se corresponde con una versión más reciente de Google Chrome.
 
 Puede que algunas funciones no estén disponibles. Especifica otro directorio de perfil o usa una versión más reciente de Chrome.</translation>
@@ -225,7 +226,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7408085963519505752">Condiciones de Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
-<translation id="7423733001651488593">Se eliminarán de forma permanente los datos de navegación del dispositivo. Para recuperar los datos, inicia sesión en Chrome como</translation>
 <translation id="7486227612705979895">Chrome accederá a tu Drive para mostrarte sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para comprobar si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>

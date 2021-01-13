@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ଆଖପାଖରେ ଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ବ୍ଲୁଟୁଥ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2364498172489649528">ପାସ୍ କରିଛି</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
 <translation id="2391082728065870591">ମତାମତ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="4835901797422965222">କୌଣସି ସକ୍ରିୟ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="4848429997038228357">ଚାଲୁଛି</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{<ph name="ERROR_MESSAGE" />{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4891842000192098784">ଷ୍ଟ୍ରେସ୍</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">VPN / L2TP ଖୋଲନ୍ତୁ</translation>
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5635169860413004179">ରିପୋର୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">ଏହା CPUର ବ୍ୟବହାରକୁ ମାପେ ଏବଂ ସମସ୍ତ କୋରର ଏକତ୍ରୀକରଣ ଅଟେ</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖି <ph name="SPAN_BEGIN" />ସ୍କାନ୍ କରନ୍ତୁ<ph name="SPAN_END" />କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>

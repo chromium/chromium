@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2364498172489649528">Pavyko</translation>
-<translation id="2375079107209812402">Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Siųsti atsiliepimo ataskaitą</translation>
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4891842000192098784">Įtampa</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
@@ -168,8 +168,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5431825016875453137">„OpenVPN“ / L2TP</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Sužinokite daugiau pagalbos centre</translation>
 <translation id="5635169860413004179">Žr. ataskaitą</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
@@ -251,7 +251,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Jei norite pradėti, padėkite dokumentą ant skaitytuvo ir pasirinkite <ph name="SPAN_BEGIN" />Nuskaityti<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
@@ -285,7 +284,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>
 <translation id="8930622219860340959">Belaidis</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
 <translation id="9003704114456258138">Dažnis</translation>

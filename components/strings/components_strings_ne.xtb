@@ -70,6 +70,7 @@
 <translation id="1236081509407217141">VR लाई अनुमति दिने हो?</translation>
 <translation id="1240347957665416060">तपाईंको यन्त्रको नाम</translation>
 <translation id="124116460088058876">थप भाषाहरू</translation>
+<translation id="1243027604378859286">लेखक:</translation>
 <translation id="1250759482327835220">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड, नाम र बिलिङ ठेगाना सुरक्षित गर्नुहोस्।</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक गरिएका)</translation>
 <translation id="1256368399071562588">&lt;p&gt;तपाईं कुनै वेबसाइटमा जान खोज्दा उक्त साइट नखुलेको खण्डमा सर्वप्रथम समस्या निवारणका यी चरणहरूको प्रयोग गरी त्रुटिको समाधान गर्ने प्रयास गर्नुहोस्:&lt;/p&gt;
@@ -311,6 +312,7 @@
 <translation id="2114841414352855701">यसलाई <ph name="POLICY_NAME" /> द्वारा ओभरराइड गरिएको हुनाले उपेक्षा गरियो।</translation>
 <translation id="2119505898009119320">जारी गरिएको सङ्गठन: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">फेदको दायाँपट्टि प्वाल</translation>
+<translation id="2126374524350484896">PDF निर्माता:</translation>
 <translation id="2129079103035905234">चालसम्बन्धी सेन्सरहरू</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
@@ -420,6 +422,7 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> बाट। यो र <ph name="OTHER_ARTICLE_COUNT" /> अन्य कथाहरू पढ्नुहोस्।</translation>
 <translation id="2587841377698384444">डाइरेक्ट्री API ID:</translation>
+<translation id="2594318783181750337">संक्षिप्त वेब भ्यू:</translation>
 <translation id="2595719060046994702">कुनै कम्पनी वा अन्य सङ्गठनले यो यन्त्र वा खाताको व्यवस्थापन गर्दैन।</translation>
 <translation id="2597378329261239068">यो कागजात पासवर्ड सुरक्षित छ। कृपया पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="2609632851001447353">विचरणहरू</translation>
@@ -516,6 +519,7 @@
 <translation id="2989742184762224133">सिरानमा दुई स्टिच</translation>
 <translation id="2991174974383378012">वेबसाइटहरूसँग साझेदारी</translation>
 <translation id="2991571918955627853">उक्त वेबसाइटले HSTS प्रयोग गर्ने हुनाले तपाईं अहिले नै <ph name="SITE" /> मा जान सक्नुहुन्न। नेटवर्कसम्बन्धी त्रुटि र आक्रमणहरू सामान्यतया अस्थायी हुन्छन्, त्यसैले यो पृष्ठले पछि सम्भवतः काम गर्नसक्नेछ।</translation>
+<translation id="2995517112308048736">फाइलको आकार:</translation>
 <translation id="2996674880327704673">Google बाट प्राप्त सुझावहरू</translation>
 <translation id="3002501248619246229">इनपुट ट्रेको मिडिया जाँच्नुहोस्</translation>
 <translation id="3005723025932146533">बचत गरिएको प्रति देखाउनुहोस्</translation>
@@ -634,6 +638,7 @@
 <translation id="3487845404393360112">ट्रे ४</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
     पृष्ठमा फेला पार्नुहोस्</translation>
+<translation id="350069200438440499">फाइलको नाम:</translation>
 <translation id="3507936815618196901">तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन</translation>
 <translation id="3512163584740124171">यसै नीति समूहको अर्को नीतिको प्राथमिकता यो नीतिको भन्दा उच्च भएका कारण यस नीतिको बेवास्ता गरिन्छ।</translation>
 <translation id="3518941727116570328">एकभन्दा बढी वस्तुहरूको व्यवस्थापन</translation>
@@ -672,9 +677,11 @@
 <translation id="3633738897356909127">'Chrome अपडेट गर्नुहोस्' नामक बटन, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Enter थिच्नुहोस्</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">एप:</translation>
 <translation id="3650584904733503804">प्रमाणीकरण सफल भयो</translation>
 <translation id="3655670868607891010">यदि तपाईं यो बारम्बार रूपमा देखिरहनुभएको छ भने, यिनीहरू गर्ने प्रयास गर्नुहोस् <ph name="HELP_LINK" />।</translation>
 <translation id="3658742229777143148">संशोधन</translation>
+<translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3676592649209844519">यन्त्रको ID:</translation>
 <translation id="3677008721441257057">तपाईंले &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; भन्न खोज्नुभएको हो?</translation>
 <translation id="3678029195006412963">अनुरोधमा हस्ताक्षर गर्न सकिएन</translation>
@@ -762,7 +769,6 @@
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
-<translation id="4067669230157909013">स्क्रिन क्याप्चर गर्ने कार्य सुचारु भएको छ।</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4075732493274867456">ग्राहक र सर्भरले एउटा साधारण SSL प्रोटोकल संस्करण वा साइफर सुइटलाई समर्थन गर्दैनन्।</translation>
@@ -1011,6 +1017,7 @@
 <translation id="4989542687859782284">उपलब्ध छैन</translation>
 <translation id="4989809363548539747">यो प्लगइनलाई समर्थन गरिँदैन</translation>
 <translation id="4995216769782533993">यो साइटसँग आफ्नो कार्डका विवरणहरू आदान प्रदान गर्न सुरक्षा कोड पुष्टि गर्नुहोस्</translation>
+<translation id="4995474875135717171">परिमार्जन गरिएको मिति:</translation>
 <translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो यन्त्रमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
 <translation id="5015510746216210676">मेसिनको नाम:</translation>
 <translation id="5017554619425969104">तपाईंले प्रतिलिपि गर्नुभएको पाठ</translation>
@@ -1057,6 +1064,7 @@
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">आवरण</translation>
 <translation id="5159010409087891077">पृष्ठलाई नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस् (⇧⌘N)</translation>
+<translation id="5161334686036120870">विषय:</translation>
 <translation id="5161506081086828129">स्ट्याकर ९</translation>
 <translation id="5164798890604758545">पाठ प्रविष्टि गरिँदा</translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> को CVC प्रविष्टि गर्नुहोस्। तपाईंले पुष्टि गरिसकेपछि तपाईंको Google खातामा रहेका कार्डसम्बन्धी विवरणहरू यो साइटसँग आदान प्रदान गरिने छ।</translation>
@@ -1088,6 +1096,7 @@
 <translation id="5269999699920406580">मालिक <ph name="OWNER_EMAIL" /> ले मात्रै प्रणालीभरि लागू हुने सुविधाहरू सेट गर्न सक्छन्:</translation>
 <translation id="5273658854610202413">चेतावनी: यो नीति गाभ्न मिल्ने शब्दकोशसम्बन्धी नीतिहरूको भाग नभएका कारण यसलाई PolicyDictionaryMultipleSourceMergeList नीतिमा तोकिएअनुसार गाभिएन।</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">डकुमेन्टका विशेषताहरू</translation>
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5284909709419567258">नेटवर्कका ठेगानाहरू</translation>
 <translation id="5285570108065881030">सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्</translation>
@@ -1243,6 +1252,7 @@
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895187275912066135">मा प्रकाशित</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
+<translation id="5903264686717710770">शीर्षक:</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> को मूल नीतिका आधारमा रोक लगाइयो।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक गरिएको)</translation>
 <translation id="5913377024445952699">स्क्रिन क्याप्चर गर्ने सुविधा पज गरियो</translation>
@@ -1291,6 +1301,7 @@
 <translation id="6047927260846328439">यो सामग्रीले तपाईंलाई सफ्टवेयर स्थापना गर्न लगाएर वा व्यक्तिगत जानकारी खुलाउन लगाएर झुक्याउन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">पृष्ठको डेलिभरी</translation>
 <translation id="6051221802930200923">उक्त वेबसाइटले प्रमाणपत्रको पिनिङ सुरक्षा व्यवस्थाको प्रयोग गर्ने हुनाले तपाईं अहिले नै <ph name="SITE" /> मा जान सक्नुहुन्न। नेटवर्कसम्बन्धी त्रुटि र आक्रमणहरू सामान्यतया अस्थायी हुन्छन्, त्यसैले यो पृष्ठले पछि सम्भवतः काम गर्नसक्नेछ।</translation>
+<translation id="6051898664905071243">पेजको सङ्ख्या:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">आफ्नो उपस्थितिसम्बन्धी जानकारी सेयर गर्ने हो?</translation>
 <translation id="6058977677006700226">तपाईंका सबै यन्त्रहरूमा तपाईंका कार्डहरूको प्रयोग गर्ने हो?</translation>
@@ -1801,6 +1812,7 @@
 <translation id="8127301229239896662">तपाईंको कम्प्युटर वा नेटवर्कमा "<ph name="SOFTWARE_NAME" />" सही ढङ्गले स्थापना भएन। आफ्नो IT प्रशासकलाई यो समस्या समाधान गर्न लगाउनुहोस्‌।</translation>
 <translation id="8128526133099929547">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले <ph name="WEBSITE_1" /> र तपाईंले यो पासवर्ड प्रयोग गर्ने अन्य साइटहरूमा गई तपाईंको पासवर्ड अहिले नै बदल्न सिफारिस गर्छ।</translation>
 <translation id="8131740175452115882">निश्चित</translation>
+<translation id="8148608574971654810">PDF को संस्करण:</translation>
 <translation id="8149426793427495338">तपाईंको कम्प्युटर शयन अवस्थामा गयो।</translation>
 <translation id="8150722005171944719"><ph name="URL" /> मा भएको फाइल पठनीय छैन। यो हटाइएको, सारिएको हुनसक्छ, वा फाइल अनुमतिले पहुँचलाई रोकेको हुन सक्छ।</translation>
 <translation id="8157295877370077682">साइट छाड्नुहोस्</translation>
@@ -1941,6 +1953,7 @@
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, सम्बन्धी खोज सुझाव</translation>
 <translation id="8719528812645237045">सिरानमा एकभन्दा बढी प्वाल</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
+<translation id="8726549941689275341">पेजको आकार:</translation>
 <translation id="8728672262656704056">तपाईं इन्कोग्निटो मोडमामा जानुभएको छ</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8731544501227493793">'पासवर्डहरू व्यवस्थित गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई आफ्ना पासवर्डहरू हेर्न तथा व्यवस्थित गर्न Enter थिच्नुहोस्</translation>
@@ -2073,7 +2086,6 @@
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
-<translation id="951941430552851965">तपाईंको स्क्रिनमा गोप्य सामग्री भएका कारण तपाईंका एड्मिनले स्क्रिन क्याप्चर गर्ने कार्य अस्थायी रूपमा रोक्का गर्नुभएको छ।</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक अनुप्रयोगहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">आधिकारिक निर्माण</translation>

@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> પ્રયત્ન બાકી</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
 <translation id="4835901797422965222">કોઈ નેટવર્ક સક્રિય નથી</translation>
 <translation id="4848429997038228357">ચાલુ છે</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}one{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}other{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}}</translation>
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">અતિથિ તરીકે બ્રાઉઝ કરો</translation>
 <translation id="54609108002486618">મેનેજ કરેલું</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} પ્રયત્ન બાકી}one{{0} પ્રયત્ન બાકી}other{{0} પ્રયત્ન બાકી}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">સહાયતા કેન્દ્ર વિશે વધુ જાણો</translation>
 <translation id="5635169860413004179">રિપોર્ટ જુઓ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">આ CPUના વપરાશની માપણી કરે છે અને તે બધા મુખ્ય ઘટકોનો સરવાળો હોય છે</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">તમારા દસ્તાવેજને સ્કૅનર પર મૂકો અને શરૂઆત કરવા માટે <ph name="SPAN_BEGIN" />સ્કૅન કરો<ph name="SPAN_END" /> પસંદ કરો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">નિષ્ફળ થયું - ટ્રે ખૂટે છે</translation>
 <translation id="8928727111548978589">નિષ્ફળ થયું - પ્રિન્ટરમાં કાગળ પૂરા થઈ ગયા છે</translation>
 <translation id="8930622219860340959">વાયરલેસ</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> પ્રયત્ન બાકી</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>
 <translation id="8970109610781093811">ફરીથી ચલાવો</translation>
 <translation id="9003704114456258138">આવર્તન</translation>

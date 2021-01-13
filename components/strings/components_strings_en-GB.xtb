@@ -70,6 +70,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1236081509407217141">Allow VR?</translation>
 <translation id="1240347957665416060">Your device name</translation>
 <translation id="124116460088058876">More languages</translation>
+<translation id="1243027604378859286">Author:</translation>
 <translation id="1250759482327835220">To pay faster next time, save your card, name and billing address to your Google Account.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synced)</translation>
 <translation id="1256368399071562588">&lt;p&gt;If you try to visit a website and it doesn’t open, first try to fix the error with these troubleshooting steps:&lt;/p&gt;
@@ -310,6 +311,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2114841414352855701">Ignored because it was overridden by <ph name="POLICY_NAME" />.</translation>
 <translation id="2119505898009119320">Issued to: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Punch bottom right</translation>
+<translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2129079103035905234">Motion Sensors</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="213826338245044447">Mobile bookmarks</translation>
@@ -419,6 +421,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2587730715158995865">From <ph name="ARTICLE_PUBLISHER" />. Read this and <ph name="OTHER_ARTICLE_COUNT" /> other stories.</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
+<translation id="2594318783181750337">Fast web view:</translation>
 <translation id="2595719060046994702">This device and account are not managed by a company or other organisation.</translation>
 <translation id="2597378329261239068">This document is password-protected.  Please enter a password.</translation>
 <translation id="2609632851001447353">Variations</translation>
@@ -515,6 +518,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2989742184762224133">Dual staple top</translation>
 <translation id="2991174974383378012">Sharing with Websites</translation>
 <translation id="2991571918955627853">You cannot visit <ph name="SITE" /> right now because the website uses HSTS. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
+<translation id="2995517112308048736">File size:</translation>
 <translation id="2996674880327704673">Suggestions by Google</translation>
 <translation id="3002501248619246229">Check input tray media</translation>
 <translation id="3005723025932146533">Show saved copy</translation>
@@ -675,9 +679,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">Application:</translation>
 <translation id="3650584904733503804">Validation successful</translation>
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revision</translation>
+<translation id="3664782872746246217">Keywords:</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Request could not be signed</translation>
@@ -765,7 +771,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
-<translation id="4067669230157909013">Screen capture was resumed.</translation>
 <translation id="4067947977115446013">Add Valid Address</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
@@ -1015,6 +1020,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4989542687859782284">Unavailable</translation>
 <translation id="4989809363548539747">This plug-in is not supported</translation>
 <translation id="4995216769782533993">Confirm the security code to share your card details with this site</translation>
+<translation id="4995474875135717171">Modified:</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
@@ -1061,6 +1067,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Cover</translation>
 <translation id="5159010409087891077">Open page in a new incognito window (⇧⌘N)</translation>
+<translation id="5161334686036120870">Subject:</translation>
 <translation id="5161506081086828129">Stacker 9</translation>
 <translation id="5164798890604758545">Text is entered</translation>
 <translation id="516920405563544094">Enter the CVC for <ph name="CREDIT_CARD" />. Once you confirm, card details from your Google Account will be shared with this site.</translation>
@@ -1092,6 +1099,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5269999699920406580">Features that apply system-wide can only be set by the owner: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">Document properties</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5284909709419567258">Network addresses</translation>
 <translation id="5285570108065881030">Show all saved passwords</translation>
@@ -1296,6 +1304,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6047927260846328439">This content might try to trick you into installing software or revealing personal information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">Page delivery</translation>
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
+<translation id="6051898664905071243">Page count:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Share your presence?</translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
@@ -1806,6 +1815,7 @@ Additional details:
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8128526133099929547">You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1" /> and other sites where you use this password, and changing it now.</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8148608574971654810">PDF version:</translation>
 <translation id="8149426793427495338">Your computer went to sleep.</translation>
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
 <translation id="8157295877370077682">Leave site</translation>
@@ -1946,6 +1956,7 @@ Additional details:
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, search suggestion</translation>
 <translation id="8719528812645237045">Multiple punch top</translation>
 <translation id="8725066075913043281">Try again</translation>
+<translation id="8726549941689275341">Page size:</translation>
 <translation id="8728672262656704056">You’ve gone incognito</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731544501227493793">Manage passwords button; press enter to view and manage your passwords in Chrome settings</translation>
@@ -2078,7 +2089,6 @@ Additional details:
 <translation id="939736085109172342">New folder</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="950736567201356821">Triple punch top</translation>
-<translation id="951941430552851965">Screen capture was paused by your administrator due to content on your screen.</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>

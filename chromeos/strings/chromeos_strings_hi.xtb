@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
 <translation id="2448312741937722512">प्रकार</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
 <translation id="4848429997038228357">चल रहा है</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">मेहमान के रूप में ब्राउज़ करें</translation>
 <translation id="54609108002486618">प्रबंधित</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{आप {0} बार और कोशिश कर सकते हैं}one{आप {0} बार और कोशिश कर सकते हैं}other{आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">ज़्यादा जानने के लिए, सहायता केंद्र देखें</translation>
 <translation id="5635169860413004179">रिपोर्ट देखें</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">इससे यह मापा जाता है कि सीपीयू का कितना इस्तेमाल किया गया है और यह सभी कोर का एग्रीगेट है</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">स्कैनर पर अपना दस्तावेज़ रखें और शुरू करने के लिए, <ph name="SPAN_BEGIN" />स्कैन करें<ph name="SPAN_END" /> को चुनें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
 <translation id="8930622219860340959">वायरलेस</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
 <translation id="8968751544471797276">चार्ज होने की दर</translation>
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>

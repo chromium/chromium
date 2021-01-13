@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> deneme hakkınız kaldı</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
 <translation id="2448312741937722512">Tür</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
 <translation id="4835901797422965222">Etkin ağ yok</translation>
 <translation id="4848429997038228357">ÇALIŞIYOR</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
@@ -148,7 +148,7 @@
 <translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5154917547274118687">Bellek</translation>
-<translation id="5168185087976003268">Pil gücü</translation>
+<translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="520299634122159966">Kullanılabilir tarayıcı yok</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
@@ -168,8 +168,8 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Misafir olarak Göz At</translation>
 <translation id="54609108002486618">Yönetilen</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} deneme hakkınız kaldı}other{{0} deneme hakkınız kaldı}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Yardım Merkezi'nden daha fazla bilgi edinebilirsiniz</translation>
 <translation id="5635169860413004179">Raporu Göster</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Bu, tüm çekirdeklerin toplamı olup CPU kullanımını ölçer</translation>
@@ -251,7 +251,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Dokümanınızı tarayıcıya yerleştirin ve başlamak için <ph name="SPAN_BEGIN" />Tara<ph name="SPAN_END" />'yı seçin</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
@@ -285,7 +284,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> deneme hakkınız kaldı</translation>
 <translation id="8968751544471797276">Şarj olma hızı</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
 <translation id="9003704114456258138">Frekans</translation>

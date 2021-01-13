@@ -586,7 +586,6 @@
 <translation id="1633947793238301227">Google ასისტენტის გათიშვა</translation>
 <translation id="1634783886312010422">ეს პაროლი <ph name="WEBSITE" />-ზე უკვე შეცვალეთ?</translation>
 <translation id="1637224376458524414">მიიღეთ ეს სანიშნე თქვენს iPhone-ზე</translation>
-<translation id="1637246113959718501">საჭირო ფაილები ვერ ჩამოიტვირთა. ცადეთ მოგვიანებით.</translation>
 <translation id="1637350598157233081">პაროლი შენახულია ამ მოწყობილობაზე</translation>
 <translation id="1637765355341780467">თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. ზოგიერთი ფუნქცია შეიძლება მიუწვდომელი იყოს.</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
@@ -665,6 +664,7 @@
 <translation id="1720318856472900922">TLS WWW სერვერის ავთენტიფიკაცია</translation>
 <translation id="1721312023322545264">ამ საიტის მოსანახულებლად, <ph name="NAME" />-ის ნებართვა გჭირდებათ</translation>
 <translation id="1722460139690167654">თქვენი <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> იმართება<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" />-ის მიერ</translation>
+<translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
 <translation id="1725149567830788547">ჩვენება &amp;კონტროლი</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
@@ -888,6 +888,7 @@
 <translation id="1969654639948595766">WebRTC-ის ტექსტური ჟურნალები (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">გაშვებულია ვიდეო რეჟიმი</translation>
 <translation id="197288927597451399">შეინახეთ</translation>
+<translation id="1973763416111613016"><ph name="FILE_NAME" />-ის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა შემდეგ კომბინაციას: Shift+F6.</translation>
 <translation id="1974043046396539880">CRL გავრცელების წერტილები</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1974159333077206889">ერთი და იგივე აუდიო ყველა დინამიკში</translation>
@@ -2603,8 +2604,10 @@
 <translation id="3900789207771372462">ზოგიერთ გაფართოებას შეუძლია თქვენი დათვალიერების აქტივობის (მათ შორის, პერსონალური ინფორმაციის) ნახვა.</translation>
 <translation id="3900966090527141178">პაროლების ექსპორტი</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-თან დაკავშირება</translation>
+<translation id="3903187154317825986">ჩაშენებული კლავიატურა</translation>
 <translation id="3904326018476041253">მდებარეობის სერვისები</translation>
 <translation id="3905761538810670789">აპის აღდგენა</translation>
+<translation id="3906232975181435906">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> მოძველდა</translation>
 <translation id="3908501907586732282">გაფართოების ჩართვა</translation>
 <translation id="3909791450649380159">&amp;ამოჭრა</translation>
@@ -2643,6 +2646,7 @@
 
   გსურთ გაუშვათ <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394183848452296464">მალსახმობის შექმნა ვერ ხერხდება</translation>
+<translation id="3942420633017001071">დიაგნოსტიკა</translation>
 <translation id="3943494825379372497">გსურთ აპებისა და გვერდების აღდგენა?</translation>
 <translation id="3943582379552582368">&amp;უკან</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
@@ -2898,6 +2902,7 @@
 <translation id="4267924571297947682">სთხოვეთ მშობელს ნებართვა</translation>
 <translation id="4267953847983678297">მობილურ ქსელთან ავტომატური დაკავშირება</translation>
 <translation id="4268025649754414643">გასაღების კოდირება</translation>
+<translation id="4268670020635416342">დაამატეთ სახელი ან ლეიბლი (მაგ. სამსახურის, პირადი ან ბავშვების)</translation>
 <translation id="4270393598798225102">ვერსია <ph name="NUMBER" /></translation>
 <translation id="4274667386947315930">სისტემაში შესვლის მონაცემები</translation>
 <translation id="4275291496240508082">ჩატვირთვის ხმა</translation>
@@ -3213,6 +3218,7 @@
 <translation id="4637083375689622795">სხვა ქმედებები, <ph name="EMAIL" /></translation>
 <translation id="4638930039313743000">ADB გამართვის ჩართვა</translation>
 <translation id="4641539339823703554">Chrome-მა ვერ დააყენა სისტემის დრო. შეამოწმეთ დრო ქვემოთ და გაასწორეთ, თუ საჭიროა.</translation>
+<translation id="4642769377300286600">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4643612240819915418">ვიდეოს &amp;გახსნა ახალ ჩანართზე</translation>
 <translation id="4645676300727003670">&amp;შეინახეთ</translation>
 <translation id="4646675363240786305">პორტები</translation>
@@ -3990,7 +3996,6 @@
 <translation id="5565735124758917034">აქტიური</translation>
 <translation id="5567989639534621706">პროგრამის შეცდომები</translation>
 <translation id="5568069709869097550">სისტემაში შესვლა ვერ მოხერხდა</translation>
-<translation id="5571832155627049070">მოირგეთ პროფილი</translation>
 <translation id="5572851009514199876">გთხოვთ, გაუშვათ Chrome და შეხვიდეთ მასში, რათა Chrome-მა შეამოწმოს, გაქვთ თუ არა ამ საიტზე წვდომის უფლება.</translation>
 <translation id="5575473780076478375">ინკოგნიტო გაფართოება: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">წარმოიქმნა დემო-რეგისტრაციის მოთხოვნასთან დაკავშირებული პრობლემა.</translation>
@@ -4617,6 +4622,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ახალი პრინტერი თქვენს ქსელში}other{ახალი პრინტერები თქვენს ქსელში}}</translation>
 <translation id="6285770818046456882">მონაცემთა გადაცემა გაუქმდა მოწყობილობიდან, რომლიდანაც კონტენტი ზიარდებოდა</translation>
 <translation id="6290613030083731160">ახლომახლო არ არის მოწყობილობები, რომლებიდანაც რაიმე ზიარდება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="6291741848715722067">დადასტურების კოდი</translation>
 <translation id="6291949900244949761">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა (რეკომენდებულია)</translation>
 <translation id="6291953229176937411">ჩ&amp;ვენება მაძიებელში</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
@@ -4979,7 +4985,6 @@
 <translation id="672609503628871915">ნახეთ სიახლეებირა სიახლეა</translation>
 <translation id="67269783048918309">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ეს მოწყობილობა ამჟამად ავტომატურად უგზავნის Google-ს დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემებს. აღნიშნული მონაცემები არ იქნება გამოყენებული თქვენი შვილის ვინაობის დასადგენად, არამედ დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. ეს <ph name="BEGIN_LINK1" />პარამეტრი<ph name="END_LINK1" /> არის იძულებით გააქტიურებული მფლობელის მიერ. თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში. <ph name="BEGIN_LINK2" />შეიტყვეთ მეტი<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">დაკავშირებულია, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="6731877319426971768">მეტყველების ამოცნობის ფაილები ჩამოიტვირთა</translation>
 <translation id="6732801395666424405">სერტიფიკატები ვერ ჩაიტვირთა</translation>
 <translation id="6732900235521116609">მალსახმობის ამოშლა ვერ მოხერხდა</translation>
 <translation id="6734468588183300211">ინკოგნიტო რეჟიმში საიტები ვერ გამოიყენებს თქვენს ქუქი-ჩანაწერებს სხვადასხვა ვებსაიტის დათვალიერების აქტივობაზე წვდომისთვის, მაგალითად, რეკლამის პერსონალიზების მიზნით. ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს.</translation>
@@ -5085,6 +5090,7 @@
 <translation id="6850286078059909152">ტექსტის ფერი</translation>
 <translation id="6851181413209322061">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ეს მოწყობილობა ამჟამად ავტომატურად უგზავნის Google-ს დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემებს. აღნიშნული მონაცემები არ იქნება გამოყენებული თქვენი შვილის ვინაობის დასადგენად, არამედ დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. ეს პარამეტრი არის იძულებით გააქტიურებული მფლობელის მიერ. თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში.</translation>
 <translation id="6851497530878285708">აპი ჩართულია</translation>
+<translation id="6853142139292753691">გსურთ აპებისა და გვერდების ნაგულისხმევად აღდგენა?</translation>
 <translation id="6853388645642883916">განახლების პროგრამა ძილის რეჟიმშია</translation>
 <translation id="68541483639528434">სხვა ჩანართების დახურვა</translation>
 <translation id="6855892664589459354">Crostini-ს სარეზერვო ასლის შექმნა და აღდგენა</translation>
@@ -5844,6 +5850,7 @@
 <translation id="7719367874908701697">გვერდის მასშტაბი</translation>
 <translation id="7719588063158526969">მოწყობილობის სახელი ზედმეტად გრძელია</translation>
 <translation id="7721179060400456005">ფანჯრებისთვის ეკრანების გადაფარვის დაშვება</translation>
+<translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7722040605881499779">განახლებისთვის საჭიროა: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7728465250249629478">მოწყობილობის ენის შეცვლა</translation>
@@ -6027,6 +6034,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის ნახვა</translation>
 <translation id="7920482456679570420">დაამატეთ სიტყვები, რომლებიც გსურთ, გამოტოვებული იყოს მართლწერის შემოწმებისას</translation>
 <translation id="7924358170328001543">პორტის გადამისამართება ვერ მოხერხდა</translation>
+<translation id="7925108652071887026">ავტომატური შევსების მონაცემები</translation>
 <translation id="792514962475806987">ჩამაგრებული მასშტაბის დონე:</translation>
 <translation id="7925247922861151263">AAA შემოწმება ვერ მოხერხდა</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ის მოლოდინში…</translation>
@@ -6108,7 +6116,6 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ხელმისაწვდომი აღარ არის</translation>
 <translation id="8004582292198964060">ბრაუზერი</translation>
 <translation id="8005600846065423578"><ph name="HOST" />-ისთვის გაცვლის ბუფერის ნახვის ყოველთვის დაშვება</translation>
-<translation id="8006143138282906848">ამ პროფილის წაშლა</translation>
 <translation id="8008356846765065031">ინტერნეტი გაითიშა. შეამოწმეთ ინტერნეტ-კავშირი.</translation>
 <translation id="8009225694047762179">პაროლების მართვა</translation>
 <translation id="8012647001091218357">ამ მომენტისათვის ჩვენ ვერ შევძელით თქვენს მშობლებთან დაკავშირება. გთხოვთ სცადეთ ხელახლა.</translation>
@@ -6172,6 +6179,7 @@
 <translation id="8074127646604999664">ახლახან დახურული საიტებისთვის მონაცემების გაგზავნისა და მიღების დასრულების დაშვება</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8076835018653442223">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="8079153653197012234">შეიყვანეთ დადასტურების კოდი <ph name="PROFILE_NAME" />-ისთვის.</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">გსურთ ADB გამართვის გამორთვა?</translation>
 <translation id="8082106343289440791">გსურთ „<ph name="DEVICE_NAME" />“-თან დაწყვილება?</translation>
@@ -6180,7 +6188,6 @@
 <translation id="8084114998886531721">შენახული პაროლი</translation>
 <translation id="8086015605808120405">მიმდინარეობს <ph name="PRINTER_NAME" />-ის კონფიგურაცია...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" />-ის დაყენება</translation>
-<translation id="8086550884324762001">მაგ.: სამსახურის, პირადი, საბავშვო ან სხვა სახელი</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ეს ფაილი დაშიფრულია. სთხოვეთ მის მფლობელს დეშიფრაცია.}other{ამ ფაილებიდან ზოგიერთი დაშიფრულია. სთხოვეთ მათ მფლობელებს დეშიფრაცია.}}</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
 <translation id="8090234456044969073">ყველაზე ხშირად მონახულებადი ვებსაიტების სიის წაკითხვა</translation>
@@ -6669,6 +6676,7 @@
 <translation id="8666584013686199826">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> ახლა სრულეკრანიან რეჟიმშია და მაუსის კურსორი გამოირთო.</translation>
 <translation id="8669284339312441707">უფრო თბილი</translation>
+<translation id="8670537393737592796">აქ უფრო სწრაფად რომ დაბრუნდეთ ხოლმე, დააინსტალირეთ <ph name="APP_NAME" /> — ამისთვის დააწკაპუნეთ ინსტალაციის ღილაკზე</translation>
 <translation id="867085395664725367">წარმოიშვა სერვერთან დაკავშირებული დროებითი შეცდომა.</translation>
 <translation id="8673026256276578048">ძიება ინტერნეტში…</translation>
 <translation id="8673383193459449849">სერვერის პრობლემა</translation>

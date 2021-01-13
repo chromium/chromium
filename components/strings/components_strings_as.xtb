@@ -70,6 +70,7 @@
 <translation id="1236081509407217141">VRৰ অনুমতি দিবনে?</translation>
 <translation id="1240347957665416060">আপোনাৰ ডিভাইচৰ নাম</translation>
 <translation id="124116460088058876">অধিক ভাষা</translation>
+<translation id="1243027604378859286">লেখক:</translation>
 <translation id="1250759482327835220">পৰৱৰ্তী সময়ত দ্ৰুতভাৱে পৰিশোধ কৰিবলৈ আপোনাৰ Google একাউণ্টত নিজৰ কাৰ্ড, নাম আৰু বিলিঙৰ ঠিকনা ছেভ কৰক।</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ছিংক কৰা আছে)</translation>
 <translation id="1256368399071562588">&lt;p&gt;আপুনি চাব খোজা কোনো ৱেবছাইট নুখুলিলে, প্ৰথমে আসোঁৱাহটো এই সমস্যা সমাধানৰ পদক্ষেপসমূহৰ জৰিয়তে সমাধান কৰিবলৈ চাওক:&lt;/p&gt;
@@ -311,6 +312,7 @@
 <translation id="2114841414352855701"><ph name="POLICY_NAME" />এ ইয়াক অ’ভাৰৰাইড কৰাৰ বাবে অৱজ্ঞা কৰা হৈছে।</translation>
 <translation id="2119505898009119320">ইয়াক প্ৰদান কৰা হৈছে: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">তলৰ অংশৰ সোঁফালে পাঞ্চ কৰক</translation>
+<translation id="2126374524350484896">PDF সৃষ্টিকৰ্তা:</translation>
 <translation id="2129079103035905234">ম'শ্বন ছেন্সৰসমূহ</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতিটো ছেট নকৰাৰ বাবে আপুনি নির্দিষ্ট কৰা টেমপ্লেটসমূহ প্ৰয়োগ কৰা নহ’ব পাৰে।</translation>
 <translation id="213826338245044447">ম’বাইল বুকমার্ক</translation>
@@ -420,6 +422,7 @@
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" />ৰ পৰা। <ph name="OTHER_ARTICLE_COUNT" /> আৰু অন্য লেখাসমূহ পঢ়ক।</translation>
 <translation id="2587841377698384444">ডাইৰেক্টৰী এপিআই আইডি:</translation>
+<translation id="2594318783181750337">দ্ৰুত ৱেব ভিউ:</translation>
 <translation id="2595719060046994702">এই ডিভাইচ আৰু একাউণ্ট কোনো কোম্পানী বা অন্য প্ৰতিষ্ঠানে পৰিচালনা নকৰে।</translation>
 <translation id="2597378329261239068">এই নথি পাছৱর্ডৰ দ্বাৰা সুৰক্ষিত।  অনুগ্ৰহ কৰি এটা পাছৱর্ড দিয়ক।</translation>
 <translation id="2609632851001447353">প্ৰকাৰভেদ</translation>
@@ -516,6 +519,7 @@
 <translation id="2989742184762224133">ওপৰৰ অংশত দুবাৰ ষ্টে'পল কৰক</translation>
 <translation id="2991174974383378012">ৱেবছাইটৰ সৈতে শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="2991571918955627853">আপুনি এই মুহূৰ্তত <ph name="SITE" /> খুলিব নোৱাৰিব কাৰণ ৱেবছাইটটোৱে HSTS. ব্যৱহাৰ কৰে। নেটৱর্কৰ আসোঁৱাহ আৰু আক্ৰমণবোৰ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে পাছত কাম কৰিব পাৰে।</translation>
+<translation id="2995517112308048736">ফাইলৰ আকাৰ:</translation>
 <translation id="2996674880327704673">Googleৰ পৰামৰ্শসমূহ</translation>
 <translation id="3002501248619246229">ইনপুট ট্ৰে’ মিডিয়া পৰীক্ষা কৰক</translation>
 <translation id="3005723025932146533">ছে’ভ কৰা প্ৰতিলিপি দেখুৱাওক</translation>
@@ -634,6 +638,7 @@
 <translation id="3484560055331845446">আপুনি নিজৰ Google একাউণ্টলৈ এক্সেছ হেৰুৱাব পাৰে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰিছে। আপোনাক ছাইন ইন কৰিবলৈ কোৱা হ’ব।</translation>
 <translation id="3487845404393360112">ট্ৰে’ ৪</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />ত বিচাৰক</translation>
+<translation id="350069200438440499">ফাইলৰ নাম:</translation>
 <translation id="3507936815618196901">আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিছে</translation>
 <translation id="3512163584740124171">এই নীতিটো অৱজ্ঞা কৰা হৈছে কাৰণ একেটা নীতিৰ গোটৰে অন্য এটা নীতিৰ এক উচ্চ অগ্ৰাধিকাৰ আছে।</translation>
 <translation id="3518941727116570328">একাধিক বস্তুৰ পৰিচালনা</translation>
@@ -672,9 +677,11 @@
 <translation id="3633738897356909127">Chrome আপডে’ট কৰক বুটাম, Chromeৰ ছেটিংসমূহৰ পৰা Chrome আপডে’ট কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="3634530185120165534">ট্ৰে’ ৫</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">এপ্লিকেশ্বন:</translation>
 <translation id="3650584904733503804">মান্যতাকৰণ সফল</translation>
 <translation id="3655670868607891010">আপুনি যদি এইটো সঘনাই দেখি আছে, <ph name="HELP_LINK" />লৈ যাওক।</translation>
 <translation id="3658742229777143148">পুনৰীক্ষণ</translation>
+<translation id="3664782872746246217">মূল শব্দ:</translation>
 <translation id="3676592649209844519">ডিভাইচ আইডি:</translation>
 <translation id="3677008721441257057">আপুনি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;ৰ কথা কৈছে নেকি?</translation>
 <translation id="3678029195006412963">অনুৰোধ ছাইন কৰিব পৰা নগ’ল</translation>
@@ -762,7 +769,6 @@
 <translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4058922952496707368">চাবি "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (লেফাফা)</translation>
-<translation id="4067669230157909013">স্ক্ৰীন কেপচাৰ কৰাৰ সুবিধাটো পুনৰ আৰম্ভ কৰা হৈছে।</translation>
 <translation id="4067947977115446013">মান্য ঠিকনা দিয়ক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰট’কল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
 <translation id="4075941231477579656">স্পৰ্শ আইডি</translation>
@@ -1010,6 +1016,7 @@
 <translation id="4989542687859782284">উপলব্ধ নহয়</translation>
 <translation id="4989809363548539747">এই প্লাগ ইনটো সমৰ্থিত নহয়।</translation>
 <translation id="4995216769782533993">এই ছাইটটোৰ সৈতে আপোনাৰ কাৰ্ডৰ সবিশেষ শ্বেয়াৰ কৰিবলৈ সুৰক্ষা ক’ডটো নিশ্চিত কৰক</translation>
+<translation id="4995474875135717171">সংশোধন কৰাৰ সময়:</translation>
 <translation id="5002932099480077015">যদি এইটো সক্ষম কৰা হয় তেন্তে Chromeএ ফর্মৰ ক্ষিপ্ৰতাৰে পুৰাবলৈ আপোনাৰ কার্ডৰ এটা প্ৰতিলিপি এই ডিভাইচত সঞ্চয় কৰিব।</translation>
 <translation id="5015510746216210676">মেছিনৰ নাম:</translation>
 <translation id="5017554619425969104">আপুনি প্ৰতিলিপি কৰা পাঠ</translation>
@@ -1056,6 +1063,7 @@
 <translation id="515292512908731282">C4 (লেফাফা)</translation>
 <translation id="5158275234811857234">ক'ভাৰ</translation>
 <translation id="5159010409087891077">কোনো নতুন ইনক’গনিট’ ৱিণ্ড’ত পৃষ্ঠা খোলক (⇧⌘N)</translation>
+<translation id="5161334686036120870">বিষয়:</translation>
 <translation id="5161506081086828129">ষ্টেকাৰ ৯</translation>
 <translation id="5164798890604758545">পাঠ দিলে</translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" />ৰ CVCটো দিয়ক। আপুনি নিশ্চিতি প্ৰদান কৰাৰ পিছত আপোনাৰ Google Accountৰ পৰা কাৰ্ডৰ সবিশেষ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
@@ -1087,6 +1095,7 @@
 <translation id="5269999699920406580">সমগ্ৰ ছিষ্টেমত প্ৰয়োগ হোৱা সুবিধাসমূহক কেৱল গৰাকীয়েহে ছেট কৰিব পাৰে: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">সাৱধানবাণী: এই নীতিটো PolicyDictionaryMultipleSourceMergeList নীতিত নিৰ্দিষ্ট কৰা ধৰণে একত্ৰিত হোৱা নাই কাৰণ এইটো একত্ৰিত কৰিব পৰা অভিধানৰ নীতিসমূহৰ অংশ নহয়।</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">নথিৰ বৈশিষ্ট্য</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5284909709419567258">নেটৱৰ্কৰ ঠিকনাসমূহ</translation>
 <translation id="5285570108065881030">ছেভ কৰি থোৱা সকলো পাছৱৰ্ড দেখুৱাওক</translation>
@@ -1242,6 +1251,7 @@
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5895187275912066135">জাৰি কৰা তাৰিখ</translation>
 <translation id="5901630391730855834">হালধীয়া</translation>
+<translation id="5903264686717710770">শিৰোনাম:</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" />ৰ মূল নীতি অনুযায়ী অৱৰোধ কৰা হৈছে।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ছিংক কৰা আছে)</translation>
 <translation id="5913377024445952699">স্ক্ৰীন কেপচাৰ সুবিধাটো পজ কৰা হ'ল</translation>
@@ -1289,6 +1299,7 @@
 <translation id="6047927260846328439">এই সমলে আপোনাক ছল-চাতুৰিৰে কিছুমান ছফ্টৱেৰ ইনষ্টল কৰাবলৈ বা আপোনাৰ ব্যক্তিগত তথ্য ফাদিল কৰিবলৈ বাধ্য কৰাব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">পৃষ্ঠা ডেলিভাৰী</translation>
 <translation id="6051221802930200923">আপুনি এই মুহূৰ্তত <ph name="SITE" /> চাব নোৱাৰে কাৰণ এই ৱেবছাইটটোৱে প্ৰমাণ পত্ৰ পিন কৰা সুবিধাটো ব্যৱহাৰ কৰে। নেটৱর্ক সম্পর্কীয় আসোঁৱাহ আৰু আক্ৰমণসমূহ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে কিছুসময়ৰ পাছত কাম কৰিব পাৰে।</translation>
+<translation id="6051898664905071243">পৃষ্ঠাৰ সংখ্যা:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">আপোনাৰ সক্ৰিয়তা শ্বেয়াৰ কৰিবনে?</translation>
 <translation id="6058977677006700226">আপোনাৰ কার্ড নিজৰ সকলো ডিভাইচত ব্যৱহাৰ কৰিবনে?</translation>
@@ -1436,6 +1447,7 @@
 <translation id="6687335167692595844">ফ’ণ্টৰ আকাৰ অনুৰোধ কৰা হৈছে</translation>
 <translation id="6689249931105087298">ক’লা পইণ্টৰ কমপ্ৰেশ্বনৰ সৈতে আপেক্ষিক</translation>
 <translation id="6689271823431384964">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহত এই আচৰণ সলনি কৰিব পাৰে। কাৰ্ডৰ ধাৰকৰ নামটো আপোনাৰ একাউণ্টৰ পৰা আহে।</translation>
+<translation id="6698381487523150993">সৃষ্টি কৰাৰ সময়:</translation>
 <translation id="6702919718839027939">উপস্থাপন ম’ড</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6710594484020273272">&lt;সন্ধান কৰিবলগীয়া শব্দ টাইপ কৰক&gt;</translation>
@@ -1794,6 +1806,7 @@
 <translation id="8127301229239896662">আপোনাৰ কম্পিউটাৰ বা নেটৱৰ্কত "<ph name="SOFTWARE_NAME" />" ভালকৈ ইনষ্টল কৰা হোৱা নাছিল। আপোনাৰ আইটি প্ৰশাসকক এই সমস্যাটোৰ সমাধান বিচাৰক</translation>
 <translation id="8128526133099929547">আপুনি এটা প্ৰবঞ্চনামূলক ছাইটত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। Chromeএ <ph name="WEBSITE_1" /> আৰু আপুনি এই পাছৱৰ্ডটো ব্যৱহাৰ কৰা অন্য ছাইটসমূহলৈ গৈ এইটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
+<translation id="8148608574971654810">PDFৰ সংস্কৰণ:</translation>
 <translation id="8149426793427495338">আপোনাৰ কম্পিউটাৰটো সুপ্ত অৱস্থালৈ গৈছিল।</translation>
 <translation id="8150722005171944719"><ph name="URL" />ৰ ফাইলটো পঢ়িব পৰা অৱস্থাত নাই।  এই ফাইলটো হয়তো আঁতৰোৱা হৈছে, ইয়াৰ পৰা লৈ যোৱা হৈছে বা ফাইলৰ অনুমতিয়ে এক্সেছ প্ৰদান কৰা নাই।</translation>
 <translation id="8157295877370077682">ছাইটটোৰ পৰা বাহিৰ হওক</translation>
@@ -1934,6 +1947,7 @@
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, সন্ধানৰ পৰামৰ্শ</translation>
 <translation id="8719528812645237045">ওপৰৰ অংশত একাধিক পাঞ্চ কৰক</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
+<translation id="8726549941689275341">পৃষ্ঠাৰ আকাৰ:</translation>
 <translation id="8728672262656704056">আপুনি ইনক’গনিট’ ম’ডত প্ৰৱেশ কৰিছে</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8731544501227493793">পাছৱৰ্ডসমূহ পৰিচালনা কৰক বুটাম, Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাবলৈ আৰু পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
@@ -2066,7 +2080,6 @@
 <translation id="939736085109172342">নতুন ফ'ল্ডাৰ</translation>
 <translation id="945855313015696284">তলৰ তথ্য পৰীক্ষা কৰক আৰু কোনো অমান্য কার্ড থাকিলে মচক</translation>
 <translation id="950736567201356821">ওপৰৰ অংশত তিনিবাৰ পাঞ্চ কৰা</translation>
-<translation id="951941430552851965">আপোনাৰ স্ক্ৰীনত থকা সমলৰ কাৰণে আপোনাৰ প্ৰশাসকে স্ক্ৰীন কেপচাৰ কৰাটো পজ কৰিছে।</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="962484866189421427">এই সমলে বিভ্ৰান্তিকৰ এপ্ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে যি আন ছদ্মৱেশ ধাৰণ কৰিব পাৰে বা আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিবলৈ ব্যৱহাৰ কৰা ডেটা সংগ্ৰহ কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">আনুষ্ঠানিক বিল্ড</translation>

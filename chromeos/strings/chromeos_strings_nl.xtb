@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Schakel Bluetooth in om apparaten in de buurt te vinden</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
-<translation id="2375079107209812402">Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
 <translation id="4848429997038228357">ACTIEF</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
@@ -168,8 +168,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Gebruiken als gast</translation>
 <translation id="54609108002486618">Beheerd</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Meer informatie in het Helpcentrum</translation>
 <translation id="5635169860413004179">Rapport bekijken</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Dit meet het CPU-gebruik en is het totaal voor alle kernen</translation>
@@ -251,7 +251,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Plaats je document op de scanner en selecteer <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> om aan de slag te gaan</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
@@ -285,7 +284,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
 <translation id="8930622219860340959">Draadloos</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="9003704114456258138">Frequentie</translation>

@@ -635,7 +635,7 @@
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7774365994322694683">ציפור</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב לא מקוון<ph name="MARKUP_3" />
+        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
@@ -765,7 +765,7 @@
 <translation id="9134524245363717059">‏קובץ זה מיועד למחשב המשתמש בתוכנה של Macintosh. הוא אינו מתאים למכשיר שלך שעובד עם מערכת הפעלה של Chrome. אפשר לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="9144340019284012223">קטלאנית</translation>
 <translation id="9148058034647219655">יציאה</translation>
-<translation id="9154418932169119429">תמונה זו אינה זמינה במצב לא מקוון.</translation>
+<translation id="9154418932169119429">תמונה זו אינה זמינה במצב אופליין.</translation>
 <translation id="9172592259078059678">תעתיק גוג'ראטית</translation>
 <translation id="9173120999827300720">מקלדת בינלאומית באנגלית (ארה"ב)</translation>
 <translation id="9189836632794948435">קזחית</translation>

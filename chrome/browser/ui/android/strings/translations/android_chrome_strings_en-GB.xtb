@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Clears history and autocompletions in the address bar.</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
+<translation id="2039379262107991683">Add pages to your reading list to get a reminder</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the Internet</translation>
@@ -197,7 +198,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2387895666653383613">Text scaling</translation>
 <translation id="2394602618534698961">Files that you download appear here</translation>
 <translation id="2407481962792080328">When you sign in to your Google account, this feature is turned on</translation>
-<translation id="2407674018644220013">Set <ph name="APP_NAME" /> as your default?</translation>
 <translation id="2410754283952462441">Choose an account</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2426805022920575512">Choose another account</translation>
@@ -210,7 +210,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="246532703174860178">Share</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2478076885740497414">Install app</translation>
-<translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2494974097748878569">Google Assistant in Chrome</translation>
 <translation id="2496180316473517155">Browsing history</translation>
@@ -462,7 +461,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4335835283689002019">Safe Browsing is off</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4378154925671717803">Phone</translation>
-<translation id="4382908510000698092">Use as Chrome’s language</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
 <translation id="4404568932422911380">No bookmarks</translation>
 <translation id="4405224443901389797">Move to…</translation>
@@ -653,7 +651,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5668404140385795438">Override a website’s request to prevent zooming in</translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> will use <ph name="LANGUAGE" /> on restart.</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
 <translation id="5697688514913266141">Your file will be saved to <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edit<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6140912465461743537">Country/Region</translation>
 <translation id="614940544461990577">Try:</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
-<translation id="6157392216611456285">Choose <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
@@ -767,7 +763,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="6345878117466430440">Mark as read</translation>
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> has the smarts and speed that you need to safely do, create and explore online</translation>
 <translation id="6378173571450987352">Details: Sorted by amount of data used</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Darken websites</translation>
@@ -791,6 +786,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6475951671322991020">Download video</translation>
 <translation id="6477928892249167417">These sites seem important to you:</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> download failed due to lack of storage space.</translation>
+<translation id="6489610539826642779">Reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">To use <ph name="APP_NAME" /> for the first time, please connect to the Internet.</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
 <translation id="6527303717912515753">Share</translation>
@@ -829,7 +825,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="666981079809192359">Chrome Privacy Notice</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
-<translation id="6691888250440401212">1. Choose <ph name="APP_NAME" />\n2. Tap 'Set as default'</translation>
 <translation id="6697492270171225480">Show suggestions for similar pages when a page can't be found</translation>
 <translation id="6698801883190606802">Manage synced data</translation>
 <translation id="6699370405921460408">Google servers will optimise the pages that you visit.</translation>
@@ -1070,7 +1065,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> is ready.</translation>
 <translation id="8393700583063109961">Send message</translation>
-<translation id="8407396331882458341">1. Choose <ph name="APP_NAME" />\n2. Tap 'Always'</translation>
 <translation id="8410695015584479363">Track prices</translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
@@ -1097,7 +1091,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8555836665334561807">On Wi-Fi</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
 <translation id="8560602726703398413">Find your reading list in Bookmarks</translation>
-<translation id="8561196567344536112">1. Go to Settings\n2. Tap 'Browser App'\n3. Choose <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Your saved passwords will appear here.</translation>
 <translation id="8569404424186215731">since <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>

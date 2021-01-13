@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2364498172489649528">Onnistui</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="2391082728065870591">Lähetä palauteraportti</translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
 <translation id="4848429997038228357">KÄYNNISSÄ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} yritys jäljellä}other{<ph name="ERROR_MESSAGE" /> {0} yritystä jäljellä}}</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4891842000192098784">Rasitus</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
@@ -168,8 +168,8 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Selaa vierailijana</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} yritys jäljellä}other{{0} yritystä jäljellä}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Katso lisätietoja ohjekeskuksesta</translation>
 <translation id="5635169860413004179">Katso raportti</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Tämä mittaa prosessorin käyttöä ja tarkoittaa kaikkien ytimien yhteissummaa</translation>
@@ -251,7 +251,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8075838845814659848">Virtaa jäljellä</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Aseta dokumentti skanneriin ja aloita valitsemalla <ph name="SPAN_BEGIN" />Skannaa<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
@@ -285,7 +284,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>
 <translation id="8928727111548978589">Epäonnistui – Paperi loppu</translation>
 <translation id="8930622219860340959">Langaton</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="9003704114456258138">Taajuus</translation>

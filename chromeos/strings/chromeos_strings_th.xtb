@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
-<translation id="2375079107209812402">ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">เลือกโฟลเดอร์ในแอป Files...</translation>
 <translation id="4835901797422965222">ไม่มีเครือข่ายที่ใช้งานอยู่</translation>
 <translation id="4848429997038228357">กำลังดำเนินการ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ลองได้อีก {0} ครั้ง}other{ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="5635169860413004179">ดูรายงาน</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">การทดสอบนี้จะวัดการใช้งาน CPU และเป็นการรวม Core ทั้งหมด</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">วางเอกสารบนเครื่องสแกนและเลือก<ph name="SPAN_BEGIN" />สแกน<ph name="SPAN_END" />เพื่อเริ่มต้น</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>
 <translation id="8928727111548978589">ไม่สำเร็จ - กระดาษหมด</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
 <translation id="9003704114456258138">ความถี่</translation>

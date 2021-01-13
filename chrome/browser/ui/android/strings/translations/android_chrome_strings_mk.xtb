@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Ги брише историјата и автоматските довршувања во лентата за адреси.</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
+<translation id="2039379262107991683">Додавајте страници во „Списокот за читање“ за да добивате потсетници</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> има податоци и во Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Пребарување на интернет</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">Скалирање текст</translation>
 <translation id="2394602618534698961">Датотеките што ќе ги преземете ќе се појават тука</translation>
 <translation id="2407481962792080328">Функцијава е вклучена кога ќе се најавите на сметката на Google</translation>
-<translation id="2407674018644220013">Да се постави <ph name="APP_NAME" /> како стандардна?</translation>
 <translation id="2410754283952462441">Изберете сметка</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2426805022920575512">Изберете друга сметка</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">Сподели</translation>
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
 <translation id="2478076885740497414">Инсталирај апликација</translation>
-<translation id="2479148705183875116">Одете во „Поставки“</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2494974097748878569">„Помошникот на Google“ во Chrome</translation>
 <translation id="2496180316473517155">Историја на прелистување</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4382908510000698092">Користи го како јазик на Chrome</translation>
 <translation id="4384468725000734951">Се користи Sogou за пребарување</translation>
 <translation id="4404568932422911380">Нема обележувачи</translation>
 <translation id="4405224443901389797">Премести во…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>
 <translation id="5683547024293500885">Chrome не може да провери за ажурирања</translation>
 <translation id="5686790454216892815">Името на датотеката е предолго</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> ќе користи <ph name="LANGUAGE" /> при рестартирањето.</translation>
 <translation id="569536719314091526">Преведете ја страницава на кој било јазик со копчето „Повеќе опции“</translation>
 <translation id="5696597120588531049">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго</translation>
 <translation id="5697688514913266141">Датотеката ќе се зачува во <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Измени<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">Држава/регион</translation>
 <translation id="614940544461990577">Обидете се:</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
-<translation id="6157392216611456285">Изберете <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> заштеда на податоци</translation>
 <translation id="6186394685773237175">Не се најдени компромитирани лозинки</translation>
 <translation id="6192907950379606605">Добивајте описи на слики</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означи како прочитано</translation>
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> има доволно знаење и брзина за да ви овозможи безбедно да работите, создавате и истражувате онлајн</translation>
 <translation id="6378173571450987352">Детали: подредени по количината на податоци што се користат</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Затемнете ги веб-сајтовите</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">Преземи видео</translation>
 <translation id="6477928892249167417">Изгледа дека сајтовиве ви се важни:</translation>
 <translation id="6482749332252372425">Преземањето на <ph name="FILE_NAME" /> не успеа поради недостаток на меморија.</translation>
+<translation id="6489610539826642779">Список за читање <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">За да ја користите <ph name="APP_NAME" /> првпат, поврзете се на интернет.</translation>
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
 <translation id="6527303717912515753">Сподели</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Известување за приватност на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
 <translation id="6676840375528380067">Да се избришат податоците на Chrome од уредов?</translation>
-<translation id="6691888250440401212">1. Изберете <ph name="APP_NAME" />\n2. Допрете „Постави како стандардна“</translation>
 <translation id="6697492270171225480">Прикажувај предлози за слични страници кога страницата не може да се најде</translation>
 <translation id="6698801883190606802">Управувајте со синхронизираните податоци</translation>
 <translation id="6699370405921460408">Серверите на Google ќе ги оптимизираат страниците што ги посетувате.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> е подготвен.</translation>
 <translation id="8393700583063109961">Испрати порака</translation>
-<translation id="8407396331882458341">1. Изберете <ph name="APP_NAME" />\n2. Допрете „Секогаш“</translation>
 <translation id="8410695015584479363">Следете ги цените</translation>
 <translation id="8413126021676339697">Прикажи ја целата историја</translation>
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Преку Wi-Fi</translation>
 <translation id="8559990750235505898">Понудувај превод на страниците на други јазици</translation>
 <translation id="8560602726703398413">Најдете го списокот за читање во „Обележувачи“</translation>
-<translation id="8561196567344536112">1. Одете во „Поставки“\n2. Допрете на „Прелистувач“\n3. Изберете <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Зачуваните лозинки ќе се појават тука.</translation>
 <translation id="8569404424186215731">од <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>

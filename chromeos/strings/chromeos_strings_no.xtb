@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2364498172489649528">Bestått</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4835901797422965222">Ingen aktive nettverk</translation>
 <translation id="4848429997038228357">KJØRER</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
@@ -168,8 +168,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Surf som gjest</translation>
 <translation id="54609108002486618">Administrert</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøk igjen}other{{0} forsøk igjen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Finn ut mer i brukerstøtten</translation>
 <translation id="5635169860413004179">Se rapporten</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Dette er en sammenstilt måling av CPU-bruken for alle kjernene</translation>
@@ -251,7 +251,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Legg dokumentet på skanneren, og velg <ph name="SPAN_BEGIN" />Skann<ph name="SPAN_END" /> for å komme i gang</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
@@ -285,7 +284,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
 <translation id="8930622219860340959">Trådløs</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
 <translation id="9003704114456258138">Frekvens</translation>

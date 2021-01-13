@@ -70,6 +70,7 @@
 <translation id="1236081509407217141">Дазволіць VR?</translation>
 <translation id="1240347957665416060">Назва вашай прылады</translation>
 <translation id="124116460088058876">Іншыя мовы</translation>
+<translation id="1243027604378859286">Аўтар:</translation>
 <translation id="1250759482327835220">Каб наступны раз плаціць хутчэй, захавайце картку, імя і адрас для выстаўлення рахункаў ва Уліковым запісе Google.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
 <translation id="1256368399071562588">&lt;p&gt;Калі патрэбны вэб-сайт не адкрываецца, паспрабуйце знайсці і вырашыць праблему наступным чынам:&lt;/p&gt;
@@ -311,6 +312,7 @@
 <translation id="2114841414352855701">Перавызначана палітыкай "<ph name="POLICY_NAME" />" і праігнаравана.</translation>
 <translation id="2119505898009119320">Каму выдадзена: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Дзірка знізу справа</translation>
+<translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2129079103035905234">Датчыкі руху</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
@@ -420,6 +422,7 @@
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2587730715158995865">Крыніца: <ph name="ARTICLE_PUBLISHER" />. Вы можаце прачытаць гэты і яшчэ <ph name="OTHER_ARTICLE_COUNT" /> артыкулаў.</translation>
 <translation id="2587841377698384444">Ідэнтыфікатар API каталога:</translation>
+<translation id="2594318783181750337">Хуткі прагляд у інтэрнэце:</translation>
 <translation id="2595719060046994702">Гэта прылада не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі.</translation>
 <translation id="2597378329261239068">Гэты дакумент абаронены паролем.  Увядзіце пароль.</translation>
 <translation id="2609632851001447353">Варыянты</translation>
@@ -516,6 +519,7 @@
 <translation id="2989742184762224133">Дзве скабы зверху</translation>
 <translation id="2991174974383378012">Абагульванне з вэб-сайтамі</translation>
 <translation id="2991571918955627853">Наведаць сайт <ph name="SITE" /> зараз нельга, паколькі ён выкарыстоўвае механізм HSTS. Звычайна сеткавыя памылкі і атакі – часовая з'ява, таму гэта старонка будзе, хутчэй за ўсё, працаваць пазней.</translation>
+<translation id="2995517112308048736">Памер файла:</translation>
 <translation id="2996674880327704673">Прапановы ад Google</translation>
 <translation id="3002501248619246229">Праверыць носьбіт уваходнага латка</translation>
 <translation id="3005723025932146533">Паказаць захаваную копію</translation>
@@ -636,6 +640,7 @@
 <translation id="3484560055331845446">Вы можаце страціць доступ да свайго Уліковага запісу Google. Chrome рэкамендуе змяніць пароль. Вас папросяць увайсці ва ўліковы запіс.</translation>
 <translation id="3487845404393360112">Латок 4</translation>
 <translation id="3495081129428749620">Знайсці на старонцы "<ph name="PAGE_TITLE" />"</translation>
+<translation id="350069200438440499">Назва файла:</translation>
 <translation id="3507936815618196901">стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="3512163584740124171">Гэта палітыка ігнаруецца, бо іншая палітыка з той жа групы палітык мае вышэйшы прыярытэт.</translation>
 <translation id="3518941727116570328">Апрацоўка некалькіх аб'ектаў</translation>
@@ -674,9 +679,11 @@
 <translation id="3633738897356909127">Кнопка "Абнавіць Chrome". Каб абнавіць браўзер Chrome праз яго налады, націсніце Enter</translation>
 <translation id="3634530185120165534">Латок 5</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">Праграма:</translation>
 <translation id="3650584904733503804">Праверка прайшла паспяхова</translation>
 <translation id="3655670868607891010">Калі вы часта бачыце гэта паведамленне, паспрабуйце наступнае: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Рэдакцыя</translation>
+<translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
 <translation id="3677008721441257057">Вы мелі на ўвазе &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не ўдалося падпісаць запыт</translation>
@@ -764,7 +771,6 @@
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (канверт)</translation>
-<translation id="4067669230157909013">Здыманне экрана ўзноўлена.</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
@@ -1014,6 +1020,7 @@
 <translation id="4989542687859782284">Недаступна</translation>
 <translation id="4989809363548539747">Гэта ўбудова не падтрымліваецца</translation>
 <translation id="4995216769782533993">Каб перадаць даныя карткі гэтаму сайту, пацвердзіце код бяспекі</translation>
+<translation id="4995474875135717171">Зменены:</translation>
 <translation id="5002932099480077015">Пры ўключэнні гэтага параметра Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="5015510746216210676">Назва прылады:</translation>
 <translation id="5017554619425969104">Скапіраваны вамі тэкст</translation>
@@ -1060,6 +1067,7 @@
 <translation id="515292512908731282">C4 (канверт)</translation>
 <translation id="5158275234811857234">Вокладка</translation>
 <translation id="5159010409087891077">Адкрыйце старонку ў акне ў рэжыме інкогніта (⇧⌘N).</translation>
+<translation id="5161334686036120870">Тэма:</translation>
 <translation id="5161506081086828129">Укладчык 9</translation>
 <translation id="5164798890604758545">Уводзіцца тэкст</translation>
 <translation id="516920405563544094">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" />. Пасля вашага пацвярджэння даныя карткі з Уліковага запісу Google будуць абагулены з гэтым сайтам.</translation>
@@ -1091,6 +1099,7 @@
 <translation id="5269999699920406580">Задаваць агульнасістэмныя функцыі можа толькі ўладальнік: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">Увага: гэта палітыка не была аб'яднана згодна з параметрамі "PolicyDictionaryMultipleSourceMergeList", бо яна не ўваходзіць у слоўнікавыя палітыкі, якія можна аб'яднаць.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">Параметры дакумента</translation>
 <translation id="528468243742722775">Канец</translation>
 <translation id="5284909709419567258">Сеткавыя адрасы</translation>
 <translation id="5285570108065881030">Паказваць усе захаваныя паролі</translation>
@@ -1246,6 +1255,7 @@
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5895187275912066135">Выдадзены</translation>
 <translation id="5901630391730855834">Жоўты</translation>
+<translation id="5903264686717710770">Назва:</translation>
 <translation id="5905445707201418379">Заблакіравана згодна з палітыкай крыніцы "<ph name="ORIGIN" />".</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (сінхранізавана)</translation>
 <translation id="5913377024445952699">Здымка экрана прыпынена</translation>
@@ -1294,6 +1304,7 @@
 <translation id="6047927260846328439">Праз гэта змесціва вас могуць падмануць і прымусіць усталяваць праграмнае забеспячэнне або выдаць асабістую інфармацыю. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">Дастаўка старонак</translation>
 <translation id="6051221802930200923">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён выкарыстоўвае механізм замацоўвання сертыфікатаў. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
+<translation id="6051898664905071243">Колькасць старонак:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Абагульваць звесткі аб вашай прысутнасці?</translation>
 <translation id="6058977677006700226">Выкарыстоўваць вашы карткі на ўсіх прыладах?</translation>
@@ -1442,6 +1453,7 @@
 <translation id="6687335167692595844">Запытаны памер шрыфту</translation>
 <translation id="6689249931105087298">Адносны са сцісканнем чорных пунктаў</translation>
 <translation id="6689271823431384964">Chrome прапаноўвае захоўваць карткі ва Уліковым запісе Google, бо вы ўвайшлі ў сістэму. Гэту функцыю можна выключыць у наладах. Імя ўладальніка карткі ўзята з вашага ўліковага запісу.</translation>
+<translation id="6698381487523150993">Створаны:</translation>
 <translation id="6702919718839027939">Прэзентацыя</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Увядзіце пошукавы запыт&gt;</translation>
@@ -1804,6 +1816,7 @@
 <translation id="8127301229239896662">Праграма "<ph name="SOFTWARE_NAME" />" не была належным чынам усталявана на камп'ютар або ў сетцы: папрасіце IT-адміністратара вырашыць гэту праблему.</translation>
 <translation id="8128526133099929547">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chrome рэкамендуе неадкладна змяніць пароль на сайце <ph name="WEBSITE_1" /> і на іншых сайтах, дзе выкарыстоўваецца гэты пароль.</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
+<translation id="8148608574971654810">Версія PDF:</translation>
 <translation id="8149426793427495338">Камп'ютар перайшоў у рэжым сну.</translation>
 <translation id="8150722005171944719">Файл па адрасе "<ph name="URL" />" не чытаецца.  Магчыма, ён быў выдалены, перамешчаны або не хапае дазволаў на доступ да яго.</translation>
 <translation id="8157295877370077682">Закрыць сайт</translation>
@@ -1944,6 +1957,7 @@
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, прапанова пошуку</translation>
 <translation id="8719528812645237045">Некалькі дзірак зверху</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
+<translation id="8726549941689275341">Памер старонкі:</translation>
 <translation id="8728672262656704056">Вы перайшлі ў рэжым інкогніта</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731544501227493793">Кнопка "Кіраваць паролямі". Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Enter</translation>
@@ -2076,7 +2090,6 @@
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="945855313015696284">Праверце інфармацыю ніжэй і выдаліце няправільныя карткі</translation>
 <translation id="950736567201356821">Тры дзіркі зверху</translation>
-<translation id="951941430552851965">Здыманне экрана была прыпынена адміністратарам з-за характару змесціва, якое знаходзілася на экране.</translation>
 <translation id="961663415146723894">Пераплёт знізу</translation>
 <translation id="962484866189421427">Праз гэта змесціва могуць усталявацца падманныя праграмы, якія спрабуюць выдаваць сябе за нешта іншае або збіраюць даныя, што могуць быць выкарыстаны для сачэння за вамі. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Афіцыйная зборка</translation>

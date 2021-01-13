@@ -184,7 +184,6 @@
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
 <translation id="2621713457727696555">보안</translation>
-<translation id="2633643784040308254">중간</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
@@ -327,6 +326,7 @@
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="394485226368336402">오디오 설정</translation>
+<translation id="3945867833895287237">핫스팟에 연결 중...</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3969043077941541451">사용 안함</translation>
 <translation id="397105322502079400">계산 중...</translation>
@@ -415,7 +415,6 @@
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
 <translation id="4702647871202761252">개인정보 보호 화면이 꺼져 있습니다</translation>
 <translation id="4705716602320768426">의견 보내기</translation>
-<translation id="4730232680256276456">높음</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4734965478015604180">가로</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>

@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> оролдлого үлдсэн</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4835901797422965222">Идэвхтэй сүлжээ байхгүй байна</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Зочны хувиар хайлт хийх</translation>
 <translation id="54609108002486618">Удирдсан</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="5635169860413004179">Тайланг харах</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Энэ нь CPU-н ашиглалтыг хэмждэг бөгөөд бүх цөмийн хуримтлал юм</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, <ph name="SPAN_BEGIN" />Скан хийхийг<ph name="SPAN_END" /> сонгоно уу</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> оролдлого үлдлээ</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="9003704114456258138">Давтамж</translation>

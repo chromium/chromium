@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
-<translation id="2375079107209812402">လုပ်ဆောင်ခွင့် <ph name="ATTEMPTS_LEFT" /> ကြိမ် ကျန်သည်</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
 <translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
 <translation id="4848429997038228357">လုပ်ဆောင်နေသည်</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4891842000192098784">ဖိအား</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">ဧည့်သည့် အဖြစ် ရှာကြည့်ရန်</translation>
 <translation id="54609108002486618">ကြီးကြပ်ထားသည်</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />− <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="5635169860413004179">အစီရင်ခံစာကို ကြည့်ရန်</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">၎င်းက CPU အသုံးပြုမှုကို တိုင်းတာပြီး core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
-<translation id="8160445423316272678">စကင်ဖတ်စက်ပေါ်တွင် သင်၏စာရွက်စာတမ်းကို ထားရှိပြီး စတင်ရန်အတွက် <ph name="SPAN_BEGIN" />စကင်ဖတ်ရန်<ph name="SPAN_END" /> ကို ရွေးပါ</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> လုပ်ဆောင်ခွင့် <ph name="ATTEMPTS_LEFT" /> ကြိမ် ကျန်သည်</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>

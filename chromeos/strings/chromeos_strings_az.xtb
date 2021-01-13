@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> cəhd qalıb</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Fayllar tətbiqində qovluq seçin...</translation>
 <translation id="4835901797422965222">Aktiv şəbəkə yoxdur</translation>
 <translation id="4848429997038228357">İCRA EDİLİR</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
 <translation id="4890353053343094602">Dərhal yenisini seçin</translation>
 <translation id="4891842000192098784">Gərginlik</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">VPN / L2TP açın</translation>
 <translation id="5457599981699367932">Qonaq kimi gözdən keçirin</translation>
 <translation id="54609108002486618">İdarə edilən</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} cəhd qalıb}other{{0} cəhd qalıb}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Yardım mərkəzində ətraflı məlumat əldə edin</translation>
 <translation id="5635169860413004179">Hesabata baxın</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Bu, CPU istifadəsini ölçür və bütün nüvələrin birləşməsidir</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Sənədinizi skanerin üzərinə qoyun və başlamaq üçün <ph name="SPAN_BEGIN" />Skanlayın<ph name="SPAN_END" /> seçin</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="8930622219860340959">Simsiz</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> cəhd qalıb</translation>
 <translation id="8968751544471797276">Şarj faizi</translation>
 <translation id="8970109610781093811">Yenidən icra edin</translation>
 <translation id="9003704114456258138">Tezlik</translation>

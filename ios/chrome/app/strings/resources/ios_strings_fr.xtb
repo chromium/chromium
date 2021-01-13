@@ -238,6 +238,7 @@ En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vue fractionnée</translation>
+<translation id="3454224729131972583">Civilité</translation>
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement ?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
@@ -267,6 +268,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3670030362669914947">Numéro</translation>
 <translation id="3691593122358196899">Ajouté aux favoris dans "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Marquer comme non lu</translation>
+<translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="3740397331642243698">Ouvre les URL saisies dans Google Chrome en mode navigation privée.</translation>
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>
 <translation id="3775743491439407556">La synchronisation ne fonctionne pas</translation>
@@ -381,6 +383,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5010803260590204777">Ouvrez un onglet de navigation privée pour naviguer sur le Web en toute confidentialité.</translation>
+<translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5056446788882570708">Problèmes identifiés <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>

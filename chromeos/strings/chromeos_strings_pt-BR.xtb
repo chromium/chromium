@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2364498172489649528">Aprovado</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
 <translation id="4835901797422965222">Não há redes ativas</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4891842000192098784">Estresse</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
@@ -168,8 +168,8 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante}one{{0} tentativa restante}other{{0} tentativas restantes}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Saiba mais na Central de Ajuda</translation>
 <translation id="5635169860413004179">Ver o relatório</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Isso mede o uso da CPU e é uma agregação de todos os núcleos</translation>
@@ -251,7 +251,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Para começar, coloque o documento no scanner e selecione <ph name="SPAN_BEGIN" />Digitalizar<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
@@ -285,7 +284,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
 <translation id="8928727111548978589">Falha - Sem papel</translation>
 <translation id="8930622219860340959">Rede sem fio</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
 <translation id="8968751544471797276">Taxa de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9003704114456258138">Frequência</translation>

@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Borra o historial e os completados automáticos na barra de enderezos.</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
+<translation id="2039379262107991683">Engade páxinas á túa lista de lectura para recibir un recordatorio</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> tamén ten datos en Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Realiza buscas en Internet</translation>
@@ -197,7 +198,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2387895666653383613">Axuste de texto</translation>
 <translation id="2394602618534698961">Os ficheiros descargados aparecen aquí</translation>
 <translation id="2407481962792080328">Cando inicies sesión na túa Conta de Google, activarase esta función</translation>
-<translation id="2407674018644220013">Queres definir <ph name="APP_NAME" /> como aplicación predeterminada?</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2426805022920575512">Escoller outra conta</translation>
@@ -210,7 +210,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="246532703174860178">Compartir</translation>
 <translation id="247737702124049222">As descricións das imaxes están activadas</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
-<translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2494974097748878569">Asistente de Google en Chrome</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
@@ -462,7 +461,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
-<translation id="4382908510000698092">Usar como idioma de Chrome</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
 <translation id="4404568932422911380">Non hai marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -653,7 +651,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
 <translation id="5683547024293500885">Chrome non puido buscar actualizacións</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> usará o <ph name="LANGUAGE" /> despois do reinicio.</translation>
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
 <translation id="5697688514913266141">O teu ficheiro gardarase en <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Editar<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6140912465461743537">País/rexión</translation>
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
-<translation id="6157392216611456285">Escoller <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Redución de datos do <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Non se atoparon contrasinais vulnerados</translation>
 <translation id="6192907950379606605">Obter descricións de imaxes</translation>
@@ -767,7 +763,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}}</translation>
 <translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6364438453358674297">Queres eliminar a suxestión do historial?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> achégache a intelixencia e a velocidade que precisas para levar a cabo accións, creacións e exploracións seguras en liña</translation>
 <translation id="6378173571450987352">Detalles: filas ordenadas por cantidade de datos utilizados</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Escurecer sitios web</translation>
@@ -791,6 +786,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6475951671322991020">Descargar vídeo</translation>
 <translation id="6477928892249167417">Estes sitios parecen importantes para ti:</translation>
 <translation id="6482749332252372425">Produciuse un erro ao descargar <ph name="FILE_NAME" /> por falta de espazo de almacenamento.</translation>
+<translation id="6489610539826642779">Lista de lectura <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Para usar <ph name="APP_NAME" /> por primeira vez, conéctate a Internet.</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -829,7 +825,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="666981079809192359">Aviso de privacidade de Chrome</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
-<translation id="6691888250440401212">1. Escolle <ph name="APP_NAME" />\n2. Toca App predeterminada</translation>
 <translation id="6697492270171225480">Mostrar suxestións de páxinas similares cando non se atope unha páxina</translation>
 <translation id="6698801883190606802">Xestionar datos sincronizados</translation>
 <translation id="6699370405921460408">Os servidores de Google optimizarán as páxinas que visites.</translation>
@@ -1070,7 +1065,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">O idioma (<ph name="LANG" />) está listo.</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
-<translation id="8407396331882458341">1. Escolle <ph name="APP_NAME" />\n2. Toca Sempre</translation>
 <translation id="8410695015584479363">Facer seguimento de prezos</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8427875596167638501">A pestana de vista previa abriuse ata a metade</translation>
@@ -1097,7 +1091,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8555836665334561807">Por wifi</translation>
 <translation id="8559990750235505898">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="8560602726703398413">Para acceder á lista de lectura, vai a Marcadores</translation>
-<translation id="8561196567344536112">1. Vai a Configuración\n2. Toca Aplicación de navegador\n3. Escolle <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Os contrasinais gardados aparecerán aquí.</translation>
 <translation id="8569404424186215731">desde o <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>

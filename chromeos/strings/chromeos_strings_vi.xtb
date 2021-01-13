@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
-<translation id="2375079107209812402">Còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2448312741937722512">Loại</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4835901797422965222">Không có mạng nào đang hoạt động</translation>
 <translation id="4848429997038228357">ĐANG CHẠY</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4891842000192098784">Độ ổn định</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
@@ -168,8 +168,8 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}other{Bạn còn {0} lần thử}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="5635169860413004179">Xem báo cáo</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Số liệu này đo mức sử dụng CPU và là số liệu tổng hợp của tất cả các lõi</translation>
@@ -251,7 +251,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">Đặt tài liệu lên máy quét rồi chọn <ph name="SPAN_BEGIN" />Quét<ph name="SPAN_END" /> để bắt đầu</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
@@ -285,7 +284,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="8930622219860340959">Không dây</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Bạn còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="9003704114456258138">Tần số</translation>

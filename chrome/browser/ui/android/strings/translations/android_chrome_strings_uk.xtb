@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Очищує історію й автозавершення в адресному рядку.</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
 <translation id="2038563949887743358">Увімкнути опцію "Запитувати версію сайту для комп’ютера"</translation>
+<translation id="2039379262107991683">Додавайте сторінки в список читання, щоб отримувати нагадування переглянути їх</translation>
 <translation id="204321170514947529">Дані додатка <ph name="APP_NAME" /> також містяться в Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Як шукати контент в Інтернеті</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">Масштаб тексту</translation>
 <translation id="2394602618534698961">Завантажені файли з’являться тут</translation>
 <translation id="2407481962792080328">Ця функція вмикається, коли ви входите в обліковий запис Google</translation>
-<translation id="2407674018644220013">Використовувати <ph name="APP_NAME" /> як додаток за умовчанням?</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2426805022920575512">Вибрати інший обліковий запис</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">Поділитися</translation>
 <translation id="247737702124049222">Описи зображень увімкнено</translation>
 <translation id="2478076885740497414">Установити додаток</translation>
-<translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2494974097748878569">Google Асистент у Chrome</translation>
 <translation id="2496180316473517155">Історія веб-перегляду</translation>
@@ -305,7 +304,7 @@
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3157842584138209013">Перевірте обсяг збережених даних за допомогою кнопки "Більше опцій"</translation>
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3205824638308738187">Майже готово.</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
 <translation id="4351244548802238354">Закрити діалогове вікно</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4382908510000698092">Використовувати як мову Chrome</translation>
 <translation id="4384468725000734951">Пошук за допомогою Sogou</translation>
 <translation id="4404568932422911380">Немає закладок</translation>
 <translation id="4405224443901389797">Перемістити в папку…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">Відхиляти запит веб-сайту, щоб забороняти масштабування</translation>
 <translation id="5683547024293500885">Chrome не може перевірити наявність оновлень</translation>
 <translation id="5686790454216892815">Назва файлу задовга</translation>
-<translation id="5687809546194252819">Після перезапуску в додатку <ph name="APP_NAME" /> використовуватиметься <ph name="LANGUAGE" />.</translation>
 <translation id="569536719314091526">Перекладіть цю сторінку будь-якою мовою, натиснувши кнопку "Більше опцій"</translation>
 <translation id="5696597120588531049">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо</translation>
 <translation id="5697688514913266141">Файл буде збережено в каталозі <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Змінити<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">Країна або регіон</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
 <translation id="6154478581116148741">Щоб експортувати паролі з цього пристрою, увімкніть блокування екрана</translation>
-<translation id="6157392216611456285">Вибрати <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Заощадження даних: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Немає зламаних паролів</translation>
 <translation id="6192907950379606605">Отримувати описи зображень</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6364438453358674297">Вилучити пропозицію з історії?</translation>
-<translation id="6366047038980456022">У <ph name="APP_NAME" /> є все, що потрібно, щоб працювати, творити й досліджувати в Інтернеті</translation>
 <translation id="6378173571450987352">Деталі: відсортовано за кількістю використаного трафіку</translation>
 <translation id="6379829913050047669">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Затемнити веб-сайти</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">Завантажити відео</translation>
 <translation id="6477928892249167417">Схоже, ці сайти є важливими для вас:</translation>
 <translation id="6482749332252372425">Не вдалося завантажити файл <ph name="FILE_NAME" />. Замало місця.</translation>
+<translation id="6489610539826642779">Список читання <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Щоб запустити додаток <ph name="APP_NAME" /> уперше, під’єднайте пристрій до Інтернету.</translation>
 <translation id="6508722015517270189">Перезапустіть Chrome</translation>
 <translation id="6527303717912515753">Надіслати</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Примітка про конфіденційність Chrome</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6676840375528380067">Видалити дані Chrome із цього пристрою?</translation>
-<translation id="6691888250440401212">1. Виберіть <ph name="APP_NAME" />\n2. Натисніть "Використовувати за умовчанням".</translation>
 <translation id="6697492270171225480">Показувати пропозиції схожих сторінок, коли не вдається знайти сторінку</translation>
 <translation id="6698801883190606802">Керування синхронізованими даними</translation>
 <translation id="6699370405921460408">Сервери Google оптимізують сторінки, які ви відвідуєте.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">Невідомий чи непідтримуваний пристрій (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Мовний пакет (<ph name="LANG" />) завантажено.</translation>
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
-<translation id="8407396331882458341">1. Виберіть <ph name="APP_NAME" />\n2. Натисніть "Завжди".</translation>
 <translation id="8410695015584479363">Відстежувати ціни</translation>
 <translation id="8413126021676339697">Показати повну історію</translation>
 <translation id="8427875596167638501">Вкладку "Попередній перегляд" відкрито на половину висоти</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Через Wi-Fi</translation>
 <translation id="8559990750235505898">Пропозиція перекладати сторінки іншими мовами</translation>
 <translation id="8560602726703398413">Ваш список читання буде в закладках</translation>
-<translation id="8561196567344536112">1. Перейдіть у Налаштування\n2. Натисніть "Веб-переглядач"\n3. Виберіть <ph name="APP_NAME" />.</translation>
 <translation id="8562452229998620586">Тут відображатимуться збережені паролі.</translation>
 <translation id="8569404424186215731">з <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>

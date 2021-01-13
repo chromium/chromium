@@ -70,6 +70,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1236081509407217141">Të lejohet VR?</translation>
 <translation id="1240347957665416060">Emri i pajisjes sate</translation>
 <translation id="124116460088058876">Gjuhë të tjera</translation>
+<translation id="1243027604378859286">Autori:</translation>
 <translation id="1250759482327835220">Për të paguar më shpejt herën tjetër, ruaje kartën, emrin dhe adresën tënde të faturimit në "Llogarinë tënde të Google".</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1256368399071562588">&lt;p&gt;Nëse përpiqesh të vizitosh një sajt uebi dhe ai nuk hapet, provo në fillim të rregullosh gabimin me këto hapa për zgjidhjen e problemeve:&lt;/p&gt;
@@ -310,6 +311,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2114841414352855701">U shpërfill për shkak se u anulua nga <ph name="POLICY_NAME" />.</translation>
 <translation id="2119505898009119320">Lëshuar për: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Shpim poshtë djathtas</translation>
+<translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
 <translation id="2129079103035905234">Sensorët e lëvizjes</translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="213826338245044447">Faqeshënuesit celularë</translation>
@@ -419,6 +421,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
 <translation id="2587730715158995865">Nga <ph name="ARTICLE_PUBLISHER" />. Lexo këtë dhe <ph name="OTHER_ARTICLE_COUNT" /> artikuj të tjerë.</translation>
 <translation id="2587841377698384444">ID-ja e ndërfaqes API të direktorisë:</translation>
+<translation id="2594318783181750337">Pamja e shpejtë e uebit:</translation>
 <translation id="2595719060046994702">Kjo pajisje dhe llogari nuk menaxhohen nga një kompani ose organizatë tjetër.</translation>
 <translation id="2597378329261239068">Ky dokument mbrohet me fjalëkalim. Fut një fjalëkalim.</translation>
 <translation id="2609632851001447353">Variantet</translation>
@@ -513,6 +516,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2989742184762224133">Dy kapje me tel lart</translation>
 <translation id="2991174974383378012">Ndarja me sajtet e uebit</translation>
 <translation id="2991571918955627853">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor HSTS. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
+<translation id="2995517112308048736">Madhësia e skedarit:</translation>
 <translation id="2996674880327704673">Sugjerime nga Google</translation>
 <translation id="3002501248619246229">Kontrollo median e tabakasë së hyrjes</translation>
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
@@ -634,6 +638,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3487845404393360112">Tabakaja 4</translation>
 <translation id="3495081129428749620">Gjej në faqen
     <ph name="PAGE_TITLE" /></translation>
+<translation id="350069200438440499">Emri i dosjes:</translation>
 <translation id="3507936815618196901">Të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="3512163584740124171">Kjo politikë shpërfillet pasi një politikë tjetër nga i njëjti grup politikash ka përparësi më të lartë.</translation>
 <translation id="3518941727116570328">Menaxhimi i shumë objekteve</translation>
@@ -672,9 +677,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3633738897356909127">Butoni "Përditëso Chrome", shtyp "Enter" për të përditësuar Chrome nga cilësimet e Chrome</translation>
 <translation id="3634530185120165534">Tabakaja 5</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
+<translation id="3642638418806704195">Aplikacioni:</translation>
 <translation id="3650584904733503804">Vlerësimi është i suksesshëm</translation>
 <translation id="3655670868607891010">Nëse e shikon këtë vazhdimisht, provo këto <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rishikim</translation>
+<translation id="3664782872746246217">Fjalët kyçe:</translation>
 <translation id="3676592649209844519">ID-ja e pajisjes:</translation>
 <translation id="3677008721441257057">Mos dëshiron të thuash &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Kërkesa nuk mund të nënshkruhej</translation>
@@ -762,7 +769,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zarf)</translation>
-<translation id="4067669230157909013">Regjistrimi i ekranit u riaktivizua.</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
@@ -1010,6 +1016,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4989542687859782284">Nuk ofrohen</translation>
 <translation id="4989809363548539747">Ky përbërës shtesë nuk mbështetet</translation>
 <translation id="4995216769782533993">Konfirmo kodin e sigurisë për të ndarë të dhënat e kartës sate me këtë sajt</translation>
+<translation id="4995474875135717171">Modifikuar:</translation>
 <translation id="5002932099480077015">Nëse aktivizohet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="5015510746216210676">Emri i pajisjes:</translation>
 <translation id="5017554619425969104">Teksti që kopjove</translation>
@@ -1056,6 +1063,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="515292512908731282">C4 (Zarf)</translation>
 <translation id="5158275234811857234">Kapak</translation>
 <translation id="5159010409087891077">Hape faqen në një dritare të re "të fshehtë" (⇧⌘N)</translation>
+<translation id="5161334686036120870">Subjekti:</translation>
 <translation id="5161506081086828129">Stivuesi 9</translation>
 <translation id="5164798890604758545">Është futur tekst</translation>
 <translation id="516920405563544094">Shkruaj kodin CVC për <ph name="CREDIT_CARD" />. Pasi t'i konfirmosh, detajet e kartës nga "Llogaria jote e Google" do të ndahen me këtë sajt.</translation>
@@ -1087,6 +1095,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5269999699920406580">Veçoritë që zbatohen për të gjithë sistemin mund të caktohen vetëm nga zotëruesi: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">Paralajmërim: Kjo politikë nuk është bashkuar siç specifikohet në politikën PolicyDictionaryMultipleSourceMergeList sepse nuk është pjesë e politikave të fjalorit që mund të bashkohen.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
 <translation id="5284909709419567258">Adresat e rrjetit</translation>
 <translation id="5285570108065881030">Shfaq të gjitha fjalëkalimet e ruajtura</translation>
@@ -1242,6 +1251,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5895187275912066135">Lëshuar më</translation>
 <translation id="5901630391730855834">E verdhë</translation>
+<translation id="5903264686717710770">Titulli:</translation>
 <translation id="5905445707201418379">Bllokuar sipas politikës së origjinës së <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizuar)</translation>
 <translation id="5913377024445952699">Regjistrimi i ekranit u vendos në pauzë</translation>
@@ -1290,6 +1300,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6047927260846328439">Kjo përmbajtje mund të përpiqet të të mashtrojë që të instalosh softuerë ose të zbulosh informacionet e tua personale. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">Dorëzimi i faqes</translation>
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
+<translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Të ndahet prania jote?</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
@@ -1799,6 +1810,7 @@ Detaje shtesë:
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
 <translation id="8128526133099929547">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë.</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
+<translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
 <translation id="8157295877370077682">Largohu nga sajti</translation>
@@ -1939,6 +1951,7 @@ Detaje shtesë:
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugjerim kërkimi</translation>
 <translation id="8719528812645237045">Shumë shpime lart</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
+<translation id="8726549941689275341">Madhësia e faqes:</translation>
 <translation id="8728672262656704056">Ke kaluar në modalitetin "e fshehtë"</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8731544501227493793">Menaxho butonin e fjalëkalimeve, shtyp "Enter" për të parë dhe menaxhuar fjalëkalimet e tua në cilësimet e Chrome</translation>
@@ -2071,7 +2084,6 @@ Detaje shtesë:
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="945855313015696284">Kontrollo informacionin më poshtë dhe fshi çdo kartë të pavlefshme</translation>
 <translation id="950736567201356821">Tri shpime lart</translation>
-<translation id="951941430552851965">Regjistrimi i ekranit u vendos në pauzë nga administratori yt për shkak të përmbajtjes në ekranin tënd.</translation>
 <translation id="961663415146723894">Lidhje poshtë</translation>
 <translation id="962484866189421427">Kjo përmbajtje mund të përpiqet të instalojë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LINK" />Shfaq gjithsesi<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ndërtimi zyrtar</translation>

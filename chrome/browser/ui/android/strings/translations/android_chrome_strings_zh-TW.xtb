@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">將歷史記錄和自動即時查詢從網址列中清除。</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
+<translation id="2039379262107991683">將網頁新增至閱讀清單，即可在之後收到閱讀提醒</translation>
 <translation id="204321170514947529">「<ph name="APP_NAME" />」在 Chrome 中也有資料</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the internet</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">文字大小</translation>
 <translation id="2394602618534698961">你下載的檔案會顯示在這裡</translation>
 <translation id="2407481962792080328">登入 Google 帳戶時，系統會啟用這項功能</translation>
-<translation id="2407674018644220013">要將 <ph name="APP_NAME" /> 設為預設瀏覽器嗎？</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">分享</translation>
 <translation id="247737702124049222">圖片說明功能已開啟</translation>
 <translation id="2478076885740497414">安裝應用程式</translation>
-<translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2494974097748878569">Chrome 版 Google 助理</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4382908510000698092">做為 Chrome 的語言</translation>
 <translation id="4384468725000734951">現已使用 Sogou 搜尋</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5683547024293500885">Chrome 無法檢查更新</translation>
 <translation id="5686790454216892815">檔案名稱過長</translation>
-<translation id="5687809546194252819">「<ph name="APP_NAME" />」會在重新啟動後使用<ph name="LANGUAGE" />。</translation>
 <translation id="569536719314091526">透過 [更多選項] 按鈕將這個網頁翻譯成任何語言</translation>
 <translation id="5696597120588531049">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等</translation>
 <translation id="5697688514913266141">檔案會儲存至「<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />」。<ph name="BEGIN_LINK2" />編輯<ph name="END_LINK2" />。</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">國家/地區</translation>
 <translation id="614940544461990577">建議做法：</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定，即可從這部裝置匯出你的密碼</translation>
-<translation id="6157392216611456285">選擇 <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">節省 <ph name="PERCENT" /> 的數據流量</translation>
 <translation id="6186394685773237175">未發現任何外洩密碼</translation>
 <translation id="6192907950379606605">取得圖片說明</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6364438453358674297">從歷史記錄中移除建議項目？</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> 的智慧功能和執行速度可讓你放心地在網路上進行操作、創作和探索，無須擔心安全性問題</translation>
 <translation id="6378173571450987352">詳細資料：依使用資料量排序</translation>
 <translation id="6379829913050047669">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="6381421346744604172">調暗網站顏色</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對你很重要：</translation>
 <translation id="6482749332252372425">儲存空間不足，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="6489610539826642779">閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">初次使用「<ph name="APP_NAME" />」時請連線至網際網路。</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Chrome 隱私權聲明</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
-<translation id="6691888250440401212">1. 選擇 <ph name="APP_NAME" />\n2. 輕觸 [設為預設]</translation>
 <translation id="6697492270171225480">找不到網頁時顯示類似的網頁建議</translation>
 <translation id="6698801883190606802">管理同步資料</translation>
 <translation id="6699370405921460408">Google 伺服器會針對你造訪的網頁進行最佳化處理。</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />套件已下載完成。</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
-<translation id="8407396331882458341">1. 選擇 <ph name="APP_NAME" />\n2. 輕觸 [一律採用]</translation>
 <translation id="8410695015584479363">追蹤價格</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8427875596167638501">已在畫面下半部顯示預覽分頁</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">使用 Wi-Fi 時</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
-<translation id="8561196567344536112">1. 前往「設定」\n2. 輕觸 [瀏覽器應用程式]\n3. 選擇 <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
 <translation id="8569404424186215731">(<ph name="DATE" />起)</translation>
 <translation id="8571213806525832805">過去 4 週</translation>

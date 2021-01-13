@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ सक्रिय गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
-<translation id="2375079107209812402">अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
 <translation id="4848429997038228357">चलिरहेको छ</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}other{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">पाहुनाको रूपमा ब्राउज गर्नुहोस्</translation>
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{अब {0} पटक प्रयास गर्न मिल्छ}other{अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
 <translation id="5635169860413004179">रिपोर्ट हेर्नुहोस्</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">यसले CPU कति प्रयोग भएको छ भन्ने कुरा मापन गर्छ र यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
-<translation id="8160445423316272678">स्क्यानरमा आफ्नो कागजात राख्नुहोस् र स्क्यान गर्न थाल्न <ph name="SPAN_BEGIN" />स्क्यान गर्नुहोस्<ph name="SPAN_END" /> विकल्प चयन गर्नुहोस्</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8230672074305416752">पूर्वनिर्धारित नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="8930622219860340959">वायरलेस</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>

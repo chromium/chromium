@@ -9,7 +9,6 @@
 <translation id="1131805035311359397">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1315551408014407711">Налаштуйте новий профіль Chromium</translation>
-<translation id="1357932062193643861">Запитувати, коли відкривається Chromium</translation>
 <translation id="1396446129537741364">Chromium намагається показати паролі.</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
 <translation id="1414973082589232775">Щоб відтворювати захищений медіаконтент за допомогою додатка Rosetta, потрібно перезапустити Chromium.</translation>
@@ -80,6 +79,7 @@
 <translation id="3651803019964686660">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
 <translation id="3685209450716071127">Chromium не може перевірити паролі. Перевірте інтернет-з'єднання.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення}=1{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення. Вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}one{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення. # вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}few{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення. # вікна в режимі анонімного перегляду не відновляться й не відкриються знову.}many{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення. # вікон в режимі анонімного перегляду не відновляться й не відкриються знову.}other{Адміністратор просить перезапустити Chromium, щоб застосувати це оновлення. # вікна в режимі анонімного перегляду не відновиться й не відкриється знову.}}</translation>
+<translation id="371088601698879021">ОС Chromium може автоматично відновлювати ваші додатки й сторінки після перезапуску пристрою.</translation>
 <translation id="3713809861844741608">Відкрити посилання в новій &amp;вкладці Chromium</translation>
 <translation id="3728336900324680424">Chromium матиме доступ до Диска, щоб робити пропозиції в адресному рядку</translation>
 <translation id="378917192836375108">Chromium дозволяє натиснути номер телефону в Інтернеті та зателефонувати за ним через Skype.</translation>
@@ -99,6 +99,7 @@
 <translation id="4407044323746248786">Усе одно вийти з Chromium?</translation>
 <translation id="4415566066719264597">Дозволити Chromium працювати у фоновому режимі</translation>
 <translation id="4423735387467980091">Налаштування та керування Chromium</translation>
+<translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
 <translation id="4544142686420020088">Не вдалось оновити веб-переглядач Chromium. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Ви ввійшли як <ph name="USER_EMAIL_ADDRESS" />. Ваші закладки, історія й інші налаштування будуть доступні на всіх пристроях, на яких ви ввійдете в цей обліковий запис.</translation>
 <translation id="459535195905078186">Програми Chromium</translation>
@@ -111,7 +112,6 @@
 <translation id="4788777615168560705">Chromium не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>
 <translation id="4888717733111232871">Вхідне правило для Chromium дозволяє трафік mDNS.</translation>
-<translation id="4893632094755846570">Дані веб-перегляду буде видалено з цього пристрою назавжди. Щоб відновити їх, увійдіть у веб-переглядачі Chromium як</translation>
 <translation id="4943838377383847465">Chromium у фоновому режимі.</translation>
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
@@ -158,6 +158,7 @@
 <translation id="6248213926982192922">Зробити Chromium переглядачем за умовчанням</translation>
 <translation id="6266342355635466082">Chromium не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
+<translation id="6281746429495226318">Налаштуйте свій профіль Chromium</translation>
 <translation id="6295779123002464101">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chromium заблокував його.</translation>
 <translation id="6309712487085796862">Chromium використовує вашу камеру.</translation>
 <translation id="6333502561965082103">У Chromium виконується інша операція. Спробуйте пізніше.</translation>
@@ -170,13 +171,13 @@
 <translation id="6510925080656968729">Видалити Chromium</translation>
 <translation id="6570579332384693436">Щоб виправляти орфографічні помилки, Chromium надсилає введений текст у Google</translation>
 <translation id="6598877126913850652">Перейти до налаштувань сповіщень Chromium</translation>
+<translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6717134281241384636">Ваш профіль не можна використовувати, оскільки він створений у новішій версії Chromium.
 
 Деякі функції можуть бути недоступними. Укажіть інший каталог профілю або скористайтеся новішою версією Chromium.</translation>
 <translation id="6734080038664603509">Оновити &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
-<translation id="6762551859069255163">Різні профілі в Chromium дають змогу розділити веб-перегляд для робочих і особистих цілей або для різних користувачів цього пристрою</translation>
 <translation id="6774082503108938489">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chromium. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
@@ -268,6 +269,5 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">ОС Chromium</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
-<translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

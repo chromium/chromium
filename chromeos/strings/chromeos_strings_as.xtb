@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
 <translation id="4848429997038228357">চলি আছে</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}one{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}other{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4891842000192098784">চাপ</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">অতিথি হিচাপে ব্ৰাউজ কৰক</translation>
 <translation id="54609108002486618">পৰিচালিত</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} টা প্ৰয়াস বাকী আছে}one{{0} টা প্ৰয়াস বাকী আছে}other{{0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="5635169860413004179">ৰিপ’ৰ্ট চাওক</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">এইটোৱে চিপিইউৰ ব্যৱহাৰ জোখে আৰু ই সকলো মুখ্য বস্তুৰ একত্ৰীকৰণ</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">আপোনাৰ নথিখন স্কেনাৰটোত ৰাখক আৰু আৰম্ভ কৰিবলৈ <ph name="SPAN_BEGIN" />স্কেন কৰক<ph name="SPAN_END" /> বাছনি কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">বিফল হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="8928727111548978589">বিফল হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="8930622219860340959">বেতাঁৰ</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>

@@ -184,7 +184,6 @@
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
 <translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2621713457727696555">Захищено</translation>
-<translation id="2633643784040308254">Сер.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
 <translation id="2678852583403169292">Меню функції "Читання з екрана"</translation>
@@ -327,6 +326,7 @@
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="394485226368336402">Налаштування звуку</translation>
+<translation id="3945867833895287237">Підключення до точки доступу…</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -415,7 +415,6 @@
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
 <translation id="4705716602320768426">Надіслати відгук</translation>
-<translation id="4730232680256276456">Вітаємо!</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>

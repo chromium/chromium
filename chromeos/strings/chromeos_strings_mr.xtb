@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2364498172489649528">पास झाले</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
@@ -169,7 +168,6 @@
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">मदत केंद्र यामध्ये अधिक जाणून घ्या</translation>
 <translation id="5635169860413004179">अहवाल पहा</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">हे CPU चा वापर आणि सर्व कोअरचे एकत्रीकरण मोजते</translation>
@@ -251,7 +249,6 @@
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
-<translation id="8160445423316272678">सुरुवात करण्यासाठी तुमचे दस्तऐवज स्कॅनरवर ठेवा आणि <ph name="SPAN_BEGIN" />स्कॅन करा<ph name="SPAN_END" /> दाबा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
@@ -285,7 +282,6 @@
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
 <translation id="8930622219860340959">बिनतारी</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
 <translation id="9003704114456258138">वारंवारता</translation>

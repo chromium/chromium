@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку.</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп'ютара</translation>
+<translation id="2039379262107991683">Дадавайце старонкі ў Спіс на прагляд, каб атрымліваць пра іх напаміны</translation>
 <translation id="204321170514947529">Праграма "<ph name="APP_NAME" />" таксама мае змесціва ў Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Як шукаць у інтэрнэце</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">Маштаб тэксту</translation>
 <translation id="2394602618534698961">Спампаваныя вамі файлы з'явяцца тут</translation>
 <translation id="2407481962792080328">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google</translation>
-<translation id="2407674018644220013">Зрабіць браўзер <ph name="APP_NAME" /> стандартным?</translation>
 <translation id="2410754283952462441">Выберыце ўліковы запіс</translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2426805022920575512">Выбраць іншы ўліковы запіс</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">Абагуліць</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
 <translation id="2478076885740497414">Усталяваць праграму</translation>
-<translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2494974097748878569">Памочнік Google у Chrome</translation>
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">"Бяспечны прагляд" выключаны</translation>
 <translation id="4351244548802238354">Закрыць дыялогавае акно</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
-<translation id="4382908510000698092">Выкарыстоўваць як мову Chrome</translation>
 <translation id="4384468725000734951">Выкарыстоўваецца пошукавая сістэма Sogou</translation>
 <translation id="4404568932422911380">Няма закладак</translation>
 <translation id="4405224443901389797">Перамясціць у…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">Перавызначаць запыт вэб-сайта на прадухіленне павелічэння маштабу</translation>
 <translation id="5683547024293500885">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў</translation>
 <translation id="5686790454216892815">Назва файла занадта доўгая</translation>
-<translation id="5687809546194252819">Пасля перазапуску праграма "<ph name="APP_NAME" />" будзе выкарыстоўваць наступную мову: <ph name="LANGUAGE" /></translation>
 <translation id="569536719314091526">Перакладзіце гэту старонку на любую мову з дапамогай кнопкі "Дадатковыя параметры"</translation>
 <translation id="5696597120588531049">Chrome дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, наведваннем небяспечных вэб-сайтаў і г. д.</translation>
 <translation id="5697688514913266141">Файл будзе захаваны ў папцы <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Змяніць<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">Краіна або рэгіён</translation>
 <translation id="614940544461990577">Паспрабуйце наступнае:</translation>
 <translation id="6154478581116148741">Каб экспартаваць паролі з гэтай прылады, уключыце блакіроўку экрана ў Наладах</translation>
-<translation id="6157392216611456285">Выбраць <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Эканомія трафіка <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Не знойдзена раскрытых пароляў</translation>
 <translation id="6192907950379606605">Атрымл. апісанні відарысаў</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Пазначыць як прачытанае</translation>
 <translation id="6364438453358674297">Выдаліць прапанову з гісторыі?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> мае разумныя функцыі і хуткасць, патрэбную вам, каб бяспечна працаваць, ствараць і шукаць новае ў інтэрнэце</translation>
 <translation id="6378173571450987352">Падрабязныя звесткі: адсартавана па аб'ёме выкарыстанага трафіка</translation>
 <translation id="6379829913050047669">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Зацямняць вэб-сайты</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">Спампаваць відэа</translation>
 <translation id="6477928892249167417">Гэтыя сайты могуць быць важнымі для вас:</translation>
 <translation id="6482749332252372425">Не ўдалося спампаваць файл <ph name="FILE_NAME" /> з-за недахопу месца ў сховішчы.</translation>
+<translation id="6489610539826642779">Спіс на прагляд <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Каб выкарыстаць <ph name="APP_NAME" /> першы раз, падключыцеся да інтэрнэту.</translation>
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Паведамленне аб прыватнасці Chrome</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6676840375528380067">Выдаліць даныя Chrome з гэтай прылады?</translation>
-<translation id="6691888250440401212">1. Выберыце <ph name="APP_NAME" />.\n2. Націсніце "Зрабіць стандартнай праграмай".</translation>
 <translation id="6697492270171225480">Паказваць прапановы падобных старонак, калі старонку не ўдаецца знайсці</translation>
 <translation id="6698801883190606802">Кіраванне сінхранізаванымі данымі</translation>
 <translation id="6699370405921460408">Серверы Google будуць аптымізаваць старонкі, якія вы наведваеце.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Моўны пакет (<ph name="LANG" />) спампаваны.</translation>
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
-<translation id="8407396331882458341">1. Выберыце праграму "<ph name="APP_NAME" />".\n2. Націсніце "Заўсёды".</translation>
 <translation id="8410695015584479363">Адсочваць цэны</translation>
 <translation id="8413126021676339697">Паказаць усю гісторыю</translation>
 <translation id="8427875596167638501">Укладка перадпрагляду адкрыта напалову</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Праз Wi-Fi</translation>
 <translation id="8559990750235505898">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="8560602726703398413">Шукайце спіс чытання ў Закладках</translation>
-<translation id="8561196567344536112">1. Перайдзіце ў Налады.\n2. Націсніце “Браўзер”.\n3. Выберыце <ph name="APP_NAME" />.</translation>
 <translation id="8562452229998620586">Захаваныя паролі з'явяцца тут.</translation>
 <translation id="8569404424186215731">з <ph name="DATE" /></translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>

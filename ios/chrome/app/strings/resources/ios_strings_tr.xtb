@@ -238,6 +238,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="3443810440409579745">Sekme alındı.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3448016392200048164">Bölünmüş Görünüm</translation>
+<translation id="3454224729131972583">Unvan</translation>
 <translation id="345565170154308620">Şifreleri Yönet...</translation>
 <translation id="3469166899695866866">İndirme Durdurulsun mu?</translation>
 <translation id="3470502288861289375">Kopyalanıyor...</translation>
@@ -267,6 +268,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3670030362669914947">Numara</translation>
 <translation id="3691593122358196899">Yer işareti <ph name="FOLDER_TITLE" /> klasörüne eklendi</translation>
 <translation id="3709582977625132201">Okunmadı Olarak İşaretle</translation>
+<translation id="3720541637541300822">Chrome'u Kapattığınızda Gizli Sekmeleri Kilitleyin</translation>
 <translation id="3740397331642243698">Girilen URL'leri Google Chrome'da Gizli modda açar.</translation>
 <translation id="3771033907050503522">Gizli Sekmeler</translation>
 <translation id="3775743491439407556">Senkronizasyon Çalışmıyor</translation>
@@ -381,6 +383,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4979397965658815378">Yer işaretleri, şifreler, geçmiş ve diğer ayarlarınıza tüm cihazlarınızdan erişmek için Google Hesabınızla oturum açın.</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
 <translation id="5010803260590204777">Web'e gizli olarak göz atmak için gizli bir sekme açın.</translation>
+<translation id="5017828934289857214">Daha Sonra Hatırlat</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> sorunlar bulundu.</translation>
 <translation id="5059136629401106827">Tamam</translation>

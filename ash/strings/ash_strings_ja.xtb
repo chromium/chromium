@@ -184,7 +184,6 @@
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2621713457727696555">保護あり</translation>
-<translation id="2633643784040308254">中</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
@@ -327,6 +326,7 @@
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="394485226368336402">音声設定</translation>
+<translation id="3945867833895287237">アクセス ポイントに接続しています…</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -415,7 +415,6 @@
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4705716602320768426">フィードバックを送信</translation>
-<translation id="4730232680256276456">高</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>

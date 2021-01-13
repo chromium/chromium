@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
 <translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
@@ -168,7 +167,6 @@
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">مرکز امداد میں مزید جانیں</translation>
 <translation id="5635169860413004179">رپورٹ دیکھیں</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">‏اس سے CPU استعمال کی پیمائش ہوتی ہے اور یہ سبھی کورز کا مجموعہ ہے</translation>
@@ -250,7 +248,6 @@
 <translation id="8075838845814659848">باقی چارج</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
-<translation id="8160445423316272678">اپنی دستاویز کو اسکینر پر رکھیں اور شروع کرنے کیلئے <ph name="SPAN_BEGIN" />اسکین کریں<ph name="SPAN_END" /> کو منتخب کریں</translation>
 <translation id="8206859287963243715">سیلولر</translation>
 <translation id="8208861521865154048">فوائد</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
@@ -284,7 +281,6 @@
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>

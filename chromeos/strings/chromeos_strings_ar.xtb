@@ -51,7 +51,6 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
-<translation id="2375079107209812402">المحاولات المتبقية: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> تتبقّى محاولة واحدة ({0}).}zero{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}two{<ph name="ERROR_MESSAGE" /> تتبقّى محاولتان ({0}).}few{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولات.}many{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}other{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}}</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">تصفَّح كزائر</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}many{تتبقّى {0} محاولة.}other{تتبقّى {0} محاولة.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">مزيد من المعلومات في مركز المساعدة</translation>
 <translation id="5635169860413004179">عرض التقرير</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">‏هذا يقيس استخدام وحدة المعالجة المركزية (CPU)، ويقدِّم بيانات مجمّعة عن كل النوى.</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
-<translation id="8160445423316272678">للبدء، يُرجى وضع المستند على الماسح الضوئي واختيار <ph name="SPAN_BEGIN" />المسح ضوئيًا<ph name="SPAN_END" />.</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> محاولة متبقية</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="9003704114456258138">التردد</translation>

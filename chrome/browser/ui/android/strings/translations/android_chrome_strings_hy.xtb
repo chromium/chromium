@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Մաքրում է պատմությունն ու հասցեագոտու ինքնալրացումները:</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
+<translation id="2039379262107991683">Դուք կարող եք ձեր Ընթերցանության ցանկում ավելացնել էջեր՝ հիշեցումներ ստանալու համար</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> հավելվածը նաև ունի տվյալներ Chrome-ում</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Որոնում համացանցում</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">Տեքստի չափափոխում</translation>
 <translation id="2394602618534698961">Ձեր ներբեռնած ֆայլերը ցուցադրվում են այստեղ</translation>
 <translation id="2407481962792080328">Այս գործառույթը միանում է, երբ դուք մտնում եք Google հաշիվ</translation>
-<translation id="2407674018644220013">Նշե՞լ <ph name="APP_NAME" /> հավելվածը որպես կանխադրված</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">Կիսվել</translation>
 <translation id="247737702124049222">Պատկերների նկարագրությունները միացված են</translation>
 <translation id="2478076885740497414">Տեղադրել հավելվածը</translation>
-<translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2494974097748878569">Google Օգնականը Chrome-ում</translation>
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
-<translation id="4382908510000698092">Օգտագործել որպես Chrome-ի լեզու</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
 <translation id="4404568932422911380">Էջանիշներ չկան</translation>
 <translation id="4405224443901389797">Տեղափոխել…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">Անտեսել կայքերի՝ խոշորացումը կանխելու հարցումները</translation>
 <translation id="5683547024293500885">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="5686790454216892815">Ֆայլի անունը չափազանց երկար է</translation>
-<translation id="5687809546194252819">Վերագործարկումից հետո <ph name="APP_NAME" /> հավելվածը կօգտագործի <ph name="LANGUAGE" /> լեզուն։</translation>
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
 <translation id="5697688514913266141">Ձեր ֆայլը կպահվի <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> պանակում։ <ph name="BEGIN_LINK2" />Փոխել<ph name="END_LINK2" /></translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
-<translation id="6157392216611456285">Ընտրել <ph name="APP_NAME" />-ը</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> տվյալների խնայում</translation>
 <translation id="6186394685773237175">Կոտրված գաղտնաբառեր չեն գտնվել</translation>
 <translation id="6192907950379606605">Ստանալ նկարագրություններ</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}}</translation>
 <translation id="6345878117466430440">Նշել որպես կարդացված</translation>
 <translation id="6364438453358674297">Հեռացնե՞լ առաջարկը պատմությունից:</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> հավելվածն օժտված է խելացի միջերեսով և արագությամբ, որն անհրաժեշտ է համացանցում ապահով և արագ դիտարկման համար։</translation>
 <translation id="6378173571450987352">Տեղեկություններ․ տեսակավորված է ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="6381421346744604172">Մգացնել կայքերը</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">Ներբեռնել տեսանյութը</translation>
 <translation id="6477928892249167417">Այս կայքերը կարող են կարևոր լինել ձեզ համար՝</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ հիշողությունում բավարար տեղ չկա:</translation>
+<translation id="6489610539826642779">Ընթերցանության ցանկ <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">«<ph name="APP_NAME" />» հավելվածն առաջին անգամ օգտագործելիս միացեք համացանցին:</translation>
 <translation id="6508722015517270189">Վերագործարկեք Chrome-ը</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Chrome-ի Գաղտնիության ծանուցագիր</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6676840375528380067">Հեռացնե՞լ Chrome-ի տվյալները այս սարքից</translation>
-<translation id="6691888250440401212">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Նշել որպես կանխադրված»</translation>
 <translation id="6697492270171225480">Ցուցադրել նմանատիպ էջերի առաջարկներ, երբ որևէ էջ չհաջողվի գտնել</translation>
 <translation id="6698801883190606802">Կառավարել համաժամացված տվյալները</translation>
 <translation id="6699370405921460408">Google-ի սերվերները կօպտիմալացնեն ձեր այցելած էջերը։</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> լեզուն պատրաստ է։</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
-<translation id="8407396331882458341">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Միշտ»</translation>
 <translation id="8410695015584479363">Հետևել գներին</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Wi-Fi-ի միջոցով</translation>
 <translation id="8559990750235505898">Առաջարկել թարգմանել էջերը այլ լեզուներով</translation>
 <translation id="8560602726703398413">Գտեք ձեր ընթերցանության ցանկը էջանիշներում։</translation>
-<translation id="8561196567344536112">1. Անցեք կարգավորումներ\n2. Հպեք «Դիտարկիչի հավելված»\n3. Ընտրեք <ph name="APP_NAME" />-ը</translation>
 <translation id="8562452229998620586">Պահված գաղտնաբառերը կտեսնեք այստեղ:</translation>
 <translation id="8569404424186215731"><ph name="DATE" />-ից սկսած</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>

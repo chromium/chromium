@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetooth-a</translation>
 <translation id="2364498172489649528">Gaindituta</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> saiakera gelditzen dira</translation>
 <translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
 <translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
 <translation id="2448312741937722512">Mota</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Hautatu karpeta Fitxategiak aplikazioan…</translation>
 <translation id="4835901797422965222">Ez dago sare aktiborik</translation>
 <translation id="4848429997038228357">ABIAN</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} saiaketa gelditzen da}other{<ph name="ERROR_MESSAGE" /> {0} saiakera gelditzen dira}}</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4891842000192098784">Estresa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
@@ -168,8 +168,8 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} saiaketa gelditzen da}other{{0} saiakera gelditzen dira}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Informazio gehiago lortzeko, joan Laguntza-zentroa atalera</translation>
 <translation id="5635169860413004179">Ikusi txostena</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">PUZaren erabilera neurtzen du honek, eta nukleo guztien multzokatze bat da</translation>
@@ -251,7 +251,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Hasteko, kokatu dokumentua eskanerrean eta hautatu <ph name="SPAN_BEGIN" />Eskaneatu<ph name="SPAN_END" /></translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
@@ -285,7 +284,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8919837981463578619">Hutsegitea - Erretilua falta da</translation>
 <translation id="8928727111548978589">Hutsegitea - Ez dago paperik</translation>
 <translation id="8930622219860340959">Hari gabekoa</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> saiakera gelditzen dira</translation>
 <translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>

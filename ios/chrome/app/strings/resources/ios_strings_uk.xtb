@@ -207,7 +207,7 @@
 <translation id="3153862085237805241">Зберегти картку</translation>
 <translation id="3157684681743766797">Позначити всі…</translation>
 <translation id="3161291298470460782">Ваш сеанс в обліковому записі буде завершено, синхронізацію – вимкнено, а всі дані Chrome на пристрої – видалено. Синхронізовані дані залишаться у вашому обліковому записі Google.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3175081911749765310">Веб-служби</translation>
 <translation id="3178650076442119961">У мережі сьогодні</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
@@ -238,6 +238,7 @@
 <translation id="3443810440409579745">Вкладку отримано.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3448016392200048164">Режим розділеного екрана</translation>
+<translation id="3454224729131972583">Звертання</translation>
 <translation id="345565170154308620">Керувати паролями…</translation>
 <translation id="3469166899695866866">Зупинити завантаження?</translation>
 <translation id="3470502288861289375">Копіювання…</translation>
@@ -267,6 +268,7 @@
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладку збережено в папці "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
+<translation id="3720541637541300822">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>
 <translation id="3775743491439407556">Синхронізація не працює</translation>
@@ -381,6 +383,7 @@
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5010803260590204777">Щоб переглядати веб-сторінки конфіденційно відкрийте анонімну вкладку.</translation>
+<translation id="5017828934289857214">Нагадати пізніше</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>

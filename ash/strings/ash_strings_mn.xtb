@@ -184,7 +184,6 @@
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2617342710774726426">SIM карт түгжигдсэн</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
-<translation id="2633643784040308254">Дунд зэрэг</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2658778018866295321">Товшоод чирэх</translation>
 <translation id="2678852583403169292">Ярихаар сонгох цэс</translation>
@@ -361,7 +360,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Суулгасан апп, Түр зогсоосон</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
-<translation id="425364040945105958">СИМ алга</translation>
+<translation id="425364040945105958">SIM алга</translation>
 <translation id="4261870227682513959">Мэдэгдлийн тохиргоог харуулна уу. Мэдэгдлийг унтраасан байна</translation>
 <translation id="4267383818855338811">Виртуал машин таны камерыг ашиглаж байна</translation>
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
@@ -417,7 +416,6 @@
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4705716602320768426">Cанал хүсэлт илгээх</translation>
-<translation id="4730232680256276456">Сайн уу</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>

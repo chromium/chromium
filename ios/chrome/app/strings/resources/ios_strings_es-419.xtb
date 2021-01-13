@@ -238,6 +238,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="3443810440409579745">Se recibió una pestaña.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
+<translation id="3454224729131972583">Título</translation>
 <translation id="345565170154308620">Administrar contraseñas…</translation>
 <translation id="3469166899695866866">¿Deseas detener la descarga?</translation>
 <translation id="3470502288861289375">Copiando…</translation>
@@ -267,6 +268,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Se agregó a favoritos en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
+<translation id="3720541637541300822">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
 <translation id="3740397331642243698">Abre las URL ingresadas en Google Chrome en modo Incógnito.</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
 <translation id="3775743491439407556">La sincronización no funciona</translation>
@@ -381,6 +383,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5010803260590204777">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
+<translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5056446788882570708">Se encontraron problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>

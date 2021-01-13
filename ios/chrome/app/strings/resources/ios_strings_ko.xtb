@@ -238,6 +238,7 @@
 <translation id="3443810440409579745">탭을 수신했습니다.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3448016392200048164">분할 보기</translation>
+<translation id="3454224729131972583">제목</translation>
 <translation id="345565170154308620">비밀번호 관리...</translation>
 <translation id="3469166899695866866">다운로드를 중지하시겠습니까?</translation>
 <translation id="3470502288861289375">복사 중...</translation>
@@ -267,6 +268,7 @@
 <translation id="3670030362669914947">번호</translation>
 <translation id="3691593122358196899">북마크를 <ph name="FOLDER_TITLE" />에 추가함</translation>
 <translation id="3709582977625132201">읽지않음으로 표시</translation>
+<translation id="3720541637541300822">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="3740397331642243698">Chrome에서 시크릿 모드로 입력된 URL 열기</translation>
 <translation id="3771033907050503522">시크릿 탭</translation>
 <translation id="3775743491439407556">동기화가 작동하지 않음</translation>
@@ -381,6 +383,7 @@
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5010803260590204777">시크릿 탭을 열어 웹을 비공개로 탐색하세요.</translation>
+<translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5056446788882570708"><ph name="TIME" />에 문제가 발견되었습니다.</translation>
 <translation id="5059136629401106827">확인</translation>

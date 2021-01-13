@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
-<translation id="2375079107209812402">Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
 <translation id="4835901797422965222">Brak aktywnych sieci</translation>
 <translation id="4848429997038228357">W TOKU</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4891842000192098784">Obciążenie</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
@@ -168,8 +168,8 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}many{Pozostało {0} prób}other{Pozostało {0} próby}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="5635169860413004179">Wyświetl raport</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">To narzędzie mierzy obciążenie procesora (wszystkich rdzeni)</translation>
@@ -251,7 +251,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">Umieść dokument na skanerze i wybierz <ph name="SPAN_BEGIN" />Skanuj<ph name="SPAN_END" />, by rozpocząć</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
@@ -285,7 +284,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>

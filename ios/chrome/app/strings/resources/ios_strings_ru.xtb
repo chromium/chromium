@@ -17,7 +17,7 @@
 <translation id="110724200315609752">Переключиться на открытое окно</translation>
 <translation id="1112015203684611006">Ошибка печати</translation>
 <translation id="1125564390852150847">Создать вкладку</translation>
-<translation id="1145536944570833626">Удалить сохраненные данные.</translation>
+<translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154690515305205900">Создать ссылку на выделенный текст нельзя.</translation>
 <translation id="1154984953698510061">Посмотреть другие вкладки</translation>
@@ -25,7 +25,7 @@
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1172898394251786223">Следующее поле</translation>
 <translation id="1176932207622159128">Не удалось сохранить</translation>
-<translation id="1180526666083833456">Синхронизация данных и персонализация на всех устройствах.</translation>
+<translation id="1180526666083833456">Синхронизация данных и персонализация на всех устройствах</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1207113853726624428">Новый поиск</translation>
 <translation id="1209206284964581585">Скрыть</translation>
@@ -238,6 +238,7 @@
 <translation id="3443810440409579745">Вкладка получена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3448016392200048164">Режим Split View</translation>
+<translation id="3454224729131972583">Обращение</translation>
 <translation id="345565170154308620">Настроить пароли</translation>
 <translation id="3469166899695866866">Остановить скачивание?</translation>
 <translation id="3470502288861289375">Копирование…</translation>
@@ -267,6 +268,7 @@
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладка добавлена в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
+<translation id="3720541637541300822">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3775743491439407556">Ошибка синхронизации</translation>
@@ -381,6 +383,7 @@
 <translation id="4979397965658815378">Войдите в аккаунт Google, чтобы пользоваться своими закладками, паролями, историей и другими настройками на любом устройстве</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5010803260590204777">Чтобы просматривать веб-страницы, не оставляя следов, откройте вкладку инкогнито.</translation>
+<translation id="5017828934289857214">Напомнить позже</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">ОК</translation>
@@ -465,7 +468,7 @@
 <translation id="5964480694698977962">Создать вкладку инкогнито.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
-<translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" />.</translation>
+<translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" /></translation>
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
@@ -479,7 +482,7 @@
 <translation id="6108923351542677676">Настройка…</translation>
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
-<translation id="6127379762771434464">Быстрая ссылка удалена</translation>
+<translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6136914049981179737">только что</translation>
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
 <translation id="616831107264507309">Читать позже</translation>

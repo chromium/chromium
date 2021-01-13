@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2364498172489649528">Stóðst</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4891842000192098784">Álag</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
@@ -168,8 +168,8 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Vafra sem gestur</translation>
 <translation id="54609108002486618">Stjórnað</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tilraun eftir}one{{0} tilraun eftir}other{{0} tilraunir eftir}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Frekari upplýsingar er að finna í Hjálparmiðstöðinni</translation>
 <translation id="5635169860413004179">Skoða skýrslu</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Þetta mælir örgjörvanotkun og er samansafn allra kjarna</translation>
@@ -251,7 +251,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8160445423316272678">Komdu skjalinu fyrir í skannanum og veldu <ph name="SPAN_BEGIN" />Skanna<ph name="SPAN_END" /> til að hefjast handa</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
@@ -285,7 +284,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
 <translation id="9003704114456258138">Tíðni</translation>

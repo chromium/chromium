@@ -24,6 +24,7 @@
 [<ph name="SERVICE_SCRIPT_NAME" />] のチェックボックスがすでにオンになっている場合は、いったんオフにしてもう一度オンにしてください。</translation>
 <translation id="225614027745146050">ようこそ</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. All Rights Reserved.</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2366718077645204424">ホストにアクセスできません。お使いのネットワークの設定が原因であることが考えられます。</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />最終オンライン: <ph name="RELATIVE_TIMESTAMP" />。</translation>

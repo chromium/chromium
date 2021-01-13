@@ -8,13 +8,11 @@
 <translation id="1088300314857992706">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chrome استفاده می‌کرد</translation>
 <translation id="1097330777386562916">‏هنگام خروج از Chrome، کوکی‌‌ها و داده‌های سایت پاک شوند</translation>
 <translation id="110877069173485804">‏این Chrome شماست</translation>
-<translation id="1125124144982679672">‏چه‌کسی از Chrome استفاده می‌کند؟</translation>
 <translation id="1142745911746664600">‏به‌روزرسانی Chrome امکان‌پذیر نیست</translation>
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
 <translation id="123620459398936149">‏سیستم‌عامل Chrome قادر به همگام‌سازی داده‌های شما نبود. لطفاً رمز عبارتی همگام‌سازی خود را به‌روز کنید.</translation>
 <translation id="1293325835983155583">‏<ph name="MANAGER" /> لازم می‌داند که شما شرایط خدمات زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شوند، اصلاح نمی‌شوند، و شرایط Google Chrome OS را محدود نمی‌کنند.</translation>
 <translation id="1302523850133262269">‏لطفاً صبر کنید تا Chrome جدیدترین به‌روزرسانی‌های سیستم را نصب کند.</translation>
-<translation id="1355000804395496115">‏برای افراد مختلفی که از این دستگاه استفاده می‌کنند یا برای جدا کردن مرور کاری و شخصی، از نمایه‌های مختلف در Chrome استفاده کنید</translation>
 <translation id="137466361146087520">‏Google Chrome نسخه بتا</translation>
 <translation id="1399397803214730675">‏این رایانه از قبل دارای نسخه جدیدتر Google Chrome است. اگر نرم‌افزار کار نمی‌کند، لطفاً Google Chrome را حذف نصب کرده و دوباره امتحان کنید.</translation>
 <translation id="1434626383986940139">‏برنامه‌های Chrome Canary</translation>
@@ -60,6 +58,7 @@
 <translation id="2534507159460261402">‏Google Pay (در Chrome کپی شد)</translation>
 <translation id="2580411288591421699">‏نمی‌توان همان نسخه Google Chrome را که اکنون در حال اجراست نصب کرد. لطفاً Google Chrome را ببندید و دوباره سعی کنید.</translation>
 <translation id="2586406160782125153">‏این کار داده‌های محصول مرورتان را برای همیشه از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
+<translation id="2588634262982826227">‏Chrome OS می‌تواند بدون اینکه هربار بپرسد، همیشه برنامه‌ها و صفحه‌هایتان را پس‌از راه‌اندازی مجدد دوباره بازیابی کند.</translation>
 <translation id="2622559029861875898">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2644798301485385923">‏سیستم سیستم‌عامل Chrome</translation>
 <translation id="2652691236519827073">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
@@ -77,7 +76,6 @@
 <translation id="2926676257163822632">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chrome اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">‏Chrome به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chrome و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chrome</translation>
-<translation id="298099161970687941">‏وقتی Chrome را باز می‌کنم سؤال شود</translation>
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
 <translation id="3059710691562604940">‏«مرور ایمن» خاموش است. Chrome توصیه می‌کند آن را روشن کنید.</translation>
 <translation id="3065168410429928842">‏برگه Chrome</translation>
@@ -85,6 +83,7 @@
 <translation id="3089968997497233615">‏نسخه جدید و امن تری از Google Chrome موجود است.</translation>
 <translation id="3114643501466072395">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود یا نه، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">‏سیستم‌عامل Chrome نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
+<translation id="3140883423282498090">‏دفعه بعد که Google Chrome را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="3149510190863420837">‏برنامه‌های Chrome</translation>
 <translation id="3360895254066713204">‏راهنمای Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chrome ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
@@ -219,7 +218,6 @@
 <translation id="7398801000654795464">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chrome شدید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7408085963519505752">‏شرایط Chrome OS</translation>
 <translation id="7419046106786626209">‏سیستم‌عامل Chrome قادر به همگام‌سازی داده‌هایتان نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
-<translation id="7423733001651488593">‏این کار داده مرور شما را برای همیشه از این دستگاه حذف می‌کند. برای بازیابی داده‌ها، با حساب زیر به سیستم Chrome وارد شوید:</translation>
 <translation id="7486227612705979895">‏Chrome برای ارائه پیشنهاد در نوار نشانی، به Drive شما دسترسی خواهد داشت</translation>
 <translation id="7535429826459677826">‏Google Chrome نسخه Dev</translation>
 <translation id="7573289029918943991">‏برای اینکه ببینید دستگاهتان به‌روز است یا نه، به <ph name="LINK_BEGIN" />تنظیمات Chrome OS<ph name="LINK_END" /> بروید</translation>

@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ခြင်းများကို ရှင်းလင်းရန်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
 <translation id="2038563949887743358">ဆိုဒ်ကြီး တောင်းဆိုမှု ဖွင့်မည်</translation>
+<translation id="2039379262107991683">သတိပေးချက်ရယူရန် စာမျက်နှာများကို သင်၏ 'ဖတ်ရန်စာရင်း' သို့ ပေါင်းထည့်ပါ</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> သည် Chrome တွင်လည်း ဒေတာများရှိသည်</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the internet</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">စာသား စကေး</translation>
 <translation id="2394602618534698961">သင်ဒေါင်းလုဒ်လုပ်ထားသော ဖိုင်များကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="2407481962792080328">သင့် Google Account သို့ လက်မှတ်ထိုးဝင်သည့်အခါ ဤဝန်ဆောင်မှုကို ဖွင့်ထားပါသည်</translation>
-<translation id="2407674018644220013"><ph name="APP_NAME" /> ကို သင့်မူရင်းအဖြစ် သတ်မှတ်လိုပါသလား။</translation>
 <translation id="2410754283952462441">အကောင့်တစ်ခု ရွေးပါ</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2426805022920575512">အခြားအကောင့် ရွေးရန်</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">မျှဝေရန်</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
 <translation id="2478076885740497414">အက်ပ် ထည့်သွင်းရန်</translation>
-<translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2494974097748878569">Chrome အတွင်းရှိ Google Assistant</translation>
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">ဘေးကင်းစွာဖွင့်ကြည့်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="4351244548802238354">ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
-<translation id="4382908510000698092">Chrome ၏ ဘာသာစကားအဖြစ် သုံးပါ</translation>
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
 <translation id="4404568932422911380">မည်သည့်လိပ်စာမျှ မရှိပါ</translation>
 <translation id="4405224443901389797">ဤနေရာသို့ ရွှေ့ရန်…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">ချဲ့နေမှုကို ဟန့်တားရန် ဝဘ်ဆိုက် တစ်ခု၏ တောင်းဆိုချက်ကို အုပ်ရေးပါ</translation>
 <translation id="5683547024293500885">Chrome က သင့်အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="5686790454216892815">ဖိုင်အမည် ရှည်လွန်းသည်</translation>
-<translation id="5687809546194252819">ပြန်စတင်ချိန်တွင် <ph name="APP_NAME" /> က <ph name="LANGUAGE" /> ကိုသုံးမည်။</translation>
 <translation id="569536719314091526">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ရန် 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်ကို ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="5696597120588531049">ဒေတာပေါက်ကြားမှု၊ မလုံခြုံသော ဝဘ်ဆိုက်များနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုလုံခြုံအောင် Chrome က ကူညီပေးနိုင်သည်</translation>
 <translation id="5697688514913266141">သင်၏ဖိုင်ကို <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> သို့ သိမ်းလိုက်ပါမည်။ <ph name="BEGIN_LINK2" />တည်းဖြတ်ရန်<ph name="END_LINK2" />။</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
 <translation id="6154478581116148741">ဤစက်မှ သင့်စကားဝှက်များ တင်ပို့ရန် ဆက်တင်များတွင် မျက်နှာပြင်လော့ခ် ဖွင့်ပါ</translation>
-<translation id="6157392216611456285"><ph name="APP_NAME" /> ကိုရွေးရန်</translation>
 <translation id="6159335304067198720">ဒေတာ <ph name="PERCENT" /> သိမ်းဆည်းနေ</translation>
 <translation id="6186394685773237175">ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
@@ -766,7 +762,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}}</translation>
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6364438453358674297">အကြံပေးချက်ကို မှတ်တမ်း ထဲမှ ဖယ်ရှားမလား?</translation>
-<translation id="6366047038980456022">အွန်လိုင်းတွင် လုံခြုံစွာ အသုံးပြုရန်၊ ပြုလုပ်ရန်နှင့် စူးစမ်းရန်အတွက် သင်လိုအပ်သည့် ချက်ခြာပါးနပ်သည့်စနစ်နှင့် အမြန်နှုန်းတို့ <ph name="APP_NAME" /> တွင် ရှိသည်</translation>
 <translation id="6378173571450987352">အသေးစိတ်များ− အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီထားသည်</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="6381421346744604172">ဝဘ်ဆိုက် မှောင်အောင်လုပ်ခြင်း</translation>
@@ -790,6 +785,7 @@
 <translation id="6475951671322991020">ဗီဒီယိုကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="6477928892249167417">ဤဝဘ်ဆိုက်များက သင့်အတွက် အရေးကြီးပုံရသည်-</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ သိုလှောင်ခန်း မလုံလောက်မှုကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
+<translation id="6489610539826642779">ဖတ်ရန်စာရင်း <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> ကို ပထမဦးဆုံး အကြိမ်အနေဖြင့် အသုံးပြုရန် အင်တာနက်သို့ ချိတ်ဆက်ပါ။</translation>
 <translation id="6508722015517270189">Chrome ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
@@ -828,7 +824,6 @@
 <translation id="666981079809192359">Chrome ကိုယ်ပိုင်လွတ်လပ်ခွင့် သတိပေးချက်</translation>
 <translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
 <translation id="6676840375528380067">ဤစက်မှ သင်၏ Chrome ဒေတာများကို ဖျက်လိုပါသလား။</translation>
-<translation id="6691888250440401212">၁။ <ph name="APP_NAME" /> ကို ရွေးပါ\n၂။ “မူရင်းအဖြစ်သတ်မှတ်ရန်” ကို တို့ပါ</translation>
 <translation id="6697492270171225480">စာမျက်နှာ ရှာမတွေ့သည့်အခါ အလားတူစာမျက်နှာများအတွက် အကြံပြုချက်များ ပြရန်</translation>
 <translation id="6698801883190606802">ထပ်တူပြုထားသည့် ဒေတာကို စီမံကွပ်ကဲရန်</translation>
 <translation id="6699370405921460408">Google ဆာဗာများသည် သင်ဝင်ကြည့်သည့် စာမျက်နှာများကို ပိုမိုကောင်းမွန်အောင် ပြုလုပ်ပေးပါမည်။</translation>
@@ -1069,7 +1064,6 @@
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>
 <translation id="8393700583063109961">စာပို့ရန်</translation>
-<translation id="8407396331882458341">၁။ <ph name="APP_NAME" /> ကို ရွေးပါ\n၂။ “အမြဲတန်း” ကို တို့ပါ</translation>
 <translation id="8410695015584479363">ဈေးနှုန်းများ ခြေရာခံရန်</translation>
 <translation id="8413126021676339697">မှတ်တမ်း အပြည့် ပြရန်</translation>
 <translation id="8427875596167638501">အစမ်းကြည့်ရှုမှုတဘ်ကို တစ်ဝက်ဖွင့်ထားသည်</translation>
@@ -1096,7 +1090,6 @@
 <translation id="8555836665334561807">Wi-Fi တွင်</translation>
 <translation id="8559990750235505898">အခြားဘာသာစကားများဖြင့် စာမျက်နှာများကို ဘာသာပြန်ပေးရန် ပေးအပ်ချက်</translation>
 <translation id="8560602726703398413">'လိပ်စာများ' တွင် သင်၏ဖတ်ရန်စာရင်းကို ရှာပါ</translation>
-<translation id="8561196567344536112">၁။ ဆက်တင်များသို့ သွားပါ\n၂။ “ဘရောင်ဇာအက်ပ်” ကို တို့ပါ\n၃။ <ph name="APP_NAME" /> ကိုရွေးပါ</translation>
 <translation id="8562452229998620586">သိမ်းဆည်းထားသော စကားဝှက်များ ဤတွင် ပေါ်လာလိမ့်မည်။</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> ကတည်းက</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>

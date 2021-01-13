@@ -10,13 +10,11 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chrome gebruik</translation>
 <translation id="1097330777386562916">Vee webkoekies en werfdata uit wanneer jy Chrome verlaat</translation>
 <translation id="110877069173485804">Dit is jou Chrome</translation>
-<translation id="1125124144982679672">Wie gebruik tans Chrome?</translation>
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
 <translation id="123620459398936149">Chrome-bedrystelsel kon nie jou data sinkroniseer nie. Dateer asseblief jou sinkroniseringwagfrase op.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voor jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie die Google Chrome-bedryfstelselbepalings uit nie.</translation>
 <translation id="1302523850133262269">Wag asseblief terwyl Chrome die jongste stelselopdaterings installeer.</translation>
-<translation id="1355000804395496115">Gebruik verskillende profiele in Chrome om werk- en persoonlike blaaidata te skei, of vir verskillende mense wat hierdie toestel gebruik</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Google Chrome. As die sagteware nie werk nie, deïnstalleer Google Chrome en probeer weer.</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
@@ -64,6 +62,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2534507159460261402">Google Pay (na Chrome gekopieer)</translation>
 <translation id="2580411288591421699">Kan nie dieselfde Google Chrome-weergawe installeer as wat tans gebruik word nie. Maak Google Chrome asseblief toe en probeer weer.</translation>
 <translation id="2586406160782125153">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
+<translation id="2588634262982826227">Chrome OS kan jou programme en bladsye altyd ná herselflaai terugstel sonder om elke keer te vra.</translation>
 <translation id="2622559029861875898">Chrome kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="2644798301485385923">Chrome-bedryfstelsel</translation>
 <translation id="2652691236519827073">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
@@ -81,7 +80,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2926676257163822632">Swak wagwoorde is maklik om te raai. Laat Chrome <ph name="BEGIN_LINK" />sterk wagwoorde vir jou skep en onthou<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome het nie opgedateer nie; iets het skeefgeloop. <ph name="BEGIN_LINK" />Stel Chrome-opdateringprobleme en mislukte opdaterings reg.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chrome</translation>
-<translation id="298099161970687941">Vra wanneer Chrome oopmaak</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
 <translation id="3059710691562604940">Veiligblaai is afgeskakel. Chrome beveel aan dat jy dit aanskakel.</translation>
 <translation id="3065168410429928842">Chrome-oortjie</translation>
@@ -89,6 +87,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3089968997497233615">Daar is 'n nuwe, veiliger weergawe van Google Chrome beskikbaar.</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou ander wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="3127818369811890733">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie.</translation>
+<translation id="3140883423282498090">Jou veranderinge sal die volgende keer wanneer jy Google Chrome herbegin, in werking tree.</translation>
 <translation id="3149510190863420837">Chrome-programme</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sal nou herbegin}=1{Chrome sal oor 1 sekonde herbegin}other{Chrome sal oor # sekondes herbegin}}</translation>
@@ -227,7 +226,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7398801000654795464">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
 <translation id="7408085963519505752">Chrome-bedryfstelsel se bepalings</translation>
 <translation id="7419046106786626209">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
-<translation id="7423733001651488593">Dit sal jou blaaidata permanent van hierdie toestel af uitvee. Om die data te herwin, moet jy by Chrome aanmeld as</translation>
 <translation id="7486227612705979895">Chrome sal by jou Drive ingaan om voorstelle in die adresbalk te maak</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Gaan na <ph name="LINK_BEGIN" />Chrome OS-instellings<ph name="LINK_END" /> om te sien of jou toestel op datum is</translation>

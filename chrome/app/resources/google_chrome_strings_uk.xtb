@@ -8,13 +8,11 @@
 <translation id="1088300314857992706">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chrome</translation>
 <translation id="1097330777386562916">Видаляти файли cookie й дані сайтів, коли закривається Chrome</translation>
 <translation id="110877069173485804">Це ваш Chrome</translation>
-<translation id="1125124144982679672">Хто користується веб-переглядачем Chrome?</translation>
 <translation id="1142745911746664600">Не вдається оновити Chrome</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="123620459398936149">ОС Chrome не вдалося синхронізувати ваші дані. Оновіть свою парольну фразу для синхронізації.</translation>
 <translation id="1293325835983155583">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome.</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
-<translation id="1355000804395496115">Різні профілі в Chrome дають змогу розділити веб-перегляд для робочих і особистих цілей або для різних користувачів цього пристрою</translation>
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
@@ -60,6 +58,7 @@
 <translation id="2534507159460261402">Google Pay (скопійовано в Chrome)</translation>
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">ОС Chrome може автоматично відновлювати ваші додатки й сторінки після перезапуску пристрою.</translation>
 <translation id="2622559029861875898">Chrome не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="2644798301485385923">ОС Chrome</translation>
 <translation id="2652691236519827073">Відкрити посилання в новій &amp;вкладці Chrome</translation>
@@ -77,7 +76,6 @@
 <translation id="2926676257163822632">Ненадійні паролі можна легко вгадати. Тому радимо <ph name="BEGIN_LINK" />створювати й зберігати безпечні паролі<ph name="END_LINK" /> в Chrome.</translation>
 <translation id="2929907241665500097">Не вдалось оновити веб-переглядач Chrome. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
-<translation id="298099161970687941">Запитувати, коли відкривається Chrome</translation>
 <translation id="3037838751736561277">Google Chrome у фоновому режимі.</translation>
 <translation id="3059710691562604940">Безпечний перегляд вимкнено. Chrome радить увімкнути його.</translation>
 <translation id="3065168410429928842">Chrome</translation>
@@ -85,6 +83,7 @@
 <translation id="3089968997497233615">Доступна нова, безпечніша версія Google Chrome.</translation>
 <translation id="3114643501466072395">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">ОС Chrome не вдалося синхронізувати ваші дані.</translation>
+<translation id="3140883423282498090">Ваші зміни почнуть діяти після наступного перезапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
 <translation id="3360895254066713204">Помічник Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome перезапуститься зараз}=1{Chrome перезапуститься через 1 секунду}one{Chrome перезапуститься через # секунду}few{Chrome перезапуститься через # секунди}many{Chrome перезапуститься через # секунд}other{Chrome перезапуститься через # секунди}}</translation>
@@ -152,6 +151,8 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Перезапустіть ОС Chrome</translation>
 <translation id="5132929315877954718">Знаходьте чудові додатки, ігри, розширення й теми для Google Chrome.</translation>
+<translation id="5139423532931106058">Налаштуйте свій профіль Chrome</translation>
+<translation id="5163087008893166964">Вітаємо в Chrome! Відкрито нове вікно веб-переглядача</translation>
 <translation id="5170938038195470297">Ваш профіль не можна використати, оскільки його створено в новішій версії Google Chrome. Деякі функції можуть бути недоступними. Укажіть інший каталог профілю чи скористайтеся новішою версією Chrome.</translation>
 <translation id="5193136243808726294">Неможливо відкрити цю сторінку в ОС Google Chrome.</translation>
 <translation id="5251420635869119124">Гості можуть анонімно користуватися Chrome.</translation>
@@ -217,7 +218,6 @@
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7408085963519505752">Умови ОС Chrome</translation>
 <translation id="7419046106786626209">ОС Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
-<translation id="7423733001651488593">Дані веб-перегляду буде видалено з цього пристрою назавжди. Щоб відновити їх, увійдіть у веб-переглядачі Chrome як</translation>
 <translation id="7486227612705979895">Chrome матиме доступ до Диска, щоб робити пропозиції в адресному рядку</translation>
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>
 <translation id="7573289029918943991">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chrome<ph name="LINK_END" /></translation>

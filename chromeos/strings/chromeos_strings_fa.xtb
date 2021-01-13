@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
 <translation id="4835901797422965222">شبکه فعالی وجود ندارد</translation>
 <translation id="4848429997038228357">درحال اجرا</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
@@ -168,8 +168,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">مرور کردن به‌عنوان یک مهمان</translation>
 <translation id="54609108002486618">مدیریت شده</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} فرصت باقی مانده است}one{{0} فرصت باقی مانده است}other{{0} فرصت باقی مانده است}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">در «مرکز راهنمایی» اطلاعات بیشتری کسب کنید</translation>
 <translation id="5635169860413004179">دیدن گزارش</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">‏این مورد میزان استفاده از CPU را اندازه‌گیری می‌کند و مجموع همه هسته‌ها است</translation>
@@ -251,7 +251,6 @@
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
-<translation id="8160445423316272678">برای شروع به کار، سندتان را روی اسکنر قرار دهید و <ph name="SPAN_BEGIN" />اسکن<ph name="SPAN_END" /> را انتخاب کنید</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
@@ -285,7 +284,6 @@
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
 <translation id="8930622219860340959">بی سیم</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="8968751544471797276">سرعت شارژ کردن</translation>
 <translation id="8970109610781093811">اجرای دوباره</translation>
 <translation id="9003704114456258138">فرکانس</translation>

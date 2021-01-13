@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Usuwa historię i wpisy autouzupełniania w pasku adresu.</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
+<translation id="2039379262107991683">Aby otrzymać przypomnienie, dodaj strony do listy Do przeczytania</translation>
 <translation id="204321170514947529">Dane aplikacji <ph name="APP_NAME" /> znajdują się też w Chrome</translation>
 <translation id="2049574241039454490"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE_OF_TOTAL" /></translation>
 <translation id="2052422354554967744">Wyszukiwanie w internecie</translation>
@@ -161,7 +162,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2122601567107267586">Nie udało się otworzyć aplikacji</translation>
 <translation id="2126426811489709554">Technologia Chrome</translation>
 <translation id="2131665479022868825">Zaoszczędzono <ph name="DATA" /></translation>
-<translation id="213279576345780926">Zamknięto <ph name="TAB_TITLE" /></translation>
+<translation id="213279576345780926">Zamknięto: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Dodaj do ekranu głównego</translation>
 <translation id="214888715418183969">Wybierz, co chcesz udostępniać w Chrome. Udostępniane dane będą używane do ulepszania funkcji przeglądarki Chrome, jej działania i stabilności.</translation>
 <translation id="2154484045852737596">Edytowanie karty</translation>
@@ -197,7 +198,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2387895666653383613">Skalowanie tekstu</translation>
 <translation id="2394602618534698961">Tutaj pojawią się pobrane pliki</translation>
 <translation id="2407481962792080328">Ta funkcja zostanie włączona, gdy zalogujesz się na swoje konto Google</translation>
-<translation id="2407674018644220013">Ustawić aplikację <ph name="APP_NAME" /> jako domyślną?</translation>
 <translation id="2410754283952462441">Wybierz konto</translation>
 <translation id="2414886740292270097">Ciemny</translation>
 <translation id="2426805022920575512">Wybierz inne konto</translation>
@@ -210,7 +210,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="246532703174860178">Udostępnij</translation>
 <translation id="247737702124049222">Opisy do obrazów są włączone</translation>
 <translation id="2478076885740497414">Zainstaluj aplikację</translation>
-<translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2494974097748878569">Asystent Google w Chrome</translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
@@ -462,7 +461,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4335835283689002019">Bezpieczne przeglądanie jest wyłączone</translation>
 <translation id="4351244548802238354">Zamknij okno</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4382908510000698092">Używaj jako języka w Chrome</translation>
 <translation id="4384468725000734951">Korzystam z wyszukiwarki Sogou</translation>
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
@@ -653,7 +651,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5668404140385795438">Zignoruj żądanie strony, gdy chce zapobiec powiększeniu widoku</translation>
 <translation id="5683547024293500885">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5686790454216892815">Nazwa pliku jest za długa</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> będzie używać języka: <ph name="LANGUAGE" /> po ponownym uruchomieniu.</translation>
 <translation id="569536719314091526">Możesz przetłumaczyć tę stronę na dowolny język, używając przycisku Więcej opcji</translation>
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5697688514913266141">Plik zostanie zapisany w katalogu <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Edytuj<ph name="END_LINK2" /></translation>
@@ -735,7 +732,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6140912465461743537">Kraj/region</translation>
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>
 <translation id="6154478581116148741">Włącz blokadę ekranu w ustawieniach, by wyeksportować hasła z urządzenia</translation>
-<translation id="6157392216611456285">Wybierz <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Oszczędność danych: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Nie znaleziono przejętych haseł</translation>
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
@@ -767,7 +763,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Oznacz jako przeczytane</translation>
 <translation id="6364438453358674297">Usunąć sugestię z historii?</translation>
-<translation id="6366047038980456022">Technologia i szybkość działania <ph name="APP_NAME" /> pozwolą Ci bezpiecznie tworzyć i poruszać się w internecie</translation>
 <translation id="6378173571450987352">Szczegóły: posortowane według wykorzystanych danych</translation>
 <translation id="6379829913050047669">Aplikacja <ph name="APP_NAME" /> zostanie otwarta w Chrome. Przechodząc dalej, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Przyciemnij strony internetowe</translation>
@@ -791,6 +786,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6475951671322991020">Pobierz film</translation>
 <translation id="6477928892249167417">Wygląda na to, że te strony są dla Ciebie ważne:</translation>
 <translation id="6482749332252372425">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu braku miejsca.</translation>
+<translation id="6489610539826642779">Lista Do przeczytania <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Aby pierwszy raz skorzystać z aplikacji <ph name="APP_NAME" />, połącz się z internetem.</translation>
 <translation id="6508722015517270189">Uruchom ponownie Chrome</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
@@ -829,7 +825,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="666981079809192359">Informacje na temat ochrony prywatności w Chrome</translation>
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
-<translation id="6691888250440401212">1. Wybierz aplikację <ph name="APP_NAME" />\n2. Kliknij „Ustaw jako domyślną”</translation>
 <translation id="6697492270171225480">Gdy nie można odnaleźć strony, pokazuj sugestie podobnych stron</translation>
 <translation id="6698801883190606802">Zarządzaj synchronizowanymi danymi</translation>
 <translation id="6699370405921460408">Serwery Google będą optymalizować otwierane strony.</translation>
@@ -1070,7 +1065,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8368027906805972958">Nieznane lub nieobsługiwane urządzenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Język <ph name="LANG" /> jest gotowy.</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
-<translation id="8407396331882458341">1. Wybierz aplikację <ph name="APP_NAME" />\n2. Kliknij „Zawsze”</translation>
 <translation id="8410695015584479363">Monitoruj ceny</translation>
 <translation id="8413126021676339697">Wyświetl całą historię</translation>
 <translation id="8427875596167638501">Karta podglądu jest otwarta w połowie</translation>
@@ -1097,7 +1091,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8555836665334561807">Po połączeniu z Wi-Fi</translation>
 <translation id="8559990750235505898">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="8560602726703398413">Swoją listę Do przeczytania znajdziesz w Zakładkach</translation>
-<translation id="8561196567344536112">1. Otwórz Ustawienia\n2. Kliknij „Przeglądarka”\n3. Wybierz <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Tutaj pojawią się zapisane hasła.</translation>
 <translation id="8569404424186215731">od <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>

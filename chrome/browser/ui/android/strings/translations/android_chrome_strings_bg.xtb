@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">Изчиства историята и автоматичните довършвания в адресната лента.</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
+<translation id="2039379262107991683">Добавете страници към списъка си за четене, за да получите напомняне</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> също има данни в Chrome</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Търсене в интернет</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">Мащабиране на текста</translation>
 <translation id="2394602618534698961">Изтеглените от вас файлове се показват тук</translation>
 <translation id="2407481962792080328">Когато влезете в профила си в Google, тази функция се включва</translation>
-<translation id="2407674018644220013">Задаване на <ph name="APP_NAME" /> като браузър по подразбиране?</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
 <translation id="2414886740292270097">Тъмно</translation>
 <translation id="2426805022920575512">Избиране на друг профил</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">Споделяне</translation>
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
-<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2494974097748878569">Google Асистент в Chrome</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">„Безопасно сърфиране“ е изключено</translation>
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4382908510000698092">Използване като език на Chrome</translation>
 <translation id="4384468725000734951">За търсене ще се използва Sogou</translation>
 <translation id="4404568932422911380">Няма отметки</translation>
 <translation id="4405224443901389797">Преместване във…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">Отмяна на искането на уебсайта да не се допуска увеличаване на мащаба</translation>
 <translation id="5683547024293500885">Chrome не може да провери за актуализации</translation>
 <translation id="5686790454216892815">Името на файла е твърде дълго</translation>
-<translation id="5687809546194252819">След рестартиране за <ph name="APP_NAME" /> ще се използва <ph name="LANGUAGE" />.</translation>
 <translation id="569536719314091526">Страницата може да бъде преведена на който и да е език чрез бутона за още опции</translation>
 <translation id="5696597120588531049">Chrome може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="5697688514913266141">Файлът ще бъде запазен в <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Редактиране<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">Държава/регион</translation>
 <translation id="614940544461990577">Изпробвайте следното:</translation>
 <translation id="6154478581116148741">Включете функцията за заключване на екрана от настройките, за да експортирате паролите си от това устройство</translation>
-<translation id="6157392216611456285">Избор на <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> икономия на данни</translation>
 <translation id="6186394685773237175">Няма намерени компрометирани пароли</translation>
 <translation id="6192907950379606605">Описания на изображенията</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6364438453358674297">Предложението да се премахне ли от историята?</translation>
-<translation id="6366047038980456022">Браузърът <ph name="APP_NAME" /> е снабден с интелигентните функции и скоростта, нужни да изпълнявате задачите си, да създавате съдържание и да сърфирате онлайн по безопасен начин</translation>
 <translation id="6378173571450987352">Подробности: сортирани по количество използвани данни</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Потъмняване на уебсайтовете</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">Изтегляне на видеоклипа</translation>
 <translation id="6477928892249167417">Тези сайтове изглеждат важни за вас:</translation>
 <translation id="6482749332252372425">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради липса на място в хранилището.</translation>
+<translation id="6489610539826642779">Списък за четене <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">За да използвате <ph name="APP_NAME" /> за първи път, моля, свържете се с интернет.</translation>
 <translation id="6508722015517270189">Рестартирайте Chrome.</translation>
 <translation id="6527303717912515753">Споделяне</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Съобщение за поверителност на Chrome</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6676840375528380067">Искате ли данните ви в Chrome да бъдат изчистени от устройството?</translation>
-<translation id="6691888250440401212">1. Изберете <ph name="APP_NAME" />\n2. Докоснете „Задаване като основно“</translation>
 <translation id="6697492270171225480">Показване на предложения за подобни страници, когато дадена страница не може да бъде намерена</translation>
 <translation id="6698801883190606802">Управление на синхронизираните данни</translation>
 <translation id="6699370405921460408">Сървърите на Google ще оптимизират посещаваните от вас страници.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
-<translation id="8407396331882458341">1. Изберете <ph name="APP_NAME" />\n2. Докоснете „Винаги“</translation>
 <translation id="8410695015584479363">Следене на цени</translation>
 <translation id="8413126021676339697">Цялата история</translation>
 <translation id="8427875596167638501">Разделът за визуализация е наполовина отворен</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">При Wi-Fi</translation>
 <translation id="8559990750235505898">Извеждане на предложения за превод на страниците, написани на други езици</translation>
 <translation id="8560602726703398413">Списъкът ви за четене се намира в „Отметки“</translation>
-<translation id="8561196567344536112">1. Отворете „Настройки“\n2. Докоснете „Приложение за браузър“\n3. Изберете <ph name="APP_NAME" /></translation>
 <translation id="8562452229998620586">Запазените пароли ще се покажат тук.</translation>
 <translation id="8569404424186215731">от <ph name="DATE" /></translation>
 <translation id="8571213806525832805">Последните 4 седмици</translation>

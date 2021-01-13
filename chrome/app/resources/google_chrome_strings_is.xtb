@@ -10,13 +10,11 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> var áður að nota Chrome</translation>
 <translation id="1097330777386562916">Hreinsa fótspor og vefsvæðisgögn þegar þú lokar Chrome</translation>
 <translation id="110877069173485804">Þetta er þitt Chrome</translation>
-<translation id="1125124144982679672">Hver er að nota Chrome?</translation>
 <translation id="1142745911746664600">Ekki er hægt að uppfæra Chrome</translation>
 <translation id="1154147086299354128">&amp;Opna í Chrome</translation>
 <translation id="123620459398936149">Chrome OS gat ekki samstillt gögnin þín. Uppfærðu aðgangsorð samstillingar.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> krefst þess að þú lesir og samþykkir eftirfarandi skilmála áður en þú notar þetta tæki. Þessir skilmálar auka ekki við, breyta eða takmarka skilmála Google Chrome OS.</translation>
 <translation id="1302523850133262269">Bíddu á meðan Chrome setur upp nýjustu kerfisuppfærslurnar.</translation>
-<translation id="1355000804395496115">Notaðu mismunandi prófíla í Chrome til að aðskilja vefskoðun fyrir vinnu og til einkanota, eða fyrir mismunandi einstaklinga sem nota þetta tæki</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
@@ -64,6 +62,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2534507159460261402">Google Pay (afritað í Chrome)</translation>
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
+<translation id="2588634262982826227">Chrome OS getur alltaf endurheimt forrit og síður eftir endurræsingu án þess að spyrja í hvert skipti.</translation>
 <translation id="2622559029861875898">Chrome getur ekki athugað með uppfærslur. Athugaðu nettenginguna þína.</translation>
 <translation id="2644798301485385923">Chrome OS kerfi</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
@@ -81,7 +80,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2926676257163822632">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Leyfðu Chrome <ph name="BEGIN_LINK" />að búa til traust aðgangsorð fyrir þig og muna þau<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome uppfærðist ekki, eitthvað fór úrskeiðis. <ph name="BEGIN_LINK" />Lagaðu uppfærsluvandamál Chrome og uppfærslur sem mistókust.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – innskráning á net – Chrome</translation>
-<translation id="298099161970687941">Spyrja þegar Chrome opnast</translation>
 <translation id="3037838751736561277">Google Chrome er í bakgrunnsstillingu.</translation>
 <translation id="3059710691562604940">Slökkt er á öruggri vefskoðun. Chrome mælir með því að kveikt sé á henni.</translation>
 <translation id="3065168410429928842">Chrome flipi</translation>
@@ -89,6 +87,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3089968997497233615">Ný og öruggari útgáfa af Google Chrome er í boði.</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />Skráðu þig inn á Chrome<ph name="END_LINK" /> til að athuga hvort hin aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>
 <translation id="3127818369811890733">Chrome OS gat ekki samstillt gögnin þín.</translation>
+<translation id="3140883423282498090">Breytingarnar taka gildi næst þegar þú endurræsir Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome forrit</translation>
 <translation id="3360895254066713204">Chrome hjálpari</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
@@ -227,7 +226,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7408085963519505752">Skilmálar Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
-<translation id="7423733001651488593">Þetta mun eyða vefskoðunargögnum varanlega úr þessu tæki. Til að endurheimta gögn skaltu skrá þig inn í Chrome sem</translation>
 <translation id="7486227612705979895">Chrome mun fá aðgang að svæðinu þínu á Drive til þess að bjóða upp á tillögur í veffangastikunni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Opnaðu <ph name="LINK_BEGIN" />stillingar Chrome OS<ph name="LINK_END" /> til að sjá hvort tækið sé uppfært</translation>

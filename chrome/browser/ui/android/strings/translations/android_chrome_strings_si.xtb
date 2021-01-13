@@ -143,6 +143,7 @@
 <translation id="2017836877785168846">ලිපින තීරුව තුළ ඉතිහාසය හා ස්වයං සම්පූර්ණ කිරීම් හිස් කරයි.</translation>
 <translation id="2021896219286479412">පූර්ණ තිර අඩවි පාලන</translation>
 <translation id="2038563949887743358">ඩෙස්ක්ටොප් අඩවිය ඉල්ලීම ක්‍රියාත්මක කරන්න</translation>
+<translation id="2039379262107991683">සිහිකැඳවීමක් ලබා ගැනීම සඳහා ඔබගේ කියවීම් ලැයිස්තුවට පිටු එක් කරන්න</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> හට ද Chrome හි දත්ත තිබේ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">අන්තර්ජාලය සෙවීම</translation>
@@ -197,7 +198,6 @@
 <translation id="2387895666653383613">පෙළ පරිමාණය</translation>
 <translation id="2394602618534698961">ඔබ බාගන්නා ගොනු මෙහි දිස් වෙති</translation>
 <translation id="2407481962792080328">ඔබ ඔබේ Google ගිණුමට පුරන විට, මෙම විශේෂාංගය සක්‍රීය කෙරේ</translation>
-<translation id="2407674018644220013"><ph name="APP_NAME" /> ඔබේ පෙරනිමි ලෙස සකසන්නේද?</translation>
 <translation id="2410754283952462441">ගිණුමක් තෝරා ගන්න</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
 <translation id="2426805022920575512">වෙනත් ගිණුමක් තෝරා ගන්න</translation>
@@ -210,7 +210,6 @@
 <translation id="246532703174860178">බෙදා ගන්න</translation>
 <translation id="247737702124049222">රූප විස්තර ක්‍රියාත්මකයි</translation>
 <translation id="2478076885740497414">වැඩසටහන සථාපනය කරන්න</translation>
-<translation id="2479148705183875116">සැකසීම් වෙත යන්න</translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2494974097748878569">Chrome හි Google සහායක</translation>
 <translation id="2496180316473517155">බ්‍රවුස් ඉතිහාසය</translation>
@@ -462,7 +461,6 @@
 <translation id="4335835283689002019">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිතයි</translation>
 <translation id="4351244548802238354">සංවාදය වසන්න</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
-<translation id="4382908510000698092">Chrome හි භාෂාව ලෙස භාවිත කරන්න</translation>
 <translation id="4384468725000734951">සෙවීම සඳහා Sogou භාවිත කරමින්</translation>
 <translation id="4404568932422911380">පිටුසන් නැත</translation>
 <translation id="4405224443901389797">වෙත ගෙන යන්න…</translation>
@@ -653,7 +651,6 @@
 <translation id="5668404140385795438">විශාලනය වැඩි කිරීම සඳහා වෙබ් අඩවියෙහි ඉල්ලීමක් අතික්‍රමණය කරන්න</translation>
 <translation id="5683547024293500885">Chrome හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකිය</translation>
 <translation id="5686790454216892815">ගොනු නාමය දිග වැඩිය</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> ආරම්භයේදී <ph name="LANGUAGE" /> භාවිත කරනු ඇත.</translation>
 <translation id="569536719314091526">තවත් විකල්ප බොත්තමෙන් මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
 <translation id="5696597120588531049">Chrome දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි, සහ තවත් ඒවාවලින් ඔබව ආරක්ෂිතව තබා ගැනීමට උදවු කළ හැකිය</translation>
 <translation id="5697688514913266141">ඔබගේ ගොනුව <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> වෙත සුරකිනු ඇත. <ph name="BEGIN_LINK2" />සංස්කරණය කරන්න<ph name="END_LINK2" />.</translation>
@@ -735,7 +732,6 @@
 <translation id="6140912465461743537">රට/කලාපය:</translation>
 <translation id="614940544461990577">උත්සාහ කරන්න:</translation>
 <translation id="6154478581116148741">මෙම උපාංගයෙන් ඔබේ මුරපද නිර්යාත කිරීමට සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න</translation>
-<translation id="6157392216611456285"><ph name="APP_NAME" /> තෝරන්න</translation>
 <translation id="6159335304067198720">දත්ත සුරැකීම <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">සමථයට පත් වූ මුරපද කිසියක් නැත</translation>
 <translation id="6192907950379606605">රූප විස්තර ලබා ගන්න</translation>
@@ -767,7 +763,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="6364438453358674297">යෝජනාව ඉතිහාසය වෙතින් ඉවත් කරන්නද?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> හි ඔබට අන්තර්ජාලයේ ආරක්‍ෂිතව ක්‍රියා කිරීමට, සෑදීමට, සහ ගවේෂණ කිරීමට අවශ්‍ය හපන්කම සහ වේගය ඇත</translation>
 <translation id="6378173571450987352">විස්තර: භාවිතා කරන දත්ත ප්ය‍රමාණය අනුව අනුපිළිවෙළට සකසා ඇත</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome තුළ විවෘත වෙයි. ඉදිරයට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි.</translation>
 <translation id="6381421346744604172">වෙබ් අඩවි අඳුරු කරන්න</translation>
@@ -791,6 +786,7 @@
 <translation id="6475951671322991020">වීඩියෝව බාගන්න</translation>
 <translation id="6477928892249167417">මෙම අඩවි ඔබට වැදගත් බව පෙනේ:</translation>
 <translation id="6482749332252372425">ආචනය ඉඩ නොමැති වීම නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
+<translation id="6489610539826642779">කියවීම් ලැයිස්තුව <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">පළමු වරට <ph name="APP_NAME" /> භාවිතා කිරීමට, අන්තර්ජාලයට සබඳින්න.</translation>
 <translation id="6508722015517270189">Chrome යළි අරඹන්න</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
@@ -829,7 +825,6 @@
 <translation id="666981079809192359">Chrome රහස්‍යතා දැනුම්දීම</translation>
 <translation id="6671495933530132209">රූපය පිටපත් කරන්න</translation>
 <translation id="6676840375528380067">මෙම උපාංගයෙන් ඔබේ Chrome දත්ත හිස් කරන්න ද?</translation>
-<translation id="6691888250440401212">1. <ph name="APP_NAME" /> තෝරන්න\n2. “පෙරනිමි ලෙස සකසන්න” තට්ටු කරන්න</translation>
 <translation id="6697492270171225480">පිටුවක් සොයා ගැනීමට නොහැකි විට සමාන පිටු සඳහා යෝජනා පෙන්වන්න</translation>
 <translation id="6698801883190606802">සමමුහුර්ත කළ දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="6699370405921460408">Google සේවාදායක ඔබ පැමිණෙන පිටු ප්‍රශස්ත කරයි.</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8368027906805972958">නොදන්නා හෝ සහය නොදැක්වෙන උපාංගය (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> සූදානම්ය.</translation>
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
-<translation id="8407396331882458341">1. <ph name="APP_NAME" /> තෝරන්න\n2. “සැම විටම” තට්ටු කරන්න</translation>
 <translation id="8410695015584479363">මිල ගණන් හඹා යන්න</translation>
 <translation id="8413126021676339697">සම්පූර්ණ ඉතිහාසය පෙන්වන්න</translation>
 <translation id="8427875596167638501">පෙරදසුන් පටිත්ත අඩක් විවෘතයි</translation>
@@ -1097,7 +1091,6 @@
 <translation id="8555836665334561807">Wi-Fi මත</translation>
 <translation id="8559990750235505898">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="8560602726703398413">පිටුසන් තුළ ඔබගේ කියවීම් ලැයිස්තුව සොයා ගන්න</translation>
-<translation id="8561196567344536112">1. සැකසීම් වෙත යන්න\n2. “බ්‍රවුසර යෙදුම” තට්ටු කරන්න\n3. <ph name="APP_NAME" /> තෝරන්න</translation>
 <translation id="8562452229998620586">සුරැකි මුරපද මෙහි පෙන්වෙනු ඇත.</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> සිට</translation>
 <translation id="8571213806525832805">පසුගිය සති 4</translation>

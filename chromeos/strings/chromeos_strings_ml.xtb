@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">സമീപത്തുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ Bluetooth ഓണാക്കുക</translation>
 <translation id="2364498172489649528">വിജയിച്ചു</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ശ്രമങ്ങൾ ശേഷിക്കുന്നു</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
@@ -136,6 +135,7 @@
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4848429997038228357">റൺ ചെയ്യുന്നു</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
@@ -167,8 +167,8 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">അതിഥിയായി ബ്രൌസ് ചെയ്യുക</translation>
 <translation id="54609108002486618">നിയന്ത്രിതം</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ശ്രമം ശേഷിക്കുന്നു}other{{0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
 <translation id="5635169860413004179">റിപ്പോർട്ട് കാണുക</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">ഇത് CPU ഉപയോഗം കണക്കാക്കുന്നു, എല്ലാ കോറുകളുടെയും സംഗ്രഹവുമാണ് ഇത്</translation>
@@ -250,7 +250,6 @@
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്‌ക്കുക, ആരംഭിക്കാൻ <ph name="SPAN_BEGIN" />സ്‌കാൻ ചെയ്യുക<ph name="SPAN_END" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
@@ -284,7 +283,6 @@
 <translation id="8919837981463578619">പ്രിന്റ് ചെയ്യാനായില്ല - ട്രേ കാണുന്നില്ല</translation>
 <translation id="8928727111548978589">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പറില്ല</translation>
 <translation id="8930622219860340959">വയര്‍‌ലെസ്സ്</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ശ്രമങ്ങൾ ശേഷിക്കുന്നു</translation>
 <translation id="8968751544471797276">ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
 <translation id="9003704114456258138">ആവൃത്തി</translation>

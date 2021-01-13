@@ -9,13 +9,11 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> पूर्वी Chrome वापरत होते</translation>
 <translation id="1097330777386562916">तुम्ही Chrome बंद करता तेव्हा कुकी आणि साइट डेटा साफ करा</translation>
 <translation id="110877069173485804">हा तुमचा Chrome आहे</translation>
-<translation id="1125124144982679672">Chrome कोण वापरत आहे?</translation>
 <translation id="1142745911746664600">Chrome अपडेट करू शकत नाही</translation>
 <translation id="1154147086299354128">Chrome मध्‍ये &amp;उघडा</translation>
 <translation id="123620459398936149">Chrome OS तुमचा डेटा सिंक करू शकले नाही. कृपया तुमचा सिंक सांकेतिक पासफ्रेज अपडेट करा.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> ला हे डिव्हाइस वापरण्यापूर्वी तुम्ही खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Google Chrome OS अटींचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>
 <translation id="1302523850133262269">कृपया Chrome नवीनतम सिस्टम अपडेट इंस्टॉल करताना प्रतीक्षा करा.</translation>
-<translation id="1355000804395496115">कामासंबंधी आणि वैयक्तिक ब्राउझिंग वेगळे करण्यासाठी किंवा हे डिव्हाइस वापरणार्‍या वेगळ्या लोकांसाठी Chrome मध्ये वेगळ्या प्रोफाइल वापरा</translation>
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -63,6 +61,7 @@
 <translation id="2534507159460261402">Google Pay (Chrome वर कॉपी केले)</translation>
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
+<translation id="2588634262982826227">Chrome OS प्रत्येक वेळी न विचारता रीबूट झाल्यानंतर तुमची अ‍ॅप्स आणि पेज नेहमी रिस्टोअर करू शकते.</translation>
 <translation id="2622559029861875898">Chrome अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="2644798301485385923">Chrome OS सिस्टम</translation>
 <translation id="2652691236519827073">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
@@ -80,7 +79,6 @@
 <translation id="2926676257163822632">कमकुवत पासवर्ड ओळखणे सोपे असते. Chrome ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome अपडेट झाले नाही, काहीतरी चूक झाली. <ph name="BEGIN_LINK" />Chrome अपडेट समस्या आणि अयशस्वी झालेल्या अपडेटचे निराकरण करा.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
-<translation id="298099161970687941">Chrome उघडते तेव्हा विचारा</translation>
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
 <translation id="3059710691562604940">सुरक्षित ब्राउझिंग बंद आहे. Chrome ते सुरू करण्याची शिफारस करते.</translation>
 <translation id="3065168410429928842">Chrome टॅब</translation>
@@ -88,6 +86,7 @@
 <translation id="3089968997497233615">Google Chrome ची नवीन, सुरक्षित आवृत्ती उपलब्ध आहे.</translation>
 <translation id="3114643501466072395">तुमचे इतर पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS ला तुमचा डेटा सिंक करता आला नाही.</translation>
+<translation id="3140883423282498090">पुढील वेळी तुम्ही Google Chrome पुन्हा लाँच केल्यानंतर तुमचे बदल प्रभावी होतील.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome आता पुन्हा लॉंच होईल}=1{Chrome एका सेकंदामध्ये पुन्हा लॉंच होईल}other{Chrome # सेकंदांमध्ये पुन्हा लॉंच होईल}}</translation>
@@ -223,7 +222,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7398801000654795464">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> या रुपात Chrome मध्ये साइन इन केले होते. कृपया पुन्हा साइन इन करण्यासाठी समान खाते वापरा.</translation>
 <translation id="7408085963519505752">Chrome OS अटी</translation>
 <translation id="7419046106786626209">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Chrome OS तुमचा डेटा संकालित करू शकले नाही.</translation>
-<translation id="7423733001651488593">यामुळे या डिव्‍हाइसवरून तुमचा ब्राउझिंग डेटा कायमचा हटवला जाईल. डेटा रिकव्हर करण्यासाठी, Chrome वर या खात्याने साइन इन करा</translation>
 <translation id="7486227612705979895">ॲड्रेस बारमध्ये सूचना देण्यासाठी Chrome तुमची ड्राइव्ह ॲक्सेस करेल</translation>
 <translation id="7535429826459677826">Google Chrome डेव्हलपर</translation>
 <translation id="7573289029918943991">तुमचे डिव्हाइस अप टू डेट असल्याची खात्री करण्यासाठी <ph name="LINK_BEGIN" />Chrome OS सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>

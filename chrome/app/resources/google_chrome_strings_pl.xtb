@@ -8,13 +8,11 @@
 <translation id="1088300314857992706">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chrome</translation>
 <translation id="1097330777386562916">Wyczyść pliki cookie i dane witryn w momencie zamknięcia Chrome</translation>
 <translation id="110877069173485804">Oto Twój Chrome</translation>
-<translation id="1125124144982679672">Kto używa Chrome?</translation>
 <translation id="1142745911746664600">Nie można zaktualizować Chrome</translation>
 <translation id="1154147086299354128">&amp;Otwórz w Chrome</translation>
 <translation id="123620459398936149">System operacyjny Chrome nie może zsynchronizować danych. Zaktualizuj hasło synchronizacji.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> wymaga, by przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google Chrome OS.</translation>
 <translation id="1302523850133262269">Poczekaj, aż Chrome zainstaluje najnowsze aktualizacje systemu.</translation>
-<translation id="1355000804395496115">Używaj różnych profili w Chrome, by oddzielić przeglądanie służbowe od osobistego lub odróżnić poszczególne osoby korzystające z tego urządzenia</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Na tym komputerze jest już zainstalowana nowsza wersja Google Chrome. Jeśli oprogramowanie nie działa, odinstaluj Google Chrome, a następnie spróbuj ponownie.</translation>
 <translation id="1434626383986940139">Aplikacje Chrome w wersji poglądowej</translation>
@@ -60,6 +58,7 @@
 <translation id="2534507159460261402">Google Pay (skopiowana do Chrome)</translation>
 <translation id="2580411288591421699">Nie można zainstalować tej samej wersji przeglądarki Google Chrome co obecnie uruchomiona. Zamknij przeglądarkę Google Chrome i spróbuj ponownie.</translation>
 <translation id="2586406160782125153">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
+<translation id="2588634262982826227">Chrome OS może zawsze przywracać Twoje aplikacje i strony po ponownym uruchomieniu bez pytania.</translation>
 <translation id="2622559029861875898">Chrome nie może sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2644798301485385923">System operacyjny Chrome</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>
@@ -77,7 +76,6 @@
 <translation id="2926676257163822632">Słabe hasła są łatwe do odgadnięcia. Pozwól Chrome <ph name="BEGIN_LINK" />utworzyć i zapamiętać silne hasła<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Coś poszło nie tak i nie udało się zaktualizować Chrome. <ph name="BEGIN_LINK" />Napraw nieudane aktualizacje Chrome i rozwiąż inne problemy z aktualizacjami<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
-<translation id="298099161970687941">Pytaj podczas otwierania Chrome</translation>
 <translation id="3037838751736561277">Google Chrome jest w trybie działania w tle</translation>
 <translation id="3059710691562604940">Bezpieczne przeglądanie jest wyłączone. Chrome zaleca jego włączenie.</translation>
 <translation id="3065168410429928842">Karta Chrome</translation>
@@ -85,6 +83,7 @@
 <translation id="3089968997497233615">Dostępna jest nowa, bezpieczniejsza wersja przeglądarki Google Chrome.</translation>
 <translation id="3114643501466072395">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">System operacyjny Chrome nie może zsynchronizować danych.</translation>
+<translation id="3140883423282498090">Zmiany zaczną obowiązywać po ponownym uruchomieniu Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3360895254066713204">Pomoc Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome uruchomi się ponownie teraz}=1{Chrome uruchomi się ponownie za 1 sekundę}few{Chrome uruchomi się ponownie za # sekundy}many{Chrome uruchomi się ponownie za # sekund}other{Chrome uruchomi się ponownie za # sekundy}}</translation>
@@ -218,7 +217,6 @@
 <translation id="7398801000654795464">Byłeś zalogowany w Chrome jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
 <translation id="7408085963519505752">Warunki korzystania z Chrome OS</translation>
 <translation id="7419046106786626209">System operacyjny Chrome nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
-<translation id="7423733001651488593">Spowoduje to trwałe usunięcie danych przeglądania z tego urządzenia. Aby przywrócić dane, zaloguj się w Chrome jako</translation>
 <translation id="7486227612705979895">Chrome będzie mieć dostęp do Dysku, by wyświetlać podpowiedzi na pasku adresu</translation>
 <translation id="7535429826459677826">Wersja deweloperska Google Chrome</translation>
 <translation id="7573289029918943991">Aby sprawdzić, czy urządzenie jest zaktualizowane, otwórz <ph name="LINK_BEGIN" />ustawienia systemu operacyjnego Chrome<ph name="LINK_END" /></translation>

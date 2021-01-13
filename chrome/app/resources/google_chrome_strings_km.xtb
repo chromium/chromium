@@ -10,13 +10,11 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> បានប្រើ Chrome កាលពីមុន</translation>
 <translation id="1097330777386562916">សម្អាត​ទិន្នន័យគេហទំព័រ និងខូគី នៅពេល​អ្នកចាកចេញពី Chrome</translation>
 <translation id="110877069173485804">នេះគឺជា Chrome របស់អ្នក</translation>
-<translation id="1125124144982679672">តើនរណា​កំពុងប្រើ Chrome?</translation>
 <translation id="1142745911746664600">មិនអាចដំឡើងជំនាន់ Chrome បានទេ</translation>
 <translation id="1154147086299354128">&amp;​បើក​នៅក្នុង Chrome</translation>
 <translation id="123620459398936149">Chrome OS មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ។ សូមធ្វើបច្ចុប្បន្នភាពឃ្លាសម្ងាត់ សមកម្ម របស់អ្នក។</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកអាន និងយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ខាងក្រោម មុនពេលប្រើឧបករណ៍នេះ។ លក្ខខណ្ឌទាំងនេះមិនបន្ថែម កែប្រែ ឬដាក់កំហិតលើលក្ខខណ្ឌ Google Chrome OS ទេ។</translation>
 <translation id="1302523850133262269">សូមរង់ចាំ ខណៈពេលដែល Chrome តំឡើងការធ្វើបច្ចុប្បន្នភាពប្រព័ន្ធចុងក្រោយបំផុត។</translation>
-<translation id="1355000804395496115">ប្រើ​កម្រងព័ត៌មាន​ផ្សេងគ្នា​នៅក្នុង Chrome ដើម្បី​បែងចែក​ការរុករក​លក្ខណៈការងារ និង​ការរុករកលក្ខណៈ​ផ្ទាល់ខ្លួន​ដាច់ដោយឡែក​ពីគ្នា ឬ​សម្រាប់​អ្នកផ្សេងដែលប្រើ​ឧបករណ៍​នេះ</translation>
 <translation id="137466361146087520">Google Chrome បេតា</translation>
 <translation id="1399397803214730675">កុំព្យូទ័រនេះមានកំណែ  Google Chrome ថ្មីជាងនេះរួចហើយ ប្រសិនបើកម្មវិធីនេះមិនដំណើរការ សូមលុបការតំឡើង Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -64,6 +62,7 @@
 <translation id="2534507159460261402">Google Pay (បាន​ចម្លង​ទៅ Chrome)</translation>
 <translation id="2580411288591421699">មិនអាចតំឡើងកំណែ Google Chrome ដូចគ្នាទៅនឹងកំណែដែលកំពុងដំណើរការបច្ចុប្បន្នទេ។ សូមបិទ Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="2586406160782125153">វា​នឹង​លុប​ទិន្នន័យ​រុករក​របស់អ្នក​ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
+<translation id="2588634262982826227">Chrome OS អាចស្ដារកម្មវិធី និងទំព័រ​របស់អ្នកបានជានិច្ច បន្ទាប់ពីចាប់​ផ្ដើមឡើងវិញ​ដោយមិនចាំបាច់​សួរគ្រប់ពេល។</translation>
 <translation id="2622559029861875898">Chrome មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។ សូមសាកល្បងពិនិត្យ​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក។</translation>
 <translation id="2644798301485385923">ប្រព័ន្ធ Chrome OS</translation>
 <translation id="2652691236519827073">បើក​តំណ​នៅក្នុង​ផ្ទាំង Chrome ថ្មី</translation>
@@ -81,7 +80,6 @@
 <translation id="2926676257163822632">ពាក្យសម្ងាត់ខ្សោយ​មានភាពងាយស្រួលក្នុងការ​ទាយដឹង​។ អនុញ្ញាតឱ្យ Chrome <ph name="BEGIN_LINK" />បង្កើត និងចងចាំពាក្យសម្ងាត់ខ្លាំងសម្រាប់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="2929907241665500097">Chrome មិន​បានដំឡើងកំណែទេ មានអ្វីមួយខុសប្រក្រតី។ <ph name="BEGIN_LINK" />សូមដោះស្រាយបញ្ហា​នៃការដំឡើងកំណែ Chrome និងការដំឡើងកំណែដែលមិនបានសម្រេចផ្សេងៗ។<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ការចូលបណ្ដាញ - Chrome</translation>
-<translation id="298099161970687941">សួរ​នៅពេល Chrome បើក</translation>
 <translation id="3037838751736561277">Google Chrome នៅក្នុងរបៀបផ្ទៃខាងក្រោយ។</translation>
 <translation id="3059710691562604940">បានបិទមុខងាររុករក​ដោយសុវត្ថិភាព​។ Chrome ណែនាំឱ្យបើក​មុខងារនេះ។</translation>
 <translation id="3065168410429928842">ផ្ទាំង Chrome</translation>
@@ -89,6 +87,7 @@
 <translation id="3089968997497233615">មានកំណែថ្មីដែលមានសុវត្ថិភាពជាងមុនសម្រាប់ Google Chrome។</translation>
 <translation id="3114643501466072395">ដើម្បីពិនិត្យមើលថា​តើពាក្យសម្ងាត់​ផ្សេងទៀតរបស់អ្នក​មានសុវត្ថិភាពពី​ការបែកធ្លាយ​ទិន្នន័យ និងបញ្ហាសុវត្ថិភាព​ផ្សេងទៀតឬអត់ សូម<ph name="BEGIN_LINK" />ចូល Chrome<ph name="END_LINK" />។</translation>
 <translation id="3127818369811890733">Chrome OS មិនអាច​ធ្វើសមកាលកម្ម​ទិន្នន័យ​របស់អ្នក​បានទេ។</translation>
+<translation id="3140883423282498090">ការផ្លាស់ប្តូររបស់អ្នកនឹងមានប្រសិទ្ធភាពនៅពេលដែលបើកដំណើរការ Google Chrome ពេលក្រោយ។</translation>
 <translation id="3149510190863420837">កម្មវិធី Chrome</translation>
 <translation id="3360895254066713204">ជំនួយការ Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ឥឡូវនេះ}=1{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល 1 វិនាទីទៀត}other{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល # វិនាទីទៀត}}</translation>
@@ -227,7 +226,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7398801000654795464">អ្នកបានចូលទៅក្នុង Chrome ជា <ph name="USER_EMAIL_ADDRESS" />. សូមប្រើគណនីដូចគ្នាដើម្បីចូលម្តងទៀត។</translation>
 <translation id="7408085963519505752">លក្ខខណ្ឌ Chrome OS</translation>
 <translation id="7419046106786626209">ChromeOS មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះ សមកម្ម មិនមានសម្រាប់ដែនរបស់អ្នកទេ។</translation>
-<translation id="7423733001651488593">ការលុបនេះ​នឹងលុប​ទិន្នន័យរុករក​របស់អ្នក​ចេញពី​ឧបករណ៍នេះ​ជាអចិន្ត្រៃយ៍​។ ដើម្បី​ស្ដារ​ទិន្នន័យនេះ សូមចូល​គណនី Chrome ជា</translation>
 <translation id="7486227612705979895">Chrome នឹងចូលប្រើ​ថាស​របស់អ្នក ដើម្បី​ធ្វើការណែនាំ​នៅក្នុង​របារ​អាសយដ្ឋាន</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">ដើម្បី​មើល​ថាតើឧបករណ៍​របស់អ្នក​មានបច្ចុប្បន្នភាពឬអត់ សូម​ចូលទៅកាន់<ph name="LINK_BEGIN" />ការកំណត់ Chrome OS<ph name="LINK_END" /></translation>

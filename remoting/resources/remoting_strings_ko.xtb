@@ -24,6 +24,7 @@
 ‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
 <translation id="225614027745146050">환영합니다.</translation>
 <translation id="2320166752086256636">키보드 숨기기</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. All Rights Reserved.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  <ph name="RELATIVE_TIMESTAMP" /> 온라인에 마지막으로 연결했습니다.</translation>

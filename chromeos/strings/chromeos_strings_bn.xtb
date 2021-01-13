@@ -51,7 +51,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
-<translation id="2375079107209812402">আর <ph name="ATTEMPTS_LEFT" /> বার চেষ্টা করতে পারবেন</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
@@ -168,7 +167,6 @@
 <translation id="5457599981699367932">অতিথি হিসাবে ব্রাউজ করুন</translation>
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">সহায়তা কেন্দ্রে গিয়ে আরও জানুন</translation>
 <translation id="5635169860413004179">রিপোর্ট দেখুন</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">এটি সিপিইউয়ের ব্যবহার পরিমাপ করে এবং এটি সব কোরের সংমিশ্রণ</translation>
@@ -250,7 +248,6 @@
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
-<translation id="8160445423316272678">শুরু করতে, স্ক্যানারে আপনার ডকুমেন্ট রেখে <ph name="SPAN_BEGIN" />স্ক্যান করুন<ph name="SPAN_END" /> বিকল্পটি বেছে নিন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
@@ -284,7 +281,6 @@
 <translation id="8919837981463578619">প্রিন্ট করা যায়নি - ট্রে পাওয়া যাচ্ছে না</translation>
 <translation id="8928727111548978589">প্রিন্ট করা যায়নি - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="8930622219860340959">ওয়্যারলেস</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> আর <ph name="ATTEMPTS_LEFT" /> বার চেষ্টা করতে পারবেন</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
