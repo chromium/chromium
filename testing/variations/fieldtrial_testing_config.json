@@ -4659,6 +4659,28 @@
             ]
         }
     ],
+    "MixedFormInterstitial": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "mode": "include-redirects-with-form-data"
+                    },
+                    "enable_features": [
+                        "InsecureFormSubmissionInterstitial"
+                    ]
+                }
+            ]
+        }
+    ],
     "MobileIdentityConsistency": [
         {
             "platforms": [
