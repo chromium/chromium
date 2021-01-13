@@ -135,10 +135,8 @@ TabSharingUIViews::TabSharingUIViews(const content::DesktopMediaID& media_id,
 }
 
 TabSharingUIViews::~TabSharingUIViews() {
-  // Unconditionally call StopSharing(), to ensure all clean-up has been
-  // performed if tasks race (e.g., OnStarted() is called after
-  // OnInfoBarRemoved()). See: https://crbug.com/1155426
-  StopSharing();
+  if (!infobars_.empty())
+    StopSharing();
 }
 
 gfx::NativeViewId TabSharingUIViews::OnStarted(
