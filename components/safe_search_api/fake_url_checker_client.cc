@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace safe_search_api {
 
@@ -23,6 +24,12 @@ void FakeURLCheckerClient::CheckURL(const GURL& url,
 
 void FakeURLCheckerClient::RunCallback(ClientClassification classification) {
   std::move(callback_).Run(url_, classification);
+}
+
+void FakeURLCheckerClient::RunCallbackAsync(
+    ClientClassification classification) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), url_, classification));
 }
 
 }  // namespace safe_search_api

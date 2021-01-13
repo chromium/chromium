@@ -30,6 +30,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
+using testing::_;
+
 namespace {
 
 using kids_chrome_management::ClassifyUrlResponse;
@@ -68,7 +70,9 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
       std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
       KidsChromeManagementClient::KidsChromeManagementCallback callback)
       override {
-    std::move(callback).Run(std::move(response_proto_), error_code_);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::move(response_proto_), error_code_));
   }
 
   void SetupResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
@@ -134,11 +138,14 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         ->SetupResponse(std::move(response_proto), error_code);
   }
 
+  // Asynchronously checks the URL and waits until finished.
   void CheckURL(const GURL& url) {
-    url_classifier_->CheckURL(
-        url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
-                            base::Unretained(this)));
+    StartCheckURL(url);
+    task_environment_.RunUntilIdle();
   }
+
+  // Starts a URL check, but doesn't wait for ClassifyURL() to finish.
+  void CheckURLWithoutResponse(const GURL& url) { StartCheckURL(url); }
 
   MOCK_METHOD2(OnCheckDone,
                void(const GURL& url,
@@ -154,6 +161,12 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
 #endif
 
  private:
+  void StartCheckURL(const GURL& url) {
+    url_classifier_->CheckURL(
+        url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
+                            base::Unretained(this)));
+  }
+
   DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClientTest);
 };
 
@@ -239,4 +252,17 @@ TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
 
   EXPECT_CALL(*this, OnCheckDone(url, classification));
   CheckURL(url);
+}
+
+TEST_F(KidsManagementURLCheckerClientTest, DestroyClientBeforeCallback) {
+  GURL url("http://randomurl7.com");
+
+  EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
+  CheckURLWithoutResponse(url);
+
+  // Destroy the URLCheckerClient.
+  url_classifier_.reset();
+
+  // Now run the callback.
+  task_environment_.RunUntilIdle();
 }

@@ -51,7 +51,7 @@ void KidsManagementURLCheckerClient::CheckURL(const GURL& url,
   kids_chrome_management_client->ClassifyURL(
       std::move(classify_url_request),
       base::BindOnce(&KidsManagementURLCheckerClient::ConvertResponseCallback,
-                     base::Unretained(this), url, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
 void KidsManagementURLCheckerClient::ConvertResponseCallback(

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "components/safe_search_api/url_checker_client.h"
 
@@ -43,6 +44,8 @@ class KidsManagementURLCheckerClient
       KidsChromeManagementClient::ErrorCode error_code);
 
   const std::string country_;
+
+  base::WeakPtrFactory<KidsManagementURLCheckerClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClient);
 };
