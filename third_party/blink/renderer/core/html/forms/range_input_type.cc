@@ -194,12 +194,8 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
       std::max((step_range.Maximum() - step_range.Minimum()) / 10, step);
 
   TextDirection dir = TextDirection::kLtr;
-  bool is_vertical = false;
   if (GetElement().GetLayoutObject()) {
     dir = ComputedTextDirection();
-    ControlPart part =
-        GetElement().GetLayoutObject()->Style()->EffectiveAppearance();
-    is_vertical = part == kSliderVerticalPart;
   }
 
   Decimal new_value;
@@ -208,19 +204,17 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   } else if (key == "ArrowDown") {
     new_value = current - step;
   } else if (key == "ArrowLeft") {
-    new_value = (is_vertical || dir == TextDirection::kRtl) ? current + step
-                                                            : current - step;
+    new_value = dir == TextDirection::kRtl ? current + step : current - step;
   } else if (key == "ArrowRight") {
-    new_value = (is_vertical || dir == TextDirection::kRtl) ? current - step
-                                                            : current + step;
+    new_value = dir == TextDirection::kRtl ? current - step : current + step;
   } else if (key == "PageUp") {
     new_value = current + big_step;
   } else if (key == "PageDown") {
     new_value = current - big_step;
   } else if (key == "Home") {
-    new_value = is_vertical ? step_range.Maximum() : step_range.Minimum();
+    new_value = step_range.Minimum();
   } else if (key == "End") {
-    new_value = is_vertical ? step_range.Minimum() : step_range.Maximum();
+    new_value = step_range.Maximum();
   } else {
     return;  // Did not match any key binding.
   }
