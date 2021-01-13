@@ -73,10 +73,6 @@ WorkerThread::CreateNonMainThreadScheduler(
                                             worker_scheduler_proxy_.get());
 }
 
-blink::PlatformThreadId WorkerThread::ThreadId() const {
-  return thread_->tid();
-}
-
 blink::ThreadScheduler* WorkerThread::Scheduler() {
   return thread_->GetNonMainThreadScheduler();
 }

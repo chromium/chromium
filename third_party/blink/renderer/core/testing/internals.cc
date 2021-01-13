@@ -30,6 +30,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/process/process_handle.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -3592,10 +3593,8 @@ String Internals::getAgentId(DOMWindow* window) {
   if (!window->IsLocalDOMWindow())
     return String();
 
-  // Sounds like there's no notion of "process ID" in Blink, but the main
-  // thread's thread ID serves for that purpose.
-  PlatformThreadId process_id = Thread::MainThread()->ThreadId();
-
+  // Create a unique id from the process id and the address of the agent.
+  const base::ProcessId process_id = base::GetCurrentProcId();
   uintptr_t agent_address =
       reinterpret_cast<uintptr_t>(To<LocalDOMWindow>(window)->GetAgent());
 

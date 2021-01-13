@@ -1,5 +1,6 @@
 include_rules = [
     "+base/run_loop.h",
+    "+base/process/process_handle.h",
     "+cc",
     "+components/ukm/test_ukm_recorder.h",
     # TODO(crbug.com/838693): Test harnesses use LayerTreeView
