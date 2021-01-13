@@ -363,10 +363,9 @@ void FrameSelection::SetSelectionForAccessibility(
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (!container.InActiveDocument())
     return;
-  // TODO(yosin): We should move to call |TypingCommand::closeTyping()| to
-  // |Editor| class.
-  if (!GetDocument().IsRunningExecCommand())
-    TypingCommand::CloseTyping(frame_);
+  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
+  // to |Editor| class.
+  TypingCommand::CloseTypingIfNeeded(frame_);
 }
 
 void FrameSelection::NodeWillBeRemoved(Node& node) {
@@ -375,10 +374,9 @@ void FrameSelection::NodeWillBeRemoved(Node& node) {
   // needs no adjustment.
   if (!node.InActiveDocument())
     return;
-  // TODO(yosin): We should move to call |TypingCommand::closeTyping()| to
-  // |Editor| class.
-  if (!GetDocument().IsRunningExecCommand())
-    TypingCommand::CloseTyping(frame_);
+  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
+  // to |Editor| class.
+  TypingCommand::CloseTypingIfNeeded(frame_);
 }
 
 void FrameSelection::DidChangeFocus() {

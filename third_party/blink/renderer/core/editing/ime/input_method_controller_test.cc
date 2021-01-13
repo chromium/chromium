@@ -3411,4 +3411,54 @@ TEST_F(InputMethodControllerTest, VirtualKeyboardPolicyOfFocusedElement) {
             Controller().VirtualKeyboardPolicyOfFocusedElement());
 }
 
+TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SetSelectionTextToBody(u8"<div id='sample' contenteditable>|</div>"));
+  Element* const div = GetDocument().getElementById("sample");
+  div->focus();
+
+  Vector<ImeTextSpan> ime_text_spans;
+  Controller().SetComposition(String(Vector<UChar>{0xF56}), ime_text_spans, 1,
+                              1);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0F56|</div>",
+            GetSelectionTextFromBody());
+
+  Controller().CommitText(String(Vector<UChar>{0xF56}), ime_text_spans, 0);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0F56|</div>",
+            GetSelectionTextFromBody());
+
+  Controller().SetComposition(String(Vector<UChar>{0xFB7}), ime_text_spans, 1,
+                              1);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0F56\u0FB7|</div>",
+            GetSelectionTextFromBody());
+
+  // Attempt to replace part of grapheme cluster "\u0FB7" in composition
+  Controller().CommitText(String(Vector<UChar>{0xFB7}), ime_text_spans, 0);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0F56\u0FB7|</div>",
+            GetSelectionTextFromBody());
+
+  Controller().SetComposition(String(Vector<UChar>{0xF74}), ime_text_spans, 1,
+                              1);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0F56\u0FB7\u0F74|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
+  GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
+      u8"<div id='sample' contenteditable>\u0958|</div>"));
+  Element* const div = GetDocument().getElementById("sample");
+  div->focus();
+
+  Vector<ImeTextSpan> ime_text_spans;
+  Controller().SetComposition(String(Vector<UChar>{0x94D}), ime_text_spans, 1,
+                              1);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0958\u094D|</div>",
+            GetSelectionTextFromBody());
+
+  Controller().CommitText(String(Vector<UChar>{0x94D, 0x930}), ime_text_spans,
+                          0);
+  EXPECT_EQ(u8"<div contenteditable id=\"sample\">\u0958\u094D\u0930|</div>",
+            GetSelectionTextFromBody());
+}
+
 }  // namespace blink
