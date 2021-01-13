@@ -224,9 +224,9 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
         filesystem_context_->CrackURL(GURL(root + file_name));
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        base::WrapUnique(
-            new storage::FileSystemOperationContext(filesystem_context_));
+    std::unique_ptr<storage::FileSystemOperationContext> operation_context(
+        std::make_unique<storage::FileSystemOperationContext>(
+            filesystem_context_));
     operation_context->set_allowed_bytes_growth(
         storage::QuotaManager::kNoLimit);
     file_util->EnsureFileExists(
@@ -253,9 +253,9 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     AwaitCompletionHelper await_completion;
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        base::WrapUnique(
-            new storage::FileSystemOperationContext(filesystem_context_));
+    std::unique_ptr<storage::FileSystemOperationContext> operation_context(
+        std::make_unique<storage::FileSystemOperationContext>(
+            filesystem_context_));
     file_util->Touch(
         std::move(operation_context), file_url, time_stamp, time_stamp,
         base::BindOnce(&BrowsingDataMediaLicenseHelperTest::OnFileTouched,

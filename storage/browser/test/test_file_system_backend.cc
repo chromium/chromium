@@ -176,7 +176,7 @@ FileSystemOperation* TestFileSystemBackend::CreateFileSystemOperation(
     FileSystemContext* context,
     base::File::Error* error_code) const {
   std::unique_ptr<FileSystemOperationContext> operation_context(
-      new FileSystemOperationContext(context));
+      std::make_unique<FileSystemOperationContext>(context));
   operation_context->set_update_observers(*GetUpdateObservers(url.type()));
   operation_context->set_change_observers(*GetChangeObservers(url.type()));
   return FileSystemOperation::Create(url, context,

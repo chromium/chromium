@@ -180,7 +180,7 @@ FileSystemOperation* PluginPrivateFileSystemBackend::CreateFileSystemOperation(
     FileSystemContext* context,
     base::File::Error* error_code) const {
   std::unique_ptr<FileSystemOperationContext> operation_context(
-      new FileSystemOperationContext(context));
+      std::make_unique<FileSystemOperationContext>(context));
   return FileSystemOperation::Create(url, context,
                                      std::move(operation_context));
 }
@@ -315,7 +315,7 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
                                                         "pluginprivate");
 
   std::unique_ptr<FileSystemOperationContext> operation_context(
-      new FileSystemOperationContext(context));
+      std::make_unique<FileSystemOperationContext>(context));
 
   // Determine the available plugin private filesystem directories for this
   // origin. Currently the plugin private filesystem is only used by Encrypted

@@ -283,8 +283,8 @@ storage::FileSystemOperation* MediaFileSystemBackend::CreateFileSystemOperation(
     FileSystemContext* context,
     base::File::Error* error_code) const {
   std::unique_ptr<storage::FileSystemOperationContext> operation_context(
-      new storage::FileSystemOperationContext(context,
-                                              MediaTaskRunner().get()));
+      std::make_unique<storage::FileSystemOperationContext>(
+          context, MediaTaskRunner().get()));
   return storage::FileSystemOperation::Create(url, context,
                                               std::move(operation_context));
 }
