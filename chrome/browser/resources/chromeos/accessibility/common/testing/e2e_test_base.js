@@ -137,6 +137,33 @@ E2ETestBase = class extends testing.Test {
   }
 
   /**
+   * Opens the options page for the running extension and calls |callback| with
+   * the options page root once ready.
+   * @param {function(chrome.automation.AutomationNode)} callback
+   * @param {!RegExp} matchUrlRegExp The url pattern of the options page if
+   *     different than the supplied default pattern below.
+   */
+  runWithLoadedOptionsPage(callback, matchUrlRegExp = /options.html/) {
+    callback = this.newCallback(callback);
+    chrome.automation.getDesktop((desktop) => {
+      const listener = (event) => {
+        if (!matchUrlRegExp.test(event.target.docUrl) ||
+            !event.target.docLoaded) {
+          return;
+        }
+
+        desktop.removeEventListener(
+            chrome.automation.EventType.LOAD_COMPLETE, listener);
+
+        callback(event.target);
+      };
+      desktop.addEventListener(
+          chrome.automation.EventType.LOAD_COMPLETE, listener);
+      chrome.runtime.openOptionsPage();
+    });
+  }
+
+  /**
    * Finds one specific node in the automation tree.
    * This function is expected to run within a callback passed to
    *     runWithLoadedTree().

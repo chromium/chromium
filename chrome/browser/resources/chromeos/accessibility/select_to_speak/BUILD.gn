@@ -82,6 +82,7 @@ js2gtest("select_to_speak_extjs_tests") {
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",
     "select_to_speak_navigation_control_test.js",
+    "select_to_speak_options_test.js",
     "select_to_speak_prefs_test.js",
   ]
 
