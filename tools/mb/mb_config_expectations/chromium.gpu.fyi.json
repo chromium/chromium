@@ -158,6 +158,19 @@
       "use_static_angle": true
     }
   },
+  "Android FYI Release (Pixel 4)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
   "Android FYI SkiaRenderer GL (Nexus 5X)": {
     "gn_args": {
       "dcheck_always_on": true,

@@ -3917,6 +3917,14 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_linux_builder(
+    name = "Android FYI Release (Pixel 4)",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|R32|QCOM",
+        short_name = "P4",
+    ),
+)
+
+ci.gpu_fyi_linux_builder(
     name = "Android FYI SkiaRenderer GL (Nexus 5X)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|skgl|M64",

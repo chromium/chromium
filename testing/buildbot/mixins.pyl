@@ -152,6 +152,13 @@
       },
     },
   },
+  'android_r': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'R',
+      },
+    },
+  },
   'angle_skia_gold_test': {
     '$mixin_append': {
       'args': [
@@ -305,6 +312,15 @@
   'enable_resultdb': {
     'resultdb': {
       'enable': True,
+    },
+  },
+  'flame': {
+    # Pixel 4
+    'swarming': {
+      'dimensions': {
+        'device_type': 'flame',
+        'os': 'Android',
+      },
     },
   },
   'flounder': {
