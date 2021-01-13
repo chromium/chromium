@@ -106,6 +106,11 @@ const char* ReadLaterButton::GetClassName() const {
   return "ReadLaterButton";
 }
 
+void ReadLaterButton::CloseBubble() {
+  if (webui_bubble_manager_->GetBubbleWidget())
+    webui_bubble_manager_->CloseBubble();
+}
+
 std::unique_ptr<views::InkDrop> ReadLaterButton::CreateInkDrop() {
   std::unique_ptr<views::InkDropImpl> ink_drop =
       CreateDefaultFloodFillInkDropImpl();

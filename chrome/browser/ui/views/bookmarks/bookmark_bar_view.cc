@@ -560,10 +560,13 @@ void BookmarkBarView::SetBookmarkBarState(
     BookmarkBar::State state,
     BookmarkBar::AnimateChangeType animate_type) {
   if (animate_type == BookmarkBar::ANIMATE_STATE_CHANGE && animations_enabled) {
-    if (state == BookmarkBar::SHOW)
+    if (state == BookmarkBar::SHOW) {
       size_animation_.Show();
-    else
+    } else {
+      if (read_later_button_)
+        read_later_button_->CloseBubble();
       size_animation_.Hide();
+    }
   } else {
     size_animation_.Reset(state == BookmarkBar::SHOW ? 1 : 0);
     if (!animations_enabled)

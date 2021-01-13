@@ -24,6 +24,8 @@ class ReadLaterButton : public views::LabelButton {
 
   const char* GetClassName() const override;
 
+  void CloseBubble();
+
  private:
   // LabelButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
