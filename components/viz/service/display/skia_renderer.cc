@@ -1064,8 +1064,6 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
 
     // Only sample from pixels behind the RPDQ for backdrop filters to avoid
     // color bleeding with pixel-moving filters.
-    // TODO(crbug.com/1165868): Add web platform test to verify this clip is
-    // done correctly.
     if (rpdq_params.bypass_geometry) {
       crop_rect.Intersect(rpdq_params.bypass_geometry->rect);
     } else {
