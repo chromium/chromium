@@ -1658,21 +1658,6 @@
             ]
         }
     ],
-    "ChromeOSLauncherAssistantIntegration": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableEmbeddedAssistantUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSNeuralPalm": [
         {
             "platforms": [
