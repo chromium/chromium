@@ -361,7 +361,7 @@
     },
     {
       name: "CompositeSVG",
-      status: "stable"
+      status: "test"
     },
     {
       name: "CompositingOptimizations",
