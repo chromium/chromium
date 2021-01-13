@@ -63,6 +63,9 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   EndpointType type() const { return type_; }
 
+  void set_notify_if_restricted(bool notify_if_restricted) {
+    notify_if_restricted_ = notify_if_restricted;
+  }
   bool notify_if_restricted() const { return notify_if_restricted_; }
 
  private:

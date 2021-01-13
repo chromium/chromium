@@ -23,6 +23,8 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
@@ -79,6 +81,19 @@ void DispatchGestureEndToWindow(aura::Window* window) {
     ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
     window->delegate()->OnGestureEvent(&gesture_end);
   }
+}
+
+bool IsDragDropAllowed(const ui::OSExchangeData* drag_data,
+                       aura::client::DragUpdateInfo& drag_info,
+                       bool is_drop) {
+  DCHECK(drag_data);
+
+  drag_info.data_endpoint.set_notify_if_restricted(is_drop);
+
+  return ui::DataTransferPolicyController::HasInstance()
+             ? ui::DataTransferPolicyController::Get()->IsDragDropAllowed(
+                   drag_data->GetSource(), &drag_info.data_endpoint)
+             : true;
 }
 
 }  // namespace
@@ -464,14 +479,19 @@ void DragDropController::DragUpdate(aura::Window* target,
       e.set_flags(event.flags());
       ui::Event::DispatcherApi(&e).set_target(target);
       drag_info = delegate->OnDragUpdated(e);
+      bool is_drop_allowed = IsDragDropAllowed(drag_data_.get(), drag_info,
+                                               /*is_drop=*/false);
       gfx::NativeCursor cursor = ui::mojom::CursorType::kNoDrop;
-      if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
-        cursor = ui::mojom::CursorType::kCopy;
-      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
-        cursor = ui::mojom::CursorType::kAlias;
-      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
-        cursor = ui::mojom::CursorType::kGrabbing;
-
+      if (is_drop_allowed) {
+        if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
+          cursor = ui::mojom::CursorType::kCopy;
+        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
+          cursor = ui::mojom::CursorType::kAlias;
+        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
+          cursor = ui::mojom::CursorType::kGrabbing;
+      } else {
+        drag_info.drag_operation = ui::DragDropTypes::DRAG_NONE;
+      }
       Shell::Get()->cursor_manager()->SetCursor(cursor);
     }
   }
@@ -506,14 +526,20 @@ void DragDropController::DragUpdate(aura::Window* target,
 
 void DragDropController::Drop(aura::Window* target,
                               const ui::LocatedEvent& event) {
-  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
-
   // We must guarantee that a target gets a OnDragEntered before Drop. WebKit
   // depends on not getting a Drop without DragEnter. This behavior is
   // consistent with drag/drop on other platforms.
   if (target != drag_window_)
     DragUpdate(target, event);
   DCHECK(target == drag_window_);
+
+  if (!IsDragDropAllowed(drag_data_.get(), current_drag_info_,
+                         /*is_drop=*/true)) {
+    DragCancel();
+    return;
+  }
+
+  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
   aura::client::DragDropDelegate* delegate =
       aura::client::GetDragDropDelegate(target);
