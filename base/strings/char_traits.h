@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 
 namespace base {
@@ -33,10 +35,14 @@ template <typename T>
 constexpr int CharTraits<T>::compare(const T* s1,
                                      const T* s2,
                                      size_t n) noexcept {
+  // Comparison with operator < fails, because of signed/unsigned
+  // mismatch, https://crbug.com/941696
+  // std::char_traits<T>::lt is guaranteed to be constexpr in C++14:
+  // https://timsong-cpp.github.io/cppwp/n4140/char.traits.specializations#char
   for (; n; --n, ++s1, ++s2) {
-    if (*s1 < *s2)
+    if (std::char_traits<T>::lt(*s1, *s2))
       return -1;
-    if (*s1 > *s2)
+    if (std::char_traits<T>::lt(*s2, *s1))
       return 1;
   }
   return 0;
