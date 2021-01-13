@@ -1436,8 +1436,11 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
 
   auto show = ShouldShow(app_info) ? apps::mojom::OptionalBool::kTrue
                                    : apps::mojom::OptionalBool::kFalse;
+  // All published ARC apps are launchable. All launchable apps should be
+  // permitted to be shown on the shelf, and have their pins on the shelf
+  // persisted.
+  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = show;
-  app->show_in_shelf = show;
   app->show_in_search = show;
   app->show_in_management = show;
 

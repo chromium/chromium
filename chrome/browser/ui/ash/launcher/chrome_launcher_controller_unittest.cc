@@ -169,6 +169,17 @@ constexpr char kCrxAppPrefix[] = "_crx_";
 // pin model with default apps that can affect some tests.
 constexpr char kDummyAppId[] = "dummyappid_dummyappid_dummyappid";
 
+std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  arc::mojom::AppInfoPtr app(arc::mojom::AppInfo::New());
+  app->name = "settings";
+  app->package_name = "com.android.settings";
+  app->activity = "com.android.settings.Settings";
+  app->sticky = true;
+  apps.push_back(std::move(app));
+  return apps;
+}
+
 // Test implementation of AppIconLoader.
 class TestAppIconLoaderImpl : public AppIconLoader {
  public:
@@ -827,6 +838,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
             result += "Play Store";
           } else if (app == crostini::kCrostiniTerminalSystemAppId) {
             result += "Terminal";
+          } else if (app == arc::kSettingsAppId) {
+            result += "Android Settings";
           } else {
             bool arc_app_found = false;
             for (const auto& arc_app : arc_test_.fake_apps()) {
@@ -1523,6 +1536,24 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, NoUpgradeFromNonDefault) {
   AddExtension(extension1_.get());
 
   EXPECT_EQ("Chrome, Files, Gmail, Doc, Play Store", GetPinnedAppStatus());
+}
+
+TEST_F(ChromeLauncherControllerWithArcTest,
+       ArcAppsHiddenFromLaunchCanBePinned) {
+  InitLauncherController();
+
+  // Register Android Settings.
+  arc::mojom::AppHost* app_host = arc_test_.arc_app_list_prefs();
+  app_host->OnAppListRefreshed(GetArcSettingsAppInfo());
+  app_service_test().WaitForAppService();
+
+  // Pin Android settings.
+  launcher_controller_->PinAppWithID(arc::kSettingsAppId);
+  EXPECT_EQ("Chrome, Android Settings", GetPinnedAppStatus());
+
+  // The pin should remain after syncing prefs. Play Store should now appear.
+  StartPrefSyncService(syncer::SyncDataList());
+  EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
