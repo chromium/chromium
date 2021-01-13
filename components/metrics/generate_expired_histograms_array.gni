@@ -77,6 +77,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/google/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/gpu/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/hang_watcher/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/help_app/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml",
       "//tools/metrics/histograms/histograms_xml/history/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/holding_space/histograms.xml",

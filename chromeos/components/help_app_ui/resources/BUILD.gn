@@ -29,6 +29,7 @@ js_library("browser_proxy") {
     # The privileged context can't access the app, but shares struct definitions
     # passed over postMessage.
     "help_app.externs.js",
+    "//third_party/closure_compiler/externs/metrics_private.js",
   ]
   deps = [
     ":message_types",

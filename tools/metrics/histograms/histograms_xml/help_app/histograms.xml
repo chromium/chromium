@@ -1,0 +1,38 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of History histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Discover.Search.SearchStatus"
+    enum="LocalSearchServiceResponseStatus" expires_after="2022-01-08">
+  <owner>callistus@google.com</owner>
+  <owner>showoff-eng@google.com</owner>
+  <summary>
+    Records the search status when searching with the Local Search Service in
+    the Discover (internally &quot;Showoff&quot;) app. This is logged once per
+    user search and will count the number of searches while the index is still
+    empty, successful searches, etc.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
