@@ -462,34 +462,20 @@ PhoneHubNotificationController::CreateNotification(
 int PhoneHubNotificationController::GetSystemPriorityForNotification(
     const chromeos::phonehub::Notification* notification,
     bool is_update) {
-  switch (notification->importance()) {
-    case chromeos::phonehub::Notification::Importance::kNone:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kMin:
-      return message_center::MIN_PRIORITY;
+  bool has_notification_been_shown =
+      base::Contains(shown_notification_ids_, notification->id());
 
-    case chromeos::phonehub::Notification::Importance::kUnspecified:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kLow:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kDefault:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kHigh:
-      bool has_notification_been_shown =
-          base::Contains(shown_notification_ids_, notification->id());
+  // If the same notification was already shown and has not been updated,
+  // use LOW_PRIORITY so that the notification is silently added to the
+  // notification shade. This ensures that we don't spam users with the same
+  // information multiple times.
+  if (has_notification_been_shown && !is_update)
+    return message_center::LOW_PRIORITY;
 
-      // If the same notification was already shown and has not been updated,
-      // use LOW_PRIORITY so that the notification is silently added to the
-      // notification shade. This ensures that we don't spam users with the same
-      // information multiple times.
-      if (has_notification_been_shown && !is_update)
-        return message_center::LOW_PRIORITY;
-
-      // Use MAX_PRIORITY, which causes the notification to be shown in a popup
-      // so that users can see new messages come in as they are chatting. See
-      // https://crbug.com/1159063.
-      return message_center::MAX_PRIORITY;
-  }
+  // Use MAX_PRIORITY, which causes the notification to be shown in a popup
+  // so that users can see new messages come in as they are chatting. See
+  // https://crbug.com/1159063.
+  return message_center::MAX_PRIORITY;
 }
 
 // static

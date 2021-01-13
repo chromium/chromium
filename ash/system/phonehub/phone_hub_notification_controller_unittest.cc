@@ -361,4 +361,23 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   EXPECT_TRUE(cros_notification->renotify());
 }
 
+// Regression test for https://crbug.com/1165646.
+TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
+  chromeos::phonehub::Notification fake_notification(
+      kPhoneHubNotificationId0,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName,
+                                                    /*icon=*/gfx::Image()),
+      base::Time::Now(), chromeos::phonehub::Notification::Importance::kMin,
+      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16(kTextContent));
+
+  // Adding the notification for the first time shows a pop-up (MAX_PRIORITY),
+  // even though the notification itself is Importance::kMin.
+  notification_manager_->SetNotification(fake_notification);
+  auto* cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+}
+
 }  // namespace ash
