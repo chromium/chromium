@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -25,6 +26,51 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 
 namespace viz {
+namespace {
+
+// Gets the minimum scaling amount used by either dimension for the src relative
+// to the dst.
+float GetMinScaleFactor(const OverlayCandidate& candidate) {
+  if (candidate.resource_size_in_pixels.IsEmpty() ||
+      candidate.uv_rect.IsEmpty()) {
+    return 1.0f;
+  }
+  return std::min(candidate.display_rect.width() /
+                      (candidate.uv_rect.width() *
+                       candidate.resource_size_in_pixels.width()),
+                  candidate.display_rect.height() /
+                      (candidate.uv_rect.height() *
+                       candidate.resource_size_in_pixels.height()));
+}
+
+// Modifies an OverlayCandidate so that the |org_src_rect| (which should
+// correspond to the src rect before any modifications were made) is scaled by
+// |scale_factor| and then clipped and aligned on integral subsampling
+// boundaries. This is used for dealing with required overlays and scaling
+// limitations.
+void ScaleCandidateSrcRect(const gfx::RectF& org_src_rect,
+                           float scale_factor,
+                           OverlayCandidate* candidate) {
+  gfx::RectF src_rect(org_src_rect);
+  src_rect.set_width(org_src_rect.width() / scale_factor);
+  src_rect.set_height(org_src_rect.height() / scale_factor);
+
+  // Make it an integral multiple of the subsampling factor.
+  constexpr int kSubsamplingFactor = 2;
+  src_rect.set_x(kSubsamplingFactor *
+                 (std::lround(src_rect.x()) / kSubsamplingFactor));
+  src_rect.set_y(kSubsamplingFactor *
+                 (std::lround(src_rect.y()) / kSubsamplingFactor));
+  src_rect.set_width(kSubsamplingFactor *
+                     (std::lround(src_rect.width()) / kSubsamplingFactor));
+  src_rect.set_height(kSubsamplingFactor *
+                      (std::lround(src_rect.height()) / kSubsamplingFactor));
+  // Scale it back into UV space and set it in the candidate.
+  candidate->uv_rect = gfx::ScaleRect(
+      src_rect, 1.0f / candidate->resource_size_in_pixels.width(),
+      1.0f / candidate->resource_size_in_pixels.height());
+}
+}  // namespace
 
 static void LogStrategyEnumUMA(OverlayStrategy strategy) {
   UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayStrategy", strategy);
@@ -382,10 +428,48 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
             ? candidate.quad_iter->material
             : DrawQuad::Material::kInvalid;
 
-    if (candidate.strategy->AttemptPrioritized(
-            output_color_matrix, render_pass_backdrop_filters,
-            resource_provider, render_pass_list, surface_damage_rect_list,
-            primary_plane, candidates, content_bounds, &candidate)) {
+    bool used_overlay = candidate.strategy->AttemptPrioritized(
+        output_color_matrix, render_pass_backdrop_filters, resource_provider,
+        render_pass_list, surface_damage_rect_list, primary_plane, candidates,
+        content_bounds, &candidate);
+    if (!used_overlay && candidate.candidate.requires_overlay) {
+      // Check if we likely failed due to scaling capabilities, and if so, try
+      // to adjust things to make it work. We do this by tracking what scale
+      // factors succeed for downscaling, and then if we hit a failure case we
+      // decrease the amount iteratively until it succeeds. We then cache that
+      // information as hints to speed up the process next time around.
+      // When we scale less, we then clip instead in order to fit into the
+      // target area.  This is more visually appealing than blacking out the
+      // quad since an overlay is required.
+      float scale_factor = GetMinScaleFactor(candidate.candidate);
+      if (scale_factor < 1.0f) {
+        // When we are trying to determine the min allowed downscale, this is
+        // the amount we will adjust the factor by for each iteration we
+        // attempt.
+        constexpr float kScaleAdjust = 0.05f;
+        gfx::RectF org_src_rect = gfx::ScaleRect(
+            candidate.candidate.uv_rect,
+            candidate.candidate.resource_size_in_pixels.width(),
+            candidate.candidate.resource_size_in_pixels.height());
+        for (float new_scale_factor = std::min(
+                 min_working_scale_,
+                 std::max(max_failed_scale_, scale_factor) + kScaleAdjust);
+             new_scale_factor < 1.0f; new_scale_factor += kScaleAdjust) {
+          float zoom_scale = new_scale_factor / scale_factor;
+          ScaleCandidateSrcRect(org_src_rect, zoom_scale, &candidate.candidate);
+          if (candidate.strategy->AttemptPrioritized(
+                  output_color_matrix, render_pass_backdrop_filters,
+                  resource_provider, render_pass_list, surface_damage_rect_list,
+                  primary_plane, candidates, content_bounds, &candidate)) {
+            used_overlay = true;
+            break;
+          } else {
+            UpdateDownscalingCapabilities(new_scale_factor, /*success=*/false);
+          }
+        }
+      }
+    }
+    if (used_overlay) {
       // This function is used by underlay strategy to mark the primary plane as
       // enable_blending.
       candidate.strategy->AdjustOutputSurfaceOverlay(primary_plane);
@@ -394,6 +478,13 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
       OnOverlaySwitchUMA(ToProposeKey(candidate));
       UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayQuadMaterial",
                                 quad_material);
+      if (candidate.candidate.requires_overlay) {
+        // Track how much we can downscale successfully.
+        float scale_factor = GetMinScaleFactor(candidate.candidate);
+        if (scale_factor < 1.0f) {
+          UpdateDownscalingCapabilities(scale_factor, /*success=*/true);
+        }
+      }
       return true;
     }
   }
@@ -423,6 +514,30 @@ void OverlayProcessorUsingStrategy::OnOverlaySwitchUMA(
                         curr_tick - last_time_interval_switch_overlay_tick_);
     last_time_interval_switch_overlay_tick_ = curr_tick;
   }
+}
+
+void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
+    float scale_factor,
+    bool success) {
+  if (success) {
+    // Adjust the working bound up by this amount so we don't end up with
+    // floating point errors based on the true minimum that actually
+    // works.
+    constexpr float kScaleBoundsTolerance = 0.001f;
+    min_working_scale_ =
+        std::min(scale_factor + kScaleBoundsTolerance, min_working_scale_);
+    // If something worked that failed before, reset the known maximum for
+    // failure.
+    if (min_working_scale_ < max_failed_scale_)
+      max_failed_scale_ = 0.0f;
+    return;
+  }
+
+  max_failed_scale_ = std::max(max_failed_scale_, scale_factor);
+  // If something failed that worked before, reset the known working
+  // minimum.
+  if (max_failed_scale_ > min_working_scale_)
+    min_working_scale_ = 1.0f;
 }
 
 }  // namespace viz
