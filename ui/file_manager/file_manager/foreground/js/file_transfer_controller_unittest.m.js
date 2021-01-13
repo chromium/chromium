@@ -2,6 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {DialogType} from './dialog_type.m.js';
+import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
+import {FileListModel} from './file_list_model.m.js';
+import {FileSelectionHandler} from './file_selection.m.js';
+import {FileTransferController} from './file_transfer_controller.m.js';
+import {MockMetadataModel} from './metadata/mock_metadata.m.js';
+import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+import {createFakeDirectoryModel} from './mock_directory_model.m.js';
+import {A11yAnnounce} from './ui/a11y_announce.m.js';
+import {DirectoryTree} from './ui/directory_tree.m.js';
+import {FileGrid} from './ui/file_grid.m.js';
+import {FileTable} from './ui/file_table.m.js';
+import {ListContainer} from './ui/list_container.m.js';
+
 /** @type {!ListContainer} */
 let listContainer;
 
@@ -22,7 +49,7 @@ let volumeManager;
  */
 let mockChrome;
 
-function setUp() {
+export function setUp() {
   // Setup page DOM.
   document.body.innerHTML = [
     '<style>',
@@ -74,8 +101,8 @@ function setUp() {
   };
   installMockChrome(mockChrome);
 
-  // Initialize cr.ui.Command with the <command>s.
-  cr.ui.decorate('command', cr.ui.Command);
+  // Initialize Command with the <command>s.
+  decorate('command', Command);
 
   // Fake confirmation callback.
   const confirmationDialog = (isMove, messages) => Promise.resolve(true);
@@ -126,7 +153,6 @@ function setUp() {
   FileTable.decorate(
       table, metadataModel, volumeManager, historyLoader, a11y,
       true /* fullPage */);
-  table.list = document.querySelector('#file-list');
   const dataModel = new FileListModel(metadataModel);
   table.list.dataModel = dataModel;
 
@@ -139,7 +165,7 @@ function setUp() {
       queryRequiredElement('#list-container'), table, grid,
       DialogType.FULL_PAGE);
   listContainer.dataModel = dataModel;
-  listContainer.selectionModel = new cr.ui.ListSelectionModel();
+  listContainer.selectionModel = new ListSelectionModel();
   listContainer.setCurrentListType(ListContainer.ListType.DETAIL);
 
   // Setup DirectoryTree elements.
@@ -168,7 +194,7 @@ function setUp() {
  * @suppress {accessControls} To be able to access private method
  * isDocumentWideEvent_
  */
-function testIsDocumentWideEvent() {
+export function testIsDocumentWideEvent() {
   const input = document.querySelector('#free-text');
   const crInput = document.querySelector('#test-input');
   const button = document.querySelector('#button');
@@ -207,7 +233,7 @@ function testIsDocumentWideEvent() {
 /**
  * Tests canCutOrDrag() respects non-modifiable entries like Downloads.
  */
-function testCanMoveDownloads() {
+export function testCanMoveDownloads() {
   // Item 1 of the volume info list should be Downloads volume type.
   assertEquals(
       VolumeManagerCommon.VolumeType.DOWNLOADS,
@@ -243,7 +269,7 @@ function testCanMoveDownloads() {
 /**
  * Tests preparePaste() with FilesApp fs/sources and standard DataTransfer.
  */
-async function testPreparePaste(done) {
+export async function testPreparePaste(done) {
   const myFilesVolume = volumeManager.volumeInfoList.item(1);
   const myFilesMockFs =
       /** @type {!MockFileSystem} */ (myFilesVolume.fileSystem);

@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FilesAppEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util, str} from '../../common/js/util.m.js';
+// clang-format on
+
 /**
  * File path component.
  *
@@ -11,7 +17,7 @@
  * PathComponent.computeComponentsFromEntry computes an array of PathComponent
  * of the given entry.
  */
-class PathComponent {
+/* #export */ class PathComponent {
   /**
    * @param {string} name Name.
    * @param {string} url Url.

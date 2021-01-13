@@ -6,7 +6,13 @@
  * @fileoverview Utility methods for the holding space feature.
  */
 
-class HoldingSpaceUtil {
+// clang-format off
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
+
+/* #export */ class HoldingSpaceUtil {
   /**
    * Returns the key in localStorage to store the time (in milliseconds) of the
    * first pin to holding space.
