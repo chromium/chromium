@@ -106,4 +106,9 @@ void WebStateDelegate::ContextMenuWillPresent(WebState* source,
                                               const GURL& link_url)
     API_AVAILABLE(ios(13.0)) {}
 
+id<CRWResponderInputView> WebStateDelegate::GetResponderInputView(
+    WebState* source) {
+  return nil;
+}
+
 }  // web

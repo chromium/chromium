@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/browsing_data/browsing_data_remover.h"
+#import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -95,6 +96,7 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 }  // namespace
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
+                                CRWInputViewProvider,
                                 CRWJSInjectorDelegate,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
@@ -1603,8 +1605,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         web::GetWebClient()->GetDefaultUserAgent(_containerView, GURL());
   }
 
-  return web::BuildWKWebView(
-      CGRectZero, config, self.webStateImpl->GetBrowserState(), userAgentType);
+  return web::BuildWKWebView(CGRectZero, config,
+                             self.webStateImpl->GetBrowserState(),
+                             userAgentType, self);
 }
 
 // Wraps the web view in a CRWWebViewContentView and adds it to the container
@@ -2044,6 +2047,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
     (CRWWebRequestController*)requestController {
   return self.navigationHandler;
+}
+
+#pragma mark -  CRWInputViewProvider
+
+- (id<CRWResponderInputView>)responderInputView {
+  web::WebState* webState = self.webStateImpl;
+  web::WebStateDelegate* webStateDelegate = webState->GetDelegate();
+  if (webStateDelegate) {
+    return webStateDelegate->GetResponderInputView(webState);
+  }
+  return nil;
 }
 
 #pragma mark - CRWJSNavigationHandlerDelegate

@@ -79,6 +79,7 @@ source_set("page_viewport_state") {
 source_set("web_view_internal_creation_util") {
   deps = [
     "//base",
+    "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/web_state/ui:crw_context_menu_controller",
@@ -86,6 +87,8 @@ source_set("web_view_internal_creation_util") {
   ]
 
   sources = [
+    "crw_web_view.h",
+    "crw_web_view.mm",
     "web_view_internal_creation_util.h",
     "web_view_internal_creation_util.mm",
   ]

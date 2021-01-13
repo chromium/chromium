@@ -111,6 +111,9 @@
     contextMenuDidEndForLinkWithURL:(const GURL&)linkURL
     API_AVAILABLE(ios(13.0));
 
+// This API can be used to show custom input views in the web view.
+- (id<CRWResponderInputView>)webStateInputViewProvider:(web::WebState*)webState;
+
 @end
 
 namespace web {
@@ -162,6 +165,8 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
       API_AVAILABLE(ios(13.0)) override;
   void ContextMenuWillPresent(WebState* source, const GURL& link_url)
       API_AVAILABLE(ios(13.0)) override;
+
+  id<CRWResponderInputView> GetResponderInputView(WebState* source) override;
 
  private:
   // CRWWebStateDelegate which receives forwarded calls.

@@ -189,4 +189,12 @@ void WebStateDelegateBridge::ContextMenuWillPresent(WebState* source,
   }
 }
 
+id<CRWResponderInputView> WebStateDelegateBridge::GetResponderInputView(
+    WebState* source) {
+  if ([delegate_ respondsToSelector:@selector(webStateInputViewProvider:)]) {
+    return [delegate_ webStateInputViewProvider:source];
+  }
+  return nil;
+}
+
 }  // web

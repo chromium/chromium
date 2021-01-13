@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #import "ios/web/public/web_state.h"
 
+@protocol CRWResponderInputView;
 @class UIViewController;
 
 namespace web {
@@ -116,6 +117,10 @@ class WebStateDelegate {
   // Called when iOS13+ context menu will present.
   virtual void ContextMenuWillPresent(WebState* source, const GURL& link_url)
       API_AVAILABLE(ios(13.0));
+
+  // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
+  // more info.
+  virtual id<CRWResponderInputView> GetResponderInputView(WebState* source);
 
  protected:
   virtual ~WebStateDelegate();
