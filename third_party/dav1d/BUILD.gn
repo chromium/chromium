@@ -140,8 +140,9 @@ if (enable_nasm) {
       rebase_path("$platform_config_root/config.asm", root_build_dir),
     ]
 
+    defines = []
     if (needs_stack_alignment) {
-      defines = [ "STACK_ALIGNMENT=$stack_alignment" ]
+      defines += [ "STACK_ALIGNMENT=$stack_alignment" ]
     }
 
     # Necessary to ensure macOS symbols end up with a _ prefix.
