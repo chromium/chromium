@@ -284,6 +284,13 @@ UIColor* BackgroundColor() {
 // Pan gesture recognizer for the view revealing pan gesture handler.
 @property(nonatomic, weak) UIPanGestureRecognizer* panGestureRecognizer;
 
+// The tab strip view can be hidden for multiple reasons, which should be
+// tracked independently.
+// Tracks view hiding from external sources.
+@property(nonatomic, assign) BOOL viewHidden;
+// Tracks view hiding from thumb strip revealing.
+@property(nonatomic, assign) BOOL viewHiddenForThumbStrip;
+
 // Initializes the tab array based on the the entries in the |_webStateList|'s.
 // Creates one TabView per Tab and adds it to the tabstrip.  A later call to
 // |-layoutTabs| is needed to properly place the tabs in the correct positions.
@@ -550,7 +557,13 @@ UIColor* BackgroundColor() {
 }
 
 - (void)hideTabStrip:(BOOL)hidden {
-  self.view.hidden = hidden;
+  self.viewHidden = hidden;
+  [self updateViewHidden];
+}
+
+// Updates the view's hidden property using all sources of visibility.
+- (void)updateViewHidden {
+  self.view.hidden = self.viewHidden || self.viewHiddenForThumbStrip;
 }
 
 - (void)tabStripSizeDidChange {
@@ -1789,6 +1802,8 @@ UIColor* BackgroundColor() {
   // should be visible behind the tab strip are visible. See the comment on
   // |BackgroundColor()| for more details.
   self.view.backgroundColor = UIColor.clearColor;
+  self.viewHiddenForThumbStrip = YES;
+  [self updateViewHidden];
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
@@ -1801,6 +1816,8 @@ UIColor* BackgroundColor() {
     // the tab strip.
     self.view.backgroundColor = BackgroundColor();
   }
+  self.viewHiddenForThumbStrip = viewRevealState != ViewRevealState::Hidden;
+  [self updateViewHidden];
 }
 
 @end

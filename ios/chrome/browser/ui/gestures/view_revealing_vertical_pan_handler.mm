@@ -98,6 +98,7 @@ const CGFloat kAnimationDuration = 0.25f;
   }
   if (!self.gesturesEnabled)
     return;
+  self.currentRecognizer = gesture;
   CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
@@ -529,7 +530,6 @@ const CGFloat kAnimationDuration = 0.25f;
   if (self.currentRecognizer) {
     return NO;
   }
-  self.currentRecognizer = gestureRecognizer;
   return YES;
 }
 

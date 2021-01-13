@@ -2904,7 +2904,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                   adjustTransformForRTL:CGAffineTransformMakeTranslation(
                                             0, self.tabStripView.frame.size
                                                    .height)];
-    self.tabStripView.hidden = YES;
     [self.contentArea addSubview:self.tabStripSnapshot];
     AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
   }
@@ -2982,7 +2981,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  self.tabStripView.hidden = (viewRevealState != ViewRevealState::Hidden);
   [self.tabStripSnapshot removeFromSuperview];
   self.bottomPosition = (viewRevealState == ViewRevealState::Revealed);
 
