@@ -400,6 +400,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// crbug.com/1166152
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_ManyPermissions DISABLED_InvokeUi_ManyPermissions
+#else
+#define MAYBE_InvokeUi_ManyPermissions InvokeUi_ManyPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_ManyPermissions) {
   for (int i = 0; i < 20; i++)
