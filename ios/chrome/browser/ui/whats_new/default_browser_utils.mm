@@ -97,16 +97,18 @@ bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
 bool IsInRemindMeLaterGroup() {
   return base::FeatureList::IsEnabled(
              kDefaultBrowserFullscreenPromoExperiment) &&
-         base::FieldTrialList::FindFullName(
-             kDefaultBrowserFullscreenPromoExperiment.name) ==
+         base::FeatureList::GetFieldTrial(
+             kDefaultBrowserFullscreenPromoExperiment)
+                 ->group_name() ==
              kDefaultBrowserFullscreenPromoExperimentRemindMeGroupName;
 }
 
 bool IsInModifiedStringsGroup() {
   return base::FeatureList::IsEnabled(
              kDefaultBrowserFullscreenPromoExperiment) &&
-         base::FieldTrialList::FindFullName(
-             kDefaultBrowserFullscreenPromoExperiment.name) ==
+         base::FeatureList::GetFieldTrial(
+             kDefaultBrowserFullscreenPromoExperiment)
+                 ->group_name() ==
              kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupName;
 }
 
