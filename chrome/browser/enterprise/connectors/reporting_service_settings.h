@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_SERVICE_SETTINGS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_SERVICE_SETTINGS_H_
 
+#include <set>
 #include <string>
 
 #include "base/optional.h"
@@ -36,6 +37,9 @@ class ReportingServiceSettings {
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
   const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
+
+  // The events that are enabled for the current service provider.
+  std::set<std::string> enabled_event_names_;
 };
 
 }  // namespace enterprise_connectors

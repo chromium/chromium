@@ -21804,11 +21804,16 @@
           'type': 'object',
           'properties': {
             'service_provider': { 'type': 'string' },
+            'enabled_event_names': {
+              'type': 'array',
+              'items': { 'type': 'string' },
+            },
           },
         },
       },
       'example_value': [{
         'service_provider': 'Google',
+        'enabled_event_names': ['passwordChangedEvent', 'sensitiveDataEvent'],
       }],
       'features': {
         'dynamic_refresh': True,
@@ -21822,7 +21827,7 @@
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEvent</ph> Enterprise Connector, which triggers when a security event occurs in Chrome. This includes negative verdicts from analysis Enterprise Connectors, password reuse, navigations to unsafe pages and other security sensitive user actions.
 
-      The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which reporting service provider the settings correspond to.
+      The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which reporting service provider the settings correspond to and the <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD">enabled_event_names</ph> field identifies which events are enabled for this provider.
 
       This policy can only be set from the Google Admin console.'''
     },

@@ -28,6 +28,7 @@ constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
 constexpr char kKeyBlockLargeFiles[] = "block_large_files";
 constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
+constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
 
 enum class ReportingConnector {
   SECURITY_EVENT,
@@ -74,6 +75,7 @@ struct ReportingSettings {
   ~ReportingSettings();
 
   GURL reporting_url;
+  std::set<std::string> enabled_event_names;
   std::string dm_token;
 
   // Indicates if the report should be made for the profile, or the browser if

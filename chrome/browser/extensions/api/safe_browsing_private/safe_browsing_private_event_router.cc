@@ -147,6 +147,7 @@ const char SafeBrowsingPrivateEventRouter::kKeyMalwareCategory[] =
 const char SafeBrowsingPrivateEventRouter::kKeyEvidenceLockerFilePath[] =
     "evidenceLockerFilepath";
 
+// All new event names should be added to the kAllEvents array below!
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
     "passwordReuseEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent[] =
@@ -159,6 +160,16 @@ const char SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent[] =
     "sensitiveDataEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
     "unscannedFileEvent";
+// All new event names should be added to this array!
+const char* SafeBrowsingPrivateEventRouter::kAllEvents[6] = {
+    SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
+    SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
+    SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
+    SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
+    SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
+    SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
+};
+
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
 
@@ -207,8 +218,10 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
   }
 
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyPasswordReuseEvent, std::move(settings.value()),
@@ -243,8 +256,10 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
   }
 
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(kKeyPasswordChangedEvent, std::move(settings.value()),
                       base::BindOnce(
@@ -286,8 +301,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   }
 
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyDangerousDownloadEvent, std::move(settings.value()),
@@ -345,8 +362,10 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   }
 
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
+  }
 
   PrefService* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
   auto event_result =
@@ -402,8 +421,10 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   }
 
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyInterstitialEvent, std::move(settings.value()),
@@ -461,8 +482,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& malware_category,
     const std::string& evidence_locker_filepath) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyDangerousDownloadEvent, std::move(settings.value()),
@@ -522,8 +545,10 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeySensitiveDataEvent, std::move(settings.value()),
@@ -579,8 +604,10 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeySensitiveDataEvent, std::move(settings.value()),
@@ -636,8 +663,10 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyUnscannedFileEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyUnscannedFileEvent, std::move(settings.value()),
@@ -686,8 +715,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyDangerousDownloadEvent, std::move(settings.value()),
@@ -730,8 +761,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& mime_type,
     const int64_t content_size) {
   auto settings = GetReportingSettings();
-  if (!settings.has_value())
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
+  }
 
   ReportRealtimeEvent(
       kKeyDangerousDownloadEvent, std::move(settings.value()),
@@ -989,6 +1022,19 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
     const std::string& name,
     enterprise_connectors::ReportingSettings settings,
     EventBuilder event_builder) {
+#ifndef NDEBUG
+  // Make sure that the event is included in the kAllEvents array.
+  bool found = false;
+  for (auto* known_event_name :
+       extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
+    if (name == known_event_name) {
+      found = true;
+      break;
+    }
+  }
+  DCHECK(found);
+#endif
+
   // Copy the DM token since |settings| is about to move.
   std::string dm_token = settings.dm_token;
   IfAuthorized(dm_token,

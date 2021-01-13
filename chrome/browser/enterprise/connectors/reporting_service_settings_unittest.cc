@@ -22,17 +22,28 @@ struct TestParam {
   ReportingSettings* expected_settings;
 };
 
-constexpr char kNormalSettings[] = R"({ "service_provider": "google" })";
-
 constexpr char kNoProviderSettings[] = "{}";
 
-ReportingSettings* NormalSettings() {
+constexpr char kNormalSettingsWithoutEvents[] =
+    R"({ "service_provider": "google" })";
+
+constexpr char kNormalSettingsWithEvents[] =
+    R"({ "service_provider": "google",
+         "enabled_event_names" : ["event 1", "event 2", "event 3"]
+       })";
+
+ReportingSettings* NoSettings() {
+  return nullptr;
+}
+
+ReportingSettings* NormalSettingsWithoutEvents() {
   static base::NoDestructor<ReportingSettings> settings;
   return settings.get();
 }
 
-ReportingSettings* NoSettings() {
-  return nullptr;
+ReportingSettings* NormalSettingsWithEvents() {
+  static base::NoDestructor<ReportingSettings> settings;
+  return settings.get();
 }
 
 }  // namespace
@@ -41,11 +52,16 @@ class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
  public:
   const char* settings_value() const { return GetParam().settings_value; }
   ReportingSettings* expected_settings() const {
-    // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings == NormalSettings() &&
+    // Set the settings fields dynamically to avoid static initialization issue.
+    if (GetParam().expected_settings == NormalSettingsWithoutEvents() &&
         !GetParam().expected_settings->reporting_url.is_valid()) {
       GetParam().expected_settings->reporting_url =
           GURL("https://chromereporting-pa.googleapis.com/v1/events");
+    } else if (GetParam().expected_settings == NormalSettingsWithEvents() &&
+               GetParam().expected_settings->enabled_event_names.empty()) {
+      GetParam().expected_settings->enabled_event_names.insert("event 1");
+      GetParam().expected_settings->enabled_event_names.insert("event 2");
+      GetParam().expected_settings->enabled_event_names.insert("event 3");
     }
     return GetParam().expected_settings;
   }
@@ -64,17 +80,25 @@ TEST_P(ReportingServiceSettingsTest, Test) {
 
   auto reporting_settings = service_settings.GetReportingSettings();
   ASSERT_EQ((expected_settings() != nullptr), reporting_settings.has_value());
-  if (reporting_settings.has_value()) {
-    ASSERT_EQ(expected_settings(), NormalSettings());
+  if (expected_settings() == NormalSettingsWithoutEvents()) {
+    ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
     ASSERT_EQ(expected_settings()->reporting_url,
               reporting_settings.value().reporting_url);
+  } else if (expected_settings() == NormalSettingsWithEvents()) {
+    ASSERT_FALSE(reporting_settings->enabled_event_names.empty());
+    ASSERT_EQ(expected_settings()->enabled_event_names,
+              reporting_settings.value().enabled_event_names);
+  } else {
+    ASSERT_EQ(expected_settings(), NoSettings());
   }
 }
 
 INSTANTIATE_TEST_CASE_P(
     ,
     ReportingServiceSettingsTest,
-    testing::Values(TestParam(kNormalSettings, NormalSettings()),
-                    TestParam(kNoProviderSettings, NoSettings())));
+    testing::Values(
+        TestParam(kNoProviderSettings, NoSettings()),
+        TestParam(kNormalSettingsWithoutEvents, NormalSettingsWithoutEvents()),
+        TestParam(kNormalSettingsWithEvents, NormalSettingsWithEvents())));
 
 }  // namespace enterprise_connectors

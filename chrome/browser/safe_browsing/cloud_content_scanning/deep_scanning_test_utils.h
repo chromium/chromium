@@ -150,9 +150,11 @@ void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope = true);
-void SetOnSecurityEventReporting(PrefService* prefs,
-                                 bool enabled,
-                                 bool machine_scope = true);
+void SetOnSecurityEventReporting(
+    PrefService* prefs,
+    bool enabled,
+    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
+    bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);
 

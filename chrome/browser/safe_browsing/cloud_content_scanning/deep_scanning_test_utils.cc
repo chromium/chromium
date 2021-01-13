@@ -365,9 +365,11 @@ void SetAnalysisConnector(PrefService* prefs,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
-void SetOnSecurityEventReporting(PrefService* prefs,
-                                 bool enabled,
-                                 bool machine_scope) {
+void SetOnSecurityEventReporting(
+    PrefService* prefs,
+    bool enabled,
+    const std::set<std::string>& enabled_event_names,
+    bool machine_scope) {
   ListPrefUpdate settings_list(prefs,
                                enterprise_connectors::kOnSecurityEventPref);
   DCHECK(settings_list.Get());
@@ -377,6 +379,14 @@ void SetOnSecurityEventReporting(PrefService* prefs,
 
       settings.SetKey(enterprise_connectors::kKeyServiceProvider,
                       base::Value("google"));
+      if (!enabled_event_names.empty()) {
+        base::Value enabled_event_name_list(base::Value::Type::LIST);
+        for (const auto& enabled_event_name : enabled_event_names) {
+          enabled_event_name_list.Append(enabled_event_name);
+        }
+        settings.SetKey(enterprise_connectors::kKeyEnabledEventNames,
+                        std::move(enabled_event_name_list));
+      }
       settings_list->Append(std::move(settings));
     }
     prefs->SetInteger(enterprise_connectors::kOnSecurityEventScopePref,

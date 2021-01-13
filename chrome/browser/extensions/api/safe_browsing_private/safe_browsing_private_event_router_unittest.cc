@@ -4,6 +4,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -231,8 +232,11 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
             "filePasswordProtected", 12345, result);
   }
 
-  void SetReportingPolicy(bool enabled) {
-    safe_browsing::SetOnSecurityEventReporting(profile_->GetPrefs(), enabled);
+  void SetReportingPolicy(bool enabled,
+                          const std::set<std::string>& enabled_event_names =
+                              std::set<std::string>()) {
+    safe_browsing::SetOnSecurityEventReporting(profile_->GetPrefs(), enabled,
+                                               enabled_event_names);
 
     // If we are not enabling reporting, or if the client has already been
     // set for testing, just return.
@@ -246,14 +250,16 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
   }
 
-  void SetUpRouters(bool realtime_reporting_enable = true,
-                    bool authorized = true) {
+  void SetUpRouters(bool authorized = true,
+                    bool realtime_reporting_enable = true,
+                    const std::set<std::string>& enabled_event_names =
+                        std::set<std::string>()) {
     event_router_ = extensions::CreateAndUseTestEventRouter(profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
         profile_,
         base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter, authorized));
 
-    SetReportingPolicy(realtime_reporting_enable);
+    SetReportingPolicy(realtime_reporting_enable, enabled_event_names);
   }
 
  protected:
@@ -576,7 +582,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOnToOffIsDynamic) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOffToOnIsDynamic) {
-  SetUpRouters(/*realtime_reporting_enable=*/false);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -595,7 +601,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOffToOnIsDynamic) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnauthorizedOnReuseDetected) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnPolicySpecifiedPasswordReuseDetected::
           kEventName);
@@ -612,7 +618,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnauthorizedOnReuseDetected) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnauthorizedOnPasswordChanged) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -629,7 +635,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnauthorizedOnPasswordChanged) {
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnDangerousDownloadOpened) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -646,7 +652,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnSecurityInterstitialProceeded) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnSecurityInterstitialProceeded::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -663,7 +669,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnSecurityInterstitialShown) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -680,7 +686,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnDangerousDownloadWarning) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -697,7 +703,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnDangerousDownloadWarningBypass) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/false);
+  SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -713,7 +719,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/true);
+  SetUpRouters(/*authorized=*/true);
 
   base::Value report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
@@ -763,7 +769,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/true);
+  SetUpRouters();
 
   base::Value report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
@@ -813,7 +819,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/true);
+  SetUpRouters();
 
   base::Value report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
@@ -857,7 +863,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
-  SetUpRouters(/*realtime_reporting_enable=*/true, /*authorized=*/true);
+  SetUpRouters();
 
   base::Value report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
@@ -936,6 +942,142 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
   captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("profile@example.com",
             captured_args.FindKey("userName")->GetString());
+}
+
+// This next series of tests validate that we get the expected number of events
+// reported when a given event name is enabled and we only trigger the related
+// events (some events like interstiaial and dangerous downloads have multiple
+// triggers for the same event name).
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordChangedEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  SafeBrowsingEventObserver event_observer(
+      api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
+  event_router_->AddEventObserver(&event_observer);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
+  TriggerOnPolicySpecifiedPasswordChangedEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Assert the event actually did fire.
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordReuseEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  SafeBrowsingEventObserver event_observer(
+      api::safe_browsing_private::OnPolicySpecifiedPasswordReuseDetected::
+          kEventName);
+  event_router_->AddEventObserver(&event_observer);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
+  TriggerOnPolicySpecifiedPasswordReuseDetectedEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Assert the event actually did fire.
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestDangerousDownloadEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  SafeBrowsingEventObserver event_observer(
+      api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
+  event_router_->AddEventObserver(&event_observer);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(3);
+  TriggerOnDangerousDownloadEvent();
+  TriggerOnDangerousDownloadEventBypass();
+  TriggerOnDangerousDownloadOpenedEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Assert the event actually did fire.
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestInterstitialEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  SafeBrowsingEventObserver event_observer1(
+      api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
+  SafeBrowsingEventObserver event_observer2(
+      api::safe_browsing_private::OnSecurityInterstitialProceeded::kEventName);
+  event_router_->AddEventObserver(&event_observer1);
+  event_router_->AddEventObserver(&event_observer2);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(2);
+  TriggerOnSecurityInterstitialShownEvent();
+  TriggerOnSecurityInterstitialProceededEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Assert the event actually did fire.
+  ASSERT_EQ(1u, event_observer1.PassEventArgs().GetList().size());
+  ASSERT_EQ(1u, event_observer2.PassEventArgs().GetList().size());
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestSensitiveDataEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
+  TriggerOnSensitiveDataEvent(safe_browsing::EventResult::BLOCKED);
+  base::RunLoop().RunUntilIdle();
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnscannedFileEnabled) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(
+      SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
+  TriggerOnUnscannedFileEvent(safe_browsing::EventResult::ALLOWED);
+  base::RunLoop().RunUntilIdle();
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
 }
 
 // Tests to make sure the feature flag and policy control real-time reporting
@@ -1031,7 +1173,7 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
   // In production, the router won't actually be authorized unless it was
   // initialized.  The second argument to SetUpRouters() takes this into
   // account.
-  SetUpRouters(is_policy_enabled_, should_init() && is_authorized_);
+  SetUpRouters(should_init() && is_authorized_, is_policy_enabled_);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
@@ -1055,7 +1197,7 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
   TriggerOnPolicySpecifiedPasswordChangedEvent();
   base::RunLoop().RunUntilIdle();
 
-  // Asser the triggered actually did fire.
+  // Assert the trigger actually did fire.
   EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
@@ -1070,5 +1212,99 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+// Tests to make sure only the enabled events are reported.
+//
+//   std::string: the name of the event to enable.
+//   int: How many triggers use this event name.
+class SafeBrowsingIsRealtimeReportingEventDisabledTest
+    : public SafeBrowsingPrivateEventRouterTest,
+      public testing::WithParamInterface<testing::tuple<std::string, int>> {
+ public:
+  SafeBrowsingIsRealtimeReportingEventDisabledTest()
+      : event_name_(testing::get<0>(GetParam())),
+        num_triggers_(testing::get<1>(GetParam())) {}
+
+ protected:
+  const std::string event_name_;
+  const int num_triggers_;
+};
+
+// Tests above confirm the 1:n relation between enabled event name and expected
+// triggers, when only these triggers are fired. Here we make sure none of the
+// unexpected events are enabled when we trigger all of them.
+TEST_P(SafeBrowsingIsRealtimeReportingEventDisabledTest,
+       TryAllButOnlyTriggerExpectedNumberOfTimesForGivenEvent) {
+  std::set<std::string> enabled_event_names;
+  enabled_event_names.insert(event_name_);
+  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
+               enabled_event_names);
+
+  SafeBrowsingEventObserver event_observer1(
+      api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
+  SafeBrowsingEventObserver event_observer2(
+      api::safe_browsing_private::OnPolicySpecifiedPasswordReuseDetected::
+          kEventName);
+  SafeBrowsingEventObserver event_observer3(
+      api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
+  SafeBrowsingEventObserver event_observer4(
+      api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
+  SafeBrowsingEventObserver event_observer5(
+      api::safe_browsing_private::OnSecurityInterstitialProceeded::kEventName);
+  event_router_->AddEventObserver(&event_observer1);
+  event_router_->AddEventObserver(&event_observer2);
+  event_router_->AddEventObserver(&event_observer3);
+  event_router_->AddEventObserver(&event_observer4);
+  event_router_->AddEventObserver(&event_observer5);
+
+  // Only 1 of the 9 triggers should make it to an upload.
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .Times(num_triggers_);
+  TriggerOnPolicySpecifiedPasswordChangedEvent();
+  TriggerOnPolicySpecifiedPasswordReuseDetectedEvent();
+  TriggerOnDangerousDownloadOpenedEvent();
+  TriggerOnSecurityInterstitialShownEvent();
+  TriggerOnSecurityInterstitialProceededEvent();
+  TriggerOnDangerousDownloadEvent();
+  TriggerOnDangerousDownloadEventBypass();
+  TriggerOnSensitiveDataEvent(safe_browsing::EventResult::BLOCKED);
+  TriggerOnUnscannedFileEvent(safe_browsing::EventResult::ALLOWED);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Assert the events with triggers actually did fire.
+  EXPECT_EQ(1u, event_observer1.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer2.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer3.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer4.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer5.PassEventArgs().GetList().size());
+
+  // Make sure UploadSecurityEventReport was called the expected number of
+  // times.
+  Mock::VerifyAndClearExpectations(client_.get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingIsRealtimeReportingEventDisabledTest,
+    testing::Values(
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
+            1),
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
+            1),
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
+            3),
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
+            2),
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
+            1),
+        testing::make_tuple(
+            SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
+            1)));
 
 }  // namespace extensions

@@ -92,6 +92,8 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyInterstitialEvent[];
   static const char kKeySensitiveDataEvent[];
   static const char kKeyUnscannedFileEvent[];
+  static const char* kAllEvents[6];
+
   static const char kKeyUnscannedReason[];
 
   // String constants for the "trigger" event field.  This corresponds to
