@@ -189,7 +189,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
       base::BindOnce(&DeclarativeNetRequestUpdateSessionRulesFunction::
                          OnSessionRulesUpdated,
                      this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondLater();
 }
 
 void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
