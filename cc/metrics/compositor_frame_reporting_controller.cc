@@ -78,9 +78,18 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   if (reporters_[PipelineStage::kBeginImplFrame]) {
     auto& reporter = reporters_[PipelineStage::kBeginImplFrame];
     DCHECK(reporter->did_finish_impl_frame());
-    DCHECK(reporter->did_not_produce_frame());
-    reporter->TerminateFrame(FrameTerminationStatus::kDidNotProduceFrame,
-                             reporter->did_not_produce_frame_time());
+    // TODO(1144353): This is a speculative fix. This code should only be
+    // reached after the previous frame have been explicitly marked as 'did not
+    // produce frame', i.e. this code should have a DCHECK instead of a
+    // conditional:
+    //   DCHECK(reporter->did_not_produce_frame()).
+    if (reporter->did_not_produce_frame()) {
+      reporter->TerminateFrame(FrameTerminationStatus::kDidNotProduceFrame,
+                               reporter->did_not_produce_frame_time());
+    } else {
+      reporter->TerminateFrame(FrameTerminationStatus::kReplacedByNewReporter,
+                               Now());
+    }
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args, latency_ukm_reporter_.get(),
