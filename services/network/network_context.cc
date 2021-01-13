@@ -96,6 +96,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/quic_transport.h"
 #include "services/network/resolve_host_request.h"
@@ -636,6 +637,29 @@ void NetworkContext::GetHasTrustTokensAnswerer(
       std::move(*suitable_top_frame_origin), trust_token_store_.get());
 
   has_trust_tokens_answerers_.Add(std::move(answerer), std::move(receiver));
+}
+
+void NetworkContext::GetStoredTrustTokenCounts(
+    GetStoredTrustTokenCountsCallback callback) {
+  if (trust_token_store_) {
+    auto get_trust_token_counts_from_store =
+        [](NetworkContext::GetStoredTrustTokenCountsCallback callback,
+           TrustTokenStore* trust_token_store) {
+          std::vector<mojom::StoredTrustTokensForIssuerPtr> result;
+          for (auto& issuer_count_pair :
+               trust_token_store->GetStoredTrustTokenCounts()) {
+            result.push_back(mojom::StoredTrustTokensForIssuer::New(
+                std::move(issuer_count_pair.first), issuer_count_pair.second));
+          }
+          std::move(callback).Run(std::move(result));
+        };
+    trust_token_store_->ExecuteOrEnqueue(
+        base::BindOnce(get_trust_token_counts_from_store, std::move(callback)));
+  } else {
+    // The Trust Tokens feature is disabled, return immediately with an empty
+    // vector.
+    std::move(callback).Run({});
+  }
 }
 
 void NetworkContext::OnProxyLookupComplete(

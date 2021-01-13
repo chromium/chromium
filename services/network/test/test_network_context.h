@@ -64,6 +64,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetHasTrustTokensAnswerer(
       mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
       const url::Origin& top_frame_origin) override {}
+  void GetStoredTrustTokenCounts(
+      GetStoredTrustTokenCountsCallback callback) override {}
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,

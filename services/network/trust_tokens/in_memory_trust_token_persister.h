@@ -49,6 +49,9 @@ class InMemoryTrustTokenPersister : public TrustTokenPersister {
       base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)> matcher)
       override;
 
+  base::flat_map<SuitableTrustTokenOrigin, int> GetStoredTrustTokenCounts()
+      override;
+
  private:
   std::map<SuitableTrustTokenOrigin, std::unique_ptr<TrustTokenToplevelConfig>>
       toplevel_configs_;

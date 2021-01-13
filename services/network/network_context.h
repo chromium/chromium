@@ -207,6 +207,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::Origin& top_frame_origin) override;
   void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
                            base::OnceClosure done) override;
+  void GetStoredTrustTokenCounts(
+      GetStoredTrustTokenCountsCallback callback) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,

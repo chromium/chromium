@@ -945,6 +945,10 @@ interface NetworkContext {
   // A null |filter| indicates that all Trust Tokens data should be cleared.
   ClearTrustTokenData(ClearDataFilter? filter) => ();
 
+  // Returns the number of signed-but-not-spent Trust Tokens.
+  GetStoredTrustTokenCounts()
+      => (array<StoredTrustTokensForIssuer> tokens);
+
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
   // retained. Only applies to network objects without more specific methods

@@ -153,6 +153,10 @@ class TrustTokenStore {
   WARN_UNUSED_RESULT virtual int CountTokens(
       const SuitableTrustTokenOrigin& issuer);
 
+  // Returns the number of stored tokens per issuer.
+  WARN_UNUSED_RESULT virtual base::flat_map<SuitableTrustTokenOrigin, int>
+  GetStoredTrustTokenCounts();
+
   // Returns all signed tokens from |issuer| signed by keys matching
   // the given predicate.
   WARN_UNUSED_RESULT virtual std::vector<TrustToken> RetrieveMatchingTokens(

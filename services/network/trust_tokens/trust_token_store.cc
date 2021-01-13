@@ -311,4 +311,9 @@ bool TrustTokenStore::ClearDataForFilter(mojom::ClearDataFilterPtr filter) {
   return persister_->DeleteForOrigins(std::move(matcher));
 }
 
+base::flat_map<SuitableTrustTokenOrigin, int>
+TrustTokenStore::GetStoredTrustTokenCounts() {
+  return persister_->GetStoredTrustTokenCounts();
+}
+
 }  // namespace network

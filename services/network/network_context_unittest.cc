@@ -6899,6 +6899,121 @@ TEST_F(NetworkContextTest,
             mojom::TrustTokenOperationStatus::kUnavailable);
 }
 
+TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&trust_tokens,
+       &run_loop](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens = std::move(tokens);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens.has_value());
+  EXPECT_TRUE(trust_tokens->empty());
+}
+
+TEST_F(NetworkContextTest, GetStoredTrustTokens) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  // Query Trust Tokens before adding the mock token.
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens_before_adding;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens_before_adding = std::move(tokens);
+      }));
+
+  // Add a mock token.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(
+            *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken.com")),
+            std::vector<std::string>{"token"}, "issuing key");
+      }));
+
+  // Query Trust Tokens after adding the mock token.
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens_after_adding;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens_after_adding = std::move(tokens);
+        run_loop.Quit();
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens_before_adding.has_value());
+  EXPECT_EQ(trust_tokens_before_adding->size(), 0ul);
+
+  ASSERT_TRUE(trust_tokens_after_adding.has_value());
+  ASSERT_EQ(trust_tokens_after_adding->size(), 1ul);
+  EXPECT_EQ(trust_tokens_after_adding.value()[0]->issuer.Serialize(),
+            "https://trusttoken.com");
+}
+
+TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Add a mock token.
+  base::RunLoop run_loop;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(
+            *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken.com")),
+            std::vector<std::string>{"token"}, "issuing key");
+      }));
+
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens;
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      reentrant_trust_tokens;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+            [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+              reentrant_trust_tokens = std::move(tokens);
+              run_loop.Quit();
+            }));
+        trust_tokens = std::move(tokens);
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens.has_value());
+  ASSERT_TRUE(reentrant_trust_tokens.has_value());
+  EXPECT_EQ(trust_tokens->size(), reentrant_trust_tokens->size());
+  EXPECT_EQ(trust_tokens.value()[0]->issuer,
+            reentrant_trust_tokens.value()[0]->issuer);
+  EXPECT_EQ(trust_tokens.value()[0]->count,
+            reentrant_trust_tokens.value()[0]->count);
+}
+
 }  // namespace
 
 }  // namespace network

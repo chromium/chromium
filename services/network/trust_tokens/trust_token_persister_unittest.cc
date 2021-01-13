@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
@@ -335,6 +336,40 @@ TYPED_TEST(TrustTokenPersisterTest, DeletesToplevelKeyedData) {
   env.RunUntilIdle();  // Give implementations with asynchronous write
                        // operations time to complete the operation.
   ASSERT_FALSE(persister->GetToplevelConfig(toplevel));
+
+  // Some implementations of TrustTokenPersister may release resources
+  // asynchronously at destruction time; manually free the persister and allow
+  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest, RetrievesAvailableTrustTokens) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();  // Give implementations with asynchronous initialization
+                       // time to initialize.
+
+  auto result = persister->GetStoredTrustTokenCounts();
+  EXPECT_EQ(result.size(), 0ul);
+
+  TrustTokenIssuerConfig config;
+  TrustToken my_token;
+  my_token.set_body("token token token");
+  *config.add_tokens() = my_token;
+
+  auto config_to_store = std::make_unique<TrustTokenIssuerConfig>(config);
+  auto origin = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
+  persister->SetIssuerConfig(origin, std::move(config_to_store));
+
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+
+  result = persister->GetStoredTrustTokenCounts();
+
+  EXPECT_EQ(result.size(), 1ul);
+  EXPECT_EQ(result.begin()->first, origin);
+  EXPECT_EQ(result.begin()->second, 1);
 
   // Some implementations of TrustTokenPersister may release resources
   // asynchronously at destruction time; manually free the persister and allow

@@ -8,9 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_split.h"
 #include "components/sqlite_proto/key_value_data.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
 #include "url/gurl.h"
@@ -234,6 +236,24 @@ bool SQLiteTrustTokenPersister::DeleteForOrigins(
       matcher, database_owner_->IssuerToplevelPairData());
 
   return any_data_was_deleted;
+}
+
+base::flat_map<SuitableTrustTokenOrigin, int>
+SQLiteTrustTokenPersister::GetStoredTrustTokenCounts() {
+  base::flat_map<SuitableTrustTokenOrigin, int> result;
+  sqlite_proto::KeyValueData<TrustTokenIssuerConfig>* data =
+      database_owner_->IssuerData();
+
+  for (const auto& kv : data->GetAllCached()) {
+    base::Optional<SuitableTrustTokenOrigin> origin =
+        SuitableTrustTokenOrigin::Create(GURL(kv.first));
+    // The Create call can fail when the SQLite data was corrupted on the disk.
+    if (origin) {
+      result.emplace(std::move(*origin), kv.second.tokens_size());
+    }
+  }
+
+  return result;
 }
 
 }  // namespace network
