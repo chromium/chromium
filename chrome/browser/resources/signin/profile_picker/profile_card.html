@@ -9,8 +9,7 @@
   }
 
   cr-button {
-    --card-background-color: var(--md-background-color);
-    background-color: var(--card-background-color);
+    background-color: var(--profile-card-background-color);
     border: none;
     border-radius: inherit;
     box-shadow: none;
@@ -22,13 +21,6 @@
 
   :host-context(.focus-outline-visible) cr-button:focus {
     box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
-  }
-
-  .profile-avatar {
-    border-radius: 37px;
-    flex-shrink: 0;
-    height: var(--avatar-icon-size);
-    width: var(--avatar-icon-size);
   }
 
   #avatarContainer {
@@ -43,7 +35,7 @@
     --domain-icon-border-size: 2px;
     align-items: center;
     background-color: white;
-    border: var(--domain-icon-border-size) solid var(--card-background-color);
+    border: var(--domain-icon-border-size) solid var(--profile-card-background-color);
     border-radius: 50%;
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
@@ -113,10 +105,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    cr-button {
-      --card-background-color: var(--google-grey-800);
-    }
-
     #iconContainer {
       background-color: var(--md-background-color);
       box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px

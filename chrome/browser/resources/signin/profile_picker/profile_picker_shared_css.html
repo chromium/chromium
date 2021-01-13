@@ -5,11 +5,13 @@
       --scrollbar-width: 4px;
       --scrollbar-background: var(--google-grey-refresh-100);
       --footer-margin: 40px;
+      --profile-card-background-color: var(--md-background-color);
     }
 
     @media (prefers-color-scheme: dark) {
       :host {
         --scrollbar-background: var(--google-grey-800);
+        --profile-card-background-color: var(--google-grey-800);
       }
     }
 
@@ -65,6 +67,13 @@
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: var(--scrollbar-background);
       border-radius: var(--scrollbar-width);
+    }
+
+    .profile-avatar {
+      border-radius: 37px;
+      flex-shrink: 0;
+      height: var(--avatar-icon-size);
+      width: var(--avatar-icon-size);
     }
   </style>
 </template>

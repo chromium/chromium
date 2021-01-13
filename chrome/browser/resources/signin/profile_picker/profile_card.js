@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import './profile_card_menu.js';
 import './profile_picker_shared_css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';

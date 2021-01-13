@@ -1,4 +1,4 @@
-<style include="cr-icons profile-picker-shared">
+<style include="cr-icons profile-picker-shared cr-hidden-style">
   #moreActionsButton {
     --cr-icon-button-icon-size: 14px;
     --cr-icon-button-margin-end: 0;
@@ -23,26 +23,13 @@
     padding-inline-start: 14px;
   }
 
-  #removeActionMenu {
-    pointer-events: none;
+  cr-dialog::part(dialog) {
+    width: 448px;
   }
 
-  #removeConfirmation {
-    color: var(--cr-primary-text-color);
-    margin-top: 16px;
-    pointer-events: none;
-    width: 234px;
-  }
-
-  #removeConfirmation > * {
-    margin: 0 16px 16px 16px;
-  }
-
-  .header {
-    font-size: 1.17em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  #removeWarningHeader {
+    line-height: 20px;
+    padding: 4px 20px 20px 20px;
   }
 
   #userName {
@@ -53,19 +40,58 @@
     font-weight: 500;
   }
 
-  .statistics {
+  #removeActionDialogBody {
+    align-items: center;
     border: 1px solid var(--google-grey-refresh-100);
-    border-radius: 4px;
+    border-radius: 12px;
     box-sizing: border-box;
-    padding: 12px 16px 16px 12px;
-    width: -webkit-fill-available;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #profileCardContainer {
+    align-items: center;
+    background-color: var(--profile-card-background-color);
+    border-radius: 12px 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    height: var(--profile-item-height);
+    justify-content: center;
+    position: relative;
+    width: var(--profile-item-width);
+  }
+
+  #avatarContainer {
+    height: var(--avatar-icon-size);
+    position: relative;
+  }
+
+  #profileName {
+    font-weight: 500;
+    top: 0;
+  }
+
+  #gaiaName {
+    bottom: 0;
+    font-weight: normal;
+  }
+
+  .statistics {
+    display: grid;
+    flex-grow: 1;
+    grid-template-columns: 5fr 1fr;
+    padding: 20px;
   }
 
   .category {
+    align-self: center;
+    color: var(--cr-primary-text-color);
+    line-height: 24px;
     text-align: start;
   }
 
   .count {
+    align-self: center;
     color: var(--google-grey-refresh-500);
     text-align: end;
   }
@@ -76,14 +102,7 @@
     --hover-bg-action: rgba(var(--google-red-700-rgb), .9);
     --hover-shadow-action-rgb: var(--google-red-300-rgb);
     background-color: var(--bg-action);
-    border-radius: 4px;
     color: var(--ink-color-action);
-    font-weight: 500;
-    left: 50%;
-    margin-bottom: 16px;
-    pointer-events: auto;
-    transform: translateX(-50%);
-    width: 111px;
   }
 
   #removeConfirmationButton:hover {
@@ -95,7 +114,7 @@
       color: var(--google-grey-500);
     }
 
-    .statistics {
+    #removeActionDialogBody {
       border-color: var(--google-grey-refresh-700);
     }
   }
@@ -117,30 +136,47 @@
   </button>
 </cr-action-menu>
 
-<cr-action-menu id="removeActionMenu" role-description="$i18n{menu}">
-  <div id="removeConfirmation">
-    <div class="header">
-      $i18n{profileMenuRemoveText}
-      <span class="key-text">[[profileState.localProfileName]]</span>
+<cr-dialog id="removeConfirmationDialog" ignore-enter-key>
+  <div slot="title">
+    $i18n{profileMenuRemoveText}
+    <span class="key-text">[[profileState.localProfileName]]</span>
+  </div>
+  <div id="removeWarningHeader" slot="header" class="warning-message">
+    [[removeWarningText_]]
+    <div id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
+      [[profileState.userName]]
     </div>
-    <div class="warning-message">
-      [[removeWarningText_]]
-      <div id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
-        [[profileState.userName]]
+  </div>
+  <div slot="body">
+    <div id="removeActionDialogBody">
+      <div id="profileCardContainer">
+        <div id="avatarContainer">
+          <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
+        </div>
+        <div id="profileName" class="profile-card-info">
+          [[profileState.localProfileName]]
+        </div>
+        <div id="gaiaName" class="profile-card-info">
+          [[profileState.gaiaName]]
+        </div>
+      </div>
+      <div class="statistics">
+        <template is="dom-repeat" items="[[profileStatistics_]]">
+          <span class="category">[[getProfileStatisticText_(item)]]</span>
+          <span class="count">
+            [[getProfileStatisticCount_(item, statistics_)]]
+          </span>
+        </template>
       </div>
     </div>
-    <table class="statistics">
-      <template is="dom-repeat" items="[[profileStatistics_]]">
-        <tr>
-          <td class="category">[[getProfileStatisticText_(item)]]</td>
-          <td class="count">
-            [[getProfileStatisticCount_(item, statistics_)]]</td>
-        <tr>
-      </template>
-    </table>
   </div>
-  <cr-button id="removeConfirmationButton"class="dropdown-item action-button"
-      on-click="onRemoveComfirationClicked_">
-    $i18n{profileMenuRemoveText}
-  </cr-button>
-</cr-action-menu>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onRemoveCancelClicked_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="removeConfirmationButton" class="action-button"
+        on-click="onRemoveConfirmationClicked_">
+      $i18n{profileMenuRemoveText}
+    </cr-button>
+  </div>
+</cr-dialog>

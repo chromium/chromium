@@ -191,6 +191,32 @@ TEST_F('ProfilePickerMainViewTest', 'All', function() {
 
 /**
  * Test fixture for
+ * chrome/browser/resources/signin/profile_picker/profile_card_menu.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+// eslint-disable-next-line no-var
+var ProfileCardMenuTest = class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://profile-picker/test_loader.html?module=signin/profile_card_menu_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kNewProfilePicker',
+      ]
+    };
+  }
+};
+
+TEST_F('ProfileCardMenuTest', 'All', function() {
+  mocha.run();
+});
+
+/**
+ * Test fixture for
  * chrome/browser/resources/signin/profile_customization/profile_customization_app.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
