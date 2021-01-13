@@ -465,6 +465,10 @@ cast_source_set("browser_base") {
       "webview/cast_app_controller.h",
       "webview/cast_app_rpc_instance.cc",
       "webview/cast_app_rpc_instance.h",
+      "webview/cast_content_window_embedded.cc",
+      "webview/cast_content_window_embedded.h",
+      "webview/cast_window_embedder.cc",
+      "webview/cast_window_embedder.h",
       "webview/js_channel_service.cc",
       "webview/js_channel_service.h",
       "webview/platform_views_grpc_service.cc",
@@ -489,6 +493,7 @@ cast_source_set("browser_base") {
     deps += [
       ":web_contents_provider",
       "//chromecast/browser/webview/proto",
+      "//chromecast/ui:back_gesture_router",
       "//components/exo",
       "//components/exo/wayland",
       "//content/public/browser",
@@ -663,6 +668,10 @@ cast_source_set("unittests") {
       "//ui/aura:test_support",
       "//ui/events:test_support",
     ]
+  }
+
+  if ((is_linux || is_chromeos) && use_ozone) {
+    deps += [ "//chromecast/browser/webview:unittests" ]
   }
 }
 
