@@ -527,11 +527,24 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // a ChromeNetworkDelegate attached that selectively allows cookies again.
   net::URLRequest::SetDefaultCookiePolicyToBlock();
 
+  // On Chrome OS, IPC (D-Bus, Crosapi) is required to create the FeatureList,
+  // which depends on policy from an OS service. So, initialize it at this
+  // timing.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The feature list depends on BrowserPolicyConnectorChromeOS which depends
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
   chromeos::InitializeDBus();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // LacrosChromeServiceImpl instance needs the sequence of the main thread,
+  // and needs to be created earlier than incoming Mojo invitation handling.
+  // This also needs ThreadPool sequences to post some tasks internally.
+  // However, the tasks can be suspended until actual start of the ThreadPool
+  // sequences later.
+  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
+      std::make_unique<LacrosChromeServiceDelegateImpl>());
 #endif
 
   ChromeFeatureListCreator* chrome_feature_list_creator =
@@ -549,13 +562,6 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize D-Bus clients that depend on feature list.
   chromeos::InitializeFeatureListDependentDBus();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosChromeServiceImpl instance is needs the sequence of the main thread,
-  // and needs to be created earlier than incoming Mojo invitation handling.
-  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
-      std::make_unique<LacrosChromeServiceDelegateImpl>());
 #endif
 
 #if defined(OS_ANDROID)

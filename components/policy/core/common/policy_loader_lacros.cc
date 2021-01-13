@@ -4,20 +4,18 @@
 
 #include "components/policy/core/common/policy_loader_lacros.h"
 
-#include <stddef.h>
+#include <stdint.h>
 
-#include <algorithm>
-#include <set>
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
-#include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
-#include "chromeos/startup/startup.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
@@ -38,37 +36,16 @@ void PolicyLoaderLacros::InitOnBackgroundThread() {
 std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
 
-  crosapi::mojom::LacrosInitParamsPtr result;
-  const crosapi::mojom::LacrosInitParams* init_params;
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service) {
-    init_params = lacros_chrome_service->init_params();
-  } else {
-    // On the first start of Lacros browser, the lacros_chrome_service is
-    // not initialized yet, so take the data directly from the file. This always
-    // happens on first start after user login, because policy data is loaded
-    // before the service is initialized. We cannot do other way, since there
-    // are other dependencies that create a cycle. The in-memory file is used
-    // to break the cycle. After that, if user reloads the policy the service
-    // is present.
-    // TODO(crbug.com/1114069): This code is duplicated in
-    // LacrosChromeServiceImpl. We could store the data in a static variable
-    // inside LacrosChromeServiceImpl and make a single static function to call.
-    base::Optional<std::string> content = chromeos::ReadStartupData();
-    if (!content) {
-      LOG(ERROR) << "No content in file for init params";
-      return bundle;
-    }
-
-    if (!crosapi::mojom::LacrosInitParams::Deserialize(
-            content->data(), content->size(), &result)) {
-      LOG(ERROR) << "Failed to parse startup data";
-      return bundle;
-    }
-
-    init_params = result.get();
+  if (!lacros_chrome_service) {
+    // LacrosChromeService should be available at this timing in production.
+    // However, in some existing tests, it is not.
+    // TODO(crbug.com/1114069): Set up LacrosChromeServiceImpl in tests.
+    LOG(ERROR) << "No LacrosChromeService is found.";
+    return bundle;
   }
-
+  const crosapi::mojom::LacrosInitParams* init_params =
+      lacros_chrome_service->init_params();
   if (!init_params) {
     LOG(ERROR) << "No init params";
     return bundle;
