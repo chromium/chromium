@@ -35,6 +35,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
@@ -91,9 +93,11 @@ bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
 
 class BatteryView : public views::View {
  public:
-  explicit BatteryView(StylusBatteryDelegate* delegate) {
+  explicit BatteryView(StylusBatteryDelegate* delegate) : delegate_(delegate) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
+
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetImage(delegate->GetBatteryImage());
@@ -107,7 +111,15 @@ class BatteryView : public views::View {
     }
   }
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kLabelText;
+    node_data->SetName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
+        base::NumberToString16(delegate_->battery_level().value_or(0))));
+  }
+
  private:
+  StylusBatteryDelegate* const delegate_;
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 };
