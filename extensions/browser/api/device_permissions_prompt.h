@@ -68,6 +68,9 @@ class DevicePermissionsPrompt {
     // implementation should register an observer.
     class Observer {
      public:
+      // Must be called after OnDeviceAdded() has been called for the final time
+      // to create the initial set of options.
+      virtual void OnDevicesInitialized() = 0;
       virtual void OnDeviceAdded(size_t index,
                                  const base::string16& device_name) = 0;
       virtual void OnDeviceRemoved(size_t index,
@@ -100,7 +103,7 @@ class DevicePermissionsPrompt {
    protected:
     virtual ~Prompt();
 
-    void AddCheckedDevice(std::unique_ptr<DeviceInfo> device, bool allowed);
+    void AddDevice(std::unique_ptr<DeviceInfo> device);
 
     const Extension* extension() const { return extension_; }
     Observer* observer() const { return observer_; }

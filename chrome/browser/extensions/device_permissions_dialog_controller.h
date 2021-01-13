@@ -26,6 +26,8 @@ class DevicePermissionsDialogController
   bool AllowMultipleSelection() const override;
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
+  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+      const override;
   size_t NumOptions() const override;
   base::string16 GetOption(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override;
@@ -34,6 +36,7 @@ class DevicePermissionsDialogController
   void OpenHelpCenterUrl() const override;
 
   // extensions::DevicePermissionsPrompt::Prompt::Observer:
+  void OnDevicesInitialized() override;
   void OnDeviceAdded(size_t index, const base::string16& device_name) override;
   void OnDeviceRemoved(size_t index,
                        const base::string16& device_name) override;

@@ -14,7 +14,6 @@
 #include "ui/gfx/range/range.h"
 #include "ui/views/view.h"
 
-class BluetoothStatusContainer;
 namespace views {
 class Checkbox;
 class Label;
@@ -64,11 +63,15 @@ class DeviceChooserContentView : public views::View,
   void UpdateTableView();
   void SelectAllCheckboxChanged();
 
+  void ShowThrobber();
+  void HideThrobber();
+  void ShowReScanButton(bool enable);
+
   // Test-only accessors to children.
   views::TableView* table_view_for_testing() { return table_view_; }
   views::LabelButton* ReScanButtonForTesting();
   views::Throbber* ThrobberForTesting();
-  views::Label* ScanningLabelForTesting();
+  views::Label* ThrobberLabelForTesting();
 
  private:
   friend class DeviceChooserContentViewTest;
@@ -82,7 +85,9 @@ class DeviceChooserContentView : public views::View,
   views::TableView* table_view_ = nullptr;
   views::View* no_options_view_ = nullptr;
   views::View* adapter_off_view_ = nullptr;
-  BluetoothStatusContainer* bluetooth_status_container_ = nullptr;
+  views::LabelButton* re_scan_button_ = nullptr;
+  views::Throbber* throbber_ = nullptr;
+  views::Label* throbber_label_ = nullptr;
 
   bool is_initialized_ = false;
   base::CallbackListSubscription select_all_subscription_;

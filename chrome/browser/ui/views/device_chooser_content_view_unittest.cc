@@ -48,7 +48,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
         widget_->SetContentsView(std::make_unique<DeviceChooserContentView>(
             table_observer_.get(), std::move(controller)));
 
-    // Also creates |bluetooth_status_container_|.
+    // Forces creation of the throbber and status line.
     extra_views_container_ = content_view_->CreateExtraView();
 
     ASSERT_NE(nullptr, table_view());
@@ -56,7 +56,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
     ASSERT_NE(nullptr, adapter_off_view());
     ASSERT_NE(nullptr, re_scan_button());
     ASSERT_NE(nullptr, throbber());
-    ASSERT_NE(nullptr, scanning_label());
+    ASSERT_NE(nullptr, throbber_label());
 
     controller_->SetBluetoothStatus(
         FakeBluetoothChooserController::BluetoothStatus::IDLE);
@@ -85,8 +85,8 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
     return content_view_->ReScanButtonForTesting();
   }
   views::Throbber* throbber() { return content_view_->ThrobberForTesting(); }
-  views::Label* scanning_label() {
-    return content_view_->ScanningLabelForTesting();
+  views::Label* throbber_label() {
+    return content_view_->ThrobberLabelForTesting();
   }
 
   void AddUnpairedDevice() {
@@ -149,7 +149,7 @@ TEST_F(DeviceChooserContentViewTest, InitialState) {
   ExpectNoDevicesWithMessageHidden();
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_FALSE(throbber()->GetVisible());
-  EXPECT_FALSE(scanning_label()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetEnabled());
 }
@@ -232,7 +232,7 @@ TEST_F(DeviceChooserContentViewTest, TurnBluetoothOffAndOn) {
   EXPECT_FALSE(no_options_view()->GetVisible());
   EXPECT_TRUE(adapter_off_view()->GetVisible());
   EXPECT_FALSE(throbber()->GetVisible());
-  EXPECT_FALSE(scanning_label()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetVisible());
   EXPECT_FALSE(re_scan_button()->GetEnabled());
 
@@ -242,7 +242,7 @@ TEST_F(DeviceChooserContentViewTest, TurnBluetoothOffAndOn) {
   ExpectNoDevicesWithMessageVisible();
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_FALSE(throbber()->GetVisible());
-  EXPECT_FALSE(scanning_label()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetEnabled());
 }
@@ -254,7 +254,7 @@ TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
   EXPECT_FALSE(table_view()->GetEnabled());
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_TRUE(throbber()->GetVisible());
-  EXPECT_TRUE(scanning_label()->GetVisible());
+  EXPECT_TRUE(throbber_label()->GetVisible());
   EXPECT_FALSE(re_scan_button()->GetVisible());
 
   AddUnpairedDevice();
@@ -262,7 +262,7 @@ TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
   EXPECT_TRUE(table_view()->GetEnabled());
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_TRUE(throbber()->GetVisible());
-  EXPECT_TRUE(scanning_label()->GetVisible());
+  EXPECT_TRUE(throbber_label()->GetVisible());
   EXPECT_FALSE(IsDeviceSelected());
   EXPECT_FALSE(re_scan_button()->GetVisible());
 }

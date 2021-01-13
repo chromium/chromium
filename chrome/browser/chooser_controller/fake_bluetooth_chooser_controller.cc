@@ -38,6 +38,14 @@ base::string16 FakeBluetoothChooserController::GetOkButtonLabel() const {
       IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT);
 }
 
+std::pair<base::string16, base::string16>
+FakeBluetoothChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
+      l10n_util::GetStringUTF16(
+          IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP)};
+}
+
 bool FakeBluetoothChooserController::TableViewAlwaysDisabled() const {
   return table_view_always_disabled_;
 }
@@ -62,26 +70,12 @@ bool FakeBluetoothChooserController::IsPaired(size_t index) const {
   return devices_.at(index).paired;
 }
 
-base::string16 FakeBluetoothChooserController::GetStatus() const {
-  switch (status_) {
-    case BluetoothStatus::UNAVAILABLE:
-      return base::string16();
-    case BluetoothStatus::IDLE:
-      return l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN);
-    case BluetoothStatus::SCANNING:
-      return l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING);
-  }
-  NOTREACHED();
-  return base::string16();
-}
-
 void FakeBluetoothChooserController::SetBluetoothStatus(
     BluetoothStatus status) {
-  status_ = status;
   const bool available = status != BluetoothStatus::UNAVAILABLE;
   view()->OnAdapterEnabledChanged(available);
   if (available)
-    view()->OnRefreshStateChanged(status_ == BluetoothStatus::SCANNING);
+    view()->OnRefreshStateChanged(status == BluetoothStatus::SCANNING);
 }
 
 void FakeBluetoothChooserController::AddDevice(FakeDevice device) {

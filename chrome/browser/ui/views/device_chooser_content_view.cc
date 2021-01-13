@@ -33,85 +33,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-class BluetoothStatusContainer : public views::View {
- public:
-  explicit BluetoothStatusContainer(ChooserController* chooser_controller);
-
-  void ShowScanningLabelAndThrobber();
-  void ShowReScanButton(bool enabled);
-
- private:
-  friend class DeviceChooserContentView;
-
-  views::LabelButton* re_scan_button_;
-  views::Throbber* throbber_;
-  views::Label* scanning_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothStatusContainer);
-};
-
-BluetoothStatusContainer::BluetoothStatusContainer(
-    ChooserController* chooser_controller) {
-  SetUseDefaultFillLayout(true);
-
-  auto* rescan_container = AddChildView(std::make_unique<views::View>());
-  rescan_container
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal))
-      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  auto re_scan_button = std::make_unique<views::MdTextButton>(
-      views::Button::PressedCallback(),
-      l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN));
-  re_scan_button->SetCallback(base::BindRepeating(
-      [](views::MdTextButton* button, ChooserController* chooser_controller) {
-        // Refreshing will cause the table view to yield focus, which will land
-        // on the help button. Instead, briefly let the rescan button take
-        // focus. When it hides itself, focus will advance to the "Cancel"
-        // button as desired.
-        button->RequestFocus();
-        chooser_controller->RefreshOptions();
-      },
-      re_scan_button.get(), chooser_controller));
-  re_scan_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN_TOOLTIP));
-  re_scan_button_ = rescan_container->AddChildView(std::move(re_scan_button));
-
-  auto* scan_container = AddChildView(std::make_unique<views::View>());
-  auto* scan_layout =
-      scan_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  scan_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  scan_layout->set_between_child_spacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-
-  throbber_ = scan_container->AddChildView(std::make_unique<views::Throbber>());
-
-  auto scanning_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_DISABLED);
-  scanning_label->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP));
-  scanning_label_ = scan_container->AddChildView(std::move(scanning_label));
-}
-
-void BluetoothStatusContainer::ShowScanningLabelAndThrobber() {
-  re_scan_button_->SetVisible(false);
-  throbber_->SetVisible(true);
-  scanning_label_->SetVisible(true);
-  throbber_->Start();
-}
-
-void BluetoothStatusContainer::ShowReScanButton(bool enabled) {
-  re_scan_button_->SetVisible(true);
-  re_scan_button_->SetEnabled(enabled);
-  throbber_->Stop();
-  throbber_->SetVisible(false);
-  scanning_label_->SetVisible(false);
-}
-
 DeviceChooserContentView::DeviceChooserContentView(
     views::TableViewObserver* table_view_observer,
     std::unique_ptr<ChooserController> chooser_controller)
@@ -247,6 +168,7 @@ void DeviceChooserContentView::OnOptionsInitialized() {
   is_initialized_ = true;
   table_view_->OnModelChanged();
   UpdateTableView();
+  HideThrobber();
 }
 
 void DeviceChooserContentView::OnOptionAdded(size_t index) {
@@ -273,7 +195,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
   adapter_enabled_ = enabled;
   UpdateTableView();
 
-  bluetooth_status_container_->ShowReScanButton(enabled);
+  ShowReScanButton(enabled);
 
   if (GetWidget() && GetWidget()->GetRootView())
     GetWidget()->GetRootView()->Layout();
@@ -289,9 +211,9 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
   }
 
   if (refreshing)
-    bluetooth_status_container_->ShowScanningLabelAndThrobber();
+    ShowThrobber();
   else
-    bluetooth_status_container_->ShowReScanButton(true /* enabled */);
+    ShowReScanButton(/*enable=*/true);
 
   if (GetWidget() && GetWidget()->GetRootView())
     GetWidget()->GetRootView()->Layout();
@@ -302,28 +224,6 @@ base::string16 DeviceChooserContentView::GetWindowTitle() const {
 }
 
 std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
-  const auto make_help_button = [this]() {
-    auto help_button = views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&ChooserController::OpenHelpCenterUrl,
-                            base::Unretained(chooser_controller_.get())),
-        vector_icons::kHelpOutlineIcon);
-    help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    return help_button;
-  };
-
-  const auto make_bluetooth_status_container = [this]() {
-    auto bluetooth_status_container =
-        std::make_unique<BluetoothStatusContainer>(chooser_controller_.get());
-    bluetooth_status_container_ = bluetooth_status_container.get();
-    return bluetooth_status_container;
-  };
-
-  const bool add_bluetooth = chooser_controller_->ShouldShowReScanButton();
-  if (!chooser_controller_->ShouldShowHelpButton())
-    return add_bluetooth ? make_bluetooth_status_container() : nullptr;
-  if (!add_bluetooth)
-    return make_help_button();
-
   auto container = std::make_unique<views::View>();
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -331,8 +231,67 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
           views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   container->SetLayoutManager(std::move(layout))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  container->AddChildView(make_help_button());
-  container->AddChildView(make_bluetooth_status_container());
+
+  if (chooser_controller_->ShouldShowHelpButton()) {
+    auto help_button = views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(&ChooserController::OpenHelpCenterUrl,
+                            base::Unretained(chooser_controller_.get())),
+        vector_icons::kHelpOutlineIcon);
+    help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+    container->AddChildView(std::move(help_button));
+  }
+
+  auto* throbber_container =
+      container->AddChildView(std::make_unique<views::View>());
+  auto* throbber_layout =
+      throbber_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  throbber_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  throbber_layout->set_between_child_spacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+
+  throbber_ =
+      throbber_container->AddChildView(std::make_unique<views::Throbber>());
+
+  auto throbber_strings = chooser_controller_->GetThrobberLabelAndTooltip();
+  auto throbber_label = std::make_unique<views::Label>(
+      throbber_strings.first, views::style::CONTEXT_LABEL,
+      views::style::STYLE_DISABLED);
+  throbber_label->SetTooltipText(throbber_strings.second);
+  throbber_label_ = throbber_container->AddChildView(std::move(throbber_label));
+
+  if (chooser_controller_->ShouldShowReScanButton()) {
+    auto* rescan_container =
+        container->AddChildView(std::make_unique<views::View>());
+    rescan_container
+        ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal))
+        ->set_cross_axis_alignment(
+            views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    auto re_scan_button = std::make_unique<views::MdTextButton>(
+        views::Button::PressedCallback(),
+        l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN));
+    re_scan_button->SetCallback(base::BindRepeating(
+        [](views::MdTextButton* button, ChooserController* chooser_controller) {
+          // Refreshing will cause the table view to yield focus, which will
+          // land on the help button. Instead, briefly let the rescan button
+          // take focus. When it hides itself, focus will advance to the
+          // "Cancel" button as desired.
+          button->RequestFocus();
+          chooser_controller->RefreshOptions();
+        },
+        re_scan_button.get(), chooser_controller_.get()));
+    re_scan_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN_TOOLTIP));
+    re_scan_button_ = rescan_container->AddChildView(std::move(re_scan_button));
+  }
+
+  // Enable the throbber by default until OnOptionsInitialized() is called.
+  ShowThrobber();
+
   return container;
 }
 
@@ -385,14 +344,38 @@ void DeviceChooserContentView::SelectAllCheckboxChanged() {
   table_view_->SetSelectionAll(/*select=*/select_all_view_->GetChecked());
 }
 
+void DeviceChooserContentView::ShowThrobber() {
+  if (re_scan_button_)
+    re_scan_button_->SetVisible(false);
+
+  throbber_->SetVisible(true);
+  throbber_label_->SetVisible(true);
+  throbber_->Start();
+}
+
+void DeviceChooserContentView::HideThrobber() {
+  throbber_->SetVisible(false);
+  throbber_label_->SetVisible(false);
+  throbber_->Stop();
+}
+
+void DeviceChooserContentView::ShowReScanButton(bool enabled) {
+  DCHECK(re_scan_button_);
+  re_scan_button_->SetVisible(true);
+  re_scan_button_->SetEnabled(enabled);
+  throbber_->Stop();
+  throbber_->SetVisible(false);
+  throbber_label_->SetVisible(false);
+}
+
 views::LabelButton* DeviceChooserContentView::ReScanButtonForTesting() {
-  return bluetooth_status_container_->re_scan_button_;
+  return re_scan_button_;
 }
 
 views::Throbber* DeviceChooserContentView::ThrobberForTesting() {
-  return bluetooth_status_container_->throbber_;
+  return throbber_;
 }
 
-views::Label* DeviceChooserContentView::ScanningLabelForTesting() {
-  return bluetooth_status_container_->scanning_label_;
+views::Label* DeviceChooserContentView::ThrobberLabelForTesting() {
+  return throbber_label_;
 }

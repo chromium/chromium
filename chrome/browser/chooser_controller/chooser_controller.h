@@ -94,6 +94,11 @@ class ChooserController {
   // Returns the label for SelectAll checkbox.
   virtual base::string16 GetSelectAllCheckboxLabel() const;
 
+  // Returns the label for the throbber shown while options are initializing or
+  // a re-scan is in progress.
+  virtual std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+      const = 0;
+
   // Returns whether both OK and Cancel buttons are enabled.
   //
   // For chooser used in Web APIs such as WebBluetooth, WebUSB,
@@ -136,9 +141,6 @@ class ChooserController {
 
   // Refresh the list of options.
   virtual void RefreshOptions();
-
-  // Returns the status text to be shown in the chooser.
-  virtual base::string16 GetStatus() const;
 
   // These three functions are called just before this object is destroyed:
 

@@ -19,6 +19,8 @@ class FakeUsbChooserController : public ChooserController {
   // ChooserController:
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
+  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+      const override;
   size_t NumOptions() const override;
   base::string16 GetOption(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override {}

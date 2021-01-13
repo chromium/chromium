@@ -258,70 +258,47 @@ TEST_F(BluetoothChooserControllerTest, UpdatePairedStatus) {
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
-       InitialNoOptionsTextAndStatusText) {
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT),
-            bluetooth_chooser_controller_.GetNoOptionsText());
-  EXPECT_EQ(base::string16(), bluetooth_chooser_controller_.GetStatus());
-}
-
-TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
        BluetoothAdapterTurnedOff) {
-  EXPECT_CALL(
-      mock_bluetooth_chooser_view_,
-      OnAdapterEnabledChanged(false /* Bluetooth adapter is turned off */))
+  EXPECT_CALL(mock_bluetooth_chooser_view_,
+              OnAdapterEnabledChanged(/*enabled=*/false))
       .Times(1);
   bluetooth_chooser_controller_.OnAdapterPresenceChanged(
       content::BluetoothChooser::AdapterPresence::POWERED_OFF);
   EXPECT_EQ(0u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::string16(), bluetooth_chooser_controller_.GetStatus());
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
        BluetoothAdapterTurnedOn) {
-  EXPECT_CALL(
-      mock_bluetooth_chooser_view_,
-      OnAdapterEnabledChanged(true /* Bluetooth adapter is turned on */))
+  EXPECT_CALL(mock_bluetooth_chooser_view_,
+              OnAdapterEnabledChanged(/*enabled=*/true))
       .Times(1);
   bluetooth_chooser_controller_.OnAdapterPresenceChanged(
       content::BluetoothChooser::AdapterPresence::POWERED_ON);
   EXPECT_EQ(0u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT),
-            bluetooth_chooser_controller_.GetNoOptionsText());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN),
-            bluetooth_chooser_controller_.GetStatus());
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest, DiscoveringState) {
-  EXPECT_CALL(
-      mock_bluetooth_chooser_view_,
-      OnRefreshStateChanged(true /* Refreshing options is in progress */))
+  EXPECT_CALL(mock_bluetooth_chooser_view_,
+              OnRefreshStateChanged(/*refreshing=*/true))
       .Times(1);
   bluetooth_chooser_controller_.OnDiscoveryStateChanged(
       content::BluetoothChooser::DiscoveryState::DISCOVERING);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING),
-            bluetooth_chooser_controller_.GetStatus());
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest, IdleState) {
   EXPECT_CALL(mock_bluetooth_chooser_view_,
-              OnRefreshStateChanged(false /* Refreshing options is complete */))
+              OnRefreshStateChanged(/*refreshing=*/false))
       .Times(1);
   bluetooth_chooser_controller_.OnDiscoveryStateChanged(
       content::BluetoothChooser::DiscoveryState::IDLE);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN),
-            bluetooth_chooser_controller_.GetStatus());
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest, FailedToStartState) {
   EXPECT_CALL(mock_bluetooth_chooser_view_,
-              OnRefreshStateChanged(false /* Refreshing options is complete */))
+              OnRefreshStateChanged(/*refreshing=*/false))
       .Times(1);
   bluetooth_chooser_controller_.OnDiscoveryStateChanged(
       content::BluetoothChooser::DiscoveryState::FAILED_TO_START);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN),
-            bluetooth_chooser_controller_.GetStatus());
 }
 
 TEST_F(BluetoothChooserControllerWithDevicesAddedTest, RefreshOptions) {

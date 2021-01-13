@@ -39,6 +39,14 @@ base::string16 BluetoothScanningPromptController::GetCancelButtonLabel() const {
       IDS_BLUETOOTH_SCANNING_PROMPT_BLOCK_BUTTON_TEXT);
 }
 
+std::pair<base::string16, base::string16>
+BluetoothScanningPromptController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
+      l10n_util::GetStringUTF16(
+          IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP)};
+}
+
 bool BluetoothScanningPromptController::BothButtonsAlwaysEnabled() const {
   return true;
 }

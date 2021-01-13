@@ -55,13 +55,14 @@ class FakeBluetoothChooserController : public ChooserController {
   bool ShouldShowReScanButton() const override;
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
+  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+      const override;
   bool TableViewAlwaysDisabled() const override;
   size_t NumOptions() const override;
   int GetSignalStrengthLevel(size_t index) const override;
   base::string16 GetOption(size_t index) const override;
   bool IsConnected(size_t index) const override;
   bool IsPaired(size_t index) const override;
-  base::string16 GetStatus() const override;
   MOCK_METHOD0(RefreshOptions, void());
   MOCK_METHOD1(Select, void(const std::vector<size_t>& indices));
   MOCK_METHOD0(Cancel, void());
@@ -78,7 +79,6 @@ class FakeBluetoothChooserController : public ChooserController {
   }
 
  private:
-  BluetoothStatus status_ = BluetoothStatus::UNAVAILABLE;
   std::vector<FakeDevice> devices_;
   bool table_view_always_disabled_ = false;
 

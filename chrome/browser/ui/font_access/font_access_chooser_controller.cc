@@ -60,6 +60,13 @@ base::string16 FontAccessChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_IMPORT_BUTTON_TEXT);
 }
 
+std::pair<base::string16, base::string16>
+FontAccessChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL),
+      l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL_TOOLTIP)};
+}
+
 size_t FontAccessChooserController::NumOptions() const {
   return items_.size();
 }

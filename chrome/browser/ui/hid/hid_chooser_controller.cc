@@ -74,6 +74,12 @@ base::string16 HidChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
 }
 
+std::pair<base::string16, base::string16>
+HidChooserController::GetThrobberLabelAndTooltip() const {
+  return {l10n_util::GetStringUTF16(IDS_HID_CHOOSER_LOADING_LABEL),
+          l10n_util::GetStringUTF16(IDS_HID_CHOOSER_LOADING_LABEL_TOOLTIP)};
+}
+
 size_t HidChooserController::NumOptions() const {
   return items_.size();
 }

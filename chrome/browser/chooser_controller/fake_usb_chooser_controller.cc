@@ -23,6 +23,13 @@ base::string16 FakeUsbChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
 }
 
+std::pair<base::string16, base::string16>
+FakeUsbChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL),
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP)};
+}
+
 size_t FakeUsbChooserController::NumOptions() const {
   return device_count_;
 }

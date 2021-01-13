@@ -41,6 +41,14 @@ base::string16 DevicePermissionsDialogController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_SELECT);
 }
 
+std::pair<base::string16, base::string16>
+DevicePermissionsDialogController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_LOADING_LABEL),
+      l10n_util::GetStringUTF16(
+          IDS_DEVICE_PERMISSIONS_DIALOG_LOADING_LABEL_TOOLTIP)};
+}
+
 size_t DevicePermissionsDialogController::NumOptions() const {
   return prompt_->GetDeviceCount();
 }
@@ -73,6 +81,12 @@ void DevicePermissionsDialogController::Close() {
 }
 
 void DevicePermissionsDialogController::OpenHelpCenterUrl() const {}
+
+void DevicePermissionsDialogController::OnDevicesInitialized() {
+  if (view()) {
+    view()->OnOptionsInitialized();
+  }
+}
 
 void DevicePermissionsDialogController::OnDeviceAdded(
     size_t index,

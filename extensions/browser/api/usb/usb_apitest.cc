@@ -87,25 +87,22 @@ class TestDevicePermissionsPrompt
 
   void ShowDialog() override { prompt()->SetObserver(this); }
 
-  void OnDeviceAdded(size_t index, const base::string16& device_name) override {
-    OnDevicesChanged();
-  }
-
-  void OnDeviceRemoved(size_t index,
-                       const base::string16& device_name) override {
-    OnDevicesChanged();
-  }
-
- private:
-  void OnDevicesChanged() {
+  void OnDevicesInitialized() override {
     for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
       prompt()->GrantDevicePermission(i);
       if (!prompt()->multiple()) {
         break;
       }
     }
+
     prompt()->Dismissed();
   }
+
+  void OnDeviceAdded(size_t index, const base::string16& device_name) override {
+  }
+
+  void OnDeviceRemoved(size_t index,
+                       const base::string16& device_name) override {}
 };
 
 class TestExtensionsAPIClient : public ShellExtensionsAPIClient {

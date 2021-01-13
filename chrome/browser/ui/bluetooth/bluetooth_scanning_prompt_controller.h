@@ -33,6 +33,8 @@ class BluetoothScanningPromptController : public ChooserController {
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
   base::string16 GetCancelButtonLabel() const override;
+  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+      const override;
   bool BothButtonsAlwaysEnabled() const override;
   bool TableViewAlwaysDisabled() const override;
   size_t NumOptions() const override;
