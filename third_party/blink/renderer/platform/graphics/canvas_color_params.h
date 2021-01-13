@@ -59,14 +59,16 @@ class PLATFORM_EXPORT CanvasColorParams {
   // The default constructor will create an output-blended 8-bit surface.
   CanvasColorParams();
   CanvasColorParams(CanvasColorSpace, CanvasPixelFormat, OpacityMode);
+  CanvasColorParams(const WTF::String& color_space,
+                    const WTF::String& pixel_format,
+                    bool has_alpha);
 
   CanvasColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
   OpacityMode GetOpacityMode() const { return opacity_mode_; }
 
-  void SetCanvasColorSpace(CanvasColorSpace c) { color_space_ = c; }
-  void SetCanvasPixelFormat(CanvasPixelFormat f) { pixel_format_ = f; }
-  void SetOpacityMode(OpacityMode m) { opacity_mode_ = m; }
+  const char* GetColorSpaceAsString() const;
+  const char* GetPixelFormatAsString() const;
 
   CanvasResourceParams GetAsResourceParams() const;
 

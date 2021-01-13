@@ -171,8 +171,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 
-  String ColorSpaceAsString() const override;
-  CanvasPixelFormat PixelFormat() const override;
   SkIRect dirty_rect_for_commit_;
 
   bool is_valid_size_ = false;

@@ -316,14 +316,6 @@ bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
   return Host()->ResourceProvider();
 }
 
-String OffscreenCanvasRenderingContext2D::ColorSpaceAsString() const {
-  return CanvasRenderingContext::ColorSpaceAsString();
-}
-
-CanvasPixelFormat OffscreenCanvasRenderingContext2D::PixelFormat() const {
-  return GetCanvas2DColorParams().PixelFormat();
-}
-
 CanvasColorParams OffscreenCanvasRenderingContext2D::GetCanvas2DColorParams()
     const {
   return CanvasRenderingContext::CanvasRenderingContextColorParams();

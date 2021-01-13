@@ -271,9 +271,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return CanvasRenderingContext::kContext2D;
   }
 
-  String ColorSpaceAsString() const override;
-  CanvasPixelFormat PixelFormat() const override;
-
   bool IsRenderingContext2D() const override { return true; }
   bool IsComposited() const override;
   bool IsAccelerated() const override;

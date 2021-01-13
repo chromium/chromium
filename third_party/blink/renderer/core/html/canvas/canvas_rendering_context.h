@@ -90,9 +90,6 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
 
   CanvasRenderingContextHost* Host() const { return host_; }
 
-  WTF::String ColorSpaceAsString() const;
-  WTF::String PixelFormatAsString() const;
-
   const CanvasColorParams& CanvasRenderingContextColorParams() const {
     return color_params_;
   }

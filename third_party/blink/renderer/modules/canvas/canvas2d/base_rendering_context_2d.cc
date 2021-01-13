@@ -1908,12 +1908,10 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
           ? CanvasPixelFormat::kF16
           : CanvasPixelFormat::kUint8,
       kNonOpaque);
-  CanvasColorParams context_color_params = CanvasColorParams(
-      GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
-
-  if (data_color_params.ColorSpace() != context_color_params.ColorSpace() ||
-      data_color_params.PixelFormat() != context_color_params.PixelFormat() ||
-      PixelFormat() == CanvasPixelFormat::kF16) {
+  if (data_color_params.ColorSpace() != GetCanvas2DColorParams().ColorSpace() ||
+      data_color_params.PixelFormat() !=
+          GetCanvas2DColorParams().PixelFormat() ||
+      GetCanvas2DColorParams().PixelFormat() == CanvasPixelFormat::kF16) {
     SkImageInfo converted_info = data_pixmap.info();
     converted_info =
         converted_info.makeColorType(GetCanvas2DColorParams().GetSkColorType());

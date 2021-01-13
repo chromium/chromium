@@ -262,13 +262,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   virtual void WillDrawImage(CanvasImageSource*) const {}
 
-  virtual String ColorSpaceAsString() const {
-    return kSRGBCanvasColorSpaceName;
-  }
-  virtual CanvasPixelFormat PixelFormat() const {
-    return CanvasPixelFormat::kUint8;
-  }
-
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
   String textAlign() const;

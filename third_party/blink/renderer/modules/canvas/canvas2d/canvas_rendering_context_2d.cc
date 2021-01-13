@@ -307,10 +307,6 @@ void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {
   canvas()->WillDrawImageTo2DContext(source);
 }
 
-String CanvasRenderingContext2D::ColorSpaceAsString() const {
-  return CanvasRenderingContext::ColorSpaceAsString();
-}
-
 CanvasColorParams CanvasRenderingContext2D::GetCanvas2DColorParams() const {
   return CanvasRenderingContext::CanvasRenderingContextColorParams();
 }
@@ -328,10 +324,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
 void CanvasRenderingContext2D::WillOverwriteCanvas() {
   if (IsPaintable())
     canvas()->GetCanvas2DLayerBridge()->WillOverwriteCanvas();
-}
-
-CanvasPixelFormat CanvasRenderingContext2D::PixelFormat() const {
-  return GetCanvas2DColorParams().PixelFormat();
 }
 
 void CanvasRenderingContext2D::Reset() {
@@ -1134,8 +1126,8 @@ CanvasRenderingContext2D::getContextAttributes() const {
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
   if (RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-    settings->setColorSpace(ColorSpaceAsString());
-    settings->setPixelFormat(PixelFormatAsString());
+    settings->setColorSpace(GetCanvas2DColorParams().GetColorSpaceAsString());
+    settings->setPixelFormat(GetCanvas2DColorParams().GetPixelFormatAsString());
   }
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
