@@ -57,6 +57,9 @@ v8.wasm.moduleCacheHit: 2 for large.wasm
 
   await PerformanceTestRunner.invokeWithTracing('runTests', processEvents);
 
+  function stringCompare(a, b) {
+    return a > b ? 1 : b > a ? -1 : 0;
+  }
   function processEvents() {
     // Since some WebAssembly compile events may be reported on different
     // threads, sort events by URL and type, to get a deterministic test.
@@ -64,8 +67,9 @@ v8.wasm.moduleCacheHit: 2 for large.wasm
       let url_a = a.args['url'] || '';
       let url_b = b.args['url'] || '';
       if (url_a != url_b)
-        return url_a.compareTo(url_b);
-      return a.name.compareTo(b.name);
+        return stringCompare(url_a, url_b)
+
+      return stringCompare(a.name, b.name)
     }
 
     const event_types = new Set([
