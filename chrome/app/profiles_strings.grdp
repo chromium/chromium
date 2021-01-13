@@ -765,7 +765,10 @@
       ...
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE" desc="Profile picker profile type choice subtitle">
-      Sign in to Sync your bookmarks, passwords, history and more on all your devices
+      To access your Chrome stuff across all your devices, sign in, then turn on sync.
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_V2" desc="Profile picker profile type choice subtitle">
+      To access your Chrome stuff across all your devices, sign in so that you can turn on sync.
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL" desc="Label for a button that prompts user to sign in">
       Turn on sync...
