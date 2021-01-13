@@ -26,9 +26,9 @@
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/find_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
-class Rect;
 class Size;
 class Vector2d;
 }  // namespace gfx
@@ -378,7 +378,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   std::vector<gfx::Rect> deferred_invalidates_;
 
   struct BackgroundPart {
-    pp::Rect location;
+    gfx::Rect location;
     uint32_t color;
   };
   std::vector<BackgroundPart> background_parts_;

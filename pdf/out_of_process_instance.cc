@@ -1218,7 +1218,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
     for (const auto& background_part : background_parts_) {
       gfx::Rect intersection =
-          gfx::IntersectRects(RectFromPPRect(background_part.location), rect);
+          gfx::IntersectRects(background_part.location, rect);
       if (!intersection.IsEmpty()) {
         FillRect(intersection, background_part.color);
         ready->push_back(PaintReadyRect(intersection, image_data_));
@@ -1246,15 +1246,14 @@ void OutOfProcessInstance::CalculateBackgroundParts() {
 
   // Add the left, right, and bottom rectangles.  Note: we assume only
   // horizontal centering.
-  BackgroundPart part = {pp::Rect(0, 0, left_width, bottom),
-                         GetBackgroundColor()};
+  BackgroundPart part = {gfx::Rect(left_width, bottom), GetBackgroundColor()};
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
-  part.location = pp::Rect(right_start, 0, right_width, bottom);
+  part.location = gfx::Rect(right_start, 0, right_width, bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
-  part.location = pp::Rect(0, bottom, plugin_size().width(),
-                           plugin_size().height() - bottom);
+  part.location = gfx::Rect(0, bottom, plugin_size().width(),
+                            plugin_size().height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
 }
