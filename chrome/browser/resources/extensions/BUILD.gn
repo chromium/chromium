@@ -4,12 +4,15 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+
+assert(enable_extensions, "enable extensions check failed")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
