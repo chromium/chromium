@@ -278,6 +278,61 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
   ASSERT_NE(primary_profile_service, secondary_profile_service);
 }
 
+// Verifies service instances are *not* created for OTR profiles.
+TEST_F(FileChangeServiceTest, DoesntCreateServiceInstanceForOTRProfile) {
+  auto* factory = FileChangeServiceFactory::GetInstance();
+  ASSERT_TRUE(factory);
+
+  // `FileChangeService` should be created for non-OTR profile.
+  auto* profile = GetProfile();
+  ASSERT_TRUE(profile);
+  ASSERT_FALSE(profile->IsOffTheRecord());
+  ASSERT_TRUE(factory->GetService(profile));
+
+  // `FileChangeService` should *not* be created for OTR profile.
+  auto* otr_profile =
+      TestingProfile::Builder().BuildIncognito(profile->AsTestingProfile());
+  ASSERT_TRUE(otr_profile);
+  ASSERT_TRUE(otr_profile->IsOffTheRecord());
+  ASSERT_FALSE(factory->GetService(otr_profile));
+}
+
+// Verifies service instance *are* created for guest OTR profiles.
+TEST_F(FileChangeServiceTest, CreatesServiceInstanceForOTRGuestProfile) {
+  auto* factory = FileChangeServiceFactory::GetInstance();
+  ASSERT_TRUE(factory);
+
+  // Construct a guest profile.
+  TestingProfile::Builder guest_profile_builder;
+  guest_profile_builder.SetGuestSession();
+  guest_profile_builder.SetProfileName("guest_profile");
+  std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
+
+  // Service instances should be created for guest profiles.
+  ASSERT_TRUE(guest_profile);
+  ASSERT_FALSE(guest_profile->IsOffTheRecord());
+  FileChangeService* const guest_profile_service =
+      factory->GetService(guest_profile.get());
+  ASSERT_TRUE(guest_profile_service);
+
+  // Construct an OTR profile from `guest_profile`.
+  TestingProfile::Builder otr_guest_profile_builder;
+  otr_guest_profile_builder.SetGuestSession();
+  otr_guest_profile_builder.SetProfileName(guest_profile->GetProfileUserName());
+  Profile* const otr_guest_profile =
+      otr_guest_profile_builder.BuildIncognito(guest_profile.get());
+  ASSERT_TRUE(otr_guest_profile);
+  ASSERT_TRUE(otr_guest_profile->IsOffTheRecord());
+
+  // Service instances *should* be created for OTR guest profiles.
+  FileChangeService* const otr_guest_profile_service =
+      factory->GetService(otr_guest_profile);
+  ASSERT_TRUE(otr_guest_profile_service);
+
+  // OTR service instances should be distinct from non-OTR service instances.
+  ASSERT_NE(otr_guest_profile_service, guest_profile_service);
+}
+
 // Verifies `OnFileCopied` events are propagated to observers.
 TEST_F(FileChangeServiceTest, PropagatesOnFileCopiedEvents) {
   auto* profile = GetProfile();

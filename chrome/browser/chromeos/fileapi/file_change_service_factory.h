@@ -37,9 +37,10 @@ class FileChangeServiceFactory : public BrowserContextKeyedServiceFactory {
   ~FileChangeServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace chromeos
