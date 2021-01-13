@@ -1831,7 +1831,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Canvas.TextMetrics.SetFont" units="microseconds"
-    expires_after="M90">
+    expires_after="2022-01-31">
   <owner>yiyix@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -10687,7 +10687,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OffscreenCanvas.TextMetrics.SetFont" units="microseconds"
-    expires_after="2021-01-31">
+    expires_after="2022-01-31">
   <owner>yiyix@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
