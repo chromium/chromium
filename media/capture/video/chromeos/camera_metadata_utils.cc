@@ -52,7 +52,15 @@ cros::mojom::CameraMetadataEntryPtr* GetMetadataEntry(
   if (iter == camera_metadata->entries.value().end()) {
     return nullptr;
   }
-  return &(camera_metadata->entries.value()[(*iter)->index]);
+
+  auto* entry_ptr = &(camera_metadata->entries.value()[(*iter)->index]);
+  if (!(*entry_ptr)->data.data()) {
+    // Metadata tag found with no valid data.
+    LOG(WARNING) << "Found tag " << static_cast<int>(tag)
+                 << " but with invalid data";
+    return nullptr;
+  }
+  return entry_ptr;
 }
 
 void AddOrUpdateMetadataEntry(cros::mojom::CameraMetadataPtr* to,
