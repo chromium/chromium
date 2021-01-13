@@ -39,6 +39,7 @@ js_type_check("closure_compile_jsmodules") {
     ":file_grid.m",
     ":file_list_selection_model.m",
     ":file_manager_dialog_base.m",
+    ":file_manager_ui.m",
     ":file_metadata_formatter.m",
     ":file_table.m",
     ":file_table_list.m",
@@ -569,6 +570,56 @@ js_library("file_manager_ui") {
     "//ui/webui/resources/js/cr/ui:dialogs",
     "//ui/webui/resources/js/cr/ui:menu",
   ]
+}
+
+js_library("file_manager_ui.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/file_manager_ui.m.js" ]
+  deps = [
+    ":a11y_announce.m",
+    ":action_model_ui.m",
+    ":actions_submenu.m",
+    ":banners.m",
+    ":combobutton.m",
+    ":default_task_dialog.m",
+    ":dialog_footer.m",
+    ":directory_tree.m",
+    ":empty_folder.m",
+    ":file_grid.m",
+    ":file_table.m",
+    ":files_alert_dialog.m",
+    ":files_confirm_dialog.m",
+    ":files_menu.m",
+    ":gear_menu.m",
+    ":import_crostini_image_dialog.m",
+    ":install_linux_package_dialog.m",
+    ":list_container.m",
+    ":location_line.m",
+    ":multi_menu.m",
+    ":multi_menu_button.m",
+    ":progress_center_panel.m",
+    ":providers_menu.m",
+    ":search_box.m",
+    ":suggest_apps_dialog.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
+    "//ui/file_manager/file_manager/foreground/js:launch_param.m",
+    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+    "//ui/webui/resources/js/cr/ui:splitter.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_metadata_formatter") {
@@ -1135,6 +1186,7 @@ js_modulizer("modulize") {
     "file_grid.js",
     "file_list_selection_model.js",
     "file_manager_dialog_base.js",
+    "file_manager_ui.js",
     "file_metadata_formatter.js",
     "file_table.js",
     "file_table_list.js",
@@ -1162,5 +1214,8 @@ js_modulizer("modulize") {
     "cr.ui.MultiMenu|MultiMenu",
     "cr.ui.table.Table|Table",
     "cr.ui.AutocompleteList|AutocompleteList",
+    "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
+    "cr.filebrowser.InstallLinuxPackageDialog|InstallLinuxPackageDialog",
+    "cr.filebrowser.ImportCrostiniImageDialog|ImportCrostiniImageDialog",
   ]
 }

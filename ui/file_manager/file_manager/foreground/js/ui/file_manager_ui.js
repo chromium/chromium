@@ -2,12 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// #import {FileGrid} from './file_grid.m.js';
+// #import {FileTable} from './file_table.m.js';
+// #import {FilesToast} from '../../elements/files_toast.m.js';
+// #import {Banners} from './banners.m.js';
+// #import {DirectoryTree} from './directory_tree.m.js';
+// #import {FilesPasswordDialog} from '../../elements/files_password_dialog.m.js';
+// #import {LaunchParam} from '../launch_param.m.js';
+// #import {ProvidersModel} from '../providers_model.m.js';
+// #import {A11yAnnounce} from './a11y_announce.m.js';
+// #import {ActionModelUI} from './action_model_ui.m.js';
+// #import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.m.js';
+// #import {DialogFooter} from './dialog_footer.m.js';
+// #import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
+// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
+// #import {FilesMenuItem} from './files_menu.m.js';
+// #import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// #import {FilesTooltip} from '../../elements/files_tooltip.m.js';
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {DialogType} from '../dialog_type.m.js';
+// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+// #import {LocationLine} from './location_line.m.js';
+// #import {ListContainer} from './list_container.m.js';
+// #import {AllowedPaths} from '../../../../base/js/volume_manager_types.m.js';
+// #import {ActionsSubmenu} from './actions_submenu.m.js';
+// #import {ProvidersMenu} from './providers_menu.m.js';
+// #import {ComboButton} from './combobutton.m.js';
+// #import {MultiMenu} from './multi_menu.m.js';
+// #import {ProgressCenterPanel} from './progress_center_panel.m.js';
+// #import {GearMenu} from './gear_menu.m.js';
+// #import {MultiMenuButton} from './multi_menu_button.m.js';
+// #import {EmptyFolder} from './empty_folder.m.js';
+// #import {SearchBox} from './search_box.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {SuggestAppsDialog} from './suggest_apps_dialog.m.js';
+// #import {FilesConfirmDialog} from './files_confirm_dialog.m.js';
+// #import {FilesAlertDialog} from './files_alert_dialog.m.js';
+// #import {str, util, strf} from '../../../common/js/util.m.js';
+// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+// #import {DefaultTaskDialog} from './default_task_dialog.m.js';
+// clang-format on
+
 /**
  * The root of the file manager's view managing the DOM of the Files app.
  * @implements {ActionModelUI}
  * @implements {A11yAnnounce}
  */
-class FileManagerUI {
+/* #export */ class FileManagerUI {
   /**
    * @param {!ProvidersModel} providersModel Model for providers.
    * @param {!HTMLElement} element Top level element of the Files app.
@@ -674,24 +719,24 @@ class FileManagerUI {
    */
   decorateSplitter_(splitterElement, opt_resizeNextElement) {
     const self = this;
-    const Splitter = cr.ui.Splitter;
+    const FileSplitter = cr.ui.Splitter;
     const customSplitter = cr.ui.define('div');
 
     customSplitter.prototype = {
-      __proto__: Splitter.prototype,
+      __proto__: FileSplitter.prototype,
 
       handleSplitterDragStart: function(e) {
-        Splitter.prototype.handleSplitterDragStart.apply(this, arguments);
+        FileSplitter.prototype.handleSplitterDragStart.apply(this, arguments);
         this.ownerDocument.documentElement.classList.add('col-resize');
       },
 
       handleSplitterDragMove: function(deltaX) {
-        Splitter.prototype.handleSplitterDragMove.apply(this, arguments);
+        FileSplitter.prototype.handleSplitterDragMove.apply(this, arguments);
         self.relayout();
       },
 
       handleSplitterDragEnd: function(e) {
-        Splitter.prototype.handleSplitterDragEnd.apply(this, arguments);
+        FileSplitter.prototype.handleSplitterDragEnd.apply(this, arguments);
         this.ownerDocument.documentElement.classList.remove('col-resize');
       }
     };
