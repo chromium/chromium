@@ -148,6 +148,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                         .CopyAddressTo(&stop_button_)
                         .SetID(static_cast<int>(ButtonId::kStop))
                         .SetVectorIcon(kSelectToSpeakStopIcon)
+                        .SetDrawHighlight(false)
                         .SetPreferredSize(gfx::Size(kButtonSize, kButtonSize))
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_EXIT))
