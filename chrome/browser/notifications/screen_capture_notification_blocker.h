@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/notification_blocker.h"
@@ -55,7 +56,7 @@ class ScreenCaptureNotificationBlocker
   FRIEND_TEST_ALL_PREFIXES(ScreenCaptureNotificationBlockerTest,
                            ObservesMediaStreamCaptureIndicator);
 
-  void ReportSessionMetrics();
+  void ReportSessionMetrics(bool revealed);
   void ReportMuteNotificationAction(MutedNotificationHandler::Action action);
   void DisplayMuteNotification();
   void CloseMuteNotification();
@@ -77,6 +78,10 @@ class ScreenCaptureNotificationBlocker
   int closed_notification_count_ = 0;
   // Flag if metrics have been reported for the current screen capture session.
   bool reported_session_metrics_ = false;
+  // Timestamp of when the last "muted" notification got shown.
+  base::TimeTicks last_mute_notification_time_;
+  // Timestamp of when the last screen capture session started.
+  base::TimeTicks last_screen_capture_session_start_time_;
 
   // The |notification_display_service_| owns a NotificationDisplayQueue which
   // owns |this| so a raw pointer is safe here.

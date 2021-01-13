@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.Action.{Action}"
-    units="notifications" expires_after="M91">
+    units="notifications" expires_after="M93">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -102,8 +102,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Notifications.Blocker.ScreenCapture.ActionTiming.{Action}"
+    units="ms" expires_after="M93">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the time between showing the 'Notifications muted' notification and
+    the user taking an action on it. Logged each time the user interacts with
+    the notification. {Action}
+  </summary>
+  <token key="Action">
+    <variant name="Body"/>
+    <variant name="Close"/>
+    <variant name="Show"/>
+  </token>
+</histogram>
+
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
-    units="notifications" expires_after="2021-06-20">
+    units="notifications" expires_after="M93">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -114,7 +130,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.MutedCount"
-    units="notifications" expires_after="2021-06-20">
+    units="notifications" expires_after="M93">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -127,13 +143,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ReplacedCount"
-    units="notifications" expires_after="2021-06-20">
+    units="notifications" expires_after="M93">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The number of muted notifications that got replaced during a screen capture
     session. The user will only see the final state of the notification without
     the previous versions. Logged once after each screen capture session ends.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.RevealDuration" units="ms"
+    expires_after="M93">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the time from the start of a screen capture session until the user
+    decided to reveal notification content again. Only logged if and when the
+    user takes that action.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.SessionDuration"
+    units="ms" expires_after="M93">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the length of a screen capture session. Notifications will be muted
+    initially but the user may reveal them during a session. This metric will be
+    logged after the screen capture session ends.
   </summary>
 </histogram>
 

@@ -102,7 +102,7 @@ void ScreenCaptureNotificationBlocker::OnAction(
     case MutedNotificationHandler::Action::kShowClick:
       state_ = NotifyState::kShowAll;
       NotifyBlockingStateChanged();
-      ReportSessionMetrics();
+      ReportSessionMetrics(/*revealed=*/true);
       break;
   }
 }
@@ -116,19 +116,29 @@ void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
     capturing_web_contents_.erase(web_contents);
 
   if (capturing_web_contents_.empty()) {
-    ReportSessionMetrics();
+    ReportSessionMetrics(/*revealed=*/false);
     muted_notification_count_ = 0;
     replaced_notification_count_ = 0;
     closed_notification_count_ = 0;
     reported_session_metrics_ = false;
     state_ = NotifyState::kNotifyMuted;
+    last_screen_capture_session_start_time_ = base::TimeTicks();
     CloseMuteNotification();
+  } else if (last_screen_capture_session_start_time_.is_null()) {
+    last_screen_capture_session_start_time_ = base::TimeTicks::Now();
   }
 
   NotifyBlockingStateChanged();
 }
 
-void ScreenCaptureNotificationBlocker::ReportSessionMetrics() {
+void ScreenCaptureNotificationBlocker::ReportSessionMetrics(bool revealed) {
+  auto elapsed_time =
+      base::TimeTicks::Now() - last_screen_capture_session_start_time_;
+  base::UmaHistogramLongTimes(
+      base::StrCat({"Notifications.Blocker.ScreenCapture.",
+                    revealed ? "RevealDuration" : "SessionDuration"}),
+      elapsed_time);
+
   if (reported_session_metrics_)
     return;
 
@@ -141,9 +151,16 @@ void ScreenCaptureNotificationBlocker::ReportSessionMetrics() {
 
 void ScreenCaptureNotificationBlocker::ReportMuteNotificationAction(
     MutedNotificationHandler::Action action) {
+  std::string action_suffix = MutedActionSuffix(action);
   RecordScreenCaptureCount(
-      base::StrCat({"Action.", MutedActionSuffix(action)}),
+      base::StrCat({"Action.", action_suffix}),
       muted_notification_count_ + replaced_notification_count_);
+
+  auto elapsed_time = base::TimeTicks::Now() - last_mute_notification_time_;
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"Notifications.Blocker.ScreenCapture.ActionTiming.", action_suffix}),
+      elapsed_time);
 }
 
 void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
@@ -169,6 +186,8 @@ void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
   notification_display_service_->Display(
       NotificationHandler::Type::NOTIFICATIONS_MUTED, notification,
       /*metadata=*/nullptr);
+
+  last_mute_notification_time_ = base::TimeTicks::Now();
 }
 
 void ScreenCaptureNotificationBlocker::CloseMuteNotification() {
