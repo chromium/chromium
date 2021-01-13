@@ -1944,7 +1944,6 @@
       'ToTWin64': {
         'mixins': [
           'chrome-tester-service-account',
-          'win10',
           'x86-64',
         ],
         'test_suites': {
