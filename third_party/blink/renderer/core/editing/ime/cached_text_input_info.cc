@@ -108,16 +108,21 @@ PlainTextRange CachedTextInputInfo::GetPlainTextRange(
     const EphemeralRange& range) const {
   if (range.IsNull())
     return PlainTextRange();
-  const unsigned start_offset = RangeLength(
-      EphemeralRange(Position(*container_, 0), range.StartPosition()));
+  const Position container_start = Position(*container_, 0);
+  // When selection is moved to another editable during IME composition,
+  // |range| may not in |container|. See http://crbug.com/1161562
+  if (container_start > range.StartPosition())
+    return PlainTextRange();
+  const unsigned start_offset =
+      RangeLength(EphemeralRange(container_start, range.StartPosition()));
   const unsigned end_offset =
-      range.IsCollapsed() ? start_offset
-                          : RangeLength(EphemeralRange(Position(*container_, 0),
-                                                       range.EndPosition()));
-  DCHECK_EQ(static_cast<unsigned>(TextIterator::RangeLength(
-                EphemeralRange(Position(*container_, 0), range.EndPosition()),
-                Behavior())),
-            end_offset);
+      range.IsCollapsed()
+          ? start_offset
+          : RangeLength(EphemeralRange(container_start, range.EndPosition()));
+  DCHECK_EQ(
+      static_cast<unsigned>(TextIterator::RangeLength(
+          EphemeralRange(container_start, range.EndPosition()), Behavior())),
+      end_offset);
   return PlainTextRange(start_offset, end_offset);
 }
 
