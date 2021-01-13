@@ -1,0 +1,26 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='The Label'
+++++++++++inlineTextBox name='The Label'
+++++++textField name='The Label ariaLabel' value='the value'
+++++++++genericContainer
+++++++++++staticText name='the value'
+++++++++++++inlineTextBox name='the value'
+++++++checkBox name='We have 3 cats' checkedState=false
+++++++++staticText name='We have '
+++++++++++inlineTextBox name='We have '
+++++++++textField name='Number of cats' value='3'
+++++++++++genericContainer
+++++++++++++staticText name='3'
+++++++++++++++inlineTextBox name='3'
+++++++++staticText name=' cats'
+++++++++++inlineTextBox name=' cats'
+++++++group name='Range Slider'
+++++++++legend
+++++++++++labelText
+++++++++++++staticText name='Range Slider'
+++++++++++++++inlineTextBox name='Range Slider'
+++++++++slider horizontal name='Range Slider Minimum' value='10' valueForRange=10.00 minValueForRange=0.00 maxValueForRange=90.00
+++++++++slider horizontal name='Range Slider Maximum' value='90' valueForRange=90.00 minValueForRange=10.00 maxValueForRange=100.00

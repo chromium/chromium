@@ -1262,8 +1262,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return nullptr;
   }
 
-  bool NameFromSelectedOption(bool recursive) const;
-
   ax::mojom::blink::Role ButtonRoleType() const;
 
   virtual LayoutObject* LayoutObjectForRelativeBounds() const {

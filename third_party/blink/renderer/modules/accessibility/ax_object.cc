@@ -4353,22 +4353,6 @@ ax::mojom::blink::Role AXObject::AriaRoleToWebCoreRole(const String& value) {
   return role;
 }
 
-bool AXObject::NameFromSelectedOption(bool recursive) const {
-  switch (RoleValue()) {
-    // Step 2E from: http://www.w3.org/TR/accname-aam-1.1
-    case ax::mojom::blink::Role::kComboBoxGrouping:
-    case ax::mojom::blink::Role::kComboBoxMenuButton:
-    case ax::mojom::blink::Role::kListBox:
-      return recursive;
-    // This can be either a button widget with a non-false value of
-    // aria-haspopup or a select element with size of 1.
-    case ax::mojom::blink::Role::kPopUpButton:
-      return DynamicTo<HTMLSelectElement>(*GetNode()) ? recursive : false;
-    default:
-      return false;
-  }
-}
-
 bool AXObject::SupportsNameFromContents(bool recursive) const {
   // ARIA 1.1, section 5.2.7.5.
   bool result = false;

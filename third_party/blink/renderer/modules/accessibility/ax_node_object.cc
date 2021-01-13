@@ -2589,47 +2589,29 @@ String AXNodeObject::TextAlternative(bool recursive,
       return String();
   }
 
-  // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control
-  if (recursive && CanSetValueAttribute()) {
-    // No need to set any name source info in a recursive call.
-    if (IsTextControl())
-      return GetText();
-
-    if (IsRangeValueSupported()) {
-      const AtomicString& aria_valuetext =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText);
-      if (!aria_valuetext.IsNull())
-        return aria_valuetext.GetString();
-      float value;
-      if (ValueForRange(&value))
-        return String::Number(value);
-    }
-
-    return StringValue();
+  // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control.
+  // This must occur before 2C, because 2C is not applied if 2E will be:
+  // 2C: "If traversal of the current node is due to recursion and the current
+  // node is an embedded control as defined in step 2E, ignore aria-label and
+  // skip to rule 2E".
+  // Note that 2E only applies the label is for "another widget", therefore, the
+  // value cannot be used to label the original control, even if aria-labelledby
+  // points to itself. The easiest way to check this is by testing whether this
+  // node has already been visited.
+  if (recursive && !visited.Contains(this)) {
+    String value_for_name = GetValueContributionToName();
+    if (!value_for_name.IsNull())
+      return value_for_name;
   }
 
-  // Step 2E from: http://www.w3.org/TR/accname-aam-1.1
-  // "If the embedded control has role combobox or listbox, return the text
-  // alternative of the chosen option."
-  if (NameFromSelectedOption(recursive)) {
-    StringBuilder accumulated_text;
-    AXObjectVector selected_options;
-    SelectedOptions(selected_options);
-    for (const auto& child : selected_options) {
-      if (accumulated_text.length())
-        accumulated_text.Append(" ");
-      accumulated_text.Append(child->ComputedName());
-    }
-    return accumulated_text.ToString();
-  }
-
+  // Step 2C from: http://www.w3.org/TR/accname-aam-1.1 -- aria-label.
   String text_alternative = AriaTextAlternative(
       recursive, in_aria_labelled_by_traversal, visited, name_from,
       related_objects, name_sources, &found_text_alternative);
   if (found_text_alternative && !name_sources)
     return text_alternative;
 
-  // Step 2D from: http://www.w3.org/TR/accname-aam-1.1
+  // Step 2D from: http://www.w3.org/TR/accname-aam-1.1  -- native markup.
   text_alternative =
       NativeTextAlternative(visited, name_from, related_objects, name_sources,
                             &found_text_alternative);
@@ -2639,7 +2621,7 @@ String AXNodeObject::TextAlternative(bool recursive,
   if (has_text_alternative && !name_sources)
     return text_alternative;
 
-  // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1
+  // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1 -- from content.
   if (in_aria_labelled_by_traversal || SupportsNameFromContents(recursive)) {
     Node* node = GetNode();
     if (!IsA<HTMLSelectElement>(node)) {  // Avoid option descendant text
@@ -4642,6 +4624,56 @@ String AXNodeObject::PlaceholderFromNativeAttribute() const {
   if (!node || !blink::IsTextControl(*node))
     return String();
   return ToTextControl(node)->StrippedPlaceholder();
+}
+
+String AXNodeObject::GetValueContributionToName() const {
+  if (CanSetValueAttribute()) {
+    if (IsTextControl())
+      return GetText();
+
+    if (IsRangeValueSupported()) {
+      const AtomicString& aria_valuetext =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText);
+      if (!aria_valuetext.IsNull())
+        return aria_valuetext.GetString();
+      float value;
+      if (ValueForRange(&value))
+        return String::Number(value);
+    }
+  }
+
+  // "If the embedded control has role combobox or listbox, return the text
+  // alternative of the chosen option."
+  if (UseNameFromSelectedOption()) {
+    StringBuilder accumulated_text;
+    AXObjectVector selected_options;
+    SelectedOptions(selected_options);
+    for (const auto& child : selected_options) {
+      if (accumulated_text.length())
+        accumulated_text.Append(" ");
+      accumulated_text.Append(child->ComputedName());
+    }
+    return accumulated_text.ToString();
+  }
+
+  return String();
+}
+
+bool AXNodeObject::UseNameFromSelectedOption() const {
+  // Assumes that the node was reached via recursion in the name calculation.
+  switch (RoleValue()) {
+    // Step 2E from: http://www.w3.org/TR/accname-aam-1.1
+    case ax::mojom::blink::Role::kComboBoxGrouping:
+    case ax::mojom::blink::Role::kComboBoxMenuButton:
+    case ax::mojom::blink::Role::kListBox:
+      return true;
+    // This can be either a button widget with a non-false value of
+    // aria-haspopup or a select element with size of 1.
+    case ax::mojom::blink::Role::kPopUpButton:
+      return DynamicTo<HTMLSelectElement>(*GetNode());
+    default:
+      return false;
+  }
 }
 
 void AXNodeObject::Trace(Visitor* visitor) const {

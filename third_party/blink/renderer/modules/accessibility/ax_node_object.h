@@ -301,6 +301,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                bool* found_text_alternative) const;
   bool IsDescendantOfElementType(HashSet<QualifiedName>& tag_names) const;
   String PlaceholderFromNativeAttribute() const;
+  String GetValueContributionToName() const;
+  bool UseNameFromSelectedOption() const;
 
   void AddNodeChildren();
   void AddLayoutChildren();
