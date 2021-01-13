@@ -328,6 +328,17 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
     case cros::mojom::CameraPrivacySwitchState::UNKNOWN:
       break;
     case cros::mojom::CameraPrivacySwitchState::ON: {
+      // On some devices, the camera privacy switch state can only be detected
+      // while the camera is active. In that case the privacy switch state will
+      // become known as the camera becomes active, in which case showing a
+      // notification is preferred to showing a toast.
+      if (is_camera_active_ &&
+          camera_privacy_switch_state_ ==
+              cros::mojom::CameraPrivacySwitchState::UNKNOWN) {
+        ShowCameraOffNotification();
+        break;
+      }
+
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOffToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOnToastId,
@@ -367,26 +378,11 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
 
 void MediaClientImpl::OnActiveClientChange(cros::mojom::CameraClientType type,
                                            bool is_active) {
+  is_camera_active_ = is_active;
+
   if (is_active && camera_privacy_switch_state_ ==
                        cros::mojom::CameraPrivacySwitchState::ON) {
-    std::unique_ptr<message_center::Notification> notification =
-        ash::CreateSystemNotification(
-            message_center::NOTIFICATION_TYPE_SIMPLE,
-            kCameraPrivacySwitchOnNotificationId,
-            l10n_util::GetStringUTF16(
-                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE),
-            l10n_util::GetStringUTF16(
-                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE),
-            base::string16(), GURL(),
-            message_center::NotifierId(
-                message_center::NotifierType::SYSTEM_COMPONENT,
-                kCameraPrivacySwitchNotifierId),
-            message_center::RichNotificationData(),
-            new message_center::HandleNotificationClickDelegate(
-                base::DoNothing::Repeatedly()),
-            vector_icons::kVideocamOffIcon,
-            message_center::SystemNotificationWarningLevel::NORMAL);
-    SystemNotificationHelper::GetInstance()->Display(*notification);
+    ShowCameraOffNotification();
   }
 }
 
@@ -475,4 +471,28 @@ void MediaClientImpl::HandleMediaAction(ui::KeyboardCode keycode) {
     default:
       break;
   }
+}
+
+void MediaClientImpl::ShowCameraOffNotification() {
+  SystemNotificationHelper::GetInstance()->Close(
+      kCameraPrivacySwitchOnNotificationId);
+
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kCameraPrivacySwitchOnNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE),
+          base::string16(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kCameraPrivacySwitchNotifierId),
+          message_center::RichNotificationData(),
+          new message_center::HandleNotificationClickDelegate(
+              base::DoNothing::Repeatedly()),
+          vector_icons::kVideocamOffIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(*notification);
 }

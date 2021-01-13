@@ -98,6 +98,10 @@ class MediaClientImpl : public ash::MediaClient,
   // delegate. Otherwise, we will forward the action to the extensions API.
   void HandleMediaAction(ui::KeyboardCode code);
 
+  // Shows a notification informing the user that an app is trying to use the
+  // camera while the camera privacy switch is turned on.
+  void ShowCameraOffNotification();
+
   ash::MediaController* media_controller_ = nullptr;
 
   base::flat_map<content::BrowserContext*, ui::MediaKeysListener::Delegate*>
@@ -115,6 +119,8 @@ class MediaClientImpl : public ash::MediaClient,
   // The most recent observed camera privacy switch state.
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+
+  bool is_camera_active_ = false;
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
 
