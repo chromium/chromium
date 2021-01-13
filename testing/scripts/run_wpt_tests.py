@@ -39,6 +39,8 @@ CHROMEDRIVER_BINARY = "../../out/{}/chromedriver"
 DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = "../../out/{}/results.json"
 MOJO_JS_PATH = "../../out/{}/gen/"
 
+TESTS_ROOT_DIR = "../../third_party/blink/web_tests/external/wpt"
+
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
     @property
@@ -50,7 +52,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
-            "../../third_party/blink/web_tests/external/wpt/wpt",
+            "../../third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt",
             "--venv=../../",
             "--skip-venv-setup",
             "run",
@@ -96,6 +98,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # from multiprocessing.cpu_count()
             "--processes=" + self.options.child_processes,
             "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
+            "--tests=" + TESTS_ROOT_DIR,
         ])
         return rest_args
 
