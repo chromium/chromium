@@ -272,19 +272,17 @@
           label-max="$i18n{largeMouseCursorSizeLargeLabel}">
       </settings-slider>
     </div>
-    <template is="dom-if" if="[[shouldShowExperimentalCursorColor_]]">
-      <div class="settings-box">
-        <div class="start settings-box-text" id="cursorColorOptionsLabel">
-          $i18n{cursorColorOptionsLabel}
-        </div>
-        <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
-            pref="{{prefs.settings.a11y.cursor_color}}"
-            menu-options="[[cursorColorOptions_]]"
-            on-settings-control-change="onA11yCursorColorChange_"
-            deep-link-focus-id$="[[Setting.kEnableCursorColor]]">
-        </settings-dropdown-menu>
+    <div class="settings-box">
+      <div class="start settings-box-text" id="cursorColorOptionsLabel">
+        $i18n{cursorColorOptionsLabel}
       </div>
-    </template>
+      <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
+          pref="{{prefs.settings.a11y.cursor_color}}"
+          menu-options="[[cursorColorOptions_]]"
+          on-settings-control-change="onA11yCursorColorChange_"
+          deep-link-focus-id$="[[Setting.kEnableCursorColor]]">
+      </settings-dropdown-menu>
+    </div>
     <settings-toggle-button
         class="hr"
         pref="{{prefs.settings.a11y.cursor_highlight}}"

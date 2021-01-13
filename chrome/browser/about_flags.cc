@@ -3840,10 +3840,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilityChromeVoxAnnotations)},
-    {"enable-experimental-accessibility-cursor-colors",
-     flag_descriptions::kExperimentalAccessibilityCursorColorsName,
-     flag_descriptions::kExperimentalAccessibilityCursorColorsDescription,
-     kOsCrOS, FEATURE_VALUE_TYPE(features::kAccessibilityCursorColor)},
     {"enable-experimental-kernel-vm-support",
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,

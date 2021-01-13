@@ -1649,10 +1649,6 @@ void AccessibilityControllerImpl::UpdateLargeCursorFromPref() {
 void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
   DCHECK(active_user_prefs_);
 
-  // Not yet released: cursor color is behind a flag.
-  if (!features::IsAccessibilityCursorColorEnabled())
-    return;
-
   const bool enabled =
       active_user_prefs_->GetBoolean(prefs::kAccessibilityCursorColorEnabled);
   Shell* shell = Shell::Get();

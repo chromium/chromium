@@ -4215,12 +4215,6 @@ const char kSwitchAccessPointScanningDescription[] =
     "Enable an in-process feature to select points onscreen with Switch "
     "Access.";
 
-const char kExperimentalAccessibilityCursorColorsName[] =
-    "Enable cursor colors.";
-const char kExperimentalAccessibilityCursorColorsDescription[] =
-    "Enable experimental feature which allows setting cursor color in "
-    "Accessibility settings.";
-
 const char kMagnifierNewFocusFollowingName[] =
     "Enable new focus following in Magnifier";
 const char kMagnifierNewFocusFollowingDescription[] =

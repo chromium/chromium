@@ -202,6 +202,12 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kEnableSwitchAccess}},
+      {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kEnableCursorColor}},
   });
   return *tags;
 }
@@ -303,18 +309,6 @@ const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetA11yCursorColorSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR,
-       mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kEnableCursorColor}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>&
 GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -335,10 +329,6 @@ bool AreExperimentalA11yLabelsAllowed() {
 
 bool AreLiveCaptionsAllowed() {
   return base::FeatureList::IsEnabled(media::kLiveCaption);
-}
-
-bool IsCursorColorAllowed() {
-  return features::IsAccessibilityCursorColorEnabled();
 }
 
 bool IsMagnifierPanningImprovementsEnabled() {
@@ -652,9 +642,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean("showExperimentalAccessibilityCursorColor",
-                          IsCursorColorAllowed());
-
   html_source->AddBoolean("isMagnifierPanningImprovementsEnabled",
                           IsMagnifierPanningImprovementsEnabled());
 
@@ -837,12 +824,6 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.AddSearchTags(GetA11yLiveCaptionSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());
-  }
-
-  if (IsCursorColorAllowed()) {
-    updater.AddSearchTags(GetA11yCursorColorSearchConcepts());
-  } else {
-    updater.RemoveSearchTags(GetA11yCursorColorSearchConcepts());
   }
 
   if (IsMagnifierPanningImprovementsEnabled()) {

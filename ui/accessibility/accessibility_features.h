@@ -64,12 +64,6 @@ AX_BASE_EXPORT bool IsIChromeAccessibleEnabled();
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-AX_BASE_EXPORT extern const base::Feature kAccessibilityCursorColor;
-
-// Returns true if the accessibility cursor color feature is enabled, letting
-// users pick a custom cursor color.
-AX_BASE_EXPORT bool IsAccessibilityCursorColorEnabled();
-
 // Enables new magnifier focus following feature, which provides a richer
 // focus following experience.
 AX_BASE_EXPORT extern const base::Feature kMagnifierNewFocusFollowing;
