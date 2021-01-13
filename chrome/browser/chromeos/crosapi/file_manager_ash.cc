@@ -67,11 +67,14 @@ void OpenItem(const base::FilePath& path,
 
 }  // namespace
 
-FileManagerAsh::FileManagerAsh(
-    mojo::PendingReceiver<mojom::FileManager> receiver)
-    : receiver_(this, std::move(receiver)) {}
+FileManagerAsh::FileManagerAsh() = default;
 
 FileManagerAsh::~FileManagerAsh() = default;
+
+void FileManagerAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::FileManager> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 void FileManagerAsh::DeprecatedShowItemInFolder(const base::FilePath& path) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();

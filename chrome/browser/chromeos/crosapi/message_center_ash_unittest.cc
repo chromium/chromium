@@ -84,7 +84,8 @@ class MessageCenterAshTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-    message_center_ash_ = std::make_unique<MessageCenterAsh>(
+    message_center_ash_ = std::make_unique<MessageCenterAsh>();
+    message_center_ash_->BindReceiver(
         message_center_remote_.BindNewPipeAndPassReceiver());
   }
 

@@ -62,14 +62,17 @@ base::Optional<TokenId> KeystoreToToken(mojom::KeystoreType type) {
 
 }  // namespace
 
-KeystoreServiceAsh::KeystoreServiceAsh(
-    mojo::PendingReceiver<mojom::KeystoreService> receiver)
-    : receiver_(this, std::move(receiver)) {
+KeystoreServiceAsh::KeystoreServiceAsh() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 KeystoreServiceAsh::~KeystoreServiceAsh() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+void KeystoreServiceAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::KeystoreService> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(

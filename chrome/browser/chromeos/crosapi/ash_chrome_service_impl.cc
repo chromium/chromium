@@ -44,12 +44,17 @@ namespace crosapi {
 AshChromeServiceImpl::AshChromeServiceImpl(
     mojo::PendingReceiver<mojom::AshChromeService> pending_receiver)
     : receiver_(this, std::move(pending_receiver)),
+      file_manager_ash_(std::make_unique<FileManagerAsh>()),
+      keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
+      message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
           g_browser_process->local_state())),
       prefs_ash_(std::make_unique<PrefsAsh>(
           g_browser_process->local_state(),
           ProfileManager::GetPrimaryUserProfile()->GetPrefs())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
+      select_file_ash_(std::make_unique<SelectFileAsh>()),
+      feedback_ash_(std::make_unique<FeedbackAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()) {
@@ -98,25 +103,17 @@ void AshChromeServiceImpl::BindAccountManager(
 
 void AshChromeServiceImpl::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  file_manager_ash_ =
-      std::make_unique<crosapi::FileManagerAsh>(std::move(receiver));
+  file_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindKeystoreService(
     mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  keystore_service_ash_ =
-      std::make_unique<crosapi::KeystoreServiceAsh>(std::move(receiver));
+  keystore_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindMessageCenter(
     mojo::PendingReceiver<mojom::MessageCenter> receiver) {
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  message_center_ash_ = std::make_unique<MessageCenterAsh>(std::move(receiver));
+  message_center_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindMetricsReporting(
@@ -126,9 +123,7 @@ void AshChromeServiceImpl::BindMetricsReporting(
 
 void AshChromeServiceImpl::BindSelectFile(
     mojo::PendingReceiver<mojom::SelectFile> receiver) {
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  select_file_ash_ = std::make_unique<SelectFileAsh>(std::move(receiver));
+  select_file_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindScreenManager(
@@ -143,9 +138,7 @@ void AshChromeServiceImpl::BindHidManager(
 
 void AshChromeServiceImpl::BindFeedback(
     mojo::PendingReceiver<mojom::Feedback> receiver) {
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  feedback_ash_ = std::make_unique<FeedbackAsh>(std::move(receiver));
+  feedback_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindMediaSessionController(

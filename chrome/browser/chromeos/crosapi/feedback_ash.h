@@ -7,7 +7,7 @@
 
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace crosapi {
 
@@ -15,16 +15,18 @@ namespace crosapi {
 // UI thread. Shows feedback page in response to mojo IPCs from lacros-chrome.
 class FeedbackAsh : public mojom::Feedback {
  public:
-  explicit FeedbackAsh(mojo::PendingReceiver<mojom::Feedback> receiver);
+  FeedbackAsh();
   FeedbackAsh(const FeedbackAsh&) = delete;
   FeedbackAsh& operator=(const FeedbackAsh&) = delete;
   ~FeedbackAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::Feedback> receiver);
 
   // crosapi::mojom::Feedback:
   void ShowFeedbackPage(mojom::FeedbackInfoPtr feedback_info) override;
 
  private:
-  mojo::Receiver<mojom::Feedback> receiver_;
+  mojo::ReceiverSet<mojom::Feedback> receivers_;
 };
 
 }  // namespace crosapi
