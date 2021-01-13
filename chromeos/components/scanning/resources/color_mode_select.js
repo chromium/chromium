@@ -6,6 +6,7 @@ import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -52,19 +53,21 @@ Polymer({
   },
 
   /**
-   * Black and white should be the default option if it exists. If not, use
-   * the first color mode in the color modes array.
+   * Use the default option if it exists. If not, use the first color mode in
+   * the color modes array.
    * @return {string}
    * @private
    */
   getDefaultSelectedColorMode_() {
-    const blackAndWhiteIndex = this.colorModes.findIndex((colorMode) => {
+    assert(this.colorModes.length > 0);
+
+    const defaultColorModeIndex = this.colorModes.findIndex((colorMode) => {
       return this.isDefaultColorMode_(colorMode);
     });
 
-    return blackAndWhiteIndex === -1 ?
+    return defaultColorModeIndex === -1 ?
         this.colorModes[0].toString() :
-        this.colorModes[blackAndWhiteIndex].toString();
+        this.colorModes[defaultColorModeIndex].toString();
   },
 
   /**
