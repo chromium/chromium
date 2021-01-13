@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {ListContainer} from './list_container.m.js';
+// #import {FilesAlertDialog} from './files_alert_dialog.m.js';
+
 /** @interface */
-class ActionModelUI {
+/* #export */ class ActionModelUI {
   constructor() {
     /** @type {!FilesAlertDialog} */
     this.alertDialog;

@@ -2,6 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {DirectoryModel} from './directory_model.m.js';
+import {FileListModel} from './file_list_model.m.js';
+import {ListThumbnailLoader} from './list_thumbnail_loader.m.js';
+import {MetadataModel} from './metadata/metadata_model.m.js';
+import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+import {MockThumbnailLoader} from './mock_thumbnail_loader.m.js';
+
 /** @type {string} */
 let currentVolumeType;
 
@@ -48,7 +62,7 @@ const entry5 = new MockEntry(fileSystem, '/Test5.jpg');
 /** @type {!MockEntry} */
 const entry6 = new MockEntry(fileSystem, '/Test6.jpg');
 
-function setUp() {
+export function setUp() {
   currentVolumeType = ListThumbnailLoader.TEST_VOLUME_TYPE;
   /** @suppress {const} */
   ListThumbnailLoader.CACHE_SIZE = 5;
@@ -97,7 +111,7 @@ function setUp() {
 
   isScanningForTest = false;
 
-  class TestDirectoryModel extends cr.EventTarget {
+  class TestDirectoryModel extends EventTarget {
     getFileList() {
       return fileListModel;
     }
@@ -157,7 +171,7 @@ function areEntriesInCache(entries) {
 /**
  * Story test for list thumbnail loader.
  */
-function testStory(callback) {
+export function testStory(callback) {
   fileListModel.push(directory1, entry1, entry2, entry3, entry4, entry5);
 
   // Set high priority range to 0 - 2.
@@ -227,7 +241,7 @@ function testStory(callback) {
 /**
  * Do not enqueue prefetch task when high priority range is at the end of list.
  */
-function testRangeIsAtTheEndOfList() {
+export function testRangeIsAtTheEndOfList() {
   // Set high priority range to 5 - 6.
   listThumbnailLoader.setHighPriorityRange(5, 6);
 
@@ -238,7 +252,7 @@ function testRangeIsAtTheEndOfList() {
   assertEquals(1, Object.keys(getCallbacks).length);
 }
 
-function testCache(callback) {
+export function testCache(callback) {
   ListThumbnailLoader.numOfMaxActiveTasksForTest = 5;
 
   // Set high priority range to 0 - 2.
@@ -301,7 +315,7 @@ function testCache(callback) {
  * Test case for thumbnail fetch error. In this test case, thumbnail fetch for
  * entry 2 is failed.
  */
-function testErrorHandling(callback) {
+export function testErrorHandling(callback) {
   MockThumbnailLoader.errorUrls = [entry2.toURL()];
 
   listThumbnailLoader.setHighPriorityRange(0, 2);
@@ -320,7 +334,7 @@ function testErrorHandling(callback) {
 /**
  * Test case for handling sorted event in data model.
  */
-function testSortedEvent(callback) {
+export function testSortedEvent(callback) {
   listThumbnailLoader.setHighPriorityRange(0, 2);
   fileListModel.push(directory1, entry1, entry2, entry3, entry4, entry5);
 
@@ -349,7 +363,7 @@ function testSortedEvent(callback) {
 /**
  * Test case for handling change event in data model.
  */
-function testChangeEvent(callback) {
+export function testChangeEvent(callback) {
   listThumbnailLoader.setHighPriorityRange(0, 2);
   fileListModel.push(directory1, entry1, entry2, entry3);
 
@@ -383,7 +397,7 @@ function testChangeEvent(callback) {
 /**
  * Test case for MTP volume.
  */
-function testMTPVolume() {
+export function testMTPVolume() {
   currentVolumeType = VolumeManagerCommon.VolumeType.MTP;
 
   listThumbnailLoader.setHighPriorityRange(0, 2);
@@ -396,7 +410,7 @@ function testMTPVolume() {
 /**
  * Test case that directory scan is running.
  */
-function testDirectoryScanIsRunning() {
+export function testDirectoryScanIsRunning() {
   // Items are added during directory scan.
   isScanningForTest = true;
 
@@ -415,7 +429,7 @@ function testDirectoryScanIsRunning() {
 /**
  * Test case for EXIF IO error and retrying logic.
  */
-function testExifIOError(callback) {
+export function testExifIOError(callback) {
   const task = new ListThumbnailLoader.Task(
       entry1,
       /** @type {!VolumeManager} */ ({

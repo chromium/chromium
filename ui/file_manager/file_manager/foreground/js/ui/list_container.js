@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileGrid} from './file_grid.m.js';
+// #import {FileTable} from './file_table.m.js';
+// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+// #import {FileListModel} from '../file_list_model.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {DialogType} from '../dialog_type.m.js';
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 class TextSearchState {
   constructor() {
     /** @public {string} */
@@ -15,7 +31,7 @@ class TextSearchState {
 /**
  * List container for the file table and the grid view.
  */
-class ListContainer {
+/* #export */ class ListContainer {
   /**
    * @param {!HTMLElement} element Element of the container.
    * @param {!FileTable} table File table.

@@ -2,11 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ActionModelUI} from './ui/action_model_ui.m.js';
+// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
+// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * A single action, that can be taken on a set of entries.
  * @interface
  */
-class Action {
+/* #export */ class Action {
   /**
    * Executes this action on the set of entries.
    */
@@ -643,7 +657,7 @@ class CustomAction {
  * Represents a set of actions for a set of entries. Includes actions set
  * locally in JS, as well as those retrieved from the FSP API.
  */
-class ActionsModel extends cr.EventTarget {
+/* #export */ class ActionsModel extends cr.EventTarget {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!MetadataModel} metadataModel

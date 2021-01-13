@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
+
 /**
  * Mock thumbnail loader.
  */
-class MockThumbnailLoader {
+/* #export */ class MockThumbnailLoader {
   /**
    * @param {Entry} entry An entry.
    * @param {ThumbnailLoader.LoaderType=} opt_loaderType Loader type.

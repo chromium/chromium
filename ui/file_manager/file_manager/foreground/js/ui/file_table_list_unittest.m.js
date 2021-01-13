@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {VolumeManagerCommon} from '../../../../base/js/volume_manager_types.m.js';
+import {importerHistoryInterfaces} from '../../../../externs/background/import_history.m.js';
+import {MockVolumeManager} from '../../../background/js/mock_volume_manager.m.js';
+import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.m.js';
+import {DirectoryModel} from '../directory_model.m.js';
+import {FileListModel} from '../file_list_model.m.js';
+import {MetadataModel} from '../metadata/metadata_model.m.js';
+import {MockMetadataModel} from '../metadata/mock_metadata.m.js';
+import {A11yAnnounce} from './a11y_announce.m.js';
+import {FileListSelectionModel} from './file_list_selection_model.m.js';
+import {FileTable} from './file_table.m.js';
+import {FileTableList} from './file_table_list.m.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;
@@ -23,7 +35,7 @@ let element;
 let a11y;
 
 // Set up test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
   window.loadTimeData.data = {};
@@ -103,7 +115,7 @@ function ctrlAndKey(keyName, code) {
 /**
  * Tests that the keyboard can be used to navigate the FileTableList.
  */
-function testMultipleSelectionWithKeyboard() {
+export function testMultipleSelectionWithKeyboard() {
   // Render the FileTable on |element|.
   const fullPage = true;
   FileTable.decorate(
@@ -234,7 +246,7 @@ function testMultipleSelectionWithKeyboard() {
   }
 }
 
-function testKeyboardOperations() {
+export function testKeyboardOperations() {
   // Render the FileTable on |element|.
   const fullPage = true;
   FileTable.decorate(

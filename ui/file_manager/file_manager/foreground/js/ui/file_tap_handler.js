@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Processes touch events and calls back upon tap, longpress and longtap.
  * This class is similar to cr.ui.TouchHandler. The major difference is that,
@@ -9,7 +11,7 @@
  * distincted from mouse clicks, or leave it handled by the mouse event
  * handlers by default.
  */
-class FileTapHandler {
+/* #export */ class FileTapHandler {
   constructor() {
     /**
      * Whether the pointer is currently down and at the same place as the

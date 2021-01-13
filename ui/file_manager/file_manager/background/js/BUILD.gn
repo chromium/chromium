@@ -428,6 +428,9 @@ js_library("mock_drive_sync_handler.m") {
     "//ui/file_manager/externs/background:drive_sync_handler.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+  visibility += [
+    "//ui/file_manager/file_manager/foreground/js:actions_model_unittest.m",
+  ]
 
   extra_deps = [ ":modulize" ]
 }

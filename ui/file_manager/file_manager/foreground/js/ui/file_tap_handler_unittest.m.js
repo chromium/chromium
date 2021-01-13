@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://test/chai_assert.js';
+import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+import {FileTapHandler} from './file_tap_handler.m.js';
+
 /** @type {!FileTapHandler} handler the handler. */
 let handler;
 
@@ -37,13 +41,13 @@ function createTouch(identifier, clientX, clientY) {
   });
 }
 
-function setUp() {
+export function setUp() {
   handler = new FileTapHandler();
   dummyTarget = document.body;
   events = [];
 }
 
-function testTap() {
+export function testTap() {
   const touch = createTouch(0, 300, 400);
   handler.handleTouchEvents(
       new TouchEvent('touchstart', {targetTouches: [touch], touches: [touch]}),
@@ -61,7 +65,7 @@ function testTap() {
   assertEquals(0, events[0].index);
 }
 
-function testIgnoreSlide() {
+export function testIgnoreSlide() {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 320, 450);
   handler.handleTouchEvents(
@@ -110,7 +114,7 @@ function testIgnoreSlide() {
   assertEquals(FileTapHandler.TapEvent.TAP, events[0].eventType);
 }
 
-function testTapMoveTolerance() {
+export function testTapMoveTolerance() {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 300, 405);  // moved slightly
   const touch2 = createTouch(0, 302, 405);  // moved slightly
@@ -148,7 +152,7 @@ function testTapMoveTolerance() {
   assertEquals(0, events[0].index);
 }
 
-function testLongTap(callback) {
+export function testLongTap(callback) {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 303, 404);
   handler.handleTouchEvents(
@@ -196,7 +200,7 @@ function testLongTap(callback) {
       callback);
 }
 
-function testCancelLongTapBySlide(callback) {
+export function testCancelLongTapBySlide(callback) {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 330, 450);
   handler.handleTouchEvents(
@@ -230,7 +234,7 @@ function testCancelLongTapBySlide(callback) {
       callback);
 }
 
-function testTwoFingerTap() {
+export function testTwoFingerTap() {
   const touch0_0 = createTouch(0, 300, 400);
   const touch0_1 = createTouch(0, 303, 404);
   const touch1_0 = createTouch(1, 350, 400);

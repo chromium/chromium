@@ -21,7 +21,7 @@ class CanvasFileManagerJsTest : public FileManagerJsTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsModelTest) {
-  RunTestURL("foreground/js/actions_model_unittest_gen.html");
+  RunTestURL("foreground/js/actions_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsSubmenuTest) {
@@ -125,15 +125,15 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileSystemMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTableList) {
-  RunTestURL("foreground/js/ui/file_table_list_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_table_list_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTableTest) {
-  RunTestURL("foreground/js/ui/file_table_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_table_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTapHandler) {
-  RunTestURL("foreground/js/ui/file_tap_handler_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_tap_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, InstallLinuxPackageDialogTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ListThumbnailLoader) {
-  RunTestURL("foreground/js/list_thumbnail_loader_unittest_gen.html");
+  RunTestURL("foreground/js/list_thumbnail_loader_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, LRUCacheTest) {

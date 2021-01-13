@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileListModel} from './file_list_model.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {LRUCache} from '../../common/js/lru_cache.m.js';
+// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
+
 /**
  * A thumbnail loader for list style UI.
  *
@@ -10,7 +22,7 @@
  * is responsible to return dataUrls of thumbnails and fetch them with proper
  * priority.
  */
-class ListThumbnailLoader extends cr.EventTarget {
+/* #export */ class ListThumbnailLoader extends cr.EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel A directory model.
    * @param {!ThumbnailModel} thumbnailModel Thumbnail metadata model.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @interface */
-class A11yAnnounce {
+/* #export */ class A11yAnnounce {
   /**
    * @param {string} text Text to be announced by screen reader, which should be
    * already translated.

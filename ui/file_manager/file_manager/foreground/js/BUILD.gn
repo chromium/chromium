@@ -28,6 +28,7 @@ group("closure_compile") {
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
+    ":actions_model.m",
     ":android_app_list_model.m",
     ":constants.m",
     ":crossover_search_utils.m",
@@ -43,11 +44,11 @@ js_type_check("closure_compile_jsmodules") {
     ":file_watcher.m",
     ":folder_shortcuts_data_model.m",
     ":launch_param.m",
-    ":metrics_start.m",
-    ":mock_actions_model.m",
+    ":list_thumbnail_loader.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
     ":mock_navigation_list_model.m",
+    ":mock_thumbnail_loader.m",
     ":navigation_list_model.m",
     ":navigation_uma.m",
     ":providers_model.m",
@@ -185,6 +186,25 @@ js_library("actions_model") {
       [ "//ui/file_manager/externs/background/drive_sync_handler.js" ]
 }
 
+js_library("actions_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/actions_model.m.js" ]
+  deps = [
+    ":folder_shortcuts_data_model.m",
+    "metadata:metadata_model.m",
+    "ui:action_model_ui.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:drive_sync_handler.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("mock_actions_model") {
   testonly = true
   deps = [
@@ -211,15 +231,24 @@ js_library("fake_file_selection_handler") {
   ]
 }
 
-js_unittest("actions_model_unittest") {
+js_unittest("actions_model_unittest.m") {
   deps = [
-    ":actions_model",
-    "metadata:mock_metadata",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/foreground/js/ui:action_model_ui",
+    ":actions_model.m",
+    ":folder_shortcuts_data_model.m",
+    "metadata:mock_metadata.m",
+    "ui:action_model_ui.m",
+    "ui:files_alert_dialog.m",
+    "ui:list_container.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -299,6 +328,13 @@ js_library("mock_navigation_list_model.m") {
 js_library("mock_thumbnail_loader") {
   testonly = true
   deps = [ ":thumbnail_loader" ]
+}
+
+js_library("mock_thumbnail_loader.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_thumbnail_loader.m.js" ]
+  deps = [ ":thumbnail_loader.m" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("android_app_list_model") {
@@ -894,12 +930,38 @@ js_library("list_thumbnail_loader") {
   ]
 }
 
-js_unittest("list_thumbnail_loader_unittest") {
+js_library("list_thumbnail_loader.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/list_thumbnail_loader.m.js" ]
   deps = [
-    ":list_thumbnail_loader",
-    ":mock_thumbnail_loader",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
+    ":directory_model.m",
+    ":file_list_model.m",
+    ":thumbnail_loader.m",
+    "metadata:thumbnail_model.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:lru_cache.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("list_thumbnail_loader_unittest.m") {
+  deps = [
+    ":directory_model.m",
+    ":file_list_model.m",
+    ":list_thumbnail_loader.m",
+    ":mock_thumbnail_loader.m",
+    "metadata:metadata_model.m",
+    "metadata:thumbnail_model.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -1227,9 +1289,11 @@ js_library("webui_command_extender") {
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
+    ":actions_model_unittest.m",
     ":directory_contents_unittest.m",
     ":file_list_model_unittest.m",
     ":file_type_filters_controller_unittest.m",
+    ":list_thumbnail_loader_unittest.m",
     ":navigation_list_model_unittest.m",
     ":providers_model_unittest.m",
     ":spinner_controller_unittest.m",
@@ -1248,12 +1312,10 @@ js_test_gen_html("js_test_gen_html_modules") {
 
 js_test_gen_html("js_test_gen_html") {
   deps = [
-    ":actions_model_unittest",
     ":file_manager_commands_unittest",
     ":file_tasks_unittest",
     ":file_transfer_controller_unittest",
     ":import_controller_unittest",
-    ":list_thumbnail_loader_unittest",
     ":task_controller_unittest",
   ]
   mocks = [ "$externs_path/file_manager_private.js" ]
@@ -1261,6 +1323,7 @@ js_test_gen_html("js_test_gen_html") {
 
 js_modulizer("modulize") {
   input_files = [
+    "actions_model.js",
     "android_app_list_model.js",
     "constants.js",
     "crossover_search_utils.js",
@@ -1287,6 +1350,8 @@ js_modulizer("modulize") {
     "metrics_start.js",
     "mock_actions_model.js",
     "spinner_controller.js",
+    "list_thumbnail_loader.js",
+    "mock_thumbnail_loader.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

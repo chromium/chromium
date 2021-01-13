@@ -3,6 +3,29 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {A11yAnnounce} from './a11y_announce.m.js';
+// #import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.m.js';
+// #import {EntryLocation} from '../../../../externs/entry_location.m.js';
+// #import {MetadataModel} from '../metadata/metadata_model.m.js';
+// #import {FilesAppEntry} from '../../../../externs/files_app_entry_interfaces.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {TableList} from './table/table_list.m.js';
+// #import {FileTapHandler} from './file_tap_handler.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {FileType} from '../../../common/js/file_type.m.js';
+// #import {util, str, strf} from '../../../common/js/util.m.js';
+// #import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selection_controller.m.js';
+// #import {isMac} from 'chrome://resources/js/cr.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
+/**
  * Namespace for utility functions.
  */
 const filelist = {};
@@ -10,7 +33,7 @@ const filelist = {};
 /**
  * File table list.
  */
-class FileTableList extends cr.ui.table.TableList {
+/* #export */ class FileTableList extends cr.ui.table.TableList {
   constructor() {
     // To silence closure compiler.
     super();
@@ -111,7 +134,7 @@ class FileListSelectionController extends cr.ui.ListSelectionController {
   /** @override */
   handleTouchEvents(e, index) {
     if (this.tapHandler_.handleTouchEvents(
-            e, index, filelist.handleTap.bind(this))) {
+            assert(e), index, filelist.handleTap.bind(this))) {
       // If a tap event is processed, FileTapHandler cancels the event to
       // prevent triggering click events. Then it results not moving the focus
       // to the list. So we do that here explicitly.
@@ -675,3 +698,6 @@ filelist.focusParentList = event => {
     element.focus();
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {filelist};
