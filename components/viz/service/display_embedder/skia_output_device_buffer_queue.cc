@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/switches.h"
@@ -23,6 +24,21 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface.h"
+
+namespace {
+base::TimeTicks g_last_reshape_failure = base::TimeTicks();
+
+NOINLINE void CheckForLoopFailuresBufferQueue() {
+  const auto threshold = base::TimeDelta::FromSeconds(1);
+  auto now = base::TimeTicks::Now();
+  if (!g_last_reshape_failure.is_null() &&
+      now - g_last_reshape_failure > threshold) {
+    CHECK(false);
+  }
+  g_last_reshape_failure = now;
+}
+
+}  // namespace
 
 namespace viz {
 
@@ -480,7 +496,10 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
   DCHECK(pending_overlay_mailboxes_.empty());
   if (!presenter_->Reshape(size, device_scale_factor, color_space, format,
                            transform)) {
-    DLOG(ERROR) << "Failed to resize.";
+    LOG(ERROR) << "Failed to resize.";
+    CheckForLoopFailuresBufferQueue();
+    // To prevent tail call, so we can see the stack.
+    base::debug::Alias(nullptr);
     return false;
   }
 
@@ -494,7 +513,13 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
     background_image_is_scheduled_ = false;
   }
 
-  return RecreateImages();
+  bool success = RecreateImages();
+  if (!success) {
+    CheckForLoopFailuresBufferQueue();
+    // To prevent tail call, so we can see the stack.
+    base::debug::Alias(nullptr);
+  }
+  return success;
 }
 
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
