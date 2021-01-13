@@ -549,13 +549,22 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(HintsFetcherBrowserTest);
 };
 
+// Issues with multiple profiles likely cause the site engagement service-based
+// tests to flake.
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
+#else
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
+#endif
+
 // This test creates new browser with no profile and loads a random page with
 // the feature flags for OptimizationHintsFetching. We confirm that the
 // TopHostProvider is called and does not crash by checking UMA
 // histograms for the total number of TopEngagementSites and
 // the total number of sites returned controlled by the experiments flag
 // |max_oneplatform_update_hosts|.
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherEnabled) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherEnabled)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Whitelist NoScript for https_url()'s' host.
@@ -596,7 +605,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherDisabledBrowserTest, HintsFetcherDisabled) {
 // is called to provide a list of hosts to HintsFetcher only returns hosts with
 // a HTTPS scheme. We verify this with the UMA histogram logged when the
 // GetHintsRequest is made to the remote Optimization Guide Service.
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, TopHostProviderHTTPSOnly) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(TopHostProviderHTTPSOnly)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Adds two HTTP and two HTTPS sites into the Site Engagement Service.
@@ -622,8 +632,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, TopHostProviderHTTPSOnly) {
   EXPECT_EQ(0u, GetTopHostBlacklistSize());
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcherFetchedHintsLoaded) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherFetchedHintsLoaded)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
@@ -656,8 +667,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintCache.HintType.Loaded", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcherWithResponsesSuccessful) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherWithResponsesSuccessful)) {
   SetResponseType(HintsFetcherRemoteResponseType::kSuccessful);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
@@ -687,8 +699,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcherWithResponsesUnsuccessful) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherWithResponsesUnsuccessful)) {
   SetResponseType(HintsFetcherRemoteResponseType::kUnsuccessful);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
@@ -717,8 +730,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcherWithResponsesMalformed) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherWithResponsesMalformed)) {
   SetResponseType(HintsFetcherRemoteResponseType::kMalformed);
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
@@ -749,8 +763,10 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcherWithResponsesUnsuccessfulAtNavigationTime) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(
+        HintsFetcherWithResponsesUnsuccessfulAtNavigationTime)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   SetResponseType(HintsFetcherRemoteResponseType::kUnsuccessful);
@@ -771,7 +787,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     HintsFetcherBrowserTest,
-    HintsFetcherWithResponsesHungShouldRecordWhenActiveRequestCanceled) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(
+        HintsFetcherWithResponsesHungShouldRecordWhenActiveRequestCanceled)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   SetResponseType(HintsFetcherRemoteResponseType::kHung);
@@ -792,7 +809,9 @@ IN_PROC_BROWSER_TEST_F(
       1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherClearFetchedHints)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
@@ -839,7 +858,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherOverrideTimer)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -885,7 +905,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
       "OptimizationGuide.HintCache.HintType.Loaded", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherNetworkOffline) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherNetworkOffline)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -914,7 +936,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherNetworkOffline) {
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcherFetches)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Whitelist NoScript for https_url()'s' host.
@@ -943,8 +966,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
 }
 
 // Test that the hints are fetched at the time of the navigation.
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcher_NavigationFetch_ECT) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcher_NavigationFetch_ECT)) {
   {
     base::HistogramTester histogram_tester;
 
@@ -1171,7 +1195,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
 // Test that the hints are fetched at the time of the navigation.
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcher_NavigationFetch_URLKeyedNotRefetched) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(
+                           HintsFetcher_NavigationFetch_URLKeyedNotRefetched)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Whitelist NoScript for https_url()'s' host.
@@ -1277,7 +1302,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 // Test that the hints are fetched at the time of the navigation.
 IN_PROC_BROWSER_TEST_F(
     HintsFetcherBrowserTest,
-    HintsFetcher_NavigationFetch_FetchWithNewlyRegisteredOptType) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(
+        HintsFetcher_NavigationFetch_FetchWithNewlyRegisteredOptType)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Whitelist NoScript for https_url()'s' host.
@@ -1370,7 +1396,8 @@ IN_PROC_BROWSER_TEST_F(
 // Test that the hints are fetched at the time of the navigation.
 IN_PROC_BROWSER_TEST_F(
     HintsFetcherBrowserTest,
-    HintsFetcher_NavigationFetch_CacheNotClearedOnLaunchedOptTypes) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(
+        HintsFetcher_NavigationFetch_CacheNotClearedOnLaunchedOptTypes)) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Whitelist NoScript for https_url()'s' host.
@@ -1545,8 +1572,9 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
-                       HintsFetcher_SRP_Slow_Connection) {
+IN_PROC_BROWSER_TEST_F(
+    HintsFetcherSearchPageBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HintsFetcher_SRP_Slow_Connection)) {
   g_browser_process->network_quality_tracker()
       ->ReportEffectiveConnectionTypeForTesting(
           net::EFFECTIVE_CONNECTION_TYPE_2G);
