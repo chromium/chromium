@@ -29,7 +29,7 @@ class ASH_EXPORT WmGestureHandler {
   // The amount in trackpad units the fingers must move in a direction before a
   // continuous gesture animation is started. This is to minimize accidental
   // scrolls.
-  static constexpr int kContinuousGestureMoveThresholdDp = 10;
+  static constexpr int kContinuousGestureMoveThresholdDp = 5;
 
   WmGestureHandler();
   WmGestureHandler(const WmGestureHandler&) = delete;

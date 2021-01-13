@@ -51,6 +51,10 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   // transform of the animation layer.
   int visible_desk_index_;
 
+  // The last time an animation has been started or replaced. This is used to
+  // help determine which desk to animate to when EndSwipeAnimation is called.
+  base::TimeTicks last_start_or_replace_time_;
+
   // Used to measure the presentation time of a continuous gesture swipe.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 };

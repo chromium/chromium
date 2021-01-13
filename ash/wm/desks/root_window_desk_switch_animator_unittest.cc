@@ -424,7 +424,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
   // should still be the most visible desk, so on ending the swipe animation,
   // desk indexed 0 is the target desk.
   animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change / 10);
-  animator()->EndSwipeAnimation();
+  animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
   EXPECT_EQ(
       Shell::GetPrimaryRootWindow()->bounds(),
       GetTargetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(0),
@@ -442,7 +442,30 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
   // indexed 1 is the target desk.
   animator()->UpdateSwipeAnimation(-9 * touchpad_swipe_length_for_desk_change /
                                    10);
-  animator()->EndSwipeAnimation();
+  animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
+  EXPECT_EQ(
+      Shell::GetPrimaryRootWindow()->bounds(),
+      GetTargetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(1),
+                             animation_layer));
+}
+
+// Tests that a fast swipe, even if it is small will result in switching desks.
+TEST_F(RootWindowDeskSwitchAnimatorTest, FastSwipe) {
+  // Add one more desk as we need two desks for this test.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+
+  InitAnimator(0, 1);
+  TakeStartingDeskScreenshotAndWait();
+  TakeEndingDeskScreenshotAndWait();
+  auto* animation_layer = test_api()->GetAnimationLayer();
+
+  const int touchpad_swipe_length_for_desk_change =
+      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
+  // Make a small left swipe headed towards desk indexed 1. We should still
+  // animate to desk indexed 1 even though desk indexed 0 is the most visible
+  // desk since it is a fast swipe.
+  animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change / 5);
+  animator()->EndSwipeAnimation(/*is_fast_swipe=*/true);
   EXPECT_EQ(
       Shell::GetPrimaryRootWindow()->bounds(),
       GetTargetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(1),
@@ -456,14 +479,14 @@ TEST_F(RootWindowDeskSwitchAnimatorTest,
        EndSwipeAnimationBeforeScreenshotTaken) {
   InitAnimator(0, 1);
   animator()->TakeStartingDeskScreenshot();
-  animator()->EndSwipeAnimation();
+  animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
 
   // Reinitialize the animator as each animator only supports one
   // EndSwipeAnimation during its lifetime.
   InitAnimator(0, 1);
   TakeStartingDeskScreenshotAndWait();
   animator()->TakeEndingDeskScreenshot();
-  animator()->EndSwipeAnimation();
+  animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
 }
 
 }  // namespace ash

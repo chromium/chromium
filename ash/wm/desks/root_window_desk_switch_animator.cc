@@ -50,6 +50,11 @@ constexpr int kRemovedDeskWindowYTranslation = 20;
 constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
     base::TimeDelta::FromMilliseconds(100);
 
+// When ending a swipe that is deemed fast, the target desk only needs to be
+// 10% shown for us to animate to that desk, compared to 50% shown for a non
+// fast swipe.
+constexpr float kFastSwipeVisibilityRatio = 0.1f;
+
 // Create the layer that will be the parent of the screenshot layer, with a
 // solid black color to act as the background showing behind the two
 // screenshot layers in the |kDesksSpacing| region between them. It will get
@@ -327,7 +332,7 @@ void RootWindowDeskSwitchAnimator::PrepareForEndingDeskScreenshot(
   ending_desk_screenshot_taken_ = false;
 }
 
-int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
+int RootWindowDeskSwitchAnimator::EndSwipeAnimation(bool is_fast_swipe) {
   // If the starting screenshot has not finished, just let our delegate know
   // that the desk animation is finished (and |this| will soon be deleted), and
   // go back to the starting desk.
@@ -350,10 +355,35 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
   // In tests, StartAnimation() may trigger OnDeskSwitchAnimationFinished()
   // right away which may delete |this|. Store the target index in a
   // local so we do not try to access a member of a deleted object.
-  const int ending_desk_index = GetIndexOfMostVisibleDeskScreenshot();
-  ending_desk_index_ = ending_desk_index;
+  int local_ending_desk_index = -1;
+
+  // If the swipe we are ending with is deemed a fast swipe, we animate to
+  // |ending_desk_index_| if more than 10% of it is currently visible.
+  // Otherwise, we animate to the most visible desk.
+  if (is_fast_swipe) {
+    ui::Layer* layer = screenshot_layers_[ending_desk_index_];
+    if (layer) {
+      const gfx::Transform transform =
+          animation_layer_owner_->root()->transform();
+      gfx::RectF screenshot_bounds(layer->bounds());
+      transform.TransformRect(&screenshot_bounds);
+
+      const gfx::RectF root_window_bounds(root_window_->bounds());
+      const gfx::RectF intersection_rect =
+          gfx::IntersectRects(screenshot_bounds, root_window_bounds);
+      if (intersection_rect.width() >
+          root_window_bounds.width() * kFastSwipeVisibilityRatio) {
+        local_ending_desk_index = ending_desk_index_;
+      }
+    }
+  }
+
+  if (local_ending_desk_index == -1)
+    local_ending_desk_index = GetIndexOfMostVisibleDeskScreenshot();
+
+  ending_desk_index_ = local_ending_desk_index;
   StartAnimation();
-  return ending_desk_index;
+  return local_ending_desk_index;
 }
 
 int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {

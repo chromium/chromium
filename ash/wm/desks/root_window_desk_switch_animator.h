@@ -272,8 +272,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   void PrepareForEndingDeskScreenshot(int new_ending_desk_index);
 
   // Called when a user ends a touchpad swipe. This will animate to the most
-  // visible desk, whose index is also returned.
-  int EndSwipeAnimation();
+  // visible desk, whose index is also returned. If |is_fast_swipe| is true, we
+  // will use a different logic to determine which ending desk index we want to
+  // end at.
+  int EndSwipeAnimation(bool is_fast_swipe);
 
   // Gets the index of the desk whose screenshot of the animation layer is most
   // visible to the user. That desk screenshot is the one which aligns the most
