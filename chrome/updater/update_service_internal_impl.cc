@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/rand_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -180,7 +179,7 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
               base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
                              this),
               config_)),
-      UpdateCheckJitter());
+      base::TimeDelta::FromSeconds(config_->InitialDelay()));
 }
 
 void CheckForUpdatesTask::MaybeCheckForUpdatesDone() {
@@ -270,11 +269,6 @@ void CheckForUpdatesTask::UninstallPingSent(update_client::Error error) {
 }
 
 }  // namespace
-
-base::TimeDelta UpdateCheckJitter() {
-  return base::TimeDelta::FromSecondsD(base::RandDouble() *
-                                       kUpdateCheckJitterMultiplier);
-}
 
 UpdateServiceInternalImpl::UpdateServiceInternalImpl(
     scoped_refptr<updater::Configurator> config)

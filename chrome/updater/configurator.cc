@@ -5,6 +5,8 @@
 #include "chrome/updater/configurator.h"
 
 #include <utility>
+
+#include "base/rand_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
@@ -49,7 +51,7 @@ Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
 Configurator::~Configurator() = default;
 
 int Configurator::InitialDelay() const {
-  return 0;
+  return base::RandInt(0, external_constants_->InitialDelay());
 }
 
 int Configurator::NextCheckDelay() const {

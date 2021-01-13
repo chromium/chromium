@@ -109,6 +109,10 @@ void EnterTestMode(const GURL& url) {
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
                            DWORD{0}),
             ERROR_SUCCESS);
+  ASSERT_EQ(
+      key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyInitialDelay).c_str(),
+                     DWORD{0}),
+      ERROR_SUCCESS);
 }
 
 void ExpectInstalled() {

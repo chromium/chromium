@@ -46,12 +46,18 @@ TEST_F(DevOverrideTest, TestDevOverrides) {
   ASSERT_EQ(
       key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(), use_cup),
       ERROR_SUCCESS);
+  DWORD initial_delay = 1;
+  ASSERT_EQ(
+      key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyInitialDelay).c_str(),
+                     initial_delay),
+      ERROR_SUCCESS);
 
   ASSERT_FALSE(consts->UseCUP());
   std::vector<GURL> urls = consts->UpdateURL();
   ASSERT_EQ(urls.size(), 1u);
   ASSERT_EQ(urls[0], GURL("http://localhost:8080"));
   ASSERT_TRUE(urls[0].is_valid());
+  ASSERT_EQ(consts->InitialDelay(), 1);
 }
 
 }  // namespace updater

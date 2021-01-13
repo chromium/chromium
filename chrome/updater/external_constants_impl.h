@@ -20,6 +20,7 @@ class DevOverrideProvider : public ExternalConstants {
   // Overrides of ExternalConstants:
   std::vector<GURL> UpdateURL() const override;
   bool UseCUP() const override;
+  int InitialDelay() const override;
 };
 
 }  // namespace updater

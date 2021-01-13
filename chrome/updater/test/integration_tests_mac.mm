@@ -112,6 +112,9 @@ void EnterTestMode(const GURL& url) {
     [userDefaults
         setBool:NO
          forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
+    [userDefaults
+        setInteger:0
+            forKey:[NSString stringWithUTF8String:kDevOverrideKeyInitialDelay]];
   }
 }
 

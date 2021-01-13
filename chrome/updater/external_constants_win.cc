@@ -39,4 +39,15 @@ bool DevOverrideProvider::UseCUP() const {
   return next_provider_->UseCUP();
 }
 
+int DevOverrideProvider::InitialDelay() const {
+  base::win::RegKey key;
+  if (key.Open(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
+    DWORD initial_delay = 0;
+    if (key.ReadValueDW(base::UTF8ToUTF16(kDevOverrideKeyInitialDelay).c_str(),
+                        &initial_delay) == ERROR_SUCCESS)
+      return initial_delay;
+  }
+  return next_provider_->InitialDelay();
+}
+
 }  // namespace updater

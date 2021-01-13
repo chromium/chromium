@@ -27,6 +27,9 @@ void ClearUserDefaults() {
     [userDefaults
         removeObjectForKey:[NSString
                                stringWithUTF8String:kDevOverrideKeyUseCUP]];
+    [userDefaults
+        removeObjectForKey:
+            [NSString stringWithUTF8String:kDevOverrideKeyInitialDelay]];
   }
 }
 
@@ -52,6 +55,9 @@ TEST_F(DevOverrideTest, TestDevOverrides) {
     [userDefaults
         setBool:NO
          forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
+    [userDefaults
+        setInteger:0
+            forKey:[NSString stringWithUTF8String:kDevOverrideKeyInitialDelay]];
   }
 
   EXPECT_FALSE(consts->UseCUP());
@@ -59,6 +65,7 @@ TEST_F(DevOverrideTest, TestDevOverrides) {
   ASSERT_EQ(urls.size(), 1u);
   EXPECT_EQ(urls[0], GURL("http://localhost:8080"));
   ASSERT_TRUE(urls[0].is_valid());
+  ASSERT_EQ(consts->InitialDelay(), 0);
 }
 
 }  // namespace updater

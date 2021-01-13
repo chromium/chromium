@@ -42,4 +42,18 @@ bool DevOverrideProvider::UseCUP() const {
   }
 }
 
+int DevOverrideProvider::InitialDelay() const {
+  @autoreleasepool {
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
+    id initial_delay = [userDefaults
+        objectForKey:[NSString
+                         stringWithUTF8String:kDevOverrideKeyInitialDelay]];
+    if (initial_delay)
+      return [initial_delay integerValue];
+    return next_provider_->InitialDelay();
+  }
+}
+
 }  // namespace updater
