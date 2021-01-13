@@ -19,16 +19,21 @@ class FakeTetherController : public TetherController {
 
   void SetStatus(Status status);
 
+  size_t num_scan_for_available_connection_calls() {
+    return num_scan_for_available_connection_calls_;
+  }
+
   // TetherController:
   Status GetStatus() const override;
+  void ScanForAvailableConnection() override;
 
  private:
   // TetherController:
-  void ScanForAvailableConnection() override;
   void AttemptConnection() override;
   void Disconnect() override;
 
   Status status_;
+  size_t num_scan_for_available_connection_calls_ = 0;
 };
 
 }  // namespace phonehub

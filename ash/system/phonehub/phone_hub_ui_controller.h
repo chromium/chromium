@@ -112,6 +112,11 @@ class ASH_EXPORT PhoneHubUiController
   // The current UI state.
   UiState ui_state_ = UiState::kHidden;
 
+  // This value becomes true the first time the user opens the PhoneHub UI
+  // when the feature is in the enabled state, and a tether scan request is
+  // made.
+  bool has_requested_tether_scan_during_session_ = false;
+
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
 };

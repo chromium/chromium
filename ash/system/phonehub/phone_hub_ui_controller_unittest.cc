@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
+using TetherStatus = chromeos::phonehub::TetherController::Status;
 
 namespace ash {
 
@@ -71,6 +72,8 @@ class PhoneHubUiControllerTest : public NoSessionAshTestBase,
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phone_status_model);
   }
+
+  void CallHandleBubbleOpened() { controller_->HandleBubbleOpened(); }
 
  protected:
   // PhoneHubUiController::Observer:
@@ -239,6 +242,27 @@ TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
             controller_->ui_state());
   auto content_view2 = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(kPhoneConnectedView, content_view2->GetID());
+}
+
+TEST_F(PhoneHubUiControllerTest, NumScanForAvailableConnectionCalls) {
+  size_t num_scan_for_connection_calls =
+      GetTetherController()->num_scan_for_available_connection_calls();
+
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
+  GetTetherController()->SetStatus(TetherStatus::kConnectionUnavailable);
+
+  // A scan for available connection calls should occur the first time
+  // the PhoneHub UI is opened while the feature status is enabled
+  // and the tether status is kConnectionUnavailable.
+  CallHandleBubbleOpened();
+  EXPECT_EQ(GetTetherController()->num_scan_for_available_connection_calls(),
+            num_scan_for_connection_calls + 1);
+
+  // No scan for available connection calls should occur after a tether scan
+  // has been requested.
+  CallHandleBubbleOpened();
+  EXPECT_EQ(GetTetherController()->num_scan_for_available_connection_calls(),
+            num_scan_for_connection_calls + 1);
 }
 
 }  // namespace ash

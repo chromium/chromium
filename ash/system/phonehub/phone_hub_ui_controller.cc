@@ -103,6 +103,21 @@ void PhoneHubUiController::HandleBubbleOpened() {
 
   phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
   phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
+
+  bool is_feature_enabled =
+      feature_status == FeatureStatus::kEnabledAndConnected ||
+      feature_status == FeatureStatus::kEnabledButDisconnected ||
+      feature_status == FeatureStatus::kEnabledAndConnected;
+
+  if (!is_feature_enabled)
+    return;
+
+  if (!has_requested_tether_scan_during_session_ &&
+      phone_hub_manager_->GetTetherController()->GetStatus() ==
+          TetherStatus::kConnectionUnavailable) {
+    phone_hub_manager_->GetTetherController()->ScanForAvailableConnection();
+    has_requested_tether_scan_during_session_ = true;
+  }
 }
 
 void PhoneHubUiController::AddObserver(Observer* observer) {
