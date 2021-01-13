@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Tests provisional blackboxing.\n`);
+  TestRunner.addResult(`Tests provisional ignore-listing.\n`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
@@ -12,13 +12,13 @@
           debugger;
           eval("239;//# sourceURL=framework.js");
       }
-      //# sourceURL=frameworks-blackbox-by-source-code.js
+      //# sourceURL=frameworks-ignore-list-by-source-code.js
   `);
 
   SourcesTestRunner.startDebuggerTest(step1, true);
 
   function step1() {
-    TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step2);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step2);
     var frameworkRegexString = '^framework\\.js$';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }

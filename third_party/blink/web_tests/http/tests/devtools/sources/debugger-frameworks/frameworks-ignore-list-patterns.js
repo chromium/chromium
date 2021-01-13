@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Tests framework blackbox patterns for various URLs.\n`);
+  TestRunner.addResult(`Tests framework ignore list patterns for various URLs.\n`);
   await TestRunner.showPanel('sources');
 
   var testCases = [
@@ -34,7 +34,7 @@
   for (var i = 0; i < testCases.length; i += 2) {
     var url = testCases[i];
     TestRunner.addResult('Testing "' + url + '"');
-    var regexValue = Bindings.blackboxManager._urlToRegExpString(url);
+    var regexValue = Bindings.ignoreListManager._urlToRegExpString(url);
     TestRunner.assertEquals(testCases[i + 1], regexValue);
     if (!regexValue)
       continue;

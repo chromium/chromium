@@ -1,8 +1,8 @@
-Tests provisional blackboxing.
+Tests provisional ignore-listing.
 
 Set timer for test function.
 Call stack:
-    0) testFunction (frameworks-blackbox-by-source-code.js:12)
+    0) testFunction (frameworks-ignore-list-by-source-code.js:12)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
@@ -10,7 +10,7 @@ Call stack:
 Executing StepInto...
 Executing StepInto...
 Call stack:
-    0) testFunction (frameworks-blackbox-by-source-code.js:14)
+    0) testFunction (frameworks-ignore-list-by-source-code.js:14)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

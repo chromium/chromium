@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Test that console.log() would linkify its location in respect with blackboxing.\n`);
+  TestRunner.addResult(`Test that console.log() would linkify its location in respect with ignore-listing.\n`);
 
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.showPanel('console');
@@ -27,21 +27,21 @@
   async function step1() {
     await dumpConsoleMessageURLs();
 
-    TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step2);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step2);
     var frameworkRegexString = 'foo\\.js';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }
 
   async function step2() {
     await dumpConsoleMessageURLs();
-    TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step3);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step3);
     var frameworkRegexString = 'foo\\.js|boo\\.js';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }
 
   async function step3() {
     await dumpConsoleMessageURLs();
-    TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step4);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step4);
     var frameworkRegexString = '';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }

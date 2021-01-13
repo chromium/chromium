@@ -1,4 +1,4 @@
-Tests framework blackbox patterns for various URLs.
+Tests framework ignore list patterns for various URLs.
 
 Testing "http://www.example.com/foo/jquery-1.7-min.js"
 Testing "https://www.example.com/jquery.js?version=1.7"
