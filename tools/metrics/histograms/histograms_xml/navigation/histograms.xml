@@ -906,6 +906,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadDelay"
+    units="ms" expires_after="2021-11-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The time spent waiting for policies to load before checking a navigation
+    against url blocking policies.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadTimeout"
+    enum="Boolean" expires_after="2021-11-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records if the policy load delay before PolicyBlocklistNavigationThrottle
+    checks a navigation against url blocking policies timed out. In case of a
+    timeout, the navigation resumes ignoring potential policy restrictions.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.ReadyToCommitUntilCommit2" units="ms"
     expires_after="M85">
   <owner>clamy@chromium.org</owner>

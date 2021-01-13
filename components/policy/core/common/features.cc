@@ -14,6 +14,16 @@ const base::Feature kCBCMPolicyInvalidations{"CBCMPolicyInvalidations",
 const base::Feature kCBCMRemoteCommands{"CBCMRemoteCommands",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kPolicyBlocklistThrottleRequiresPoliciesLoaded{
+    "PolicyBlocklistThrottleRequiresPoliciesLoaded",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<base::TimeDelta>
+    kPolicyBlocklistThrottlePolicyLoadTimeout{
+        &kPolicyBlocklistThrottleRequiresPoliciesLoaded,
+        "PolicyBlocklistThrottlePolicyLoadTimeout",
+        base::TimeDelta::FromSeconds(20)};
+
 }  // namespace features
 
 }  // namespace policy

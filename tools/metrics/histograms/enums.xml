@@ -43099,6 +43099,8 @@ from previous Chrome versions.
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
   <int value="-1396434715" label="AssistMultiWord:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
+  <int value="-1392673888"
+      label="PolicyBlocklistThrottleRequiresPoliciesLoaded:enabled"/>
   <int value="-1392562498" label="disable-origin-chip"/>
   <int value="-1391728260" label="ContextualSearchDefinitions:enabled"/>
   <int value="-1391693054"
@@ -43473,6 +43475,8 @@ from previous Chrome versions.
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
+  <int value="-1060574877"
+      label="PolicyBlocklistThrottleRequiresPoliciesLoaded:disabled"/>
   <int value="-1060541241" label="ForcePreferredIntervalForVideo:enabled"/>
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1056860259"

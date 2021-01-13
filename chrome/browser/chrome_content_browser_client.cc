@@ -90,6 +90,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #if !defined(OS_ANDROID)
 #include "chrome/browser/payments/payment_handler_navigation_throttle.h"
@@ -4072,8 +4073,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
 
+  policy::PolicyService* policy_service = nullptr;
+  Profile* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
+  if (profile && profile->GetProfilePolicyConnector())
+    policy_service = profile->GetProfilePolicyConnector()->policy_service();
+
   throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      handle, handle->GetWebContents()->GetBrowserContext()));
+      handle, handle->GetWebContents()->GetBrowserContext(), policy_service));
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke
   // the relevant extension API whenever an SSL interstitial is shown.
@@ -4135,8 +4142,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         &throttles);
   }
 
-  Profile* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
   if (profile && profile->GetPrefs()) {
     MaybeAddThrottle(
         security_interstitials::InsecureFormNavigationThrottle::

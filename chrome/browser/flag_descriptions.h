@@ -94,6 +94,10 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableFtpName[];
 extern const char kEnableFtpDescription[];
 
+extern const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[];
+extern const char
+    kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[];
+
 extern const char kEnableSignedExchangeSubresourcePrefetchName[];
 extern const char kEnableSignedExchangeSubresourcePrefetchDescription[];
 

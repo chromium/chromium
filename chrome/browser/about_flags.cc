@@ -5672,6 +5672,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSyncRequiresPoliciesLoadedDescription, kOsAll,
      FEATURE_VALUE_TYPE(switches::kSyncRequiresPoliciesLoaded)},
 
+    {"enable-policy-blocklist-throttle-requires-policies-loaded",
+     flag_descriptions::
+         kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName,
+     flag_descriptions::
+         kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded)},
+
 #if !defined(OS_ANDROID)
     {"form-controls-dark-mode", flag_descriptions::kFormControlsDarkModeName,
      flag_descriptions::kFormControlsDarkModeDescription, kOsDesktop,

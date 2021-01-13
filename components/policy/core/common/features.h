@@ -22,6 +22,14 @@ POLICY_EXPORT extern const base::Feature kCBCMPolicyInvalidations;
 // remote commands when fetching policies.
 POLICY_EXPORT extern const base::Feature kCBCMRemoteCommands;
 
+// PolicyBlocklistThrottle defers navigations until policies are loaded.
+POLICY_EXPORT extern const base::Feature
+    kPolicyBlocklistThrottleRequiresPoliciesLoaded;
+
+// Max time to defer the navigation while waiting for policies to load.
+POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kPolicyBlocklistThrottlePolicyLoadTimeout;
+
 }  // namespace features
 }  // namespace policy
 
