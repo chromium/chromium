@@ -104,10 +104,10 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         super.onAttach(context);
 
         // TODO(https://crbug.com/1143593): Replace FirstRunAppRestrictionInfo with a supplier.
-        mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                getPageDelegate().getFirstRunAppRestrictionInfo(), mPolicyServiceProvider,
-                EnterpriseInfo.getInstance(), new CctTosFragmentMetricsNameProvider());
-        mSkipTosDialogPolicyListener.onAvailable((b) -> onPolicyLoadListenerAvailable());
+        mSkipTosDialogPolicyListener =
+                new SkipTosDialogPolicyListener(getPageDelegate().getPolicyLoadListener(),
+                        EnterpriseInfo.getInstance(), new CctTosFragmentMetricsNameProvider());
+        mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
     }
 
     @Override

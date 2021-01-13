@@ -4,21 +4,24 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.ChildAccountStatus;
@@ -47,19 +50,28 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
     private static boolean sShowUmaCheckBoxForTesting;
 
-    protected boolean mNativeInitialized;
+    private boolean mNativeInitialized;
+    private boolean mTosButtonClicked;
 
     private Button mAcceptButton;
     private CheckBox mSendReportCheckBox;
     private TextView mTosAndPrivacy;
     private View mTitle;
     private View mProgressSpinner;
-    private boolean mTriggerAcceptAfterNativeInit;
+
+    private long mTosAcceptedTime;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fre_tosanduma, container, false);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        getPageDelegate().getPolicyLoadListener().onAvailable(
+                (ignored) -> tryMarkTermsAccepted(false));
     }
 
     @Override
@@ -73,12 +85,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         mSendReportCheckBox = (CheckBox) view.findViewById(R.id.send_report_checkbox);
         mTosAndPrivacy = (TextView) view.findViewById(R.id.tos_and_privacy);
 
-        mAcceptButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                acceptTermsOfService();
-            }
-        });
+        mAcceptButton.setOnClickListener((v) -> onTosButtonClicked());
 
         mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
         if (!canShowUmaCheckBox()) {
@@ -130,7 +137,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         // initialized at which point the activity will skip the page.
         // We distinguish case 1 from case 2 by the value of |mNativeInitialized|, as that is set
         // via onAttachFragment() from FirstRunActivity - which is before this onViewCreated().
-        if (!mNativeInitialized && FirstRunStatus.shouldSkipWelcomePage()) {
+        if (isWaitingForNativeAndPolicyInit() && FirstRunStatus.shouldSkipWelcomePage()) {
             setSpinnerVisible(true);
         }
     }
@@ -165,17 +172,33 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         assert !mNativeInitialized;
 
         mNativeInitialized = true;
-        if (mTriggerAcceptAfterNativeInit) acceptTermsOfService();
+        tryMarkTermsAccepted(false);
     }
 
-    private void acceptTermsOfService() {
-        if (!mNativeInitialized) {
-            mTriggerAcceptAfterNativeInit = true;
-            setSpinnerVisible(true);
+    private void onTosButtonClicked() {
+        mTosButtonClicked = true;
+        mTosAcceptedTime = SystemClock.elapsedRealtime();
+        tryMarkTermsAccepted(true);
+    }
+
+    /**
+     * This should be called Tos button is clicked for a fresh new FRE, or when native and policies
+     * are initialized if Tos has ever been accepted.
+     *
+     * @param fromButtonClicked Whether called from {@link #onTosButtonClicked()}.
+     */
+    private void tryMarkTermsAccepted(boolean fromButtonClicked) {
+        if (!mTosButtonClicked || isWaitingForNativeAndPolicyInit()) {
+            if (fromButtonClicked) setSpinnerVisible(true);
             return;
         }
 
-        mTriggerAcceptAfterNativeInit = false;
+        // In cases where the attempt is triggered other than button click, the ToS should have been
+        // accepted by the user already.
+        if (!fromButtonClicked) {
+            RecordHistogram.recordTimesHistogram("MobileFre.TosFragment.SpinnerVisibleDuration",
+                    SystemClock.elapsedRealtime() - mTosAcceptedTime);
+        }
         boolean allowCrashUpload = canShowUmaCheckBox() && mSendReportCheckBox.isChecked();
         getPageDelegate().acceptTermsOfService(allowCrashUpload);
     }
@@ -188,6 +211,10 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         setTosAndUmaVisible(otherElementVisible);
         mTitle.setVisibility(otherElementVisible ? View.VISIBLE : View.INVISIBLE);
         mProgressSpinner.setVisibility(spinnerVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean isWaitingForNativeAndPolicyInit() {
+        return !mNativeInitialized || getPageDelegate().getPolicyLoadListener().get() == null;
     }
 
     // Exposed methods for ToSAndUMACCTFirstRunFragment

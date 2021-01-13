@@ -822,6 +822,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MobileFre.NativeInitialized" units="ms"
+    expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: The amount of time spent between FRE started and native
+    initialization. Recorded when native is fully initialized.
+  </summary>
+</histogram>
+
+<histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: The amount of time spent between native initialized and the
+    decision &quot;whether we need to wait to load policy service from
+    native&quot; has been made. The decision is made when no on-device policy is
+    found, or policy service is fully initialized. If the decision has been made
+    before native initialization, 0 will be recorded. Recorded during FRE only,
+    when on-device policy is {PolicyPresence}
+  </summary>
+  <token key="PolicyPresence">
+    <variant name=".WithoutPolicy" summary="not presented."/>
+    <variant name=".WithPolicy" summary="presented."/>
+  </token>
+</histogram>
+
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
     expires_after="2021-06-20">
   <owner>bsazonov@chromium.org</owner>
@@ -843,6 +871,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Android: How the user left the sign-in part of the &quot;first run
     experience&quot; activity (M-38+).
+  </summary>
+</histogram>
+
+<histogram name="MobileFre.TosFragment.SpinnerVisibleDuration" units="ms"
+    expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: The amount of time that the small spinner, which become visible
+    after the ToS is accepted, is showing on screen.
   </summary>
 </histogram>
 

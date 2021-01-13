@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration test suite for the first run experience.
@@ -120,6 +121,18 @@ public class FirstRunIntegrationTest {
     private ActivityMonitor getMonitor(Class activityClass) {
         Assert.assertTrue(mSupportedActivities.contains(activityClass));
         return mMonitorMap.get(activityClass);
+    }
+
+    private FirstRunActivity launchFirstRunActivity() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+
+        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
+        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
+        // startup flow where they were interrupted.
+        return waitForActivity(FirstRunActivity.class);
     }
 
     private <T extends Activity> T waitForActivity(Class<T> activityClass) {
@@ -238,15 +251,7 @@ public class FirstRunIntegrationTest {
         };
         LocaleManager.setInstanceForTest(mockManager);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
-        intent.setPackage(mContext.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
-
-        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
-        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
-        // startup flow where they were interrupted.
-        waitForActivity(FirstRunActivity.class);
+        launchFirstRunActivity();
 
         mTestObserver.flowIsKnownCallback.waitForCallback("Failed to finalize the flow", 0);
         Bundle freProperties = mTestObserver.freProperties;
@@ -344,6 +349,20 @@ public class FirstRunIntegrationTest {
         // FirstRun status should be refreshed by TosDialogBehaviorSharedPrefInvalidator in deferred
         // start up task.
         CriteriaHelper.pollUiThread(() -> !FirstRunStatus.isFirstRunSkippedByPolicy());
+    }
+
+    @Test
+    @MediumTest
+    public void testSkipTosPage() throws TimeoutException {
+        // Test case that verifies when the ToS Page is accepted before thus skipped, and FRE should
+        // transitioning to the next page.
+        FirstRunStatus.setSkipWelcomePage(true);
+
+        FirstRunActivity freActivity = launchFirstRunActivity();
+        CriteriaHelper.pollUiThread(
+                () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
+
+        mTestObserver.jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
     }
 
     @Test

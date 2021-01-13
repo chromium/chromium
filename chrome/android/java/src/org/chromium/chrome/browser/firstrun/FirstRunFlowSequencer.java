@@ -166,10 +166,11 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     /**
-     * Called onNativeInitialized() a given flow as completed.
+     * Will be called either when policies are initialized, or when native is initialized if we have
+     * no on-device policies.
      * @param freProperties Resulting FRE properties bundle.
      */
-    public void onNativeInitialized(Bundle freProperties) {
+    public void onNativeAndPoliciesInitialized(Bundle freProperties) {
         // We show the sign-in page if sync is allowed, and not signed in, and
         // - no "skip the first use hints" is set, or
         // - "skip the first use hints" is set, but there is at least one account.

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -27,9 +28,11 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.EnterpriseInfo.OwnedState;
+import org.chromium.components.policy.PolicyService;
 
 /**
  * Unit tests for {@link SkipTosDialogPolicyListener}.
@@ -85,7 +88,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Spy
     public TestHistNameProvider mHistogramNameProvider;
     @Mock
-    public PolicyLoadListener mMockPolicyLoadListener;
+    public OneshotSupplier<Boolean> mMockPolicyLoadListener;
     @Mock
     public EnterpriseInfo mMockEnterpriseInfo;
 
@@ -208,7 +211,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Test
     public void testDestroy_PolicyNotFound() {
         mSkipTosDialogPolicyListener.destroy();
-        Mockito.verify(mMockPolicyLoadListener).destroy();
 
         // Policy signal should be ignored after destroy.
         mPolicyLoadListenerCallback.onResult(false);
@@ -219,7 +221,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Test
     public void testDestroy_DeviceNotOwned() {
         mSkipTosDialogPolicyListener.destroy();
-        Mockito.verify(mMockPolicyLoadListener).destroy();
 
         // Device owned signal should be ignored after destroy.
         setDeviceFullyManaged(false);
@@ -230,7 +231,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Test
     public void testDestroy_SkipTosDialog() {
         mSkipTosDialogPolicyListener.destroy();
-        Mockito.verify(mMockPolicyLoadListener).destroy();
 
         setDeviceFullyManaged(true);
         assertPolicyCheckNotComplete();
@@ -335,6 +335,30 @@ public class SkipTosDialogPolicyListenerUnitTest {
         Assert.assertEquals("No histogram for Policy should not be recorded.", 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         HIST_POLICY_LOAD_LISTENER_AVAILABLE));
+    }
+
+    @Test
+    public void testCreateAndOwnPolicyLoadListener() throws NoSuchFieldException {
+        FirstRunAppRestrictionInfo mockAppRestrictionInfo =
+                Mockito.mock(FirstRunAppRestrictionInfo.class);
+        OneshotSupplier<PolicyService> mockSupplier =
+                (OneshotSupplier<PolicyService>) Mockito.mock(OneshotSupplier.class);
+
+        SkipTosDialogPolicyListener targetListener = new SkipTosDialogPolicyListener(
+                mockAppRestrictionInfo, mockSupplier, mMockEnterpriseInfo, null);
+
+        Assert.assertNotNull(
+                "SkipTosDialogPolicyListener should create and own a PolicyLoadListener.",
+                targetListener.getPolicyLoadListenerForTesting());
+
+        PolicyLoadListener spyListener =
+                Mockito.spy(targetListener.getPolicyLoadListenerForTesting());
+        FieldSetter.setField(targetListener,
+                SkipTosDialogPolicyListener.class.getDeclaredField("mPolicyLoadListener"),
+                spyListener);
+
+        targetListener.destroy();
+        Mockito.verify(spyListener).destroy();
     }
 
     private void assertTosDialogEnabled() {

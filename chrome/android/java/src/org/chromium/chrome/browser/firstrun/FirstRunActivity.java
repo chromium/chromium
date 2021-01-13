@@ -91,7 +91,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private boolean mResultShowSignInSettings;
 
     private boolean mFlowIsKnown;
-    private boolean mPostNativePageSequenceCreated;
+    private boolean mPostNativeAndPolicyPagesCreated;
     private boolean mNativeSideIsInitialized;
     private Set<FirstRunFragment> mPagesToNotifyOfNativeInit;
     private boolean mDeferredCompleteFRE;
@@ -115,8 +115,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     private long mIntentCreationElapsedRealtimeMs;
 
-    private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
-
     private final List<FirstRunPage> mPages = new ArrayList<>();
     private final List<Integer> mFreProgressStates = new ArrayList<>();
 
@@ -124,10 +122,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      * The pager adapter, which provides the pages to the view pager widget.
      */
     private FirstRunPagerAdapter mPagerAdapter;
-
-    public FirstRunActivity() {
-        mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
-    }
 
     /**
      * Defines a sequence of pages to be shown (depending on parameters etc).
@@ -137,8 +131,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         ? new TosAndUmaFirstRunFragmentWithEnterpriseSupport.Page()
                         : new ToSAndUMAFirstRunFragment.Page());
         mFreProgressStates.add(FRE_PROGRESS_WELCOME_SHOWN);
-        // Other pages will be created by createPostNativePageSequence() after
-        // native has been initialized.
+        // Other pages will be created by createPostNativeAndPoliciesPageSequence() after
+        // native and policy service have been initialized.
     }
 
     private boolean shouldCreateEnterpriseCctTosPage() {
@@ -150,12 +144,20 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return mLaunchedFromCCT && !FirstRunStatus.shouldSkipWelcomePage();
     }
 
-    private void createPostNativePageSequence() {
+    /**
+     * Create the page sequence which requires native initialized, and policies loaded if any
+     * on-device policies may exists.
+     *
+     * @see #areNativeAndPoliciesInitialized()
+     */
+    private void createPostNativeAndPoliciesPageSequence() {
         // Note: Can't just use POST_NATIVE_SETUP_NEEDED for the early return, because this
-        // populates |mPages| which needs to be done even even if onNativeInitialized() was
-        // performed in a previous session.
-        if (mPostNativePageSequenceCreated) return;
-        mFirstRunFlowSequencer.onNativeInitialized(mFreProperties);
+        // populates |mPages| which needs to be done even if onNativeDependenciesFullyInitialized()
+        // was performed in a previous session.
+        if (mPostNativeAndPolicyPagesCreated) return;
+
+        assert areNativeAndPoliciesInitialized();
+        mFirstRunFlowSequencer.onNativeAndPoliciesInitialized(mFreProperties);
 
         boolean notifyAdapter = false;
         // An optional Data Saver page.
@@ -182,7 +184,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (notifyAdapter && mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();
         }
-        mPostNativePageSequenceCreated = true;
+        mPostNativeAndPolicyPagesCreated = true;
     }
 
     @Override
@@ -234,8 +236,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 }
 
                 createPageSequence();
-                if (mNativeSideIsInitialized) {
-                    createPostNativePageSequence();
+                if (areNativeAndPoliciesInitialized()) {
+                    createPostNativeAndPoliciesPageSequence();
                 }
 
                 if (mPages.size() == 0) {
@@ -247,7 +249,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 stopProgressionIfNotAcceptedTermsOfService();
                 mPager.setAdapter(mPagerAdapter);
 
-                if (mNativeSideIsInitialized) {
+                if (areNativeAndPoliciesInitialized()) {
                     skipPagesIfNecessary();
                 }
 
@@ -256,7 +258,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 long inflationCompletion = SystemClock.elapsedRealtime();
                 RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.FirstFragmentInflatedV2",
                         inflationCompletion - mIntentCreationElapsedRealtimeMs);
-                mFirstRunAppRestrictionInfo.getCompletionElapsedRealtimeMs(
+                getFirstRunAppRestrictionInfo().getCompletionElapsedRealtimeMs(
                         restrictionsCompletion -> {
                             if (restrictionsCompletion > inflationCompletion) {
                                 RecordHistogram.recordTimesHistogram(
@@ -294,27 +296,45 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         TemplateUrlServiceFactory.get().runWhenLoaded(onNativeFinished);
     }
 
-    public boolean isNativeSideIsInitializedForTest() {
-        return mNativeSideIsInitialized;
-    }
-
     private void onNativeDependenciesFullyInitialized() {
         mNativeSideIsInitialized = true;
         if (mDeferredCompleteFRE) {
             completeFirstRunExperience();
             mDeferredCompleteFRE = false;
         } else if (mFlowIsKnown) {
+            boolean doCreatePostPolicyPageSequence = areNativeAndPoliciesInitialized();
             // Note: If mFlowIsKnown is false, then we're not ready to create the post native page
             // sequence - in that case this will be done when onFlowIsKnown() gets called.
-            createPostNativePageSequence();
+            if (doCreatePostPolicyPageSequence) {
+                createPostNativeAndPoliciesPageSequence();
+            }
+
             if (mPagesToNotifyOfNativeInit != null) {
                 for (FirstRunFragment page : mPagesToNotifyOfNativeInit) {
                     page.onNativeInitialized();
                 }
+                mPagesToNotifyOfNativeInit = null;
             }
-            mPagesToNotifyOfNativeInit = null;
+
+            if (doCreatePostPolicyPageSequence) {
+                skipPagesIfNecessary();
+            }
+        }
+    }
+
+    @Override
+    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
+        super.onPolicyLoadListenerAvailable(onDevicePolicyFound);
+
+        if (areNativeAndPoliciesInitialized()) {
+            createPostNativeAndPoliciesPageSequence();
             skipPagesIfNecessary();
         }
+    }
+
+    private boolean areNativeAndPoliciesInitialized() {
+        return mNativeSideIsInitialized && mFlowIsKnown
+                && this.getPolicyLoadListener().get() != null;
     }
 
     // Activity:
@@ -350,14 +370,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void onStart() {
         super.onStart();
         stopProgressionIfNotAcceptedTermsOfService();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // As first run is complete, we no longer need FirstRunAppRestrictionInfo.
-        mFirstRunAppRestrictionInfo.destroy();
     }
 
     @Override
@@ -604,9 +616,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 this, LocalizationUtils.substituteLocalePlaceholder(getString(url)));
     }
 
-    @Override
-    public FirstRunAppRestrictionInfo getFirstRunAppRestrictionInfo() {
-        return mFirstRunAppRestrictionInfo;
+    @VisibleForTesting
+    public boolean isNativeSideIsInitializedForTest() {
+        return mNativeSideIsInitialized;
     }
 
     @VisibleForTesting

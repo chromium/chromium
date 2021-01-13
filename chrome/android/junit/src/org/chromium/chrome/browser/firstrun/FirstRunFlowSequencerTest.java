@@ -70,7 +70,7 @@ public class FirstRunFlowSequencerTest {
         @Override
         public void onFlowIsKnown(Bundle freProperties) {
             calledOnFlowIsKnown = true;
-            if (freProperties != null) onNativeInitialized(freProperties);
+            if (freProperties != null) onNativeAndPoliciesInitialized(freProperties);
             returnedBundle = freProperties;
         }
 
