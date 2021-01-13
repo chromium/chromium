@@ -2086,7 +2086,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     }
   }
 
-  // BrowsingInstance unless the destination URL's cross-origin isolated state
+  // Start the new renderer in a new SiteInstance, but in the current
+  // BrowsingInstance, unless the destination URL's cross-origin isolated state
   // cannot be hosted by it.
   if (IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
           render_frame_host_->GetSiteInstance(),
