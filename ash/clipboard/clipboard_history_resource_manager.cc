@@ -31,7 +31,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPlaceholderImageEdgePadding = 5;
 constexpr int kPlaceholderImageWidth = 234;
 constexpr int kPlaceholderImageHeight = 74;
 constexpr int kPlaceholderImageOutlineCornerRadius = 8;
@@ -69,9 +68,7 @@ class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
     flags.setAntiAlias(true);
     flags.setColor(gfx::kGoogleGrey100);
     canvas->DrawRoundRect(
-        {kPlaceholderImageEdgePadding, kPlaceholderImageEdgePadding,
-         kPlaceholderImageWidth - 2 * kPlaceholderImageEdgePadding,
-         kPlaceholderImageHeight - 2 * kPlaceholderImageEdgePadding},
+        /*rect=*/{kPlaceholderImageWidth, kPlaceholderImageHeight},
         kPlaceholderImageOutlineCornerRadius, flags);
 
     flags = cc::PaintFlags();
