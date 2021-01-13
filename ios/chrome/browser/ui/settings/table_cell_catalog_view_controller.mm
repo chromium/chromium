@@ -489,10 +489,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewSigninPromoItem* signinPromo =
       [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
-      initWithUserEmail:@"jonhdoe@example.com"
-           userFullName:@"John Doe"
-              userImage:nil
-         hasCloseButton:NO];
+      initWithIdentityPromoViewMode:IdentityPromoViewModeSigninWithAccount
+                          userEmail:@"jonhdoe@example.com"
+                       userFullName:@"John Doe"
+                          userImage:nil
+                     hasCloseButton:NO];
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 

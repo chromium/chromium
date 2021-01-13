@@ -436,15 +436,18 @@ const char* AlreadySeenSigninViewPreferenceKey(
       AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
   if (_defaultIdentity) {
     return [[SigninPromoViewConfigurator alloc]
-        initWithUserEmail:_defaultIdentity.userEmail
-             userFullName:_defaultIdentity.userFullName
-                userImage:self.identityAvatar
-           hasCloseButton:hasCloseButton];
+        initWithIdentityPromoViewMode:IdentityPromoViewModeSigninWithAccount
+                            userEmail:_defaultIdentity.userEmail
+                         userFullName:_defaultIdentity.userFullName
+                            userImage:self.identityAvatar
+                       hasCloseButton:hasCloseButton];
   }
-  return [[SigninPromoViewConfigurator alloc] initWithUserEmail:nil
-                                                   userFullName:nil
-                                                      userImage:nil
-                                                 hasCloseButton:hasCloseButton];
+  return [[SigninPromoViewConfigurator alloc]
+      initWithIdentityPromoViewMode:IdentityPromoViewModeNoAccounts
+                          userEmail:nil
+                       userFullName:nil
+                          userImage:nil
+                     hasCloseButton:hasCloseButton];
 }
 
 - (void)signinPromoViewIsVisible {

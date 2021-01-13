@@ -36,22 +36,22 @@ using l10n_util::GetNSStringF;
 // If YES the close button will be shown.
 @property(nonatomic) BOOL hasCloseButton;
 
+// State of the identity promo view.
+@property(nonatomic, assign) IdentityPromoViewMode identityPromoViewMode;
+
 @end
 
 @implementation SigninPromoViewConfigurator
 
-@synthesize userEmail = _userEmail;
-@synthesize userFullName = _userFullName;
-@synthesize userImage = _userImage;
-@synthesize hasCloseButton = _hasCloseButton;
-
-- (instancetype)initWithUserEmail:(NSString*)userEmail
-                     userFullName:(NSString*)userFullName
-                        userImage:(UIImage*)userImage
-                   hasCloseButton:(BOOL)hasCloseButton {
+- (instancetype)initWithIdentityPromoViewMode:(IdentityPromoViewMode)viewMode
+                                    userEmail:(NSString*)userEmail
+                                 userFullName:(NSString*)userFullName
+                                    userImage:(UIImage*)userImage
+                               hasCloseButton:(BOOL)hasCloseButton {
   self = [super init];
   if (self) {
     DCHECK(userEmail || (!userEmail && !userFullName && !userImage));
+    _identityPromoViewMode = viewMode;
     _userFullName = [userFullName copy];
     _userEmail = [userEmail copy];
     _userImage = [userImage copy];
@@ -62,33 +62,38 @@ using l10n_util::GetNSStringF;
 
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView {
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
-  if (!self.userEmail) {
-    signinPromoView.mode = IdentityPromoViewModeNoAccounts;
-    NSString* signInString =
-        GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
-    signinPromoView.accessibilityLabel = signInString;
-    [signinPromoView.primaryButton setTitle:signInString
-                                   forState:UIControlStateNormal];
-  } else {
-    signinPromoView.mode = IdentityPromoViewModeSigninWithAccount;
-    NSString* name =
-        self.userFullName.length ? self.userFullName : self.userEmail;
-    base::string16 name16 = SysNSStringToUTF16(name);
-    [signinPromoView.primaryButton
-        setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
-        forState:UIControlStateNormal];
-    signinPromoView.accessibilityLabel =
-        GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
-    [signinPromoView.secondaryButton
-        setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
-        forState:UIControlStateNormal];
-    UIImage* image = self.userImage;
-    if (!image) {
-      image = ios::GetChromeBrowserProvider()
-                  ->GetSigninResourcesProvider()
-                  ->GetDefaultAvatar();
+  signinPromoView.mode = self.identityPromoViewMode;
+
+  switch (self.identityPromoViewMode) {
+    case IdentityPromoViewModeNoAccounts: {
+      NSString* signInString =
+          GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+      signinPromoView.accessibilityLabel = signInString;
+      [signinPromoView.primaryButton setTitle:signInString
+                                     forState:UIControlStateNormal];
+      break;
     }
-    [signinPromoView setProfileImage:image];
+    case IdentityPromoViewModeSigninWithAccount: {
+      NSString* name =
+          self.userFullName.length ? self.userFullName : self.userEmail;
+      base::string16 name16 = SysNSStringToUTF16(name);
+      [signinPromoView.primaryButton
+          setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
+          forState:UIControlStateNormal];
+      signinPromoView.accessibilityLabel =
+          GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
+      [signinPromoView.secondaryButton
+          setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
+          forState:UIControlStateNormal];
+      UIImage* image = self.userImage;
+      if (!image) {
+        image = ios::GetChromeBrowserProvider()
+                    ->GetSigninResourcesProvider()
+                    ->GetDefaultAvatar();
+      }
+      [signinPromoView setProfileImage:image];
+      break;
+    }
   }
 }
 

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_SIGNIN_PROMO_VIEW_CONFIGURATOR_H_
 
 #import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 
 @class SigninPromoView;
 
@@ -14,12 +15,14 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initializes the instance. For cold state mode, set all parameters to nil.
-// For warm state mode set at least the |userEmail| to not nil.
-- (instancetype)initWithUserEmail:(NSString*)userEmail
-                     userFullName:(NSString*)userFullName
-                        userImage:(UIImage*)userImage
-                   hasCloseButton:(BOOL)hasCloseButton
+// Initializes the instance.
+// |userEmail| is used as a proxy to determine if accounts have
+// been added to the device.
+- (instancetype)initWithIdentityPromoViewMode:(IdentityPromoViewMode)viewMode
+                                    userEmail:(NSString*)userEmail
+                                 userFullName:(NSString*)userFullName
+                                    userImage:(UIImage*)userImage
+                               hasCloseButton:(BOOL)hasCloseButton
     NS_DESIGNATED_INITIALIZER;
 
 // Configures a sign-in promo view.
