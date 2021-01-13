@@ -27,10 +27,12 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
+#include "chrome/common/safe_browsing/download_type_util.h"
 #include "chrome/common/url_constants.h"
 #include "components/download/public/common/download_item.h"
 #include "components/google/core/common/google_util.h"
@@ -238,13 +240,12 @@ bool DownloadProtectionService::IsSupportedDownload(
     const download::DownloadItem& item,
     const base::FilePath& target_path) const {
   DownloadCheckResultReason reason = REASON_MAX;
-  ClientDownloadRequest::DownloadType type =
-      ClientDownloadRequest::WIN_EXECUTABLE;
   // TODO(nparker): Remove the CRX check here once can support
   // UNKNOWN types properly.  http://crbug.com/581044
   return (CheckClientDownloadRequest::IsSupportedDownload(item, target_path,
-                                                          &reason, &type) &&
-          (ClientDownloadRequest::CHROME_EXTENSION != type));
+                                                          &reason) &&
+          download_type_util::GetDownloadType(target_path) !=
+              ClientDownloadRequest::CHROME_EXTENSION);
 }
 
 void DownloadProtectionService::CheckPPAPIDownloadRequest(

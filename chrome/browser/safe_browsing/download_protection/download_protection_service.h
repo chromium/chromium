@@ -58,6 +58,7 @@ class CheckClientDownloadRequest;
 class CheckClientDownloadRequestBase;
 class CheckNativeFileSystemWriteRequest;
 class ClientDownloadRequest;
+class DownloadRequestMaker;
 class DownloadFeedbackService;
 class PPAPIDownloadRequest;
 
@@ -213,6 +214,7 @@ class DownloadProtectionService {
   friend class CheckClientDownloadRequest;
   friend class CheckNativeFileSystemWriteRequest;
   friend class DeepScanningRequest;
+  friend class DownloadRequestMaker;
 
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            TestDownloadRequestTimeout);

@@ -111,15 +111,12 @@ CheckClientDownloadRequest::CheckClientDownloadRequest(
     : CheckClientDownloadRequestBase(
           item->GetURL(),
           item->GetTargetFilePath(),
-          item->GetFullPath(),
-          {item->GetTabUrl(), item->GetTabReferrerUrl()},
-          item->GetMimeType(),
-          item->GetHash(),
           content::DownloadItemUtils::GetBrowserContext(item),
           callback,
           service,
           std::move(database_manager),
-          std::move(binary_feature_extractor)),
+          std::make_unique<DownloadRequestMaker>(binary_feature_extractor,
+                                                 item)),
       item_(item),
       callback_(callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -154,8 +151,7 @@ void CheckClientDownloadRequest::OnDownloadUpdated(
 bool CheckClientDownloadRequest::IsSupportedDownload(
     const download::DownloadItem& item,
     const base::FilePath& target_path,
-    DownloadCheckResultReason* reason,
-    ClientDownloadRequest::DownloadType* type) {
+    DownloadCheckResultReason* reason) {
   if (item.GetUrlChain().empty()) {
     *reason = REASON_EMPTY_URL_CHAIN;
     return false;
@@ -181,7 +177,6 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
-  *type = download_type_util::GetDownloadType(target_path);
   return true;
 }
 
@@ -191,9 +186,8 @@ CheckClientDownloadRequest::~CheckClientDownloadRequest() {
 }
 
 bool CheckClientDownloadRequest::IsSupportedDownload(
-    DownloadCheckResultReason* reason,
-    ClientDownloadRequest::DownloadType* type) {
-  return IsSupportedDownload(*item_, item_->GetTargetFilePath(), reason, type);
+    DownloadCheckResultReason* reason) {
+  return IsSupportedDownload(*item_, item_->GetTargetFilePath(), reason);
 }
 
 content::BrowserContext* CheckClientDownloadRequest::GetBrowserContext() const {
@@ -202,46 +196,6 @@ content::BrowserContext* CheckClientDownloadRequest::GetBrowserContext() const {
 
 bool CheckClientDownloadRequest::IsCancelled() {
   return item_->GetState() == download::DownloadItem::CANCELLED;
-}
-
-void CheckClientDownloadRequest::PopulateRequest(
-    ClientDownloadRequest* request) {
-  request->mutable_digests()->set_sha256(item_->GetHash());
-  request->set_length(item_->GetReceivedBytes());
-  for (size_t i = 0; i < item_->GetUrlChain().size(); ++i) {
-    ClientDownloadRequest::Resource* resource = request->add_resources();
-    resource->set_url(SanitizeUrl(item_->GetUrlChain()[i]));
-    if (i == item_->GetUrlChain().size() - 1) {
-      // The last URL in the chain is the download URL.
-      resource->set_type(ClientDownloadRequest::DOWNLOAD_URL);
-      resource->set_referrer(SanitizeUrl(item_->GetReferrerUrl()));
-      DVLOG(2) << "dl url " << resource->url();
-      if (!item_->GetRemoteAddress().empty()) {
-        resource->set_remote_ip(item_->GetRemoteAddress());
-        DVLOG(2) << "  dl url remote addr: " << resource->remote_ip();
-      }
-      DVLOG(2) << "dl referrer " << resource->referrer();
-    } else {
-      DVLOG(2) << "dl redirect " << i << " " << resource->url();
-      resource->set_type(ClientDownloadRequest::DOWNLOAD_REDIRECT);
-    }
-  }
-
-  request->set_user_initiated(item_->HasUserGesture());
-
-  auto* referrer_chain_data = static_cast<ReferrerChainData*>(
-      item_->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey));
-  if (referrer_chain_data &&
-      !referrer_chain_data->GetReferrerChain()->empty()) {
-    request->mutable_referrer_chain()->Swap(
-        referrer_chain_data->GetReferrerChain());
-    request->mutable_referrer_chain_options()
-        ->set_recent_navigations_to_collect(
-            referrer_chain_data->recent_navigations_to_collect());
-    UMA_HISTOGRAM_COUNTS_100(
-        "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
-        referrer_chain_data->referrer_chain_length());
-  }
 }
 
 base::WeakPtr<CheckClientDownloadRequestBase>
@@ -253,6 +207,9 @@ void CheckClientDownloadRequest::NotifySendRequest(
     const ClientDownloadRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   service()->client_download_request_callbacks_.Notify(item_, request);
+  UMA_HISTOGRAM_COUNTS_100(
+      "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
+      request->referrer_chain().size());
 }
 
 void CheckClientDownloadRequest::SetDownloadPingToken(

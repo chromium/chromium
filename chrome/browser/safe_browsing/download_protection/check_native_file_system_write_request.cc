@@ -27,50 +27,22 @@ namespace safe_browsing {
 
 using content::BrowserThread;
 
-namespace {
-
-GURL GetDownloadUrl(const GURL& frame_url) {
-  // Regular blob: URLs are of the form
-  // "blob:https://my-origin.com/def07373-cbd8-49d2-9ef7-20b071d34a1a". To make
-  // these URLs distinguishable from those we use a fixed string rather than a
-  // random UUID.
-  return GURL("blob:" + frame_url.GetOrigin().spec() +
-              "native-file-system-write");
-}
-
-CheckClientDownloadRequestBase::TabUrls TabUrlsFromWebContents(
-    content::WebContents* web_contents) {
-  CheckClientDownloadRequestBase::TabUrls result;
-  if (web_contents) {
-    content::NavigationEntry* entry =
-        web_contents->GetController().GetVisibleEntry();
-    if (entry) {
-      result.url = entry->GetURL();
-      result.referrer = entry->GetReferrer().url;
-    }
-  }
-  return result;
-}
-
-}  // namespace
-
 CheckNativeFileSystemWriteRequest::CheckNativeFileSystemWriteRequest(
     std::unique_ptr<content::NativeFileSystemWriteItem> item,
     CheckDownloadCallback callback,
     DownloadProtectionService* service,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
-    : CheckClientDownloadRequestBase(GetDownloadUrl(item->frame_url),
-                                     item->target_file_path,
-                                     item->full_path,
-                                     TabUrlsFromWebContents(item->web_contents),
-                                     "application/octet-stream",
-                                     item->sha256_hash,
-                                     item->browser_context,
-                                     std::move(callback),
-                                     service,
-                                     std::move(database_manager),
-                                     std::move(binary_feature_extractor)),
+    : CheckClientDownloadRequestBase(
+          GetFileSystemAccessDownloadUrl(item->frame_url),
+          item->target_file_path,
+          item->browser_context,
+          std::move(callback),
+          service,
+          std::move(database_manager),
+          std::make_unique<DownloadRequestMaker>(binary_feature_extractor,
+                                                 service,
+                                                 *item)),
       item_(std::move(item)),
       referrer_chain_data_(service->IdentifyReferrerChain(*item_)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -80,14 +52,12 @@ CheckNativeFileSystemWriteRequest ::~CheckNativeFileSystemWriteRequest() =
     default;
 
 bool CheckNativeFileSystemWriteRequest::IsSupportedDownload(
-    DownloadCheckResultReason* reason,
-    ClientDownloadRequest::DownloadType* type) {
+    DownloadCheckResultReason* reason) {
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           item_->target_file_path)) {
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
-  *type = download_type_util::GetDownloadType(item_->target_file_path);
   return true;
 }
 
@@ -100,33 +70,6 @@ bool CheckNativeFileSystemWriteRequest::IsCancelled() {
   return false;
 }
 
-void CheckNativeFileSystemWriteRequest::PopulateRequest(
-    ClientDownloadRequest* request) {
-  request->mutable_digests()->set_sha256(item_->sha256_hash);
-  request->set_length(item_->size);
-  {
-    ClientDownloadRequest::Resource* resource = request->add_resources();
-    resource->set_url(SanitizeUrl(GetDownloadUrl(item_->frame_url)));
-    resource->set_type(ClientDownloadRequest::DOWNLOAD_URL);
-    if (item_->frame_url.is_valid())
-      resource->set_referrer(SanitizeUrl(item_->frame_url));
-  }
-
-  request->set_user_initiated(item_->has_user_gesture);
-
-  if (referrer_chain_data_ &&
-      !referrer_chain_data_->GetReferrerChain()->empty()) {
-    request->mutable_referrer_chain()->Swap(
-        referrer_chain_data_->GetReferrerChain());
-    request->mutable_referrer_chain_options()
-        ->set_recent_navigations_to_collect(
-            referrer_chain_data_->recent_navigations_to_collect());
-    UMA_HISTOGRAM_COUNTS_100(
-        "SafeBrowsing.ReferrerURLChainSize.NativeFileSystemWriteAttribution",
-        referrer_chain_data_->referrer_chain_length());
-  }
-}
-
 base::WeakPtr<CheckClientDownloadRequestBase>
 CheckNativeFileSystemWriteRequest::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
@@ -135,6 +78,9 @@ CheckNativeFileSystemWriteRequest::GetWeakPtr() {
 void CheckNativeFileSystemWriteRequest::NotifySendRequest(
     const ClientDownloadRequest* request) {
   service()->native_file_system_write_request_callbacks_.Notify(request);
+  UMA_HISTOGRAM_COUNTS_100(
+      "SafeBrowsing.ReferrerURLChainSize.NativeFileSystemWriteAttribution",
+      request->referrer_chain().size());
 }
 
 void CheckNativeFileSystemWriteRequest::SetDownloadPingToken(

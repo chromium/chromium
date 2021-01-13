@@ -184,6 +184,8 @@ static_library("safe_browsing") {
         "download_protection/download_protection_util.h",
         "download_protection/download_reporter.cc",
         "download_protection/download_reporter.h",
+        "download_protection/download_request_maker.cc",
+        "download_protection/download_request_maker.h",
         "download_protection/download_url_sb_client.cc",
         "download_protection/download_url_sb_client.h",
         "download_protection/file_analyzer.cc",

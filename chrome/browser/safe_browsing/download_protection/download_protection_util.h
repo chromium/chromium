@@ -143,6 +143,8 @@ void GetCertificateWhitelistStrings(
     const net::X509Certificate& issuer,
     std::vector<std::string>* whitelist_strings);
 
+GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
