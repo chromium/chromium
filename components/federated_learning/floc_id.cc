@@ -122,9 +122,6 @@ FlocId::FlocId(base::Optional<uint64_t> id,
       history_end_time_(history_end_time),
       finch_config_version_(finch_config_version),
       sorting_lsh_version_(sorting_lsh_version),
-      compute_time_(compute_time) {
-  // If the floc is never computed, the id should be invalid.
-  DCHECK(!compute_time.is_null() || !id.has_value());
-}
+      compute_time_(compute_time) {}
 
 }  // namespace federated_learning
