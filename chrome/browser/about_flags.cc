@@ -3418,7 +3418,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableLinkCapturing)},
     {"enable-desktop-pwas-run-on-os-login",
      flag_descriptions::kDesktopPWAsRunOnOsLoginName,
-     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin | kOsLinux,
+     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin | kOsLinux | kOsMac,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,

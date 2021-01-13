@@ -694,7 +694,8 @@ const char kDesktopPWAsTabStripLinkCapturingDescription[] =
 const char kDesktopPWAsRunOnOsLoginName[] = "Desktop PWAs run on OS login";
 const char kDesktopPWAsRunOnOsLoginDescription[] =
     "Enable installed PWAs to be configured to automatically start when the OS "
-    "user logs in.";
+    "user logs in. Launching a PWA while the browser is not running is known "
+    "to cause a failure to restore sessions. See https://crbug.com/938759.";
 
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
     "Migrate default G Suite Chrome apps to web apps";

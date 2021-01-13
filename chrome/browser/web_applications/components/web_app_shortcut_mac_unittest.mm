@@ -70,6 +70,42 @@ class WebAppShortcutCreatorSortingMock : public WebAppShortcutCreator {
       const WebAppShortcutCreatorSortingMock&) = delete;
 };
 
+class WebAppAutoLoginUtilMock : public WebAppAutoLoginUtil {
+ public:
+  WebAppAutoLoginUtilMock() = default;
+  WebAppAutoLoginUtilMock(const WebAppAutoLoginUtilMock&) = delete;
+  WebAppAutoLoginUtilMock& operator=(const WebAppAutoLoginUtilMock&) = delete;
+
+  void AddToLoginItems(const base::FilePath& app_bundle_path,
+                       bool hide_on_startup) override {
+    EXPECT_TRUE(base::PathExists(app_bundle_path));
+    EXPECT_FALSE(hide_on_startup);
+    add_to_login_items_called_count_++;
+  }
+
+  void RemoveFromLoginItems(const base::FilePath& app_bundle_path) override {
+    EXPECT_TRUE(base::PathExists(app_bundle_path));
+    remove_from_login_items_called_count_++;
+  }
+
+  void ResetCounts() {
+    add_to_login_items_called_count_ = 0;
+    remove_from_login_items_called_count_ = 0;
+  }
+
+  int GetAddToLoginItemsCalledCount() const {
+    return add_to_login_items_called_count_;
+  }
+
+  int GetRemoveFromLoginItemsCalledCount() const {
+    return remove_from_login_items_called_count_;
+  }
+
+ private:
+  int add_to_login_items_called_count_ = 0;
+  int remove_from_login_items_called_count_ = 0;
+};
+
 std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
   std::unique_ptr<ShortcutInfo> info(new ShortcutInfo);
   info->extension_id = "extensionid";
@@ -120,9 +156,13 @@ class WebAppShortcutCreatorTest : public testing::Test {
 
     shim_base_name_ = base::FilePath(base::UTF16ToUTF8(info_->title) + ".app");
     shim_path_ = destination_dir_.Append(shim_base_name_);
+
+    auto_login_util_mock_ = std::make_unique<WebAppAutoLoginUtilMock>();
+    WebAppAutoLoginUtil::SetInstanceForTesting(auto_login_util_mock_.get());
   }
 
   void TearDown() override {
+    WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
     SetChromeAppsFolderForTesting(base::FilePath());
     testing::Test::TearDown();
   }
@@ -136,6 +176,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
   base::FilePath destination_dir_;
   base::FilePath user_data_dir_;
 
+  std::unique_ptr<WebAppAutoLoginUtilMock> auto_login_util_mock_;
   std::unique_ptr<ShortcutInfo> info_;
   base::FilePath fallback_shim_base_name_;
   base::FilePath shim_base_name_;
@@ -169,11 +210,14 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcuts) {
   // Delete it here, just to test that it is not recreated.
   EXPECT_TRUE(base::DeletePathRecursively(strings_file));
 
+  auto_login_util_mock_->ResetCounts();
+
   // Ensure the strings file wasn't recreated. It's not needed for any other
   // tests.
   EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
                                                ShortcutLocations()));
   EXPECT_FALSE(base::PathExists(strings_file));
+  EXPECT_EQ(auto_login_util_mock_->GetAddToLoginItemsCalledCount(), 0);
 
   base::FilePath plist_path =
       shim_path_.Append("Contents").Append("Info.plist");
@@ -339,6 +383,22 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcutsConflict) {
   EXPECT_TRUE(base::PathExists(destination_dir_));
 }
 
+TEST_F(WebAppShortcutCreatorTest, CreateShortcutsStartup) {
+  WebAppShortcutCreatorMock shortcut_creator(app_data_dir_, info_.get());
+
+  ShortcutLocations locations;
+  locations.in_startup = true;
+
+  auto_login_util_mock_->ResetCounts();
+  EXPECT_FALSE(base::PathExists(shim_path_));
+  EXPECT_CALL(shortcut_creator, RevealAppShimInFinder(_)).Times(0);
+  EXPECT_TRUE(
+      shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED, locations));
+  EXPECT_TRUE(base::PathExists(shim_path_));
+  EXPECT_EQ(auto_login_util_mock_->GetAddToLoginItemsCalledCount(), 1);
+  EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
+}
+
 TEST_F(WebAppShortcutCreatorTest, NormalizeTitle) {
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());
@@ -454,10 +514,15 @@ TEST_F(WebAppShortcutCreatorTest, DeleteShortcutsSingleProfile) {
   // Ensure the paths were created, and that they are destroyed.
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
+  auto_login_util_mock_->ResetCounts();
   internals::DeleteMultiProfileShortcutsForApp(info_->extension_id);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
+
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
+  auto_login_util_mock_->ResetCounts();
   internals::DeletePlatformShortcuts(app_data_dir_, *info_);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 2);
   EXPECT_FALSE(base::PathExists(shim_path_));
   EXPECT_FALSE(base::PathExists(other_shim_path));
 }
@@ -481,10 +546,14 @@ TEST_F(WebAppShortcutCreatorTest, DeleteShortcuts) {
   // Ensure the paths were created, and that they are destroyed.
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
+  auto_login_util_mock_->ResetCounts();
   internals::DeletePlatformShortcuts(app_data_dir_, *info_);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
+  auto_login_util_mock_->ResetCounts();
   internals::DeleteMultiProfileShortcutsForApp(info_->extension_id);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 2);
   EXPECT_FALSE(base::PathExists(shim_path_));
   EXPECT_FALSE(base::PathExists(other_shim_path));
 }
@@ -503,10 +572,14 @@ TEST_F(WebAppShortcutCreatorTest, DeleteAllShortcutsForProfile) {
                                                ShortcutLocations()));
   EXPECT_TRUE(base::PathExists(shim_path_));
 
+  auto_login_util_mock_->ResetCounts();
   internals::DeleteAllShortcutsForProfile(other_profile_path);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
   EXPECT_TRUE(base::PathExists(shim_path_));
 
+  auto_login_util_mock_->ResetCounts();
   internals::DeleteAllShortcutsForProfile(profile_path);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
   EXPECT_FALSE(base::PathExists(shim_path_));
 }
 
@@ -580,6 +653,31 @@ TEST_F(WebAppShortcutCreatorTest, SortAppBundles) {
       .WillOnce(Return(unsorted));
   std::vector<base::FilePath> result = shortcut_creator.GetAppBundlesById();
   EXPECT_EQ(result, sorted);
+}
+
+TEST_F(WebAppShortcutCreatorTest, RemoveAppShimFromLoginItems) {
+  WebAppShortcutCreatorMock shortcut_creator(app_data_dir_, info_.get());
+
+  ShortcutLocations locations;
+  locations.in_startup = true;
+
+  auto_login_util_mock_->ResetCounts();
+  EXPECT_FALSE(base::PathExists(shim_path_));
+  EXPECT_CALL(shortcut_creator, RevealAppShimInFinder(_)).Times(0);
+  EXPECT_TRUE(
+      shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED, locations));
+  EXPECT_TRUE(base::PathExists(shim_path_));
+  EXPECT_EQ(auto_login_util_mock_->GetAddToLoginItemsCalledCount(), 1);
+
+  auto_login_util_mock_->ResetCounts();
+  RemoveAppShimFromLoginItems("does-not-exist-app");
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
+
+  auto_login_util_mock_->ResetCounts();
+  RemoveAppShimFromLoginItems(info_->extension_id);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
+
+  EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 }
 
 }  // namespace web_app
