@@ -26,7 +26,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
+  is_polymer3 = true
   deps = [
     ":actions_model.m",
     ":android_app_list_model.m",
@@ -61,10 +61,13 @@ js_type_check("closure_compile_jsmodules") {
     ":path_component.m",
     ":providers_model.m",
     ":quick_view_model.m",
+    ":selection_menu_controller.m",
+    ":sort_menu_controller.m",
     ":spinner_controller.m",
     ":task_history.m",
     ":thumbnail_loader.m",
     ":web_store_utils.m",
+    ":webui_command_extender.m",
   ]
 }
 
@@ -1331,11 +1334,36 @@ js_library("selection_menu_controller") {
   ]
 }
 
+js_library("selection_menu_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/selection_menu_controller.m.js" ]
+  deps = [
+    "ui:multi_menu_button.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("sort_menu_controller") {
   deps = [
     ":file_list_model",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
+}
+
+js_library("sort_menu_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/sort_menu_controller.m.js" ]
+  deps = [
+    ":file_list_model.m",
+    "ui:multi_menu_button.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("spinner_controller") {
@@ -1459,6 +1487,16 @@ js_library("webui_command_extender") {
   ]
 }
 
+js_library("webui_command_extender.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/webui_command_extender.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":actions_model_unittest.m",
@@ -1480,6 +1518,7 @@ js_test_gen_html("js_test_gen_html_modules") {
         "js_module_root=../../ui",
         "jscomp_off=duplicate",
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
         "hide_warnings_for=third_party/",
       ]
 }
@@ -1535,8 +1574,13 @@ js_modulizer("modulize") {
     "task_history.js",
     "thumbnail_loader.js",
     "web_store_utils.js",
+    "webui_command_extender.js",
+    "sort_menu_controller.js",
+    "selection_menu_controller.js",
   ]
 
-  namespace_rewrites =
-      cr_namespace_rewrites + [ "cr.ui.FilesMenuItem|FilesMenuItem" ]
+  namespace_rewrites = cr_namespace_rewrites + [
+                         "cr.ui.FilesMenuItem|FilesMenuItem",
+                         "cr.ui.MultiMenu|MultiMenu",
+                       ]
 }

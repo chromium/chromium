@@ -32,6 +32,7 @@ js_type_check("closure_compile_jsmodules") {
     ":combobutton.m",
     ":commandbutton.m",
     ":default_task_dialog.m",
+    ":dialog_footer.m",
     ":directory_tree.m",
     ":drag_selector.m",
     ":empty_folder.m",
@@ -321,6 +322,20 @@ js_library("dialog_footer") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
+}
+
+js_library("dialog_footer.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/dialog_footer.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
+    "//ui/file_manager/file_manager/foreground/js:file_list_model.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("directory_tree") {
@@ -1113,6 +1128,7 @@ js_modulizer("modulize") {
     "combobutton.js",
     "commandbutton.js",
     "default_task_dialog.js",
+    "dialog_footer.js",
     "directory_tree.js",
     "drag_selector.js",
     "empty_folder.js",

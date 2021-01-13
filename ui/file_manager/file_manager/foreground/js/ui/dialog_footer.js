@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+// #import {FileType} from '../../../common/js/file_type.m.js';
+// #import {FileListModel} from '../file_list_model.m.js';
+// #import {DialogType} from '../dialog_type.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {util, str} from '../../../common/js/util.m.js';
+
 /**
  * Footer shown when the Files app is opened as a file/folder selecting dialog.
  */
-class DialogFooter {
+/* #export */ class DialogFooter {
   /**
    * @param {DialogType} dialogType Dialog type.
    * @param {!Element} container Container of the dialog footer.
