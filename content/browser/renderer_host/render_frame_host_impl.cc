@@ -5273,6 +5273,12 @@ void RenderFrameHostImpl::CreateNewWindow(
           effective_transient_activation_state, params->opener_suppressed,
           &no_javascript_access);
 
+  // Disallow window creation in prerendered pages.
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+      IsPrerendering()) {
+    can_create_window = false;
+  }
+
   bool was_consumed = false;
   if (can_create_window) {
     // Consume activation even w/o User Activation v2, to sync other renderers

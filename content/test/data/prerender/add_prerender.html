@@ -25,6 +25,8 @@ async function add_iframe(url) {
 // Opens a new pop-up window with the URL.
 async function open_window(url) {
   const win = window.open(url, '_blank');
+  if (!win)
+    return 'FAILED';
   return await new Promise(resolve => {
     win.onload = e => resolve('LOADED');
   });

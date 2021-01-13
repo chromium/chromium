@@ -421,5 +421,34 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
 // TODO(https://crbug.com/1132746): Test prerendering for 404 page, redirection,
 // auth error, cross origin, etc.
 
+// Tests for feature restrictions in prerendered pages =========================
+
+// Tests that window.open() in a prerendering page fails.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/add_prerender.html?prerendering");
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+
+  // Attempt to open a window in the prerendered page. This should fail.
+  const GURL kWindowOpenUrl = GetUrl("/empty.html");
+  EXPECT_EQ("FAILED", EvalJs(prerender_contents,
+                             JsReplace("open_window($1)", kWindowOpenUrl)));
+  EXPECT_EQ(GetRequestCount(kWindowOpenUrl), 0);
+
+  // Opening a window shouldn't cancel prerendering.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
+}
+
 }  // namespace
 }  // namespace content
