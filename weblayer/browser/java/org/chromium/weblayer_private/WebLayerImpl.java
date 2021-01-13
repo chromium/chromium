@@ -937,6 +937,10 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
             String[] splitNames = ApiHelperForO.getSplitNames(appInfo);
+            if (splitNames == null) {
+                return;
+            }
+
             for (int i = 0; i < splitNames.length; i++) {
                 String splitName = splitNames[i];
                 // WebLayer depends on the "weblayer" split and "chrome" split (if running in
