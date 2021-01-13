@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.account_picker;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import android.accounts.Account;
 import android.content.Context;
@@ -12,12 +12,10 @@ import android.view.View.OnClickListener;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.signin.ui.R;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;

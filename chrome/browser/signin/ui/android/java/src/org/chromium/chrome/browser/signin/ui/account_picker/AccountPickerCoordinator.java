@@ -57,9 +57,8 @@ public class AccountPickerCoordinator {
      *                 account.
      * @param selectedAccountName The name of the account that should be marked as selected.
      * @param showIncognitoRow whether to show the incognito row in the account picker.
-     * TODO(crbug/1155123): Change this method to package private after modularization.
      */
-    public AccountPickerCoordinator(RecyclerView view, Listener listener,
+    AccountPickerCoordinator(RecyclerView view, Listener listener,
             @Nullable String selectedAccountName, boolean showIncognitoRow) {
         assert listener != null : "The argument AccountPickerCoordinator.Listener cannot be null!";
 
@@ -90,9 +89,8 @@ public class AccountPickerCoordinator {
 
     /**
      * Destroys the resources used by the coordinator.
-     * TODO(crbug/1155123): Change this method to package private after modularization.
      */
-    public void destroy() {
+    void destroy() {
         mMediator.destroy();
     }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.account_picker;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -18,11 +18,9 @@ import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerFeatureUtils;
-import org.chromium.chrome.browser.signin.ui.account_picker.ExistingAccountRowViewBinder;
+import org.chromium.chrome.browser.signin.ui.R;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -169,7 +167,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 accountProfileData.getGivenNameOrFullNameOrEmail());
         continueButton.setText(continueAsButtonText);
     }
-
 
     @Override
     public View getContentView() {
