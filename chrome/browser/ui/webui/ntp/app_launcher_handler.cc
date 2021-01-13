@@ -573,9 +573,25 @@ void AppLauncherHandler::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
   std::unique_ptr<base::DictionaryValue> app_info =
       std::make_unique<base::DictionaryValue>();
-  app_info->SetString(kInfoIdKey, app_id);
-  // Since |isUninstaLL| is true below, the only item needed in the app_info
+  // Since |isUninstall| is true below, the only item needed in the app_info
   // dictionary is the id.
+  app_info->SetString(kInfoIdKey, app_id);
+  web_ui()->CallJavascriptFunctionUnsafe(
+      "ntp.appRemoved", *app_info, /*isUninstall=*/base::Value(true),
+      base::Value(!extension_id_prompting_.empty()));
+}
+
+void AppLauncherHandler::OnWebAppUninstalled(const web_app::AppId& app_id) {
+  // This can be redundant in most cases, however it is not uncommon for the
+  // chrome://apps page to be loaded, or reloaded, during the uninstallation of
+  // an app. In this state, the app is still in the registry, but the
+  // |OnWebAppWillBeUninstalled| event has already been sent. Thus we also
+  // listen to this event, to ensure that the app is removed.
+  std::unique_ptr<base::DictionaryValue> app_info =
+      std::make_unique<base::DictionaryValue>();
+  // Since |isUninstall| is true below, the only item needed in the app_info
+  // dictionary is the id.
+  app_info->SetString(kInfoIdKey, app_id);
   web_ui()->CallJavascriptFunctionUnsafe(
       "ntp.appRemoved", *app_info, /*isUninstall=*/base::Value(true),
       base::Value(!extension_id_prompting_.empty()));
