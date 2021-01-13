@@ -4782,7 +4782,7 @@
                 'enum': ['blocked', 'allowed', 'force_installed', 'normal_installed', 'removed']
               },
               'update_url': { 'type': 'string' },
-              'update_url_enforced': {'type': 'boolean' },
+              'override_update_url': {'type': 'boolean' },
               'blocked_permissions': {
                 'type': 'array',
                 'items': {
@@ -4904,7 +4904,7 @@
         'ghijklmnopabcdefghijklmnopabcdef' : {
           'installation_mode': 'force_installed',
           'update_url': 'https://example.com/update_url',
-          'update_url_enforced': True,
+          'override_update_url': True,
         },
         '*': {
           'installation_mode': 'blocked',
