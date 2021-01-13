@@ -123,9 +123,11 @@
 // The OTR browser can be reset after creation.
 - (void)setOtrBrowser:(std::unique_ptr<Browser>)browser;
 
-// Creates a new off-the-record ("incognito") browser state for |_browserState|,
-// then creates and sets up a TabModel and returns a Browser for the result.
-- (std::unique_ptr<Browser>)buildOtrBrowser:(BOOL)restorePersistedState;
+// Creates and sets up a new Browser for the given BrowserState, optionally
+// loading the session from disk.
+- (std::unique_ptr<Browser>)buildBrowserForBrowserState:
+                                (ChromeBrowserState*)browserState
+                                         restoreSession:(BOOL)restoreSession;
 
 // Creates the correct BrowserCoordinator for the corresponding browser state
 // and Browser.
@@ -156,22 +158,8 @@
 }
 
 - (void)createMainBrowser {
-  _mainBrowser = Browser::Create(_browserState);
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_mainBrowser->GetBrowserState());
-  browserList->AddBrowser(_mainBrowser.get());
-
-  // Associate |_sceneState| with the new browser.
-  SceneStateBrowserAgent::CreateForBrowser(_mainBrowser.get(), _sceneState);
-
-  [self dispatchToEndpointsForBrowser:_mainBrowser.get()];
-
-  [self setSessionIDForBrowser:_mainBrowser.get() restoreSession:YES];
-
-  breakpad::MonitorTabStateForWebStateList(_mainBrowser->GetWebStateList());
-  // Follow loaded URLs in the main tab model to send those in case of
-  // crashes.
-  breakpad::MonitorURLsForWebStateList(self.mainBrowser->GetWebStateList());
+  _mainBrowser = [self buildBrowserForBrowserState:_browserState
+                                    restoreSession:YES];
 
   // Create the main coordinator, and thus the main interface.
   _mainBrowserCoordinator = [self coordinatorForBrowser:self.mainBrowser];
@@ -244,7 +232,12 @@
 
 - (Browser*)otrBrowser {
   if (!_otrBrowser) {
-    _otrBrowser = [self buildOtrBrowser:YES];
+    // Ensure the incognito BrowserState is created.
+    DCHECK(_browserState);
+    ChromeBrowserState* incognitoBrowserState =
+        _browserState->GetOffTheRecordChromeBrowserState();
+    _otrBrowser = [self buildBrowserForBrowserState:incognitoBrowserState
+                                     restoreSession:YES];
   }
   return _otrBrowser.get();
 }
@@ -258,7 +251,6 @@
   }
 
   _mainBrowser = nullptr;
-  ;
 }
 
 - (void)setOtrBrowser:(std::unique_ptr<Browser>)otrBrowser {
@@ -317,7 +309,11 @@
   // possible to prevent the tabChanged notification being sent. Otherwise,
   // when it is created, a notification with no tabs will be sent, and it will
   // be immediately deleted.
-  [self setOtrBrowser:[self buildOtrBrowser:NO]];
+  ChromeBrowserState* incognitoBrowserState =
+      _browserState->GetOffTheRecordChromeBrowserState();
+
+  [self setOtrBrowser:[self buildBrowserForBrowserState:incognitoBrowserState
+                                         restoreSession:NO]];
   DCHECK(self.otrBrowser->GetWebStateList()->empty());
 
   if (_currentInterface == nil) {
@@ -353,31 +349,6 @@
 
 #pragma mark - Internal methods
 
-- (std::unique_ptr<Browser>)buildOtrBrowser:(BOOL)restorePersistedState {
-  DCHECK(_browserState);
-  // Ensure that the OTR ChromeBrowserState is created.
-  ChromeBrowserState* otrBrowserState =
-      _browserState->GetOffTheRecordChromeBrowserState();
-  DCHECK(otrBrowserState);
-
-  std::unique_ptr<Browser> browser = Browser::Create(otrBrowserState);
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browser->GetBrowserState());
-  browserList->AddIncognitoBrowser(browser.get());
-  [self dispatchToEndpointsForBrowser:browser.get()];
-
-  [self setSessionIDForBrowser:browser.get()
-                restoreSession:restorePersistedState];
-
-  // Associate the same SceneState with the new OTR browser as is associated
-  // with the main browser.
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), _sceneState);
-
-  breakpad::MonitorTabStateForWebStateList(browser->GetWebStateList());
-
-  return browser;
-}
-
 - (BrowserCoordinator*)coordinatorForBrowser:(Browser*)browser {
   BrowserCoordinator* coordinator =
       [[BrowserCoordinator alloc] initWithBaseViewController:nil
@@ -407,6 +378,38 @@
                            forProtocol:@protocol(ApplicationSettingsCommands)];
   [dispatcher startDispatchingToTarget:_browsingDataCommandEndpoint
                            forProtocol:@protocol(BrowsingDataCommands)];
+}
+
+- (std::unique_ptr<Browser>)buildBrowserForBrowserState:
+                                (ChromeBrowserState*)browserState
+                                         restoreSession:(BOOL)restoreSession {
+  auto browser = Browser::Create(browserState);
+  DCHECK_EQ(browser->GetBrowserState(), browserState);
+
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
+  if (browserState->IsOffTheRecord()) {
+    browserList->AddIncognitoBrowser(browser.get());
+  } else {
+    browserList->AddBrowser(browser.get());
+  }
+
+  // Associate the current SceneState with the new browser.
+  SceneStateBrowserAgent::CreateForBrowser(browser.get(), _sceneState);
+
+  [self dispatchToEndpointsForBrowser:browser.get()];
+
+  [self setSessionIDForBrowser:browser.get() restoreSession:restoreSession];
+
+  breakpad::MonitorTabStateForWebStateList(browser->GetWebStateList());
+
+  // Follow loaded URLs in the non-incognito browser to send those in case of
+  // crashes.
+  if (!browserState->IsOffTheRecord()) {
+    breakpad::MonitorURLsForWebStateList(browser->GetWebStateList());
+  }
+
+  return browser;
 }
 
 - (void)setSessionIDForBrowser:(Browser*)browser
