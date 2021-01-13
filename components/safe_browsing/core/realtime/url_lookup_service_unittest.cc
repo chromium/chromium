@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 
+#include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,10 +12,10 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
@@ -29,9 +30,25 @@ using ::testing::_;
 namespace safe_browsing {
 
 namespace {
-constexpr char kTestEmail[] = "test@example.com";
 constexpr char kRealTimeLookupUrlPrefix[] =
     "https://safebrowsing.google.com/safebrowsing/clientreport/realtime";
+
+class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
+ public:
+  TestSafeBrowsingTokenFetcher() = default;
+  ~TestSafeBrowsingTokenFetcher() override = default;
+
+  // SafeBrowsingTokenFetcher:
+  void Start(Callback callback) override { callback_ = std::move(callback); }
+
+  void RunAccessTokenCallback(std::string token) {
+    std::move(callback_).Run(token);
+  }
+
+ private:
+  Callback callback_;
+};
+
 }  // namespace
 
 class RealTimeUrlLookupServiceTest : public PlatformTest {
@@ -54,11 +71,15 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         nullptr, content_setting_map_.get());
 
-    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+    auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
+    raw_token_fetcher_ = token_fetcher.get();
     rt_service_ = std::make_unique<RealTimeUrlLookupService>(
-        test_shared_loader_factory_, cache_manager_.get(),
-        identity_test_env_->identity_manager(), &test_sync_service_,
-        &test_pref_service_, ChromeUserPopulation::NOT_MANAGED,
+        test_shared_loader_factory_, cache_manager_.get(), &test_sync_service_,
+        &test_pref_service_, std::move(token_fetcher),
+        base::BindRepeating(
+            &RealTimeUrlLookupServiceTest::AreTokenFetchesConfiguredInClient,
+            base::Unretained(this)),
+        ChromeUserPopulation::NOT_MANAGED,
         /*is_under_advanced_protection=*/true,
         /*is_off_the_record=*/false, /*variations_service=*/nullptr);
   }
@@ -140,14 +161,17 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     }
   }
 
-  void SetupPrimaryAccount() {
-    identity_test_env_->MakeUnconsentedPrimaryAccountAvailable(kTestEmail);
+  void EnableTokenFetchesInClient() {
+    token_fetches_configured_in_client_ = true;
   }
 
-  void WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      std::string token) {
-    identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        token, base::Time::Max());
+  void FulfillAccessTokenRequest(std::string token) {
+    raw_token_fetcher_->RunAccessTokenCallback(token);
+  }
+
+  bool AreTokenFetchesConfiguredInClient(
+      bool user_has_enabled_extended_protection) {
+    return token_fetches_configured_in_client_;
   }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -155,8 +179,9 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<RealTimeUrlLookupService> rt_service_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
+  bool token_fetches_configured_in_client_ = false;
+  TestSafeBrowsingTokenFetcher* raw_token_fetcher_ = nullptr;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   syncer::TestSyncService test_sync_service_;
   base::test::ScopedFeatureList feature_list_;
@@ -558,7 +583,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_AttachTokenWhenWithTokenIsEnabled) {
   base::HistogramTester histograms;
   EnableRealTimeUrlLookup(/* is_with_token_enabled */ true);
-  SetupPrimaryAccount();
+  EnableTokenFetchesInClient();
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
@@ -579,8 +604,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token_string");
+  FulfillAccessTokenRequest("access_token_string");
   task_environment_->RunUntilIdle();
 
   // Check the response is cached.
@@ -593,7 +617,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
                                 /* expected_count */ 1);
 }
 
-TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_NoTokenWhenNotSignedIn) {
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_NoTokenWhenNotConfiguredInClient) {
   EnableRealTimeUrlLookup(/* is_with_token_enabled */ true);
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -606,7 +631,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_NoTokenWhenNotSignedIn) {
       url,
       base::BindOnce(
           [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            // Check the token field is empty.
+            // Check the token field is empty as the passed-in client callback
+            // indicates that token fetches are not configured in the client.
             EXPECT_EQ("", token);
           }),
       response_callback.Get());
@@ -625,7 +651,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_NoTokenWhenNotSignedIn) {
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_NoTokenWhenWithTokenIsDisabled) {
   EnableRealTimeUrlLookup(/* is_with_token_enabled */ false);
-  SetupPrimaryAccount();
+  EnableTokenFetchesInClient();
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,

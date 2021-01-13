@@ -4,7 +4,10 @@
 
 #include "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
+#include "base/bind.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
@@ -57,9 +60,15 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state),
       chrome_browser_state->GetPrefs(),
+      std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
+          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
+      base::BindRepeating(
+          &safe_browsing::SyncUtils::
+              AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
+          ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state),
+          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
       safe_browsing::ChromeUserPopulation::NOT_MANAGED,
       /*is_under_advanced_protection=*/false,
       chrome_browser_state->IsOffTheRecord(),
