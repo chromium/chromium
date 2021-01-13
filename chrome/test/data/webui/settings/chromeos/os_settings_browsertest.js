@@ -971,12 +971,7 @@ var OSSettingsInternetPageTest = class extends OSSettingsBrowserTest {
 
   /** @override */
   get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kOsSettingsDeepLinking',
-        'chromeos::features::kUpdatedCellularActivationUi',
-      ]
-    };
+    return {enabled: ['chromeos::features::kOsSettingsDeepLinking']};
   }
 
   /** @override */

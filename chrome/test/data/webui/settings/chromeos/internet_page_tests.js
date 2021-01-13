@@ -309,40 +309,6 @@ suite('InternetPage', function() {
       removeDialog = internetPage.$$('#esimRemoveProfileDialog');
       assertTrue(!!removeDialog);
     });
-
-    test(
-        'Show cellular setup dialog if route params contain showCellularSetup',
-        async function() {
-          loadTimeData.overrideValues({
-            updatedCellularActivationUi: true,
-          });
-          eSimManagerRemote.addEuiccForTest(1);
-
-          const mojom = chromeos.networkConfig.mojom;
-          mojoApi_.setNetworkTypeEnabledState(
-              mojom.NetworkType.kCellular, true);
-          const cellularNetwork = OncMojo.getDefaultManagedProperties(
-              mojom.NetworkType.kCellular, 'cellular_guid', name);
-          cellularNetwork.connectable = false;
-          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-
-          await flushAsync();
-
-          let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
-          assertFalse(!!cellularSetupDialog);
-
-          const params = new URLSearchParams;
-          params.append('guid', 'cellular_guid');
-          params.append('type', 'Cellular');
-          params.append('name', 'cellular');
-          params.append('showCellularSetup', 'true');
-          settings.Router.getInstance().navigateTo(
-              settings.routes.INTERNET_NETWORKS, params);
-
-          await flushAsync();
-          cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
-          assertTrue(!!cellularSetupDialog);
-        });
   });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
