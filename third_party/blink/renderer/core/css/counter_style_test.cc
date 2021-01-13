@@ -441,4 +441,16 @@ TEST_F(CounterStyleTest, ExtremeValuesFixed) {
   EXPECT_EQ("B", fixed.GenerateRepresentation(std::numeric_limits<int>::max()));
 }
 
+TEST_F(CounterStyleTest, PrefixAndSuffix) {
+  const CounterStyle& base = AddCounterStyle(
+      "base", "system: symbolic; symbols: A; prefix: X; suffix: Y;");
+  EXPECT_EQ("X", base.GetPrefix());
+  EXPECT_EQ("Y", base.GetSuffix());
+
+  const CounterStyle& extended =
+      AddCounterStyle("extended", "system: extends base");
+  EXPECT_EQ("X", extended.GetPrefix());
+  EXPECT_EQ("Y", extended.GetSuffix());
+}
+
 }  // namespace blink

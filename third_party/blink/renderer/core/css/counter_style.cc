@@ -328,7 +328,7 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   if (!style_rule_->GetPrefix())
     prefix_ = extended.prefix_;
   if (!style_rule_->GetSuffix())
-    prefix_ = extended.suffix_;
+    suffix_ = extended.suffix_;
 
   // TODO(crbug.com/687225): Implement 'speak-as'.
 }
