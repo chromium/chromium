@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 
@@ -180,6 +181,19 @@ bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
     return false;
 
   return connectors_manager_->DelayUntilVerdict(connector);
+}
+
+base::Optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
+    const {
+  if (!ConnectorsEnabled())
+    return base::nullopt;
+
+  base::Optional<DmToken> dm_token =
+      GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
+
+  if (dm_token.has_value())
+    return dm_token.value().value;
+  return base::nullopt;
 }
 
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {

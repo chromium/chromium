@@ -60,6 +60,7 @@
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/federated_learning/floc_eligibility_observer.h"
@@ -4404,13 +4405,18 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   bool matches_enterprise_whitelist = safe_browsing::IsURLWhitelistedByPolicy(
       request.url, *profile->GetPrefs());
   if (!matches_enterprise_whitelist) {
-    bool is_enterprise_lookup_enabled =
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+    auto* connectors_service =
+        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+            browser_context);
+    bool has_valid_dm_token =
+        connectors_service &&
+        connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
+    bool is_enterprise_lookup_enabled =
         safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-            profile->GetPrefs(), policy::GetDMToken(profile).is_valid(),
-            profile->IsOffTheRecord());
+            profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
 #else
-        false;
+    bool is_enterprise_lookup_enabled = false;
 #endif
     bool is_consumer_lookup_enabled =
         safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(

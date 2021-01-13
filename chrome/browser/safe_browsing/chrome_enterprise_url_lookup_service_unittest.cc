@@ -6,10 +6,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -50,13 +53,19 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     TestingProfile::Builder builder;
     test_profile_ = builder.Build();
 
-    enterprise_rt_service_ =
-        std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
-            test_shared_loader_factory_, cache_manager_.get(),
-            test_profile_.get(), &test_sync_service_, &test_pref_service_,
-            ChromeUserPopulation::NOT_MANAGED,
-            /*is_under_advanced_protection=*/true,
-            /*is_off_the_record=*/false);
+    enterprise_rt_service_ = std::make_unique<
+        ChromeEnterpriseRealTimeUrlLookupService>(
+        test_shared_loader_factory_, cache_manager_.get(), test_profile_.get(),
+        &test_sync_service_,
+        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+            test_profile_.get()),
+        &test_pref_service_, ChromeUserPopulation::NOT_MANAGED,
+        /*is_under_advanced_protection=*/true,
+        /*is_off_the_record=*/false);
+
+    test_profile_->GetPrefs()->SetInteger(
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        policy::POLICY_SCOPE_MACHINE);
   }
 
   void TearDown() override {

@@ -57,6 +57,11 @@ class ConnectorsService : public KeyedService {
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
+  // DM token accessor function for real-time URL checks. Returns a profile or
+  // browser DM token depending on the policy scope, and base::nullopt if there
+  // is no token to use.
+  base::Optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+
   // Testing functions.
   ConnectorsManager* ConnectorsManagerForTesting();
 

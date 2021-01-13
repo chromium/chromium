@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -183,5 +184,29 @@ INSTANTIATE_TEST_CASE_P(
     testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
                      testing::Bool(),
                      testing::ValuesIn({0, 1, 2})));
+
+class ConnectorsServiceRealtimeURLCheckTest : public ConnectorsServiceTest {
+ public:
+  ConnectorsServiceRealtimeURLCheckTest() {
+    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
+  }
+};
+
+TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+
+  auto maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                            ->GetDMTokenForRealTimeUrlCheck();
+  EXPECT_TRUE(maybe_dm_token.has_value());
+  EXPECT_EQ("fake-token", maybe_dm_token.value());
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
+
+  maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                       ->GetDMTokenForRealTimeUrlCheck();
+  EXPECT_FALSE(maybe_dm_token.has_value());
+}
 
 }  // namespace enterprise_connectors

@@ -20,6 +20,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
 
 namespace enterprise_connectors {
@@ -150,6 +151,11 @@ class ConnectorsServiceProfileBrowserTest
     browser()->profile()->GetPrefs()->SetInteger(scope_pref,
                                                  policy::POLICY_SCOPE_USER);
   }
+  void SetPrefs(const char* pref, const char* scope_pref, int pref_value) {
+    browser()->profile()->GetPrefs()->SetInteger(pref, pref_value);
+    browser()->profile()->GetPrefs()->SetInteger(scope_pref,
+                                                 policy::POLICY_SCOPE_USER);
+  }
 
   ManagementStatus management_status() { return management_status_; }
 
@@ -260,6 +266,52 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
 #endif
 }
 
+class ConnectorsServiceRealtimeURLCheckProfileBrowserTest
+    : public ConnectorsServiceProfileBrowserTest,
+      public testing::WithParamInterface<ManagementStatus> {
+ public:
+  ConnectorsServiceRealtimeURLCheckProfileBrowserTest()
+      : ConnectorsServiceProfileBrowserTest(GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
+                         testing::Values(ManagementStatus::AFFILIATED,
+                                         ManagementStatus::UNAFFILIATED,
+                                         ManagementStatus::UNMANAGED));
+
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
+                       Test) {
+  SetPrefs(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 1);
+  auto maybe_dm_token =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetDMTokenForRealTimeUrlCheck();
+
+#if defined(OS_CHROMEOS)
+  if (management_status() == ManagementStatus::UNMANAGED) {
+    ASSERT_FALSE(maybe_dm_token.has_value());
+  } else {
+    ASSERT_TRUE(maybe_dm_token.has_value());
+    ASSERT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
+  }
+#else
+  switch (management_status()) {
+    case ManagementStatus::AFFILIATED:
+      ASSERT_TRUE(maybe_dm_token.has_value());
+      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+      break;
+    case ManagementStatus::UNAFFILIATED:
+      ASSERT_FALSE(maybe_dm_token.has_value());
+      break;
+    case ManagementStatus::UNMANAGED:
+      ASSERT_TRUE(maybe_dm_token.has_value());
+      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+      break;
+  }
+#endif
+}
+
 // This test validates that no settings are obtained when
 // kPerProfileConnectorsEnabled is disabled. CrOS is unaffected as it only gets
 // the browser token if it is present.
@@ -289,6 +341,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            kNormalReportingSettingsPref);
+  SetPrefs(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 1);
 
   for (auto connector : {FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY}) {
     auto settings =
@@ -319,6 +373,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
   }
 #else
   EXPECT_FALSE(settings.has_value());
+#endif
+
+  auto maybe_dm_token =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetDMTokenForRealTimeUrlCheck();
+#if defined(OS_CHROMEOS)
+  EXPECT_EQ(management_status() != ManagementStatus::UNMANAGED,
+            maybe_dm_token.has_value());
+  if (maybe_dm_token.has_value())
+    EXPECT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
+#else
+  EXPECT_FALSE(maybe_dm_token.has_value());
 #endif
 }
 

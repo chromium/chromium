@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
 #include "url/gurl.h"
@@ -19,10 +20,6 @@ struct NetworkTrafficAnnotationTag;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace policy {
-class DMToken;
-}  // namespace policy
 
 namespace syncer {
 class SyncService;
@@ -45,6 +42,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       VerdictCacheManager* cache_manager,
       Profile* profile,
       syncer::SyncService* sync_service,
+      enterprise_connectors::ConnectorsService* connectors_service,
       PrefService* pref_service,
       const ChromeUserPopulation::ProfileManagementStatus&
           profile_management_status,
@@ -69,10 +67,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
   std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
 
-  policy::DMToken GetDMToken() const;
-
   // Unowned object used for checking profile based settings.
   Profile* profile_;
+
+  // Unowned pointer to ConnectorsService, used to get a DM token.
+  enterprise_connectors::ConnectorsService* connectors_service_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
