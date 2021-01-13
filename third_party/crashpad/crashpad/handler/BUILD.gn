@@ -75,8 +75,8 @@ static_library("handler") {
   deps = [
     "../minidump",
     "../snapshot",
+    "../third_party/mini_chromium:chromeos_buildflags",
     "../tools:tool_support",
-    "//build:chromeos_buildflags",
   ]
 
   if (crashpad_is_win) {

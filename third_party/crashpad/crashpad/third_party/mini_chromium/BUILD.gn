@@ -45,3 +45,16 @@ group("build") {
     public_deps = [ "//third_party/mini_chromium/mini_chromium/build" ]
   }
 }
+
+group("chromeos_buildflags") {
+  if (crashpad_is_in_chromium) {
+    public_deps = [ "//build:chromeos_buildflags" ]
+  } else if (crashpad_is_standalone || crashpad_is_in_fuchsia) {
+    public_deps = [ "mini_chromium/build:chromeos_buildflags" ]
+  } else if (crashpad_is_external) {
+    public_deps = [ "../../../../mini_chromium/mini_chromium/build:chromeos_buildflags" ]
+  } else if (crashpad_is_in_dart) {
+    public_deps = [ "//third_party/mini_chromium/mini_chromium/build:chromeos_buildflags" ]
+  }
+}
+
