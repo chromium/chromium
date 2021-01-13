@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <TestLib/EarlGreyImpl/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/test/wpt/cwt_request_handler.h"
-#import "ios/testing/earl_grey/base_earl_grey_test_case.h"
 #include "net/base/port_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_constants.h"
@@ -28,17 +26,20 @@ const int kDefaultPort = 8123;
 // Dummy test case that hosts CWTChromeDriver. CWTChromeDriver implements a
 // minimal subset of the WebDriver protocol needed to run most Web Platform
 // Tests. CWTChromeDriverTestCase launches a test server that listens for
-// WebDriver commands, and then uses EarlGrey2's eDistantObject protocol to pass
-// on corresponding messages to the app process. Each CWTChromeDriver launches a
-// single instance of Chrome, but mulitple instances of CWTChromeDriver can be
+// WebDriver commands, and then uses the eDistantObject protocol to pass on
+// corresponding messages to the app process. Each CWTChromeDriver launches a
+// single instance of Chrome, but multiple instances of CWTChromeDriver can be
 // run in parallel in order to use multiple instances of Chrome.
-@interface CWTChromeDriverTestCase : BaseEarlGreyTestCase
+@interface CWTChromeDriverTestCase : XCTestCase
 @end
 
 @implementation CWTChromeDriverTestCase
 
 // Dummy test that keeps the test app alive.
 - (void)testRunCWTChromeDriver {
+  XCUIApplication* application = [[XCUIApplication alloc] init];
+  [application launch];
+
   int port = kDefaultPort;
 
   NSArray* arguments = NSProcessInfo.processInfo.arguments;

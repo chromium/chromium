@@ -13,6 +13,9 @@
 // avoid deadlock while waiting for actions to complete on the main thread.
 @interface CWTWebDriverAppInterface : NSObject
 
+// The background thread where this class' methods are run.
+@property(nonatomic, readonly) dispatch_queue_t executingQueue;
+
 // Loads the given URL in the tab identified by |tabID|. Returns an error if the
 // page fails to load within |timeout| seconds or if no such tab exists.
 + (NSError*)loadURL:(NSString*)URL

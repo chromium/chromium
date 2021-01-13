@@ -10,15 +10,16 @@
 #include "base/json/json_writer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/version_info/version_info.h"
+#import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
-#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
 #include "net/http/http_status_code.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_BACKGROUND_QUEUE(CWTWebDriverAppInterface)
+EDO_STUB_CLASS(CWTWebDriverAppInterface, kCwtEdoPortNumber)
 
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
