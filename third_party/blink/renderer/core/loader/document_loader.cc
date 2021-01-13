@@ -2001,8 +2001,10 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(
         WebFeature::kCertificateTransparencyNonCompliantResourceInSubframe);
   }
-  if (RuntimeEnabledFeatures::ForceLoadAtTopEnabled(frame_->DomWindow()))
+  if (frame_->DomWindow()->IsFeatureEnabled(
+          mojom::blink::DocumentPolicyFeature::kForceLoadAtTop)) {
     CountUse(WebFeature::kForceLoadAtTop);
+  }
 
   if (response_.IsSignedExchangeInnerResponse()) {
     CountUse(WebFeature::kSignedExchangeInnerResponse);

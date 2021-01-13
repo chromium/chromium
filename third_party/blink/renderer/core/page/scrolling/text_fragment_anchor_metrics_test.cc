@@ -1620,4 +1620,60 @@ TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedFailedUKM) {
   EXPECT_TRUE(ukm_recorder()->GetEntryMetric(entry, kSourceUkmMetric));
 }
 
+// Tests that loading a page that has a ForceLoadAtTop DocumentPolicy invokes
+// the UseCounter.
+TEST_F(TextFragmentAnchorMetricsTest, ForceLoadAtTopUseCounter) {
+  SimRequest::Params params;
+  params.response_http_headers.insert("Document-Policy", "force-load-at-top");
+  SimRequest request("https://example.com/test.html", "text/html", params);
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+}
+
+// Tests that loading a page that explicitly disables ForceLoadAtTop
+// DocumentPolicy or has no DocumentPolicy doesn't invoke the UseCounter for
+// ForceLoadAtTop.
+TEST_F(TextFragmentAnchorMetricsTest, NoForceLoadAtTopUseCounter) {
+  SimRequest::Params params;
+  params.response_http_headers.insert("Document-Policy",
+                                      "no-force-load-at-top");
+  SimRequest request("https://example.com/test.html", "text/html", params);
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+
+  // Try without any DocumentPolicy headers.
+  SimRequest request2("https://example.com/test2.html", "text/html");
+  LoadURL("https://example.com/test2.html");
+  request2.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a different test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+}
+
 }  // namespace blink
