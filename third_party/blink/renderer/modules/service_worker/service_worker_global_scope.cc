@@ -201,8 +201,7 @@ ServiceWorkerGlobalScope* ServiceWorkerGlobalScope::Create(
         installed_scripts_manager,
     mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
     base::TimeTicks time_origin,
-    const ServiceWorkerToken& service_worker_token,
-    ukm::SourceId ukm_source_id) {
+    const ServiceWorkerToken& service_worker_token) {
 #if DCHECK_IS_ON()
   // If the script is being loaded via script streaming, the script is not yet
   // loaded.
@@ -219,8 +218,7 @@ ServiceWorkerGlobalScope* ServiceWorkerGlobalScope::Create(
 
   return MakeGarbageCollected<ServiceWorkerGlobalScope>(
       std::move(creation_params), thread, std::move(installed_scripts_manager),
-      std::move(cache_storage_remote), time_origin, service_worker_token,
-      ukm_source_id);
+      std::move(cache_storage_remote), time_origin, service_worker_token);
 }
 
 ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
@@ -230,12 +228,8 @@ ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
         installed_scripts_manager,
     mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
     base::TimeTicks time_origin,
-    const ServiceWorkerToken& service_worker_token,
-    ukm::SourceId ukm_source_id)
-    : WorkerGlobalScope(std::move(creation_params),
-                        thread,
-                        time_origin,
-                        ukm_source_id),
+    const ServiceWorkerToken& service_worker_token)
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
       installed_scripts_manager_(std::move(installed_scripts_manager)),
       cache_storage_remote_(std::move(cache_storage_remote)),
       token_(service_worker_token) {

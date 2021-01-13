@@ -229,8 +229,7 @@ class CORE_EXPORT WorkerGlobalScope
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
-                    base::TimeTicks time_origin,
-                    ukm::SourceId);
+                    base::TimeTicks time_origin);
 
   // ExecutionContext
   void ExceptionThrown(ErrorEvent*) override;

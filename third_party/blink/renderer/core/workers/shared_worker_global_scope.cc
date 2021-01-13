@@ -59,12 +59,8 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
     const SharedWorkerToken& token,
-    const base::UnguessableToken& appcache_host_id,
-    ukm::SourceId ukm_source_id)
-    : WorkerGlobalScope(std::move(creation_params),
-                        thread,
-                        time_origin,
-                        ukm_source_id),
+    const base::UnguessableToken& appcache_host_id)
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
       token_(token) {
   appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
       appcache_host_id, GetBrowserInterfaceBroker(),

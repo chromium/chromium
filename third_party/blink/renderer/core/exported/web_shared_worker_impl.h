@@ -93,8 +93,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       const blink::SharedWorkerToken& token,
       const base::UnguessableToken& appcache_host_id,
       CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase> host,
-      WebSharedWorkerClient*,
-      ukm::SourceId ukm_source_id);
+      WebSharedWorkerClient*);
 
   void StartWorkerContext(
       const WebURL&,
@@ -117,7 +116,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       bool pause_worker_context_on_start,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
-      scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context);
+      scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
+      ukm::SourceId ukm_source_id);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

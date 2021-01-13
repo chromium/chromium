@@ -50,8 +50,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       WorkerThread* thread)
       : WorkerGlobalScope(std::move(creation_params),
                           thread,
-                          base::TimeTicks::Now(),
-                          ukm::kInvalidSourceId) {
+                          base::TimeTicks::Now()) {
     ReadyToRunWorkerScript();
   }
 

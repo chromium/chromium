@@ -56,10 +56,6 @@ DedicatedWorkerThread::DedicatedWorkerThread(
   worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
       ThreadCreationParams(GetThreadType())
           .SetFrameOrWorkerScheduler(scheduler));
-
-  // As a dedicated worker can only be associated with one parent context,
-  // we inherit the parent's UKM source id.
-  ukm_source_id_ = parent_execution_context->UkmSourceID();
 }
 
 DedicatedWorkerThread::~DedicatedWorkerThread() = default;
@@ -71,7 +67,7 @@ void DedicatedWorkerThread::ClearWorkerBackingThread() {
 WorkerOrWorkletGlobalScope* DedicatedWorkerThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   return DedicatedWorkerGlobalScope::Create(std::move(creation_params), this,
-                                            time_origin_, ukm_source_id_);
+                                            time_origin_);
 }
 
 }  // namespace blink

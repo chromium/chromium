@@ -225,14 +225,14 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       nullptr /* worklet_module_respones_map */,
       std::move(browser_interface_broker), BeginFrameProviderParams(),
       nullptr /* parent_feature_policy */,
-      base::UnguessableToken() /* agent_cluster_id */);
+      base::UnguessableToken() /* agent_cluster_id */,
+      worker_start_data->ukm_source_id);
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(
       std::make_unique<ServiceWorkerGlobalScopeProxy>(
           *this, *worker_context_client_, initiator_thread_task_runner),
       std::move(installed_scripts_manager), std::move(cache_storage_remote),
-      initiator_thread_task_runner, worker_start_data->service_worker_token,
-      worker_start_data->ukm_source_id);
+      initiator_thread_task_runner, worker_start_data->service_worker_token);
 
   auto devtools_params = std::make_unique<WorkerDevToolsParams>();
   devtools_params->devtools_worker_token =

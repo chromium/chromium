@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
@@ -65,6 +66,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       BeginFrameProviderParams begin_frame_provider_params = {},
       const FeaturePolicy* parent_feature_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
+      ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
       const base::Optional<ExecutionContextToken>& parent_context_token =
           base::nullopt,
       bool parent_cross_origin_isolated_capability = false);
@@ -163,6 +165,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // context that created it (e.g. for a dedicated worker).
   // See https://tc39.github.io/ecma262/#sec-agent-clusters
   base::UnguessableToken agent_cluster_id;
+
+  // Set to ukm::kInvalidSourceId when the global scope is not provided an ID.
+  ukm::SourceId ukm_source_id;
 
   // The identity of the parent ExecutionContext that is the sole owner of this
   // worker or worklet, which caused it to be created, and to whose lifetime

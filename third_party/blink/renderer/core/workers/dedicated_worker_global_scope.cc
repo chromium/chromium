@@ -32,7 +32,6 @@
 
 #include <memory>
 #include "base/feature_list.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
@@ -65,8 +64,7 @@ namespace blink {
 DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
-    base::TimeTicks time_origin,
-    ukm::SourceId ukm_source_id) {
+    base::TimeTicks time_origin) {
   std::unique_ptr<Vector<String>> outside_origin_trial_tokens =
       std::move(creation_params->origin_trial_tokens);
   BeginFrameProviderParams begin_frame_provider_params =
@@ -83,7 +81,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
-      ukm_source_id, parent_cross_origin_isolated_capability);
+      parent_cross_origin_isolated_capability);
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
@@ -127,7 +125,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id,
     bool parent_cross_origin_isolated_capability)
     : DedicatedWorkerGlobalScope(
           ParseCreationParams(std::move(creation_params)),
@@ -135,7 +132,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           time_origin,
           std::move(outside_origin_trial_tokens),
           begin_frame_provider_params,
-          ukm_source_id,
           parent_cross_origin_isolated_capability) {}
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
@@ -144,12 +140,10 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id,
     bool parent_cross_origin_isolated_capability)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
                         thread,
-                        time_origin,
-                        ukm_source_id),
+                        time_origin),
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
       cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),

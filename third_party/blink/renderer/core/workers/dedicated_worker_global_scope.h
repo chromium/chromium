@@ -58,8 +58,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   static DedicatedWorkerGlobalScope* Create(
       std::unique_ptr<GlobalScopeCreationParams>,
       DedicatedWorkerThread*,
-      base::TimeTicks time_origin,
-      ukm::SourceId ukm_source_id);
+      base::TimeTicks time_origin);
 
   // Do not call this. Use Create() instead. This is public only for
   // MakeGarbageCollected.
@@ -69,7 +68,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id,
       bool parent_cross_origin_isolated_capability);
 
   ~DedicatedWorkerGlobalScope() override;
@@ -170,7 +168,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id,
       bool parent_cross_origin_isolated_capability);
 
   void DidReceiveResponseForClassicScript(

@@ -72,7 +72,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
           mojom::blink::V8CacheOptions::kDefault, module_responses_map,
           mojo::NullRemote() /* browser_interface_broker */,
           BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
-          window->GetAgentClusterID(), window->GetExecutionContextToken(),
+          window->GetAgentClusterID(), ukm::kInvalidSourceId,
+          window->GetExecutionContextToken(),
           window->CrossOriginIsolatedCapability());
 
   // Worklets share the pre-initialized backing thread so that we don't have to

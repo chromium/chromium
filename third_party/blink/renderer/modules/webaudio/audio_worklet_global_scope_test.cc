@@ -91,7 +91,8 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
             BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
-            window->GetAgentClusterID(), window->GetExecutionContextToken()),
+            window->GetAgentClusterID(), ukm::kInvalidSourceId,
+            window->GetExecutionContextToken()),
         base::nullopt, std::make_unique<WorkerDevToolsParams>());
     return thread;
   }

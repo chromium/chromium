@@ -49,7 +49,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
           .InitWithNewPipeAndPassReceiver();
     }
     auto* global_scope = DedicatedWorkerGlobalScope::Create(
-        std::move(creation_params), this, time_origin_, ukm::kInvalidSourceId);
+        std::move(creation_params), this, time_origin_);
     // Initializing a global scope with a dummy creation params may emit warning
     // messages (e.g., invalid CSP directives). Clear them here for tests that
     // check console messages (i.e., UseCounter tests).

@@ -444,6 +444,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       std::move(browser_interface_broker_), CreateBeginFrameProviderParams(),
       GetExecutionContext()->GetSecurityContext().GetFeaturePolicy(),
       GetExecutionContext()->GetAgentClusterID(),
+      GetExecutionContext()->UkmSourceID(),
       GetExecutionContext()->GetExecutionContextToken(),
       GetExecutionContext()->CrossOriginIsolatedCapability());
 }

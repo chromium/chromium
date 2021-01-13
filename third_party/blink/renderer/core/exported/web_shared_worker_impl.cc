@@ -78,15 +78,13 @@ WebSharedWorkerImpl::WebSharedWorkerImpl(
     const blink::SharedWorkerToken& token,
     const base::UnguessableToken& appcache_host_id,
     CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase> host,
-    WebSharedWorkerClient* client,
-    ukm::SourceId ukm_source_id)
+    WebSharedWorkerClient* client)
     : reporting_proxy_(MakeGarbageCollected<SharedWorkerReportingProxy>(
           this,
           ParentExecutionContextTaskRunners::Create())),
       worker_thread_(std::make_unique<SharedWorkerThread>(*reporting_proxy_,
                                                           token,
-                                                          appcache_host_id,
-                                                          ukm_source_id)),
+                                                          appcache_host_id)),
       host_(std::move(host)),
       client_(client) {
   DCHECK(IsMainThread());
@@ -210,7 +208,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
     bool pause_worker_context_on_start,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
-    scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context) {
+    scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
+    ukm::SourceId ukm_source_id) {
   DCHECK(IsMainThread());
   DCHECK(web_worker_fetch_context);
   CHECK(constructor_origin.Get()->CanAccessSharedWorkers());
@@ -269,7 +268,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
       std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_response_map */,
       std::move(browser_interface_broker), BeginFrameProviderParams(),
-      nullptr /* parent_feature_policy */, base::UnguessableToken());
+      nullptr /* parent_feature_policy */, base::UnguessableToken(),
+      ukm_source_id);
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =
@@ -352,7 +352,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     WebSharedWorkerClient* client,
     ukm::SourceId ukm_source_id) {
   auto worker = base::WrapUnique(new WebSharedWorkerImpl(
-      token, appcache_host_id, std::move(host), client, ukm_source_id));
+      token, appcache_host_id, std::move(host), client));
   worker->StartWorkerContext(
       script_request_url, script_type, credentials_mode, name,
       constructor_origin, user_agent, ua_metadata, content_security_policy,
@@ -360,7 +360,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       devtools_worker_token, std::move(content_settings),
       std::move(browser_interface_broker), pause_worker_context_on_start,
       std::move(worker_main_script_load_params),
-      std::move(web_worker_fetch_context));
+      std::move(web_worker_fetch_context), ukm_source_id);
   return worker;
 }
 

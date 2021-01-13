@@ -38,6 +38,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     BeginFrameProviderParams begin_frame_provider_params,
     const FeaturePolicy* parent_feature_policy,
     base::UnguessableToken agent_cluster_id,
+    ukm::SourceId ukm_source_id,
     const base::Optional<ExecutionContextToken>& parent_context_token,
     bool parent_cross_origin_isolated_capability)
     : script_url(script_url.Copy()),
@@ -66,6 +67,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
           ParsedFeaturePolicy() /* container_policy */,
           starter_origin->ToUrlOrigin())),
       agent_cluster_id(agent_cluster_id),
+      ukm_source_id(ukm_source_id),
       parent_context_token(parent_context_token),
       parent_cross_origin_isolated_capability(
           parent_cross_origin_isolated_capability) {
