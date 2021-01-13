@@ -71,7 +71,7 @@ TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
             report_once_callback_.is_null());
 
   compositor_->AddObserver(this);
-  if (compositor->animation_observer_list_.has_observers())
+  if (!compositor->animation_observer_list_.empty())
     OnFirstAnimationStarted(compositor_);
 }
 

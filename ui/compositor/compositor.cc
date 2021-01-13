@@ -576,7 +576,7 @@ bool Compositor::HasObserver(const CompositorObserver* observer) const {
 }
 
 void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
-  if (!animation_observer_list_.has_observers()) {
+  if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
       obs.OnFirstAnimationStarted(this);
   }
@@ -589,7 +589,7 @@ void Compositor::RemoveAnimationObserver(
   if (!animation_observer_list_.HasObserver(observer))
     return;
   animation_observer_list_.RemoveObserver(observer);
-  if (!animation_observer_list_.has_observers()) {
+  if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
       obs.OnLastAnimationEnded(this);
   }

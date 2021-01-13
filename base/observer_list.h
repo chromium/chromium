@@ -319,7 +319,7 @@ class ObserverList {
     observers_count_ = 0;
   }
 
-  bool has_observers() const { return observers_count_ > 0; }
+  bool empty() const { return !observers_count_; }
 
   // Deprecated: use |has_observers()|.
   // TODO(1155308): migrate all callers and make this test only.
