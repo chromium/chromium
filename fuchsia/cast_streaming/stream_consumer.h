@@ -6,7 +6,6 @@
 #define FUCHSIA_CAST_STREAMING_STREAM_CONSUMER_H_
 
 #include "base/callback.h"
-#include "base/timer/timer.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -32,11 +31,11 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
   // |receiver| sends frames to this object. It must outlive this object.
   // |frame_received_cb| is called on every new frame, after a new frame has
   // been written to |data_pipe|. On error, |data_pipe| will be closed.
-  // If no data is received for 10 seconds, |on_timeout| will be closed.
+  // On every new frame, |on_new_frame| will be called.
   StreamConsumer(openscreen::cast::Receiver* receiver,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
-                 base::OnceClosure on_timeout);
+                 base::RepeatingClosure on_new_frame);
   ~StreamConsumer() final;
 
   StreamConsumer(const StreamConsumer&) = delete;
@@ -72,8 +71,8 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
   // Remaining bytes to write from |pending_buffer_| to |data_pipe_|.
   size_t pending_buffer_remaining_bytes_ = 0;
 
-  // Timer to trigger connection closure if no data is received for 10 seconds.
-  base::OneShotTimer data_timeout_timer_;
+  // Closure called on every new frame.
+  base::RepeatingClosure on_new_frame_;
 };
 
 }  // namespace cast_streaming
