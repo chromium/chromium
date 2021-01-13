@@ -246,9 +246,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   AddSearchEngine(/*profile_index=*/0, "test2");
 
   // client1: { SE0, SE2, SE3, SE0 + different URL }
-  AddSearchEngine(/*profile_index=*/0, "test0");
-  AddSearchEngine(/*profile_index=*/0, "test2");
-  AddSearchEngine(/*profile_index=*/0, "test3");
+  AddSearchEngine(/*profile_index=*/1, "test0");
+  AddSearchEngine(/*profile_index=*/1, "test2");
+  AddSearchEngine(/*profile_index=*/1, "test3");
 
   TemplateURLBuilder builder("test0");
   builder.data()->SetKeyword(base::UTF8ToUTF16("somethingelse.com"));

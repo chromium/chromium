@@ -1809,6 +1809,8 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
       // (2) If the user deleted the pre-populated default and we subsequently
       // lost their user-selected value.
       default_search_provider_ = Add(std::make_unique<TemplateURL>(*data));
+      DCHECK(default_search_provider_)
+          << "Add() to repair the DSE must never fail.";
     }
   } else if (source == DefaultSearchManager::FROM_USER) {
     default_search_provider_ = GetTemplateURLForGUID(data->sync_guid);
@@ -1822,6 +1824,8 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     } else {
       new_data.id = kInvalidTemplateURLID;
       default_search_provider_ = Add(std::make_unique<TemplateURL>(new_data));
+      DCHECK(default_search_provider_)
+          << "Add() to repair the DSE must never fail.";
     }
     if (default_search_provider_ && prefs_) {
       prefs_->SetString(prefs::kSyncedDefaultSearchProviderGUID,
@@ -2182,7 +2186,11 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     DCHECK_NE(turl, candidate) << "This algorithm runs BEFORE |candidate| is "
                                   "added to the keyword map.";
 
-    if (turl->safe_for_autoreplace()) {
+    // Prepopulated engines are marked as safe_for_autoreplace(). But because
+    // they are shown in the Default Search Engines Settings UI, users would
+    // find it confusing if they were ever automatically removed.
+    // https://crbug.com/1164024
+    if (turl->safe_for_autoreplace() && turl->prepopulate_id() == 0) {
       replaceable_turls.push_back(turl);
     }
   }
@@ -2214,5 +2222,31 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
   }
 
   // Caller needs to know if |candidate| would have been deleted.
-  return candidate != best && candidate->safe_for_autoreplace();
+  // Also always successfully add prepopulated engines, for two reasons:
+  //  1. The DSE repair logic in ApplyDefaultSearchChangeNoMetrics() relies on
+  //     Add()ing back the DSE always succeeding. https://crbug.com/1164024
+  //  2. If we don't do this, we have a weird order-dependence on the
+  //     replaceability of prepopulated engines, given that we refuse to add
+  //     prepopulated engines to the |replaceable_engines| vector.
+  //
+  // Given the necessary special casing of prepopulated engines, we may consider
+  // marking prepopulated engines as NOT safe_for_autoreplace(), but there's a
+  // few obstacles to this:
+  //  1. Prepopulated engines are not user-created, and therefore meet the
+  //     definition of safe_for_autoreplace().
+  //  2. If we mark them as NOT safe_for_autoreplace(), we can no longer
+  //     distinguish between prepopulated engines that user has edited, vs. not
+  //     edited.
+  //
+  // One more caveat: In 2019, we made prepopulated engines have a
+  // deterministically generated Sync GUID in order to prevent duplicate
+  // prepopulated engines when two clients start syncing at the same time.
+  // When combined with the requirement that we can never fail to add a
+  // prepopulated engine, this could leads to two engines having the same GUID.
+  //
+  // TODO(tommycli): After M89, we need to investigate solving the contradiction
+  // above. Most probably: the solution is to stop Syncing prepopulated engines
+  // and make the GUIDs actually globally unique again.
+  return candidate != best && candidate->safe_for_autoreplace() &&
+         candidate->prepopulate_id() == 0;
 }
