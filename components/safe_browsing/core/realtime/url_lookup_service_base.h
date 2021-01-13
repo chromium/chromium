@@ -121,7 +121,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       base::flat_map<network::SimpleURLLoader*, RTLookupResponseCallback>;
 
   // Returns the endpoint that the URL lookup will be sent to.
-  static GURL GetRealTimeLookupUrl();
+  virtual GURL GetRealTimeLookupUrl() const = 0;
 
   // Returns the traffic annotation tag that is attached in the simple URL
   // loader.

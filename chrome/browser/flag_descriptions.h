@@ -1173,6 +1173,10 @@ extern const char kSafeBrowsingEnhancedProtectionMessageInInterstitialsName[];
 extern const char
     kSafeBrowsingEnhancedProtectionMessageInInterstitialsDescription[];
 
+extern const char kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName[];
+extern const char
+    kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointDescription[];
+
 extern const char kSafetyTipName[];
 extern const char kSafetyTipDescription[];
 

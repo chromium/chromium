@@ -4249,6 +4249,14 @@
     "expiry_milestone": 90
   },
   {
+    "name": "safe-browsing-real-time-url-lookup-enterprise-ga-endpoint",
+    "owners": [
+      "xinghuilu",
+      "chrome-safebrowsing-core@google.com"
+    ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "safe-browsing-security-section-ui-android",
     "owners": [
       "vakh",

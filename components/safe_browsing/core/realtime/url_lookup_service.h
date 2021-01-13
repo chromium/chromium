@@ -74,6 +74,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
  private:
   // RealTimeUrlLookupServiceBase:
+  GURL GetRealTimeLookupUrl() const override;
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;
   bool CanPerformFullURLLookupWithToken() const override;
   void GetAccessToken(const GURL& url,

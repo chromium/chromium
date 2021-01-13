@@ -85,6 +85,17 @@ ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   return GetDMToken().value();
 }
 
+GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  bool is_ga_endpoint_enabled =
+      base::FeatureList::IsEnabled(kRealTimeUrlLookupEnterpriseGaEndpoint);
+  std::string endpoint = is_ga_endpoint_enabled
+                             ? "https://enterprise-safebrowsing.googleapis.com/"
+                               "safebrowsing/clientreport/realtime"
+                             : "https://safebrowsing.google.com/safebrowsing/"
+                               "clientreport/realtime";
+  return GURL(endpoint);
+}
+
 net::NetworkTrafficAnnotationTag
 ChromeEnterpriseRealTimeUrlLookupService::GetTrafficAnnotationTag() const {
   // Safe Browsing Zwieback cookies are not sent for enterprise users, because

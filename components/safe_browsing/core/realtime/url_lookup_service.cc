@@ -110,6 +110,11 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   return true;
 }
 
+GURL RealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  return GURL(
+      "https://safebrowsing.google.com/safebrowsing/clientreport/realtime");
+}
+
 net::NetworkTrafficAnnotationTag
 RealTimeUrlLookupService::GetTrafficAnnotationTag() const {
   return net::DefineNetworkTrafficAnnotation(

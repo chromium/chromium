@@ -92,6 +92,10 @@ const base::Feature kRealTimeUrlLookupEnabledForEnterprise{
     "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kRealTimeUrlLookupEnterpriseGaEndpoint{
+    "SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kRealTimeUrlLookupEnabledWithToken{
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -145,6 +149,7 @@ constexpr struct {
     {&kPromptAppForDeepScanning, true},
     {&kRealTimeUrlLookupEnabled, true},
     {&kRealTimeUrlLookupEnabledForEnterprise, true},
+    {&kRealTimeUrlLookupEnterpriseGaEndpoint, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSafeBrowsingSectionUIAndroid, true},

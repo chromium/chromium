@@ -174,12 +174,6 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-// static
-GURL RealTimeUrlLookupServiceBase::GetRealTimeLookupUrl() {
-  return GURL(
-      "https://safebrowsing.google.com/safebrowsing/clientreport/realtime");
-}
-
 base::WeakPtr<RealTimeUrlLookupServiceBase>
 RealTimeUrlLookupServiceBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

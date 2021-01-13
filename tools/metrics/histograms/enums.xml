@@ -42783,6 +42783,8 @@ from previous Chrome versions.
       label="AutofillUpstreamEditableCardholderName:disabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
+  <int value="-1623003151"
+      label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
@@ -45683,6 +45685,8 @@ from previous Chrome versions.
   <int value="1105439588" label="enable-swipe-selection"/>
   <int value="1106307305" label="AutofillPrimaryInfoStyleExperiment:enabled"/>
   <int value="1106579567" label="ProfilesUIRevamp:enabled"/>
+  <int value="1106890743"
+      label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:enabled"/>
   <int value="1107543566" label="enable-one-copy"/>
   <int value="1108663108" label="disable-device-discovery-notifications"/>
   <int value="1109907837"

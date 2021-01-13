@@ -93,6 +93,9 @@ extern const base::Feature kRealTimeUrlLookupEnabled;
 // disabled.
 extern const base::Feature kRealTimeUrlLookupEnabledForEnterprise;
 
+// Controls whether to use the GA endpoint for enterprise real time URL lookup.
+extern const base::Feature kRealTimeUrlLookupEnterpriseGaEndpoint;
+
 // Controls whether the GAIA-keyed real time URL lookup is enabled.
 extern const base::Feature kRealTimeUrlLookupEnabledWithToken;
 
