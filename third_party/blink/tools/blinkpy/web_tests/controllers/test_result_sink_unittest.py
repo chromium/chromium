@@ -17,12 +17,15 @@ from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
 from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
 from blinkpy.web_tests.models import test_results
 from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
+from blinkpy.web_tests.port.test import TestPort
+from blinkpy.web_tests.port.test import WEB_TEST_DIR
 
 
 class TestResultSinkTestBase(unittest.TestCase):
     def setUp(self):
         super(TestResultSinkTestBase, self).setUpClass()
-        self.port = MockHost().port_factory.get()
+        self.port = TestPort(MockHost())
 
     def luci_context(self, **section_values):
         if not section_values:
@@ -188,4 +191,38 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             p.findall(sent_data['summaryHtml']),
             # The artifact tags should be sorted by the artifact names.
             ['command', 'crash_log', 'stderr'],
+        )
+
+    def assertFilename(self, test_name, expected_filename):
+        sent_data = self.sink(True, test_results.TestResult(test_name))
+        self.assertEqual(sent_data['testMetadata']['location']['fileName'],
+                         '//' + RELATIVE_WEB_TESTS + expected_filename)
+
+    def test_location_filename(self):
+        self.assertFilename('real/test.html', 'real/test.html')
+
+        # TestPort.virtual_test_suites() has a set of hard-coded virtualized
+        # tests, and a test name must start with one of the virtual prefixes
+        # and base in order for it to be recognized as a virtual test.
+        self.assertFilename(
+            'virtual/virtual_passes/passes/does_not_exist.html',
+            'passes/does_not_exist.html')
+        self.port.host.filesystem.write_text_file(
+            self.port.host.filesystem.join(WEB_TEST_DIR, 'virtual',
+                                           'virtual_passes', 'passes',
+                                           'exists.html'),
+            'body',
+        )
+        self.assertFilename('virtual/virtual_passes/passes/exists.html',
+                            'virtual/virtual_passes/passes/exists.html')
+
+    def test_wpt_location_filename(self):
+        add_manifest_to_mock_filesystem(self.port)
+        self.assertFilename(
+            'external/wpt/html/parse.html?run_type=uri',
+            'external/wpt/html/parse.html',
+        )
+        self.assertFilename(
+            'virtual/virtual_wpt/external/wpt/dom/ranges/Range-attributes.html',
+            'external/wpt/dom/ranges/Range-attributes.html',
         )

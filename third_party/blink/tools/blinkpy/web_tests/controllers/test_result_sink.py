@@ -187,9 +187,13 @@ class TestResultSink(object):
         if self.is_closed:
             raise TestResultSinkClosed('sink() cannot be called after close()')
 
-        # The structure and member definitions of this dict can be found at
-        # https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/resultdb/proto/sink/v1/test_result.proto
-        loc_file_name = '//%s%s' % (RELATIVE_WEB_TESTS, result.test_name)
+        # fileName refers to the real file path instead of the test path
+        # that might be virtualized.
+        path = (self._port.get_file_path_for_wpt_test(result.test_name)
+                or self._port.name_for_test(result.test_name))
+        if self._port.host.filesystem.sep != '/':
+            path = path.replace(self._port.host.filesystem.sep, '/')
+        loc_fn = '//%s%s' % (RELATIVE_WEB_TESTS, path)
         summaries, artifacts = self._artifacts(result)
         r = {
             'artifacts': artifacts,
@@ -204,13 +208,12 @@ class TestResultSink(object):
             'testId': result.test_name,
             'testMetadata': {
                 'name': result.test_name,
-
                 # location is where the test is defined. It is used to find
                 # the associated component/team/os information in flakiness
                 # and disabled-test dashboards.
                 'location': {
                     'repo': 'https://chromium.googlesource.com/chromium/src',
-                    'fileName': loc_file_name,
+                    'fileName': loc_fn,
                     # skip: 'line'
                 },
             },
