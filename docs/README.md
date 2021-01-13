@@ -309,6 +309,8 @@ used when committed.
 ### Misc WebUI-Specific Docs
 *   [Creating WebUI Interfaces in components/](webui_in_components.md) How to
     create a new WebUI component in the `components/` directory.
+*   [Trusted Types on WebUI](trusted_types_on_webui.md) Tips for coding in WebUI
+    with Trusted Types in mind.
 
 ### Media
 *   [Audio Focus Handling](media/audio_focus.md) - How multiple MediaSession
