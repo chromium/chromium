@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -37,7 +38,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface NewTabPageCoordinator () <OverscrollActionsControllerDelegate,
+@interface NewTabPageCoordinator () <NewTabPageContentDelegate,
+                                     OverscrollActionsControllerDelegate,
                                      SceneStateObserver>
 
 // Coordinator for the ContentSuggestions.
@@ -132,6 +134,10 @@
       self.ntpViewController.discoverFeedWrapperViewController =
           self.discoverFeedWrapperViewController;
       self.ntpViewController.overscrollDelegate = self;
+      self.ntpViewController.ntpContentDelegate = self;
+
+      self.ntpViewController.headerController =
+          self.contentSuggestionsCoordinator.headerController;
     }
 
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
@@ -228,7 +234,7 @@
   if (IsRefactoredNTP()) {
     ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
   }
-  [self.contentSuggestionsCoordinator reload];
+  [self reloadContentSuggestions];
 }
 
 - (void)locationBarDidBecomeFirstResponder {
@@ -327,6 +333,17 @@
     (OverscrollActionsController*)controller {
   // Fullscreen isn't supported here.
   return nullptr;
+}
+
+#pragma mark - NewTabPageContentDelegate
+
+- (void)reloadContentSuggestions {
+  [self.contentSuggestionsCoordinator reload];
+}
+
+- (CGFloat)heightAboveFakeOmnibox {
+  return [self.contentSuggestionsCoordinator
+              .headerController heightAboveFakeOmnibox];
 }
 
 @end

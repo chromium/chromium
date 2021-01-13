@@ -96,6 +96,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 // The CollectionViewController scroll position when an scrolling event starts.
 @property(nonatomic, assign) int scrollStartPosition;
 
+// The layout of the content suggestions collection view.
+@property(nonatomic, strong) ContentSuggestionsLayout* layout;
+
 @end
 
 @implementation ContentSuggestionsViewController
@@ -115,9 +118,8 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset {
   _offset = offset;
-  UICollectionViewLayout* layout =
-      [[ContentSuggestionsLayout alloc] initWithOffset:offset];
-  self = [super initWithLayout:layout style:style];
+  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset];
+  self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
     _initialContentOffset = NAN;
@@ -309,6 +311,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [self.collectionView.collectionViewLayout invalidateLayout];
   // Ensure initial fake omnibox layout.
   [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  // TODO(crbug.com/1114792): Plumb the collection view.
+  self.layout.parentCollectionView =
+      static_cast<UICollectionView*>(self.view.superview);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -319,9 +324,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   // Remove forced height if it was already applied, since the scroll position
   // was already maintained.
   if (self.offset > 0) {
-    ContentSuggestionsLayout* layout = static_cast<ContentSuggestionsLayout*>(
-        self.collectionView.collectionViewLayout);
-    layout.offset = 0;
+    self.layout.offset = 0;
   }
 }
 

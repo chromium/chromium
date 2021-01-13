@@ -19,6 +19,14 @@
 // The total scroll height of the NTP.
 @property(nonatomic, assign) CGFloat ntpHeight;
 
+// The parent collection view that contains the content suggestions collection
+// view.
+@property(nonatomic, weak) UICollectionView* parentCollectionView;
+
+// Whether or not the user has scrolled into the feed, transferring ownership of
+// the omnibox to allow it to stick to the top of the NTP.
+@property(nonatomic, assign) BOOL isScrolledIntoFeed;
+
 // Creates layout with |offset| as additional height. Allows the view's height
 // to be increased enough to maintain the scroll position. Only needed if
 // Discover feed is enabled.

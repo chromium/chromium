@@ -4,6 +4,7 @@
 
 source_set("ntp") {
   sources = [
+    "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
     "new_tab_page_header_constants.h",
     "new_tab_page_header_constants.mm",

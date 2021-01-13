@@ -8,15 +8,27 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// The offset from the bottom of the content suggestions header before changing
+// ownership of the fake omnibox. This value can be a large range of numbers, as
+// long as it is larger than the omnibox height (plus an addional offset to make
+// it look smooth). Otherwise, the omnibox hides beneath the feed before
+// changing ownership.
+const CGFloat kOffsetToPinOmnibox = 100;
+}
 
 @interface NewTabPageViewController ()
 
@@ -29,6 +41,14 @@
 // The overscroll actions controller managing accelerators over the toolbar.
 @property(nonatomic, strong)
     OverscrollActionsController* overscrollActionsController;
+
+// Whether or not the user has scrolled into the feed, transferring ownership of
+// the omnibox to allow it to stick to the top of the NTP.
+@property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
+
+// The collection view layout for the uppermost content suggestions collection
+// view.
+@property(nonatomic, weak) ContentSuggestionsLayout* contentSuggestionsLayout;
 
 @end
 
@@ -43,6 +63,9 @@
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _contentSuggestionsViewController = contentSuggestionsViewController;
+    // TODO(crbug.com/1114792): Instantiate this depending on the initial scroll
+    // position.
+    _scrolledIntoFeed = NO;
   }
 
   return self;
@@ -99,6 +122,11 @@
   [self updateOverscrollActionsState];
 
   self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+
+  _contentSuggestionsLayout = static_cast<ContentSuggestionsLayout*>(
+      self.contentSuggestionsViewController.collectionView
+          .collectionViewLayout);
+  _contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
 }
 
 - (void)viewDidLayoutSubviews {
@@ -185,6 +213,23 @@
   [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
   self.scrolledToTop =
       scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
+  // Fixes the content suggestions collection view layout so that the header
+  // scrolls at the same rate as the rest.
+  if (scrollView.contentOffset.y > -self.contentSuggestionsViewController
+                                        .collectionView.contentSize.height) {
+    [self.contentSuggestionsViewController.collectionView
+            .collectionViewLayout invalidateLayout];
+  }
+  // Changes ownership of fake omnibox view based on scroll position.
+  if (!self.isScrolledIntoFeed &&
+      scrollView.contentOffset.y > -kOffsetToPinOmnibox) {
+    [self setIsScrolledIntoFeed:YES];
+    [self stickFakeOmniboxToTop];
+  } else if (self.isScrolledIntoFeed &&
+             scrollView.contentOffset.y <= -kOffsetToPinOmnibox) {
+    [self setIsScrolledIntoFeed:NO];
+    [self resetFakeOmnibox];
+  }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -248,6 +293,47 @@
   } else {
     [self.overscrollActionsController disableOverscrollActions];
   }
+}
+
+// Lets this view own the fake omnibox and sticks it to the top of the NTP.
+- (void)stickFakeOmniboxToTop {
+  [self.view addSubview:self.headerController.view];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.headerController.view.topAnchor
+        constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+                                    .topAnchor
+                       constant:-([self.ntpContentDelegate
+                                          heightAboveFakeOmnibox] +
+                                  2)],
+    [self.headerController.view.leadingAnchor
+        constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+                                    .leadingAnchor],
+    [self.headerController.view.trailingAnchor
+        constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
+                                    .trailingAnchor],
+    [self.headerController.view.heightAnchor
+        constraintEqualToConstant:self.headerController.view.frame.size.height],
+  ]];
+}
+
+// Gives content suggestions collection view ownership of the fake omnibox for
+// the width animation.
+- (void)resetFakeOmnibox {
+  [self.headerController.view removeFromSuperview];
+  // Reload the content suggestions so that the fake omnibox goes back where it
+  // belongs. This can probably be optimized by just reloading the header, if
+  // that doesn't mess up any collection/header interactions.
+  [self.ntpContentDelegate reloadContentSuggestions];
+}
+
+#pragma mark - Setters
+
+// Sets whether or not the NTP is scrolled into the feed and notifies the
+// content suggestions layout to avoid it changing the omnibox frame when this
+// view controls its position.
+- (void)setIsScrolledIntoFeed:(BOOL)scrolledIntoFeed {
+  _scrolledIntoFeed = scrolledIntoFeed;
+  self.contentSuggestionsLayout.isScrolledIntoFeed = scrolledIntoFeed;
 }
 
 @end

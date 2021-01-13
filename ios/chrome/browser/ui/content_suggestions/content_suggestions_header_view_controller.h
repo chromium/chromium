@@ -59,6 +59,10 @@ class ReadingListModel;
 // omnibox.
 - (void)focusFakebox;
 
+// Returns the height of the content suggestions header, not including the
+// omnibox.
+- (CGFloat)heightAboveFakeOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_H_

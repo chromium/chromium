@@ -115,8 +115,14 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
 
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
       indexPath.section == 0) {
-    UICollectionView* collectionView = self.collectionView;
-    CGPoint contentOffset = collectionView.contentOffset;
+    CGFloat contentOffset;
+    if (IsRefactoredNTP()) {
+      contentOffset = self.parentCollectionView.contentOffset.y +
+                      self.collectionView.contentSize.height;
+    } else {
+      contentOffset = self.collectionView.contentOffset.y;
+    }
+
     CGFloat headerHeight = CGRectGetHeight(attributes.frame);
     CGPoint origin = attributes.frame.origin;
 
@@ -130,8 +136,10 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
         ToolbarExpandedHeight(
             [UIApplication sharedApplication].preferredContentSizeCategory) -
         topSafeArea;
-    if (contentOffset.y > minY)
-      origin.y = contentOffset.y - minY;
+    if (contentOffset > minY &&
+        (!IsRefactoredNTP() || !self.isScrolledIntoFeed)) {
+      origin.y = contentOffset - minY;
+    }
     attributes.frame = {origin, attributes.frame.size};
   }
   return attributes;

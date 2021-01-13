@@ -9,8 +9,10 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 
+@class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @class DiscoverFeedWrapperViewController;
+@protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
 
 // View controller containing all the content presented on a standard,
@@ -26,6 +28,12 @@
 // Delegate for the overscroll actions.
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
     overscrollDelegate;
+
+// The content suggestions header, containing the fake omnibox and the doodle.
+@property(nonatomic, weak) UIViewController* headerController;
+
+// Delegate for actions relating to the NTP content.
+@property(nonatomic, weak) id<NewTabPageContentDelegate> ntpContentDelegate;
 
 // Initializes view controller with NTP content view controllers.
 // |discoverFeedViewController| represents the Discover feed for suggesting
