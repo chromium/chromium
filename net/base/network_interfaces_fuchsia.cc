@@ -175,14 +175,17 @@ base::Optional<ExistingInterfaceProperties> GetExistingInterfaces(
   for (;;) {
     fuchsia::net::interfaces::Event event;
     zx_status_t status = watcher->Watch(&event);
-    if (status != ZX_OK)
+    if (status != ZX_OK) {
+      ZX_LOG(ERROR, status) << "GetExistingInterfaces: Watch() failed";
       return base::nullopt;
+    }
 
     switch (event.Which()) {
       case fuchsia::net::interfaces::Event::Tag::kExisting: {
         base::Optional<InterfaceProperties> interface =
             InterfaceProperties::VerifyAndCreate(std::move(event.existing()));
         if (!interface) {
+          LOG(ERROR) << "GetExistingInterfaces: Invalid kExisting event.";
           return base::nullopt;
         }
         uint64_t id = interface->id();
@@ -194,6 +197,7 @@ base::Optional<ExistingInterfaceProperties> GetExistingInterfaces(
         // fetching events.
         return existing_interfaces;
       default:
+        LOG(ERROR) << "GetExistingInterfaces: Unexpected event received.";
         return base::nullopt;
     }
   }
