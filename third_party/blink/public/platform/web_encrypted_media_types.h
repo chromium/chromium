@@ -8,11 +8,13 @@
 namespace blink {
 
 // From https://w3c.github.io/encrypted-media/#idl-def-MediaKeySessionType
+// Reported to UMA. Do not change values of existing enums.
 enum class WebEncryptedMediaSessionType {
-  kUnknown,
-  kTemporary,
-  kPersistentLicense,
-  kPersistentUsageRecord,
+  kUnknown = 0,
+  kTemporary = 1,
+  kPersistentLicense = 2,
+  kPersistentUsageRecord = 3,
+  kMaxValue = kPersistentUsageRecord,
 };
 
 }  // namespace blink

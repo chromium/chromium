@@ -8027,6 +8027,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.EME.cancelKeyRequest"/>
   <affected-histogram name="Media.EME.CreateCdm"/>
   <affected-histogram name="Media.EME.CreateCdmTime"/>
+  <affected-histogram name="Media.EME.CreateSession.SessionType"/>
   <affected-histogram name="Media.EME.generateKeyRequest"/>
   <affected-histogram name="Media.EME.KeyAdded"/>
   <affected-histogram name="Media.EME.KeyError"/>

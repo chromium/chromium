@@ -20553,6 +20553,13 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="MediaKeySession.remove()"/>
 </enum>
 
+<enum name="EmeSessionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Temporary"/>
+  <int value="2" label="Persistent License"/>
+  <int value="3" label="Persistent Usage Record"/>
+</enum>
+
 <enum name="EmmcLifeUsed">
   <int value="0" label="Not defined"/>
   <int value="1" label="0% - 10% device life time used"/>

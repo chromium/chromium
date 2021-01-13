@@ -1513,6 +1513,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The time it takes to create the CDM instance.</summary>
 </histogram>
 
+<histogram base="true" name="Media.EME.CreateSession.SessionType"
+    enum="EmeSessionType" expires_after="2021-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>EME session type passed into CreateSession.</summary>
+</histogram>
+
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
     expires_after="2022-01-15">
   <owner>jkardatzke@chromium.org</owner>
