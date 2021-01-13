@@ -68,6 +68,9 @@ NearbyShareHttpStatus::NearbyShareHttpStatus(
   }
 }
 
+NearbyShareHttpStatus::NearbyShareHttpStatus(
+    const NearbyShareHttpStatus& status) = default;
+
 NearbyShareHttpStatus::~NearbyShareHttpStatus() = default;
 
 bool NearbyShareHttpStatus::IsSuccess() const {

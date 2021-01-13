@@ -55,6 +55,7 @@ class ReceiveMessagesExpress : public network::SimpleURLLoaderStreamConsumer {
   void DoStartReceivingMessages(
       const chrome_browser_nearby_sharing_instantmessaging::
           ReceiveMessagesExpressRequest& request,
+      base::RepeatingCallback<void(const std::string& message)> listener,
       const std::string& oauth_token);
 
   // network::SimpleURLLoaderStreamConsumer:

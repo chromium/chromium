@@ -54,21 +54,29 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           })");
 
-void LogReceiveResult(bool success, const network::SimpleURLLoader* loader) {
+base::Optional<NearbyShareHttpStatus> HttpStatusFromUrlLoader(
+    const network::SimpleURLLoader* loader) {
+  if (!loader)
+    return base::nullopt;
+
+  return NearbyShareHttpStatus(loader->NetError(), loader->ResponseInfo());
+}
+
+void LogReceiveResult(
+    bool success,
+    const base::Optional<NearbyShareHttpStatus>& http_status) {
   std::stringstream ss;
   ss << "Instant messaging receive express "
      << (success ? "succeeded." : "failed.");
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.ReceiveExpress.Result", success);
-  if (loader) {
-    NearbyShareHttpStatus http_status(loader->NetError(),
-                                      loader->ResponseInfo());
-    ss << " HTTP status: " << http_status;
+  if (http_status) {
+    ss << " HTTP status: " << *http_status;
     if (!success) {
       base::UmaHistogramSparse(
           "Nearby.Connections.InstantMessaging.ReceiveExpress.Result."
           "FailureReason",
-          http_status.GetResultCodeForMetrics());
+          http_status->GetResultCodeForMetrics());
     }
   }
 
@@ -101,26 +109,30 @@ void ReceiveMessagesExpress::StartReceivingMessages(
     base::RepeatingCallback<void(const std::string& message)> listener,
     SuccessCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  url_loader_.reset();
+  stream_parser_.reset();
+
   if (!success_callback_.is_null()) {
-    // A pending callback was found, this should be marked as false since the
+    // A pending callback was found. This should be marked as false since the
     // previous receiver has not yet started listening for messages and is now
     // going to be replaced by the new listener.
+    NS_LOG(WARNING)
+        << __func__
+        << ": Found pending request to start receiving messages. "
+           "Failing the previous request before handling the new request.";
     std::move(success_callback_).Run(false);
   }
   success_callback_ = std::move(callback);
-  url_loader_.reset();
-  stream_parser_ = std::make_unique<StreamParser>(
-      listener, base::BindOnce(&ReceiveMessagesExpress::OnFastPathReady,
-                               base::Unretained(this)));
 
   token_fetcher_->GetAccessToken(
       base::BindOnce(&ReceiveMessagesExpress::DoStartReceivingMessages,
-                     weak_ptr_factory_.GetWeakPtr(), request));
+                     weak_ptr_factory_.GetWeakPtr(), request, listener));
 }
 
 void ReceiveMessagesExpress::DoStartReceivingMessages(
     const chrome_browser_nearby_sharing_instantmessaging::
         ReceiveMessagesExpressRequest& request,
+    base::RepeatingCallback<void(const std::string& message)> listener,
     const std::string& oauth_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramBoolean(
@@ -132,6 +144,13 @@ void ReceiveMessagesExpress::DoStartReceivingMessages(
     std::move(success_callback_).Run(false);
     return;
   }
+
+  NS_LOG(VERBOSE) << __func__
+                  << ": OAuth token fetched; starting stream download";
+
+  stream_parser_ = std::make_unique<StreamParser>(
+      listener, base::BindOnce(&ReceiveMessagesExpress::OnFastPathReady,
+                               base::Unretained(this)));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kInstantMessagingReceiveMessageAPI);
@@ -152,29 +171,42 @@ void ReceiveMessagesExpress::DoStartReceivingMessages(
 
 void ReceiveMessagesExpress::StopReceivingMessages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success_callback_.is_null())
-    std::move(success_callback_).Run(false);
-
   url_loader_.reset();
   stream_parser_.reset();
+
+  NS_LOG(VERBOSE) << __func__ << ": callback already invoked? "
+                  << (success_callback_ ? "no" : "yes");
+
+  if (!success_callback_.is_null())
+    std::move(success_callback_).Run(false);
 }
 
 void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
                                             base::OnceClosure resume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(https://crbug.com/1162157): Change to DCHECK when bug is resolved.
+  CHECK(stream_parser_) << __func__ << ": Stream parser unexpectedly null";
+
   stream_parser_->Append(data);
   std::move(resume).Run();
 }
 
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success_callback_.is_null()) {
-    LogReceiveResult(success, url_loader_.get());
-    std::move(success_callback_).Run(success);
-  }
-
+  base::Optional<NearbyShareHttpStatus> http_status =
+      HttpStatusFromUrlLoader(url_loader_.get());
   url_loader_.reset();
   stream_parser_.reset();
+
+  NS_LOG(VERBOSE) << __func__ << ": " << (success ? "success" : "failure")
+                  << ", callback already invoked? "
+                  << (success_callback_ ? "no" : "yes");
+
+  if (!success_callback_.is_null()) {
+    LogReceiveResult(success, http_status);
+    std::move(success_callback_).Run(success);
+  }
 }
 
 void ReceiveMessagesExpress::OnRetry(base::OnceClosure start_retry) {
@@ -183,7 +215,7 @@ void ReceiveMessagesExpress::OnRetry(base::OnceClosure start_retry) {
 
 void ReceiveMessagesExpress::OnFastPathReady() {
   if (!success_callback_.is_null()) {
-    LogReceiveResult(/*success=*/true, /*loader=*/nullptr);
+    LogReceiveResult(/*success=*/true, /*http_status=*/base::nullopt);
     std::move(success_callback_).Run(true);
   }
 }
