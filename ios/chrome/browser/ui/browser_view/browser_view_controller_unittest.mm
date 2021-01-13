@@ -224,22 +224,6 @@ TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
   EXPECT_TRUE(ActiveWebState()->IsVisible());
 }
 
-// Verifies that editing the omnimbox while the page is loading will stop the
-// load on a handset, but not stop the load on a tablet.
-TEST_F(BrowserViewControllerTest,
-       TestLocationBarBeganEdit_whenPageLoadIsInProgress) {
-  // Have the TestLocationBarModel indicate that a page load is in progress.
-  id partialMock = OCMPartialMock(bvcHelper_);
-  OCMExpect([partialMock isToolbarLoading:static_cast<web::WebState*>(
-                                              [OCMArg anyPointer])])
-      .andReturn(YES);
-
-  // The tab should stop loading on iPhones.
-  [bvc_ locationBarBeganEdit];
-  if (!IsIPadIdiom())
-    EXPECT_FALSE(ActiveWebState()->IsLoading());
-}
-
 TEST_F(BrowserViewControllerTest, TestClearPresentedState) {
   EXPECT_CALL(*this, OnCompletionCalled());
   [bvc_

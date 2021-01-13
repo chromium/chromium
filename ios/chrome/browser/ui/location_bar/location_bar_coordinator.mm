@@ -369,10 +369,6 @@
   [self.delegate locationBarDidResignFirstResponder];
 }
 
-- (void)locationBarBeganEdit {
-  [self.delegate locationBarBeganEdit];
-}
-
 - (web::WebState*)webState {
   return self.webStateList->GetActiveWebState();
 }

@@ -17,7 +17,6 @@ class WebState;
 @protocol LocationBarDelegate
 - (void)locationBarHasBecomeFirstResponder;
 - (void)locationBarHasResignedFirstResponder;
-- (void)locationBarBeganEdit;
 - (web::WebState*)webState;
 - (LocationBarModel*)locationBarModel;
 @end

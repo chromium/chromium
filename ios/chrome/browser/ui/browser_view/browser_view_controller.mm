@@ -397,8 +397,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // YES if Voice Search should be started when the new tab animation is
   // finished.
   BOOL _startVoiceSearchAfterNewTabAnimation;
-  // YES if a load was cancelled due to typing in the location bar.
-  BOOL _locationBarEditCancelledLoad;
   // YES if waiting for a foreground tab due to expectNewForegroundTab.
   BOOL _expectingForegroundTab;
 
@@ -4356,26 +4354,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [[OmniboxGeolocationController sharedInstance]
       locationBarDidResignFirstResponder:self.browserState];
 
-  // If a load was cancelled by an omnibox edit, but nothing is loading when
-  // editing ends (i.e., editing was cancelled), restart the cancelled load.
-  if (_locationBarEditCancelledLoad) {
-    _locationBarEditCancelledLoad = NO;
-
-    web::WebState* webState = self.currentWebState;
-    if (!_isShutdown && webState && ![self.helper isToolbarLoading:webState])
-      webState->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
-                                               false /* check_for_repost */);
-  }
   [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:NO];
-}
-
-- (void)locationBarBeganEdit {
-  // On handsets, if a page is currently loading it should be stopped.
-  if (![self canShowTabStrip] &&
-      [self.helper isToolbarLoading:self.currentWebState]) {
-    WebNavigationBrowserAgent::FromBrowser(self.browser)->StopLoading();
-    _locationBarEditCancelledLoad = YES;
-  }
 }
 
 - (LocationBarModel*)locationBarModel {

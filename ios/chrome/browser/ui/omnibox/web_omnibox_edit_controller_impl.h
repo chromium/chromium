@@ -38,7 +38,6 @@ class WebOmniboxEditControllerImpl : public WebOmniboxEditController {
       AutocompleteMatchType::Type match_type,
       base::TimeTicks match_selection_timestamp,
       bool destination_url_entered_without_scheme) override;
-  void OnInputInProgress(bool in_progress) override;
   void OnChanged() override;
   LocationBarModel* GetLocationBarModel() override;
   const LocationBarModel* GetLocationBarModel() const override;

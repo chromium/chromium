@@ -53,12 +53,6 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
   }
 }
 
-void WebOmniboxEditControllerImpl::OnInputInProgress(bool in_progress) {
-  // TODO(crbug.com/818649): see if this is really used.
-  if (in_progress)
-    [delegate_ locationBarBeganEdit];
-}
-
 void WebOmniboxEditControllerImpl::OnChanged() {
   // Called when anything is changed. Since the Mediator already observes the
   // WebState for security status changes, no need to do anything.
