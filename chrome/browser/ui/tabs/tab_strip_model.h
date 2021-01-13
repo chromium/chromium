@@ -440,7 +440,7 @@ class TabStripModel : public TabGroupController {
   // being moved, and adds them to the tab group |group|.
   void MoveTabsAndSetGroup(const std::vector<int>& indices,
                            int destination_index,
-                           const tab_groups::TabGroupId& group);
+                           base::Optional<tab_groups::TabGroupId> group);
 
   // Similar to AddToExistingGroup(), but creates a group with id |group| if it
   // doesn't exist. This is only intended to be called from session restore
