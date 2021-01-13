@@ -203,6 +203,22 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
       {"modulesCartHeaderNew", IDS_NTP_MODULES_CART_HEADER_CHIP_NEW},
+      {"modulesCartTitle", IDS_NTP_MODULES_CART_TITLE},
+      {"modulesCartWarmWelcome", IDS_NTP_MODULES_CART_WARM_WELCOME},
+      {"modulesCartModuleMenuHide", IDS_NTP_MODULES_CART_MODULE_MENU_HIDE},
+      {"modulesCartModuleMenuHideToastMessage",
+       IDS_NTP_MODULES_CART_MODULE_MENU_HIDE_TOAST_MESSAGE},
+      {"modulesCartModuleMenuRemove", IDS_NTP_MODULES_CART_MODULE_MENU_REMOVE},
+      {"modulesCartModuleMenuRemoveToastMessage",
+       IDS_NTP_MODULES_CART_MODULE_MENU_REMOVE_TOAST_MESSAGE},
+      {"modulesCartCartMenuHideMerchant",
+       IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT},
+      {"modulesCartCartMenuHideMerchantToastMessage",
+       IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT_TOAST_MESSAGE},
+      {"modulesCartCartMenuRemoveMerchant",
+       IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT},
+      {"modulesCartCartMenuRemoveMerchantToastMessage",
+       IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT_TOAST_MESSAGE},
   };
   AddLocalizedStringsBulk(source, kStrings);
 
