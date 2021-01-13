@@ -490,14 +490,6 @@ void IdentityManager::OnPrimaryAccountChanged(
     case PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
-  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      FireUnconsentedPrimaryAccountChanged(event_details);
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
 
   for (auto& observer : observer_list_)
     observer.OnPrimaryAccountChanged(event_details);
@@ -525,15 +517,6 @@ void IdentityManager::FirePrimaryAccountSet(
       event_details.GetCurrentState().primary_account;
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountSet(account_info);
-  }
-}
-
-void IdentityManager::FireUnconsentedPrimaryAccountChanged(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetCurrentState().primary_account;
-  for (auto& observer : observer_list_) {
-    observer.OnUnconsentedPrimaryAccountChanged(account_info);
   }
 }
 

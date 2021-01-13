@@ -101,22 +101,6 @@ class IdentityManager : public KeyedService,
     // General observers should use |OnPrimaryAccountChanged|.
     virtual void AfterSyncPrimaryAccountCleared() {}
 
-    // When the unconsented primary account (see ./README.md) of the user
-    // changes, this callback gets called with the new account as
-    // |unconsented_primary_account_info|. If after the change, there is no
-    // unconsented primary account, |unconsented_primary_account_info| is empty.
-    // This does not get called when the unconsented account becomes consented
-    // (as the same account was unconsented before so there is no change). In
-    // all other changes (the unconsented primary account gets added, changed or
-    // removed), this notification is called only once. Note: we do not use the
-    // {Set, Cleared} notifications like for the primary account above because
-    // the identity manager does not have clear guarantees that that account
-    // cannot change in one atomic operation (without getting cleared in the
-    // mean-time).
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnUnconsentedPrimaryAccountChanged(
-        const CoreAccountInfo& unconsented_primary_account_info) {}
-
     // Called when a new refresh token is associated with |account_info|.
     // NOTE: On a signin event, the ordering of this callback wrt the
     // OnPrimaryAccountSet() callback is undefined. If you as a client are
@@ -679,8 +663,6 @@ class IdentityManager : public KeyedService,
   // Fire the deprecated observer methods for settings and clearing the primary
   // account.
   void FirePrimaryAccountSet(const PrimaryAccountChangeEvent& event_details);
-  void FireUnconsentedPrimaryAccountChanged(
-      const PrimaryAccountChangeEvent& event_details);
   void FirePrimaryAccountCleared(
       const PrimaryAccountChangeEvent& event_details);
 
