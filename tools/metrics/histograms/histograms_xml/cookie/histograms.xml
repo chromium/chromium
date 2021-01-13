@@ -540,6 +540,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteUnspecifiedEffective"
     enum="CookieEffectiveSameSite" expires_after="M90">
+  <obsolete>
+    Removed Jan 2021 for cleanup: crbug.com/1165039
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

@@ -713,13 +713,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   CookieEffectiveSameSite effective_same_site =
       GetEffectiveSameSite(params.access_semantics);
   DCHECK(effective_same_site != CookieEffectiveSameSite::UNDEFINED);
-  // Log the effective SameSite mode that is applied to the cookie on this
-  // request, if its SameSite was not specified.
-  if (SameSite() == CookieSameSite::UNSPECIFIED) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteUnspecifiedEffective",
-                              effective_same_site,
-                              CookieEffectiveSameSite::COUNT);
-  }
   UMA_HISTOGRAM_ENUMERATION(
       "Cookie.RequestSameSiteContext", cookie_inclusion_context,
       CookieOptions::SameSiteCookieContext::ContextType::COUNT);
