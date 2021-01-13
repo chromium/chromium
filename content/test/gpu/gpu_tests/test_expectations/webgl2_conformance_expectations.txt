@@ -126,6 +126,9 @@ crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.h
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
+# TODO(kbr): Lift this once upstream test is updated.
+crbug.com/angleproject/5499 conformance/glsl/misc/shaders-with-name-conflicts.html [ Skip ]
+
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 crbug.com/949249 [ win passthrough angle-opengl nvidia ] conformance2/extensions/ovr_multiview2.html [ Failure ]
