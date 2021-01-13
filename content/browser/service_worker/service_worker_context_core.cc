@@ -137,7 +137,7 @@ bool IsSameOriginClientContainerHost(
       container_host->IsInBackForwardCache()) {
     return false;
   }
-  return container_host->url().GetOrigin() == origin &&
+  return container_host->GetOrigin() == origin &&
          (allow_reserved_client || container_host->is_execution_ready());
 }
 

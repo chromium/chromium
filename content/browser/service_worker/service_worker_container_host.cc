@@ -1585,6 +1585,13 @@ bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
   return true;
 }
 
+const GURL ServiceWorkerContainerHost::GetOrigin() const {
+  // Ideally, the origins of GetUrlForScopeMatch() and url() should be the same
+  // but GURL::GetOrigin() doesn't work with blob URL.
+  // See https://crbug.com/1144717
+  return GetUrlForScopeMatch().GetOrigin();
+}
+
 const GURL& ServiceWorkerContainerHost::GetUrlForScopeMatch() const {
   DCHECK(IsContainerForClient());
   if (!scope_match_url_for_blob_client_.is_empty())
