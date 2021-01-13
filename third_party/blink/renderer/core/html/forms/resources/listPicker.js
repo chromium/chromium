@@ -90,6 +90,7 @@ ListPicker.prototype._handleWindowMessage = function(event) {
   if (window.updateData.type === 'update') {
     this._config.baseStyle = window.updateData.baseStyle;
     this._config.children = window.updateData.children;
+    const prev_children_count = this._selectElement.children.length;
     this._update();
     if (this._config.anchorRectInScreen.x !==
             window.updateData.anchorRectInScreen.x ||
@@ -98,9 +99,10 @@ ListPicker.prototype._handleWindowMessage = function(event) {
         this._config.anchorRectInScreen.width !==
             window.updateData.anchorRectInScreen.width ||
         this._config.anchorRectInScreen.height !==
-            window.updateData.anchorRectInScreen.height) {
-        this._config.anchorRectInScreen = window.updateData.anchorRectInScreen;
-        this._fixWindowSize();
+            window.updateData.anchorRectInScreen.height ||
+        prev_children_count !== window.updateData.children.length) {
+      this._config.anchorRectInScreen = window.updateData.anchorRectInScreen;
+      this._fixWindowSize();
     }
   }
   delete window.updateData;
