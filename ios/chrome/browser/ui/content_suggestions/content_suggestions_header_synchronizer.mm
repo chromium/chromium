@@ -122,8 +122,7 @@ initWithCollectionController:
   if (self.collectionView.decelerating) {
     // Stop the scrolling if the scroll view is decelerating to prevent the
     // focus to be immediately lost.
-    [self.collectionView setContentOffset:self.collectionView.contentOffset
-                                 animated:NO];
+    [self.collectionView setContentOffset:[self adjustedOffset] animated:NO];
   }
 
   if (self.collectionController.scrolledToTop) {
@@ -138,7 +137,7 @@ initWithCollectionController:
 
   CGFloat pinnedOffsetY = [self.headerController pinnedOffsetY];
   self.collectionShiftingOffset =
-      MAX(0, pinnedOffsetY - self.collectionView.contentOffset.y);
+      MAX(0, pinnedOffsetY - [self adjustedOffset].y);
 
   self.collectionController.scrolledToTop = YES;
   self.shouldAnimateHeader = YES;
@@ -153,13 +152,14 @@ initWithCollectionController:
                 return;
 
               __typeof(weakSelf) strongSelf = weakSelf;
-              if (strongSelf.collectionView.contentOffset.y < pinnedOffsetY) {
+              if ((strongSelf.collectionView.contentOffset.y +
+                   self.additionalOffset) < pinnedOffsetY) {
                 if (animations)
                   animations();
                 // Changing the contentOffset of the collection results in a
                 // scroll and a change in the constraints of the header.
                 strongSelf.collectionView.contentOffset =
-                    CGPointMake(0, pinnedOffsetY);
+                    CGPointMake(0, pinnedOffsetY - self.additionalOffset);
                 // Layout the header for the constraints to be animated.
                 [strongSelf.headerController layoutHeader];
                 [strongSelf.collectionView
@@ -211,10 +211,8 @@ initWithCollectionController:
 
   if (self.shouldAnimateHeader) {
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
-    CGFloat totalOffset =
-        self.collectionView.contentOffset.y + self.additionalOffset;
     [self.headerController
-        updateFakeOmniboxForOffset:totalOffset
+        updateFakeOmniboxForOffset:[self adjustedOffset].y
                        screenWidth:self.collectionView.frame.size.width
                     safeAreaInsets:insets];
   }
@@ -229,9 +227,7 @@ initWithCollectionController:
     // -viewDidLayoutSubviews.  Since self.collectionView and it's superview
     // should always have the same safeArea, this should be safe.
     UIEdgeInsets insets = self.collectionView.superview.safeAreaInsets;
-    CGFloat totalOffset =
-        self.collectionView.contentOffset.y + self.additionalOffset;
-    [self.headerController updateFakeOmniboxForOffset:totalOffset
+    [self.headerController updateFakeOmniboxForOffset:[self adjustedOffset].y
                                           screenWidth:width
                                        safeAreaInsets:insets];
   } else {
@@ -265,6 +261,32 @@ initWithCollectionController:
 
 - (BOOL)isShowing {
   return self.headerController.isShowing;
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  BOOL isMostVisitedCell =
+      content_suggestions::nearestAncestor(
+          touch.view, [ContentSuggestionsMostVisitedCell class]) != nil;
+  BOOL isMostVisitedActionCell =
+      content_suggestions::nearestAncestor(
+          touch.view, [ContentSuggestionsMostVisitedActionCell class]) != nil;
+  BOOL isSuggestionCell =
+      content_suggestions::nearestAncestor(
+          touch.view, [ContentSuggestionsCell class]) != nil;
+  return !isMostVisitedCell && !isMostVisitedActionCell && !isSuggestionCell;
+}
+
+- (UIView*)nearestAncestorOfView:(UIView*)view withClass:(Class)aClass {
+  if (!view) {
+    return nil;
+  }
+  if ([view isKindOfClass:aClass]) {
+    return view;
+  }
+  return [self nearestAncestorOfView:[view superview] withClass:aClass];
 }
 
 #pragma mark - Private
@@ -306,30 +328,11 @@ initWithCollectionController:
   }
 }
 
-#pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-       shouldReceiveTouch:(UITouch*)touch {
-  BOOL isMostVisitedCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsMostVisitedCell class]) != nil;
-  BOOL isMostVisitedActionCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsMostVisitedActionCell class]) != nil;
-  BOOL isSuggestionCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsCell class]) != nil;
-  return !isMostVisitedCell && !isMostVisitedActionCell && !isSuggestionCell;
-}
-
-- (UIView*)nearestAncestorOfView:(UIView*)view withClass:(Class)aClass {
-  if (!view) {
-    return nil;
-  }
-  if ([view isKindOfClass:aClass]) {
-    return view;
-  }
-  return [self nearestAncestorOfView:[view superview] withClass:aClass];
+// Returns y-offset compensated for any additionalOffset that might be set.
+- (CGPoint)adjustedOffset {
+  CGPoint adjustedOffset = self.collectionView.contentOffset;
+  adjustedOffset.y += self.additionalOffset;
+  return adjustedOffset;
 }
 
 @end
