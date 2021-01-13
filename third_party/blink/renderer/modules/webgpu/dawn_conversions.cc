@@ -54,6 +54,73 @@ WGPUBindingType AsDawnEnum<WGPUBindingType>(const WTF::String& webgpu_enum) {
 }
 
 template <>
+WGPUBufferBindingType AsDawnEnum<WGPUBufferBindingType>(
+    const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "uniform") {
+    return WGPUBufferBindingType_Uniform;
+  }
+  if (webgpu_enum == "storage") {
+    return WGPUBufferBindingType_Storage;
+  }
+  if (webgpu_enum == "read-only-storage") {
+    return WGPUBufferBindingType_ReadOnlyStorage;
+  }
+  NOTREACHED();
+  return WGPUBufferBindingType_Force32;
+}
+
+template <>
+WGPUSamplerBindingType AsDawnEnum<WGPUSamplerBindingType>(
+    const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "filtering") {
+    return WGPUSamplerBindingType_Filtering;
+  }
+  if (webgpu_enum == "non-filtering") {
+    return WGPUSamplerBindingType_NonFiltering;
+  }
+  if (webgpu_enum == "comparison") {
+    return WGPUSamplerBindingType_Comparison;
+  }
+  NOTREACHED();
+  return WGPUSamplerBindingType_Force32;
+}
+
+template <>
+WGPUTextureSampleType AsDawnEnum<WGPUTextureSampleType>(
+    const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "float") {
+    return WGPUTextureSampleType_Float;
+  }
+  if (webgpu_enum == "unfilterable-float") {
+    return WGPUTextureSampleType_UnfilterableFloat;
+  }
+  if (webgpu_enum == "depth") {
+    return WGPUTextureSampleType_Depth;
+  }
+  if (webgpu_enum == "sint") {
+    return WGPUTextureSampleType_Sint;
+  }
+  if (webgpu_enum == "uint") {
+    return WGPUTextureSampleType_Uint;
+  }
+  NOTREACHED();
+  return WGPUTextureSampleType_Force32;
+}
+
+template <>
+WGPUStorageTextureAccess AsDawnEnum<WGPUStorageTextureAccess>(
+    const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "read-only") {
+    return WGPUStorageTextureAccess_ReadOnly;
+  }
+  if (webgpu_enum == "write-only") {
+    return WGPUStorageTextureAccess_WriteOnly;
+  }
+  NOTREACHED();
+  return WGPUStorageTextureAccess_Force32;
+}
+
+template <>
 WGPUTextureComponentType AsDawnEnum<WGPUTextureComponentType>(
     const WTF::String& webgpu_enum) {
   if (webgpu_enum == "float") {

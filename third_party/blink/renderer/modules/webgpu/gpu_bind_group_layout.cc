@@ -6,6 +6,10 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_entry.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_storage_texture_binding_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_binding_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -20,23 +24,65 @@ WGPUBindGroupLayoutEntry AsDawnType(
   dawn_binding.binding = webgpu_binding->binding();
   dawn_binding.visibility =
       AsDawnEnum<WGPUShaderStage>(webgpu_binding->visibility());
-  dawn_binding.type = AsDawnEnum<WGPUBindingType>(webgpu_binding->type());
 
-  dawn_binding.hasDynamicOffset = webgpu_binding->hasDynamicOffset();
+  if (webgpu_binding->hasBuffer()) {
+    dawn_binding.buffer.type =
+        AsDawnEnum<WGPUBufferBindingType>(webgpu_binding->buffer()->type());
+    dawn_binding.buffer.hasDynamicOffset =
+        webgpu_binding->buffer()->hasDynamicOffset();
+    dawn_binding.buffer.minBindingSize =
+        webgpu_binding->buffer()->minBindingSize();
+  }
 
-  dawn_binding.minBufferBindingSize =
-      webgpu_binding->hasMinBufferBindingSize()
-          ? webgpu_binding->minBufferBindingSize()
-          : 0;
+  if (webgpu_binding->hasSampler()) {
+    dawn_binding.sampler.type =
+        AsDawnEnum<WGPUSamplerBindingType>(webgpu_binding->sampler()->type());
+  }
 
-  dawn_binding.viewDimension =
-      AsDawnEnum<WGPUTextureViewDimension>(webgpu_binding->viewDimension());
+  if (webgpu_binding->hasTexture()) {
+    dawn_binding.texture.sampleType = AsDawnEnum<WGPUTextureSampleType>(
+        webgpu_binding->texture()->sampleType());
+    dawn_binding.texture.viewDimension = AsDawnEnum<WGPUTextureViewDimension>(
+        webgpu_binding->texture()->viewDimension());
+    dawn_binding.texture.multisampled =
+        webgpu_binding->texture()->multisampled();
+  }
 
-  dawn_binding.textureComponentType = AsDawnEnum<WGPUTextureComponentType>(
-      webgpu_binding->textureComponentType());
+  if (webgpu_binding->hasStorageTexture()) {
+    dawn_binding.storageTexture.access = AsDawnEnum<WGPUStorageTextureAccess>(
+        webgpu_binding->storageTexture()->access());
+    dawn_binding.storageTexture.format = AsDawnEnum<WGPUTextureFormat>(
+        webgpu_binding->storageTexture()->format());
+    dawn_binding.storageTexture.viewDimension =
+        AsDawnEnum<WGPUTextureViewDimension>(
+            webgpu_binding->storageTexture()->viewDimension());
+  }
 
-  dawn_binding.storageTextureFormat =
-      AsDawnEnum<WGPUTextureFormat>(webgpu_binding->storageTextureFormat());
+  // Deprecated values
+  if (webgpu_binding->hasType()) {
+    device->AddConsoleWarning(
+        "The format of GPUBindGroupLayoutEntry has changed, and will soon "
+        "require the buffer, sampler, texture, or storageTexture members be "
+        "set rather than setting type, etc. on the entry directly.");
+
+    dawn_binding.type = AsDawnEnum<WGPUBindingType>(webgpu_binding->type());
+
+    dawn_binding.hasDynamicOffset = webgpu_binding->hasDynamicOffset();
+
+    dawn_binding.minBufferBindingSize =
+        webgpu_binding->hasMinBufferBindingSize()
+            ? webgpu_binding->minBufferBindingSize()
+            : 0;
+
+    dawn_binding.viewDimension =
+        AsDawnEnum<WGPUTextureViewDimension>(webgpu_binding->viewDimension());
+
+    dawn_binding.textureComponentType = AsDawnEnum<WGPUTextureComponentType>(
+        webgpu_binding->textureComponentType());
+
+    dawn_binding.storageTextureFormat =
+        AsDawnEnum<WGPUTextureFormat>(webgpu_binding->storageTextureFormat());
+  }
 
   return dawn_binding;
 }
