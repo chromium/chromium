@@ -130,6 +130,8 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')
     self.assertFalse(self.HasChromeTraces())
 
+  @decorators.Disabled('linux',
+                       'chromeos')  # Disable due to flaky: crbug.com/1163628
   def testExtraChromeCategories(self):
     self.options.extra_chrome_categories = 'cc,blink'
     self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')
