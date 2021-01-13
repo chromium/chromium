@@ -546,6 +546,9 @@ bool DesksController::MoveWindowFromActiveDeskTo(
 }
 
 void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
+  if (!features::IsBentoEnabled())
+    return;
+
   const bool added = visible_on_all_desks_windows_.emplace(window).second;
   DCHECK(added);
 }
