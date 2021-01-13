@@ -430,6 +430,7 @@ void TrayBackgroundView::BounceInAnimation() {
   std::unique_ptr<ui::LayerAnimationElement> scale_and_move_up =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
           std::move(scale_about_pivot), kAnimationDurationForBounceElement);
+  scale_and_move_up->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
 
   std::unique_ptr<ui::LayerAnimationElement> move_down =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
@@ -437,13 +438,14 @@ void TrayBackgroundView::BounceInAnimation() {
               gfx::PointF(0, -kAnimationBounceDistance),
               gfx::PointF(0, kAnimationBounceDistance)),
           kAnimationDurationForBounceElement);
-  move_down->set_tween_type(gfx::Tween::EASE_IN);
+  move_down->set_tween_type(gfx::Tween::EASE_OUT_4);
 
   std::unique_ptr<ui::LayerAnimationElement> move_up =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
           std::make_unique<ui::InterpolatedTranslation>(
               gfx::PointF(0, kAnimationBounceDistance), gfx::PointF(0, 0)),
           kAnimationDurationForBounceElement);
+  move_up->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
 
   std::unique_ptr<ui::LayerAnimationSequence> sequence =
       std::make_unique<ui::LayerAnimationSequence>();
