@@ -5837,3 +5837,6 @@ crbug.com/1164568 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting
 
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Pass Failure ]
+
+# Sheriff 2021-01-13
+crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure ]
