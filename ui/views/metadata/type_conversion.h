@@ -163,9 +163,7 @@ DECLARE_CONVERSIONS(gfx::Insets)
 #undef DECLARE_CONVERSIONS
 
 template <>
-struct VIEWS_EXPORT TypeConverter<bool> {
-  static constexpr bool is_serializable = true;
-  static bool IsSerializable() { return is_serializable; }
+struct VIEWS_EXPORT TypeConverter<bool> : BaseTypeConverter<true> {
   static base::string16 ToString(bool source_value);
   static base::Optional<bool> FromString(const base::string16& source_value);
   static ValidStrings GetValidStrings();
