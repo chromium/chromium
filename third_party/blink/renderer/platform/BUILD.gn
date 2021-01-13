@@ -659,6 +659,8 @@ component("platform") {
     "fonts/shaping/caching_word_shaper.h",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.cc",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.h",
+    "fonts/shaping/font_features.cc",
+    "fonts/shaping/font_features.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
     "fonts/shaping/harfbuzz_face.cc",
     "fonts/shaping/harfbuzz_face.h",

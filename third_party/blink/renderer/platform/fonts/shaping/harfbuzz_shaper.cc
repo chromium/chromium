@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
@@ -58,6 +59,15 @@
 namespace blink {
 
 namespace {
+
+constexpr hb_feature_t CreateFeature(char c1,
+                                     char c2,
+                                     char c3,
+                                     char c4,
+                                     uint32_t value = 0) {
+  return {HB_TAG(c1, c2, c3, c4), value, 0 /* start */,
+          static_cast<unsigned>(-1) /* end */};
+}
 
 #if DCHECK_IS_ON()
 // Check if the ShapeResult has the specified range.
@@ -148,14 +158,16 @@ class HarfBuzzScopedPtr {
   DISALLOW_COPY_AND_ASSIGN(HarfBuzzScopedPtr);
 };
 
-using FeaturesVector = Vector<hb_feature_t, 6>;
 struct RangeData {
+  STACK_ALLOCATED();
+
+ public:
   hb_buffer_t* buffer;
   const Font* font;
   TextDirection text_direction;
   unsigned start;
   unsigned end;
-  FeaturesVector font_features;
+  FontFeatures font_features;
   Deque<ReshapeQueueItem> reshape_queue;
 
   hb_direction_t HarfBuzzDirection(CanvasRotationInVertical canvas_rotation) {
@@ -212,7 +224,7 @@ void RoundHarfBuzzBufferPositions(hb_buffer_t* buffer) {
 }
 
 inline bool ShapeRange(hb_buffer_t* buffer,
-                       hb_feature_t* font_features,
+                       const hb_feature_t* font_features,
                        unsigned font_features_size,
                        const SimpleFontData* current_font,
                        scoped_refptr<UnicodeRangeSet> current_font_range_set,
@@ -566,211 +578,6 @@ void SplitUntilNextCaseChange(
   }
 }
 
-constexpr hb_feature_t CreateFeature(hb_tag_t tag, uint32_t value = 0) {
-  return {tag, value, 0 /* start */, static_cast<unsigned>(-1) /* end */};
-}
-
-// TODO(kojii): crbug.com/762493 This list is getting long enough to extract out
-// of HarfBuzzShaper.cpp.
-void SetFontFeatures(const Font* font, FeaturesVector* features) {
-  const FontDescription& description = font->GetFontDescription();
-
-  constexpr hb_feature_t no_kern = CreateFeature(HB_TAG('k', 'e', 'r', 'n'));
-  constexpr hb_feature_t no_vkrn = CreateFeature(HB_TAG('v', 'k', 'r', 'n'));
-  switch (description.GetKerning()) {
-    case FontDescription::kNormalKerning:
-      // kern/vkrn are enabled by default in HarfBuzz
-      break;
-    case FontDescription::kNoneKerning:
-      features->push_back(description.IsVerticalAnyUpright() ? no_vkrn
-                                                             : no_kern);
-      break;
-    case FontDescription::kAutoKerning:
-      break;
-  }
-
-  {
-    bool default_is_off = description.TextRendering() == blink::kOptimizeSpeed;
-    bool letter_spacing = description.LetterSpacing() != 0;
-    constexpr auto normal = FontDescription::kNormalLigaturesState;
-    constexpr auto enabled = FontDescription::kEnabledLigaturesState;
-    constexpr auto disabled = FontDescription::kDisabledLigaturesState;
-
-    // clig and liga are on by default in HarfBuzz
-    constexpr hb_feature_t no_clig = CreateFeature(HB_TAG('c', 'l', 'i', 'g'));
-    constexpr hb_feature_t no_liga = CreateFeature(HB_TAG('l', 'i', 'g', 'a'));
-    auto common = description.CommonLigaturesState();
-    if (letter_spacing ||
-        (common == disabled || (common == normal && default_is_off))) {
-      features->push_back(no_liga);
-      features->push_back(no_clig);
-    }
-    // dlig is off by default in HarfBuzz
-    constexpr hb_feature_t dlig = CreateFeature(HB_TAG('d', 'l', 'i', 'g'), 1);
-    auto discretionary = description.DiscretionaryLigaturesState();
-    if (!letter_spacing && discretionary == enabled) {
-      features->push_back(dlig);
-    }
-    // hlig is off by default in HarfBuzz
-    constexpr hb_feature_t hlig = CreateFeature(HB_TAG('h', 'l', 'i', 'g'), 1);
-    auto historical = description.HistoricalLigaturesState();
-    if (!letter_spacing && historical == enabled) {
-      features->push_back(hlig);
-    }
-    // calt is on by default in HarfBuzz
-    constexpr hb_feature_t no_calt = CreateFeature(HB_TAG('c', 'a', 'l', 't'));
-    auto contextual = description.ContextualLigaturesState();
-    if (letter_spacing ||
-        (contextual == disabled || (contextual == normal && default_is_off))) {
-      features->push_back(no_calt);
-    }
-  }
-
-  static constexpr hb_feature_t hwid =
-      CreateFeature(HB_TAG('h', 'w', 'i', 'd'), 1);
-  static constexpr hb_feature_t twid =
-      CreateFeature(HB_TAG('t', 'w', 'i', 'd'), 1);
-  static constexpr hb_feature_t qwid =
-      CreateFeature(HB_TAG('q', 'w', 'i', 'd'), 1);
-  switch (description.WidthVariant()) {
-    case kHalfWidth:
-      features->push_back(hwid);
-      break;
-    case kThirdWidth:
-      features->push_back(twid);
-      break;
-    case kQuarterWidth:
-      features->push_back(qwid);
-      break;
-    case kRegularWidth:
-      break;
-  }
-
-  // font-variant-east-asian:
-  const FontVariantEastAsian east_asian = description.VariantEastAsian();
-  if (UNLIKELY(!east_asian.IsAllNormal())) {
-    static constexpr hb_feature_t jp78 =
-        CreateFeature(HB_TAG('j', 'p', '7', '8'), 1);
-    static constexpr hb_feature_t jp83 =
-        CreateFeature(HB_TAG('j', 'p', '8', '3'), 1);
-    static constexpr hb_feature_t jp90 =
-        CreateFeature(HB_TAG('j', 'p', '9', '0'), 1);
-    static constexpr hb_feature_t jp04 =
-        CreateFeature(HB_TAG('j', 'p', '0', '4'), 1);
-    static constexpr hb_feature_t smpl =
-        CreateFeature(HB_TAG('s', 'm', 'p', 'l'), 1);
-    static constexpr hb_feature_t trad =
-        CreateFeature(HB_TAG('t', 'r', 'a', 'd'), 1);
-    switch (east_asian.Form()) {
-      case FontVariantEastAsian::kNormalForm:
-        break;
-      case FontVariantEastAsian::kJis78:
-        features->push_back(jp78);
-        break;
-      case FontVariantEastAsian::kJis83:
-        features->push_back(jp83);
-        break;
-      case FontVariantEastAsian::kJis90:
-        features->push_back(jp90);
-        break;
-      case FontVariantEastAsian::kJis04:
-        features->push_back(jp04);
-        break;
-      case FontVariantEastAsian::kSimplified:
-        features->push_back(smpl);
-        break;
-      case FontVariantEastAsian::kTraditional:
-        features->push_back(trad);
-        break;
-      default:
-        NOTREACHED();
-    }
-    static constexpr hb_feature_t fwid =
-        CreateFeature(HB_TAG('f', 'w', 'i', 'd'), 1);
-    static constexpr hb_feature_t pwid =
-        CreateFeature(HB_TAG('p', 'w', 'i', 'd'), 1);
-    switch (east_asian.Width()) {
-      case FontVariantEastAsian::kNormalWidth:
-        break;
-      case FontVariantEastAsian::kFullWidth:
-        features->push_back(fwid);
-        break;
-      case FontVariantEastAsian::kProportionalWidth:
-        features->push_back(pwid);
-        break;
-      default:
-        NOTREACHED();
-    }
-    static constexpr hb_feature_t ruby =
-        CreateFeature(HB_TAG('r', 'u', 'b', 'y'), 1);
-    if (east_asian.Ruby())
-      features->push_back(ruby);
-  }
-
-  // font-variant-numeric:
-  static constexpr hb_feature_t lnum =
-      CreateFeature(HB_TAG('l', 'n', 'u', 'm'), 1);
-  if (description.VariantNumeric().NumericFigureValue() ==
-      FontVariantNumeric::kLiningNums)
-    features->push_back(lnum);
-
-  static constexpr hb_feature_t onum =
-      CreateFeature(HB_TAG('o', 'n', 'u', 'm'), 1);
-  if (description.VariantNumeric().NumericFigureValue() ==
-      FontVariantNumeric::kOldstyleNums)
-    features->push_back(onum);
-
-  static constexpr hb_feature_t pnum =
-      CreateFeature(HB_TAG('p', 'n', 'u', 'm'), 1);
-  if (description.VariantNumeric().NumericSpacingValue() ==
-      FontVariantNumeric::kProportionalNums)
-    features->push_back(pnum);
-  static constexpr hb_feature_t tnum =
-      CreateFeature(HB_TAG('t', 'n', 'u', 'm'), 1);
-  if (description.VariantNumeric().NumericSpacingValue() ==
-      FontVariantNumeric::kTabularNums)
-    features->push_back(tnum);
-
-  static constexpr hb_feature_t afrc =
-      CreateFeature(HB_TAG('a', 'f', 'r', 'c'), 1);
-  if (description.VariantNumeric().NumericFractionValue() ==
-      FontVariantNumeric::kStackedFractions)
-    features->push_back(afrc);
-  static constexpr hb_feature_t frac =
-      CreateFeature(HB_TAG('f', 'r', 'a', 'c'), 1);
-  if (description.VariantNumeric().NumericFractionValue() ==
-      FontVariantNumeric::kDiagonalFractions)
-    features->push_back(frac);
-
-  static constexpr hb_feature_t ordn =
-      CreateFeature(HB_TAG('o', 'r', 'd', 'n'), 1);
-  if (description.VariantNumeric().OrdinalValue() ==
-      FontVariantNumeric::kOrdinalOn)
-    features->push_back(ordn);
-
-  static constexpr hb_feature_t zero =
-      CreateFeature(HB_TAG('z', 'e', 'r', 'o'), 1);
-  if (description.VariantNumeric().SlashedZeroValue() ==
-      FontVariantNumeric::kSlashedZeroOn)
-    features->push_back(zero);
-
-  FontFeatureSettings* settings = description.FeatureSettings();
-  if (!settings)
-    return;
-
-  // TODO(drott): crbug.com/450619 Implement feature resolution instead of
-  // just appending the font-feature-settings.
-  unsigned num_features = settings->size();
-  for (unsigned i = 0; i < num_features; ++i) {
-    hb_feature_t feature;
-    feature.tag = settings->at(i).Tag();
-    feature.value = settings->at(i).Value();
-    feature.start = 0;
-    feature.end = static_cast<unsigned>(-1);
-    features->push_back(feature);
-  }
-}
-
 inline RangeData CreateRangeData(const Font* font,
                                  TextDirection direction,
                                  hb_buffer_t* buffer) {
@@ -778,7 +585,7 @@ inline RangeData CreateRangeData(const Font* font,
   range_data.buffer = buffer;
   range_data.font = font;
   range_data.text_direction = direction;
-  SetFontFeatures(font, &range_data.font_features);
+  range_data.font_features.Initialize(*font);
   return range_data;
 }
 
@@ -786,7 +593,7 @@ class CapsFeatureSettingsScopedOverlay final {
   STACK_ALLOCATED();
 
  public:
-  CapsFeatureSettingsScopedOverlay(FeaturesVector*,
+  CapsFeatureSettingsScopedOverlay(FontFeatures*,
                                    FontDescription::FontVariantCaps);
   CapsFeatureSettingsScopedOverlay() = delete;
   ~CapsFeatureSettingsScopedOverlay();
@@ -794,12 +601,12 @@ class CapsFeatureSettingsScopedOverlay final {
  private:
   void OverlayCapsFeatures(FontDescription::FontVariantCaps);
   void PrependCounting(const hb_feature_t&);
-  FeaturesVector* features_;
+  FontFeatures* features_;
   wtf_size_t count_features_;
 };
 
 CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(
-    FeaturesVector* features,
+    FontFeatures* features,
     FontDescription::FontVariantCaps variant_caps)
     : features_(features), count_features_(0) {
   OverlayCapsFeatures(variant_caps);
@@ -807,18 +614,12 @@ CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(
 
 void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
     FontDescription::FontVariantCaps variant_caps) {
-  static constexpr hb_feature_t smcp =
-      CreateFeature(HB_TAG('s', 'm', 'c', 'p'), 1);
-  static constexpr hb_feature_t pcap =
-      CreateFeature(HB_TAG('p', 'c', 'a', 'p'), 1);
-  static constexpr hb_feature_t c2sc =
-      CreateFeature(HB_TAG('c', '2', 's', 'c'), 1);
-  static constexpr hb_feature_t c2pc =
-      CreateFeature(HB_TAG('c', '2', 'p', 'c'), 1);
-  static constexpr hb_feature_t unic =
-      CreateFeature(HB_TAG('u', 'n', 'i', 'c'), 1);
-  static constexpr hb_feature_t titl =
-      CreateFeature(HB_TAG('t', 'i', 't', 'l'), 1);
+  static constexpr hb_feature_t smcp = CreateFeature('s', 'm', 'c', 'p', 1);
+  static constexpr hb_feature_t pcap = CreateFeature('p', 'c', 'a', 'p', 1);
+  static constexpr hb_feature_t c2sc = CreateFeature('c', '2', 's', 'c', 1);
+  static constexpr hb_feature_t c2pc = CreateFeature('c', '2', 'p', 'c', 1);
+  static constexpr hb_feature_t unic = CreateFeature('u', 'n', 'i', 'c', 1);
+  static constexpr hb_feature_t titl = CreateFeature('t', 'i', 't', 'l', 1);
   if (variant_caps == FontDescription::kSmallCaps ||
       variant_caps == FontDescription::kAllSmallCaps) {
     PrependCounting(smcp);
@@ -843,7 +644,7 @@ void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
 
 void CapsFeatureSettingsScopedOverlay::PrependCounting(
     const hb_feature_t& feature) {
-  features_->push_front(feature);
+  features_->Insert(feature);
   count_features_++;
 }
 
