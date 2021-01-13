@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "services/network/public/cpp/isolation_opt_in_hints.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

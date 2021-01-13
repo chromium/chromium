@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "services/network/public/cpp/isolation_opt_in_hints.h"
 #include "url/gurl.h"
 
 namespace network {

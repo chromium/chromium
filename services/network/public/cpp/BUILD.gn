@@ -236,8 +236,6 @@ component("cpp_base") {
     "http_request_headers_mojom_traits.h",
     "isolation_info_mojom_traits.cc",
     "isolation_info_mojom_traits.h",
-    "isolation_opt_in_hints.cc",
-    "isolation_opt_in_hints.h",
     "mutable_network_traffic_annotation_tag_mojom_traits.h",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
     "net_ipc_param_traits.cc",

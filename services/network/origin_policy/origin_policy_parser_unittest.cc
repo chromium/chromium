@@ -4,7 +4,6 @@
 
 #include "services/network/origin_policy/origin_policy_parser.h"
 #include "base/strings/stringprintf.h"
-#include "services/network/public/cpp/isolation_opt_in_hints.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
