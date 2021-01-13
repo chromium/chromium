@@ -12,11 +12,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/at_exit.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -35,8 +39,7 @@ using testing::_;
 
 namespace {
 
-using MockTerminateGpuCallback =
-    base::MockCallback<base::OnceCallback<void(std::string)>>;
+using TerminateGpuCallback = base::OnceCallback<void(std::string)>;
 
 // Copied from ui/ozone/test/mock_platform_window_delegate.h to avoid
 // dependency from the whole library (it causes link problems).
@@ -73,17 +76,32 @@ struct Environment {
     mojo::core::Init();
   }
 
+  void SetTerminateGpuCallback(ui::WaylandBufferManagerHost* host) {
+    DCHECK(host);
+    host->SetTerminateGpuCallback(base::BindOnce(
+        &Environment::OnTerminateCallbackFired, base::Unretained(this)));
+  }
+
+  void OnTerminateCallbackFired(std::string message) { terminated = true; }
+
   base::test::TaskEnvironment task_environment;
-  MockTerminateGpuCallback callback_;
+  bool terminated = false;
 };
 
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
+  DCHECK(!env.terminated);
+
+  // Required for ICU initialization.
+  static base::NoDestructor<base::AtExitManager> exit_manager;
   FuzzedDataProvider data_provider(data, size);
 
   base::CommandLine::Init(0, nullptr);
+
+  // Required for base::FormatNumber that WaylandBufferManagerHost uses.
+  base::test::InitializeICUForTesting();
 
   std::vector<uint32_t> known_fourccs{
       DRM_FORMAT_R8,          DRM_FORMAT_GR88,        DRM_FORMAT_ABGR8888,
@@ -148,9 +166,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   const uint32_t kBufferId = 1;
 
-  EXPECT_CALL(*server.zwp_linux_dmabuf_v1(), CreateParams(_, _, _));
   auto* manager_host = connection->buffer_manager_host();
-  manager_host->SetTerminateGpuCallback(env.callback_.Get());
+  env.SetTerminateGpuCallback(manager_host);
   manager_host->CreateDmabufBasedBuffer(
       mojo::PlatformHandle(std::move(fd)), buffer_size, strides, offsets,
       modifiers, kFormat, kPlaneCount, kBufferId);
@@ -158,13 +175,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Wait until the buffers are created.
   env.task_environment.RunUntilIdle();
 
-  manager_host->DestroyBuffer(widget, kBufferId);
+  // If the |manager_host| fires the terminate gpu callback, we need to set the
+  // callback again.
+  if (env.terminated)
+    env.SetTerminateGpuCallback(manager_host);
 
+  manager_host->DestroyBuffer(widget, kBufferId);
   // Wait until the buffers are destroyed.
   env.task_environment.RunUntilIdle();
 
   // Pause the server so it is not running when mock expectations are validated.
   server.Pause();
+
+  // Reset the value as |env| is a static object.
+  env.terminated = false;
 
   return 0;
 }
