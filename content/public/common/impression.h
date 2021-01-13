@@ -40,7 +40,7 @@ struct CONTENT_EXPORT Impression {
 
   // Data that will be sent in conversion reports to identify this impression.
   // Declared by the impression tag.
-  uint64_t impression_data;
+  uint64_t impression_data = 0UL;
 
   // Optional expiry specifying the amount of time this impression can convert.
   // Declared by the impression tag.
