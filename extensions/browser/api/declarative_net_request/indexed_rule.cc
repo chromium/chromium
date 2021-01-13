@@ -143,7 +143,7 @@ uint8_t GetOptionsMask(const dnr_api::Rule& parsed_rule) {
   uint8_t mask = flat_rule::OptionFlag_NONE;
 
   if (parsed_rule.action.type == dnr_api::RULE_ACTION_TYPE_ALLOW)
-    mask |= flat_rule::OptionFlag_IS_WHITELIST;
+    mask |= flat_rule::OptionFlag_IS_ALLOWLIST;
 
   if (!IsCaseSensitive(parsed_rule))
     mask |= flat_rule::OptionFlag_IS_CASE_INSENSITIVE;

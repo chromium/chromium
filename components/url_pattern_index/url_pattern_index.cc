@@ -241,9 +241,9 @@ class UrlRuleFlatBufferConverter {
     static_assert(flat::OptionFlag_ANY <= std::numeric_limits<uint8_t>::max(),
                   "Option flags can not be stored in uint8_t.");
 
-    if (rule_.semantics() == proto::RULE_SEMANTICS_WHITELIST) {
-      options_ |= flat::OptionFlag_IS_WHITELIST;
-    } else if (rule_.semantics() != proto::RULE_SEMANTICS_BLACKLIST) {
+    if (rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
+      options_ |= flat::OptionFlag_IS_ALLOWLIST;
+    } else if (rule_.semantics() != proto::RULE_SEMANTICS_BLOCKLIST) {
       return false;  // Unsupported semantics.
     }
 

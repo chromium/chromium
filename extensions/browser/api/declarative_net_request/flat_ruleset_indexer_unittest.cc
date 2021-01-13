@@ -452,7 +452,7 @@ TEST_F(FlatRulesetIndexerTest, MultipleRules) {
 
   // Allow rules.
   rules_to_index.push_back(CreateIndexedRule(
-      17, kMinValidPriority, flat_rule::OptionFlag_IS_WHITELIST,
+      17, kMinValidPriority, flat_rule::OptionFlag_IS_ALLOWLIST,
       flat_rule::ElementType_PING | flat_rule::ElementType_SCRIPT,
       flat_rule::ActivationType_NONE, flat_rule::UrlPatternType_SUBSTRING,
       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_NONE,
@@ -460,7 +460,7 @@ TEST_F(FlatRulesetIndexerTest, MultipleRules) {
       dnr_api::RULE_ACTION_TYPE_ALLOW, nullptr, base::nullopt, {}, {}));
   rules_to_index.push_back(CreateIndexedRule(
       16, kMinValidPriority,
-      flat_rule::OptionFlag_IS_WHITELIST |
+      flat_rule::OptionFlag_IS_ALLOWLIST |
           flat_rule::OptionFlag_IS_CASE_INSENSITIVE,
       flat_rule::ElementType_IMAGE, flat_rule::ActivationType_NONE,
       flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_NONE,

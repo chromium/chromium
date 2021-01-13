@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   proto::UrlRule rule = testing::CreateSuffixRule("included_script.html");
   proto::UrlRule allowlist_rule = testing::CreateSuffixRule(kAllowlistedDomain);
   allowlist_rule.set_anchor_right(proto::ANCHOR_TYPE_NONE);
-  allowlist_rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+  allowlist_rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
   ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules({rule, allowlist_rule}));
 
   ui_test_utils::NavigateToURL(browser(), url);
