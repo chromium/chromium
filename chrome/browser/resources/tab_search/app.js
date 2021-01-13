@@ -40,10 +40,9 @@ export class TabSearchAppElement extends PolymerElement {
         value: '',
       },
 
-      /** @private {?Array<!WindowTabs>} */
+      /** @private {?Array<!TabData>}*/
       openTabs_: {
         type: Array,
-        observer: 'openTabsChanged_',
       },
 
       /** @private {!Array<!TabData>} */
@@ -169,7 +168,7 @@ export class TabSearchAppElement extends PolymerElement {
           'Tabs.TabSearch.WebUI.TabListDataReceived',
           Math.round(Date.now() - getTabsStartTimestamp));
 
-      this.openTabs_ = profileTabs.windows;
+      this.openTabsChanged_(profileTabs.windows);
     });
   }
 
@@ -178,19 +177,13 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onTabUpdated_(updatedTab) {
-    const updatedTabId = updatedTab.tabId;
-    const windows = this.openTabs_;
-    if (windows) {
-      for (const window of windows) {
-        const {tabs} = window;
-        for (let i = 0; i < tabs.length; ++i) {
-          // Replace the tab with the same tabId and trigger rerender.
-          if (tabs[i].tabId === updatedTabId) {
-            tabs[i] = updatedTab;
-            this.openTabs_ = windows.concat();
-            return;
-          }
-        }
+    // Replace the tab with the same tabId and trigger rerender.
+    for (let i = 0; i < this.openTabs_.length; ++i) {
+      if (this.openTabs_[i].tab.tabId === updatedTab.tabId) {
+        this.openTabs_[i] =
+            this.tabData_(updatedTab, this.openTabs_[i].inActiveWindow);
+        this.updateFilteredTabs_(this.openTabs_);
+        return;
       }
     }
   }
@@ -200,14 +193,21 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onTabsRemoved_(tabIds) {
-    const windows = this.openTabs_;
-    if (windows) {
-      const ids = new Set(tabIds);
-      for (const window of windows) {
-        window.tabs = window.tabs.filter(tab => (!ids.has(tab.tabId)));
-      }
-      this.openTabs_ = windows.concat();
+    if (!this.openTabs_) {
+      return;
     }
+
+    const ids = new Set(tabIds);
+    // Splicing in descending index order to avoid affecting preceding indices
+    // that are to be removed.
+    for (let i = this.openTabs_.length - 1; i >= 0; i--) {
+      if (ids.has(this.openTabs_[i].tab.tabId)) {
+        this.openTabs_.splice(i, 1);
+      }
+    }
+
+    this.filteredOpenTabs_ =
+        this.filteredOpenTabs_.filter(tabData => !ids.has(tabData.tab.tabId));
   }
 
   /**
@@ -304,11 +304,17 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<!WindowTabs>} newOpenTabs
+   * @param {!Array<!WindowTabs>} newOpenWindowTabs
    * @private
    */
-  openTabsChanged_(newOpenTabs) {
-    this.updateFilteredTabs_(newOpenTabs);
+  openTabsChanged_(newOpenWindowTabs) {
+    this.openTabs_ = [];
+    newOpenWindowTabs.forEach(({active, tabs}) => {
+      tabs.forEach(tab => {
+        this.openTabs_.push(this.tabData_(tab, active));
+      });
+    });
+    this.updateFilteredTabs_(this.openTabs_);
 
     // If there was no previously selected index, set the first item as
     // selected; else retain the currently selected index. If the list
@@ -415,19 +421,22 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<!WindowTabs>} windowTabs
+   * @param {!Tab} tab
+   * @param {boolean} inActiveWindow
+   * @return {!TabData}
    * @private
    */
-  updateFilteredTabs_(windowTabs) {
-    const result = [];
-    windowTabs.forEach(window => {
-      window.tabs.forEach(tab => {
-        const hostname = new URL(tab.url).hostname;
-        const inActiveWindow = window.active;
-        result.push({hostname, inActiveWindow, tab});
-      });
-    });
-    result.sort((a, b) => {
+  tabData_(tab, inActiveWindow) {
+    const hostname = new URL(tab.url).hostname;
+    return /** @type {!TabData} */ ({hostname, inActiveWindow, tab});
+  }
+
+  /**
+   * @param {!Array<!TabData>} tabs
+   * @private
+   */
+  updateFilteredTabs_(tabs) {
+    tabs.sort((a, b) => {
       // Move the active tab to the bottom of the list
       // because it's not likely users want to click on it.
       if (this.moveActiveTabToBottom_) {
@@ -444,8 +453,9 @@ export class TabSearchAppElement extends PolymerElement {
               a.tab.lastActiveTimeTicks.internalValue) :
           0;
     });
+
     this.filteredOpenTabs_ =
-        fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
+        fuzzySearch(this.searchText_, tabs, this.fuzzySearchOptions_);
     this.searchResultText_ = this.getA11ySearchResultText_();
   }
 

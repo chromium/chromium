@@ -11,11 +11,12 @@ import {TabData} from './tab_data.js';
  * @param {string} input
  * @param {!Array<!TabData>} records
  * @param {!Object} options
- * @return {!Array<!TabData>}
+ * @return {!Array<!TabData>} A new array of entries satisfying the input. If no
+ *     search input is present, returns a shallow copy of the records.
  */
 export function fuzzySearch(input, records, options) {
   if (input.length === 0) {
-    return records;
+    return [...records];
   }
   // Fuse does not handle exact match searches well. It indiscriminately
   // searches for direct matches that appear anywhere in the string. This
