@@ -12850,6 +12850,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Count of renderer view context menu items (Only commands now) used.
 
+    The user action RenderViewContextMenu.Used.IDC_CONTENT_CONTEXT_SEARCHWEBFOR
+    is also logged in case that IDC_CONTENT_CONTEXT_SEARCHWEBFOR is logged to
+    this histogram.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>

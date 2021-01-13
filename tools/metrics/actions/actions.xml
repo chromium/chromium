@@ -20308,6 +20308,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="RenderViewContextMenu.Used.IDC_CONTENT_CONTEXT_SEARCHWEBFOR">
+  <owner>avi@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Emitted whenever the IDC_CONTENT_CONTEXT_SEARCHWEBFOR context menu item is
+    used.
+
+    This is logged at the same time that the RenderViewContextMenu.Used
+    histogram is logged.
+
+    This action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="ReportBug">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

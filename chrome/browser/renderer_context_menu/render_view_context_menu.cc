@@ -981,6 +981,13 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
       "RenderViewContextMenu.Used", enum_id,
       GetUmaValueMax(UmaEnumIdLookupType::GeneralEnumId));
 
+  // Log a user action for the SEARCHWEBFOR case. This value is used as part of
+  // a high-level guiding metric, which is being migrated to user actions.
+  if (id == IDC_CONTENT_CONTEXT_SEARCHWEBFOR) {
+    base::RecordAction(base::UserMetricsAction(
+        "RenderViewContextMenu.Used.IDC_CONTENT_CONTEXT_SEARCHWEBFOR"));
+  }
+
   // Log other situations.
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK) &&
