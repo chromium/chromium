@@ -47,6 +47,9 @@ constexpr base::TimeDelta kDelayDefault = base::TimeDelta::FromSeconds(10);
 // user stops hovering over it.
 constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
 
+// Maximum width of the bubble. Longer strings will cause wrapping.
+constexpr int kBubbleMaxWidthDip = 340;
+
 // The insets from the bubble border to the text inside.
 constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 
@@ -205,9 +208,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
   body_label->SetBackgroundColor(background_color);
   body_label->SetEnabledColor(text_color);
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  if (params.preferred_width.has_value())
-    body_label->SetMultiLine(true);
+  body_label->SetMultiLine(true);
 
   if (snoozable_) {
     auto* button_container = AddChildView(std::make_unique<views::View>());
@@ -330,9 +331,16 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
   if (preferred_width_.has_value()) {
     return gfx::Size(preferred_width_.value(),
                      GetHeightForWidth(preferred_width_.value()));
-  } else {
-    return View::CalculatePreferredSize();
   }
+
+  gfx::Size layout_manager_preferred_size = View::CalculatePreferredSize();
+
+  // Wrap if the width is larger than |kBubbleMaxWidthDip|.
+  if (layout_manager_preferred_size.width() > kBubbleMaxWidthDip) {
+    return gfx::Size(kBubbleMaxWidthDip, GetHeightForWidth(kBubbleMaxWidthDip));
+  }
+
+  return layout_manager_preferred_size;
 }
 
 views::Button* FeaturePromoBubbleView::GetDismissButtonForTesting() const {
