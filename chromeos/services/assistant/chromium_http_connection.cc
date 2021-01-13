@@ -163,7 +163,8 @@ void ChromiumHttpConnection::Start() {
     receiver_set_.Add(this, data_remote.InitWithNewPipeAndPassReceiver());
     resource_request->request_body = new network::ResourceRequestBody();
     resource_request->request_body->SetToChunkedDataPipe(
-        std::move(data_remote));
+        std::move(data_remote),
+        network::ResourceRequestBody::ReadOnlyOnce(false));
   }
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
