@@ -131,8 +131,7 @@ public class SharedClipboardShareActivity
         SharedClipboardMetrics.recordDeviceClick(position);
         SharedClipboardMetrics.recordTextSize(text != null ? text.length() : 0);
 
-        SharedClipboardMessageHandler.showSendingNotification(
-                device.guid, device.clientName, text, /*retries=*/0);
+        SharedClipboardMessageHandler.showSendingNotification(device.guid, device.clientName, text);
         finish();
     }
 }

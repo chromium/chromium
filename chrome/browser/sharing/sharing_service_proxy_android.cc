@@ -44,7 +44,6 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_guid,
     const base::android::JavaParamRef<jstring>& j_text,
-    const jint j_retries,
     const base::android::JavaParamRef<jobject>& j_runnable) {
   auto callback =
       base::BindOnce(base::android::RunIntCallbackAndroid,
@@ -55,7 +54,6 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
 
   std::unique_ptr<syncer::DeviceInfo> device =
       sharing_service_->GetDeviceByGuid(guid);
-  LogSharingDeviceInfoAvailable(device != nullptr);
 
   if (!device) {
     std::move(callback).Run(
@@ -71,14 +69,13 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
       *device, base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get()),
       std::move(sharing_message),
       base::BindOnce(
-          [](int retries, base::OnceCallback<void(int)> callback,
+          [](base::OnceCallback<void(int)> callback,
              SharingSendMessageResult result,
              std::unique_ptr<chrome_browser_sharing::ResponseMessage>
                  response) {
-            LogSharedClipboardRetries(retries, result);
             std::move(callback).Run(static_cast<int>(result));
           },
-          j_retries, std::move(callback)));
+          std::move(callback)));
 }
 
 void SharingServiceProxyAndroid::GetDeviceCandidates(

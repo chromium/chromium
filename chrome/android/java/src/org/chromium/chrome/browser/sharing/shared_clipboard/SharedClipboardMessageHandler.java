@@ -30,7 +30,6 @@ public class SharedClipboardMessageHandler {
     private static final String EXTRA_DEVICE_GUID = "SharedClipboard.EXTRA_DEVICE_GUID";
     private static final String EXTRA_DEVICE_CLIENT_NAME =
             "SharedClipboard.EXTRA_DEVICE_CLIENT_NAME";
-    private static final String EXTRA_RETRIES = "SharedClipboard.EXTRA_RETRIES";
 
     /**
      * Handles the tapping of an incoming notification when text is shared with current device.
@@ -54,9 +53,8 @@ public class SharedClipboardMessageHandler {
             String guid = IntentUtils.safeGetStringExtra(intent, EXTRA_DEVICE_GUID);
             String name = IntentUtils.safeGetStringExtra(intent, EXTRA_DEVICE_CLIENT_NAME);
             String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
-            int retries = IntentUtils.safeGetIntExtra(intent, EXTRA_RETRIES, /*defaultValue=*/1);
 
-            showSendingNotification(guid, name, text, retries);
+            showSendingNotification(guid, name, text);
         }
     }
 
@@ -67,9 +65,8 @@ public class SharedClipboardMessageHandler {
      * @param guid The guid of the receiver device.
      * @param name The name of the receiver device.
      * @param text The text shared from the sender device.
-     * @param retries The number of retries so far.
      */
-    public static void showSendingNotification(String guid, String name, String text, int retries) {
+    public static void showSendingNotification(String guid, String name, String text) {
         if (TextUtils.isEmpty(guid) || TextUtils.isEmpty(name) || TextUtils.isEmpty(text)) {
             return;
         }
@@ -88,7 +85,7 @@ public class SharedClipboardMessageHandler {
         // TODO(crbug.com/1015411): Wait for device info in a more central place.
         SharingServiceProxy.getInstance().addDeviceCandidatesInitializedObserver(() -> {
             SharingServiceProxy.getInstance().sendSharedClipboardMessage(
-                    guid, text, retries, result -> {
+                    guid, text, result -> {
                         if (result == SharingSendMessageResult.SUCCESSFUL) {
                             SharingNotificationUtil.dismissNotification(
                                     NotificationConstants.GROUP_SHARED_CLIPBOARD,
@@ -107,8 +104,7 @@ public class SharedClipboardMessageHandler {
                                         new Intent(context, TryAgainReceiver.class)
                                                 .putExtra(Intent.EXTRA_TEXT, text)
                                                 .putExtra(EXTRA_DEVICE_GUID, guid)
-                                                .putExtra(EXTRA_DEVICE_CLIENT_NAME, name)
-                                                .putExtra(EXTRA_RETRIES, retries + 1),
+                                                .putExtra(EXTRA_DEVICE_CLIENT_NAME, name),
                                         PendingIntent.FLAG_UPDATE_CURRENT);
                             }
 

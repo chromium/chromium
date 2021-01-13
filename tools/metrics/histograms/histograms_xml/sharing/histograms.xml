@@ -115,6 +115,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.DeviceInfoAvailable" enum="BooleanAvailable"
     expires_after="M87">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>knollr@chromium.org</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <summary>
@@ -125,6 +128,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.DeviceLastUpdatedAge" units="hours"
     expires_after="M87">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SharingMessage" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -138,6 +144,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.DeviceLastUpdatedAgeWithResult" units="hours"
     expires_after="M87">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -171,6 +180,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.MajorVersionComparison"
     enum="SharingMajorVersionComparison" expires_after="M87">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SharingMessage" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -407,6 +419,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.SharedClipboardRetries" units="retries"
     expires_after="M87">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>

@@ -17369,8 +17369,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SIGNALLING_MESSAGE" label="Signalling Message"/>
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAge"/>
-  <affected-histogram name="Sharing.MajorVersionComparison"/>
+  <affected-histogram name="Sharing.DeviceLastUpdatedAge">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Sharing.MajorVersionComparison">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Sharing.MessageAckTime"/>
   <affected-histogram name="Sharing.MessageAckTime.Android"/>
   <affected-histogram name="Sharing.MessageAckTime.ChromeOS"/>
@@ -17429,8 +17437,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NetworkError" label="Network error"/>
   <suffix name="PayloadTooLarge" label="Payload is too large"/>
   <suffix name="Successful" label="Successful"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAgeWithResult"/>
-  <affected-histogram name="Sharing.SharedClipboardRetries"/>
+  <affected-histogram name="Sharing.DeviceLastUpdatedAgeWithResult">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Sharing.SharedClipboardRetries">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingWebRtcTimingEvent" separator=".">
