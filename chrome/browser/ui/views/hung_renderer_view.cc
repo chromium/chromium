@@ -80,8 +80,8 @@ void HungPagesTableModel::InitForWebContents(
   DCHECK(!hang_monitor_restarter.is_null());
 
   DCHECK(!render_widget_host_);
-  DCHECK(!process_observation_.IsObserving());
-  DCHECK(!widget_observation_.IsObserving());
+  DCHECK(!process_observer_.IsObservingSources());
+  DCHECK(!widget_observer_.IsObservingSources());
   DCHECK(tab_observers_.empty());
 
   render_widget_host_ = render_widget_host;
@@ -93,8 +93,8 @@ void HungPagesTableModel::InitForWebContents(
         std::make_unique<WebContentsObserverImpl>(this, hung_contents));
   }
 
-  process_observation_.Observe(render_widget_host_->GetProcess());
-  widget_observation_.Observe(render_widget_host_);
+  process_observer_.Add(render_widget_host_->GetProcess());
+  widget_observer_.Add(render_widget_host_);
 
   // The world is different.
   if (observer_)
@@ -102,8 +102,8 @@ void HungPagesTableModel::InitForWebContents(
 }
 
 void HungPagesTableModel::Reset() {
-  process_observation_.Reset();
-  widget_observation_.Reset();
+  process_observer_.RemoveAll();
+  widget_observer_.RemoveAll();
   tab_observers_.clear();
   render_widget_host_ = nullptr;
 
@@ -158,8 +158,8 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observation_.IsObservingSource(render_widget_host_));
-  widget_observation_.Reset();
+  DCHECK(widget_observer_.IsObserving(render_widget_host_));
+  widget_observer_.Remove(widget_host);
   render_widget_host_ = nullptr;
 
   // Notify the delegate.

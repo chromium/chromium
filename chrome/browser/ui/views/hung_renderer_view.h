@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_observer.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -124,13 +124,11 @@ class HungPagesTableModel : public ui::TableModel,
   // some more until the renderer process responds).
   base::RepeatingClosure hang_monitor_restarter_;
 
-  base::ScopedObservation<content::RenderProcessHost,
-                          content::RenderProcessHostObserver>
-      process_observation_{this};
+  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
+      process_observer_{this};
 
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      widget_observation_{this};
+  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
+      widget_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HungPagesTableModel);
 };
