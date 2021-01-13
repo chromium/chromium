@@ -53,7 +53,6 @@ base::Optional<net::IPEndPoint> GetLocalAddr(
   return local_addr;
 }
 
-// True if |hostname| ends with either ".local" or ".local.".
 bool ResemblesMulticastDNSName(const std::string& hostname) {
   return base::EndsWith(hostname, ".local") ||
          base::EndsWith(hostname, ".local.");

@@ -59,58 +59,40 @@ struct RecordedCall {
 class MockHostResolver : public network::mojom::HostResolver {
  public:
   explicit MockHostResolver(
-      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver)
-      : receiver_(this) {
+      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
+      net::HostResolver* internal_resolver)
+      : receiver_(this), internal_resolver_(internal_resolver) {
     receiver_.Bind(std::move(resolver_receiver));
   }
 
   MockHostResolver(const MockHostResolver&) = delete;
   MockHostResolver& operator=(const MockHostResolver&) = delete;
 
-  static std::map<std::string, std::string>& known_hosts() {
-    static base::NoDestructor<std::map<std::string, std::string>> hosts;
-    return *hosts;
-  }
-
-  void ResolveHost(const ::net::HostPortPair& host_port_pair,
+  void ResolveHost(const ::net::HostPortPair& host,
                    const ::net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    ::mojo::PendingRemote<network::mojom::ResolveHostClient>
                        pending_response_client) override {
+    DCHECK(!internal_request_);
+    DCHECK(!response_client_.is_bound());
+
+    internal_request_ = internal_resolver_->CreateRequest(
+        host, network_isolation_key,
+        net::NetLogWithSource::Make(net::NetLog::Get(),
+                                    net::NetLogSourceType::NONE),
+        base::nullopt);
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
 
-    std::string host = host_port_pair.host();
-    auto iter = known_hosts().find(host);
-    if (iter != known_hosts().end())
-      host = iter->second;
-
-    net::IPAddress remote_address;
-    // TODO(crbug.com/1141241): Replace if/else with AssignFromIPLiteral.
-    if (host.find(':') != std::string::npos) {
-      // GURL expects IPv6 hostnames to be surrounded with brackets.
-      std::string host_brackets = base::StrCat({"[", host, "]"});
-      url::Component host_comp(0, host_brackets.size());
-      std::array<uint8_t, 16> bytes;
-      EXPECT_TRUE(url::IPv6AddressToNumber(host_brackets.data(), host_comp,
-                                           bytes.data()));
-      remote_address = net::IPAddress(bytes.data(), bytes.size());
-    } else {
-      // Otherwise the string is an IPv4 address.
-      url::Component host_comp(0, host.size());
-      std::array<uint8_t, 4> bytes;
-      int num_components;
-      url::CanonHostInfo::Family family = url::IPv4AddressToNumber(
-          host.data(), host_comp, bytes.data(), &num_components);
-      EXPECT_EQ(family, url::CanonHostInfo::IPV4);
-      EXPECT_EQ(num_components, 4);
-      remote_address = net::IPAddress(bytes.data(), bytes.size());
+    int rv = internal_request_->Start(
+        base::BindOnce(&MockHostResolver::OnComplete, base::Unretained(this)));
+    if (rv != net::ERR_IO_PENDING) {
+      response_client->OnComplete(rv, internal_request_->GetResolveErrorInfo(),
+                                  internal_request_->GetAddressResults());
+      return;
     }
-    EXPECT_EQ(remote_address.ToString(), host);
 
-    response_client->OnComplete(net::OK, net::ResolveErrorInfo(),
-                                net::AddressList::CreateFromIPAddress(
-                                    remote_address, host_port_pair.port()));
+    response_client_ = std::move(response_client);
   }
 
   void MdnsListen(
@@ -122,7 +104,20 @@ class MockHostResolver : public network::mojom::HostResolver {
   }
 
  private:
+  void OnComplete(int error) {
+    DCHECK(response_client_.is_bound());
+    DCHECK(internal_request_);
+
+    response_client_->OnComplete(error,
+                                 internal_request_->GetResolveErrorInfo(),
+                                 internal_request_->GetAddressResults());
+    response_client_.reset();
+  }
+
+  std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;
+  mojo::Remote<network::mojom::ResolveHostClient> response_client_;
   mojo::Receiver<network::mojom::HostResolver> receiver_;
+  net::HostResolver* const internal_resolver_;
 };
 
 class MockNetworkContext : public network::TestNetworkContext {
@@ -163,13 +158,29 @@ class MockNetworkContext : public network::TestNetworkContext {
       const base::Optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     DCHECK(!config_overrides.has_value());
+    DCHECK(!internal_resolver_);
     DCHECK(!host_resolver_);
-    host_resolver_ = std::make_unique<MockHostResolver>(std::move(receiver));
+
+    internal_resolver_ = net::HostResolver::CreateStandaloneResolver(
+        net::NetLog::Get(), /*options=*/base::nullopt, host_mapping_rules_,
+        /*enable_caching=*/false);
+    host_resolver_ = std::make_unique<MockHostResolver>(
+        std::move(receiver), internal_resolver_.get());
+  }
+
+  // If set to non-empty, the mapping rules will be applied to requests to the
+  // created internal host resolver. See MappedHostResolver for details. Should
+  // be called before CreateHostResolver().
+  void set_host_mapping_rules(std::string host_mapping_rules) {
+    DCHECK(!internal_resolver_);
+    host_mapping_rules_ = std::move(host_mapping_rules);
   }
 
  private:
   const net::Error result_;
   std::vector<RecordedCall> history_;
+  std::string host_mapping_rules_;
+  std::unique_ptr<net::HostResolver> internal_resolver_;
   std::unique_ptr<network::mojom::HostResolver> host_resolver_;
 };
 
@@ -287,9 +298,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Hostname) {
 
   const char kExampleHostname[] = "mail.example.com";
   const char kExampleAddress[] = "98.76.54.32";
-  MockHostResolver::known_hosts()[kExampleHostname] = kExampleAddress;
+  const std::string mapping_rules =
+      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
   MockNetworkContext mock_network_context(net::OK);
+  mock_network_context.set_host_mapping_rules(mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result = base::StringPrintf(
       "openTcp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
