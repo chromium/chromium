@@ -177,6 +177,11 @@ std::pair<SkColorType, GrGLenum> GetSkiaAndGlColorTypesForPlane(
 }  // namespace
 
 // static
+const char* VideoEncoderTraits::GetNameForDevTools() {
+  return "VideoEncoder(WebCodecs)";
+}
+
+// static
 VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
                                    const VideoEncoderInit* init,
                                    ExceptionState& exception_state) {
@@ -187,40 +192,12 @@ VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
 VideoEncoder::VideoEncoder(ScriptState* script_state,
                            const VideoEncoderInit* init,
                            ExceptionState& exception_state)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      state_(V8CodecState::Enum::kUnconfigured),
-      script_state_(script_state) {
+    : Base(script_state, init, exception_state) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
-
-  // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
-  if (IsMainThread()) {
-    logger_ = std::make_unique<CodecLogger>(
-        GetExecutionContext(), Thread::MainThread()->GetTaskRunner());
-  } else {
-    // This will create a logger backed by a NullMediaLog, which does nothing.
-    logger_ = std::make_unique<CodecLogger>();
-  }
-
-  media::MediaLog* log = logger_->log();
-
-  log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("VideoEncoder(WebCodecs)"));
-  log->SetProperty<media::MediaLogProperty::kFrameUrl>(
-      GetExecutionContext()->Url().GetString().Ascii());
-
-  output_callback_ = init->output();
-  if (init->hasError())
-    error_callback_ = init->error();
 }
 
-VideoEncoder::~VideoEncoder() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-int32_t VideoEncoder::encodeQueueSize() {
-  return requested_encodes_;
-}
+VideoEncoder::~VideoEncoder() = default;
 
 VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     const VideoEncoderConfig* config,
@@ -334,6 +311,11 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   }
 
   return true;
+}
+
+VideoFrame* VideoEncoder::CloneFrame(VideoFrame* frame,
+                                     ExecutionContext* context) {
+  return frame->CloneFromNative(context);
 }
 
 void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
@@ -451,188 +433,6 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.level == new_config.level &&
          original_config.color_space == new_config.color_space &&
          original_config.acc_pref == new_config.acc_pref;
-}
-
-void VideoEncoder::configure(const VideoEncoderConfig* config,
-                             ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (ThrowIfCodecStateClosed(state_, "configure", exception_state))
-    return;
-
-  auto* parsed_config = ParseConfig(config, exception_state);
-  if (!parsed_config) {
-    DCHECK(exception_state.HadException());
-    return;
-  }
-
-  if (!VerifyCodecSupport(parsed_config, exception_state)) {
-    DCHECK(exception_state.HadException());
-    return;
-  }
-
-  Request* request = MakeGarbageCollected<Request>();
-  request->reset_count = reset_count_;
-  if (media_encoder_ && active_config_ &&
-      state_.AsEnum() == V8CodecState::Enum::kConfigured &&
-      CanReconfigure(*active_config_, *parsed_config)) {
-    request->type = Request::Type::kReconfigure;
-  } else {
-    state_ = V8CodecState(V8CodecState::Enum::kConfigured);
-    request->type = Request::Type::kConfigure;
-  }
-  active_config_ = parsed_config;
-  EnqueueRequest(request);
-}
-
-void VideoEncoder::encode(VideoFrame* frame,
-                          const VideoEncoderEncodeOptions* opts,
-                          ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (ThrowIfCodecStateClosed(state_, "encode", exception_state))
-    return;
-
-  if (ThrowIfCodecStateUnconfigured(state_, "encode", exception_state))
-    return;
-
-  DCHECK(active_config_);
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is destroyed.");
-    return;
-  }
-
-  // This will fail if |frame| is already destroyed.
-  auto* internal_frame = frame->CloneFromNative(context);
-
-  if (!internal_frame) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Cannot encode destroyed frame.");
-    return;
-  }
-
-  // At this point, we have "consumed" the frame, and will destroy the clone
-  // in ProcessEncode().
-  frame->destroy();
-
-  Request* request = MakeGarbageCollected<Request>();
-  request->reset_count = reset_count_;
-  request->type = Request::Type::kEncode;
-  request->frame = internal_frame;
-  request->encodeOpts = opts;
-  ++requested_encodes_;
-  EnqueueRequest(request);
-}
-
-void VideoEncoder::close(ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (ThrowIfCodecStateClosed(state_, "close", exception_state))
-    return;
-
-  state_ = V8CodecState(V8CodecState::Enum::kClosed);
-
-  ResetInternal();
-  media_encoder_.reset();
-  output_callback_.Clear();
-  error_callback_.Clear();
-}
-
-ScriptPromise VideoEncoder::flush(ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
-    return ScriptPromise();
-
-  if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
-    return ScriptPromise();
-
-  Request* request = MakeGarbageCollected<Request>();
-  request->resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
-  request->reset_count = reset_count_;
-  request->type = Request::Type::kFlush;
-  EnqueueRequest(request);
-  return request->resolver->Promise();
-}
-
-void VideoEncoder::reset(ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
-    return;
-
-  state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
-  ResetInternal();
-  media_encoder_.reset();
-}
-
-void VideoEncoder::ResetInternal() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  reset_count_++;
-  while (!requests_.empty()) {
-    Request* pending_req = requests_.TakeFirst();
-    DCHECK(pending_req);
-    if (pending_req->resolver)
-      pending_req->resolver.Release()->Resolve();
-    if (pending_req->frame)
-      pending_req->frame.Release()->destroy();
-  }
-  stall_request_processing_ = false;
-}
-
-void VideoEncoder::HandleError(DOMException* ex) {
-  if (state_.AsEnum() == V8CodecState::Enum::kClosed)
-    return;
-
-  // Save a temp before we clear the callback.
-  V8WebCodecsErrorCallback* error_callback = error_callback_.Get();
-
-  state_ = V8CodecState(V8CodecState::Enum::kClosed);
-
-  ResetInternal();
-
-  // Errors are permanent. Shut everything down.
-  error_callback_.Clear();
-  media_encoder_.reset();
-  output_callback_.Clear();
-
-  // Prevent further logging.
-  logger_->Neuter();
-
-  if (!script_state_->ContextIsValid() || !error_callback)
-    return;
-
-  ScriptState::Scope scope(script_state_);
-  error_callback->InvokeAndReportException(nullptr, ex);
-}
-
-void VideoEncoder::EnqueueRequest(Request* request) {
-  requests_.push_back(request);
-  ProcessRequests();
-}
-
-void VideoEncoder::ProcessRequests() {
-  while (!requests_.empty() && !stall_request_processing_) {
-    Request* request = requests_.TakeFirst();
-    DCHECK(request);
-    switch (request->type) {
-      case Request::Type::kConfigure:
-        ProcessConfigure(request);
-        break;
-      case Request::Type::kReconfigure:
-        ProcessReconfigure(request);
-        break;
-      case Request::Type::kEncode:
-        ProcessEncode(request);
-        break;
-      case Request::Type::kFlush:
-        ProcessFlush(request);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
 }
 
 void VideoEncoder::ProcessEncode(Request* request) {
@@ -859,14 +659,6 @@ void VideoEncoder::CallOutputCallback(
   output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
 }
 
-void VideoEncoder::ContextDestroyed() {
-  logger_->Neuter();
-}
-
-bool VideoEncoder::HasPendingActivity() const {
-  return stall_request_processing_ || !requests_.empty();
-}
-
 // This function reads pixel data from textures associated with |txt_frame|
 // and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.
@@ -973,19 +765,4 @@ VideoEncoder::ReadbackTextureBackedFrameToMemory(
   return result;
 }
 
-void VideoEncoder::Trace(Visitor* visitor) const {
-  visitor->Trace(active_config_);
-  visitor->Trace(script_state_);
-  visitor->Trace(output_callback_);
-  visitor->Trace(error_callback_);
-  visitor->Trace(requests_);
-  ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-}
-
-void VideoEncoder::Request::Trace(Visitor* visitor) const {
-  visitor->Trace(frame);
-  visitor->Trace(encodeOpts);
-  visitor->Trace(resolver);
-}
 }  // namespace blink
