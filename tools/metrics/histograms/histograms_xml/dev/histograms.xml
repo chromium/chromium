@@ -126,6 +126,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DevTools.DeveloperResourceLoaded"
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2021-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>sigurds@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) several enum values encoding which load method
+    was used, whether a fallback was used (and why), and whether the method
+    succeeded or not.
+
+    Some explanations to make sense of the enum values:
+
+    LoadsThroughPage = LoadThroughPageViaTarget + LoadThroughPageViaFrame
+    SuccessfulLoadsThroughPage = LoadsThroughPage - LoadThroughPageFailure
+
+    LoadThroughPageFallback is the number of loads that can in principle be
+    loaded through the page, but had to use the fallback because either loading
+    through the page failed (LoadThroughPageFailure), or there was insufficient
+    information to dispatch the load through the page; the number of such loads
+    can be computed as LoadThroughPageFallback - LoadThroughPageFailure.
+
+    The number of loads not eligible for loading through the page can be
+    computed as FallbackPerOverride + FallbackPerProtocol, where
+    FallbackPerOverride indicates loads where the DevTools user disabled loading
+    through the page via an override, and FallbackPerProtocol indicates loads
+    where DevTools could not load the resource via the page due to the
+    resource's protocol scheme.
+
+    The total number of loads that used the fallback can be computed as
+    LoadThroughPageFallback + FallbackPerOverride + FallbackPerProtocol. Adding
+    SuccessfulLoadsThroughPage to that number gives the total number of loads.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.DualScreenDeviceEmulated"
     enum="DevToolsDualScreenDeviceEmulated" expires_after="M87">
   <owner>yangguo@chromium.org</owner>

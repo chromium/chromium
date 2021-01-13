@@ -16883,6 +16883,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Font Editor opened"/>
 </enum>
 
+<enum name="DevToolsDeveloperResourceLoaded">
+  <int value="0" label="LoadThroughPageViaTarget"/>
+  <int value="1" label="LoadThroughPageViaFrame"/>
+  <int value="2" label="LoadThroughPageFailure"/>
+  <int value="3" label="LoadThroughPageFallback"/>
+  <int value="4" label="FallbackAfterFailure"/>
+  <int value="5" label="FallbackPerOverride"/>
+  <int value="6" label="FallbackPerProtocol"/>
+  <int value="7" label="FallbackFailure"/>
+</enum>
+
 <enum name="DevToolsDualScreenDeviceEmulated">
   <int value="0" label="Dual-screen or fold device selected"/>
   <int value="1" label="Dual-screen span mode selected"/>
