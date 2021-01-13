@@ -156,6 +156,8 @@ constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
+constexpr char kFocusBehaviorHTML[] = "components/oobe_focus_behavior.html";
+constexpr char kFocusBehaviorJS[] = "components/oobe_focus_behavior.js";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
@@ -667,6 +669,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
   source->AddResourcePath(kI18nBehaviorJS,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS);
+  source->AddResourcePath(kFocusBehaviorHTML,
+                          IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_HTML);
+  source->AddResourcePath(kFocusBehaviorJS,
+                          IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_JS);
 
   source->AddResourcePath(kCommonStylesHTML,
                           IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
