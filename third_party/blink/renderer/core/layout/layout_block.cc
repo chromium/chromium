@@ -494,6 +494,21 @@ void LayoutBlock::AddLayoutOverflowFromChildren() {
     AddLayoutOverflowFromBlockChildren();
 }
 
+OverflowClipAxes LayoutBlock::ComputeOverflowClipAxes() const {
+  const OverflowClipAxes layout_box_clip_axes =
+      LayoutBox::ComputeOverflowClipAxes();
+  if (layout_box_clip_axes != kNoOverflowClip)
+    return layout_box_clip_axes;
+  if (!HasNonVisibleOverflow())
+    return kNoOverflowClip;
+  if (IsScrollContainer())
+    return kOverflowClipBothAxis;
+  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipX) |
+         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipY);
+}
+
 void LayoutBlock::ComputeVisualOverflow(bool) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());

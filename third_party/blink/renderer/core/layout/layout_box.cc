@@ -7774,16 +7774,9 @@ PhysicalRect LayoutBox::DebugRect() const {
 
 OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
-  if (ShouldApplyPaintContainment() || HasControlClip())
-    return kOverflowClipBothAxis;
-  if (!HasNonVisibleOverflow())
-    return kNoOverflowClip;
-  if (IsScrollContainer())
-    return kOverflowClipBothAxis;
-  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipX) |
-         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipY);
+  return (ShouldApplyPaintContainment() || HasControlClip())
+             ? kOverflowClipBothAxis
+             : kNoOverflowClip;
 }
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {

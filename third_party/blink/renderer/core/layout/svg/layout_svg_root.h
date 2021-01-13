@@ -115,7 +115,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     if (ShouldApplyViewportClip())
       return kOverflowClipBothAxis;
-    return LayoutBox::ComputeOverflowClipAxes();
+    return LayoutReplaced::ComputeOverflowClipAxes();
   }
   LayoutRect ComputeContentsVisualOverflow() const;
 
