@@ -7306,7 +7306,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstanceID.GetToken.NetErrorCode" enum="NetErrorCodes"
-    expires_after="M90">
+    expires_after="M94">
   <owner>peter@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -7329,7 +7329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="M90">
+    enum="GCMRegistrationRequestStatus" expires_after="M94">
   <owner>peter@chromium.org</owner>
   <summary>Status code of the outcome of GetToken request.</summary>
 </histogram>
@@ -8046,7 +8046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="M87">
+    expires_after="M96">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -12380,6 +12380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PushMessaging.DeliveryStatus" enum="PushEventStatus"
     expires_after="2021-06-13">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When a Service Worker receives a push message, this records whether the
     overall operation was successful, or otherwise the type of error
@@ -12388,8 +12389,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus.FindServiceWorker"
-    enum="ServiceWorkerStatusCode" expires_after="M90">
+    enum="ServiceWorkerStatusCode" expires_after="M96">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When attempting to deliver a push message to a Service Worker, this records
     the result of finding the Service Worker registration given its ID and
@@ -12398,8 +12400,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus.ServiceWorkerEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M87">
+    enum="ServiceWorkerStatusCode" expires_after="M96">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When a Service Worker receives a push message, this records the precise
     result received from the Service Worker code.
@@ -12407,8 +12410,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.GetRegistrationStatus"
-    enum="PushGetRegistrationStatus" expires_after="M87">
+    enum="PushGetRegistrationStatus" expires_after="M94">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When a webpage asks for details about its current push messaging
     registration, this records whether the request is successful, or otherwise
@@ -12417,7 +12421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.PushSubscriptionChangeStatus"
-    enum="PushEventStatus" expires_after="M87">
+    enum="PushEventStatus" expires_after="M94">
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
@@ -12443,7 +12447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.RegistrationStatus"
-    enum="PushRegistrationStatus" expires_after="M87">
+    enum="PushRegistrationStatus" expires_after="M94">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -12483,8 +12487,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.UnregistrationGCMResult" enum="GCMClientResult"
-    expires_after="M87">
+    expires_after="M94">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When unregistering a legacy non-InstanceID push messaging subscription, this
     records the result returned by the GCMDriver (note that exceeding the
@@ -12493,7 +12498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.UnregistrationIIDResult" enum="InstanceIDResult"
-    expires_after="M90">
+    expires_after="M94">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -12504,8 +12509,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.UnregistrationReason"
-    enum="PushUnregistrationReason" expires_after="M87">
+    enum="PushUnregistrationReason" expires_after="M94">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When unregistering a website from push messaging, this records the reason
     why it is being unregistered.
@@ -12513,8 +12519,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.UnregistrationStatus"
-    enum="PushUnregistrationStatus" expires_after="M87">
+    enum="PushUnregistrationStatus" expires_after="M94">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When unregistering a website from push messaging, this records whether the
     request is successful, or otherwise the type of error encountered.
@@ -12522,8 +12529,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.UserVisibleStatus" enum="PushUserVisibleStatus"
-    expires_after="M87">
+    expires_after="M96">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     When a Service Worker receives a push message, this records whether it
     showed user-visible UX (like a notification), or whether we showed a forced
