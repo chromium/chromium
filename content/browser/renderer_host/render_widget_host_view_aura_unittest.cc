@@ -337,23 +337,23 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   ~MockRenderWidgetHostImpl() override {}
 
   // Extracts |latency_info| for wheel event, and stores it in
-  // |lastWheelOrTouchEventLatencyInfo|.
+  // |last_wheel_or_touch_event_latency_info_|.
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& ui_latency) override {
     RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
                                                            ui_latency);
-    lastWheelOrTouchEventLatencyInfo = ui::LatencyInfo(ui_latency);
+    last_wheel_or_touch_event_latency_info_ = ui::LatencyInfo(ui_latency);
   }
 
   // Extracts |latency_info| for touch event, and stores it in
-  // |lastWheelOrTouchEventLatencyInfo|.
+  // |last_wheel_or_touch_event_latency_info_|.
   void ForwardTouchEventWithLatencyInfo(
       const blink::WebTouchEvent& touch_event,
       const ui::LatencyInfo& ui_latency) override {
     RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(touch_event,
                                                            ui_latency);
-    lastWheelOrTouchEventLatencyInfo = ui::LatencyInfo(ui_latency);
+    last_wheel_or_touch_event_latency_info_ = ui::LatencyInfo(ui_latency);
   }
 
   void ForwardGestureEventWithLatencyInfo(
@@ -397,7 +397,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return new MockRenderWidgetHostImpl(delegate, agent_scheduling_group,
                                         routing_id);
   }
-  ui::LatencyInfo lastWheelOrTouchEventLatencyInfo;
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
 
@@ -417,6 +416,10 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     widget_.SetTouchActionFromMain(touch_action);
   }
 
+  const ui::LatencyInfo& LastWheelOrTouchEventLatencyInfo() const {
+    return last_wheel_or_touch_event_latency_info_;
+  }
+
  private:
   MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
                            AgentSchedulingGroupHost& agent_scheduling_group,
@@ -428,17 +431,16 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                              /*hidden=*/false,
                              /*renderer_initiated_creation=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {
-    lastWheelOrTouchEventLatencyInfo = ui::LatencyInfo();
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-    BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        widget_.GetNewRemote());
+    BindWidgetInterfaces(mojo::AssociatedRemote<blink::mojom::WidgetHost>()
+                             .BindNewEndpointAndPassDedicatedReceiver(),
+                         widget_.GetNewRemote());
   }
 
   void NotifyNewContentRenderingTimeoutForTesting() override {
     new_content_rendering_timeout_fired_ = true;
   }
 
+  ui::LatencyInfo last_wheel_or_touch_event_latency_info_;
   bool new_content_rendering_timeout_fired_ = false;
   MockWidgetInputHandler input_handler_;
   MockWidget widget_;
@@ -560,16 +562,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
                                           aura_test_helper_->GetContext(),
                                           gfx::Rect());
 
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>
-        parent_frame_widget_host;
-    auto parent_frame_widget_host_receiver =
-        parent_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> parent_frame_widget;
-    auto parent_frame_widget_receiver =
-        parent_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     parent_host_->BindFrameWidgetInterfaces(
-        std::move(parent_frame_widget_host_receiver),
-        parent_frame_widget.Unbind());
+        mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>()
+            .BindNewEndpointAndPassDedicatedReceiver(),
+        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
     parent_host_->RendererWidgetCreated(/*for_frame_widget=*/true);
     // The RenderWidgetHostImpl sets up additional connections over mojo to the
     // renderer widget, which we need to complete before the test runs.
@@ -3371,8 +3367,9 @@ TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
   ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(2, 2), ui::EventTimeForNow(),
                          0, 0, 0, 0, 0, 2);
   view_->OnScrollEvent(&scroll);
-  EXPECT_EQ(widget_host_->lastWheelOrTouchEventLatencyInfo.source_event_type(),
-            ui::SourceEventType::WHEEL);
+  EXPECT_EQ(
+      widget_host_->LastWheelOrTouchEventLatencyInfo().source_event_type(),
+      ui::SourceEventType::WHEEL);
 
   // TOUCH source exists.
   ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(30, 30),
@@ -3386,8 +3383,9 @@ TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   view_->OnTouchEvent(&press);
   view_->OnTouchEvent(&move);
-  EXPECT_EQ(widget_host_->lastWheelOrTouchEventLatencyInfo.source_event_type(),
-            ui::SourceEventType::TOUCH);
+  EXPECT_EQ(
+      widget_host_->LastWheelOrTouchEventLatencyInfo().source_event_type(),
+      ui::SourceEventType::TOUCH);
   view_->OnTouchEvent(&release);
 }
 
@@ -6114,19 +6112,17 @@ TEST_F(InputMethodResultAuraTest, ChangeTextDirectionAndLayoutAlignment) {
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
 
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>
-        blink_frame_widget_host;
-    auto blink_frame_widget_host_receiver =
-        blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
-    auto blink_frame_widget_receiver =
-        blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-
+    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote;
+    mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
+        frame_widget_receiver =
+            frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
     static_cast<RenderWidgetHostImpl*>(views_[index]->GetRenderWidgetHost())
-        ->BindFrameWidgetInterfaces(std::move(blink_frame_widget_host_receiver),
-                                    blink_frame_widget.Unbind());
+        ->BindFrameWidgetInterfaces(
+            mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>()
+                .BindNewEndpointAndPassDedicatedReceiver(),
+            frame_widget_remote.Unbind());
 
-    FakeFrameWidget fake_frame_widget(std::move(blink_frame_widget_receiver));
+    FakeFrameWidget fake_frame_widget(std::move(frame_widget_receiver));
 
     ime_finish_session_call.Run();
     base::RunLoop().RunUntilIdle();

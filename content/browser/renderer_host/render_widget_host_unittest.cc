@@ -617,11 +617,10 @@ class RenderWidgetHostTest : public testing::Test {
   }
 
   void ReinitalizeHost() {
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     host_->BindWidgetInterfaces(
-        widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+        mojo::AssociatedRemote<blink::mojom::WidgetHost>()
+            .BindNewEndpointAndPassDedicatedReceiver(),
         widget_.GetNewRemote());
-
     host_->BindFrameWidgetInterfaces(
         mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>()
             .BindNewEndpointAndPassDedicatedReceiver(),

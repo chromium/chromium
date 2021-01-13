@@ -33,6 +33,7 @@
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_render_widget_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -129,18 +130,14 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
 
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     widget_host_->BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+        mojo::AssociatedRemote<blink::mojom::WidgetHost>()
+            .BindNewEndpointAndPassDedicatedReceiver(),
         widget_.GetNewRemote());
-
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
-    auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     widget_host_->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        frame_widget.Unbind());
+        mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>()
+            .BindNewEndpointAndPassDedicatedReceiver(),
+        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
 
     blink::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(1, 2, 3, 4);

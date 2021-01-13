@@ -273,21 +273,15 @@ bool TestRenderViewHost::CreateRenderView(
     // Pretend that we started a renderer process and created the renderer Frame
     // with its Widget. We bind all the mojom interfaces, but they all just talk
     // into the void.
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-    mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
-    auto blink_widget_receiver =
-        blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-    GetWidget()->BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        blink_widget.Unbind());
-
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
-    auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-    GetWidget()->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        frame_widget.Unbind());
+    RenderWidgetHostImpl* main_frame_widget = main_frame->GetRenderWidgetHost();
+    main_frame_widget->BindWidgetInterfaces(
+        mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>()
+            .InitWithNewEndpointAndPassReceiver(),
+        TestRenderWidgetHost::CreateStubWidgetRemote());
+    main_frame_widget->BindFrameWidgetInterfaces(
+        mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
+            .InitWithNewEndpointAndPassReceiver(),
+        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
 
     // This also initializes the RenderWidgetHost attached to the frame.
     main_frame->RenderFrameCreated();
