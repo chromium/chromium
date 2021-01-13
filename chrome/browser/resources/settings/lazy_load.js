@@ -94,7 +94,7 @@ export {kControlledByLookup} from './site_settings/site_settings_behavior.js';
 export {ContentSettingProvider, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 
 // </if>
