@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
@@ -113,15 +114,19 @@ export class ManageProfilesBrowserProxy {
   loadSignInProfileCreationFlow(profileColor) {}
 
   /**
+   * Retrieves custom avatar list for the select avatar dialog.
+   * * @return {!Promise<!Array<!AvatarIcon>>}
+   */
+  getAvailableIcons() {}
+
+  /**
    * Creates local profile
    * @param {string} profileName
    * @param {number} profileColor
-   * @param {string} avatarUrl
-   * @param {boolean} isGeneric
+   * @param {number} avatarIndex
    * @param {boolean} createShortcut
    */
-  createProfile(
-      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {}
+  createProfile(profileName, profileColor, avatarIndex, createShortcut) {}
 
   /**
    * Sets the local profile name.
@@ -187,11 +192,15 @@ export class ManageProfilesBrowserProxyImpl {
   }
 
   /** @override */
-  createProfile(
-      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {
+  getAvailableIcons() {
+    return sendWithPromise('getAvailableIcons');
+  }
+
+  /** @override */
+  createProfile(profileName, profileColor, avatarIndex, createShortcut) {
     chrome.send(
         'createProfile',
-        [profileName, profileColor, avatarUrl, isGeneric, createShortcut]);
+        [profileName, profileColor, avatarIndex, createShortcut]);
   }
 
   /** @override */

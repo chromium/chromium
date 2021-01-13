@@ -1,4 +1,4 @@
-<style include="profile-creation-shared">
+<style include="profile-creation-shared profile-picker-shared">
   :host {
     --vertical-gap: 24px;
   }
@@ -65,21 +65,6 @@
     overflow: auto;
   }
 
-  #wrapperContainer::-webkit-scrollbar {
-    width: var(--scrollbar-width);
-  }
-
-  /* Track */
-  #wrapperContainer::-webkit-scrollbar-track {
-    border-radius: var(--scrollbar-width);
-  }
-
-  /* Handle */
-  #wrapperContainer::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-background);
-    border-radius: var(--scrollbar-width);
-  }
-
   #wrapper > * {
     flex-grow: 0;
     flex-shrink: 0;
@@ -143,6 +128,32 @@
     width: 111px;
   }
 
+  cr-profile-avatar-selector {
+    --avatar-size: 72px;
+    --avatar-spacing: 18px;
+    --avatar-grid-columns: 5;
+    height: fit-content;
+    padding-bottom: 15px;
+    padding-inline-start: 15px;
+    padding-top: 15px;
+    width: fit-content;
+  }
+
+  #selectAvatarWrapper {
+    height: 394px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #doneButton {
+    width : 32px;
+  }
+
   @media (prefers-color-scheme: dark) {
     #nameInput {
       --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
@@ -164,11 +175,11 @@
             --theme-shape-color:[[profileThemeInfo.themeShapeColor]]">
   <iron-icon class="banner" icon="profiles:customize-banner"></iron-icon>
   <cr-icon-button id="backButton" class="icon-arrow-back"
-        on-click="onClickBack_" aria-label="$i18n{backButtonLabel}">
+      on-click="onClickBack_" aria-label="$i18n{backButtonLabel}">
   </cr-icon-button>
   <h2 id="title">$i18n{localProfileCreationTitle}</h2>
   <div id="avatarContainer">
-    <img class="avatar" alt="" src$="[[profileThemeInfo.themeGenericAvatar]]">
+    <img class="avatar" alt="" src$="[[selectedAvatar_.url]]">
     <div id="customizeAvatarEllipse"></div>
     <cr-icon-button id="customizeAvatarIcon"
         iron-icon="profiles:create" on-click="onCustomizeAvatarClick_"
@@ -177,7 +188,7 @@
   </div>
 </div>
 
-<div id="wrapperContainer">
+<div id="wrapperContainer" class="custom-scrollbar">
   <div id="wrapper">
     <cr-input id="nameInput" value="{{profileName_}}" pattern="[[pattern_]]"
         placeholder="$i18n{createProfileNamePlaceholder}"
@@ -198,11 +209,28 @@
 <div class="footer">
   <cr-checkbox checked="{{createShortcut_}}"
       hidden="[[!isProfileShortcutsEnabled_]]">
-      $i18n{createDesktopShortcutLabel}
+    $i18n{createDesktopShortcutLabel}
   </cr-checkbox>
 
   <cr-button id="save" class="action-button" on-click="onSaveClick_"
-            disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+      disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
     $i18n{createProfileConfirm}
   </cr-button>
 </div>
+
+<cr-dialog id="selectAvatarDialog">
+  <div slot="title">$i18n{selectAnAvatarDialogTitle}</div>
+  <div slot="body">
+    <div id="selectAvatarWrapper" class="custom-scrollbar">
+      <cr-profile-avatar-selector avatars="[[availableIcons_]]"
+          selected-avatar="{{selectedAvatar_}}">
+      </cr-profile-avatar-selector>
+    </div>
+  </div>
+  <div id="buttonContainer" slot="button-container">
+    <cr-button id="doneButton" class="action-button"
+        on-click="onDoneSelectAvatarClick_">
+      $i18n{selectAvatarDoneButtonLabel}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -209,6 +209,10 @@ void ProfilePickerHandler::RegisterMessages() {
   // TODO(crbug.com/1115056): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
   web_ui()->RegisterMessageCallback(
+      "getAvailableIcons",
+      base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableIcons,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
                           base::Unretained(this)));
@@ -356,31 +360,33 @@ void ProfilePickerHandler::HandleGetProfileThemeInfo(
   ResolveJavascriptCallback(callback_id, std::move(dict));
 }
 
+void ProfilePickerHandler::HandleGetAvailableIcons(
+    const base::ListValue* args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args->GetSize());
+  const base::Value& callback_id = args->GetList()[0];
+  ResolveJavascriptCallback(callback_id,
+                            *profiles::GetCustomProfileAvatarIconsAndLabels());
+}
+
 void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
-  // profileName, profileColor, avatarUrl, isGeneric, createShortcut
-  CHECK_EQ(5U, args->GetList().size());
+  CHECK_EQ(4U, args->GetList().size());
   base::string16 profile_name =
       base::UTF8ToUTF16(args->GetList()[0].GetString());
   // profileColor is undefined for the default theme.
   base::Optional<SkColor> profile_color;
   if (args->GetList()[1].is_int())
     profile_color = args->GetList()[1].GetInt();
-  std::string avatar_url = args->GetList()[2].GetString();
-  bool is_generic = args->GetList()[3].GetBool();
-  bool create_shortcut = args->GetList()[4].GetBool();
-  DCHECK(base::IsStringASCII(avatar_url));
+  size_t avatar_index = args->GetList()[2].GetInt();
+  bool create_shortcut = args->GetList()[3].GetBool();
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   CHECK(!profile_name.empty());
-  if (is_generic) {
-    avatar_url = profiles::GetDefaultAvatarIconUrl(
-        profiles::GetPlaceholderAvatarIndex());
-  }
 
 #ifndef NDEBUG
-  size_t icon_index;
-  DCHECK(profiles::IsDefaultAvatarIconUrl(avatar_url, &icon_index));
+  DCHECK(profiles::IsDefaultAvatarIconIndex(avatar_index));
 #endif
 
+  std::string avatar_url = profiles::GetDefaultAvatarIconUrl(avatar_index);
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
   ProfileManager::CreateMultiProfileAsync(

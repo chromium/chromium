@@ -20,9 +20,9 @@ suite('cr-profile-avatar-selector', function() {
     const avatarSelector = /** @type {!CrProfileAvatarSelectorElement} */ (
         document.createElement('cr-profile-avatar-selector'));
     avatarSelector.avatars = [
-      {url: 'chrome://avatar1.png', label: 'avatar1'},
-      {url: 'chrome://avatar2.png', label: 'avatar2'},
-      {url: 'chrome://avatar3.png', label: 'avatar3'}
+      {url: 'chrome://avatar1.png', label: 'avatar1', index: '1'},
+      {url: 'chrome://avatar2.png', label: 'avatar2', index: '2'},
+      {url: 'chrome://avatar3.png', label: 'avatar3', index: '3'}
     ];
     return avatarSelector;
   }

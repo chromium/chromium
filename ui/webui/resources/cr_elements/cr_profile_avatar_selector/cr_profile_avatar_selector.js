@@ -40,9 +40,6 @@ Polymer({
       notify: true,
     },
 
-    /** @private {?HTMLElement} */
-    selectedAvatarElement_: Object,
-
     ignoreModifiedKeyEvents: {
       type: Boolean,
       value: false,
@@ -59,19 +56,31 @@ Polymer({
   },
 
   /** @private */
-  getSelectedClass_(isSelected) {
+  getSelectedClass_(avatarItem) {
     // TODO(dpapad): Rename 'iron-selected' to 'selected' now that this CSS
     // class is not assigned by any iron-* behavior.
-    return isSelected ? 'iron-selected' : '';
+    return this.isAvatarSelected(avatarItem) ? 'iron-selected' : '';
   },
 
   /**
-   * @param {boolean} isSelected
+   * @param {AvatarIcon} avatarItem
    * @return {string}
    * @private
    */
-  getCheckedAttribute_(isSelected) {
-    return isSelected ? 'true' : 'false';
+  getCheckedAttribute_(avatarItem) {
+    return this.isAvatarSelected(avatarItem) ? 'true' : 'false';
+  },
+
+  /**
+   * @param {AvatarIcon} avatarItem
+   * @return {boolean}
+   * @private
+   */
+  isAvatarSelected(avatarItem) {
+    return !!avatarItem &&
+        (avatarItem.selected ||
+         (!!this.selectedAvatar &&
+          this.selectedAvatar.index === avatarItem.index));
   },
 
   /**
@@ -88,13 +97,6 @@ Polymer({
    * @private
    */
   onAvatarTap_(e) {
-    // Manual selection for profile creation
-    if (this.selectedAvatarElement_) {
-      this.selectedAvatarElement_.classList.remove('iron-selected');
-    }
-    this.selectedAvatarElement_ = /** @type {!HTMLElement} */ (e.target);
-    this.selectedAvatarElement_.classList.add('iron-selected');
-
     // |selectedAvatar| is set to pass back selection to the owner of this
     // component.
     this.selectedAvatar =

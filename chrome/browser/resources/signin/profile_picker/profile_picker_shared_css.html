@@ -51,5 +51,20 @@
       position: absolute;
       width: 100%;
     }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: var(--scrollbar-width);
+    }
+
+    /* Track */
+    .custom-scrollbar::-webkit-scrollbar-track {
+      border-radius: var(--scrollbar-width);
+    }
+
+    /* Handle */
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-background);
+      border-radius: var(--scrollbar-width);
+    }
   </style>
 </template>

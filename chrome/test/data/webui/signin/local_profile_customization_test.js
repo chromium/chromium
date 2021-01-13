@@ -21,6 +21,8 @@ suite('LocalProfileCustomizationTest', function() {
   /** @type {!TestManageProfilesBrowserProxy} */
   let browserProxy;
 
+  const defaultAvatarIndex = 26;
+
   async function resetCustomizeProfileElement() {
     document.body.innerHTML = '';
     customizeProfileElement = /** @type {!LocalProfileCustomizationElement} */ (
@@ -52,18 +54,16 @@ suite('LocalProfileCustomizationTest', function() {
   /**
    * @param {string} profileName
    * @param {number} profileColor
-   * @param {string} avatarUrl
-   * @param {boolean} isGeneric
+   * @param {number} avatarIndex
    * @param {boolean} createShortcut
    */
   async function verifyCreateProfileCalledWithParams(
-      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {
+      profileName, profileColor, avatarIndex, createShortcut) {
     const args = await browserProxy.whenCalled('createProfile');
     assertEquals(args[0], profileName);
     assertEquals(args[1], profileColor);
-    assertEquals(args[2], avatarUrl);
-    assertEquals(args[3], isGeneric);
-    assertEquals(args[4], createShortcut);
+    assertEquals(args[2], avatarIndex);
+    assertEquals(args[3], createShortcut);
     browserProxy.resetResolver('createProfile');
   }
 
@@ -86,7 +86,7 @@ suite('LocalProfileCustomizationTest', function() {
     assertFalse(customizeProfileElement.$$('#save').disabled);
     customizeProfileElement.$$('#save').click();
     await verifyCreateProfileCalledWithParams(
-        'Work', browserProxy.profileThemeInfo.color, '', true, false);
+        'Work', browserProxy.profileThemeInfo.color, defaultAvatarIndex, false);
   });
 
   test('ThemeSelectionChanges', async function() {
@@ -122,7 +122,8 @@ suite('LocalProfileCustomizationTest', function() {
     customizeProfileElement.$$('#nameInput').value = 'Personal';
     customizeProfileElement.$$('#save').click();
     await verifyCreateProfileCalledWithParams(
-        'Personal', browserProxy.profileThemeInfo.color, '', true, false);
+        'Personal', browserProxy.profileThemeInfo.color, defaultAvatarIndex,
+        false);
   });
 
   test('createShortcut', async function() {
@@ -142,7 +143,8 @@ suite('LocalProfileCustomizationTest', function() {
     customizeProfileElement.$$('#nameInput').value = 'Personal';
     customizeProfileElement.$$('#save').click();
     await verifyCreateProfileCalledWithParams(
-        'Personal', browserProxy.profileThemeInfo.color, '', true, false);
+        'Personal', browserProxy.profileThemeInfo.color, defaultAvatarIndex,
+        false);
     // Profile creation in progress should disable the save button.
     assertTrue(customizeProfileElement.$$('#save').disabled);
     // Fire profile creation finished.
@@ -153,6 +155,7 @@ suite('LocalProfileCustomizationTest', function() {
     assertTrue(createShortcut.checked);
     customizeProfileElement.$$('#save').click();
     await verifyCreateProfileCalledWithParams(
-        'Personal', browserProxy.profileThemeInfo.color, '', true, true);
+        'Personal', browserProxy.profileThemeInfo.color, defaultAvatarIndex,
+        true);
   });
 });

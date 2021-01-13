@@ -72,21 +72,6 @@
     width: 100%;
   }
 
-  .profiles-container::-webkit-scrollbar {
-    width: var(--scrollbar-width);
-  }
-
-  /* Track */
-  .profiles-container::-webkit-scrollbar-track {
-    border-radius: var(--scrollbar-width);
-  }
-
-  /* Handle */
-  .profiles-container::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-background);
-    border-radius: var(--scrollbar-width);
-  }
-
   .profile-item {
     align-items: center;
     border-radius: 12px;
@@ -168,7 +153,7 @@
   <h3>$i18n{mainViewSubtitle}</h3>
 </div>
 <div id="wrapper" hidden$="[[!profilesListLoaded_]]">
-  <div class="profiles-container">
+  <div class="profiles-container custom-scrollbar">
     <template is="dom-repeat" items="[[profilesList_]]">
       <profile-card
           class="profile-item" profile-state="[[item]]">
