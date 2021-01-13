@@ -50,6 +50,11 @@ class BluetoothHelper {
   virtual std::string GetBluetoothPublicAddress(
       const std::string& device_id) = 0;
 
+  // Prints a string containing the expected service data for the provided
+  // device IDs.
+  virtual std::string ExpectedServiceDataToString(
+      const DeviceIdPairSet& device_id_pair_set) = 0;
+
  protected:
   BluetoothHelper();
 

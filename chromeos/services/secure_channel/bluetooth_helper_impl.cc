@@ -140,6 +140,40 @@ std::string BluetoothHelperImpl::GetBluetoothPublicAddress(
   return std::string();
 }
 
+std::string BluetoothHelperImpl::ExpectedServiceDataToString(
+    const DeviceIdPairSet& device_id_pair_set) {
+  std::stringstream ss;
+
+  for (const DeviceIdPair& pair : device_id_pair_set) {
+    ss << "{Device ID: "
+       << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+              pair.remote_device_id())
+       << " - ";
+
+    base::Optional<multidevice::RemoteDeviceRef> device =
+        remote_device_cache_->GetRemoteDevice(
+            base::nullopt /* instance_id */,
+            pair.remote_device_id() /* legacy_device_id */);
+
+    if (!device) {
+      ss << "<missing metadata>},";
+      continue;
+    }
+
+    std::vector<DataWithTimestamp> data_for_device =
+        background_eid_generator_->GenerateNearestEids(
+            multidevice::ToCryptAuthSeedList(device->beacon_seeds()));
+    if (data_for_device.empty()) {
+      ss << "[]},";
+      continue;
+    }
+
+    ss << DataWithTimestamp::ToDebugString(data_for_device) << "},";
+  }
+
+  return ss.str();
+}
+
 base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
 BluetoothHelperImpl::PerformIdentifyRemoteDevice(
     const std::string& service_data,
