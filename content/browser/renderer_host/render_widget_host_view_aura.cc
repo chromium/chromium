@@ -307,6 +307,11 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
       device_scale_factor_(0.0f),
       event_handler_(new RenderWidgetHostViewEventHandler(host(), this, this)),
       frame_sink_id_(host()->GetFrameSinkId()) {
+  // CreateDelegatedFrameHostClient() and CreateAuraWindow() assume that the
+  // FrameSinkId is valid. RenderWidgetHostImpl::GetFrameSinkId() always returns
+  // a valid FrameSinkId.
+  DCHECK(frame_sink_id_.is_valid());
+
   CreateDelegatedFrameHostClient();
 
   host()->SetView(this);
@@ -2015,14 +2020,10 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
                                                   : SK_ColorWHITE);
   // This needs to happen only after |window_| has been initialized using
   // Init(), because it needs to have the layer.
-  if (frame_sink_id_.is_valid())
-    window_->SetEmbedFrameSinkId(frame_sink_id_);
+  window_->SetEmbedFrameSinkId(frame_sink_id_);
 }
 
 void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
-  if (!frame_sink_id_.is_valid())
-    return;
-
   delegated_frame_host_client_ =
       std::make_unique<DelegatedFrameHostClientAura>(this);
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
