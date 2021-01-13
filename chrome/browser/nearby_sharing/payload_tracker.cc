@@ -128,8 +128,6 @@ void PayloadTracker::OnTransferUpdate() {
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Payloads are in progress at " << percent
-                  << " percent.";
   last_update_progress_ = current_progress;
   last_update_timestamp_ = current_time;
 
