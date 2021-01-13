@@ -334,6 +334,11 @@ extern const char kSettingsRefreshDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
+// Title and description for the flag to use a sites blocklist when generating
+// URLs for Shared Highlighting (Link to Text).
+extern const char kSharedHighlightingUseBlocklistIOSName[];
+extern const char kSharedHighlightingUseBlocklistIOSDescription[];
+
 // Title and description for the flag to enable annotating web forms with
 // Autofill field type predictions as placeholder.
 extern const char kShowAutofillTypePredictionsName[];

@@ -4,6 +4,8 @@
 
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -36,6 +38,15 @@ TEST(DisabledSitesTest, SpecificPages) {
 }
 
 TEST(DisabledSitesTest, NonMatchingHost) {
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
+}
+
+TEST(DisabledSitesTest, FeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(kSharedHighlightingUseBlocklist);
+
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
 }
 

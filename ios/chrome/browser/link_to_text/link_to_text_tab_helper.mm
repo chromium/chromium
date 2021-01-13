@@ -8,6 +8,7 @@
 #import "base/optional.h"
 #import "base/timer/elapsed_timer.h"
 #import "base/values.h"
+#import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -40,7 +41,11 @@ void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
 }
 
 bool LinkToTextTabHelper::ShouldOffer() {
-  // TODO(crbug.com/1134708): add more checks, like text only.
+  if (!shared_highlighting::ShouldOfferLinkToText(
+          web_state_->GetLastCommittedURL())) {
+    return false;
+  }
+
   web::WebFrame* main_frame =
       web_state_->GetWebFramesManager()->GetMainWebFrame();
   return web_state_->ContentIsHTML() && main_frame &&

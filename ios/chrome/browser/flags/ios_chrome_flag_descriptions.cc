@@ -259,6 +259,14 @@ const char kIOSSharedHighlightingColorChangeDescription[] =
     "Changes the Shared Highlighting color of the text fragment"
     "away from the default yellow in iOS. Works with #scroll-to-text-ios flag.";
 
+const char kSharedHighlightingUseBlocklistIOSName[] =
+    "Shared Highlighting blocklist";
+const char kSharedHighlightingUseBlocklistIOSDescription[] =
+    "Uses a blocklist to disable Shared Highlighting link generation on "
+    "certain sites where personalized or dynamic content or other technical "
+    "restrictions make it unlikely that a URL can be generated and actually "
+    "work when shared.";
+
 const char kLocationPermissionsPromptName[] =
     "Location Permisssions Prompt Experiment";
 const char kLocationPermissionsPromptDescription[] =

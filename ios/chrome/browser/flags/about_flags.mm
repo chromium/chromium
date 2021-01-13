@@ -45,6 +45,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/security_state/core/features.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -598,6 +599,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSNewOmniboxImplementation)},
+    {"shared-highlighting-use-blocklist",
+     flag_descriptions::kSharedHighlightingUseBlocklistIOSName,
+     flag_descriptions::kSharedHighlightingUseBlocklistIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingUseBlocklist)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

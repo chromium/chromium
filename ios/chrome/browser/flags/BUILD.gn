@@ -35,6 +35,7 @@ source_set("flags") {
     "//components/search_provider_logos",
     "//components/security_state/core",
     "//components/send_tab_to_self",
+    "//components/shared_highlighting/core/common",
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
     "//components/signin/public/base",

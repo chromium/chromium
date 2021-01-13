@@ -84,6 +84,7 @@ include_rules = [
   "+components/services/patch",
   "+components/services/unzip",
   "+components/sessions",
+  "+components/shared_highlighting",
   "+components/signin/core/browser",
   "+components/signin/public",
   "+components/signin/ios/browser",

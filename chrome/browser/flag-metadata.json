@@ -4439,6 +4439,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "shared-highlighting-use-blocklist",
+    "owners": ["tmartino"],
+    "expiry_milestone": 91
+  },
+  {
     "name": "sharing-device-expiration",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 86
