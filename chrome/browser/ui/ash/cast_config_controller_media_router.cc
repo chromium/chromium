@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -32,12 +31,7 @@ namespace {
 
 base::Optional<media_router::MediaRouter*> media_router_for_test_;
 
-// Returns the MediaRouter instance for the current primary profile, if there is
-// one.
-media_router::MediaRouter* GetMediaRouter() {
-  if (media_router_for_test_)
-    return *media_router_for_test_;
-
+Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())
     return nullptr;
 
@@ -45,7 +39,16 @@ media_router::MediaRouter* GetMediaRouter() {
   if (!user)
     return nullptr;
 
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+}
+
+// Returns the MediaRouter instance for the current primary profile, if there is
+// one.
+media_router::MediaRouter* GetMediaRouter() {
+  if (media_router_for_test_)
+    return *media_router_for_test_;
+
+  Profile* profile = GetProfile();
   if (!profile)
     return nullptr;
 
@@ -144,11 +147,6 @@ void CastDeviceCache::OnRoutesUpdated(
 ////////////////////////////////////////////////////////////////////////////////
 // CastConfigControllerMediaRouter:
 
-void CastConfigControllerMediaRouter::SetMediaRouterForTest(
-    media_router::MediaRouter* media_router) {
-  media_router_for_test_ = media_router;
-}
-
 CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
   // TODO(jdufault): This should use a callback interface once there is an
   // equivalent. See crbug.com/666005.
@@ -157,6 +155,20 @@ CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
 }
 
 CastConfigControllerMediaRouter::~CastConfigControllerMediaRouter() = default;
+
+// static
+bool CastConfigControllerMediaRouter::MediaRouterEnabled() {
+  if (media_router_for_test_)
+    return true;
+  Profile* profile = GetProfile();
+  return profile ? media_router::MediaRouterEnabled(profile) : false;
+}
+
+// static
+void CastConfigControllerMediaRouter::SetMediaRouterForTest(
+    media_router::MediaRouter* media_router) {
+  media_router_for_test_ = media_router;
+}
 
 CastDeviceCache* CastConfigControllerMediaRouter::device_cache() {
   // The CastDeviceCache instance is lazily allocated because the MediaRouter
@@ -243,15 +255,18 @@ CastConfigControllerMediaRouter::GetSinksAndRoutes() {
 }
 
 void CastConfigControllerMediaRouter::CastToSink(const std::string& sink_id) {
-  // TODO(imcheng): Pass in tab casting timeout.
-  GetMediaRouter()->CreateRoute(
-      media_router::MediaSource::ForUnchosenDesktop().id(), sink_id,
-      url::Origin::Create(GURL("http://cros-cast-origin/")), nullptr,
-      base::DoNothing(), base::TimeDelta(), false);
+  if (GetMediaRouter()) {
+    // TODO(imcheng): Pass in tab casting timeout.
+    GetMediaRouter()->CreateRoute(
+        media_router::MediaSource::ForUnchosenDesktop().id(), sink_id,
+        url::Origin::Create(GURL("http://cros-cast-origin/")), nullptr,
+        base::DoNothing(), base::TimeDelta(), false);
+  }
 }
 
 void CastConfigControllerMediaRouter::StopCasting(const std::string& route_id) {
-  GetMediaRouter()->TerminateRoute(route_id);
+  if (GetMediaRouter())
+    GetMediaRouter()->TerminateRoute(route_id);
 }
 
 void CastConfigControllerMediaRouter::Observe(

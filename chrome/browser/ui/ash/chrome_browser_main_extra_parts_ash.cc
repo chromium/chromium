@@ -120,8 +120,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       std::make_unique<NetworkConnectDelegateChromeOS>();
   chromeos::NetworkConnect::Initialize(network_connect_delegate_.get());
 
-  cast_config_controller_media_router_ =
-      std::make_unique<CastConfigControllerMediaRouter>();
+  if (CastConfigControllerMediaRouter::MediaRouterEnabled()) {
+    cast_config_controller_media_router_ =
+        std::make_unique<CastConfigControllerMediaRouter>();
+  }
 
   // Needed by AmbientController in ash.
   if (chromeos::features::IsAmbientModeEnabled())

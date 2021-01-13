@@ -86,9 +86,11 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
 
 base::WeakPtr<media_router::WebContentsPresentationManager>
 GetPresentationManager(content::WebContents* web_contents) {
-  return web_contents
-             ? media_router::WebContentsPresentationManager::Get(web_contents)
-             : nullptr;
+  if (!web_contents ||
+      !media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
+    return nullptr;
+  }
+  return media_router::WebContentsPresentationManager::Get(web_contents);
 }
 
 }  // anonymous namespace
@@ -316,18 +318,19 @@ void MediaNotificationService::Session::MarkActiveIfNecessary() {
 MediaNotificationService::MediaNotificationService(Profile* profile,
                                                    bool show_from_all_profiles)
     : overlay_media_notifications_manager_(this) {
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast) &&
-      media_router::MediaRouterEnabled(profile)) {
-    cast_notification_provider_ =
-        std::make_unique<CastMediaNotificationProvider>(
-            profile, this,
-            base::BindRepeating(
-                &MediaNotificationService::OnCastNotificationsChanged,
-                base::Unretained(this)));
-  }
-  if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
-    presentation_request_notification_provider_ =
-        std::make_unique<PresentationRequestNotificationProvider>(this);
+  if (media_router::MediaRouterEnabled(profile)) {
+    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
+      cast_notification_provider_ =
+          std::make_unique<CastMediaNotificationProvider>(
+              profile, this,
+              base::BindRepeating(
+                  &MediaNotificationService::OnCastNotificationsChanged,
+                  base::Unretained(this)));
+    }
+    if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
+      presentation_request_notification_provider_ =
+          std::make_unique<PresentationRequestNotificationProvider>(this);
+    }
   }
 
   // Connect to the controller manager so we can create media controllers for

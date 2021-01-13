@@ -55,8 +55,9 @@ class CastHandler : public protocol::Cast::Backend,
   // Constructor that does not wire the handler to a dispatcher. Used in tests.
   explicit CastHandler(content::WebContents* web_contents);
 
-  // Initializes the handler if it hasn't been initialized yet.
-  void EnsureInitialized();
+  // Initializes the handler if it hasn't been initialized yet. Returns
+  // Response::Success() if initialization succeeds, otherwise an error.
+  protocol::Response EnsureInitialized();
 
   void StartPresentation(
       const std::string& sink_name,
