@@ -35,6 +35,13 @@ class CertStoreBridge : public mojom::CertStoreHost {
   void BindToInvitation(mojo::OutgoingInvitation* invitation);
   void OnBootstrapMojoConnection(bool result);
 
+  bool is_proxy_bound() const { return cert_store_proxy_.is_bound(); }
+
+  // Send the latest information about Chrome OS keys to arc-keymasterd.
+  void UpdatePlaceholderKeysInKeymaster(
+      std::vector<mojom::ChromeOsKeyPtr> keys,
+      mojom::CertStoreInstance::UpdatePlaceholderKeysCallback callback);
+
   // CertStoreHost overrides.
   void GetSecurityTokenOperation(
       mojo::PendingReceiver<mojom::SecurityTokenOperation> operation_receiver,

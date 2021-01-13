@@ -24,21 +24,15 @@
 
 namespace arc {
 
-namespace {
+CertDescription::CertDescription(crypto::RSAPrivateKey* placeholder_key,
+                                 CERTCertificate* nss_cert)
+    : placeholder_key(placeholder_key), nss_cert(nss_cert) {}
 
-// Exports subject public key info and encodes it in base64.
-std::string exportSpki(crypto::RSAPrivateKey* rsa) {
-  std::vector<uint8_t> spki;
-  if (!rsa->ExportPublicKey(&spki)) {
-    LOG(ERROR) << "Key export has failed.";
-    return "";
-  }
-  std::string encoded_spki;
-  base::Base64Encode(std::string(spki.begin(), spki.end()), &encoded_spki);
-  return encoded_spki;
-}
+CertDescription::CertDescription(CertDescription&& other) = default;
 
-}  // namespace
+CertDescription& CertDescription::operator=(CertDescription&& other) = default;
+
+CertDescription::~CertDescription() = default;
 
 ArcCertInstaller::ArcCertInstaller(content::BrowserContext* context)
     : ArcCertInstaller(Profile::FromBrowserContext(context),
@@ -60,7 +54,7 @@ ArcCertInstaller::~ArcCertInstaller() {
 }
 
 std::map<std::string, std::string> ArcCertInstaller::InstallArcCerts(
-    const std::vector<net::ScopedCERTCertificate>& certificates,
+    std::vector<CertDescription> certificates,
     InstallArcCertsCallback callback) {
   VLOG(1) << "ArcCertInstaller::InstallArcCerts";
 
@@ -75,7 +69,8 @@ std::map<std::string, std::string> ArcCertInstaller::InstallArcCerts(
   std::map<std::string, std::string> required_cert_names;
   callback_ = std::move(callback);
 
-  for (const auto& nss_cert : certificates) {
+  for (const auto& certificate : certificates) {
+    const net::ScopedCERTCertificate& nss_cert = certificate.nss_cert;
     if (!nss_cert) {
       LOG(ERROR)
           << "An invalid certificate has been passed to ArcCertInstaller";
@@ -84,7 +79,7 @@ std::map<std::string, std::string> ArcCertInstaller::InstallArcCerts(
 
     std::string cert_name =
         x509_certificate_model::GetCertNameOrNickname(nss_cert.get());
-    required_cert_names[cert_name] = InstallArcCert(cert_name, nss_cert);
+    required_cert_names[cert_name] = InstallArcCert(cert_name, certificate);
   }
 
   // Cleanup |known_cert_names_| according to |required_cert_names|.
@@ -103,7 +98,7 @@ std::map<std::string, std::string> ArcCertInstaller::InstallArcCerts(
 
 std::string ArcCertInstaller::InstallArcCert(
     const std::string& name,
-    const net::ScopedCERTCertificate& nss_cert) {
+    const CertDescription& certificate) {
   VLOG(1) << "ArcCertInstaller::InstallArcCert " << name;
 
   // Do not install certificate if it is already installed or pending.
@@ -113,7 +108,7 @@ std::string ArcCertInstaller::InstallArcCert(
   }
 
   std::string der_cert;
-  if (!net::x509_util::GetDEREncoded(nss_cert.get(), &der_cert)) {
+  if (!net::x509_util::GetDEREncoded(certificate.nss_cert.get(), &der_cert)) {
     LOG(ERROR) << "Certificate encoding error: " << name;
     return "";
   }
@@ -132,8 +127,7 @@ std::string ArcCertInstaller::InstallArcCert(
   std::string der_cert64;
   base::Base64Encode(der_cert, &der_cert64);
 
-  std::unique_ptr<crypto::RSAPrivateKey> rsa =
-      crypto::RSAPrivateKey::Create(2048);
+  crypto::RSAPrivateKey* rsa = certificate.placeholder_key.get();
   std::string pkcs12 = CreatePkcs12ForKey(name, rsa->key());
   command_proto.set_payload(
       base::StringPrintf("{\"type\":\"INSTALL_KEY_PAIR\","
@@ -153,7 +147,7 @@ std::string ArcCertInstaller::InstallArcCert(
     pending_commands_[next_id_++] = name;
     queue_->AddJob(std::move(job));
 
-    return exportSpki(rsa.get());
+    return ExportSpki(rsa);
   }
 }
 

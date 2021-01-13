@@ -16,6 +16,8 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_cert_installer_utils.h"
+#include "chrome/browser/chromeos/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
+#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -121,6 +124,60 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
           chromeos::platform_keys::TokenId::kUser, public_key_spki_der,
           base::BindOnce(&CheckKeyLocationAndCorporateFlag, std::move(callback),
                          public_key_spki_der, context));
+}
+
+std::vector<CertDescription> PrepareCertDescriptions(
+    net::ScopedCERTCertificateList nss_certs) {
+  std::vector<CertDescription> certificates;
+  for (auto& nss_cert : nss_certs) {
+    if (!nss_cert)
+      continue;
+    // Generate the placeholder RSA key that will be installed in ARC.
+    auto placeholder_key = crypto::RSAPrivateKey::Create(2048);
+    DCHECK(placeholder_key);
+
+    certificates.emplace_back(placeholder_key.release(), nss_cert.release());
+  }
+  return certificates;
+}
+
+std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeys(
+    const std::vector<CertDescription>& certificates) {
+  std::vector<keymaster::mojom::ChromeOsKeyPtr> chrome_os_keys;
+  for (const auto& certificate : certificates) {
+    CERTCertificate* nss_cert = certificate.nss_cert.get();
+    DCHECK(nss_cert);
+
+    // Fetch PKCS#11 CKA_LABEL.
+    SECKEYPrivateKey* priv_key =
+        PK11_FindKeyByAnyCert(nss_cert, nullptr /* wincx */);
+    if (!priv_key)
+      continue;
+    crypto::ScopedSECKEYPrivateKey priv_key_destroyer(priv_key);
+
+    char* nickname = PK11_GetPrivateKeyNickname(priv_key);
+    if (!nickname)
+      continue;
+    std::string pkcs11_label(nickname);
+
+    // Fetch PKCS#11 CKA_ID.
+    SECItem* id_item = PK11_GetLowLevelKeyIDForPrivateKey(priv_key);
+    if (!id_item)
+      continue;
+    crypto::ScopedSECItem sec_item_destroyer(id_item);
+    std::string pkcs11_id(id_item->data, id_item->data + id_item->len);
+
+    // Build a mojo ChromeOsKey and store it in the output vector.
+    keymaster::mojom::ChapsKeyDataPtr key_data =
+        keymaster::mojom::ChapsKeyData::New(pkcs11_label, pkcs11_id);
+    keymaster::mojom::ChromeOsKeyPtr key = keymaster::mojom::ChromeOsKey::New(
+        ExportSpki(certificate.placeholder_key.get()),
+        keymaster::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
+
+    chrome_os_keys.push_back(std::move(key));
+  }
+
+  return chrome_os_keys;
 }
 
 }  // namespace
@@ -239,13 +296,39 @@ void CertStoreService::OnCertificatesListed(
 
 void CertStoreService::OnFilteredAllowedCertificates(
     net::ScopedCERTCertificateList allowed_certs) {
+  ArcKeymasterBridge* const keymaster_bridge =
+      ArcKeymasterBridge::GetForBrowserContext(context_);
+  if (!keymaster_bridge) {
+    LOG(ERROR) << "Missing instance of ArcKeymasterBridge.";
+    return;
+  }
+
+  std::vector<CertDescription> certificates =
+      PrepareCertDescriptions(std::move(allowed_certs));
+  std::vector<keymaster::mojom::ChromeOsKeyPtr> keys =
+      PrepareChromeOsKeys(certificates);
+
+  keymaster_bridge->UpdatePlaceholderKeys(
+      std::move(keys),
+      base::BindOnce(&CertStoreService::OnUpdatedKeymasterKeys,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(certificates)));
+}
+
+void CertStoreService::OnUpdatedKeymasterKeys(
+    std::vector<CertDescription> certificate_descriptions,
+    bool success) {
+  if (!success) {
+    LOG(WARNING) << "Could not update placeholder keys with keymaster.";
+    return;
+  }
+
   certificate_cache_.clear_need_policy_update();
-  auto certificates = certificate_cache_.Update(std::move(allowed_certs));
+  certificate_cache_.Update(certificate_descriptions);
 
   // Maps cert name to dummy SPKI.
   std::map<std::string, std::string> installed_keys =
       installer_->InstallArcCerts(
-          std::move(certificates),
+          std::move(certificate_descriptions),
           base::BindOnce(&CertStoreService::OnArcCertsInstalled,
                          weak_ptr_factory_.GetWeakPtr()));
 
@@ -255,34 +338,35 @@ void CertStoreService::OnFilteredAllowedCertificates(
 CertStoreService::CertificateCache::CertificateCache() = default;
 CertStoreService::CertificateCache::~CertificateCache() = default;
 
-net::ScopedCERTCertificateList CertStoreService::CertificateCache::Update(
-    net::ScopedCERTCertificateList allowed_certs) {
-  net::ScopedCERTCertificateList certs;
+void CertStoreService::CertificateCache::Update(
+    const std::vector<CertDescription>& certificates) {
   // Map cert name to real SPKI.
   key_info_by_name_cache_.clear();
   std::set<std::string> new_required_cert_names;
-  for (auto& cert : allowed_certs) {
-    if (!cert)
-      continue;
+  for (const auto& certificate : certificates) {
+    CERTCertificate* nss_cert = certificate.nss_cert.get();
+    DCHECK(nss_cert);
+
+    // Fetch certificate name.
     std::string cert_name =
-        x509_certificate_model::GetCertNameOrNickname(cert.get());
+        x509_certificate_model::GetCertNameOrNickname(nss_cert);
+
+    // Fetch PKCS#11 CKA_ID.
     SECKEYPrivateKey* priv_key =
-        PK11_FindKeyByAnyCert(cert.get(), nullptr /* wincx */);
+        PK11_FindKeyByAnyCert(nss_cert, nullptr /* wincx */);
     if (!priv_key)
       continue;
-    // Get the CKA_ID attribute for a key.
+    crypto::ScopedSECKEYPrivateKey priv_key_destroyer(priv_key);
+
     SECItem* sec_item = PK11_GetLowLevelKeyIDForPrivateKey(priv_key);
     std::string pkcs11_id;
     if (sec_item) {
-      pkcs11_id = base::HexEncode(sec_item->data, sec_item->len);
+      pkcs11_id = std::string(sec_item->data, sec_item->data + sec_item->len);
       SECITEM_FreeItem(sec_item, PR_TRUE);
     }
-    SECKEY_DestroyPrivateKey(priv_key);
 
     key_info_by_name_cache_[cert_name] = {cert_name, pkcs11_id};
     new_required_cert_names.insert(cert_name);
-
-    certs.push_back(std::move(cert));
   }
   need_policy_update_ = (required_cert_names_ != new_required_cert_names);
   for (auto cert_name : required_cert_names_) {
@@ -292,7 +376,6 @@ net::ScopedCERTCertificateList CertStoreService::CertificateCache::Update(
     }
   }
   required_cert_names_ = new_required_cert_names;
-  return certs;
 }
 
 void CertStoreService::CertificateCache::Update(

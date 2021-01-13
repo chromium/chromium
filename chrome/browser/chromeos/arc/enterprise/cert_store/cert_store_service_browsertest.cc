@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/chromeos/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -70,12 +72,12 @@ class FakeArcCertInstaller : public ArcCertInstaller {
 
   // Returns map from nicknames to real der cert64 to identify certificates.
   std::map<std::string, std::string> InstallArcCerts(
-      const std::vector<net::ScopedCERTCertificate>& certs,
+      std::vector<CertDescription> certs,
       InstallArcCertsCallback callback) override {
     certs_.clear();
     for (const auto& cert : certs) {
-      certs_[x509_certificate_model::GetCertNameOrNickname(cert.get())] =
-          GetDerCert64(cert.get());
+      certs_[x509_certificate_model::GetCertNameOrNickname(
+          cert.nss_cert.get())] = GetDerCert64(cert.nss_cert.get());
     }
 
     callback_ = std::move(callback);
@@ -94,7 +96,7 @@ class FakeArcCertInstaller : public ArcCertInstaller {
 
   void Stop() {
     if (run_loop_)
-      run_loop_->Quit();
+      run_loop_->QuitWhenIdle();
   }
 
   std::map<std::string, std::string> certs() const { return certs_; }
@@ -104,6 +106,33 @@ class FakeArcCertInstaller : public ArcCertInstaller {
   std::map<std::string, std::string> certs_;
   InstallArcCertsCallback callback_;
 };
+
+class FakeArcKeymasterBridge : public ArcKeymasterBridge {
+ public:
+  explicit FakeArcKeymasterBridge(content::BrowserContext* context)
+      : ArcKeymasterBridge(context, nullptr) {}
+  FakeArcKeymasterBridge(const FakeArcKeymasterBridge& other) = delete;
+  FakeArcKeymasterBridge& operator=(const FakeArcKeymasterBridge&) = delete;
+
+  void UpdatePlaceholderKeys(std::vector<keymaster::mojom::ChromeOsKeyPtr> keys,
+                             UpdatePlaceholderKeysCallback callback) override {
+    keys_ = std::move(keys);
+    std::move(callback).Run(/*success=*/true);
+  }
+
+  const std::vector<keymaster::mojom::ChromeOsKeyPtr>& placeholder_keys()
+      const {
+    return keys_;
+  }
+
+ private:
+  std::vector<keymaster::mojom::ChromeOsKeyPtr> keys_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeArcKeymasterBridge(
+    content::BrowserContext* profile) {
+  return std::make_unique<FakeArcKeymasterBridge>(profile);
+}
 
 std::unique_ptr<KeyedService> BuildCertStoreService(
     std::unique_ptr<FakeArcCertInstaller> installer,
@@ -165,6 +194,13 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted,
                                                  true);
+
+    ArcKeymasterBridge::GetFactory()->SetTestingFactoryAndUse(
+        browser()->profile(),
+        base::BindRepeating(&BuildFakeArcKeymasterBridge));
+    auto* keymaster_bridge =
+        ArcKeymasterBridge::GetForBrowserContext(browser()->profile());
+    keymaster_bridge_ = static_cast<FakeArcKeymasterBridge*>(keymaster_bridge);
 
     auto installer = std::make_unique<FakeArcCertInstaller>(
         browser()->profile(), std::make_unique<policy::RemoteCommandsQueue>());
@@ -254,11 +290,23 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
     loop.Run();
   }
 
+  bool PlaceholdersContainId(const std::string& id) {
+    for (const auto& key : keymaster_bridge()->placeholder_keys()) {
+      if (key->key_data->is_chaps_key_data() &&
+          key->key_data->get_chaps_key_data()->id == id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void CheckInstalledCerts(size_t installed_cert_num,
                            CertStoreService* service) {
     EXPECT_EQ(installed_cert_num, client_certs_.size());
     EXPECT_EQ(installed_cert_num, installer()->certs().size());
     EXPECT_EQ(installed_cert_num, service->get_required_cert_names().size());
+    EXPECT_EQ(installed_cert_num,
+              keymaster_bridge()->placeholder_keys().size());
 
     for (const auto& cert_name : service->get_required_cert_names()) {
       bool found = false;
@@ -279,9 +327,12 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
           EXPECT_EQ(key_info.value().nickname, cert_name);
           int slot_id;
           // Check CKA_ID.
-          EXPECT_EQ(key_info.value().id,
+          std::string hex_encoded_id = base::HexEncode(
+              key_info.value().id.data(), key_info.value().id.size());
+          EXPECT_EQ(hex_encoded_id,
                     chromeos::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
                         cert.get(), &slot_id));
+          EXPECT_TRUE(PlaceholdersContainId(key_info.value().id));
           break;
         }
       }
@@ -291,6 +342,8 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
   }
 
   FakeArcCertInstaller* installer() { return installer_; }
+
+  FakeArcKeymasterBridge* keymaster_bridge() { return keymaster_bridge_; }
 
   net::ScopedCERTCertificateList client_certs_;
 
@@ -370,6 +423,7 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
 
   // Owned by service.
   FakeArcCertInstaller* installer_;
+  FakeArcKeymasterBridge* keymaster_bridge_;
 };
 
 // Test no corporate usage keys.
@@ -388,6 +442,7 @@ IN_PROC_BROWSER_TEST_F(CertStoreServiceTest, Basic) {
   // No corporate usage keys installed.
   EXPECT_TRUE(installer()->certs().empty());
   EXPECT_TRUE(service->get_required_cert_names().empty());
+  EXPECT_TRUE(keymaster_bridge()->placeholder_keys().empty());
 }
 
 // Test installation of 2 corporate usage keys.
@@ -420,6 +475,10 @@ IN_PROC_BROWSER_TEST_F(CertStoreServiceTest, UninstalledCorporateUsageKeys) {
             Profile::FromBrowserContext(browser()->profile()));
   ASSERT_TRUE(service);
 
+  installer()->Wait();
+  installer()->RunCompletionCallback(true /* success */);
+
+  CheckInstalledCerts(0, service);
   ASSERT_NO_FATAL_FAILURE(
       SetUpCerts({kCertFiles}, true /* is_corporate_usage_key */));
   installer()->Wait();

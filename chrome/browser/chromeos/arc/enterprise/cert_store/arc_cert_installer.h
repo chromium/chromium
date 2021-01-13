@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
+#include "crypto/rsa_private_key.h"
 #include "net/cert/scoped_nss_types.h"
 
 class Profile;
@@ -25,6 +26,19 @@ class BrowserContext;
 }  // namespace content
 
 namespace arc {
+
+struct CertDescription {
+  CertDescription(crypto::RSAPrivateKey* placeholder_key,
+                  CERTCertificate* nss_cert);
+  CertDescription(CertDescription&& other);
+  CertDescription(const CertDescription& other) = delete;
+  CertDescription& operator=(CertDescription&& other);
+  CertDescription& operator=(const CertDescription& other) = delete;
+  ~CertDescription();
+
+  std::unique_ptr<crypto::RSAPrivateKey> placeholder_key;
+  net::ScopedCERTCertificate nss_cert;
+};
 
 // This class manages the certificates, available to ARC.
 // It keeps track of the certificates and installs missing ones via
@@ -49,7 +63,7 @@ class ArcCertInstaller : public policy::RemoteCommandsQueue::Observer {
   // Return false via |callback| in case of any error, and true otherwise.
   // Made virtual for override in test.
   virtual std::map<std::string, std::string> InstallArcCerts(
-      const std::vector<net::ScopedCERTCertificate>& certs,
+      std::vector<CertDescription> certificates,
       InstallArcCertsCallback callback);
 
  private:
@@ -58,7 +72,7 @@ class ArcCertInstaller : public policy::RemoteCommandsQueue::Observer {
   // or an empty string if the key is not installed during this call
   // (either error or already installed key pair).
   std::string InstallArcCert(const std::string& name,
-                             const net::ScopedCERTCertificate& nss_cert);
+                             const CertDescription& certificate);
 
   // RemoteCommandsQueue::Observer overrides:
   void OnJobStarted(policy::RemoteCommandJob* command) override {}

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/process/process_handle.h"
+#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -43,6 +44,11 @@ class ArcKeymasterBridgeFactory
 }  // namespace
 
 // static
+BrowserContextKeyedServiceFactory* ArcKeymasterBridge::GetFactory() {
+  return ArcKeymasterBridgeFactory::GetInstance();
+}
+
+// static
 ArcKeymasterBridge* ArcKeymasterBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcKeymasterBridgeFactory::GetForBrowserContext(context);
@@ -53,35 +59,73 @@ ArcKeymasterBridge::ArcKeymasterBridge(content::BrowserContext* context,
     : arc_bridge_service_(bridge_service),
       cert_store_bridge_(std::make_unique<keymaster::CertStoreBridge>(context)),
       weak_factory_(this) {
-  arc_bridge_service_->keymaster()->SetHost(this);
+  if (arc_bridge_service_)
+    arc_bridge_service_->keymaster()->SetHost(this);
 }
 
 ArcKeymasterBridge::~ArcKeymasterBridge() {
-  arc_bridge_service_->keymaster()->SetHost(nullptr);
+  if (arc_bridge_service_)
+    arc_bridge_service_->keymaster()->SetHost(nullptr);
+}
+
+void ArcKeymasterBridge::UpdatePlaceholderKeys(
+    std::vector<keymaster::mojom::ChromeOsKeyPtr> keys,
+    UpdatePlaceholderKeysCallback callback) {
+  if (cert_store_bridge_->is_proxy_bound()) {
+    cert_store_bridge_->UpdatePlaceholderKeysInKeymaster(std::move(keys),
+                                                         std::move(callback));
+  } else {
+    BootstrapMojoConnection(base::BindOnce(
+        &ArcKeymasterBridge::UpdatePlaceholderKeysAfterBootstrap,
+        weak_factory_.GetWeakPtr(), std::move(keys), std::move(callback)));
+  }
+}
+
+void ArcKeymasterBridge::UpdatePlaceholderKeysAfterBootstrap(
+    std::vector<keymaster::mojom::ChromeOsKeyPtr> keys,
+    UpdatePlaceholderKeysCallback callback,
+    bool bootstrapResult) {
+  if (bootstrapResult) {
+    cert_store_bridge_->UpdatePlaceholderKeysInKeymaster(std::move(keys),
+                                                         std::move(callback));
+  } else {
+    std::move(callback).Run(/*success=*/false);
+  }
 }
 
 void ArcKeymasterBridge::GetServer(GetServerCallback callback) {
-  if (!keymaster_server_proxy_.is_bound()) {
-    BootstrapMojoConnection(std::move(callback));
-    return;
+  if (keymaster_server_proxy_.is_bound()) {
+    std::move(callback).Run(keymaster_server_proxy_.Unbind());
+  } else {
+    BootstrapMojoConnection(
+        base::BindOnce(&ArcKeymasterBridge::GetServerAfterBootstrap,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
-  std::move(callback).Run(keymaster_server_proxy_.Unbind());
 }
 
-void ArcKeymasterBridge::OnBootstrapMojoConnection(GetServerCallback callback,
-                                                   bool result) {
+void ArcKeymasterBridge::GetServerAfterBootstrap(GetServerCallback callback,
+                                                 bool bootstrapResult) {
+  if (bootstrapResult)
+    std::move(callback).Run(keymaster_server_proxy_.Unbind());
+  else
+    std::move(callback).Run(mojo::NullRemote());
+}
+
+void ArcKeymasterBridge::OnBootstrapMojoConnection(
+    BootstrapMojoConnectionCallback callback,
+    bool result) {
   cert_store_bridge_->OnBootstrapMojoConnection(result);
-  if (!result) {
+  if (result) {
+    DVLOG(1) << "Success bootstrapping Mojo in arc-keymasterd.";
+  } else {
     LOG(ERROR) << "Error bootstrapping Mojo in arc-keymasterd.";
     keymaster_server_proxy_.reset();
-    std::move(callback).Run(mojo::NullRemote());
-    return;
   }
-  DVLOG(1) << "Success bootstrapping Mojo in arc-keymasterd.";
-  std::move(callback).Run(keymaster_server_proxy_.Unbind());
+  std::move(callback).Run(result);
 }
 
-void ArcKeymasterBridge::BootstrapMojoConnection(GetServerCallback callback) {
+void ArcKeymasterBridge::BootstrapMojoConnection(
+    BootstrapMojoConnectionCallback callback) {
   DVLOG(1) << "Bootstrapping arc-keymasterd Mojo connection via D-Bus.";
 
   mojo::OutgoingInvitation invitation;

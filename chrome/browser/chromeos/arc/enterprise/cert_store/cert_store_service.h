@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -14,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_cert_installer.h"
+#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -72,13 +74,15 @@ class CertStoreService : public KeyedService,
   using FilterAllowedCertificatesCallback =
       base::OnceCallback<void(net::ScopedCERTCertificateList allowed_certs)>;
 
+  // TODO(b/177051802) Some of certificate cache is obsolete. Clean up.
   class CertificateCache {
    public:
     CertificateCache();
+    CertificateCache(const CertificateCache& other) = delete;
+    CertificateCache& operator=(const CertificateCache&) = delete;
     ~CertificateCache();
 
-    net::ScopedCERTCertificateList Update(
-        net::ScopedCERTCertificateList allowed_certs);
+    void Update(const std::vector<CertDescription>& certificates);
     void Update(std::map<std::string, std::string> dummy_spki_by_name);
 
     base::Optional<KeyInfo> GetKeyInfoForDummySpki(
@@ -121,6 +125,8 @@ class CertStoreService : public KeyedService,
   void OnCertificatesListed(net::ScopedCERTCertificateList cert_list);
   void OnFilteredAllowedCertificates(
       net::ScopedCERTCertificateList allowed_certs);
+  void OnUpdatedKeymasterKeys(std::vector<CertDescription> certificates,
+                              bool success);
   void OnArcCertsInstalled(bool success);
 
   content::BrowserContext* const context_;

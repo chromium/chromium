@@ -64,8 +64,7 @@ class MockPolicyInstance : public FakePolicyInstance {
                     OnCommandReceivedCallback callback));
 };
 
-void AddCert(const std::string& cn,
-             std::vector<net::ScopedCERTCertificate>* certs) {
+void AddCert(const std::string& cn, std::vector<CertDescription>* certs) {
   std::string der_cert;
   net::ScopedCERTCertificate cert;
   std::unique_ptr<crypto::RSAPrivateKey> key(
@@ -77,7 +76,7 @@ void AddCert(const std::string& cn,
   cert = net::x509_util::CreateCERTCertificateFromBytes(
       reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size());
   ASSERT_TRUE(cert);
-  certs->push_back(std::move(cert));
+  certs->push_back(CertDescription(key.release(), cert.release()));
 }
 
 }  // namespace
@@ -150,14 +149,14 @@ class ArcCertInstallerTest : public testing::Test {
 // Tests that installation of an empty cert list completes successfully.
 TEST_F(ArcCertInstallerTest, NoCertsTest) {
   installer()->InstallArcCerts(
-      std::vector<net::ScopedCERTCertificate>(),
+      std::vector<CertDescription>(),
       base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
 }
 
 // Tests that installing certs completes successfully if there are two certs
 // available.
 TEST_F(ArcCertInstallerTest, BasicCertTest) {
-  std::vector<net::ScopedCERTCertificate> certs;
+  std::vector<CertDescription> certs;
 
   AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
   AddCert(base::StringPrintf(kCNFormat, kFakeName2), &certs);
@@ -194,7 +193,7 @@ TEST_F(ArcCertInstallerTest, ConsequentInstallTest) {
                                policy::RemoteCommandJob::Status::SUCCEEDED)))
       .Times(3);
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
     AddCert(base::StringPrintf(kCNFormat, kFakeName2), &certs);
     base::RunLoop run_loop;
@@ -210,7 +209,7 @@ TEST_F(ArcCertInstallerTest, ConsequentInstallTest) {
 
   ExpectArcCommandForName(kFakeName3, mojom::CommandResultType::SUCCESS);
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
     AddCert(base::StringPrintf(kCNFormat, kFakeName3), &certs);
 
@@ -236,7 +235,7 @@ TEST_F(ArcCertInstallerTest, FailureIncompleteInstallationTest) {
                                policy::RemoteCommandJob::Status::SUCCEEDED)));
 
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
 
     installer()->InstallArcCerts(std::move(certs),
@@ -248,7 +247,7 @@ TEST_F(ArcCertInstallerTest, FailureIncompleteInstallationTest) {
   }
 
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
 
     base::RunLoop run_loop;
@@ -271,7 +270,7 @@ TEST_F(ArcCertInstallerTest, FailedRequiredSmartCardTest) {
   EXPECT_CALL(*observer(), OnJobFinished(IsCommandWithStatus(
                                policy::RemoteCommandJob::Status::FAILED)));
 
-  std::vector<net::ScopedCERTCertificate> certs;
+  std::vector<CertDescription> certs;
   AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
 
   base::RunLoop run_loop;
@@ -292,7 +291,7 @@ TEST_F(ArcCertInstallerTest, FailiedNotRequiredSmartCardTest) {
                                policy::RemoteCommandJob::Status::RUNNING)))
       .Times(2);
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName1), &certs);
 
     installer()->InstallArcCerts(std::move(certs),
@@ -311,7 +310,7 @@ TEST_F(ArcCertInstallerTest, FailiedNotRequiredSmartCardTest) {
                                policy::RemoteCommandJob::Status::FAILED)));
 
   {
-    std::vector<net::ScopedCERTCertificate> certs;
+    std::vector<CertDescription> certs;
     AddCert(base::StringPrintf(kCNFormat, kFakeName2), &certs);
 
     base::RunLoop run_loop;
