@@ -5574,7 +5574,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Uninstall
       </message>
       <message name="IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL" desc="The label for the color picker in the customization menu on the New Tab Page">
-        Select color
+        Custom color
       </message>
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
         Default
