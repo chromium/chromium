@@ -1751,15 +1751,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Autofill.TranslatedPageLanguage" enum="LanguageName"
+<histogram name="Autofill.TranslatedPageLanguage" enum="LanguageCode"
     expires_after="2021-10-25">
   <owner>marsin@google.com</owner>
   <owner>koerber@google.com</owner>
   <summary>
     The visible page language (best guess of the original or the translated
     language, if translation was used) upon form submission. This is a sparse
-    histogram where the integer value represents the first two letters of the
-    language code and mapped to English language names.
+    histogram where the integer value represents the language code as described
+    by the ISO 639 standard.
   </summary>
 </histogram>
 
