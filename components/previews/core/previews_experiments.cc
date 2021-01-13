@@ -93,21 +93,13 @@ base::TimeDelta SingleOptOutDuration() {
 net::EffectiveConnectionType GetECTThresholdForPreview(
     previews::PreviewsType type) {
   switch (type) {
-    case PreviewsType::NOSCRIPT:
-      return net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
     case PreviewsType::NONE:
     case PreviewsType::UNSPECIFIED:
-    case PreviewsType::RESOURCE_LOADING_HINTS:
       return net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
     case PreviewsType::DEFER_ALL_SCRIPT:
       return GetParamValueAsECTByFeature(GetDeferAllScriptPreviewsFeature(),
                                          kEffectiveConnectionTypeThreshold,
                                          net::EFFECTIVE_CONNECTION_TYPE_2G);
-    case PreviewsType::DEPRECATED_AMP_REDIRECTION:
-    case PreviewsType::DEPRECATED_LOFI:
-    case PreviewsType::DEPRECATED_LITE_PAGE:
-    case PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-    case PreviewsType::DEPRECATED_OFFLINE:
     case PreviewsType::LAST:
       break;
   }
@@ -197,19 +189,10 @@ std::string GetStringNameForType(PreviewsType type) {
   switch (type) {
     case PreviewsType::NONE:
       return "None";
-    case PreviewsType::NOSCRIPT:
-      return "NoScript";
     case PreviewsType::UNSPECIFIED:
       return "Unspecified";
-    case PreviewsType::RESOURCE_LOADING_HINTS:
-      return "ResourceLoadingHints";
     case PreviewsType::DEFER_ALL_SCRIPT:
       return "DeferAllScript";
-    case PreviewsType::DEPRECATED_AMP_REDIRECTION:
-    case PreviewsType::DEPRECATED_LITE_PAGE:
-    case PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-    case PreviewsType::DEPRECATED_LOFI:
-    case PreviewsType::DEPRECATED_OFFLINE:
     case PreviewsType::LAST:
       break;
   }

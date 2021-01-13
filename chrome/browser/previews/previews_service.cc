@@ -26,7 +26,6 @@
 #include "components/previews/content/previews_optimization_guide.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/core/previews_experiments.h"
-#include "components/previews/core/previews_logger.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -56,22 +55,8 @@ std::unique_ptr<previews::RegexpList> GetDenylistRegexpsForDeferAllScript() {
 // Returns true if previews can be shown for |type|.
 bool IsPreviewsTypeEnabled(previews::PreviewsType type) {
   switch (type) {
-    case previews::PreviewsType::DEPRECATED_OFFLINE:
-      return false;
-    case previews::PreviewsType::DEPRECATED_LOFI:
-      return false;
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-      return false;
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE:
-      return false;
-    case previews::PreviewsType::NOSCRIPT:
-      return false;
-    case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-      return false;
     case previews::PreviewsType::DEFER_ALL_SCRIPT:
       return previews::params::IsDeferAllScriptPreviewsEnabled();
-    case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
-      return false;
     case previews::PreviewsType::UNSPECIFIED:
       // Not a real previews type so treat as false.
       return false;
@@ -79,6 +64,8 @@ bool IsPreviewsTypeEnabled(previews::PreviewsType type) {
     case previews::PreviewsType::LAST:
       break;
   }
+  if (static_cast<int>(type) < static_cast<int>(previews::PreviewsType::LAST))
+    return false;
   NOTREACHED();
   return false;
 }
@@ -87,20 +74,11 @@ bool IsPreviewsTypeEnabled(previews::PreviewsType type) {
 // specified in field trial config.
 int GetPreviewsTypeVersion(previews::PreviewsType type) {
   switch (type) {
-    case previews::PreviewsType::NOSCRIPT:
-      return -1;
-    case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-      return -1;
     case previews::PreviewsType::DEFER_ALL_SCRIPT:
       return previews::params::DeferAllScriptPreviewsVersion();
     case previews::PreviewsType::NONE:
     case previews::PreviewsType::UNSPECIFIED:
     case previews::PreviewsType::LAST:
-    case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE:
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-    case previews::PreviewsType::DEPRECATED_LOFI:
-    case previews::PreviewsType::DEPRECATED_OFFLINE:
       break;
   }
   NOTREACHED();
@@ -203,8 +181,7 @@ void PreviewsService::Initialize(
           ui_task_runner, background_task_runner,
           profile_path.Append(chrome::kPreviewsOptOutDBFilename)),
       std::move(previews_opt_guide), base::Bind(&IsPreviewsTypeEnabled),
-      std::make_unique<previews::PreviewsLogger>(), GetAllowedPreviews(),
-      g_browser_process->network_quality_tracker());
+      GetAllowedPreviews(), g_browser_process->network_quality_tracker());
 }
 
 void PreviewsService::Shutdown() {

@@ -226,7 +226,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://inspect",
     "chrome://internals/web-app",
     "chrome://interstitials/ssl",
-    "chrome://interventions-internals",
     "chrome://invalidations",
     "chrome://local-state",
     "chrome://management",

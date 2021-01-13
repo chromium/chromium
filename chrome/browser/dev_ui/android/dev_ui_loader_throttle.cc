@@ -39,7 +39,6 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUIGCMInternalsHost ||
          host == chrome::kChromeUIInternalsHost ||
          host == chrome::kChromeUIInterstitialHost ||
-         host == chrome::kChromeUIInterventionsInternalsHost ||
          host == chrome::kChromeUIInvalidationsHost ||
          host == chrome::kChromeUILocalStateHost ||
          host == chrome::kChromeUIMediaEngagementHost ||

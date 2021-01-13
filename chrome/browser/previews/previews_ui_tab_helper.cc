@@ -114,8 +114,6 @@ void PreviewsUITabHelper::ReloadWithoutPreviews(
   if (on_dismiss_callback_)
     std::move(on_dismiss_callback_).Run(true);
   switch (previews_type) {
-    case previews::PreviewsType::NOSCRIPT:
-    case previews::PreviewsType::RESOURCE_LOADING_HINTS:
     case previews::PreviewsType::DEFER_ALL_SCRIPT:
       // Previews may cause a redirect, so we should use the original URL. The
       // black list prevents showing the preview again.
@@ -125,11 +123,6 @@ void PreviewsUITabHelper::ReloadWithoutPreviews(
     case previews::PreviewsType::NONE:
     case previews::PreviewsType::UNSPECIFIED:
     case previews::PreviewsType::LAST:
-    case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE:
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-    case previews::PreviewsType::DEPRECATED_LOFI:
-    case previews::PreviewsType::DEPRECATED_OFFLINE:
       NOTREACHED();
       break;
   }

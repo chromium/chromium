@@ -241,19 +241,6 @@ TEST_F(PreviewsOptimizationGuideTest, InitializationRegistersOnlyEnabledTypes) {
 }
 
 TEST_F(PreviewsOptimizationGuideTest,
-       PreviewsTypeWithoutCorrespondingOptimizationTypeReturnsFalse) {
-  PreviewsOptimizationGuide guide(optimization_guide_decider());
-  SeedOptimizationGuideDeciderWithDefaultResponses();
-
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://whatever.com/"));
-
-  EXPECT_FALSE(guide.CanApplyPreview(
-      /*previews_data=*/nullptr, &navigation_handle,
-      PreviewsType::DEPRECATED_LOFI));
-}
-
-TEST_F(PreviewsOptimizationGuideTest,
        CanApplyPreviewWithUnknownDecisionReturnsFalse) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
@@ -271,7 +258,8 @@ TEST_F(PreviewsOptimizationGuideTest,
       /*previews_data=*/nullptr, &navigation_handle,
       PreviewsType::DEFER_ALL_SCRIPT));
   EXPECT_FALSE(guide.CanApplyPreview(
-      /*previews_data=*/nullptr, &navigation_handle, PreviewsType::NOSCRIPT));
+      /*previews_data=*/nullptr, &navigation_handle,
+      PreviewsType::DEFER_ALL_SCRIPT));
 }
 
 TEST_F(PreviewsOptimizationGuideTest,
@@ -291,8 +279,6 @@ TEST_F(PreviewsOptimizationGuideTest,
   EXPECT_TRUE(guide.CanApplyPreview(
       /*previews_data=*/nullptr, &navigation_handle,
       PreviewsType::DEFER_ALL_SCRIPT));
-  EXPECT_FALSE(guide.CanApplyPreview(
-      /*previews_data=*/nullptr, &navigation_handle, PreviewsType::NOSCRIPT));
 }
 
 TEST_F(PreviewsOptimizationGuideTest,

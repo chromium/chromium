@@ -20,7 +20,6 @@
 #include "components/previews/content/previews_optimization_guide.h"
 #include "components/previews/core/previews_block_list.h"
 #include "components/previews/core/previews_experiments.h"
-#include "components/previews/core/previews_logger.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
@@ -39,7 +38,6 @@ class PreviewsUIService
       std::unique_ptr<blocklist::OptOutStore> previews_opt_out_store,
       std::unique_ptr<PreviewsOptimizationGuide> previews_opt_guide,
       const PreviewsIsEnabledCallback& is_enabled_callback,
-      std::unique_ptr<PreviewsLogger> logger,
       blocklist::BlocklistData::AllowedTypesAndVersions allowed_previews,
       network::NetworkQualityTracker* network_quality_tracker);
   ~PreviewsUIService() override;
@@ -111,11 +109,6 @@ class PreviewsUIService
   std::vector<std::string> GetResourceLoadingHintsResourcePatternsToBlock(
       const GURL& document_gurl) const;
 
-  // Expose the pointer to PreviewsLogger to extract logging messages. This
-  // pointer's life time is the same as of |this|, and it is guaranteed to not
-  // return null.
-  PreviewsLogger* previews_logger() const;
-
   // Gets the decision making object for Previews triggering. Guaranteed to be
   // non-null.
   PreviewsDeciderImpl* previews_decider_impl() const;
@@ -124,10 +117,6 @@ class PreviewsUIService
   // The decision making object for Previews triggering. Guaranteed to be
   // non-null.
   std::unique_ptr<previews::PreviewsDeciderImpl> previews_decider_impl_;
-
-  // A log object to keep track of events such as previews navigations,
-  // blocklist actions, etc.
-  std::unique_ptr<PreviewsLogger> logger_;
 
   // Used to remove |this| from observing.
   network::NetworkQualityTracker* network_quality_tracker_;

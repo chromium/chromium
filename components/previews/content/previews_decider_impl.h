@@ -24,7 +24,6 @@
 #include "components/previews/content/previews_optimization_guide.h"
 #include "components/previews/core/previews_block_list.h"
 #include "components/previews/core/previews_experiments.h"
-#include "components/previews/core/previews_logger.h"
 #include "net/nqe/effective_connection_type.h"
 #include "url/gurl.h"
 

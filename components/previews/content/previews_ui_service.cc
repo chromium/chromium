@@ -17,13 +17,10 @@ PreviewsUIService::PreviewsUIService(
     std::unique_ptr<blocklist::OptOutStore> previews_opt_out_store,
     std::unique_ptr<PreviewsOptimizationGuide> previews_opt_guide,
     const PreviewsIsEnabledCallback& is_enabled_callback,
-    std::unique_ptr<PreviewsLogger> logger,
     blocklist::BlocklistData::AllowedTypesAndVersions allowed_previews,
     network::NetworkQualityTracker* network_quality_tracker)
     : previews_decider_impl_(std::move(previews_decider_impl)),
-      logger_(std::move(logger)),
       network_quality_tracker_(network_quality_tracker) {
-  DCHECK(logger_);
   DCHECK(previews_decider_impl_);
   DCHECK(network_quality_tracker_);
   previews_decider_impl_->Initialize(
@@ -51,7 +48,6 @@ void PreviewsUIService::LogPreviewNavigation(const GURL& url,
                                              base::Time time,
                                              uint64_t page_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->LogPreviewNavigation(url, type, opt_out, time, page_id);
 }
 
 void PreviewsUIService::LogPreviewDecisionMade(
@@ -62,24 +58,19 @@ void PreviewsUIService::LogPreviewDecisionMade(
     std::vector<PreviewsEligibilityReason>&& passed_reasons,
     uint64_t page_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->LogPreviewDecisionMade(reason, url, time, type,
-                                  std::move(passed_reasons), page_id);
 }
 
 void PreviewsUIService::OnNewBlocklistedHost(const std::string& host,
                                              base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->OnNewBlocklistedHost(host, time);
 }
 
 void PreviewsUIService::OnUserBlocklistedStatusChange(bool blocklisted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->OnUserBlocklistedStatusChange(blocklisted);
 }
 
 void PreviewsUIService::OnBlocklistCleared(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->OnBlocklistCleared(time);
 }
 
 void PreviewsUIService::SetIgnorePreviewsBlocklistDecision(bool ignored) {
@@ -89,13 +80,8 @@ void PreviewsUIService::SetIgnorePreviewsBlocklistDecision(bool ignored) {
 
 void PreviewsUIService::OnIgnoreBlocklistDecisionStatusChanged(bool ignored) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  logger_->OnIgnoreBlocklistDecisionStatusChanged(ignored);
 }
 
-PreviewsLogger* PreviewsUIService::previews_logger() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return logger_.get();
-}
 
 PreviewsDeciderImpl* PreviewsUIService::previews_decider_impl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

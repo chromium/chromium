@@ -45,7 +45,6 @@
 #include "components/previews/core/previews_block_list.h"
 #include "components/previews/core/previews_experiments.h"
 #include "components/previews/core/previews_features.h"
-#include "components/previews/core/previews_logger.h"
 #include "components/previews/core/previews_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -70,20 +69,6 @@ const uint64_t kDefaultPageId = 123456;
 // offline previews check.
 bool IsPreviewFieldTrialEnabled(PreviewsType type) {
   switch (type) {
-    case PreviewsType::DEPRECATED_OFFLINE:
-      return false;
-    case PreviewsType::DEPRECATED_LITE_PAGE:
-      return false;
-    case PreviewsType::DEPRECATED_AMP_REDIRECTION:
-      return false;
-    case PreviewsType::DEPRECATED_LOFI:
-      return false;
-    case PreviewsType::NOSCRIPT:
-      return false;
-    case PreviewsType::RESOURCE_LOADING_HINTS:
-      return false;
-    case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-      return false;
     case PreviewsType::DEFER_ALL_SCRIPT:
       return params::IsDeferAllScriptPreviewsEnabled();
     case PreviewsType::NONE:
@@ -165,17 +150,10 @@ class TestPreviewsOptimizationGuide
   bool CanApplyPreview(PreviewsUserData* previews_user_data,
                        content::NavigationHandle* navigation_handle,
                        PreviewsType type) override {
-    EXPECT_TRUE(type == PreviewsType::NOSCRIPT ||
-                type == PreviewsType::RESOURCE_LOADING_HINTS ||
-                type == PreviewsType::DEFER_ALL_SCRIPT);
+    EXPECT_TRUE(type == PreviewsType::DEFER_ALL_SCRIPT);
 
     const GURL url = navigation_handle->GetURL();
-    if (type == PreviewsType::NOSCRIPT) {
-      return url.host().compare("allowlisted.example.com") == 0 ||
-             url.host().compare("noscript_only_allowlisted.example.com") == 0;
-    }
-    if (type == PreviewsType::RESOURCE_LOADING_HINTS ||
-        type == PreviewsType::DEFER_ALL_SCRIPT) {
+    if (type == PreviewsType::DEFER_ALL_SCRIPT) {
       return url.host().compare("allowlisted.example.com") == 0;
     }
     return false;
@@ -203,14 +181,12 @@ class TestPreviewsUIService : public PreviewsUIService {
       std::unique_ptr<blocklist::OptOutStore> previews_opt_out_store,
       std::unique_ptr<PreviewsOptimizationGuide> previews_opt_guide,
       const PreviewsIsEnabledCallback& is_enabled_callback,
-      std::unique_ptr<PreviewsLogger> logger,
       blocklist::BlocklistData::AllowedTypesAndVersions allowed_types,
       network::NetworkQualityTracker* network_quality_tracker)
       : PreviewsUIService(std::move(previews_decider_impl),
                           std::move(previews_opt_out_store),
                           std::move(previews_opt_guide),
                           is_enabled_callback,
-                          std::move(logger),
                           std::move(allowed_types),
                           network_quality_tracker),
         user_blocklisted_(false),
@@ -395,8 +371,6 @@ class PreviewsDeciderImplTest : public testing::Test {
   void InitializeUIServiceWithoutWaitingForBlockList(
       bool include_previews_opt_guide) {
     blocklist::BlocklistData::AllowedTypesAndVersions allowed_types;
-    allowed_types[static_cast<int>(PreviewsType::NOSCRIPT)] = 0;
-    allowed_types[static_cast<int>(PreviewsType::RESOURCE_LOADING_HINTS)] = 0;
     allowed_types[static_cast<int>(PreviewsType::DEFER_ALL_SCRIPT)] = 0;
 
     std::unique_ptr<TestPreviewsDeciderImpl> previews_decider_impl =
@@ -411,8 +385,7 @@ class PreviewsDeciderImplTest : public testing::Test {
         std::move(previews_decider_impl), std::make_unique<TestOptOutStore>(),
         include_previews_opt_guide ? std::move(previews_opt_guide) : nullptr,
         base::BindRepeating(&IsPreviewFieldTrialEnabled),
-        std::make_unique<PreviewsLogger>(), std::move(allowed_types),
-        &network_quality_tracker_));
+        std::move(allowed_types), &network_quality_tracker_));
   }
 
   void InitializeUIService(bool include_previews_opt_guide = true) {
@@ -460,7 +433,7 @@ TEST_F(PreviewsDeciderImplTest, AllPreviewsDisabledByFeature) {
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_url(GURL("https://www.google.com"));
   EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data2, &navigation_handle, false, PreviewsType::NOSCRIPT));
+      &user_data2, &navigation_handle, false, PreviewsType::DEFER_ALL_SCRIPT));
 }
 
 TEST_F(PreviewsDeciderImplTest, TestDisallowBasicAuthentication) {
@@ -522,22 +495,6 @@ TEST_F(PreviewsDeciderImplTest, MissingHostDisallowed) {
   navigation_handle.set_url(GURL("file:///sdcard"));
   EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
       &user_data, &navigation_handle, false, PreviewsType::DEFER_ALL_SCRIPT));
-}
-
-TEST_F(PreviewsDeciderImplTest, NoScriptFeatureDefaultBehavior) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPreviews);
-  InitializeUIService();
-
-  base::HistogramTester histogram_tester;
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://www.google.com"));
-
-  // Disabled by default on non-Android.
-  EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false, PreviewsType::NOSCRIPT));
-  histogram_tester.ExpectTotalCount("Previews.EligibilityReason.NoScript", 0);
 }
 
 TEST_F(PreviewsDeciderImplTest, DeferAllScriptDefaultBehavior) {
@@ -795,7 +752,7 @@ TEST_F(PreviewsDeciderImplTest, ShouldCommitPreviewBlocklistStatuses) {
   scoped_feature_list.InitWithFeatures(
       {features::kPreviews, features::kDeferAllScriptPreviews}, {});
   InitializeUIService(/*include_previews_opt_guide=*/false);
-  auto expected_type = PreviewsType::NOSCRIPT;
+  auto expected_type = PreviewsType::DEFER_ALL_SCRIPT;
   PreviewsUserData user_data(kDefaultPageId);
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_url(GURL("https://www.google.com"));

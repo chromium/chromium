@@ -358,7 +358,7 @@ TEST_F(PreviewsUKMObserverTest, LogPreviewsEligibilityReason_WithAllowed) {
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED /* allowed_state */,
           false /* origin_opt_out */, true /* save_data_enabled */,
           {// ALLOWED is equal to zero and should not be recorded.
-           {PreviewsType::NOSCRIPT,
+           {PreviewsType::DEFER_ALL_SCRIPT,
             PreviewsEligibilityReason::ALLOWED}} /* eligibility_reasons */);
 
   tester()->NavigateToUntrackedUrl();

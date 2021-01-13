@@ -76,30 +76,15 @@ class PreviewEnabledPreviewsDecider : public PreviewsDecider {
   bool ShouldCommitPreview(PreviewsUserData* previews_data,
                            content::NavigationHandle* navigation_handle,
                            PreviewsType type) const override {
-    EXPECT_TRUE(type == PreviewsType::NOSCRIPT ||
-                type == PreviewsType::RESOURCE_LOADING_HINTS ||
-                type == PreviewsType::DEFER_ALL_SCRIPT);
+    EXPECT_TRUE(type == PreviewsType::DEFER_ALL_SCRIPT);
     return IsEnabled(type);
   }
 
  private:
   bool IsEnabled(PreviewsType type) const {
     switch (type) {
-      case previews::PreviewsType::DEPRECATED_OFFLINE:
-        return false;
-      case previews::PreviewsType::DEPRECATED_LOFI:
-        return false;
-      case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
-        return false;
-      case previews::PreviewsType::NOSCRIPT:
-        return false;
-      case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-        return false;
-      case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
-        return false;
       case previews::PreviewsType::DEFER_ALL_SCRIPT:
         return params::IsDeferAllScriptPreviewsEnabled();
-      case PreviewsType::DEPRECATED_LITE_PAGE:
       case PreviewsType::NONE:
       case PreviewsType::UNSPECIFIED:
       case PreviewsType::LAST:
@@ -130,7 +115,7 @@ TEST_F(PreviewsContentUtilTest,
        DetermineAllowedClientPreviewsStatePreviewsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(
-      "ResourceLoadingHints,NoScriptPreviews" /* enable_features */,
+      "DeferAllScript" /* enable_features */,
       "Previews" /* disable_features */);
   PreviewsUserData user_data(1);
   bool is_reload = false;
@@ -151,9 +136,8 @@ TEST_F(PreviewsContentUtilTest,
 TEST_F(PreviewsContentUtilTest,
        DetermineAllowedClientPreviewsStateDataSaverDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      "Previews,DeferAllScript,ResourceLoadingHints,NoScriptPreviews",
-      {} /* disable_features */);
+  scoped_feature_list.InitFromCommandLine("Previews,DeferAllScript",
+                                          {} /* disable_features */);
   PreviewsUserData user_data(1);
   bool is_reload = false;
   bool previews_triggering_logic_already_ran = false;
@@ -223,9 +207,8 @@ TEST_F(PreviewsContentUtilTest,
 
 TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      "Previews,NoScriptPreviews,ResourceLoadingHints,DeferAllScript",
-      std::string());
+  scoped_feature_list.InitFromCommandLine("Previews,DeferAllScript",
+                                          std::string());
   PreviewsUserData user_data(1);
   user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
 
@@ -239,9 +222,8 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
 
 TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsStateForHttp) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      "Previews,NoScriptPreviews,ResourceLoadingHints,DeferAllScript",
-      std::string());
+  scoped_feature_list.InitFromCommandLine("Previews,DeferAllScript",
+                                          std::string());
   PreviewsUserData user_data(1);
   user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_2G);
 

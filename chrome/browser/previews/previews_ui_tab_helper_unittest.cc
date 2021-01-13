@@ -144,12 +144,12 @@ TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationDisplaysOmniboxBadge) {
 #endif
 
 TEST_F(PreviewsUITabHelperUnitTest,
-       DidFinishNavigationCreatesNoScriptPreviewsUI) {
+       DidFinishNavigationCreateDeferAllScriptPreviewsUI) {
   PreviewsUITabHelper* ui_tab_helper =
       PreviewsUITabHelper::FromWebContents(web_contents());
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
 
-  SetCommittedPreviewsType(previews::PreviewsType::NOSCRIPT);
+  SetCommittedPreviewsType(previews::PreviewsType::DEFER_ALL_SCRIPT);
   SimulateWillProcessResponse();
   CallDidFinishNavigation();
   base::RunLoop().RunUntilIdle();
