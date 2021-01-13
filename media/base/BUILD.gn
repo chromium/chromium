@@ -634,7 +634,10 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "win/dxgi_device_scope_handle_unittest.cc" ]
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      "//media/base/win:media_foundation_util",
+      "//ui/events:test_support",
+    ]
     libs = [
       "d3d11.lib",
       "mfplat.lib",
