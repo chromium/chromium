@@ -5014,16 +5014,13 @@
 
   <!-- Strings for Oobe fingerprint enrollment screen -->
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_TITLE" desc="The title of the dialog that allow users to register their fingerprint.">
-    Set up your fingerprint to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> faster
+    Unlock faster with your fingerprint
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION" desc="The label that explains that the fingerprint sensor is in the power button.">
-    Touch the power button with your finger
+    Touch the power button with your finger. Your data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION" desc="The label that explains the location of the fingerprint sensor on the device.">
-      Touch the fingerprint sensor with your finger
-  </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_FOOTER" desc="Footer message for the fingerprint setup screen">
-      Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+    Touch the fingerprint sensor with your finger. Your data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE" desc="The title of the dialog that shows where the fingerprint sensor is.">
     Lift, then touch again
@@ -5052,10 +5049,10 @@
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME_3" desc="The default name for third newly added fingerprint.">
     Finger 3
   </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_MOVE_FINGER" desc="Text in the fingerprint setup screen telling users what to move finger to capture the different parts of fingerprint.">
-    Move your finger slightly to add the different parts of your fingerprint.
+  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_MOVE_FINGER" desc="Text in the fingerprint setup screen telling users to lift their finger to capture the different parts of fingerprint.">
+    Keep lifting your finger to add the different parts of your fingerprint
   </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_TRY_AGAIN" desc="Text in the fingerprint setup screen telling users what to scan their finger again.">
+  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_TRY_AGAIN" desc="Text in the fingerprint setup screen telling users to scan their finger again.">
     Try again.
   </message>
 
