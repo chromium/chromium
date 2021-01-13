@@ -772,6 +772,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.ResidualEchoDetector.EchoLikelihood" units="%"
     expires_after="2021-05-09">
+  <obsolete>
+    No longer reported. Removed in M84.
+  </obsolete>
   <owner>hlundin@chromium.org</owner>
   <owner>ivoc@chromium.org</owner>
   <summary>
