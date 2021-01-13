@@ -218,8 +218,8 @@ const char* const kSafeManifestEntries[] = {
     // Just a display string.
     emk::kShortName,
 
-    // Doc missing. Declared as a feature, but unused.
-    // emk::kSignature,
+    // Deprecated manifest key.
+    // "signature",
 
     // Network access.
     emk::kSockets,

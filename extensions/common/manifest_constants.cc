@@ -134,7 +134,6 @@ const char kSettingsOverrideAlternateUrls[] =
 const char kSharedModuleAllowlist[] = "allowlist";
 const char kSharedModuleLegacyAllowlist[] = "whitelist";
 const char kShortName[] = "short_name";
-const char kSignature[] = "signature";
 const char kSockets[] = "sockets";
 const char kStorageManagedSchema[] = "storage.managed_schema";
 const char kSuggestedKey[] = "suggested_key";
@@ -586,8 +585,6 @@ const char kInvalidSearchEngineURL[] =
     "Invalid URL [*] for 'chrome_settings_overrides.search_provider'.";
 const char kInvalidShortName[] =
     "Invalid value for 'short_name'.";
-const char kInvalidSignature[] =
-    "Value 'signature' is missing or invalid.";
 const char kInvalidStartupOverrideURL[] =
     "Invalid value for overriding startup URL: '[*]'.";
 const char kInvalidSystemIndicator[] =

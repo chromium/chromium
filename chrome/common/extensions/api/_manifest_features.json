@@ -209,10 +209,6 @@
     "channel": "stable",
     "extension_types": "all"
   },
-  "signature": {
-    "channel": "stable",
-    "extension_types": "all"
-  },
   "storage": {
     "channel": "stable",
     "extension_types": [
