@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {FileManagerDialogBase} from './file_manager_dialog_base.m.js';
+// #import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * DefaultTaskDialog contains a message, a list box, an ok button, and a
  * cancel button.
@@ -11,7 +19,7 @@ cr.define('cr.filebrowser', () => {
   /**
    * Creates dialog in DOM tree.
    */
-  class DefaultTaskDialog extends FileManagerDialogBase {
+  /* #export */ class DefaultTaskDialog extends FileManagerDialogBase {
     /**
      * @param {HTMLElement} parentNode Node to be parent for this dialog.
      */
@@ -98,8 +106,12 @@ cr.define('cr.filebrowser', () => {
       // A11y - make it focusable and readable.
       result.setAttribute('tabindex', '-1');
 
-      cr.defineProperty(result, 'lead', cr.PropertyKind.BOOL_ATTR);
-      cr.defineProperty(result, 'selected', cr.PropertyKind.BOOL_ATTR);
+      Object.defineProperty(
+          result, 'lead',
+          cr.getPropertyDescriptor('lead', cr.PropertyKind.BOOL_ATTR));
+      Object.defineProperty(
+          result, 'selected',
+          cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
 
       return result;
     }
@@ -189,5 +201,6 @@ cr.define('cr.filebrowser', () => {
     }
   }
 
+  // #cr_define_end
   return {DefaultTaskDialog: DefaultTaskDialog};
 });

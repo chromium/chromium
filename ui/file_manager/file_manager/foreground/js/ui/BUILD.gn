@@ -26,6 +26,9 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":a11y_announce.m",
     ":action_model_ui.m",
+    ":combobutton.m",
+    ":commandbutton.m",
+    ":default_task_dialog.m",
     ":directory_tree.m",
     ":drag_selector.m",
     ":empty_folder.m",
@@ -42,6 +45,7 @@ js_type_check("closure_compile_jsmodules") {
     ":list_container.m",
     ":multi_menu.m",
     ":multi_menu_button.m",
+    ":progress_center_panel.m",
     ":suggest_apps_dialog.m",
     "table:table.m",
     "table:table_column.m",
@@ -197,12 +201,39 @@ js_library("combobutton") {
   externs_list = [ "//ui/file_manager/externs/paper_elements.js" ]
 }
 
+js_library("combobutton.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/combobutton.m.js" ]
+  deps = [
+    ":files_menu.m",
+    ":multi_menu_button.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+  ]
+
+  externs_list = [ "//ui/file_manager/externs/paper_elements.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("commandbutton") {
   deps = [
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:ui",
     "//ui/webui/resources/js/cr/ui:command",
   ]
+}
+
+js_library("commandbutton.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/commandbutton.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("default_task_dialog") {
@@ -212,6 +243,19 @@ js_library("default_task_dialog") {
     "//ui/webui/resources/js/cr/ui:list",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model",
   ]
+}
+
+js_library("default_task_dialog.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/default_task_dialog.m.js" ]
+
+  deps = [
+    ":file_manager_dialog_base.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("dialog_footer") {
@@ -800,6 +844,18 @@ js_library("progress_center_panel") {
   externs_list = [ "//ui/file_manager/externs/progress_center_panel.js" ]
 }
 
+js_library("progress_center_panel.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/progress_center_panel.m.js" ]
+  deps = [
+    "//ui/file_manager/externs:progress_center_panel.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("providers_menu") {
   deps = [
     ":directory_tree",
@@ -901,7 +957,11 @@ js_test_gen_html("js_test_gen_html") {
 
 js_modulizer("modulize") {
   input_files = [
+    "a11y_announce.js",
     "action_model_ui.js",
+    "combobutton.js",
+    "commandbutton.js",
+    "default_task_dialog.js",
     "directory_tree.js",
     "drag_selector.js",
     "empty_folder.js",
@@ -918,14 +978,15 @@ js_modulizer("modulize") {
     "list_container.js",
     "multi_menu.js",
     "multi_menu_button.js",
+    "progress_center_panel.js",
     "suggest_apps_dialog.js",
-    "a11y_announce.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
   namespace_rewrites += [
-    "cr.ui.MultiMenu|MultiMenu",
+    "cr.ui.ComboButton|ComboButton",
     "cr.ui.FilesMenuItem|FilesMenuItem",
+    "cr.ui.MultiMenu|MultiMenu",
     "cr.ui.table.Table|Table",
   ]
 }
