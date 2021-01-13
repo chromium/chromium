@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ScreenMagnifierTypeFull) {
   PolicyMap policies;
   policies.Set(key::kScreenMagnifierType, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(chromeos::MAGNIFIER_FULL), nullptr);
+               base::Value(static_cast<int>(chromeos::MagnifierType::kFull)),
+               nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(magnification_manager->IsMagnifierEnabled());
 
@@ -145,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ScreenMagnifierTypeDocked) {
   PolicyMap policies;
   policies.Set(key::kScreenMagnifierType, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(chromeos::MAGNIFIER_DOCKED), nullptr);
+               base::Value(static_cast<int>(chromeos::MagnifierType::kDocked)),
+               nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(magnification_manager->IsDockedMagnifierEnabled());
 
