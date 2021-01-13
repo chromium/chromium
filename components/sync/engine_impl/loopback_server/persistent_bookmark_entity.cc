@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/logging.h"
+#include "components/sync/base/client_tag_hash.h"
 
 using std::string;
 
@@ -46,9 +47,10 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
 
   return std::make_unique<PersistentBookmarkEntity>(
       id, 0, client_entity.name(), originator_cache_guid,
-      originator_client_item_id, client_entity.unique_position(),
-      client_entity.specifics(), client_entity.folder(), parent_id,
-      client_entity.ctime(), client_entity.mtime());
+      originator_client_item_id, client_entity.client_defined_unique_tag(),
+      client_entity.unique_position(), client_entity.specifics(),
+      client_entity.folder(), parent_id, client_entity.ctime(),
+      client_entity.mtime());
 }
 
 // static
@@ -70,12 +72,16 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
 
   std::string originator_cache_guid;
   std::string originator_client_item_id;
+  std::string client_tag_hash;
 
   if (current_server_entity.IsDeleted()) {
     // Handle undeletions.
     originator_cache_guid = updating_client_cache_guid;
     originator_client_item_id =
         LoopbackServerEntity::GetInnerIdFromId(client_entity.id_string());
+    // An undeletion is similar to a creation, so let's honor the client tag
+    // provided by the client (if any).
+    client_tag_hash = client_entity.client_defined_unique_tag();
   } else {
     // Regular case (non-undeletion).
     const PersistentBookmarkEntity& current_bookmark_entity =
@@ -83,15 +89,19 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
     originator_cache_guid = current_bookmark_entity.originator_cache_guid_;
     originator_client_item_id =
         current_bookmark_entity.originator_client_item_id_;
+    // Note that the client tag provided by the client in |client_entity| is
+    // ignored during non-creations updates, since it's meant to be immutable.
+    client_tag_hash = current_bookmark_entity.client_tag_hash_;
   }
 
   // Using a version of 0 is okay here as it'll be updated before this entity is
   // actually saved.
   return std::make_unique<PersistentBookmarkEntity>(
       client_entity.id_string(), 0, client_entity.name(), originator_cache_guid,
-      originator_client_item_id, client_entity.unique_position(),
-      client_entity.specifics(), client_entity.folder(), parent_id,
-      client_entity.ctime(), client_entity.mtime());
+      originator_client_item_id, client_tag_hash,
+      client_entity.unique_position(), client_entity.specifics(),
+      client_entity.folder(), parent_id, client_entity.ctime(),
+      client_entity.mtime());
 }
 
 // static
@@ -107,6 +117,7 @@ PersistentBookmarkEntity::CreateFromEntity(
       client_entity.id_string(), client_entity.version(), client_entity.name(),
       client_entity.originator_cache_guid(),
       client_entity.originator_client_item_id(),
+      client_entity.client_defined_unique_tag(),
       client_entity.unique_position(), client_entity.specifics(),
       client_entity.folder(), client_entity.parent_id_string(),
       client_entity.ctime(), client_entity.mtime());
@@ -117,6 +128,7 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
     const string& name,
     const string& originator_cache_guid,
     const string& originator_client_item_id,
+    const string& client_tag_hash,
     const sync_pb::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics,
     bool is_folder,
@@ -126,11 +138,20 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
     : LoopbackServerEntity(id, syncer::BOOKMARKS, version, name),
       originator_cache_guid_(originator_cache_guid),
       originator_client_item_id_(originator_client_item_id),
+      client_tag_hash_(client_tag_hash),
       is_folder_(is_folder),
       unique_position_(unique_position),
       parent_id_(parent_id),
       creation_time_(creation_time),
       last_modified_time_(last_modified_time) {
+  if (!client_tag_hash.empty()) {
+    // This relies technically on a well-behaving client, but verifying here to
+    // avoid issues with Local Sync, which uses LoopbackServer.
+    DCHECK_EQ(
+        ClientTagHash::FromHashed(client_tag_hash),
+        ClientTagHash::FromUnhashed(BOOKMARKS, originator_client_item_id));
+  }
+
   SetSpecifics(specifics);
 }
 
@@ -155,6 +176,10 @@ PersistentBookmarkEntity::GetLoopbackServerEntityType() const {
 void PersistentBookmarkEntity::SerializeAsProto(
     sync_pb::SyncEntity* proto) const {
   LoopbackServerEntity::SerializeBaseProtoFields(proto);
+
+  if (!client_tag_hash_.empty()) {
+    proto->set_client_defined_unique_tag(client_tag_hash_);
+  }
 
   proto->set_originator_cache_guid(originator_cache_guid_);
   proto->set_originator_client_item_id(originator_client_item_id_);

@@ -50,6 +50,7 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
                            const std::string& name,
                            const std::string& originator_cache_guid,
                            const std::string& originator_client_item_id,
+                           const std::string& client_tag_hash,
                            const sync_pb::UniquePosition& unique_position,
                            const sync_pb::EntitySpecifics& specifics,
                            bool is_folder,
@@ -71,6 +72,10 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
   // All member values have equivalent fields in SyncEntity.
   const std::string originator_cache_guid_;
   const std::string originator_client_item_id_;
+  // Whether a client tag hash was provided upon *creation*, or an empty string
+  // otherwise. Takes precedence over the two fields above when exposing the
+  // entity in the protocol.
+  const std::string client_tag_hash_;
   const bool is_folder_;
   sync_pb::UniquePosition unique_position_;
   std::string parent_id_;

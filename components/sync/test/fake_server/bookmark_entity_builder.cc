@@ -128,8 +128,8 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
   return base::WrapUnique<LoopbackServerEntity>(
       new syncer::PersistentBookmarkEntity(
           id_, kUnusedVersion, title_, originator_cache_guid_,
-          originator_client_item_id_, unique_position, entity_specifics,
-          is_folder, parent_id_, kDefaultTime, kDefaultTime));
+          originator_client_item_id_, /*client_tag_hash=*/"", unique_position,
+          entity_specifics, is_folder, parent_id_, kDefaultTime, kDefaultTime));
 }
 
 }  // namespace fake_server
