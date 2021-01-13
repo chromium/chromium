@@ -68,7 +68,8 @@ class DriveZeroStateProvider : public SearchProvider,
 
   base::TimeTicks query_start_time_;
 
-  // Whether the suggested files experiment is enabled.
+  // Whether suggested files feature is enabled. True if both the experiment is
+  // enabled, and the suggested content toggle is enabled.
   const bool suggested_files_enabled_;
 
   // The normalizer normalizes the relevance scores of Results

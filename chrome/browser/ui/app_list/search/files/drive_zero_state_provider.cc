@@ -72,7 +72,9 @@ DriveZeroStateProvider::DriveZeroStateProvider(
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
       item_suggest_cache_(profile, std::move(url_loader_factory)),
-      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
+      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled() &&
+                               profile->GetPrefs()->GetBoolean(
+                                   chromeos::prefs::kSuggestedContentEnabled)) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
