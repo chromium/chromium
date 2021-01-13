@@ -55,6 +55,7 @@ js_type_check("closure_compile_jsmodules") {
     ":mock_folder_shortcut_data_model.m",
     ":mock_navigation_list_model.m",
     ":mock_thumbnail_loader.m",
+    ":naming_controller.m",
     ":navigation_list_model.m",
     ":navigation_uma.m",
     ":path_component.m",
@@ -1153,6 +1154,21 @@ js_library("naming_controller") {
   ]
 }
 
+js_library("naming_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/naming_controller.m.js" ]
+  deps = [
+    ":directory_contents.m",
+    ":directory_model.m",
+    ":file_selection.m",
+    "ui:list_container.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("navigation_list_model") {
   deps = [
     ":android_app_list_model",
@@ -1509,6 +1525,7 @@ js_modulizer("modulize") {
     "mock_folder_shortcut_data_model.js",
     "mock_navigation_list_model.js",
     "mock_thumbnail_loader.js",
+    "naming_controller.js",
     "navigation_list_model.js",
     "navigation_uma.js",
     "path_component.js",

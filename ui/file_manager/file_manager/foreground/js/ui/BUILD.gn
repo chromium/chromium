@@ -26,6 +26,7 @@ js_type_check("closure_compile_jsmodules") {
     ":a11y_announce.m",
     ":action_model_ui.m",
     ":actions_submenu.m",
+    ":autocomplete_list.m",
     ":banners.m",
     ":breadcrumb.m",
     ":combobutton.m",
@@ -53,6 +54,7 @@ js_type_check("closure_compile_jsmodules") {
     ":multi_menu_button.m",
     ":progress_center_panel.m",
     ":providers_menu.m",
+    ":search_box.m",
     ":suggest_apps_dialog.m",
     "table:table.m",
     "table:table_column.m",
@@ -999,12 +1001,45 @@ js_library("search_box") {
   externs_list = [ "//ui/file_manager/externs/search_item.js" ]
 }
 
+js_library("search_box.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/search_box.m.js" ]
+  deps = [
+    ":autocomplete_list.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+  ]
+  externs_list = [ "//ui/file_manager/externs/search_item.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("autocomplete_list") {
   deps = [
     "//ui/webui/resources/js/cr/ui:list",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model",
     "//ui/webui/resources/js/cr/ui:position_util",
   ]
+}
+
+js_library("autocomplete_list.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/autocomplete_list.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+    "//ui/webui/resources/js/cr/ui:position_util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("suggest_apps_dialog") {
@@ -1072,6 +1107,7 @@ js_modulizer("modulize") {
     "a11y_announce.js",
     "action_model_ui.js",
     "actions_submenu.js",
+    "autocomplete_list.js",
     "banners.js",
     "breadcrumb.js",
     "combobutton.js",
@@ -1099,6 +1135,7 @@ js_modulizer("modulize") {
     "multi_menu_button.js",
     "progress_center_panel.js",
     "providers_menu.js",
+    "search_box.js",
     "suggest_apps_dialog.js",
   ]
 
@@ -1108,5 +1145,6 @@ js_modulizer("modulize") {
     "cr.ui.FilesMenuItem|FilesMenuItem",
     "cr.ui.MultiMenu|MultiMenu",
     "cr.ui.table.Table|Table",
+    "cr.ui.AutocompleteList|AutocompleteList",
   ]
 }

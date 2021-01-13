@@ -2,10 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {FileFilter} from './directory_contents.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {util, strf} from '../../common/js/util.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format off
+
 /**
  * Controller to handle naming.
  */
-class NamingController {
+/* #export */ class NamingController {
   /**
    * @param {!ListContainer} listContainer
    * @param {!cr.ui.dialogs.AlertDialog} alertDialog
