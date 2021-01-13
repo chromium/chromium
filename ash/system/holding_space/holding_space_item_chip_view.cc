@@ -13,6 +13,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -95,6 +96,10 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
         static_cast<float>(paint_recording_size.width()) / size.width(),
         static_cast<float>(paint_recording_size.height()) / size.height(),
         /*cache*/ nullptr);
+
+    // Flip canvas for RTL.
+    gfx::ScopedCanvas canvas(recorder.canvas());
+    canvas.FlipIfRTL(size.width());
 
     cc::PaintFlags flags;
     flags.setAntiAlias(false);
