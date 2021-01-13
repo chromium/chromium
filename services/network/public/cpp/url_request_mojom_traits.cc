@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -274,35 +275,100 @@ bool StructTraits<network::mojom::URLRequestBodyDataView,
   return true;
 }
 
-bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
-    Read(network::mojom::DataElementDataView data, network::DataElement* out) {
-  if (!data.ReadPath(&out->path_)) {
-    network::debug::SetDeserializationCrashKeyString("data_element_path");
+bool StructTraits<network::mojom::DataElementBytesDataView,
+                  network::DataElementBytes>::
+    Read(network::mojom::DataElementBytesDataView data,
+         network::DataElementBytes* out) {
+  mojo_base::BigBufferView big_buffer_view;
+  if (!data.ReadData(&big_buffer_view)) {
     return false;
   }
-  if (!data.ReadExpectedModificationTime(&out->expected_modification_time_)) {
-    return false;
-  }
-  if (data.type() == network::mojom::DataElementType::kBytes) {
-    mojo_base::BigBufferView big_buffer;
-    if (!data.ReadBuf(&big_buffer))
-      return false;
-    // TODO(yoichio): Fix DataElementDataView::ReadBuf issue
-    // (crbug.com/1152664).
-    if (data.length() != big_buffer.data().size())
-      return false;
-    out->buf_.clear();
-    out->buf_.insert(out->buf_.end(), big_buffer.data().begin(),
-                     big_buffer.data().end());
-  }
-  out->type_ = data.type();
-  out->data_pipe_getter_ = data.TakeDataPipeGetter<
-      mojo::PendingRemote<network::mojom::DataPipeGetter>>();
-  out->chunked_data_pipe_getter_ = data.TakeChunkedDataPipeGetter<
-      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>>();
-  out->offset_ = data.offset();
-  out->length_ = data.length();
+  *out = network::DataElementBytes(std::vector<uint8_t>(
+      big_buffer_view.data().begin(), big_buffer_view.data().end()));
   return true;
+}
+
+bool StructTraits<network::mojom::DataElementDataPipeDataView,
+                  network::DataElementDataPipe>::
+    Read(network::mojom::DataElementDataPipeDataView data,
+         network::DataElementDataPipe* out) {
+  auto data_pipe_getter = data.TakeDataPipeGetter<
+      mojo::PendingRemote<network::mojom::DataPipeGetter>>();
+  *out = network::DataElementDataPipe(std::move(data_pipe_getter));
+  return true;
+}
+
+bool StructTraits<network::mojom::DataElementChunkedDataPipeDataView,
+                  network::DataElementChunkedDataPipe>::
+    Read(network::mojom::DataElementChunkedDataPipeDataView data,
+         network::DataElementChunkedDataPipe* out) {
+  auto data_pipe_getter = data.TakeDataPipeGetter<
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>>();
+  UMA_HISTOGRAM_BOOLEAN("NetworkService.StreamingUploadDataPipeGetterValidity",
+                        data_pipe_getter.is_valid());
+  *out = network::DataElementChunkedDataPipe(
+      std::move(data_pipe_getter),
+      network::DataElementChunkedDataPipe::ReadOnlyOnce(data.read_only_once()));
+  return true;
+}
+
+bool StructTraits<network::mojom::DataElementFileDataView,
+                  network::DataElementFile>::
+    Read(network::mojom::DataElementFileDataView data,
+         network::DataElementFile* out) {
+  base::FilePath path;
+  if (!data.ReadPath(&path)) {
+    return false;
+  }
+  base::Time expected_modification_time;
+  if (!data.ReadExpectedModificationTime(&expected_modification_time)) {
+    return false;
+  }
+  *out = network::DataElementFile(path, data.offset(), data.length(),
+                                  expected_modification_time);
+  return true;
+}
+
+bool UnionTraits<network::mojom::DataElementDataView, network::DataElement>::
+    Read(network::mojom::DataElementDataView data, network::DataElement* out) {
+  using Tag = network::mojom::DataElementDataView::Tag;
+  DCHECK(!data.is_null());
+
+  switch (data.tag()) {
+    case Tag::kBytes: {
+      network::DataElementBytes bytes;
+      if (!data.ReadBytes(&bytes)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(bytes));
+      return true;
+    }
+    case Tag::kDataPipe: {
+      network::DataElementDataPipe data_pipe;
+      if (!data.ReadDataPipe(&data_pipe)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(data_pipe));
+      return true;
+    }
+    case Tag::kChunkedDataPipe: {
+      network::DataElementChunkedDataPipe chunked_data_pipe;
+      if (!data.ReadChunkedDataPipe(&chunked_data_pipe)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(chunked_data_pipe));
+      return true;
+    }
+    case Tag::kFile: {
+      network::DataElementFile file;
+      if (!data.ReadFile(&file)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(file));
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace mojo

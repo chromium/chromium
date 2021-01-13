@@ -1670,12 +1670,14 @@ struct FuzzTraits<network::DataElement> {
       case 0: {
         // network::DataElement::Type::TYPE_BYTES
         if (RandEvent(2)) {
-          p->SetToBytes(nullptr, 0);
+          *p = network::DataElement(
+              network::DataElementBytes(std::vector<uint8_t>()));
         } else {
           char data[256];
           int data_len = RandInRange(sizeof(data));
           fuzzer->FuzzBytes(&data[0], data_len);
-          p->SetToBytes(&data[0], data_len);
+          *p = network::DataElement(network::DataElementBytes(
+              std::vector<uint8_t>(std::begin(data), std::end(data))));
         }
         return true;
       }
@@ -1693,7 +1695,8 @@ struct FuzzTraits<network::DataElement> {
           return false;
         if (!FuzzParam(&modification_time, fuzzer))
           return false;
-        p->SetToFilePathRange(path, offset, length, modification_time);
+        *p = network::DataElement(
+            network::DataElementFile(path, offset, length, modification_time));
         return true;
       }
       default: {

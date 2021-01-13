@@ -218,11 +218,11 @@ std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
   std::string result;
   for (const network::DataElement& element : *data_elements) {
-    DCHECK_EQ(element.type(), network::mojom::DataElementType::kBytes);
+    DCHECK_EQ(element.type(), network::DataElement::Tag::kBytes);
     // Provide the length of the bytes explicitly, not to rely on the null
     // termination.
-    result.append(element.bytes(),
-                  base::checked_cast<size_t>(element.length()));
+    const auto piece = element.As<network::DataElementBytes>().AsStringPiece();
+    result.append(piece.data(), piece.size());
   }
   return result;
 }

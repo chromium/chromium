@@ -76,29 +76,31 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
   http_body.SetContainsPasswordData(input.contains_sensitive_info());
   for (auto& element : *input.elements()) {
     switch (element.type()) {
-      case network::mojom::blink::DataElementType::kBytes:
+      case network::DataElement::Tag::kBytes: {
+        const auto& bytes = element.As<network::DataElementBytes>().bytes();
         http_body.AppendData(
-            WebData(element.bytes(), SafeCast<size_t>(element.length())));
+            WebData(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
         break;
-      case network::mojom::blink::DataElementType::kFile: {
+      }
+      case network::DataElement::Tag::kFile: {
+        const auto& file = element.As<network::DataElementFile>();
         base::Optional<base::Time> modification_time;
-        if (!element.expected_modification_time().is_null())
-          modification_time = element.expected_modification_time();
+        if (!file.expected_modification_time().is_null())
+          modification_time = file.expected_modification_time();
         http_body.AppendFileRange(
-            FilePathToWebString(element.path()), element.offset(),
-            (element.length() != std::numeric_limits<uint64_t>::max())
-                ? element.length()
+            FilePathToWebString(file.path()), file.offset(),
+            (file.length() != std::numeric_limits<uint64_t>::max())
+                ? file.length()
                 : -1,
             modification_time);
         break;
       }
-      case network::mojom::blink::DataElementType::kDataPipe: {
-        http_body.AppendDataPipe(element.CloneDataPipeGetter());
+      case network::DataElement::Tag::kDataPipe: {
+        http_body.AppendDataPipe(
+            element.As<network::DataElementDataPipe>().CloneDataPipeGetter());
         break;
       }
-      case network::mojom::blink::DataElementType::kUnknown:
-      case network::mojom::blink::DataElementType::kChunkedDataPipe:
-      case network::mojom::blink::DataElementType::kReadOnceStream:
+      case network::DataElement::Tag::kChunkedDataPipe:
         NOTREACHED();
         break;
     }

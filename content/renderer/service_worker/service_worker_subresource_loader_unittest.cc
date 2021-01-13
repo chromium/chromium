@@ -204,13 +204,14 @@ class FakeControllerServiceWorker
     // So far this test expects a single element (bytes or data pipe).
     ASSERT_EQ(1u, elements->size());
     network::DataElement& element = elements->front();
-    if (element.type() == network::mojom::DataElementType::kBytes) {
-      *out_string = std::string(element.bytes(), element.length());
-    } else if (element.type() == network::mojom::DataElementType::kDataPipe) {
+    if (element.type() == network::DataElement::Tag::kBytes) {
+      *out_string =
+          std::string(element.As<network::DataElementBytes>().AsStringPiece());
+    } else if (element.type() == network::DataElement::Tag::kDataPipe) {
       // Read the content into |data_pipe|.
       mojo::DataPipe data_pipe;
       mojo::Remote<network::mojom::DataPipeGetter> remote(
-          element.ReleaseDataPipeGetter());
+          element.As<network::DataElementDataPipe>().ReleaseDataPipeGetter());
       base::RunLoop run_loop;
       remote->Read(
           std::move(data_pipe.producer_handle),

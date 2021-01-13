@@ -19,31 +19,33 @@ void ParamTraits<network::DataElement>::Write(base::Pickle* m,
                                               const param_type& p) {
   WriteParam(m, static_cast<int>(p.type()));
   switch (p.type()) {
-    case network::mojom::DataElementType::kBytes: {
-      m->WriteData(p.bytes(), static_cast<int>(p.length()));
+    case network::mojom::DataElementDataView::Tag::kBytes: {
+      const auto& bytes = p.As<network::DataElementBytes>().bytes();
+      m->WriteData(reinterpret_cast<const char*>(bytes.data()),
+                   static_cast<int>(bytes.size()));
       break;
     }
-    case network::mojom::DataElementType::kFile: {
-      WriteParam(m, p.path());
-      WriteParam(m, p.offset());
-      WriteParam(m, p.length());
-      WriteParam(m, p.expected_modification_time());
+    case network::mojom::DataElementDataView::Tag::kFile: {
+      const auto& file = p.As<network::DataElementFile>();
+      WriteParam(m, file.path());
+      WriteParam(m, file.offset());
+      WriteParam(m, file.length());
+      WriteParam(m, file.expected_modification_time());
       break;
     }
-    case network::mojom::DataElementType::kDataPipe: {
-      WriteParam(m, p.CloneDataPipeGetter().PassPipe().release());
-      break;
-    }
-    case network::mojom::DataElementType::kChunkedDataPipe: {
-      WriteParam(m, const_cast<network::DataElement&>(p)
-                        .ReleaseChunkedDataPipeGetter()
+    case network::mojom::DataElementDataView::Tag::kDataPipe: {
+      WriteParam(m, p.As<network::DataElementDataPipe>()
+                        .CloneDataPipeGetter()
                         .PassPipe()
                         .release());
       break;
     }
-    case network::mojom::DataElementType::kReadOnceStream:
-    case network::mojom::DataElementType::kUnknown: {
-      NOTREACHED();
+    case network::mojom::DataElementDataView::Tag::kChunkedDataPipe: {
+      auto& element = const_cast<network::DataElement&>(p)
+                          .As<network::DataElementChunkedDataPipe>();
+      DCHECK(!element.read_only_once());
+      WriteParam(m,
+                 element.ReleaseChunkedDataPipeGetter().PassPipe().release());
       break;
     }
   }
@@ -55,16 +57,19 @@ bool ParamTraits<network::DataElement>::Read(const base::Pickle* m,
   int type;
   if (!ReadParam(m, iter, &type))
     return false;
-  switch (static_cast<network::mojom::DataElementType>(type)) {
-    case network::mojom::DataElementType::kBytes: {
-      const char* data;
+  switch (static_cast<network::mojom::DataElementDataView::Tag>(type)) {
+    case network::mojom::DataElementDataView::Tag::kBytes: {
+      const char* char_data;
       int len;
-      if (!iter->ReadData(&data, &len))
+      if (!iter->ReadData(&char_data, &len))
         return false;
-      r->SetToBytes(data, len);
+      const uint8_t* data = reinterpret_cast<const uint8_t*>(char_data);
+      *r = network::DataElement(
+          network::DataElementBytes(std::vector<uint8_t>(data, data + len)));
+      DCHECK_EQ(static_cast<int>(r->type()), type);
       return true;
     }
-    case network::mojom::DataElementType::kFile: {
+    case network::mojom::DataElementDataView::Tag::kFile: {
       base::FilePath file_path;
       uint64_t offset, length;
       base::Time expected_modification_time;
@@ -76,34 +81,41 @@ bool ParamTraits<network::DataElement>::Read(const base::Pickle* m,
         return false;
       if (!ReadParam(m, iter, &expected_modification_time))
         return false;
-      r->SetToFilePathRange(file_path, offset, length,
-                            expected_modification_time);
+      *r = network::DataElement(network::DataElementFile(
+          file_path, offset, length, expected_modification_time));
+      DCHECK_EQ(static_cast<int>(r->type()), type);
       return true;
     }
-    case network::mojom::DataElementType::kDataPipe: {
+    case network::mojom::DataElementDataView::Tag::kDataPipe: {
       mojo::MessagePipeHandle message_pipe;
       if (!ReadParam(m, iter, &message_pipe))
         return false;
+      if (!message_pipe) {
+        return false;
+      }
       mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter(
           mojo::ScopedMessagePipeHandle(message_pipe), 0u);
-      r->SetToDataPipe(std::move(data_pipe_getter));
+      *r = network::DataElement(
+          network::DataElementDataPipe(std::move(data_pipe_getter)));
+      DCHECK_EQ(static_cast<int>(r->type()), type);
       return true;
     }
-    case network::mojom::DataElementType::kChunkedDataPipe: {
+    case network::mojom::DataElementDataView::Tag::kChunkedDataPipe: {
       mojo::MessagePipeHandle message_pipe;
       if (!ReadParam(m, iter, &message_pipe))
         return false;
+      if (!message_pipe) {
+        return false;
+      }
       mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
           chunked_data_pipe_getter(mojo::ScopedMessagePipeHandle(message_pipe),
                                    0u);
 
-      r->SetToChunkedDataPipe(std::move(chunked_data_pipe_getter));
+      *r = network::DataElement(network::DataElementChunkedDataPipe(
+          std::move(chunked_data_pipe_getter),
+          network::DataElementChunkedDataPipe::ReadOnlyOnce(false)));
+      DCHECK_EQ(static_cast<int>(r->type()), type);
       return true;
-    }
-    case network::mojom::DataElementType::kReadOnceStream:
-    case network::mojom::DataElementType::kUnknown: {
-      NOTREACHED();
-      return false;
     }
   }
   return false;
@@ -140,8 +152,9 @@ bool ParamTraits<scoped_refptr<network::ResourceRequestBody>>::Read(
   // A chunked element is only allowed if it's the only one element.
   if (elements.size() > 1) {
     for (const auto& element : elements) {
-      if (element.type() == network::mojom::DataElementType::kChunkedDataPipe)
+      if (element.type() == network::DataElement::Tag::kChunkedDataPipe) {
         return false;
+      }
     }
   }
   int64_t identifier;

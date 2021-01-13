@@ -139,7 +139,12 @@ class HintsFetcherTest : public testing::Test,
       EXPECT_EQ(pending_request.request.request_body->elements()->size(), 1u);
       auto& element =
           pending_request.request.request_body->elements_mutable()->front();
-      last_request_body_ = std::string(element.bytes(), element.length());
+      if (element.type() != network::DataElement::Tag::kBytes) {
+        ADD_FAILURE() << "network::DataElement type mismatch";
+        return;
+      }
+      last_request_body_ =
+          std::string(element.As<network::DataElementBytes>().AsStringPiece());
     }
   }
 

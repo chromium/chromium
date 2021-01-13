@@ -87,10 +87,11 @@ std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
   std::string result;
   for (const network::DataElement& e : *data_elements) {
-    DCHECK_EQ(e.type(), network::mojom::DataElementType::kBytes);
+    DCHECK_EQ(e.type(), network::DataElement::Tag::kBytes);
     // Provide the length of the bytes explicitly, not to rely on the null
     // termination.
-    result.append(e.bytes(), base::checked_cast<size_t>(e.length()));
+    const auto piece = e.As<network::DataElementBytes>().AsStringPiece();
+    result.append(piece.data(), piece.size());
   }
   return result;
 }

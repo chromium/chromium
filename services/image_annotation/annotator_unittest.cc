@@ -326,9 +326,10 @@ class TestServerURLLoaderFactory {
 
       // We only support the simplest body structure.
       if (elements && elements->size() == 1 &&
-          (*elements)[0].type() == network::mojom::DataElementType::kBytes) {
-        actual_body =
-            std::string((*elements)[0].bytes(), (*elements)[0].length());
+          (*elements)[0].type() ==
+              network::mojom::DataElementDataView::Tag::kBytes) {
+        actual_body = std::string(
+            (*elements)[0].As<network::DataElementBytes>().AsStringPiece());
       }
     }
 

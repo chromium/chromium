@@ -8,70 +8,40 @@
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 
 namespace mojo {
 
 // static
-WTF::Vector<blink::mojom::blink::FetchAPIDataElementPtr>
+WTF::Vector<network::DataElement>
 StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
              blink::ResourceRequestBody>::elements(blink::ResourceRequestBody&
                                                        mutable_body) {
-  WTF::Vector<blink::mojom::blink::FetchAPIDataElementPtr> out_elements;
-  const auto& body = mutable_body;
-  if (body.IsEmpty()) {
-    return out_elements;
+  scoped_refptr<network::ResourceRequestBody> network_body;
+  if (auto form_body = mutable_body.FormBody()) {
+    // Here we need to keep the original body, because other members such as
+    // `identifier` are on the form body.
+    network_body = NetworkResourceRequestBodyFor(
+        blink::ResourceRequestBody(form_body),
+        /*allow_http1_for_streaming_upload=*/false);
+  } else if (mutable_body.StreamBody()) {
+    // Here we don't need to keep the original body (and it's impossible to do
+    // so, because the streaming body is not copyable).
+    network_body = NetworkResourceRequestBodyFor(
+        std::move(mutable_body), /*allow_http1_for_streaming_upload=*/false);
   }
-
-  if (mutable_body.StreamBody()) {
-    auto out = blink::mojom::blink::FetchAPIDataElement::New();
-    out->type = network::mojom::DataElementType::kReadOnceStream;
-    out->chunked_data_pipe_getter = mutable_body.TakeStreamBody();
-    out_elements.push_back(std::move(out));
-    return out_elements;
+  if (!network_body) {
+    return WTF::Vector<network::DataElement>();
   }
-
-  DCHECK(body.FormBody());
-  for (const auto& element : body.FormBody()->elements_) {
-    auto out = blink::mojom::blink::FetchAPIDataElement::New();
-    switch (element.type_) {
-      case blink::FormDataElement::kData:
-        out->type = network::mojom::DataElementType::kBytes;
-        out->buf.ReserveCapacity(element.data_.size());
-        for (const char c : element.data_) {
-          out->buf.push_back(static_cast<uint8_t>(c));
-        }
-        break;
-      case blink::FormDataElement::kEncodedFile:
-        out->type = network::mojom::DataElementType::kFile;
-        out->path = base::FilePath::FromUTF8Unsafe(element.filename_.Utf8());
-        out->offset = element.file_start_;
-        out->length = element.file_length_;
-        out->expected_modification_time =
-            element.expected_file_modification_time_.value_or(base::Time());
-        break;
-      case blink::FormDataElement::kEncodedBlob: {
-        out->type = network::mojom::DataElementType::kDataPipe;
-        out->length = element.optional_blob_data_handle_->size();
-
-        mojo::Remote<blink::mojom::blink::Blob> blob_remote(
-            element.optional_blob_data_handle_->CloneBlobRemote());
-        blob_remote->AsDataPipeGetter(
-            out->data_pipe_getter.InitWithNewPipeAndPassReceiver());
-        break;
-      }
-      case blink::FormDataElement::kDataPipe:
-        out->type = network::mojom::DataElementType::kDataPipe;
-        if (element.data_pipe_getter_) {
-          element.data_pipe_getter_->GetDataPipeGetter()->Clone(
-              out->data_pipe_getter.InitWithNewPipeAndPassReceiver());
-        }
-        break;
-    }
-    out_elements.push_back(std::move(out));
+  WTF::Vector<network::DataElement> out_elements;
+  DCHECK(network_body->elements_mutable());
+  for (auto& element : *network_body->elements_mutable()) {
+    out_elements.emplace_back(std::move(element));
   }
   return out_elements;
 }
@@ -86,73 +56,58 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
     return true;
   }
 
-  mojo::ArrayDataView<blink::mojom::FetchAPIDataElementDataView> elements_view;
+  mojo::ArrayDataView<network::mojom::DataElementDataView> elements_view;
   in.GetElementsDataView(&elements_view);
   if (elements_view.size() == 1) {
-    blink::mojom::FetchAPIDataElementDataView view;
+    network::mojom::DataElementDataView view;
     elements_view.GetDataView(0, &view);
 
-    network::mojom::DataElementType type;
-    if (!view.ReadType(&type)) {
-      return false;
-    }
-    if (type == network::mojom::DataElementType::kReadOnceStream) {
-      auto chunked_data_pipe_getter = view.TakeChunkedDataPipeGetter<
-          mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>>();
-      *out = blink::ResourceRequestBody(std::move(chunked_data_pipe_getter));
+    DCHECK(!view.is_null());
+    if (view.tag() == network::DataElement::Tag::kChunkedDataPipe) {
+      network::DataElement element;
+      if (!elements_view.Read(0, &element)) {
+        return false;
+      }
+      auto& chunked_data_pipe =
+          element.As<network::DataElementChunkedDataPipe>();
+      *out = blink::ResourceRequestBody(blink::ToCrossVariantMojoType(
+          chunked_data_pipe.ReleaseChunkedDataPipeGetter()));
       return true;
     }
   }
   auto form_data = blink::EncodedFormData::Create();
   for (size_t i = 0; i < elements_view.size(); ++i) {
-    blink::mojom::FetchAPIDataElementDataView view;
-    elements_view.GetDataView(i, &view);
-
-    network::mojom::DataElementType type;
-    if (!view.ReadType(&type)) {
+    network::DataElement element;
+    if (!elements_view.Read(i, &element)) {
       return false;
     }
-    switch (type) {
-      case network::mojom::DataElementType::kBytes: {
-        // TODO(richard.li): Delete this workaround when type of
-        // blink::FormDataElement::data_ is changed to WTF::Vector<uint8_t>
-        WTF::Vector<uint8_t> buf;
-        if (!view.ReadBuf(&buf)) {
-          return false;
-        }
-        form_data->AppendData(buf.data(), buf.size());
-        break;
-      }
-      case network::mojom::DataElementType::kFile: {
-        base::FilePath file_path;
-        base::Time expected_time;
-        if (!view.ReadPath(&file_path) ||
-            !view.ReadExpectedModificationTime(&expected_time)) {
-          return false;
-        }
-        base::Optional<base::Time> expected_file_modification_time;
-        if (!expected_time.is_null()) {
-          expected_file_modification_time = expected_time;
-        }
-        form_data->AppendFileRange(blink::FilePathToString(file_path),
-                                   view.offset(), view.length(),
-                                   expected_file_modification_time);
-        break;
-      }
-      case network::mojom::DataElementType::kDataPipe: {
-        auto data_pipe_ptr_remote = view.TakeDataPipeGetter<
-            mojo::PendingRemote<network::mojom::blink::DataPipeGetter>>();
-        DCHECK(data_pipe_ptr_remote.is_valid());
 
+    switch (element.type()) {
+      case network::DataElement::Tag::kBytes: {
+        const auto& bytes = element.As<network::DataElementBytes>();
+        form_data->AppendData(bytes.bytes().data(), bytes.bytes().size());
+        break;
+      }
+      case network::DataElement::Tag::kFile: {
+        const auto& file = element.As<network::DataElementFile>();
+        base::Optional<base::Time> expected_modification_time;
+        if (!file.expected_modification_time().is_null()) {
+          expected_modification_time = file.expected_modification_time();
+        }
+        form_data->AppendFileRange(blink::FilePathToString(file.path()),
+                                   file.offset(), file.length(),
+                                   expected_modification_time);
+        break;
+      }
+      case network::DataElement::Tag::kDataPipe: {
+        auto& datapipe = element.As<network::DataElementDataPipe>();
         form_data->AppendDataPipe(
             base::MakeRefCounted<blink::WrappedDataPipeGetter>(
-                std::move(data_pipe_ptr_remote)));
-
+                blink::ToCrossVariantMojoType(
+                    datapipe.ReleaseDataPipeGetter())));
         break;
       }
-      case network::mojom::DataElementType::kUnknown:
-      case network::mojom::DataElementType::kChunkedDataPipe:
-      case network::mojom::DataElementType::kReadOnceStream:
+      case network::DataElement::Tag::kChunkedDataPipe:
         NOTREACHED();
         return false;
     }

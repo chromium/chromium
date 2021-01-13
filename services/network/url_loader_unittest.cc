@@ -2264,7 +2264,8 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
       CreateResourceRequest("POST", test_server()->GetURL("/echo"));
   request.request_body = base::MakeRefCounted<ResourceRequestBody>();
   request.request_body->SetToChunkedDataPipe(
-      data_pipe_getter.GetDataPipeGetterRemote());
+      data_pipe_getter.GetDataPipeGetterRemote(),
+      ResourceRequestBody::ReadOnlyOnce(false));
 
   base::RunLoop delete_run_loop;
   mojo::Remote<mojom::URLLoader> loader;
@@ -2308,8 +2309,9 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
   ResourceRequest request =
       CreateResourceRequest("POST", test_server()->GetURL("/echo"));
   request.request_body = base::MakeRefCounted<ResourceRequestBody>();
-  request.request_body->SetToReadOnceStream(
-      data_pipe_getter.GetDataPipeGetterRemote());
+  request.request_body->SetToChunkedDataPipe(
+      data_pipe_getter.GetDataPipeGetterRemote(),
+      ResourceRequestBody::ReadOnlyOnce(true));
 
   base::HistogramTester tester;
   std::string histogram_allowh1("Net.Fetch.UploadStreamingProtocolAllowH1");

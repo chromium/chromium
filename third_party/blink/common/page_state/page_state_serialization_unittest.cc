@@ -46,17 +46,24 @@ void ExpectEquality(const std::vector<T>& expected,
 template <>
 void ExpectEquality(const network::DataElement& expected,
                     const network::DataElement& actual) {
-  EXPECT_EQ(expected.type(), actual.type());
-  if (expected.type() == network::mojom::DataElementType::kBytes &&
-      actual.type() == network::mojom::DataElementType::kBytes) {
-    EXPECT_EQ(std::string(expected.bytes(), expected.length()),
-              std::string(actual.bytes(), actual.length()));
+  ASSERT_EQ(expected.type(), actual.type());
+  if (expected.type() == network::DataElement::Tag::kBytes) {
+    EXPECT_EQ(expected.As<network::DataElementBytes>().bytes(),
+              actual.As<network::DataElementBytes>().bytes());
+    return;
   }
-  EXPECT_EQ(expected.path(), actual.path());
-  EXPECT_EQ(expected.offset(), actual.offset());
-  EXPECT_EQ(expected.length(), actual.length());
-  EXPECT_EQ(expected.expected_modification_time(),
-            actual.expected_modification_time());
+  if (expected.type() != network::DataElement::Tag::kFile) {
+    ADD_FAILURE() << "Impossible to check equality.";
+    return;
+  }
+
+  const auto& expected_file = expected.As<network::DataElementFile>();
+  const auto& actual_file = actual.As<network::DataElementFile>();
+  EXPECT_EQ(expected_file.path(), actual_file.path());
+  EXPECT_EQ(expected_file.offset(), actual_file.offset());
+  EXPECT_EQ(expected_file.length(), actual_file.length());
+  EXPECT_EQ(expected_file.expected_modification_time(),
+            actual_file.expected_modification_time());
 }
 
 template <>

@@ -433,15 +433,12 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
       ASSERT_TRUE(GetUpstreamRequest(&upstream_request));
       ASSERT_TRUE(upstream_request->request.request_body);
       ASSERT_EQ(1u, upstream_request->request.request_body->elements()->size());
-      ASSERT_EQ(
-          network::mojom::DataElementType::kChunkedDataPipe,
-          (*upstream_request->request.request_body->elements())[0].type());
-      network::TestURLLoaderFactory::PendingRequest* mutable_upstream_request =
-          const_cast<network::TestURLLoaderFactory::PendingRequest*>(
-              upstream_request);
-      chunked_data_pipe_getter.Bind((*mutable_upstream_request->request
-                                          .request_body->elements_mutable())[0]
-                                        .ReleaseChunkedDataPipeGetter());
+      auto& element =
+          (*upstream_request->request.request_body->elements_mutable())[0];
+      ASSERT_EQ(network::DataElement::Tag::kChunkedDataPipe, element.type());
+      chunked_data_pipe_getter.Bind(
+          element.As<network::DataElementChunkedDataPipe>()
+              .ReleaseChunkedDataPipeGetter());
       chunked_data_pipe_getter->StartReading(
           std::move(data_pipe.producer_handle));
     }

@@ -32,6 +32,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
     : public base::RefCountedThreadSafe<ResourceRequestBody> {
  public:
+  using ReadOnlyOnce = DataElementChunkedDataPipe::ReadOnlyOnce;
+
   ResourceRequestBody();
 
   // Creates ResourceRequestBody that holds a copy of |bytes|.
@@ -59,7 +61,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   // method should only be used when talking to servers that are are known to
   // support chunked uploads.
   void SetToChunkedDataPipe(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-                                chunked_data_pipe_getter);
+                                chunked_data_pipe_getter,
+                            ReadOnlyOnce read_only_once);
   // Almost same as above except |chunked_data_pipe_getter| is read only once
   // and you must talk with a server supporting chunked upload.
   void SetToReadOnceStream(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
@@ -84,7 +87,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   int64_t identifier() const { return identifier_; }
 
   // Returns paths referred to by |elements| of type
-  // network::mojom::DataElementType::kFile.
+  // network::mojom::DataElementDataView::Tag::kFile.
   std::vector<base::FilePath> GetReferencedFiles() const;
 
   // Sets the flag which indicates whether the post data contains sensitive

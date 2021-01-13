@@ -55,20 +55,6 @@ enum URLRequestReferrerPolicy {
   kNoReferrer
 };
 
-// Used for represents the type of the internal contents of
-// network::DataElement.
-enum DataElementType {
-  kUnknown = -1,
-
-  kDataPipe,
-  kChunkedDataPipe,
-  kReadOnceStream,
-  kBytes,
-
-  // TODO(https://crbug.com/1132362):  Remove this.
-  kFile,
-};
-
 // Options that may only be set on URLRequests passed to a URLLoaderFactory
 // created with |is_trusted| set to true.
 struct TrustedUrlRequestParams {
@@ -418,7 +404,8 @@ struct URLRequest {
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
 // Typemapped to network::ResourceRequestBody
 struct URLRequestBody {
-  // Store upload bodies
+  // The body contents. DataElementChunkedDataPipe can be used in `elements`
+  // only if `elements` consists of one element.
   array<DataElement> elements;
 
   // Identifies a particular upload instance, which is used by the cache to
@@ -434,24 +421,40 @@ struct URLRequestBody {
   bool allow_http1_for_streaming_upload;
 };
 
-// Represents part of an upload body. This could be either one of bytes, file or
-// a data pipe.
-// Typemapped to network::DataElement
-struct DataElement {
-  DataElementType type;
+// Represents part of an upload body consisting of bytes.
+struct DataElementBytes {
+  mojo_base.mojom.BigBuffer data;
+};
 
-  // For kBytes.
-  mojo_base.mojom.BigBuffer buf;
-  // For kFile
+// Represents part of an upload body consisting of (part of) a file.
+struct DataElementFile {
   mojo_base.mojom.FilePath path;
-  // For kDataPipe
-  pending_remote<network.mojom.DataPipeGetter>? data_pipe_getter;
-  // For kChunkedDataPipe
-  pending_remote<network.mojom.ChunkedDataPipeGetter>? chunked_data_pipe_getter;
-
   uint64 offset;
   uint64 length;
   mojo_base.mojom.Time expected_modification_time;
+};
+
+// Represents part of an upload body consisting of a data pipe with a known
+// size.
+struct DataElementDataPipe {
+  pending_remote<network.mojom.DataPipeGetter> data_pipe_getter;
+};
+
+// Represents part of an upload body consisting of a data pipe without a known
+// size.
+struct DataElementChunkedDataPipe {
+  pending_remote<network.mojom.ChunkedDataPipeGetter> data_pipe_getter;
+  // When true, a data pipe can be gotten from `chunked_data_pipe_getter` only
+  // once.
+  bool read_only_once;
+};
+
+// Represents part of an upload body.
+union DataElement {
+  DataElementBytes bytes;
+  DataElementFile file;
+  DataElementDataPipe data_pipe;
+  DataElementChunkedDataPipe chunked_data_pipe;
 };
 
 // URLLoader is an interface for performing a single request to a URL.

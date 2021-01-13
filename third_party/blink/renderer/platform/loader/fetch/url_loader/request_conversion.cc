@@ -242,6 +242,27 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
 
 }  // namespace
 
+scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
+    ResourceRequestBody src_body,
+    bool allow_http1_for_streaming_upload) {
+  scoped_refptr<network::ResourceRequestBody> dest_body;
+  if (const EncodedFormData* form_body = src_body.FormBody().get()) {
+    dest_body = base::MakeRefCounted<network::ResourceRequestBody>();
+
+    PopulateResourceRequestBody(*form_body, dest_body.get());
+  } else if (src_body.StreamBody().is_valid()) {
+    mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
+        stream_body = src_body.TakeStreamBody();
+    dest_body = base::MakeRefCounted<network::ResourceRequestBody>();
+    dest_body->SetToChunkedDataPipe(
+        ToCrossVariantMojoType(std::move(stream_body)),
+        network::ResourceRequestBody::ReadOnlyOnce(true));
+    dest_body->SetAllowHTTP1ForStreamingUpload(
+        allow_http1_for_streaming_upload);
+  }
+  return dest_body;
+}
+
 void PopulateResourceRequest(const ResourceRequestHead& src,
                              ResourceRequestBody src_body,
                              network::ResourceRequest* dest) {
@@ -355,22 +376,11 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->is_fetch_like_api = src.IsFetchLikeAPI();
 
-  if (const EncodedFormData* body = src_body.FormBody().get()) {
+  dest->request_body = NetworkResourceRequestBodyFor(
+      std::move(src_body), src.AllowHTTP1ForStreamingUpload());
+  if (dest->request_body) {
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kGetMethod);
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kHeadMethod);
-    dest->request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-
-    PopulateResourceRequestBody(*body, dest->request_body.get());
-  } else if (src_body.StreamBody().is_valid()) {
-    DCHECK_NE(dest->method, net::HttpRequestHeaders::kGetMethod);
-    DCHECK_NE(dest->method, net::HttpRequestHeaders::kHeadMethod);
-    mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
-        stream_body = src_body.TakeStreamBody();
-    dest->request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-    dest->request_body->SetToReadOnceStream(
-        ToCrossVariantMojoType(std::move(stream_body)));
-    dest->request_body->SetAllowHTTP1ForStreamingUpload(
-        src.AllowHTTP1ForStreamingUpload());
   }
 
   if (resource_type == mojom::ResourceType::kStylesheet) {

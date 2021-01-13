@@ -1966,9 +1966,10 @@ class MockURLLoader : public network::mojom::URLLoader {
         test_events_(std::move(test_events)) {
     if (request_body && request_body->elements()->size() == 1 &&
         (*request_body->elements())[0].type() ==
-            network::mojom::DataElementType::kDataPipe) {
-      data_pipe_getter_.Bind(
-          (*request_body->elements())[0].CloneDataPipeGetter());
+            network::mojom::DataElementDataView::Tag::kDataPipe) {
+      const auto& element =
+          (*request_body->elements())[0].As<network::DataElementDataPipe>();
+      data_pipe_getter_.Bind(element.CloneDataPipeGetter());
       DCHECK(data_pipe_getter_);
     }
   }

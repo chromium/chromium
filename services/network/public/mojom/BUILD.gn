@@ -607,6 +607,26 @@ mojom("mojom") {
           cpp = "::net::RequestPriority"
         },
         {
+          mojom = "network.mojom.DataElementBytes"
+          cpp = "::network::DataElementBytes"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.DataElementDataPipe"
+          cpp = "::network::DataElementDataPipe"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.DataElementChunkedDataPipe"
+          cpp = "::network::DataElementChunkedDataPipe"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.DataElementFile"
+          cpp = "::network::DataElementFile"
+          move_only = true
+        },
+        {
           mojom = "network.mojom.DataElement"
           cpp = "::network::DataElement"
           move_only = true

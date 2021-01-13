@@ -476,7 +476,9 @@ TEST_F(FeedNetworkTest, SendActionRequestSendsValidRequest) {
   auto* elements = resource_request.request_body->elements();
   ASSERT_TRUE(elements);
   ASSERT_EQ(1UL, elements->size());
-  std::string sent_body((*elements)[0].bytes(), (*elements)[0].length());
+  ASSERT_EQ(network::DataElement::Tag::kBytes, elements->at(0).type());
+  std::string sent_body(
+      elements->at(0).As<network::DataElementBytes>().AsStringPiece());
   std::string sent_body_uncompressed;
   ASSERT_TRUE(compression::GzipUncompress(sent_body, &sent_body_uncompressed));
   std::string expected_body;

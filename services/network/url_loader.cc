@@ -155,11 +155,10 @@ void PopulateResourceResponse(net::URLRequest* request,
 class BytesElementReader : public net::UploadBytesElementReader {
  public:
   BytesElementReader(ResourceRequestBody* resource_request_body,
-                     const DataElement& element)
-      : net::UploadBytesElementReader(element.bytes(), element.length()),
-        resource_request_body_(resource_request_body) {
-    DCHECK_EQ(network::mojom::DataElementType::kBytes, element.type());
-  }
+                     const DataElementBytes& element)
+      : net::UploadBytesElementReader(element.AsStringPiece().data(),
+                                      element.AsStringPiece().size()),
+        resource_request_body_(resource_request_body) {}
 
   ~BytesElementReader() override {}
 
@@ -177,7 +176,7 @@ class FileElementReader : public net::UploadFileElementReader {
  public:
   FileElementReader(ResourceRequestBody* resource_request_body,
                     base::TaskRunner* task_runner,
-                    const DataElement& element,
+                    const DataElementFile& element,
                     base::File&& file)
       : net::UploadFileElementReader(task_runner,
                                      std::move(file),
@@ -185,9 +184,7 @@ class FileElementReader : public net::UploadFileElementReader {
                                      element.offset(),
                                      element.length(),
                                      element.expected_modification_time()),
-        resource_request_body_(resource_request_body) {
-    DCHECK_EQ(network::mojom::DataElementType::kFile, element.type());
-  }
+        resource_request_body_(resource_request_body) {}
 
   ~FileElementReader() override {}
 
@@ -203,16 +200,16 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     base::SequencedTaskRunner* file_task_runner) {
   // In the case of a chunked upload, there will just be one element.
   if (body->elements()->size() == 1) {
-    network::mojom::DataElementType type = body->elements()->begin()->type();
-    if (type == network::mojom::DataElementType::kChunkedDataPipe ||
-        type == network::mojom::DataElementType::kReadOnceStream) {
+    if (body->elements()->begin()->type() ==
+        network::mojom::DataElementDataView::Tag::kChunkedDataPipe) {
+      auto& element =
+          body->elements_mutable()->at(0).As<DataElementChunkedDataPipe>();
       auto upload_data_stream =
           std::make_unique<ChunkedDataPipeUploadDataStream>(
-              body, body->elements_mutable()
-                        ->begin()
-                        ->ReleaseChunkedDataPipeGetter());
-      if (type == network::mojom::DataElementType::kReadOnceStream)
+              body, element.ReleaseChunkedDataPipeGetter());
+      if (element.read_only_once()) {
         upload_data_stream->EnableCache();
+      }
       return upload_data_stream;
     }
   }
@@ -221,30 +218,28 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
   std::vector<std::unique_ptr<net::UploadElementReader>> element_readers;
   for (const auto& element : *body->elements()) {
     switch (element.type()) {
-      case network::mojom::DataElementType::kBytes:
-        element_readers.push_back(
-            std::make_unique<BytesElementReader>(body, element));
+      case network::mojom::DataElementDataView::Tag::kBytes:
+        element_readers.push_back(std::make_unique<BytesElementReader>(
+            body, element.As<DataElementBytes>()));
         break;
-      case network::mojom::DataElementType::kFile:
+      case network::mojom::DataElementDataView::Tag::kFile:
         DCHECK(opened_file != opened_files.end());
         element_readers.push_back(std::make_unique<FileElementReader>(
-            body, file_task_runner, element, std::move(*opened_file++)));
+            body, file_task_runner, element.As<network::DataElementFile>(),
+            std::move(*opened_file++)));
         break;
-      case network::mojom::DataElementType::kDataPipe: {
+      case network::mojom::DataElementDataView::Tag::kDataPipe: {
         element_readers.push_back(std::make_unique<DataPipeElementReader>(
-            body, element.CloneDataPipeGetter()));
+            body,
+            element.As<network::DataElementDataPipe>().CloneDataPipeGetter()));
         break;
       }
-      case network::mojom::DataElementType::kChunkedDataPipe:
-      case network::mojom::DataElementType::kReadOnceStream: {
+      case network::mojom::DataElementDataView::Tag::kChunkedDataPipe: {
         // This shouldn't happen, as the traits logic should ensure that if
         // there's a chunked pipe, there's one and only one element.
         NOTREACHED();
         break;
       }
-      case network::mojom::DataElementType::kUnknown:
-        NOTREACHED();
-        break;
     }
   }
   DCHECK(opened_file == opened_files.end());
@@ -652,25 +647,6 @@ URLLoader::URLLoader(
 
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {
-    const auto& elements = *request.request_body->elements();
-    // TODO(crbug.com/1156550): Move this logic to the deserialization part.
-    if (elements.size() == 1 &&
-        (elements[0].type() == mojom::DataElementType::kChunkedDataPipe ||
-         elements[0].type() == mojom::DataElementType::kReadOnceStream)) {
-      const bool chunked_data_pipe_getter_is_valid =
-          elements[0].chunked_data_pipe_getter().is_valid();
-      UMA_HISTOGRAM_BOOLEAN(
-          "NetworkService.StreamingUploadDataPipeGetterValidity",
-          chunked_data_pipe_getter_is_valid);
-      if (!chunked_data_pipe_getter_is_valid) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&URLLoader::NotifyCompleted, base::Unretained(this),
-                           net::ERR_INVALID_ARGUMENT));
-        return;
-      }
-    }
-
     OpenFilesForUpload(request);
     return;
   }
@@ -783,8 +759,9 @@ class URLLoader::FileOpenerForUpload {
 void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
   std::vector<base::FilePath> paths;
   for (const auto& element : *request.request_body.get()->elements()) {
-    if (element.type() == mojom::DataElementType::kFile)
-      paths.push_back(element.path());
+    if (element.type() == mojom::DataElementDataView::Tag::kFile) {
+      paths.push_back(element.As<network::DataElementFile>().path());
+    }
   }
   if (paths.empty()) {
     SetUpUpload(request, net::OK, std::vector<base::File>());
@@ -1181,7 +1158,9 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
   const std::vector<DataElement>* elements = request_body->elements();
   if (elements->size() != 1u)
     return false;
-  return elements->front().type() == mojom::DataElementType::kReadOnceStream;
+  const auto& element = elements->front();
+  return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
+         element.As<network::DataElementChunkedDataPipe>().read_only_once();
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,

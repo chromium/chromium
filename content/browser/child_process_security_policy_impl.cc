@@ -1286,20 +1286,20 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
 
   for (const network::DataElement& element : *body->elements()) {
     switch (element.type()) {
-      case network::mojom::DataElementType::kFile:
-        if (!CanReadFile(child_id, element.path()))
+      case network::DataElement::Tag::kFile:
+        if (!CanReadFile(child_id,
+                         element.As<network::DataElementFile>().path()))
           return false;
         break;
 
-      case network::mojom::DataElementType::kBytes:
+      case network::DataElement::Tag::kBytes:
         // Data is self-contained within |body| - no need to check access.
         break;
 
-      case network::mojom::DataElementType::kDataPipe:
+      case network::DataElement::Tag::kDataPipe:
         // Data is self-contained within |body| - no need to check access.
         break;
 
-      case network::mojom::DataElementType::kUnknown:
       default:
         // Fail safe - deny access.
         NOTREACHED();

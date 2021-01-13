@@ -524,14 +524,15 @@ bool GetPostData(
     return false;
   for (const auto& element : *elements) {
     // TODO(caseq): Also support blobs.
-    if (element.type() != network::mojom::DataElementType::kBytes)
+    if (element.type() != network::DataElement::Tag::kBytes)
       return false;
-    auto bytes = protocol::Binary::fromSpan(
-        reinterpret_cast<const uint8_t*>(element.bytes()), element.length());
+    const std::vector<uint8_t>& bytes =
+        element.As<network::DataElementBytes>().bytes();
     auto data_entry = protocol::Network::PostDataEntry::Create().Build();
-    data_entry->SetBytes(std::move(bytes));
+    data_entry->SetBytes(
+        protocol::Binary::fromSpan(bytes.data(), bytes.size()));
     data_entries->push_back(std::move(data_entry));
-    result->append(element.bytes(), element.length());
+    result->append(reinterpret_cast<const char*>(bytes.data()), bytes.size());
   }
   return true;
 }

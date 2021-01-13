@@ -37,7 +37,11 @@ bool ProtobufHttpTestResponder::ParseRequestMessage(
     google::protobuf::MessageLite* out_message) {
   std::string unified_data;
   for (const auto& data_element : *resource_request.request_body->elements()) {
-    unified_data.append(data_element.bytes(), data_element.length());
+    if (data_element.type() == network::DataElement::Tag::kBytes) {
+      const auto piece =
+          data_element.As<network::DataElementBytes>().AsStringPiece();
+      unified_data.append(piece.data(), piece.size());
+    }
   }
   return out_message->ParseFromString(unified_data);
 }

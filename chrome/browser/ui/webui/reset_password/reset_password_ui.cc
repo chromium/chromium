@@ -89,10 +89,13 @@ PasswordType GetPasswordType(content::WebContents* web_contents) {
   if (!nav_entry || !nav_entry->GetHasPostData())
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
-  int post_data_int = -1;
-  if (base::StringToInt(std::string(post_data.bytes(), post_data.length()),
-                        &post_data_int)) {
-    return static_cast<PasswordType>(post_data_int);
+  if (post_data.type() == network::DataElement::Tag::kBytes) {
+    int post_data_int = -1;
+    if (base::StringToInt(
+            post_data.As<network::DataElementBytes>().AsStringPiece(),
+            &post_data_int)) {
+      return static_cast<PasswordType>(post_data_int);
+    }
   }
 
   return PasswordType::PASSWORD_TYPE_UNKNOWN;

@@ -55,7 +55,10 @@ std::string GetRequestBodyAsString(const network::ResourceRequest* request) {
     return "";
   }
   const network::DataElement& elem = request->request_body->elements()->at(0);
-  return std::string(elem.bytes(), elem.length());
+  if (elem.type() != network::DataElement::Tag::kBytes) {
+    return "";
+  }
+  return std::string(elem.As<network::DataElementBytes>().AsStringPiece());
 }
 
 }  // namespace
