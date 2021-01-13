@@ -112,4 +112,15 @@ public interface SiteSettingsDelegate {
      * @return The set of all origins whose notification permissions are delegated to another app.
      */
     Set<String> getAllDelegatedNotificationOrigins();
+
+    /**
+     * Displays a snackbar, informing the user about the Privacy Sandbox settings page, when the
+     * corresponding flag is enabled.
+     */
+    void maybeDisplayPrivacySandboxSnackbar();
+
+    /**
+     * Dismisses the Privacy Sandbox snackbar, if active.
+     */
+    void dismissPrivacySandboxSnackbar();
 }

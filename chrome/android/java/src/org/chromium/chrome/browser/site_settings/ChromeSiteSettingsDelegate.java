@@ -19,10 +19,13 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedW
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -52,10 +55,21 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Context mContext;
     private final BrowserContextHandle mBrowserContext;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
+    private PrivacySandboxSnackbarController mPrivacySandboxController;
 
     public ChromeSiteSettingsDelegate(Context context, BrowserContextHandle browserContext) {
         mContext = context;
         mBrowserContext = browserContext;
+    }
+
+    /**
+     * Used to set an instance of {@link SnackbarManager} by the parent activity.
+     */
+    public void setSnackbarManager(SnackbarManager manager) {
+        if (manager != null) {
+            mPrivacySandboxController = new PrivacySandboxSnackbarController(
+                    mContext, manager, new SettingsLauncherImpl());
+        }
     }
 
     @Override
@@ -219,5 +233,23 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public Set<String> getAllDelegatedNotificationOrigins() {
         return TrustedWebActivityPermissionManager.get().getAllDelegatedOrigins();
+    }
+
+    @Override
+    public void maybeDisplayPrivacySandboxSnackbar() {
+        if (mPrivacySandboxController == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+            return;
+        }
+        mPrivacySandboxController.showSnackbar();
+    }
+
+    @Override
+    public void dismissPrivacySandboxSnackbar() {
+        if (mPrivacySandboxController == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+            return;
+        }
+        mPrivacySandboxController.dismissSnackbar();
     }
 }

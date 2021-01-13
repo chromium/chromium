@@ -794,6 +794,9 @@ For example, some websites may respond to this request by showing you ads that a
       <message name="IDS_PRIVACY_SANDBOX_BULLET_TWO" desc="Second bullet point of the Privacy Sandbox description">
         Allow advertisers to study ad campaigns using non-identifiable information.
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
+        Explore the Privacy Sandbox
+      </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">

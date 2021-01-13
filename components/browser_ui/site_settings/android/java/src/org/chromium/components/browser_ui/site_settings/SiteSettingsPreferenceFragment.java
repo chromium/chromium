@@ -25,7 +25,7 @@ public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentC
     /**
      * @return the SiteSettingsDelegate instance to use when rendering the Site Settings UI.
      */
-    protected SiteSettingsDelegate getSiteSettingsDelegate() {
+    public SiteSettingsDelegate getSiteSettingsDelegate() {
         assert mSiteSettingsDelegate != null : "SiteSettingsDelegate not set";
         return mSiteSettingsDelegate;
     }

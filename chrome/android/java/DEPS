@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/browser/banners/android/java",
   "+chrome/browser/device",
   "+chrome/browser/privacy",
+  "+chrome/browser/privacy_sandbox",
   "+chrome/browser/profiles/android/java",
   "+chrome/browser/share/android",
   "+chrome/browser/tab",

@@ -490,6 +490,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 return;
         }
 
+        getSiteSettingsDelegate().dismissPrivacySandboxSnackbar();
+
+        // Display the Privacy Sandbox snackbar whenever third-party/all cookies are blocked.
+        if (mode == CookieControlsMode.BLOCK_THIRD_PARTY) {
+            getSiteSettingsDelegate().maybeDisplayPrivacySandboxSnackbar();
+        }
+
         WebsitePreferenceBridge.setCategoryEnabled(
                 getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES,
                 allowCookies);

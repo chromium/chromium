@@ -90,6 +90,7 @@ public class Snackbar {
     public static final int UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO = 35;
     public static final int UMA_PAINT_PREVIEW_UPGRADE_NOTIFICATION = 36;
     public static final int UMA_READING_LIST_BOOKMARK_ADDED = 37;
+    public static final int UMA_PRIVACY_SANDBOX_PAGE_OPEN = 38;
 
     private SnackbarController mController;
     private CharSequence mText;

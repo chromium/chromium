@@ -142,4 +142,10 @@ public class WebLayerSiteSettingsDelegate
     public Set<String> getAllDelegatedNotificationOrigins() {
         return Collections.EMPTY_SET;
     }
+
+    @Override
+    public void maybeDisplayPrivacySandboxSnackbar() {}
+
+    @Override
+    public void dismissPrivacySandboxSnackbar() {}
 }
