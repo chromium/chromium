@@ -35,6 +35,8 @@ PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEn
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.doNotTrack is newChildWindow.navigator.doNotTrack
 PASS oldChildWindow.navigator.hardwareConcurrency is newChildWindow.navigator.hardwareConcurrency
+PASS oldChildWindow.navigator.hid.onconnect is newChildWindow.navigator.hid.onconnect
+PASS oldChildWindow.navigator.hid.ondisconnect is newChildWindow.navigator.hid.ondisconnect
 PASS oldChildWindow.navigator.language is newChildWindow.navigator.language
 PASS oldChildWindow.navigator.maxTouchPoints is newChildWindow.navigator.maxTouchPoints
 PASS oldChildWindow.navigator.mediaDevices.ondevicechange is newChildWindow.navigator.mediaDevices.ondevicechange

@@ -63,8 +63,10 @@ interface HTMLMediaElement : HTMLElement
 # permissions API (crbug.com/490120), presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
-# and WebXr API (crbug.com/1012899) are not supported in webview.
+# WebXr API (crbug.com/1012899), and WebHID API (crbug.com/1164125) are not
+# supported in webview.
 interface Navigator
+    getter hid                         # crbug.com/1164125
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
@@ -73,7 +75,7 @@ interface Navigator
     method registerProtocolHandler     # crbug.com/589502
     method unregisterProtocolHandler   # crbug.com/589502
     method share                       # crbug.com/765923
-    method getInstalledRelatedApps     
+    method getInstalledRelatedApps
 
 # Media Session API is not enabled in Android WebView (crbug.com/925997)
 interface MediaMetadata
@@ -177,6 +179,12 @@ interface XRAnchorSet
 # were added this could change. https://crbug.com/1164036
 interface Serial : EventTarget
 interface SerialPort : EventTarget
+
+# WebHID API is not implemented on Android. crbug.com/1164125
+interface HIDDevice : EventTarget
+interface HIDInputReportEvent : Event
+interface HIDConnectionEvent : Event
+interface HID : EventTarget
 
 [GLOBAL OBJECT]
     method openDatabase
