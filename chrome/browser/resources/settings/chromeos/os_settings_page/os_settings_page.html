@@ -202,14 +202,6 @@
               show-plugin-vm="[[showPluginVm]]">
           </os-settings-apps-page>
         </settings-section>
-        <template is="dom-if" if="[[showCrostini]]" restamp>
-          <settings-section page-title="$i18n{crostiniPageTitle}"
-              section="crostini">
-            <settings-crostini-page prefs="{{prefs}}"
-                allow-crostini="[[allowCrostini_]]">
-            </settings-crostini-page>
-          </settings-section>
-        </template>
         <template is="dom-if" if="[[showStartup]]">
           <settings-section page-title="$i18n{onStartupPageTitle}"
               section="onstartup">
@@ -268,6 +260,14 @@
             <os-settings-printing-page prefs="{{prefs}}">
             </os-settings-printing-page>
           </settings-section>
+          <template is="dom-if" if="[[showCrostini]]" restamp>
+            <settings-section page-title="$i18n{crostiniPageTitle}"
+                section="crostini">
+              <settings-crostini-page prefs="{{prefs}}"
+                  allow-crostini="[[allowCrostini_]]">
+              </settings-crostini-page>
+            </settings-section>
+          </template>
           <settings-section page-title="$i18n{a11yPageTitle}"
               section="osAccessibility">
             <os-settings-a11y-page prefs="{{prefs}}">
