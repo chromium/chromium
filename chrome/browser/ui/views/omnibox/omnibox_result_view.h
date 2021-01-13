@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -23,6 +22,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class OmniboxMatchCellView;
@@ -46,8 +46,11 @@ class ImageButton;
 class OmniboxResultView : public views::View,
                           public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(OmniboxResultView);
   OmniboxResultView(OmniboxPopupContentsView* popup_contents_view,
                     size_t model_index);
+  OmniboxResultView(const OmniboxResultView&) = delete;
+  OmniboxResultView& operator=(const OmniboxResultView&) = delete;
   ~OmniboxResultView() override;
 
   // Static method to share logic about how to set backgrounds of popup cells.
@@ -75,7 +78,7 @@ class OmniboxResultView : public views::View,
 
   // Whether this result view should be considered 'selected'. This returns
   // false if this line's header is selected (instead of the match itself).
-  bool IsMatchSelected() const;
+  bool GetMatchSelected() const;
 
   // Returns the visible (and keyboard-focusable) secondary button, or nullptr
   // if none exists for this suggestion.
@@ -105,9 +108,6 @@ class OmniboxResultView : public views::View,
   void OnThemeChanged() override;
 
  private:
-  // Returns the height of the text portion of the result view.
-  int GetTextHeight() const;
-
   gfx::Image GetIcon() const;
 
   // Updates the highlight state of the row, as well as conditionally shows
@@ -129,7 +129,6 @@ class OmniboxResultView : public views::View,
   void SetWidths();
 
   // views::View:
-  const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::AnimationDelegateViews:
@@ -174,8 +173,6 @@ class OmniboxResultView : public views::View,
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;
 
   base::WeakPtrFactory<OmniboxResultView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxResultView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_RESULT_VIEW_H_

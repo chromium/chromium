@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -31,6 +30,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -65,8 +65,7 @@ class OmniboxViewViews : public OmniboxView,
                          public TemplateURLServiceObserver,
                          public content::WebContentsObserver {
  public:
-  // The internal view class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(OmniboxViewViews);
 
   // Max width of the gradient mask used to smooth ElideAnimation edges.
   static const int kSmoothingGradientMaxWidth = 15;
@@ -76,6 +75,8 @@ class OmniboxViewViews : public OmniboxView,
                    bool popup_window_mode,
                    LocationBarView* location_bar,
                    const gfx::FontList& font_list);
+  OmniboxViewViews(const OmniboxViewViews&) = delete;
+  OmniboxViewViews& operator=(const OmniboxViewViews&) = delete;
   ~OmniboxViewViews() override;
 
   // Initialize, create the underlying views, etc.
@@ -103,10 +104,9 @@ class OmniboxViewViews : public OmniboxView,
   // "Search Google or type a URL" when the Omnibox is empty and unfocused.
   void InstallPlaceholderText();
 
-  // Indicates if the cursor is at one end of the input. Requires that both
+  // Indicates if the cursor is at the end of the input. Requires that both
   // ends of the selection reside there.
-  bool SelectionAtBeginning() const;
-  bool SelectionAtEnd() const;
+  bool GetSelectionAtEnd() const;
 
   // Returns the width in pixels needed to display the current text. The
   // returned value includes margins.
@@ -430,7 +430,6 @@ class OmniboxViewViews : public OmniboxView,
 
   // views::Textfield:
   bool IsItemForCommandIdDynamic(int command_id) const override;
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
@@ -507,7 +506,7 @@ class OmniboxViewViews : public OmniboxView,
   // This method does NOT take field trials into account or the "Always show
   // full URLs" option. Calling code should check field trial state and
   // model()->ShouldPreventElision() if applicable.
-  bool IsURLEligibleForSimplifiedDomainEliding();
+  bool GetURLEligibleForSimplifiedDomainEliding() const;
 
   // When certain field trials are enabled, the URL is shown on page load
   // and elided to a simplified domain when the user interacts with the page.
@@ -557,7 +556,7 @@ class OmniboxViewViews : public OmniboxView,
 
   // Parses GetText() as a URL, trims trivial subdomains from it (if any and if
   // applicable), and returns the result.
-  url::Component GetHostComponentAfterTrivialSubdomain();
+  url::Component GetHostComponentAfterTrivialSubdomain() const;
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
@@ -698,8 +697,6 @@ class OmniboxViewViews : public OmniboxView,
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<OmniboxViewViews> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxViewViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_VIEW_VIEWS_H_

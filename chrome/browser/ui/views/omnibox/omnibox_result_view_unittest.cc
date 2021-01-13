@@ -28,7 +28,7 @@ namespace {
 
 // An arbitrary index for the result view under test. Used to test the selection
 // state. There are 6 results total so the index should be in the range 0-5.
-static constexpr int kTestResultViewIndex = 4;
+static constexpr size_t kTestResultViewIndex = 4;
 
 class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
  public:
@@ -39,13 +39,9 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
             /*location_bar_view=*/nullptr),
         selected_index_(0) {}
 
-  void SetSelectedLineForMouseOrTouch(size_t index) override {
-    selected_index_ = index;
-  }
+  void SetSelectedIndex(size_t index) override { selected_index_ = index; }
 
-  bool IsSelectedIndex(size_t index) const override {
-    return selected_index_ == index;
-  }
+  size_t GetSelectedIndex() const override { return selected_index_; }
 
  private:
   size_t selected_index_;
@@ -124,62 +120,62 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
 
 TEST_F(OmniboxResultViewTest, MousePressedWithLeftButtonSelectsThisResult) {
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Right button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Middle button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_MIDDLE_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Multi-button press should not select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED,
                      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Left button press should select.
   result_view()->OnMousePressed(
       FakeMouseEvent(ui::ET_MOUSE_PRESSED, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_TRUE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_EQ(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 }
 
 TEST_F(OmniboxResultViewTest, MouseDragWithLeftButtonSelectsThisResult) {
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Right button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Middle button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_MIDDLE_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Multi-button drag should not select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED,
                      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_NE(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_FALSE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_NE(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 
   // Left button drag should select.
   result_view()->OnMouseDragged(
       FakeMouseEvent(ui::ET_MOUSE_DRAGGED, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(OmniboxPartState::SELECTED, result_view()->GetThemeState());
-  EXPECT_TRUE(popup_view()->IsSelectedIndex(kTestResultViewIndex));
+  EXPECT_EQ(popup_view()->GetSelectedIndex(), kTestResultViewIndex);
 }
 
 TEST_F(OmniboxResultViewTest, MouseDragWithNonLeftButtonSetsHoveredState) {
@@ -251,7 +247,7 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   //   base::ASCIIToUTF16("Google https://google.com location from history"));
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
-      kTestResultViewIndex + 1);
+      int{kTestResultViewIndex} + 1);
   // TODO(accessibility) Find a way to test this.
   // EXPECT_EQ(result_node_data.GetIntAttribute(
   //   ax::mojom::IntAttribute::kSetSize), 1);

@@ -29,6 +29,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -220,10 +221,6 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
   answer_image_view_->SetImageSize(gfx::Size(width, height));
 }
 
-const char* OmniboxMatchCellView::GetClassName() const {
-  return "OmniboxMatchCellView";
-}
-
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const bool single_line = layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION;
   const int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -251,7 +248,7 @@ void OmniboxMatchCellView::Layout() {
   const int text_width = child_area.width() - text_indent;
 
   if (two_line) {
-    if (description_view_->text().empty()) {
+    if (description_view_->GetText().empty()) {
       // This vertically centers content in the rare case that no description is
       // provided.
       content_view_->SetBounds(x, y, text_width, row_height);
@@ -315,3 +312,6 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   // Indent text by prefix, but come back by width of ellipsis.
   tail_suggest_common_prefix_width_ -= ellipsis_width_;
 }
+
+BEGIN_METADATA(OmniboxMatchCellView, views::View)
+END_METADATA

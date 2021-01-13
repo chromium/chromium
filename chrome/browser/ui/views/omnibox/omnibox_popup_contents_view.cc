@@ -29,6 +29,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 class OmniboxPopupContentsView::AutocompletePopupWidget
@@ -204,7 +205,7 @@ gfx::Image OmniboxPopupContentsView::GetMatchIcon(
   return model_->GetMatchIcon(match, vector_icon_color);
 }
 
-void OmniboxPopupContentsView::SetSelectedLineForMouseOrTouch(size_t index) {
+void OmniboxPopupContentsView::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
   // We do this to prevent de-focusing auxiliary buttons due to drag.
   // With refined-focus-state enabled, there's more visual differences for
@@ -216,10 +217,11 @@ void OmniboxPopupContentsView::SetSelectedLineForMouseOrTouch(size_t index) {
 
   OmniboxPopupModel::LineState line_state = OmniboxPopupModel::NORMAL;
   model_->SetSelection(OmniboxPopupModel::Selection(index, line_state));
+  OnPropertyChanged(&model_, views::kPropertyEffectsNone);
 }
 
-bool OmniboxPopupContentsView::IsSelectedIndex(size_t index) const {
-  return index == model_->selected_line();
+size_t OmniboxPopupContentsView::GetSelectedIndex() const {
+  return model_->selected_line();
 }
 
 void OmniboxPopupContentsView::UnselectButton() {
@@ -472,7 +474,7 @@ void OmniboxPopupContentsView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP_DOWN:
     case ui::ET_GESTURE_SCROLL_BEGIN:
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      SetSelectedLineForMouseOrTouch(index);
+      SetSelectedIndex(index);
       break;
     case ui::ET_GESTURE_TAP:
     case ui::ET_GESTURE_SCROLL_END:
@@ -515,7 +517,7 @@ void OmniboxPopupContentsView::OnWidgetBoundsChanged(
   UpdatePopupAppearance();
 }
 
-gfx::Rect OmniboxPopupContentsView::GetTargetBounds() {
+gfx::Rect OmniboxPopupContentsView::GetTargetBounds() const {
   int popup_height = 0;
 
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
@@ -621,6 +623,7 @@ void OmniboxPopupContentsView::GetAccessibleNodeData(
   }
 }
 
-const char* OmniboxPopupContentsView::GetClassName() const {
-  return "OmniboxPopupContentsView";
-}
+BEGIN_METADATA(OmniboxPopupContentsView, views::View)
+ADD_PROPERTY_METADATA(size_t, SelectedIndex)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, TargetBounds)
+END_METADATA

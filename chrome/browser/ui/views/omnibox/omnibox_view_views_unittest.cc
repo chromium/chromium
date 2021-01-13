@@ -800,13 +800,13 @@ TEST_F(OmniboxViewViewsTest,
   omnibox_view()->SetTextAndSelectedRanges(base::ASCIIToUTF16("user text"),
                                            {gfx::Range(9, 9)});
   ASSERT_FALSE(omnibox_view()->IsSelectAll());
-  ASSERT_TRUE(omnibox_view()->SelectionAtEnd());
+  ASSERT_TRUE(omnibox_view()->GetSelectionAtEnd());
 
   // Simulate a renderer-initated focus event. Expect the cursor position to be
   // preserved, and that the omnibox did not select-all the text.
   omnibox_view()->SetFocus(/*is_user_initiated=*/false);
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
-  EXPECT_TRUE(omnibox_view()->SelectionAtEnd());
+  EXPECT_TRUE(omnibox_view()->GetSelectionAtEnd());
 }
 
 TEST_F(OmniboxViewViewsTest, Emphasis) {

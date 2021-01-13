@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -125,10 +126,6 @@ bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
   return false;
 }
 
-const char* OmniboxTextView::GetClassName() const {
-  return "OmniboxTextView";
-}
-
 int OmniboxTextView::GetHeightForWidth(int width) const {
   if (!render_text_)
     return 0;
@@ -150,36 +147,36 @@ void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void OmniboxTextView::ApplyTextColor(OmniboxPart part) {
-  if (text().empty())
+  if (GetText().empty())
     return;
   render_text_->SetColor(result_view_->GetColor(part));
   SchedulePaint();
 }
 
-const base::string16& OmniboxTextView::text() const {
+const base::string16& OmniboxTextView::GetText() const {
   return render_text_ ? render_text_->text() : base::EmptyString16();
 }
 
-void OmniboxTextView::SetText(const base::string16& new_text,
-                              bool deemphasize) {
+void OmniboxTextView::SetText(const base::string16& new_text) {
   if (cached_classifications_) {
     cached_classifications_.reset();
-  } else if (text() == new_text && deemphasize == use_deemphasized_font_) {
+  } else if (GetText() == new_text && !use_deemphasized_font_) {
     // Only exit early if |cached_classifications_| was empty,
     // i.e. the last time text was set was through this method.
     return;
   }
 
-  use_deemphasized_font_ = deemphasize;
+  use_deemphasized_font_ = false;
   render_text_ = CreateRenderText(new_text);
 
   OnStyleChanged();
 }
 
-void OmniboxTextView::SetText(const base::string16& new_text,
-                              const ACMatchClassifications& classifications,
-                              bool deemphasize) {
-  if (text() == new_text && cached_classifications_ &&
+void OmniboxTextView::SetTextWithStyling(
+    const base::string16& new_text,
+    const ACMatchClassifications& classifications,
+    bool deemphasize) {
+  if (GetText() == new_text && cached_classifications_ &&
       classifications == *cached_classifications_ &&
       deemphasize == use_deemphasized_font_)
     return;
@@ -194,8 +191,9 @@ void OmniboxTextView::SetText(const base::string16& new_text,
   ReapplyStyling();
 }
 
-void OmniboxTextView::SetText(const SuggestionAnswer::ImageLine& line,
-                              bool deemphasize) {
+void OmniboxTextView::SetTextWithStyling(
+    const SuggestionAnswer::ImageLine& line,
+    bool deemphasize) {
   use_deemphasized_font_ = deemphasize;
   cached_classifications_.reset();
   wrap_text_lines_ = line.num_text_lines() > 1;
@@ -241,7 +239,7 @@ void OmniboxTextView::ReapplyStyling() {
   if (!cached_classifications_)
     return;
 
-  const size_t text_length = text().length();
+  const size_t text_length = GetText().length();
   for (size_t i = 0; i < cached_classifications_->size(); ++i) {
     const size_t text_start = (*cached_classifications_)[i].offset;
     if (text_start >= text_length)
@@ -293,7 +291,7 @@ void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
       prefix.empty() ? field.text() : (prefix + field.text());
   if (append_text.empty())
     return;
-  int offset = text().length();
+  int offset = GetText().length();
   gfx::Range range(offset, offset + append_text.length());
   render_text_->AppendText(append_text);
   ApplyTextStyleForType(field.style(), result_view_, render_text_.get(), range);
@@ -314,3 +312,8 @@ void OmniboxTextView::OnStyleChanged() {
   SetPreferredSize(CalculatePreferredSize());
   SchedulePaint();
 }
+
+BEGIN_METADATA(OmniboxTextView, views::View)
+ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
+END_METADATA

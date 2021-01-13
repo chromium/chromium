@@ -140,7 +140,7 @@ void OmniboxTabSwitchButton::UpdateBackground() {
 
 bool OmniboxTabSwitchButton::IsSelected() const {
   // Is this result selected and is button selected?
-  return result_view_->IsMatchSelected() &&
+  return result_view_->GetMatchSelected() &&
          popup_contents_view_->model()->selected_line_state() ==
              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH;
 }

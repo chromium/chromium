@@ -98,14 +98,14 @@ base::string16 TypeConverter<gfx::ShadowValues>::ToString(
 
 base::string16 TypeConverter<gfx::Size>::ToString(
     const gfx::Size& source_value) {
-  return base::ASCIIToUTF16(base::StringPrintf("{%i, %i}", source_value.width(),
+  return base::ASCIIToUTF16(base::StringPrintf("{%d, %d}", source_value.width(),
                                                source_value.height()));
 }
 
 base::string16 TypeConverter<gfx::Range>::ToString(
     const gfx::Range& source_value) {
   return base::ASCIIToUTF16(base::StringPrintf(
-      "{%i, %i}", source_value.GetMin(), source_value.GetMax()));
+      "{%d, %d}", source_value.GetMin(), source_value.GetMax()));
 }
 
 base::string16 TypeConverter<gfx::Insets>::ToString(
@@ -113,6 +113,12 @@ base::string16 TypeConverter<gfx::Insets>::ToString(
   return base::ASCIIToUTF16(base::StringPrintf(
       "{%d, %d, %d, %d}", source_value.top(), source_value.left(),
       source_value.bottom(), source_value.right()));
+}
+
+base::string16 TypeConverter<url::Component>::ToString(
+    const url::Component& source_value) {
+  return base::ASCIIToUTF16(
+      base::StringPrintf("{%d, %d}", source_value.begin, source_value.len));
 }
 
 base::Optional<int8_t> TypeConverter<int8_t>::FromString(
@@ -287,6 +293,19 @@ base::Optional<gfx::Insets> TypeConverter<gfx::Insets>::FromString(
       base::StringToInt(values[2], &bottom) &&
       base::StringToInt(values[3], &right)) {
     return gfx::Insets(top, left, bottom, right);
+  }
+  return base::nullopt;
+}
+
+base::Optional<url::Component> TypeConverter<url::Component>::FromString(
+    const base::string16& source_value) {
+  const auto values =
+      base::SplitStringPiece(source_value, base::ASCIIToUTF16("{,}"),
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  int begin, len;
+  if ((values.size() == 2) && base::StringToInt(values[0], &begin) &&
+      base::StringToInt(values[1], &len) && len >= -1) {
+    return url::Component(begin, len);
   }
   return base::nullopt;
 }

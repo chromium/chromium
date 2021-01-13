@@ -9,11 +9,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -26,13 +26,15 @@ class RenderText;
 // as selection) and more specific features (such as suggestion answer styling).
 class OmniboxTextView : public views::View {
  public:
+  METADATA_HEADER(OmniboxTextView);
   explicit OmniboxTextView(OmniboxResultView* result_view);
+  OmniboxTextView(const OmniboxTextView&) = delete;
+  OmniboxTextView& operator=(const OmniboxTextView&) = delete;
   ~OmniboxTextView() override;
 
-  // views::View.
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
   bool GetCanProcessEventsWithinSubtree() const override;
-  const char* GetClassName() const override;
   int GetHeightForWidth(int width) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -43,18 +45,18 @@ class OmniboxTextView : public views::View {
   void ApplyTextColor(OmniboxPart part);
 
   // Returns the render text, or an empty string if there is none.
-  const base::string16& text() const;
+  const base::string16& GetText() const;
 
   // Sets the render text with default rendering for the given |new_text|. The
   // |classifications| are used to style the text. An ImageLine incorporates
   // both the text and the styling.
   // |deemphasize| specifies whether to use a slightly smaller font than normal.
-  void SetText(const base::string16& new_text, bool deemphasize = false);
-  void SetText(const base::string16& new_text,
-               const ACMatchClassifications& classifications,
-               bool deemphasize = false);
-  void SetText(const SuggestionAnswer::ImageLine& line,
-               bool deemphasize = false);
+  void SetText(const base::string16& new_text);
+  void SetTextWithStyling(const base::string16& new_text,
+                          const ACMatchClassifications& classifications,
+                          bool deemphasize = false);
+  void SetTextWithStyling(const SuggestionAnswer::ImageLine& line,
+                          bool deemphasize);
 
   // Adds the "additional" and "status" text from |line|, if any.
   void AppendExtraText(const SuggestionAnswer::ImageLine& line);
@@ -101,8 +103,6 @@ class OmniboxTextView : public views::View {
   // early instead of setting text when the text and classifications
   // match the current state of the view.
   std::unique_ptr<ACMatchClassifications> cached_classifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxTextView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TEXT_VIEW_H_

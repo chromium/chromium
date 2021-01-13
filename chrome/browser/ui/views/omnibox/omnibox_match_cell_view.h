@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MATCH_CELL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MATCH_CELL_VIEW_H_
 
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,12 +18,16 @@ class OmniboxTextView;
 
 class OmniboxMatchCellView : public views::View {
  public:
+  METADATA_HEADER(OmniboxMatchCellView);
+
   // Constants used in layout. Exposed so other views can coordinate margins.
   static constexpr int kMarginLeft = 4;
   static constexpr int kMarginRight = 8;
   static constexpr int kImageBoundsWidth = 40;
 
   explicit OmniboxMatchCellView(OmniboxResultView* result_view);
+  OmniboxMatchCellView(const OmniboxMatchCellView&) = delete;
+  OmniboxMatchCellView& operator=(const OmniboxMatchCellView&) = delete;
   ~OmniboxMatchCellView() override;
 
   views::ImageView* icon() { return icon_view_; }
@@ -40,7 +45,6 @@ class OmniboxMatchCellView : public views::View {
   void SetImage(const gfx::ImageSkia& image);
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Insets GetInsets() const override;
   void Layout() override;
   bool GetCanProcessEventsWithinSubtree() const override;
@@ -76,8 +80,6 @@ class OmniboxMatchCellView : public views::View {
   // suggestions so that it doesn't have to be re-calculated if the prefix
   // doesn't change.
   int tail_suggest_common_prefix_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxMatchCellView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MATCH_CELL_VIEW_H_

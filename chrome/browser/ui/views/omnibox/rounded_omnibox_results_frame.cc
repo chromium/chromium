@@ -15,6 +15,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -215,10 +216,6 @@ gfx::Insets RoundedOmniboxResultsFrame::GetShadowInsets() {
   return views::BubbleBorder::GetBorderAndShadowInsets(kElevation);
 }
 
-const char* RoundedOmniboxResultsFrame::GetClassName() const {
-  return "RoundedOmniboxResultsFrame";
-}
-
 void RoundedOmniboxResultsFrame::Layout() {
   // This is called when the Widget resizes due to results changing. Resizing
   // the Widget is fast on ChromeOS, but slow on other platforms, and can't be
@@ -284,3 +281,6 @@ void RoundedOmniboxResultsFrame::OnThemeChanged() {
                                   : gfx::kGoogleGrey800);
   SchedulePaint();
 }
+
+BEGIN_METADATA(RoundedOmniboxResultsFrame, views::View)
+END_METADATA

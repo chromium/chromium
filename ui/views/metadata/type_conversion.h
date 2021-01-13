@@ -25,6 +25,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/views_export.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace views {
 namespace metadata {
@@ -159,6 +160,7 @@ DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::Range)
 DECLARE_CONVERSIONS(gfx::Insets)
+DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS
 
