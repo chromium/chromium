@@ -4,9 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
-#include "base/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 #include "content/public/browser/browser_context.h"
@@ -50,12 +48,8 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return new safe_browsing::RealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForBrowserContext(context),
-      nullptr /* profile sync service */,
+      nullptr /* identity manager */, nullptr /* profile sync service */,
       static_cast<BrowserContextImpl*>(context)->pref_service(),
-      // TODO(crbug.com/1080748): Bring up token fetching for URL lookups and
-      // configure the following two parameters accordingly.
-      nullptr /* token_fetcher */,
-      base::BindRepeating([](bool) { return false; }),
       safe_browsing::GetProfileManagementStatus(nullptr),
       false /* is_under_advanced_protection */,
       static_cast<BrowserContextImpl*>(context)->IsOffTheRecord(),

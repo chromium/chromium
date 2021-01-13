@@ -30,7 +30,7 @@ class RealTimePolicyEngine {
   RealTimePolicyEngine() = delete;
   ~RealTimePolicyEngine() = delete;
 
-  // A callback via which the client of this class indicates whether they
+  // A callback via which the client of this component indicates whether they
   // are configured to support token fetches. Used as part of
   // CanPerformFullURLLookupWithToken().
   using ClientConfiguredForTokenFetchesCallback =

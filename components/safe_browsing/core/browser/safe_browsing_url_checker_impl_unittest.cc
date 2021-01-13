@@ -5,13 +5,11 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include <memory>
 
-#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
@@ -168,19 +166,15 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
 class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
  public:
   MockRealTimeUrlLookupService()
-      : RealTimeUrlLookupService(
-            /*url_loader_factory=*/nullptr,
-            /*cache_manager=*/nullptr,
-            /*sync_service=*/nullptr,
-            /*pref_service=*/nullptr,
-            /*token_fetcher=*/nullptr,
-            /*client_token_config_callback=*/base::BindRepeating([](bool) {
-              return false;
-            }),
-            ChromeUserPopulation::NOT_MANAGED,
-            /*is_under_advanced_protection=*/false,
-            /*is_off_the_record=*/false,
-            /*variations_service=*/nullptr) {}
+      : RealTimeUrlLookupService(/*url_loader_factory=*/nullptr,
+                                 /*cache_manager=*/nullptr,
+                                 /*identity_manager=*/nullptr,
+                                 /*sync_service=*/nullptr,
+                                 /*pref_service=*/nullptr,
+                                 ChromeUserPopulation::NOT_MANAGED,
+                                 /*is_under_advanced_protection=*/false,
+                                 /*is_off_the_record=*/false,
+                                 /*variations_service=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(const GURL& gurl,
