@@ -9941,6 +9941,16 @@ histogram as enum -->
   <int value="2" label="First service disabled"/>
 </enum>
 
+<enum name="ChromeOSCameraClientType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Testing"/>
+  <int value="2" label="Chrome"/>
+  <int value="3" label="Android"/>
+  <int value="4" label="PluginVM"/>
+  <int value="5" label="AshChrome"/>
+  <int value="6" label="LacrosChrome"/>
+</enum>
+
 <enum name="ChromeOSCameraErrorType">
   <int value="1" label="Device"/>
   <int value="2" label="Request"/>
