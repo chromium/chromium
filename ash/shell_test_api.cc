@@ -157,8 +157,7 @@ bool ShellTestApi::IsSystemModalWindowOpen() {
   return Shell::IsSystemModalWindowOpen();
 }
 
-void ShellTestApi::SetTabletModeEnabledForTest(bool enable,
-                                               bool wait_for_completion) {
+void ShellTestApi::SetTabletModeEnabledForTest(bool enable) {
   // Detach mouse devices, so we can enter tablet mode.
   // Calling RunUntilIdle() here is necessary before setting the mouse devices
   // to prevent the callback from evdev thread from overwriting whatever we set
