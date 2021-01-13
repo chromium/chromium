@@ -33,16 +33,7 @@ void PrerenderHostRegistry::CreateAndStartHost(
 
   auto prerender_host = std::make_unique<PrerenderHost>(
       std::move(attributes), initiator_render_frame_host_id, initiator_origin);
-
-  // Start prerendering before adding the host to the map to make sure
-  // navigation for prerendering doesn't select itself.
-  // TODO(https://crbug.com/1132746): SelectForNavigation() should avoid select
-  // a prerender host when the current NavigationRequest is for prerendering
-  // regardless of the calling order of StartPrerendering(). This modification
-  // would require the proper `is_prerendering` state in NavigationRequest,
-  // RenderFrameHostImpl, or somewhere else.
   prerender_host->StartPrerendering();
-
   prerender_host_by_url_[prerendering_url] = std::move(prerender_host);
 }
 
@@ -54,6 +45,10 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::SelectForNavigation(
     const GURL& navigation_url,
     FrameTreeNode& frame_tree_node) {
   RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
+
+  // Disallow activation when the navigation is for prerendering.
+  if (render_frame_host->IsPrerendering())
+    return nullptr;
 
   // Disallow activation when the render frame host is for a nested browsing
   // context (e.g., iframes). This is because nested browsing contexts are
