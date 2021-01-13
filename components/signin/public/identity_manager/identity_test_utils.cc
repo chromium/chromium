@@ -198,7 +198,14 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
   DCHECK(identity_manager->GetPrimaryAccountMutator());
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
-  signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](base::RunLoop* run_loop, PrimaryAccountChangeEvent event) {
+        if (event.GetEventTypeFor(ConsentLevel::kSync) ==
+            PrimaryAccountChangeEvent::Type::kCleared) {
+          run_loop->Quit();
+        }
+      },
+      &run_loop));
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -220,7 +227,14 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
       identity_manager->HasPrimaryAccount(ConsentLevel::kSync);
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
-  signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](base::RunLoop* run_loop, PrimaryAccountChangeEvent event) {
+        if (event.GetEventTypeFor(ConsentLevel::kNotRequired) ==
+            PrimaryAccountChangeEvent::Type::kCleared) {
+          run_loop->Quit();
+        }
+      },
+      &run_loop));
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);

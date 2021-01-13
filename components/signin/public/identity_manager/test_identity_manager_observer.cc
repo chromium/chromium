@@ -20,34 +20,14 @@ TestIdentityManagerObserver::~TestIdentityManagerObserver() {
   identity_manager_->RemoveObserver(this);
 }
 
-void TestIdentityManagerObserver::SetOnPrimaryAccountSetCallback(
-    base::OnceClosure callback) {
-  on_primary_account_set_callback_ = std::move(callback);
+void TestIdentityManagerObserver::SetOnPrimaryAccountChangedCallback(
+    PrimaryAccountChangedCallback callback) {
+  on_primary_account_changed_callback_ = std::move(callback);
 }
 
-const CoreAccountInfo&
-TestIdentityManagerObserver::PrimaryAccountFromSetCallback() {
-  return primary_account_from_set_callback_;
-}
-
-void TestIdentityManagerObserver::SetOnPrimaryAccountClearedCallback(
-    base::OnceClosure callback) {
-  on_primary_account_cleared_callback_ = std::move(callback);
-}
-
-const CoreAccountInfo&
-TestIdentityManagerObserver::PrimaryAccountFromClearedCallback() {
-  return primary_account_from_cleared_callback_;
-}
-
-void TestIdentityManagerObserver::SetOnUnconsentedPrimaryAccountChangedCallback(
-    base::OnceClosure callback) {
-  on_unconsented_primary_account_callback_ = std::move(callback);
-}
-
-const CoreAccountInfo&
-TestIdentityManagerObserver::UnconsentedPrimaryAccountFromCallback() {
-  return unconsented_primary_account_from_callback_;
+const PrimaryAccountChangeEvent&
+TestIdentityManagerObserver::GetPrimaryAccountChangedEvent() {
+  return on_primary_account_changed_event_;
 }
 
 void TestIdentityManagerObserver::SetOnRefreshTokenUpdatedCallback(
@@ -135,36 +115,9 @@ TestIdentityManagerObserver::BatchChangeRecords() const {
 // IdentityManager::Observer:
 void TestIdentityManagerObserver::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event) {
-  // TODO(https://crbug.com/1158855): Refactor this test observer to
-  // have a single on_primary_account_changed_callback_  and a single
-  // on_primary_account_changed_event_.
-  switch (event.GetEventTypeFor(ConsentLevel::kNotRequired)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      unconsented_primary_account_from_callback_ =
-          event.GetCurrentState().primary_account;
-      if (on_unconsented_primary_account_callback_)
-        std::move(on_unconsented_primary_account_callback_).Run();
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-  switch (event.GetEventTypeFor(ConsentLevel::kSync)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-      primary_account_from_set_callback_ =
-          event.GetCurrentState().primary_account;
-      if (on_primary_account_set_callback_)
-        std::move(on_primary_account_set_callback_).Run();
-      break;
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      primary_account_from_cleared_callback_ =
-          event.GetPreviousState().primary_account;
-      if (on_primary_account_cleared_callback_)
-        std::move(on_primary_account_cleared_callback_).Run();
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
+  on_primary_account_changed_event_ = event;
+  if (on_primary_account_changed_callback_)
+    std::move(on_primary_account_changed_callback_).Run(event);
 }
 
 void TestIdentityManagerObserver::OnRefreshTokenUpdatedForAccount(

@@ -561,22 +561,23 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   ClearPrimaryAccount(identity_manager());
 
   SetPrimaryAccount(identity_manager(), kTestEmail);
+  auto event = identity_manager_observer()->GetPrimaryAccountChangedEvent();
+  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
+            event.GetEventTypeFor(ConsentLevel::kSync));
+  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
+            event.GetEventTypeFor(ConsentLevel::kNotRequired));
 
   CoreAccountInfo primary_account_from_set_callback =
-      identity_manager_observer()->PrimaryAccountFromSetCallback();
+      event.GetCurrentState().primary_account;
   EXPECT_EQ(kTestGaiaId, primary_account_from_set_callback.gaia);
   EXPECT_EQ(kTestEmail, primary_account_from_set_callback.email);
-
-  // Primary account is by definition also unconsented primary account.
-  EXPECT_EQ(
-      primary_account_from_set_callback,
-      identity_manager_observer()->UnconsentedPrimaryAccountFromCallback());
 
   CoreAccountInfo primary_account_info =
       identity_manager()->GetPrimaryAccountInfo();
   EXPECT_EQ(kTestGaiaId, primary_account_info.gaia);
   EXPECT_EQ(kTestEmail, primary_account_info.email);
 
+  // Primary account is by definition also unconsented primary account.
   EXPECT_EQ(primary_account_info, identity_manager()->GetPrimaryAccountInfo(
                                       ConsentLevel::kNotRequired));
 
@@ -599,15 +600,20 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
   // Sign the user out and check that the IdentityManager responds
   // appropriately.
   ClearPrimaryAccount(identity_manager());
+  auto event = identity_manager_observer()->GetPrimaryAccountChangedEvent();
+  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
+            event.GetEventTypeFor(ConsentLevel::kSync));
+  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
+            event.GetEventTypeFor(ConsentLevel::kNotRequired));
 
   CoreAccountInfo primary_account_from_cleared_callback =
-      identity_manager_observer()->PrimaryAccountFromClearedCallback();
+      event.GetPreviousState().primary_account;
   EXPECT_EQ(kTestGaiaId, primary_account_from_cleared_callback.gaia);
   EXPECT_EQ(kTestEmail, primary_account_from_cleared_callback.email);
 
   // After the sign-out, there is no unconsented primary account.
-  EXPECT_TRUE(identity_manager_observer()
-                  ->UnconsentedPrimaryAccountFromCallback()
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
                   .IsEmpty());
 
   CoreAccountInfo primary_account_info =
@@ -675,8 +681,9 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_FALSE(identity_manager_observer()
-                   ->PrimaryAccountFromClearedCallback()
-                   .IsEmpty());
+                   ->GetPrimaryAccountChangedEvent()
+                   .GetPreviousState()
+                   .primary_account.IsEmpty());
 #endif
 }
 
