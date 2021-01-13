@@ -39,11 +39,6 @@ class AccountReconcilor;
 class AccountConsistencyService : public KeyedService,
                                   public signin::IdentityManager::Observer {
  public:
-  // Name of the cookie that is managed by AccountConsistencyService and is used
-  // to inform Google web properties that the browser is connected and that
-  // Google authentication cookies are managed by |AccountReconcilor|).
-  static const char kChromeConnectedCookieName[];
-
   AccountConsistencyService(
       web::BrowserState* browser_state,
       AccountReconcilor* account_reconcilor,

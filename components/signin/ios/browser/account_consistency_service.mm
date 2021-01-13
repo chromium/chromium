@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -355,9 +356,6 @@ void AccountConsistencyHandler::WebStateDestroyed() {
   account_consistency_service_->RemoveWebStateHandler(web_state());
 }
 
-const char AccountConsistencyService::kChromeConnectedCookieName[] =
-    "CHROME_CONNECTED";
-
 AccountConsistencyService::AccountConsistencyService(
     web::BrowserState* browser_state,
     AccountReconcilor* account_reconcilor,
@@ -458,7 +456,7 @@ void AccountConsistencyService::RemoveAllChromeConnectedCookies(
 
   network::mojom::CookieDeletionFilterPtr filter =
       network::mojom::CookieDeletionFilter::New();
-  filter->cookie_name = kChromeConnectedCookieName;
+  filter->cookie_name = signin::kChromeConnectedCookieName;
 
   ++active_cookie_manager_requests_for_testing_;
   cookie_manager->DeleteCookies(
@@ -503,7 +501,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url,
-          /*name=*/kChromeConnectedCookieName, cookie_value,
+          /*name=*/signin::kChromeConnectedCookieName, cookie_value,
           /*domain=*/domain,
           /*path=*/std::string(),
           /*creation_time=*/base::Time::Now(),

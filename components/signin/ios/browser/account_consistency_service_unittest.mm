@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
+#include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/ios/browser/features.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -196,24 +197,21 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
   // Cookie verification APIs.
   void CheckDomainHasChromeConnectedCookie(const std::string& domain) {
-    EXPECT_TRUE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       GetCookieDomain(domain)));
+    EXPECT_TRUE(ContainsCookie(GetCookiesInCookieJar(),
+                               signin::kChromeConnectedCookieName,
+                               GetCookieDomain(domain)));
   }
 
   void CheckNoChromeConnectedCookieForDomain(const std::string& domain) {
-    EXPECT_FALSE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       GetCookieDomain(domain)));
+    EXPECT_FALSE(ContainsCookie(GetCookiesInCookieJar(),
+                                signin::kChromeConnectedCookieName,
+                                GetCookieDomain(domain)));
   }
 
   void CheckNoChromeConnectedCookies() {
-    EXPECT_FALSE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       /*domain=*/std::string()));
+    EXPECT_FALSE(ContainsCookie(GetCookiesInCookieJar(),
+                                signin::kChromeConnectedCookieName,
+                                /*domain=*/std::string()));
   }
 
   // Verifies the time that the Gaia cookie was last updated for google.com.

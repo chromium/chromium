@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/signin/ios/browser/account_consistency_service.h"
+#include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/web/public/browser_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -223,7 +223,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
     // properties. Requests initiated from the browser services (e.g.
     // GaiaCookieManagerService) must not include this cookie.
     if (cookie_with_access_result.cookie.Name() ==
-        AccountConsistencyService::kChromeConnectedCookieName) {
+        signin::kChromeConnectedCookieName) {
       continue;
     }
     [http_cookies addObject:net::SystemCookieFromCanonicalCookie(
