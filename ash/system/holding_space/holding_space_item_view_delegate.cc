@@ -115,9 +115,10 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
-  // When a long press gesture occurs we are going to show the context menu.
-  // Ensure that the pressed `view` is the only view selected.
-  if (event.type() == ui::ET_GESTURE_LONG_PRESS) {
+  // When a long press or two finger tap gesture occurs we are going to show the
+  // context menu. Ensure that the pressed `view` is the only view selected.
+  if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
+      event.type() == ui::ET_GESTURE_TWO_FINGER_TAP) {
     SetSelection(view);
     return;
   }
