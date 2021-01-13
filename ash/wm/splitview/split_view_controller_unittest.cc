@@ -31,6 +31,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -150,19 +151,32 @@ class SplitViewControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  aura::Window* CreateWindow(
+  std::unique_ptr<aura::Window> CreateWindow(
       const gfx::Rect& bounds,
       aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL) {
-    aura::Window* window = CreateTestWindowInShellWithDelegateAndType(
-        new SplitViewTestWindowDelegate, type, -1, bounds);
+    std::unique_ptr<aura::Window> window =
+        TestWindowBuilder()
+            .SetBounds(bounds)
+            .SetDelegate(new SplitViewTestWindowDelegate)
+            .SetWindowType(type)
+            .Build();
+    // Create non maximizable window so that it's centered when created,
+    // then allow maximize/fullscreen state.
+    window->SetProperty(aura::client::kResizeBehaviorKey,
+                        aura::client::kResizeBehaviorCanMaximize |
+                            aura::client::kResizeBehaviorCanMinimize |
+                            aura::client::kResizeBehaviorCanResize);
     return window;
   }
 
-  aura::Window* CreateNonSnappableWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateWindow(bounds);
-    window->SetProperty(aura::client::kResizeBehaviorKey,
-                        aura::client::kResizeBehaviorNone);
-    return window;
+  std::unique_ptr<aura::Window> CreateNonSnappableWindow(
+      const gfx::Rect& bounds) {
+    return TestWindowBuilder()
+        .SetWindowProperty(aura::client::kResizeBehaviorKey,
+                           aura::client::kResizeBehaviorNone)
+        .SetBounds(bounds)
+        .SetDelegate(new SplitViewTestWindowDelegate)
+        .Build();
   }
 
   bool IsDividerAnimating() {

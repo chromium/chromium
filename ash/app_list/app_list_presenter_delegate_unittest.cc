@@ -60,6 +60,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"

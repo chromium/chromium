@@ -9,6 +9,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 namespace ash {
@@ -81,8 +82,11 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x800");
-  // Create a window to transition to the in-app shelf.
-  auto window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 800, 800));
+  // Create a widget to transition to the in-app shelf.
+  TestWidgetBuilder()
+      .SetTestWidgetDelegate()
+      .SetBounds(gfx::Rect(0, 0, 800, 800))
+      .BuildOwnedByNativeWidget();
 
   EXPECT_TRUE(drag_handle()->GetVisible());
 

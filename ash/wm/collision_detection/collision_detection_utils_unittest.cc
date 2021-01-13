@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -252,8 +253,10 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
   auto display = GetDisplay();
   aura::Window* accessibility_bubble_container = Shell::GetContainer(
       root_window(), kShellWindowId_AccessibilityBubbleContainer);
-  std::unique_ptr<aura::Window> prioritized_window = CreateChildWindow(
-      accessibility_bubble_container, gfx::Rect(100, 100, 100, 10), 0);
+  std::unique_ptr<aura::Window> prioritized_window =
+      ChildTestWindowBuilder(accessibility_bubble_container,
+                             gfx::Rect(100, 100, 100, 10), 0)
+          .Build();
 
   gfx::Rect position_before_collision_detection(100, 100, 100, 100);
   gfx::Rect position_when_moved_by_collision_detection(100, 118, 100, 100);

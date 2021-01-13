@@ -5,6 +5,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
@@ -67,8 +68,11 @@ class ResizeShadowAndCursorTest : public AshTestBase {
     // Add a child window to |window_| in order to properly test that the resize
     // handles and the resize shadows are shown when the mouse is
     // ash::kResizeInsideBoundsSize inside of |window_|'s edges.
-    aura::Window* child =
-        CreateTestWindowInShell(SK_ColorWHITE, 0, gfx::Rect(0, 10, 200, 90));
+    aura::Window* child = TestWindowBuilder()
+                              .SetColorWindowDelegate(SK_ColorWHITE)
+                              .SetBounds(gfx::Rect(0, 10, 200, 90))
+                              .Build()
+                              .release();
     window_->AddChild(child);
   }
 

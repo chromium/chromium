@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -345,8 +346,10 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
 
   // Key events should be ignored when the focused window is not an
   // exo::Surface.
-  auto window = CreateChildWindow(shell_surface->GetWidget()->GetNativeWindow(),
-                                  gfx::Rect(buffer_size));
+  std::unique_ptr<aura::Window> window =
+      ash::ChildTestWindowBuilder(shell_surface->GetWidget()->GetNativeWindow(),
+                                  gfx::Rect(buffer_size))
+          .Build();
   // Moving the focus away will trigger the fallback path in GetEffectiveFocus.
   // TODO(oshima): Consider removing the fallback path.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))

@@ -9,6 +9,8 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
@@ -139,15 +141,11 @@ class ExtendedDesktopTest : public AshTestBase {
     Shell::Get()->cursor_manager()->ShowCursor();
   }
 
-  // TODO(jamescook): Switch to AshTestBase::CreateTestWidget().
   views::Widget* CreateTestWidget(const gfx::Rect& bounds) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-    params.bounds = bounds;
-    views::Widget* widget = new views::Widget;
-    params.context = GetContext();
-    widget->Init(std::move(params));
-    widget->Show();
-    return widget;
+    return TestWidgetBuilder()
+        .SetBounds(bounds)
+        .SetContext(GetContext())
+        .BuildOwnedByNativeWidget();
   }
 
  protected:
@@ -590,22 +588,28 @@ TEST_F(ExtendedDesktopTest, MoveWindowWithTransient) {
       CreateTestWindowInShellWithBounds(gfx::Rect(10, 10, 100, 100));
   wm::ActivateWindow(w1);
   // |w1_t1| is a transient child window of |w1|.
-  std::unique_ptr<aura::Window> w1_t1 = CreateChildWindow(
-      w1, gfx::Rect(50, 50, 50, 50), desks_util::GetActiveDeskContainerId());
+  std::unique_ptr<aura::Window> w1_t1 =
+      ChildTestWindowBuilder(w1, gfx::Rect(50, 50, 50, 50),
+                             desks_util::GetActiveDeskContainerId())
+          .Build();
   ::wm::AddTransientChild(w1, w1_t1.get());
   // |w1_t11| is a transient child window of transient child window |w1_t1|.
   std::unique_ptr<aura::Window> w1_t11 =
-      CreateChildWindow(w1_t1.get(), gfx::Rect(2, 7, 35, 35),
-                        desks_util::GetActiveDeskContainerId());
+      ChildTestWindowBuilder(w1_t1.get(), gfx::Rect(2, 7, 35, 35),
+                             desks_util::GetActiveDeskContainerId())
+          .Build();
   ::wm::AddTransientChild(w1_t1.get(), w1_t11.get());
 
   // |w11| is a non-transient child window of |w1|.
-  std::unique_ptr<aura::Window> w11 = CreateChildWindow(
-      w1, gfx::Rect(10, 10, 40, 40), desks_util::GetActiveDeskContainerId());
+  std::unique_ptr<aura::Window> w11 =
+      ChildTestWindowBuilder(w1, gfx::Rect(10, 10, 40, 40),
+                             desks_util::GetActiveDeskContainerId())
+          .Build();
   // |w11_t1| is a transient child window of |w11|.
   std::unique_ptr<aura::Window> w11_t1 =
-      CreateChildWindow(w11.get(), gfx::Rect(30, 10, 80, 80),
-                        desks_util::GetActiveDeskContainerId());
+      ChildTestWindowBuilder(w11.get(), gfx::Rect(30, 10, 80, 80),
+                             desks_util::GetActiveDeskContainerId())
+          .Build();
   ::wm::AddTransientChild(w11.get(), w11_t1.get());
 
   EXPECT_EQ(root_windows[0], w1->GetRootWindow());

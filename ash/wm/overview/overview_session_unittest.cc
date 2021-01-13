@@ -30,6 +30,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
@@ -1411,7 +1412,8 @@ TEST_F(OverviewSessionTest, NoCrashOnTabAfterExit) {
 TEST_F(OverviewSessionTest,
        NoCrashOnTabAfterExitWithChildWindowInitiallyFocused) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
-  std::unique_ptr<aura::Window> child_window = CreateChildWindow(window.get());
+  std::unique_ptr<aura::Window> child_window =
+      ChildTestWindowBuilder(window.get()).Build();
 
   wm::ActivateWindow(child_window.get());
 

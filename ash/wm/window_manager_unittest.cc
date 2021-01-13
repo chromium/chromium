@@ -5,6 +5,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/test_activation_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
@@ -133,8 +134,10 @@ TEST_F(WindowManagerTest, Focus) {
   // Supplied ids are negative so as not to collide with shell ids.
   // TODO(beng): maybe introduce a MAKE_SHELL_ID() macro that generates a safe
   //             id beyond shell id max?
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(10, 10, 500, 500)));
+  std::unique_ptr<aura::Window> w1 = TestWindowBuilder()
+                                         .SetColorWindowDelegate(SK_ColorWHITE)
+                                         .SetBounds(gfx::Rect(10, 10, 500, 500))
+                                         .Build();
   std::unique_ptr<aura::Window> w11(aura::test::CreateTestWindow(
       SK_ColorGREEN, -11, gfx::Rect(5, 5, 100, 100), w1.get()));
   std::unique_ptr<aura::Window> w111(aura::test::CreateTestWindow(
@@ -647,8 +650,8 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
   // Creates a window and make it active
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w1 =
+      TestWindowBuilder().SetBounds(gfx::Rect(0, 0, 100, 100)).Build();
   wm::ActivateWindow(w1.get());
 
   // Creates two addition filters
@@ -791,8 +794,10 @@ TEST_F(WindowManagerTest, TestCursorClientObserver) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
 
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w1 = TestWindowBuilder()
+                                         .SetColorWindowDelegate(SK_ColorWHITE)
+                                         .SetBounds(gfx::Rect(0, 0, 100, 100))
+                                         .Build();
   wm::ActivateWindow(w1.get());
 
   // Add two observers. Both should have OnCursorVisibilityChanged()

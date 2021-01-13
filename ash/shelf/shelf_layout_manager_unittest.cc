@@ -3558,8 +3558,8 @@ TEST_F(ShelfLayoutManagerTest, NoShelfUpdateDuringOverviewAnimation) {
   ui::ScopedAnimationDurationScaleMode regular_animations(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<aura::Window> window1(AshTestBase::CreateTestWindow());
-  std::unique_ptr<aura::Window> fullscreen(AshTestBase::CreateTestWindow());
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> fullscreen(CreateTestWindow());
   fullscreen->SetProperty(aura::client::kShowStateKey,
                           ui::SHOW_STATE_FULLSCREEN);
   wm::ActivateWindow(fullscreen.get());

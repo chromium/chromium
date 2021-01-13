@@ -1113,9 +1113,9 @@ TEST_F(AutoclickTest, HidesBubbleInFullscreenWhenCursorHides) {
     SCOPED_TRACE(test.display_spec);
     UpdateDisplay(test.display_spec);
 
-    std::unique_ptr<views::Widget> widget =
-        CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
-                         test.widget_position, /*show=*/true);
+    std::unique_ptr<views::Widget> widget = CreateTestWidget(
+        nullptr, desks_util::GetActiveDeskContainerId(), test.widget_position,
+        /*show=*/true);
     EXPECT_TRUE(GetAutoclickBubbleWidget()->IsVisible());
 
     // Move the mouse over the widget, so it's on the same screen as the widget.

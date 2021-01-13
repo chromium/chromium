@@ -31,15 +31,6 @@ class HomeScreenControllerTest : public AshTestBase {
   HomeScreenControllerTest() = default;
   ~HomeScreenControllerTest() override = default;
 
-  std::unique_ptr<aura::Window> CreateTestWindow() {
-    return AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  }
-
-  std::unique_ptr<aura::Window> CreatePopupTestWindow() {
-    return AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400),
-                                         aura::client::WINDOW_TYPE_POPUP);
-  }
-
   HomeScreenController* home_screen_controller() {
     return Shell::Get()->home_screen_controller();
   }
@@ -52,8 +43,9 @@ class HomeScreenControllerTest : public AshTestBase {
 };
 
 TEST_F(HomeScreenControllerTest, OnlyMinimizeCycleListWindows) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreatePopupTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindow(
+      gfx::Rect(0, 0, 400, 400), aura::client::WINDOW_TYPE_POPUP));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(

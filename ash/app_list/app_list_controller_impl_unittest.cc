@@ -37,6 +37,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -118,10 +119,6 @@ class AppListControllerImplTest : public AshTestBase {
  public:
   AppListControllerImplTest() = default;
   ~AppListControllerImplTest() override = default;
-
-  std::unique_ptr<aura::Window> CreateTestWindow() {
-    return AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  }
 
   void PopulateItem(int num) {
     for (int i = 0; i < num; i++) {
@@ -807,7 +804,9 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
                     {"fake_id_22", base::nullopt}};
 
   // Tests the case app ID property is not set on the window.
-  std::unique_ptr<aura::Window> window_without_app_id(CreateTestWindow());
+  gfx::Rect init_bounds(0, 0, 400, 400);
+  std::unique_ptr<views::Widget> widget_without_app_id =
+      TestWidgetBuilder().SetBounds(init_bounds).BuildOwnsNativeWidget();
 
   HomeScreenDelegate* const home_screen_delegate =
       Shell::Get()->home_screen_controller()->delegate();
@@ -820,7 +819,7 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
 
   EXPECT_EQ(apps_grid_center,
             home_screen_delegate->GetInitialAppListItemScreenBoundsForWindow(
-                window_without_app_id.get()));
+                widget_without_app_id->GetNativeWindow()));
 
   // Run tests cases, both for when the first and the second apps grid page is
   // selected - the returned bounds should be the same in both cases, as
@@ -837,12 +836,16 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
                            : "null")
                    << "} with selected page " << selected_page);
 
-      std::unique_ptr<aura::Window> window(CreateTestWindow());
-      window->SetProperty(kAppIDKey, new std::string(test_case.window_app_id));
+      std::unique_ptr<views::Widget> widget =
+          TestWidgetBuilder()
+              .SetWindowProperty(kAppIDKey,
+                                 new std::string(test_case.window_app_id))
+              .SetBounds(init_bounds)
+              .BuildOwnsNativeWidget();
 
       const gfx::Rect item_bounds =
           home_screen_delegate->GetInitialAppListItemScreenBoundsForWindow(
-              window.get());
+              widget->GetNativeWindow());
       if (!test_case.grid_position.has_value()) {
         EXPECT_EQ(apps_grid_center, item_bounds);
       } else {

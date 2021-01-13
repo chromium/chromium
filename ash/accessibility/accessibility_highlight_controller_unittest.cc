@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -132,8 +133,11 @@ class AccessibilityHighlightControllerTest : public AshTestBase {
 
 TEST_F(AccessibilityHighlightControllerTest, TestCaretRingDrawsBluePixels) {
   // Create a white background window for captured image color smoke test.
-  CreateTestWindowInShell(SK_ColorWHITE, kShellWindowId_Invalid,
-                          Shell::GetPrimaryRootWindow()->bounds());
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetColorWindowDelegate(SK_ColorWHITE)
+          .SetBounds(Shell::GetPrimaryRootWindow()->bounds())
+          .Build();
 
   gfx::Rect capture_bounds(200, 300, 100, 100);
   gfx::Rect caret_bounds(230, 330, 1, 25);
@@ -160,8 +164,11 @@ TEST_F(AccessibilityHighlightControllerTest, TestCaretRingDrawsBluePixels) {
 
 TEST_F(AccessibilityHighlightControllerTest, TestFocusRingDrawsPixels) {
   // Create a white background window for captured image color smoke test.
-  CreateTestWindowInShell(SK_ColorWHITE, kShellWindowId_Invalid,
-                          Shell::GetPrimaryRootWindow()->bounds());
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetColorWindowDelegate(SK_ColorWHITE)
+          .SetBounds(Shell::GetPrimaryRootWindow()->bounds())
+          .Build();
 
   gfx::Rect capture_bounds(200, 300, 100, 100);
   gfx::Rect focus_bounds(230, 330, 40, 40);

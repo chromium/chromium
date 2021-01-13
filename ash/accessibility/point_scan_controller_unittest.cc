@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -126,7 +127,11 @@ TEST_F(PointScanControllerTest, StartScanning) {
   gfx::Rect bounds = Shell::GetPrimaryRootWindow()->bounds();
 
   // Create a white background window for captured image color smoke test.
-  CreateTestWindowInShell(SK_ColorWHITE, -1, bounds);
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetColorWindowDelegate(SK_ColorWHITE)
+          .SetBounds(bounds)
+          .Build();
 
   // For some reason, the white window is not fully drawn the first time we call
   // CaptureBeforeImage.

@@ -33,6 +33,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/window_factory.h"
 #include "ash/wm/always_on_top_controller.h"
@@ -412,8 +413,8 @@ TEST_F(WorkspaceLayoutManagerTest, ChildBoundsResetOnMaximize) {
   window->Show();
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Activate();
-  std::unique_ptr<aura::Window> child_window(
-      CreateChildWindow(window.get(), gfx::Rect(5, 6, 7, 8)));
+  std::unique_ptr<aura::Window> child_window =
+      ChildTestWindowBuilder(window.get(), gfx::Rect(5, 6, 7, 8)).Build();
   window_state->Maximize();
   EXPECT_EQ("5,6 7x8", child_window->bounds().ToString());
 }

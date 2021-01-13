@@ -12,6 +12,7 @@
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/test_screenshot_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
@@ -63,8 +64,11 @@ class ScreenshotControllerTest : public AshTestBase {
     return Shell::Get()->screenshot_controller()->selected_;
   }
 
-  aura::Window* CreateSelectableWindow(const gfx::Rect& rect) {
-    return CreateTestWindowInShell(SK_ColorGRAY, 0, rect);
+  std::unique_ptr<aura::Window> CreateSelectableWindow(const gfx::Rect& rect) {
+    return TestWindowBuilder()
+        .SetColorWindowDelegate(SK_ColorGRAY)
+        .SetBounds(rect)
+        .Build();
   }
 
  private:

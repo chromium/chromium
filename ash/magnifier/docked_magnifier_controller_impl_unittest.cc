@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/new_desk_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -468,8 +469,11 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
 
 // Test that we exit overview mode when enabling the docked magnifier.
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetBounds(gfx::Rect(0, 0, 200, 200))
+          .AllowAllWindowStates()
+          .Build();
   WindowState::Get(window.get())->Maximize();
 
   // Enable overview mode followed by the magnifier.
@@ -531,8 +535,11 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetBounds(gfx::Rect(0, 0, 200, 200))
+          .AllowAllWindowStates()
+          .Build();
   WindowState::Get(window.get())->Maximize();
 
   EXPECT_EQ(split_view_controller()->state(),
@@ -575,10 +582,16 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
-  std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShell(SK_ColorWHITE, 200, gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window1 =
+      TestWindowBuilder()
+          .SetBounds(gfx::Rect(0, 0, 200, 200))
+          .AllowAllWindowStates()
+          .Build();
+  std::unique_ptr<aura::Window> window2 =
+      TestWindowBuilder()
+          .SetBounds(gfx::Rect(0, 0, 200, 200))
+          .AllowAllWindowStates()
+          .Build();
 
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview();

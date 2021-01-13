@@ -695,7 +695,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
 
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
@@ -721,7 +721,7 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
 
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
