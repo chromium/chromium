@@ -38,9 +38,6 @@ class BorealisContext {
     container_name_ = std::move(container_name);
   }
 
-  const std::string& root_path() const { return root_path_; }
-  void set_root_path(std::string path) { root_path_ = std::move(path); }
-
   const base::FilePath& disk_path() const { return disk_path_; }
   void set_disk_path(base::FilePath path) { disk_path_ = std::move(path); }
 
@@ -52,7 +49,6 @@ class BorealisContext {
   Profile* const profile_;
   std::string vm_name_;
   std::string container_name_;
-  std::string root_path_;
   base::FilePath disk_path_;
   // This instance listens for the session to finish and issues an automatic
   // shutdown when it does.
