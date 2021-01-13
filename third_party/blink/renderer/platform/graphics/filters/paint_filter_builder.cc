@@ -30,14 +30,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkImageSource.h"
-#include "third_party/skia/include/effects/SkOffsetImageFilter.h"
-#include "third_party/skia/include/effects/SkPictureImageFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
-#include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {
 namespace paint_filter_builder {
@@ -167,9 +161,8 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
   sk_sp<PaintFilter> flip_image_filter = sk_make_sp<MatrixPaintFilter>(
       reflection.ReflectionMatrix(), kLow_SkFilterQuality,
       std::move(masked_input));
-  return sk_make_sp<XfermodePaintFilter>(SkBlendMode::kSrcOver,
-                                         std::move(flip_image_filter),
-                                         std::move(input), nullptr);
+  return sk_make_sp<XfermodePaintFilter>(
+      SkBlendMode::kSrcOver, std::move(flip_image_filter), std::move(input));
 }
 
 }  // namespace paint_filter_builder

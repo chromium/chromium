@@ -15,7 +15,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -727,7 +727,7 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
     // The blur is halved to produce a shadow that correctly fits within the
     // |shadow_margin|.
     SkScalar sigma = SkDoubleToScalar(shadow.blur() / 2);
-    paint.setImageFilter(SkBlurImageFilter::Make(sigma, sigma, nullptr));
+    paint.setImageFilter(SkImageFilters::Blur(sigma, sigma, nullptr));
 
     canvas.saveLayer(0, &paint);
     canvas.drawBitmap(shadow_image,

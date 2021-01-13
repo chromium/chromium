@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 
 namespace blink {
@@ -146,9 +145,9 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   sk_sp<SkColorFilter> filter = CreateColorFilter(type_, values_);
-  PaintFilter::CropRect rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(std::move(filter), std::move(input),
-                                            &rect);
+                                            base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/point_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/spot_light_source.h"
 #include "third_party/skia/include/core/SkPoint3.h"
-#include "third_party/skia/include/effects/SkLightingImageFilter.h"
 
 namespace blink {
 
@@ -56,7 +55,8 @@ FELighting::FELighting(Filter* filter,
 sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   if (!light_source_)
     return CreateTransparentBlack();
-  PaintFilter::CropRect rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  const PaintFilter::CropRect* rect = base::OptionalOrNullptr(crop_rect);
   Color light_color = AdaptColorToOperatingInterpolationSpace(lighting_color_);
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
@@ -71,7 +71,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           sinf(azimuth_rad) * cosf(elevation_rad), sinf(elevation_rad));
       return sk_make_sp<LightingDistantPaintFilter>(
           GetLightingType(), direction, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), &rect);
+          GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
     case LS_POINT: {
       PointLightSource* point_light_source =
@@ -81,7 +81,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           SkPoint3::Make(position.X(), position.Y(), position.Z());
       return sk_make_sp<LightingPointPaintFilter>(
           GetLightingType(), sk_position, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), &rect);
+          GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
     case LS_SPOT: {
       SpotLightSource* spot_light_source =
@@ -102,7 +102,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
       return sk_make_sp<LightingSpotPaintFilter>(
           GetLightingType(), location, target, specular_exponent,
           limiting_cone_angle, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), &rect);
+          GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
     default:
       NOTREACHED();

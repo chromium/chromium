@@ -32,9 +32,9 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "bitmap.mojom",
-    "blur_image_filter_tile_mode.mojom",
     "image_info.mojom",
     "skcolor.mojom",
+    "tile_mode.mojom",
   ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
@@ -43,11 +43,11 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "skia.mojom.BlurTileMode"
-          cpp = "::SkBlurImageFilter::TileMode"
+          mojom = "skia.mojom.TileMode"
+          cpp = "::SkTileMode"
         },
       ]
-      traits_headers = [ "blur_image_filter_tile_mode_mojom_traits.h" ]
+      traits_headers = [ "tile_mode_mojom_traits.h" ]
       traits_public_deps = [ "//skia" ]
     },
     {

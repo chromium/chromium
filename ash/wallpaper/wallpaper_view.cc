@@ -155,8 +155,8 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
 
   // Create the blur and brightness filter to apply to the downsampled image.
   cc::FilterOperations operations;
-  operations.Append(cc::FilterOperation::CreateBlurFilter(
-      blur, SkBlurImageFilter::kClamp_TileMode));
+  operations.Append(
+      cc::FilterOperation::CreateBlurFilter(blur, SkTileMode::kClamp));
   sk_sp<cc::PaintFilter> filter = cc::RenderSurfaceFilters::BuildImageFilter(
       operations, gfx::SizeF(dst.size()), gfx::Vector2dF());
 

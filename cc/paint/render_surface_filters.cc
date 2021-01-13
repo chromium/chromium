@@ -12,14 +12,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/paint_filter.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "third_party/skia/include/effects/SkAlphaThresholdFilter.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
-#include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkComposeImageFilter.h"
-#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
-#include "third_party/skia/include/effects/SkMagnifierImageFilter.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/skia_util.h"
 
@@ -209,7 +202,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
             SkIntToScalar(op.drop_shadow_offset().y()),
             SkIntToScalar(op.amount()), SkIntToScalar(op.amount()),
             op.drop_shadow_color(),
-            SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode,
+            DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
             std::move(image_filter));
         break;
       case FilterOperation::COLOR_MATRIX:

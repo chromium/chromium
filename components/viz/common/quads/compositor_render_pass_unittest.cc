@@ -15,7 +15,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/transform.h"
 

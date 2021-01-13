@@ -37,7 +37,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 
 namespace blink {
 

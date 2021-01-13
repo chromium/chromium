@@ -54,7 +54,6 @@
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
@@ -1176,7 +1175,7 @@ void SkiaRenderer::PreparePaintOrCanvasForRPDQ(
       if (params->opacity != 1.f) {
         // Apply opacity as the last step of image filter so it is uniform
         // across any overlapping content produced by the image filters.
-        paint->setImageFilter(SkColorFilterImageFilter::Make(
+        paint->setImageFilter(SkImageFilters::ColorFilter(
             MakeOpacityFilter(params->opacity, nullptr),
             rpdq_params.image_filter));
         paint->setAlphaf(1.f);

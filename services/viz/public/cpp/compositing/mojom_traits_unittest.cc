@@ -55,7 +55,7 @@
 #include "services/viz/public/mojom/compositing/surface_range.mojom.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
-#include "skia/public/mojom/blur_image_filter_tile_mode_mojom_traits.h"
+#include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -188,7 +188,7 @@ TEST_F(StructTraitsTest, FilterOperationReferenceFilter) {
       sk_make_sp<cc::DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
           SkIntToScalar(9), SK_ColorBLACK,
-          SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode,
+          cc::DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr));
 
   cc::FilterOperation output;

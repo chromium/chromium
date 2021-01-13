@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -53,9 +52,8 @@ void CompositorFilterOperations::AppendOpacityFilter(float amount) {
   filter_operations_.Append(cc::FilterOperation::CreateOpacityFilter(amount));
 }
 
-void CompositorFilterOperations::AppendBlurFilter(
-    float amount,
-    SkBlurImageFilter::TileMode tile_mode) {
+void CompositorFilterOperations::AppendBlurFilter(float amount,
+                                                  SkTileMode tile_mode) {
   filter_operations_.Append(
       cc::FilterOperation::CreateBlurFilter(amount, tile_mode));
 }

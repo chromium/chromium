@@ -59,7 +59,7 @@ class LayerTreeHostFiltersPixelTest
     };
 
     FilterOperations filters;
-    SkImageFilter::CropRect cropRect(
+    PaintFilter::CropRect cropRect(
         SkRect::MakeXYWH(-40000, -40000, 80000, 80000));
     filters.Append(FilterOperation::CreateReferenceFilter(
         sk_make_sp<ColorFilterPaintFilter>(SkColorFilters::Matrix(matrix),
@@ -98,8 +98,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -164,8 +163,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      30.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(30.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -206,8 +204,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 14,
                                      16, 18, 20, 22, 30, 40, 50);
@@ -254,8 +251,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      5.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(5.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -339,8 +335,7 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
     EffectNode& blur_effect_node = CreateEffectNode(blur_layers[0].get());
 
     FilterOperations filters;
-    filters.Append(FilterOperation::CreateBlurFilter(
-        2.f, SkBlurImageFilter::kClamp_TileMode));
+    filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
     blur_effect_node.backdrop_filters = filters;
     blur_effect_node.render_surface_reason =
         RenderSurfaceReason::kBackdropFilter;
@@ -497,7 +492,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, CroppedFilter) {
   // Check that a filter with a zero-height crop rect crops out its
   // result completely.
   FilterOperations filters;
-  SkImageFilter::CropRect cropRect(SkRect::MakeXYWH(0, 0, 100, 0));
+  PaintFilter::CropRect cropRect(SkRect::MakeXYWH(0, 0, 100, 0));
   sk_sp<PaintFilter> offset(
       sk_make_sp<OffsetPaintFilter>(0, 0, nullptr, &cropRect));
   filters.Append(FilterOperation::CreateReferenceFilter(offset));
@@ -518,7 +513,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterClipped) {
   // This filter does a red-blue swap, so the foreground becomes blue.
   matrix[2] = matrix[6] = matrix[10] = matrix[18] = 1.0f;
   // We filter only the bottom 200x100 pixels of the foreground.
-  SkImageFilter::CropRect crop_rect(SkRect::MakeXYWH(0, 100, 200, 100));
+  PaintFilter::CropRect crop_rect(SkRect::MakeXYWH(0, 100, 200, 100));
   FilterOperations filters;
   filters.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<ColorFilterPaintFilter>(
@@ -644,8 +639,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
 
   // Add a blur filter to the blue layer.
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      5.0f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(5.0f, SkTileMode::kClamp));
   filter_layer->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(
       gfx::RectF(gfx::SizeF(filter_layer->bounds())), 0);
@@ -1019,7 +1013,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
   filter_layer->AddChild(child2);
 
   FilterOperations filters;
-  SkImageFilter::CropRect cropRect(SkRect::MakeXYWH(10, 10, 80, 80));
+  PaintFilter::CropRect cropRect(SkRect::MakeXYWH(10, 10, 80, 80));
   filters.Append(FilterOperation::CreateReferenceFilter(
       sk_make_sp<OffsetPaintFilter>(0, 0, nullptr, &cropRect)));
   filter_layer->SetFilters(filters);
@@ -1052,8 +1046,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
   filter_layer->AddChild(child4);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   filter_layer->SetFilters(filters);
 
   // Force the allocation a larger textures.

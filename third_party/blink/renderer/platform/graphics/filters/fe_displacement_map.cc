@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkDisplacementMapEffect.h"
 
 namespace blink {
 
@@ -86,20 +85,20 @@ bool FEDisplacementMap::SetScale(float scale) {
   return true;
 }
 
-static SkDisplacementMapEffect::ChannelSelectorType ToSkiaMode(
-    ChannelSelectorType type) {
+static SkColorChannel ToSkiaMode(ChannelSelectorType type) {
   switch (type) {
     case CHANNEL_R:
-      return SkDisplacementMapEffect::kR_ChannelSelectorType;
+      return SkColorChannel::kR;
     case CHANNEL_G:
-      return SkDisplacementMapEffect::kG_ChannelSelectorType;
+      return SkColorChannel::kG;
     case CHANNEL_B:
-      return SkDisplacementMapEffect::kB_ChannelSelectorType;
+      return SkColorChannel::kB;
     case CHANNEL_A:
-      return SkDisplacementMapEffect::kA_ChannelSelectorType;
+      return SkColorChannel::kA;
     case CHANNEL_UNKNOWN:
     default:
-      return SkDisplacementMapEffect::kUnknown_ChannelSelectorType;
+      // Historically, Skia's raster backend treated unknown as blue.
+      return SkColorChannel::kB;
   }
 }
 
@@ -114,18 +113,16 @@ sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
 
   sk_sp<PaintFilter> displ = paint_filter_builder::Build(
       InputEffect(1), OperatingInterpolationSpace());
-  SkDisplacementMapEffect::ChannelSelectorType type_x =
-      ToSkiaMode(x_channel_selector_);
-  SkDisplacementMapEffect::ChannelSelectorType type_y =
-      ToSkiaMode(y_channel_selector_);
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  SkColorChannel type_x = ToSkiaMode(x_channel_selector_);
+  SkColorChannel type_y = ToSkiaMode(y_channel_selector_);
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   // FIXME : Only applyHorizontalScale is used and applyVerticalScale is ignored
   // This can be fixed by adding a 2nd scale parameter to
   // DisplacementMapEffectPaintFilter.
   return sk_make_sp<DisplacementMapEffectPaintFilter>(
       type_x, type_y,
       SkFloatToScalar(GetFilter()->ApplyHorizontalScale(scale_)),
-      std::move(displ), std::move(color), &crop_rect);
+      std::move(displ), std::move(color), base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

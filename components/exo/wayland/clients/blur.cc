@@ -13,7 +13,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -131,8 +131,8 @@ void Blur::Run(double sigma_x,
   if (sigma_x > 0.0 || sigma_y > 0.0) {
     sigma_x = AdjustSigma(sigma_x, max_sigma, &blur_scale_factor_x);
     sigma_y = AdjustSigma(sigma_y, max_sigma, &blur_scale_factor_y);
-    blur_filter = SkBlurImageFilter::Make(sigma_x, sigma_y, nullptr, nullptr,
-                                          SkBlurImageFilter::kClamp_TileMode);
+    blur_filter = SkImageFilters::Blur(sigma_x, sigma_y, SkTileMode::kClamp,
+                                       nullptr, nullptr);
     auto size = SkISize::Make(size_.width() / blur_scale_factor_x,
                               size_.height() / blur_scale_factor_y);
     do {

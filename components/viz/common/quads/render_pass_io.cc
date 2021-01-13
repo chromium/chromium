@@ -455,7 +455,8 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
       dict.SetIntKey("zoom_inset", filter.zoom_inset());
       break;
     case cc::FilterOperation::BLUR:
-      dict.SetIntKey("blur_tile_mode", filter.blur_tile_mode());
+      dict.SetIntKey("blur_tile_mode",
+                     static_cast<int>(filter.blur_tile_mode()));
       break;
     default:
       break;
@@ -536,7 +537,7 @@ bool FilterOperationFromDict(const base::Value& dict,
       if (!blur_tile_mode)
         return false;
       filter.set_blur_tile_mode(
-          static_cast<SkBlurImageFilter::TileMode>(blur_tile_mode.value()));
+          static_cast<SkTileMode>(blur_tile_mode.value()));
       break;
     default:
       break;

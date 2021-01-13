@@ -27,8 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkArithmeticImageFilter.h"
-#include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {
 
@@ -186,18 +184,19 @@ sk_sp<PaintFilter> FEComposite::CreateImageFilterInternal(
   sk_sp<PaintFilter> background(
       paint_filter_builder::Build(InputEffect(1), OperatingInterpolationSpace(),
                                   !MayProduceInvalidPreMultipliedPixels()));
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
 
   if (type_ == FECOMPOSITE_OPERATOR_ARITHMETIC) {
     return sk_make_sp<ArithmeticPaintFilter>(
         SkFloatToScalar(k1_), SkFloatToScalar(k2_), SkFloatToScalar(k3_),
         SkFloatToScalar(k4_), requires_pm_color_validation,
-        std::move(background), std::move(foreground), &crop_rect);
+        std::move(background), std::move(foreground),
+        base::OptionalOrNullptr(crop_rect));
   }
 
-  return sk_make_sp<XfermodePaintFilter>(ToBlendMode(type_),
-                                         std::move(background),
-                                         std::move(foreground), &crop_rect);
+  return sk_make_sp<XfermodePaintFilter>(
+      ToBlendMode(type_), std::move(background), std::move(foreground),
+      base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

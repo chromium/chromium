@@ -5,7 +5,7 @@
 module viz.mojom;
 
 import "services/viz/public/mojom/compositing/paint_filter.mojom";
-import "skia/public/mojom/blur_image_filter_tile_mode.mojom";
+import "skia/public/mojom/tile_mode.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum FilterType {
@@ -37,7 +37,7 @@ struct FilterOperation {
   PaintFilter image_filter;
   array<float, 20>? matrix;
   int32 zoom_inset;
-  skia.mojom.BlurTileMode blur_tile_mode;
+  skia.mojom.TileMode blur_tile_mode;
   array<gfx.mojom.Rect>? shape;
 };
 

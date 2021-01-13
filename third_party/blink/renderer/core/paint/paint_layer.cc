@@ -3536,7 +3536,7 @@ PaintLayer::CreateCompositorFilterOperationsForBackdropFilter() const {
   // Use kClamp tile mode to avoid pixel moving filters bringing in black
   // transparent pixels from the viewport edge.
   return_value = FilterEffectBuilder(reference_box, zoom, nullptr, nullptr,
-                                     SkBlurImageFilter::kClamp_TileMode)
+                                     SkTileMode::kClamp)
                      .BuildFilterOperations(filter_operations);
   // Note that return_value may be empty here, if the |filter_operations| list
   // contains only invalid filters (e.g. invalid reference filters). See

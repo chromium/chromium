@@ -14,7 +14,7 @@
 #include "cc/paint/paint_filter.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -98,7 +98,7 @@ class CC_PAINT_EXPORT FilterOperation {
     return shape_;
   }
 
-  SkBlurImageFilter::TileMode blur_tile_mode() const {
+  SkTileMode blur_tile_mode() const {
     DCHECK_EQ(type_, BLUR);
     return blur_tile_mode_;
   }
@@ -137,8 +137,7 @@ class CC_PAINT_EXPORT FilterOperation {
 
   static FilterOperation CreateBlurFilter(
       float amount,
-      SkBlurImageFilter::TileMode tile_mode =
-          SkBlurImageFilter::kClampToBlack_TileMode) {
+      SkTileMode tile_mode = SkTileMode::kDecal) {
     return FilterOperation(BLUR, amount, tile_mode);
   }
 
@@ -227,7 +226,7 @@ class CC_PAINT_EXPORT FilterOperation {
     shape_ = shape;
   }
 
-  void set_blur_tile_mode(SkBlurImageFilter::TileMode tile_mode) {
+  void set_blur_tile_mode(SkTileMode tile_mode) {
     DCHECK_EQ(type_, BLUR);
     blur_tile_mode_ = tile_mode;
   }
@@ -255,9 +254,7 @@ class CC_PAINT_EXPORT FilterOperation {
  private:
   FilterOperation(FilterType type, float amount);
 
-  FilterOperation(FilterType type,
-                  float amount,
-                  SkBlurImageFilter::TileMode tile_mode);
+  FilterOperation(FilterType type, float amount, SkTileMode tile_mode);
 
   FilterOperation(FilterType type,
                   const gfx::Point& offset,
@@ -286,7 +283,7 @@ class CC_PAINT_EXPORT FilterOperation {
 
   // Use a collection of |gfx::Rect| to make serialization simpler.
   ShapeRects shape_;
-  SkBlurImageFilter::TileMode blur_tile_mode_;
+  SkTileMode blur_tile_mode_;
 };
 
 }  // namespace cc

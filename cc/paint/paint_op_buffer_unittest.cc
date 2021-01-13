@@ -37,7 +37,6 @@
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
-#include "third_party/skia/include/effects/SkOffsetImageFilter.h"
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
 
 using testing::_;
@@ -3320,19 +3319,18 @@ TEST_P(PaintFilterSerializationTest, Basic) {
   std::vector<sk_sp<PaintFilter>> filters = {
       sk_sp<PaintFilter>{new ColorFilterPaintFilter(
           SkColorFilters::LinearToSRGBGamma(), nullptr)},
-      sk_sp<PaintFilter>{new BlurPaintFilter(
-          0.5f, 0.3f, SkBlurImageFilter::kRepeat_TileMode, nullptr)},
+      sk_sp<PaintFilter>{
+          new BlurPaintFilter(0.5f, 0.3f, SkTileMode::kRepeat, nullptr)},
       sk_sp<PaintFilter>{new DropShadowPaintFilter(
           5.f, 10.f, 0.1f, 0.3f, SK_ColorBLUE,
-          SkDropShadowImageFilter::kDrawShadowOnly_ShadowMode, nullptr)},
+          DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr)},
       sk_sp<PaintFilter>{new MagnifierPaintFilter(SkRect::MakeXYWH(5, 6, 7, 8),
                                                   10.5f, nullptr)},
       sk_sp<PaintFilter>{new AlphaThresholdPaintFilter(
           SkRegion(SkIRect::MakeXYWH(0, 0, 100, 200)), 10.f, 20.f, nullptr)},
       sk_sp<PaintFilter>{new MatrixConvolutionPaintFilter(
           SkISize::Make(3, 3), scalars, 30.f, 123.f, SkIPoint::Make(0, 0),
-          SkMatrixConvolutionImageFilter::kClampToBlack_TileMode, true,
-          nullptr)},
+          SkTileMode::kDecal, true, nullptr)},
       sk_sp<PaintFilter>{new MorphologyPaintFilter(
           MorphologyPaintFilter::MorphType::kErode, 15.5f, 30.2f, nullptr)},
       sk_sp<PaintFilter>{new OffsetPaintFilter(-1.f, -2.f, nullptr)},
@@ -3361,12 +3359,10 @@ TEST_P(PaintFilterSerializationTest, Basic) {
   filters.emplace_back(new ComposePaintFilter(filters[0], filters[1]));
   filters.emplace_back(
       new XfermodePaintFilter(SkBlendMode::kDst, filters[2], filters[3]));
-  filters.emplace_back(new ArithmeticPaintFilter(
-      1.1f, 2.2f, 3.3f, 4.4f, false, filters[4], filters[5], nullptr));
+  filters.emplace_back(new ArithmeticPaintFilter(1.1f, 2.2f, 3.3f, 4.4f, false,
+                                                 filters[4], filters[5]));
   filters.emplace_back(new DisplacementMapEffectPaintFilter(
-      SkDisplacementMapEffect::kR_ChannelSelectorType,
-      SkDisplacementMapEffect::kG_ChannelSelectorType, 10, filters[6],
-      filters[7]));
+      SkColorChannel::kR, SkColorChannel::kG, 10, filters[6], filters[7]));
   filters.emplace_back(new MergePaintFilter(filters.data(), filters.size()));
   filters.emplace_back(new RecordPaintFilter(
       sk_sp<PaintRecord>{new PaintRecord}, SkRect::MakeXYWH(10, 15, 20, 25)));

@@ -914,8 +914,7 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
 
   void AddBackgroundBlurFilter(Layer* layer) {
     FilterOperations filters;
-    filters.Append(FilterOperation::CreateBlurFilter(
-        30, SkBlurImageFilter::kClamp_TileMode));
+    filters.Append(FilterOperation::CreateBlurFilter(30, SkTileMode::kClamp));
     layer->SetBackdropFilters(filters);
   }
 

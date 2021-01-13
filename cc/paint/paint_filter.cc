@@ -59,6 +59,86 @@ sk_sp<PaintFilter> Snapshot(const sk_sp<PaintFilter>& filter,
   return filter->SnapshotWithImages(image_provider);
 }
 
+// TODO(michaelludwig): These conversion functions can be removed once the
+// PaintFilter implementations are updated to use the new image factory APIs.
+SkImageFilter::CropRect ToLegacyCropRect(
+    const PaintFilter::CropRect* crop_rect) {
+  if (crop_rect) {
+    return SkImageFilter::CropRect(*crop_rect);
+  } else {
+    return SkImageFilter::CropRect(SkRect::MakeEmpty(), 0x0);
+  }
+}
+
+SkBlurImageFilter::TileMode ToLegacyBlurTileMode(SkTileMode tile_mode) {
+  switch (tile_mode) {
+    case SkTileMode::kClamp:
+      return SkBlurImageFilter::kClamp_TileMode;
+    case SkTileMode::kRepeat:
+      return SkBlurImageFilter::kRepeat_TileMode;
+    case SkTileMode::kMirror:
+      // The legacy SkBlurImageFilter::TileMode did not expose a mirror tiling
+      // option, so return kRepeat for now, which is consistent with Skia's
+      // deprecated behavior.
+      return SkBlurImageFilter::kRepeat_TileMode;
+    case SkTileMode::kDecal:
+      return SkBlurImageFilter::kClampToBlack_TileMode;
+    default:
+      NOTREACHED();
+      return SkBlurImageFilter::kClamp_TileMode;
+  }
+}
+
+SkMatrixConvolutionImageFilter::TileMode ToLegacyConvolutionTileMode(
+    SkTileMode tile_mode) {
+  switch (tile_mode) {
+    case SkTileMode::kClamp:
+      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
+    case SkTileMode::kRepeat:
+      return SkMatrixConvolutionImageFilter::kRepeat_TileMode;
+    case SkTileMode::kMirror:
+      // The legacy SkMatrixConvolutionImageFilter::TileMode did not expose a
+      // mirror tiling option, so return kRepeat for now, which is consistent
+      // with Skia's deprecated behavior.
+      return SkMatrixConvolutionImageFilter::kRepeat_TileMode;
+    case SkTileMode::kDecal:
+      return SkMatrixConvolutionImageFilter::kClampToBlack_TileMode;
+    default:
+      NOTREACHED();
+      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
+  }
+}
+
+SkDisplacementMapEffect::ChannelSelectorType ToLegacyChannel(
+    SkColorChannel channel) {
+  switch (channel) {
+    case SkColorChannel::kR:
+      return SkDisplacementMapEffect::kR_ChannelSelectorType;
+    case SkColorChannel::kG:
+      return SkDisplacementMapEffect::kG_ChannelSelectorType;
+    case SkColorChannel::kB:
+      return SkDisplacementMapEffect::kB_ChannelSelectorType;
+    case SkColorChannel::kA:
+      return SkDisplacementMapEffect::kA_ChannelSelectorType;
+    default:
+      NOTREACHED();
+      return SkDisplacementMapEffect::kUnknown_ChannelSelectorType;
+  }
+}
+
+SkDropShadowImageFilter::ShadowMode ToLegacyShadowMode(
+    DropShadowPaintFilter::ShadowMode shadow_mode) {
+  switch (shadow_mode) {
+    case DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground:
+      return SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode;
+    case DropShadowPaintFilter::ShadowMode::kDrawShadowOnly:
+      return SkDropShadowImageFilter::kDrawShadowOnly_ShadowMode;
+    default:
+      NOTREACHED();
+      return SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode;
+  }
+}
+
 }  // namespace
 
 PaintFilter::PaintFilter(Type type,
@@ -140,8 +220,7 @@ size_t PaintFilter::BaseSerializedSize() const {
   total_size += sizeof(uint32_t);
   if (crop_rect_) {
     // CropRect.
-    total_size += sizeof(crop_rect_->flags());
-    total_size += sizeof(crop_rect_->rect());
+    total_size += sizeof(*crop_rect_);
   }
   return total_size;
 }
@@ -159,9 +238,7 @@ bool PaintFilter::operator==(const PaintFilter& other) const {
   if (!!crop_rect_ != !!other.crop_rect_)
     return false;
   if (crop_rect_) {
-    if (crop_rect_->flags() != other.crop_rect_->flags() ||
-        !PaintOp::AreSkRectsEqual(crop_rect_->rect(),
-                                  other.crop_rect_->rect())) {
+    if (!PaintOp::AreSkRectsEqual(*crop_rect_, *other.crop_rect_)) {
       return false;
     }
   }
@@ -248,8 +325,9 @@ ColorFilterPaintFilter::ColorFilterPaintFilter(
       color_filter_(std::move(color_filter)),
       input_(std::move(input)) {
   DCHECK(color_filter_);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkColorFilterImageFilter::Make(
-      color_filter_, GetSkFilter(input_.get()), crop_rect);
+      color_filter_, GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 ColorFilterPaintFilter::~ColorFilterPaintFilter() = default;
@@ -277,7 +355,7 @@ bool ColorFilterPaintFilter::operator==(
 
 BlurPaintFilter::BlurPaintFilter(SkScalar sigma_x,
                                  SkScalar sigma_y,
-                                 TileMode tile_mode,
+                                 SkTileMode tile_mode,
                                  sk_sp<PaintFilter> input,
                                  const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
@@ -285,8 +363,10 @@ BlurPaintFilter::BlurPaintFilter(SkScalar sigma_x,
       sigma_y_(sigma_y),
       tile_mode_(tile_mode),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkBlurImageFilter::Make(
-      sigma_x_, sigma_y_, GetSkFilter(input_.get()), crop_rect, tile_mode_);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
+  cached_sk_filter_ =
+      SkBlurImageFilter::Make(sigma_x_, sigma_y_, GetSkFilter(input_.get()),
+                              &sk_crop_rect, ToLegacyBlurTileMode(tile_mode_));
 }
 
 BlurPaintFilter::~BlurPaintFilter() = default;
@@ -329,9 +409,10 @@ DropShadowPaintFilter::DropShadowPaintFilter(SkScalar dx,
       color_(color),
       shadow_mode_(shadow_mode),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkDropShadowImageFilter::Make(
-      dx_, dy_, sigma_x_, sigma_y_, color_, shadow_mode_,
-      GetSkFilter(input_.get()), crop_rect);
+      dx_, dy_, sigma_x_, sigma_y_, color_, ToLegacyShadowMode(shadow_mode_),
+      GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 DropShadowPaintFilter::~DropShadowPaintFilter() = default;
@@ -369,8 +450,9 @@ MagnifierPaintFilter::MagnifierPaintFilter(const SkRect& src_rect,
       src_rect_(src_rect),
       inset_(inset),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkMagnifierImageFilter::Make(
-      src_rect_, inset_, GetSkFilter(input_.get()), crop_rect);
+      src_rect_, inset_, GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 MagnifierPaintFilter::~MagnifierPaintFilter() = default;
@@ -435,8 +517,10 @@ AlphaThresholdPaintFilter::AlphaThresholdPaintFilter(const SkRegion& region,
       inner_min_(inner_min),
       outer_max_(outer_max),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkAlphaThresholdFilter::Make(
-      region_, inner_min_, outer_max_, GetSkFilter(input_.get()), crop_rect);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
+  cached_sk_filter_ =
+      SkAlphaThresholdFilter::Make(region_, inner_min_, outer_max_,
+                                   GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
@@ -476,9 +560,10 @@ XfermodePaintFilter::XfermodePaintFilter(SkBlendMode blend_mode,
       blend_mode_(blend_mode),
       background_(std::move(background)),
       foreground_(std::move(foreground)) {
-  cached_sk_filter_ =
-      SkXfermodeImageFilter::Make(blend_mode_, GetSkFilter(background_.get()),
-                                  GetSkFilter(foreground_.get()), crop_rect);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
+  cached_sk_filter_ = SkXfermodeImageFilter::Make(
+      blend_mode_, GetSkFilter(background_.get()),
+      GetSkFilter(foreground_.get()), &sk_crop_rect);
 }
 
 XfermodePaintFilter::~XfermodePaintFilter() = default;
@@ -523,9 +608,10 @@ ArithmeticPaintFilter::ArithmeticPaintFilter(float k1,
       enforce_pm_color_(enforce_pm_color),
       background_(std::move(background)),
       foreground_(std::move(foreground)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkArithmeticImageFilter::Make(
       k1_, k2_, k3_, k4_, enforce_pm_color_, GetSkFilter(background_.get()),
-      GetSkFilter(foreground_.get()), crop_rect);
+      GetSkFilter(foreground_.get()), &sk_crop_rect);
 }
 
 ArithmeticPaintFilter::~ArithmeticPaintFilter() = default;
@@ -564,7 +650,7 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
     SkScalar gain,
     SkScalar bias,
     const SkIPoint& kernel_offset,
-    TileMode tile_mode,
+    SkTileMode tile_mode,
     bool convolve_alpha,
     sk_sp<PaintFilter> input,
     const CropRect* crop_rect)
@@ -582,9 +668,11 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
   for (size_t i = 0; i < len; ++i)
     kernel_->push_back(kernel[i]);
 
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkMatrixConvolutionImageFilter::Make(
-      kernel_size_, kernel, gain_, bias_, kernel_offset_, tile_mode_,
-      convolve_alpha_, GetSkFilter(input_.get()), crop_rect);
+      kernel_size_, kernel, gain_, bias_, kernel_offset_,
+      ToLegacyConvolutionTileMode(tile_mode_), convolve_alpha_,
+      GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 MatrixConvolutionPaintFilter::~MatrixConvolutionPaintFilter() = default;
@@ -619,8 +707,8 @@ bool MatrixConvolutionPaintFilter::operator==(
 }
 
 DisplacementMapEffectPaintFilter::DisplacementMapEffectPaintFilter(
-    ChannelSelectorType channel_x,
-    ChannelSelectorType channel_y,
+    SkColorChannel channel_x,
+    SkColorChannel channel_y,
     SkScalar scale,
     sk_sp<PaintFilter> displacement,
     sk_sp<PaintFilter> color,
@@ -634,17 +722,19 @@ DisplacementMapEffectPaintFilter::DisplacementMapEffectPaintFilter(
       scale_(scale),
       displacement_(std::move(displacement)),
       color_(std::move(color)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkDisplacementMapEffect::Make(
-      channel_x_, channel_y_, scale_, GetSkFilter(displacement_.get()),
-      GetSkFilter(color_.get()), crop_rect);
+      ToLegacyChannel(channel_x_), ToLegacyChannel(channel_y_), scale_,
+      GetSkFilter(displacement_.get()), GetSkFilter(color_.get()),
+      &sk_crop_rect);
 }
 
 DisplacementMapEffectPaintFilter::~DisplacementMapEffectPaintFilter() = default;
 
 size_t DisplacementMapEffectPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = BaseSerializedSize() +
-                                            sizeof(uint32_t) +
-                                            sizeof(uint32_t) + sizeof(scale_);
+                                            sizeof(channel_x_) +
+                                            sizeof(channel_y_) + sizeof(scale_);
   total_size += GetFilterSize(displacement_.get());
   total_size += GetFilterSize(color_.get());
   return total_size.ValueOrDefault(0u);
@@ -770,8 +860,10 @@ MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
     sk_filters.push_back(GetSkFilter(inputs_->back().get()));
   }
 
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkMergeImageFilter::Make(
-      static_cast<sk_sp<SkImageFilter>*>(sk_filters.data()), count, crop_rect);
+      static_cast<sk_sp<SkImageFilter>*>(sk_filters.data()), count,
+      &sk_crop_rect);
 }
 
 MergePaintFilter::~MergePaintFilter() = default;
@@ -811,14 +903,15 @@ MorphologyPaintFilter::MorphologyPaintFilter(MorphType morph_type,
       radius_x_(radius_x),
       radius_y_(radius_y),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   switch (morph_type_) {
     case MorphType::kDilate:
       cached_sk_filter_ = SkDilateImageFilter::Make(
-          radius_x_, radius_y_, GetSkFilter(input_.get()), crop_rect);
+          radius_x_, radius_y_, GetSkFilter(input_.get()), &sk_crop_rect);
       break;
     case MorphType::kErode:
       cached_sk_filter_ = SkErodeImageFilter::Make(
-          radius_x_, radius_y_, GetSkFilter(input_.get()), crop_rect);
+          radius_x_, radius_y_, GetSkFilter(input_.get()), &sk_crop_rect);
       break;
   }
 }
@@ -855,8 +948,9 @@ OffsetPaintFilter::OffsetPaintFilter(SkScalar dx,
       dx_(dx),
       dy_(dy),
       input_(std::move(input)) {
-  cached_sk_filter_ =
-      SkOffsetImageFilter::Make(dx_, dy_, GetSkFilter(input_.get()), crop_rect);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
+  cached_sk_filter_ = SkOffsetImageFilter::Make(
+      dx_, dy_, GetSkFilter(input_.get()), &sk_crop_rect);
 }
 
 OffsetPaintFilter::~OffsetPaintFilter() = default;
@@ -942,7 +1036,8 @@ TurbulencePaintFilter::TurbulencePaintFilter(TurbulenceType turbulence_type,
 
   SkPaint paint;
   paint.setShader(std::move(shader));
-  cached_sk_filter_ = SkPaintImageFilter::Make(paint, crop_rect);
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
+  cached_sk_filter_ = SkPaintImageFilter::Make(paint, &sk_crop_rect);
 }
 
 TurbulencePaintFilter::~TurbulencePaintFilter() = default;
@@ -984,9 +1079,11 @@ PaintFlagsPaintFilter::PaintFlagsPaintFilter(PaintFlags flags,
   if (image_provider) {
     raster_flags_.emplace(&flags_, image_provider, SkMatrix::I(), 0, 255u);
   }
+
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   cached_sk_filter_ = SkPaintImageFilter::Make(
       raster_flags_ ? raster_flags_->flags()->ToSkPaint() : flags_.ToSkPaint(),
-      crop_rect);
+      &sk_crop_rect);
 }
 
 PaintFlagsPaintFilter::~PaintFlagsPaintFilter() = default;
@@ -1057,16 +1154,17 @@ LightingDistantPaintFilter::LightingDistantPaintFilter(
       kconstant_(kconstant),
       shininess_(shininess),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   switch (lighting_type_) {
     case LightingType::kDiffuse:
       cached_sk_filter_ = SkLightingImageFilter::MakeDistantLitDiffuse(
           direction_, light_color_, surface_scale_, kconstant_,
-          GetSkFilter(input_.get()), crop_rect);
+          GetSkFilter(input_.get()), &sk_crop_rect);
       break;
     case LightingType::kSpecular:
       cached_sk_filter_ = SkLightingImageFilter::MakeDistantLitSpecular(
           direction_, light_color_, surface_scale_, kconstant_, shininess_,
-          GetSkFilter(input_.get()), crop_rect);
+          GetSkFilter(input_.get()), &sk_crop_rect);
       break;
   }
 }
@@ -1116,16 +1214,17 @@ LightingPointPaintFilter::LightingPointPaintFilter(LightingType lighting_type,
       kconstant_(kconstant),
       shininess_(shininess),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   switch (lighting_type_) {
     case LightingType::kDiffuse:
       cached_sk_filter_ = SkLightingImageFilter::MakePointLitDiffuse(
           location_, light_color_, surface_scale_, kconstant_,
-          GetSkFilter(input_.get()), crop_rect);
+          GetSkFilter(input_.get()), &sk_crop_rect);
       break;
     case LightingType::kSpecular:
       cached_sk_filter_ = SkLightingImageFilter::MakePointLitSpecular(
           location_, light_color_, surface_scale_, kconstant_, shininess_,
-          GetSkFilter(input_.get()), crop_rect);
+          GetSkFilter(input_.get()), &sk_crop_rect);
       break;
   }
 }
@@ -1181,17 +1280,18 @@ LightingSpotPaintFilter::LightingSpotPaintFilter(LightingType lighting_type,
       kconstant_(kconstant),
       shininess_(shininess),
       input_(std::move(input)) {
+  auto sk_crop_rect = ToLegacyCropRect(crop_rect);
   switch (lighting_type_) {
     case LightingType::kDiffuse:
       cached_sk_filter_ = SkLightingImageFilter::MakeSpotLitDiffuse(
           location_, target_, specular_exponent_, cutoff_angle_, light_color_,
-          surface_scale_, kconstant_, GetSkFilter(input_.get()), crop_rect);
+          surface_scale_, kconstant_, GetSkFilter(input_.get()), &sk_crop_rect);
       break;
     case LightingType::kSpecular:
       cached_sk_filter_ = SkLightingImageFilter::MakeSpotLitSpecular(
           location_, target_, specular_exponent_, cutoff_angle_, light_color_,
           surface_scale_, kconstant_, shininess_, GetSkFilter(input_.get()),
-          crop_rect);
+          &sk_crop_rect);
       break;
   }
 }

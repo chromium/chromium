@@ -5,17 +5,15 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
-#include "skia/public/mojom/blur_image_filter_tile_mode.mojom.h"
-#include "skia/public/mojom/blur_image_filter_tile_mode_mojom_traits.h"
 #include "skia/public/mojom/image_info.mojom.h"
+#include "skia/public/mojom/tile_mode.mojom.h"
+#include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkString.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
-#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/skia_util.h"
 
@@ -105,18 +103,22 @@ TEST(StructTraitsTest, ImageInfoCustomColorSpace) {
   EXPECT_EQ(input, output);
 }
 
-TEST(StructTraitsTest, BlurImageFilterTileMode) {
-  SkBlurImageFilter::TileMode input(SkBlurImageFilter::kClamp_TileMode);
-  SkBlurImageFilter::TileMode output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+TEST(StructTraitsTest, TileMode) {
+  SkTileMode input(SkTileMode::kClamp);
+  SkTileMode output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
       input, output));
   EXPECT_EQ(input, output);
-  input = SkBlurImageFilter::kRepeat_TileMode;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+  input = SkTileMode::kRepeat;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
       input, output));
   EXPECT_EQ(input, output);
-  input = SkBlurImageFilter::kClampToBlack_TileMode;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BlurTileMode>(
+  input = SkTileMode::kMirror;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
+      input, output));
+  EXPECT_EQ(input, output);
+  input = SkTileMode::kDecal;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
       input, output));
   EXPECT_EQ(input, output);
 }

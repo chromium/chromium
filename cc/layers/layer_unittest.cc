@@ -1719,7 +1719,7 @@ TEST_F(LayerTest, UpdatingClipRect) {
   // Setting a filter that moves pixels.
   FilterOperations move_pixel_filters;
   move_pixel_filters.Append(
-      FilterOperation::CreateBlurFilter(2, SkBlurImageFilter::kClamp_TileMode));
+      FilterOperation::CreateBlurFilter(2, SkTileMode::kClamp));
   ASSERT_TRUE(move_pixel_filters.HasFilterThatMovesPixels());
   clipped_3->SetFilters(move_pixel_filters);
 

@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkMorphologyImageFilter.h"
 
 namespace blink {
 
@@ -87,13 +86,14 @@ sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float radius_x = GetFilter()->ApplyHorizontalScale(radius_x_);
   float radius_y = GetFilter()->ApplyVerticalScale(radius_y_);
-  PaintFilter::CropRect rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   MorphologyPaintFilter::MorphType morph_type =
       type_ == FEMORPHOLOGY_OPERATOR_DILATE
           ? MorphologyPaintFilter::MorphType::kDilate
           : MorphologyPaintFilter::MorphType::kErode;
   return sk_make_sp<MorphologyPaintFilter>(morph_type, radius_x, radius_y,
-                                           std::move(input), &rect);
+                                           std::move(input),
+                                           base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

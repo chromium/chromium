@@ -198,9 +198,8 @@ class VizSerializationPerfTest : public testing::Test {
     arbitrary_filters1.Append(
         cc::FilterOperation::CreateGrayscaleFilter(arbitrary_float1));
     arbitrary_filters1.Append(cc::FilterOperation::CreateReferenceFilter(
-        sk_make_sp<cc::BlurPaintFilter>(
-            arbitrary_sigma, arbitrary_sigma,
-            cc::BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr)));
+        sk_make_sp<cc::BlurPaintFilter>(arbitrary_sigma, arbitrary_sigma,
+                                        SkTileMode::kDecal, nullptr)));
 
     cc::FilterOperations arbitrary_filters2;
     arbitrary_filters2.Append(

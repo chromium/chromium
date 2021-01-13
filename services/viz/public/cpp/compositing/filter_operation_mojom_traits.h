@@ -12,7 +12,7 @@
 #include "cc/paint/paint_filter.h"
 #include "services/viz/public/cpp/compositing/paint_filter_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/filter_operation.mojom-shared.h"
-#include "skia/public/mojom/blur_image_filter_tile_mode_mojom_traits.h"
+#include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -157,12 +157,10 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
     return operation.zoom_inset();
   }
 
-  static skia::mojom::BlurTileMode blur_tile_mode(
-      const cc::FilterOperation& operation) {
+  static SkTileMode blur_tile_mode(const cc::FilterOperation& operation) {
     if (operation.type() != cc::FilterOperation::BLUR)
-      return skia::mojom::BlurTileMode::CLAMP_TO_BLACK;
-    return EnumTraits<skia::mojom::BlurTileMode, SkBlurImageFilter::TileMode>::
-        ToMojom(operation.blur_tile_mode());
+      return SkTileMode::kDecal;
+    return operation.blur_tile_mode();
   }
 
   static bool Read(viz::mojom::FilterOperationDataView data,
@@ -182,7 +180,7 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
         return true;
       case cc::FilterOperation::BLUR:
         out->set_amount(data.amount());
-        SkBlurImageFilter::TileMode tile_mode;
+        SkTileMode tile_mode;
         if (!data.ReadBlurTileMode(&tile_mode))
           return false;
         out->set_blur_tile_mode(tile_mode);

@@ -4,10 +4,10 @@
 
 module skia.mojom;
 
-// Mirror of SkBlurImageFilter::TileMode.
-enum BlurTileMode {
+// Mirror of SkTileMode.
+enum TileMode {
   CLAMP,
   REPEAT,
-  CLAMP_TO_BLACK,
-  BLUR_TILE_MODE_LAST = CLAMP_TO_BLACK
+  MIRROR,
+  DECAL
 };
