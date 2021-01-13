@@ -412,7 +412,7 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
     return false;
   }
 
-  LOG_IF(ERROR, result == VK_SUBOPTIMAL_KHR) << "Swapchian is suboptimal.";
+  LOG_IF(ERROR, result == VK_SUBOPTIMAL_KHR) << "Swapchain is suboptimal.";
   acquired_image_.reset();
 
   return true;
