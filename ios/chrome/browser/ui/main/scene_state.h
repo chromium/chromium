@@ -120,6 +120,14 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // Array of all agents added to this scene state.
 - (NSArray*)connectedAgents;
 
+// Retrieves per-session preference for |key|. May return nil if the key is
+// not found.
+- (NSObject*)sessionObjectForKey:(NSString*)key;
+
+// Stores |object| as a per-session preference if supported by the device or
+// into NSUserDefaults otherwise (old table, phone, ...).
+- (void)setSessionObject:(NSObject*)object forKey:(NSString*)key;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_H_

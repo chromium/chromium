@@ -15,13 +15,6 @@
 class ChromeBrowserState;
 @class SceneState;
 
-namespace {
-
-// Preference key used to store which profile is current.
-NSString* kIncognitoCurrentKey = @"IncognitoActive";
-
-}  // namespace
-
 // Wrangler (a class in need of further refactoring) for handling the creation
 // and ownership of Browser instances and their associated
 // BrowserViewControllers.
@@ -64,9 +57,6 @@ NSString* kIncognitoCurrentKey = @"IncognitoActive";
 // Tells the receiver to clean up prior to deallocation. It is an error for an
 // instance of this class to deallocate without a call to this method first.
 - (void)shutdown;
-
-// Switch all global states for the given mode (normal or incognito).
-- (void)switchGlobalStateToMode:(ApplicationMode)mode;
 
 @end
 

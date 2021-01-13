@@ -29,8 +29,6 @@ class TimeTicks;
 // Keeps track of the restore state during startup.
 @property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
 
-- (BOOL)canLaunchInIncognito;
-
 // Only for iOS 12 compat.
 - (NSDictionary*)launchOptions;
 

@@ -52,11 +52,6 @@
   // Stub.
 }
 
-- (BOOL)canLaunchInIncognito {
-  // Stub.
-  return NO;
-}
-
 - (NSDictionary*)launchOptions {
   // Stub.
   return @{};
