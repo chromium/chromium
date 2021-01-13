@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserApi, ZoomBehavior} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/browser_api.js';
-import {ZoomManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/zoom_manager.js';
+import {BrowserApi, ZoomBehavior, ZoomManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 
 chrome.test.runTests(function() {

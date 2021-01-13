@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
-import {PDFMetrics, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/metrics.js';
+import {FittingType, PDFMetrics, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 chrome.test.runTests(function() {
   'use strict';

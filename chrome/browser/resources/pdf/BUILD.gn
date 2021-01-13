@@ -37,6 +37,7 @@ preprocess_if_expr("preprocess") {
     "pdf_scripting_api.js",
     "pdf_viewer_base.js",
     "pdf_viewer_utils.js",
+    "pdf_viewer_wrapper.js",
     "toolbar_manager.js",
     "viewport.js",
     "viewport_scroller.js",
@@ -297,6 +298,10 @@ js_library("pdf_viewer") {
   externs_list = [ "$externs_path/resources_private.js" ]
 }
 
+js_library("pdf_viewer_wrapper") {
+  deps = [ ":pdf_viewer" ]
+}
+
 js_library("pdf_viewer_utils") {
   deps = [
     ":controller",
@@ -352,6 +357,7 @@ js_type_check("closure_compile_local") {
     ":pdf_viewer_base",
     ":pdf_viewer_pp",
     ":pdf_viewer_utils",
+    ":pdf_viewer_wrapper",
     ":toolbar_manager",
     ":viewport",
     ":viewport_scroller",

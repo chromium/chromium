@@ -54,7 +54,10 @@ generate_grd("build_grd") {
   ]
   resource_path_rewrites = [
     "pdf/index_pp.html|pdf/index.html",
-    "pdf/pdf_viewer_pp.js|pdf/pdf_viewer.js",
+
+    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
+    # and Print Preview viewer can use the same main.js source.
+    "pdf/pdf_viewer_pp.js|pdf/pdf_viewer_wrapper.js",
   ]
   if (optimize_webui) {
     deps += [ ":build" ]
