@@ -683,6 +683,8 @@ base::Value ProfilePickerHandler::GetProfilesList() {
 }
 
 void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
+  if (profile_path == ProfileManager::GetGuestProfilePath())
+    return;
   size_t number_of_profiles = profiles_order_.size();
   profiles_order_[profile_path] = number_of_profiles;
   PushProfilesList();
@@ -692,6 +694,8 @@ void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
     const base::string16& profile_name) {
   DCHECK(IsJavascriptAllowed());
+  if (profile_path == ProfileManager::GetGuestProfilePath())
+    return;
   size_t index = profiles_order_[profile_path];
   profiles_order_.erase(profile_path);
   for (auto it : profiles_order_) {
