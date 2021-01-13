@@ -955,7 +955,6 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
      * @param animate Whether or not {@code layout} should animate as it shows.
      */
     protected void startShowing(Layout layout, boolean animate) {
-        assert mTabModelSelector != null : "init() must be called first.";
         assert layout != null : "Can't show a null layout.";
 
         // Set the new layout
