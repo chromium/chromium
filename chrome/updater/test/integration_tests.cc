@@ -312,7 +312,14 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Clean();
 }
 
-TEST_F(IntegrationTest, UnregisterUnownedApp) {
+// TODO(https://crbug.com/1166196): Fix flaky timeouts. The timeout is in
+// RunWake(0).
+#if defined(OS_MAC)
+#define MAYBE_UnregisterUnownedApp DISABLED_UnregisterUnownedApp
+#else
+#define MAYBE_UnregisterUnownedApp UnregisterUnownedApp
+#endif
+TEST_F(IntegrationTest, MAYBE_UnregisterUnownedApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectActiveVersion(UPDATER_VERSION_STRING);
