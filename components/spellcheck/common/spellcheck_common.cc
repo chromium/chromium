@@ -62,6 +62,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"hy", "hy"},
     {"id", "id-ID"},
     {"it", "it-IT"},
+    {"it-IT", "it-IT"},
     {"ko", "ko"},
     {"lt", "lt-LT"},
     {"lv", "lv-LV"},
