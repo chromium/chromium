@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Caret browsing with fragment anchor navigation</title>
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<meta name="assert" content="
+  This test checks that, when caret browsing is enabled, navigating to a fragment moves
+  the caret to the beginning of the fragment. Or, if the fragment is inert, to the next
+  non-inert position (which may be out of view, since it's the fragment what's scrolled
+  into view, not the caret).
+" />
+<style>
+.separator {
+  margin: 50vh 0;
+}
+</style>
+<div class="separator">Content 1</div>
+<div class="test" id="normal">Normal</div>
+<div class="separator">Content 2</div>
+<div class="test" id="focusable" tabindex="-1" data-focusable>Focusable</div>
+<div class="separator">Content 3</div>
+<div class="test" id="inert" inert data-caret-target="after-inert">Inert</div>
+<div class="separator" id="after-inert">Content 4</div>
+<div inert>
+  <div class="separator">Content 5</div>
+  <div class="test" id="inside-inert" data-caret-target="after-inside-inert">Inside inert</div>
+  <div class="separator">Content 6</div>
+</div>
+<div class="separator" id="after-inside-inert">Content 7</div>
+<div id="log"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+function setHash(hash) {
+  return new Promise((resolve) => {
+    addEventListener("hashchange", resolve, {once: true});
+    location.hash = "#" + hash;
+  });
+}
+if (window.testRunner) {
+  testRunner.setCaretBrowsingEnabled();
+}
+const selection = getSelection();
+const scroller = document.scrollingElement;
+for (let target of document.querySelectorAll(".test")) {
+  promise_test(async (t) => {
+    await setHash(target.id);
+
+    // Check scroll offset
+    const actualScrollOffset = scroller.scrollTop;
+    target.scrollIntoView();
+    const expectedScrollOffset = scroller.scrollTop;
+    assert_equals(actualScrollOffset, expectedScrollOffset, "Scrolled into view");
+
+    // Check focused element
+    const focusTarget = target.hasAttribute("data-focusable")
+        ? target : document.body;
+    assert_equals(document.activeElement, focusTarget, "Focused right element");
+
+    // Check caret
+    const caretTarget = target.dataset.caretTarget
+        ? document.getElementById(target.dataset.caretTarget)
+        : target;
+    assert_equals(selection.anchorNode, caretTarget.firstChild, "Received caret");
+    assert_equals(selection.anchorOffset, 0, "Caret at position 0");
+    assert_equals(selection.isCollapsed, true, "Selection is collapsed");
+  }, target.id);
+}
+add_completion_callback(async () => {
+  // Scroll to log and remove hash from URL
+  await setHash("log");
+  history.pushState(null, "", " ");
+});
+</script>

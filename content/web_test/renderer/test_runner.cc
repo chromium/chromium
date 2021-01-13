@@ -279,6 +279,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                                v8::Local<v8::Function> callback);
   void SetBluetoothManualChooser(bool enable);
   void SetCanOpenWindows();
+  void SetCaretBrowsingEnabled();
   void SetColorProfile(const std::string& name,
                        v8::Local<v8::Function> callback);
   void SetCustomPolicyDelegate(gin::Arguments* args);
@@ -669,6 +670,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetBluetoothManualChooser)
       .SetMethod("setCallCloseOnWebViews", &TestRunnerBindings::NotImplemented)
       .SetMethod("setCanOpenWindows", &TestRunnerBindings::SetCanOpenWindows)
+      .SetMethod("setCaretBrowsingEnabled",
+                 &TestRunnerBindings::SetCaretBrowsingEnabled)
       .SetMethod("setColorProfile", &TestRunnerBindings::SetColorProfile)
       .SetMethod("setCustomPolicyDelegate",
                  &TestRunnerBindings::SetCustomPolicyDelegate)
@@ -1468,6 +1471,13 @@ void TestRunnerBindings::SetCanOpenWindows() {
   if (invalid_)
     return;
   runner_->SetCanOpenWindows();
+}
+
+void TestRunnerBindings::SetCaretBrowsingEnabled() {
+  if (invalid_)
+    return;
+  blink::WebView* web_view = GetWebFrame()->View();
+  web_view->GetSettings()->SetCaretBrowsingEnabled(true);
 }
 
 void TestRunnerBindings::SetImagesAllowed(bool allowed) {
@@ -2301,6 +2311,7 @@ void TestRunner::ResetWebView(WebViewTestProxy* web_view_test_proxy) {
 
   web_view->SetTabKeyCyclesThroughElements(true);
   web_view->GetSettings()->SetHighlightAds(false);
+  web_view->GetSettings()->SetCaretBrowsingEnabled(false);
   web_view->DisableAutoResizeForTesting(gfx::Size());
   web_view->SetScreenOrientationOverrideForTesting(
       fake_screen_orientation_impl_.CurrentOrientationType());

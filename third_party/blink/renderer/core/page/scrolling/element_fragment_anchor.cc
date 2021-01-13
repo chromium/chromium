@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -174,11 +175,27 @@ void ElementFragmentAnchor::ApplyFocusIfNeeded() {
   if (!anchor_node_)
     return;
 
+  frame_->GetDocument()->UpdateStyleAndLayoutTree();
+
+  // If caret browsing is enabled, move the caret to the beginning of the
+  // fragment, or to the first non-inert position after it.
+  if (frame_->IsCaretBrowsingEnabled()) {
+    const Position& pos = Position::FirstPositionInOrBeforeNode(*anchor_node_);
+    if (pos.IsConnected()) {
+      frame_->Selection().SetSelection(
+          SelectionInDOMTree::Builder().Collapse(pos).Build(),
+          SetSelectionOptions::Builder()
+              .SetShouldCloseTyping(true)
+              .SetShouldClearTypingStyle(true)
+              .SetDoNotSetFocus(true)
+              .Build());
+    }
+  }
+
   // If the anchor accepts keyboard focus and fragment scrolling is allowed,
   // move focus there to aid users relying on keyboard navigation.
   // If anchorNode is not focusable or fragment scrolling is not allowed,
   // clear focus, which matches the behavior of other browsers.
-  frame_->GetDocument()->UpdateStyleAndLayoutTree();
   auto* element = DynamicTo<Element>(anchor_node_.Get());
   if (element && element->IsFocusable()) {
     element->focus();
