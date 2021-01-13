@@ -185,6 +185,7 @@ static_library("renderer") {
     "//components/spellcheck:buildflags",
     "//components/subresource_filter/content/renderer",
     "//components/subresource_filter/core/common",
+    "//components/subresource_redirect/common",
     "//components/sync/driver",
     "//components/translate/content/renderer",
     "//components/translate/core/common",

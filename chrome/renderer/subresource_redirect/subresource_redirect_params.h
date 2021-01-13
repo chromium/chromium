@@ -16,19 +16,6 @@ namespace subresource_redirect {
 // default.
 url::Origin GetSubresourceRedirectOrigin();
 
-// Returns if the public image hints based subresource compression is enabled.
-bool IsPublicImageHintsBasedCompressionEnabled();
-
-// Returns if the login and robots checks based subresource compression is
-// enabled. This compresses non logged-in pages and subresources allowed by
-// robots.txt rules.
-bool IsLoginRobotsCheckedCompressionEnabled();
-
-// Should the subresource be redirected to its compressed version. This returns
-// false if only coverage metrics need to be recorded and actual redirection
-// should not happen.
-bool ShouldCompressionServerRedirectSubresource();
-
 // Returns the timeout for the compressed subresource redirect, after which the
 // subresource should be fetched directly from the origin.
 base::TimeDelta GetCompressionRedirectTimeout();

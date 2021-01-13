@@ -17,9 +17,6 @@ namespace {
 // Default timeout for the hints to be received from the time navigation starts.
 const int64_t kHintsReceiveDefaultTimeoutSeconds = 5;
 
-bool IsSubresourceRedirectEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect);
-}
 }  // namespace
 
 url::Origin GetSubresourceRedirectOrigin() {
@@ -28,34 +25,6 @@ url::Origin GetSubresourceRedirectOrigin() {
   if (lite_page_subresource_origin.empty())
     return url::Origin::Create(GURL("https://litepages.googlezip.net/"));
   return url::Origin::Create(GURL(lite_page_subresource_origin));
-}
-
-bool IsPublicImageHintsBasedCompressionEnabled() {
-  bool is_enabled = IsSubresourceRedirectEnabled() &&
-                    base::GetFieldTrialParamByFeatureAsBool(
-                        blink::features::kSubresourceRedirect,
-                        "enable_public_image_hints_based_compression", true);
-  // Only one of the public image hints or login and robots based image
-  // compression should be active.
-  DCHECK(!is_enabled || !IsLoginRobotsCheckedCompressionEnabled());
-  return is_enabled;
-}
-
-bool IsLoginRobotsCheckedCompressionEnabled() {
-  bool is_enabled = IsSubresourceRedirectEnabled() &&
-                    base::GetFieldTrialParamByFeatureAsBool(
-                        blink::features::kSubresourceRedirect,
-                        "enable_login_robots_based_compression", false);
-  // Only one of the public image hints or login and robots based image
-  // compression should be active.
-  DCHECK(!is_enabled || !IsPublicImageHintsBasedCompressionEnabled());
-  return is_enabled;
-}
-
-bool ShouldCompressionServerRedirectSubresource() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      blink::features::kSubresourceRedirect,
-      "enable_subresource_server_redirect", true);
 }
 
 base::TimeDelta GetCompressionRedirectTimeout() {

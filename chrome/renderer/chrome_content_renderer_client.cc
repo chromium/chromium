@@ -101,6 +101,7 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
@@ -604,10 +605,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
-  if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled()) {
+  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression()) {
     new subresource_redirect::PublicImageHintsDeciderAgent(
         associated_interfaces, render_frame);
-  } else if (subresource_redirect::IsLoginRobotsCheckedCompressionEnabled()) {
+  } else if (subresource_redirect::
+                 ShouldEnableLoginRobotsCheckedCompression()) {
     new subresource_redirect::LoginRobotsDeciderAgent(associated_interfaces,
                                                       render_frame);
   }

@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -34,7 +35,7 @@ PublicImageHintsDeciderAgent::PublicImageHintsDeciderAgent(
     blink::AssociatedInterfaceRegistry* associated_interfaces,
     content::RenderFrame* render_frame)
     : PublicResourceDeciderAgent(associated_interfaces, render_frame) {
-  DCHECK(IsPublicImageHintsBasedCompressionEnabled());
+  DCHECK(ShouldEnablePublicImageHintsBasedCompression());
 }
 
 PublicImageHintsDeciderAgent::~PublicImageHintsDeciderAgent() = default;
