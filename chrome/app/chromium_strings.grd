@@ -1229,8 +1229,8 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- ChromeBeta bubble -->
-      <message name="IDS_CHROMEBETA_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Beta bubble when relaunch is needed for changes to take effect.">
+      <!-- ChromeLabs bubble -->
+      <message name="IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Labs bubble when relaunch is needed for changes to take effect.">
         Your changes will take effect the next time you relaunch Chromium.
       </message>
     </messages>

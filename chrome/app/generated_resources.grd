@@ -11134,10 +11134,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Watch
     </message>
 
-    <!-- ChromeBeta bubble -->
-    <message name="IDS_CHROMEBETA_RELAUNCH_BUTTON_LABEL"
-             desc="Label on the button in the footer of the Chrome Beta bubble which will relaunch the browser.">
+    <!-- ChromeLabs bubble -->
+    <message name="IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL"
+             desc="Label on the button in the footer of the Chrome Labs bubble which will relaunch the browser.">
       Relaunch
+    </message>
+    <message name="IDS_WINDOW_TITLE_EXPERIMENTS"
+             desc="Window title for the Chrome Labs bubble">
+      Experiments
     </message>
   </messages>
 </release>

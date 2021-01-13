@@ -81,7 +81,7 @@ class ChromeLabsFooter : public views::View {
         views::Builder<views::Label>()
             .CopyAddressTo(&restart_label_)
             .SetText(l10n_util::GetStringUTF16(
-                IDS_CHROMEBETA_RELAUNCH_FOOTER_MESSAGE))
+                IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE))
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetProperty(views::kFlexBehaviorKey,
@@ -98,7 +98,7 @@ class ChromeLabsFooter : public views::View {
                      .CopyAddressTo(&restart_button_)
                      .SetCallback(base::BindRepeating(&chrome::AttemptRestart))
                      .SetText(l10n_util::GetStringUTF16(
-                         IDS_CHROMEBETA_RELAUNCH_BUTTON_LABEL))
+                         IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
                      .SetProminent(true)
                      .Build());
     SetBackground(views::CreateThemedSolidBackground(
@@ -152,7 +152,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
       model_(std::move(model)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
-  SetTitle(base::ASCIIToUTF16("Chrome Labs"));
+  SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
