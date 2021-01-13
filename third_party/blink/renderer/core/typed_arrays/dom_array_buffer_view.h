@@ -122,6 +122,10 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
+  void DetachForTesting() { dom_array_buffer_->Detach(); }
+
+  bool IsDetached() const { return dom_array_buffer_->IsDetached(); }
+
  protected:
   DOMArrayBufferView(DOMArrayBufferBase* dom_array_buffer, size_t byte_offset)
       : raw_byte_offset_(byte_offset), dom_array_buffer_(dom_array_buffer) {
@@ -129,8 +133,6 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     raw_base_address_ =
         static_cast<char*>(dom_array_buffer_->DataMaybeShared()) + byte_offset;
   }
-
-  bool IsDetached() const { return dom_array_buffer_->IsDetached(); }
 
  private:
   // The raw_* fields may be stale after Detach. Use getters instead.
