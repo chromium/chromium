@@ -25,10 +25,12 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -165,17 +167,18 @@ public class ClearBrowsingDataFragmentTest {
         verify(mBrowsingDataBridgeMock).getLastClearBrowsingDataTab(any());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewPager viewPager = (ViewPager) preferences.getView().findViewById(
+            ViewPager2 viewPager = (ViewPager2) preferences.getView().findViewById(
                     R.id.clear_browsing_data_viewpager);
-            PagerAdapter adapter = viewPager.getAdapter();
-            Assert.assertEquals(2, adapter.getCount());
+            RecyclerView.Adapter adapter = viewPager.getAdapter();
+            Assert.assertEquals(2, adapter.getItemCount());
             Assert.assertEquals(1, viewPager.getCurrentItem());
+            TabLayout tabLayout = preferences.getView().findViewById(R.id.clear_browsing_data_tabs);
             Assert.assertEquals(InstrumentationRegistry.getTargetContext().getString(
                                         R.string.clear_browsing_data_basic_tab_title),
-                    adapter.getPageTitle(0));
+                    tabLayout.getTabAt(0).getText());
             Assert.assertEquals(InstrumentationRegistry.getTargetContext().getString(
                                         R.string.prefs_section_advanced),
-                    adapter.getPageTitle(1));
+                    tabLayout.getTabAt(1).getText());
             viewPager.setCurrentItem(0);
         });
         // Verify the tab preference is saved.
