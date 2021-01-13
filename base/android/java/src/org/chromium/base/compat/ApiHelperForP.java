@@ -5,18 +5,12 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
-import android.app.RemoteAction;
 import android.content.pm.PackageInfo;
 import android.location.LocationManager;
 import android.net.LinkProperties;
 import android.os.Build;
-import android.view.textclassifier.TextClassification;
-
-import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.VerifiesOnP;
-
-import java.util.List;
 
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
@@ -46,10 +40,5 @@ public final class ApiHelperForP {
     /** See {@link LocationManager#isLocationEnabled() }. */
     public static boolean isLocationEnabled(LocationManager locationManager) {
         return locationManager.isLocationEnabled();
-    }
-
-    /** See {@link TextClassification#getActions() } */
-    public static @NonNull List<RemoteAction> getActions(TextClassification classification) {
-        return classification.getActions();
     }
 }

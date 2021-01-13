@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
 import android.os.Build;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +53,7 @@ public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvide
 
             MenuItem item = menu.findItem(android.R.id.textAssist);
             if (primaryAction.shouldShowIcon()) {
-                setItemIconFromRemoteAction(context, primaryAction, item);
+                item.setIcon(primaryAction.getIcon().loadDrawable(context));
             } else {
                 item.setIcon(null);
             }
@@ -73,7 +72,7 @@ public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvide
                     MENU_ITEM_ORDER_SECONDARY_ASSIST_ACTIONS_START + i, action.getTitle());
             item.setContentDescription(action.getContentDescription());
             if (action.shouldShowIcon()) {
-                setItemIconFromRemoteAction(context, action, item);
+                item.setIcon(action.getIcon().loadDrawable(context));
             }
             // Set this flag to SHOW_AS_ACTION_IF_ROOM to match text processing menu items. So
             // Android could put them to the same level and then consider their actual order.
@@ -105,10 +104,5 @@ public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvide
                 Log.e(TAG, "Error creating OnClickListener from PendingIntent", e);
             }
         };
-    }
-
-    private static void setItemIconFromRemoteAction(
-            Context context, RemoteAction action, MenuItem item) {
-        action.getIcon().loadDrawableAsync(context, item::setIcon, new Handler());
     }
 }
