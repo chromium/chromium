@@ -53,15 +53,11 @@ class ClipboardHistoryItemView : public views::View {
   // Returns whether the highlight background should show.
   bool ShouldHighlight() const;
 
+  // Called when the mouse click on descendants (such as the main button or
+  // the delete button) gets canceled.
+  void OnMouseClickOnDescendantCanceled();
+
   ClipboardHistoryUtil::Action action() const { return action_; }
-
-  ClipboardHistoryDeleteButton* delete_button_for_test() {
-    return contents_view_->delete_button();
-  }
-
-  const ClipboardHistoryDeleteButton* delete_button_for_test() const {
-    return contents_view_->delete_button();
-  }
 
  protected:
   // Used by subclasses to draw contents, such as text or bitmaps.
@@ -105,8 +101,8 @@ class ClipboardHistoryItemView : public views::View {
   ClipboardHistoryItemView(const ClipboardHistoryItem* clipboard_history_item,
                            views::MenuItemView* container);
 
-  // Records histograms after the button is pressed.
-  void RecordButtonPressedHistogram() const;
+  // Maybe record histograms after the button is pressed.
+  void MaybeRecordButtonPressedHistogram() const;
 
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;

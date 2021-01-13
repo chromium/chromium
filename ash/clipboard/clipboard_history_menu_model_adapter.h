@@ -74,6 +74,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Selects the menu item specified by `command_id`.
   void SelectMenuItemWithCommandId(int command_id);
 
+  // Selects the menu item hovered by mouse.
+  void SelectMenuItemHoveredByMouse();
+
   // Removes the menu item specified by `command_id`.
   void RemoveMenuItemWithCommandId(int command_id);
 

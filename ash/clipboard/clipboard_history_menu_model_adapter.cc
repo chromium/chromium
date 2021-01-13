@@ -147,6 +147,25 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
       selected_menu_item);
 }
 
+void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
+  // Find the menu item hovered by mouse.
+  auto iter =
+      std::find_if(item_views_by_command_id_.cbegin(),
+                   item_views_by_command_id_.cend(), [](const auto& iterator) {
+                     const views::View* item_view = iterator.second;
+                     return item_view->IsMouseHovered();
+                   });
+
+  if (iter == item_views_by_command_id_.cend()) {
+    // If no item is hovered by mouse, cancel the selection on the child menu
+    // item by selecting the root menu item.
+    views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
+        root_view_);
+  } else {
+    SelectMenuItemWithCommandId(iter->first);
+  }
+}
+
 void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
     int command_id) {
   // Calculate `new_selected_command_id` before removing the item specified by

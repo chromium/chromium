@@ -44,7 +44,18 @@ enum class Action {
   kDelete,
 
   // Selects the activated item.
-  kSelect
+  kSelect,
+
+  // Selects the item hovered by mouse if any.
+  kSelectItemHoveredByMouse
+};
+
+// IDs for the views used by the clipboard history menu.
+enum ClipboardHistoryMenuViewID {
+  // We start at 1 because 0 is not a valid view ID.
+  kDeleteButtonViewID = 1,
+
+  kMainButtonViewID
 };
 
 // Used in histograms, each value corresponds with an underlying format

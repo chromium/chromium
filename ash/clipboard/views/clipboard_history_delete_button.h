@@ -29,12 +29,16 @@ class ClipboardHistoryDeleteButton : public views::ImageButton {
   const char* GetClassName() const override;
   void AddLayerBeneathView(ui::Layer* layer) override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
+  void OnClickCanceled(const ui::Event& event) override;
   void OnThemeChanged() override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.
   views::InkDropContainerView* ink_drop_container_ = nullptr;
+
+  // The listener of button events.
+  ClipboardHistoryItemView* const listener_;
 };
 }  // namespace ash
 

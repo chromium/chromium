@@ -21,7 +21,9 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
           [](ClipboardHistoryItemView* item_view, const ui::Event& event) {
             item_view->HandleDeleteButtonPressEvent(event);
           },
-          base::Unretained(listener))) {
+          base::Unretained(listener))),
+      listener_(listener) {
+  SetID(ClipboardHistoryUtil::kDeleteButtonViewID);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_DELETE_BUTTON));
@@ -62,6 +64,13 @@ std::unique_ptr<views::InkDrop> ClipboardHistoryDeleteButton::CreateInkDrop() {
   ink_drop->SetShowHighlightOnHover(false);
   ink_drop->SetShowHighlightOnFocus(true);
   return ink_drop;
+}
+
+void ClipboardHistoryDeleteButton::OnClickCanceled(const ui::Event& event) {
+  DCHECK(event.IsMouseEvent());
+
+  listener_->OnMouseClickOnDescendantCanceled();
+  views::Button::OnClickCanceled(event);
 }
 
 void ClipboardHistoryDeleteButton::OnThemeChanged() {
