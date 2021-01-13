@@ -32,6 +32,33 @@ std::string GetAppId(Profile* profile, const std::string& id) {
 
 }  // namespace
 
+// static
+bool AppServiceAppIconLoader::CanLoadImage(Profile* profile,
+                                           const std::string& id) {
+  const std::string app_id = GetAppId(profile, id);
+
+  // Skip the ARC intent helper, the system Android app that proxies links to
+  // Chrome, which should be hidden.
+  if (app_id == kArcIntentHelperAppId) {
+    return false;
+  }
+
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  // Support icon loading for apps registered in AppService or Crostini apps
+  // with the prefix "crostini:".
+  if (apps::AppServiceProxyFactory::GetForProfile(profile)
+              ->AppRegistryCache()
+              .GetAppType(app_id) != apps::mojom::AppType::kUnknown ||
+      crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
+    return true;
+  }
+
+  return false;
+}
+
 AppServiceAppIconLoader::AppServiceAppIconLoader(
     Profile* profile,
     int resource_size_in_dip,
@@ -45,26 +72,7 @@ AppServiceAppIconLoader::AppServiceAppIconLoader(
 AppServiceAppIconLoader::~AppServiceAppIconLoader() = default;
 
 bool AppServiceAppIconLoader::CanLoadImageForApp(const std::string& id) {
-  const std::string app_id = GetAppId(profile(), id);
-
-  // Skip the ARC intent helper, the system Android app that proxies links to
-  // Chrome, which should be hidden.
-  if (app_id == kArcIntentHelperAppId) {
-    return false;
-  }
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-
-  // Support icon loading for apps registered in AppService or Crostini apps
-  // with the prefix "crostini:".
-  if (proxy->AppRegistryCache().GetAppType(app_id) !=
-          apps::mojom::AppType::kUnknown ||
-      crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
-    return true;
-  }
-
-  return false;
+  return AppServiceAppIconLoader::CanLoadImage(profile(), id);
 }
 
 void AppServiceAppIconLoader::FetchImage(const std::string& id) {

@@ -22,6 +22,8 @@ class Profile;
 class AppServiceAppIconLoader : public AppIconLoader,
                                 private apps::AppRegistryCache::Observer {
  public:
+  static bool CanLoadImage(Profile* profile, const std::string& id);
+
   AppServiceAppIconLoader(Profile* profile,
                           int resource_size_in_dip,
                           AppIconLoaderDelegate* delegate);

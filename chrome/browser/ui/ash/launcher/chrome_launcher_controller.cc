@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
@@ -928,6 +929,10 @@ void ChromeLauncherController::OnAppUninstalledPrepared(
 
 void ChromeLauncherController::OnAppImageUpdated(const std::string& app_id,
                                                  const gfx::ImageSkia& image) {
+  bool is_standard_icon = true;
+  if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id))
+    is_standard_icon = false;
+
   // TODO: need to get this working for shortcuts.
   for (int index = 0; index < model_->item_count(); ++index) {
     ash::ShelfItem item = model_->items()[index];
@@ -936,7 +941,8 @@ void ChromeLauncherController::OnAppImageUpdated(const std::string& app_id,
         item.id.app_id != app_id) {
       continue;
     }
-    item.image = image;
+    item.image =
+        is_standard_icon ? image : app_list::CreateStandardIconImage(image);
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     model_->Set(index, item);
     // It's possible we're waiting on more than one item, so don't break.
