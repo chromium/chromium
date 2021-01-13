@@ -188,7 +188,7 @@ mode, where `N` is the number of raw profiles. With `N = 4`, the total size of
 the raw profiles are limited to a few gigabytes.
 
 ```
-$ export LLVM_PROFILE_FILE=”out/report/crypto_unittests.%4m.profraw”
+$ export LLVM_PROFILE_FILE="out/report/crypto_unittests.%4m.profraw"
 $ ./out/coverage/crypto_unittests
 $ ls out/report/
 crypto_unittests.3657994905831792357_0.profraw
