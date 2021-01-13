@@ -407,6 +407,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ContextMenu.ShowMenu"
+    enum="ClipboardHistoryTriggerType" expires_after="2021-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    It records how many times users trigger the clipboard history menu through
+    different ways respecitvely. Recorded when the clipboard history menu shows.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString"
     enum="ClipboardHistoryPlaceholderStringType" expires_after="2021-09-01">
   <owner>newcomer@chromium.org</owner>

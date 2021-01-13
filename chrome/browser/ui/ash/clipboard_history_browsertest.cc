@@ -275,9 +275,14 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   SetClipboardText("B");
   SetClipboardText("C");
 
+  base::HistogramTester histogram_tester;
+
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+      ash::ClipboardHistoryController::ShowSource::kAccelerator, 1);
 
   // The history menu's first item should be selected as default after the menu
   // shows. Meanwhile, its delete button should not show.

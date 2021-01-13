@@ -65,8 +65,9 @@ void ViewsTextServicesContextMenuImpl::ExecuteCommand(int command_id,
     else
       source_type = ui::MENU_SOURCE_KEYBOARD;
 
-    clipboard_history_controller->ShowMenu(client()->GetCaretBounds(),
-                                           source_type);
+    clipboard_history_controller->ShowMenu(
+        client()->GetCaretBounds(), source_type,
+        ClipboardHistoryController::ShowSource::kTextfieldContextMenu);
     return;
   }
 

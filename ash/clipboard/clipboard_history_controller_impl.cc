@@ -21,6 +21,7 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -219,16 +220,17 @@ void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
     ExecuteSelectedMenuItem(ui::EF_COMMAND_DOWN);
     return;
   }
-  ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD);
+  ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD,
+           ShowSource::kAccelerator);
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
   return context_menu_->GetMenuBoundsInScreenForTest();
 }
 
-void ClipboardHistoryControllerImpl::ShowMenu(
-    const gfx::Rect& anchor_rect,
-    ui::MenuSourceType source_type) {
+void ClipboardHistoryControllerImpl::ShowMenu(const gfx::Rect& anchor_rect,
+                                              ui::MenuSourceType source_type,
+                                              ShowSource show_source) {
   if (IsMenuShowing() || !CanShowMenu())
     return;
 
@@ -247,6 +249,9 @@ void ClipboardHistoryControllerImpl::ShowMenu(
 
   DCHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();
+
+  base::UmaHistogramEnumeration("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                show_source);
 
   // The first menu item should be selected as default after the clipboard
   // history menu shows. Note that the menu item is selected asynchronously

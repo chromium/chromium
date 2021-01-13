@@ -2501,7 +2501,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         source_type = ui::MENU_SOURCE_KEYBOARD;
 
       ash::ClipboardHistoryController::Get()->ShowMenu(
-          gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type);
+          gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
+          ash::ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
 #else
       NOTREACHED();
 #endif

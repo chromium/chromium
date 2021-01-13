@@ -11255,6 +11255,13 @@ histogram as enum -->
   <int value="3" label="Web Smart Paste"/>
 </enum>
 
+<enum name="ClipboardHistoryTriggerType">
+  <int value="0" label="Accelerator"/>
+  <int value="1" label="Render View Context Menu"/>
+  <int value="2" label="Textfield Context Menu"/>
+  <int value="3" label="Virtual Keyboard"/>
+</enum>
+
 <enum name="ClockdriftLevel">
   <int value="0" label="None"/>
   <int value="1" label="Probable"/>
