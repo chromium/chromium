@@ -298,7 +298,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
   CHECK(frame);
 
   // Frame returned with kSuccess should not be an end-of-stream frame.
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
 
   // If color space is not set, use the color space in the |config_|.
   if (!frame->ColorSpace().IsValid()) {

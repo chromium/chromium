@@ -918,7 +918,7 @@ TEST_P(MediaCodecVideoDecoderTest, VideoFramesArePowerEfficient) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(!!most_recent_frame_);
-  EXPECT_TRUE(most_recent_frame_->metadata()->power_efficient);
+  EXPECT_TRUE(most_recent_frame_->metadata().power_efficient);
 }
 
 TEST_P(MediaCodecVideoDecoderH264Test, CsdIsIncludedInCodecConfig) {

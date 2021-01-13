@@ -368,7 +368,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       color_space = config_.color_space_info();
 
     frame->set_color_space(color_space.ToGfxColorSpace());
-    frame->metadata()->power_efficient = false;
+    frame->metadata().power_efficient = false;
     frame->set_hdr_metadata(config_.hdr_metadata());
 
     // When we use bind mode, our image data is dependent on the Dav1dPicture,

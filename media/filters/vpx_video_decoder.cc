@@ -182,7 +182,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // We might get a successful VpxDecode but not a frame if only a partial
   // decode happened.
   if (video_frame) {
-    video_frame->metadata()->power_efficient = false;
+    video_frame->metadata().power_efficient = false;
     output_cb_.Run(video_frame);
   }
 

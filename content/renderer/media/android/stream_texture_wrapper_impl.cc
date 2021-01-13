@@ -86,7 +86,7 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   new_frame->set_ycbcr_info(ycbcr_info);
 
   if (enable_texture_copy_) {
-    new_frame->metadata()->copy_mode =
+    new_frame->metadata().copy_mode =
         media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
   }
 

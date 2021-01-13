@@ -432,9 +432,9 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
   }
 
   // Flag that the video frame is capable of being put in an overlay.
-  frame->metadata()->allow_overlay = true;
+  frame->metadata().allow_overlay = true;
   // Flag that the video frame was decoded in a power efficient way.
-  frame->metadata()->power_efficient = true;
+  frame->metadata().power_efficient = true;
 
   // MojoVideoDecoderService expects the |output_cb_| to be called on the client
   // task runner, even though media::VideoDecoder states frames should be output

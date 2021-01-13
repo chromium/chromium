@@ -65,7 +65,7 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
             media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),
             current_config_.visible_rect(), current_config_.natural_size(),
             buffer.timestamp());
-    frame->metadata()->power_efficient = true;
+    frame->metadata().power_efficient = true;
     return frame;
   }
 

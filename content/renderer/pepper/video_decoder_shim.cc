@@ -281,7 +281,7 @@ void VideoDecoderShim::DecoderImpl::OnOutputComplete(
   DCHECK(awaiting_decoder_);
 
   std::unique_ptr<PendingFrame> pending_frame;
-  if (!frame->metadata()->end_of_stream)
+  if (!frame->metadata().end_of_stream)
     pending_frame.reset(new PendingFrame(decode_id_, std::move(frame)));
   else
     pending_frame.reset(new PendingFrame(decode_id_));

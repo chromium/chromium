@@ -243,12 +243,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     frame->set_color_space(picture.color_space());
 
-    frame->metadata()->allow_overlay = picture.allow_overlay();
-    frame->metadata()->read_lock_fences_enabled =
+    frame->metadata().allow_overlay = picture.allow_overlay();
+    frame->metadata().read_lock_fences_enabled =
         picture.read_lock_fences_enabled();
 
     // TODO(sandersd): Provide an API for VDAs to control this.
-    frame->metadata()->power_efficient = true;
+    frame->metadata().power_efficient = true;
 
     return frame;
   }

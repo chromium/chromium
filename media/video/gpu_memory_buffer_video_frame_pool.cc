@@ -1032,7 +1032,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
 #else
   switch (output_format_) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
-      allow_overlay = video_frame->metadata()->allow_overlay;
+      allow_overlay = video_frame->metadata().allow_overlay;
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
@@ -1062,9 +1062,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
       break;
   }
 #endif  // OS_WIN
-  frame->metadata()->MergeMetadataFrom(video_frame->metadata());
-  frame->metadata()->allow_overlay = allow_overlay;
-  frame->metadata()->read_lock_fences_enabled = true;
+  frame->metadata().MergeMetadataFrom(video_frame->metadata());
+  frame->metadata().allow_overlay = allow_overlay;
+  frame->metadata().read_lock_fences_enabled = true;
 
   CompleteCopyRequestAndMaybeStartNextCopy(std::move(frame));
 }

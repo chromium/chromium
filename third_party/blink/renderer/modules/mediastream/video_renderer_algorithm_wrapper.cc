@@ -31,7 +31,7 @@ void VideoRendererAlgorithmWrapper::EnqueueFrame(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK(frame);
   if (renderer_algorithm_ == RendererAlgorithm::Default &&
-      frame->metadata()->maximum_composition_delay_in_frames) {
+      frame->metadata().maximum_composition_delay_in_frames) {
     default_rendering_frame_buffer_.release();
     low_latency_rendering_frame_buffer_ =
         std::make_unique<LowLatencyVideoRendererAlgorithm>(media_log_);

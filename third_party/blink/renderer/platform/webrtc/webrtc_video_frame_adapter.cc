@@ -211,7 +211,7 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
     LOG(ERROR) << "Failed to create I420 frame from pool.";
     return nullptr;
   }
-  dst_frame->metadata()->MergeMetadataFrom(source_frame->metadata());
+  dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
   const auto& i420_planes = dst_frame->layout().planes();
   webrtc::NV12ToI420Scaler scaler;
   scaler.NV12ToI420Scale(
@@ -240,7 +240,7 @@ scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
       media::PIXEL_FORMAT_NV12, source_frame->natural_size(),
       gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
       source_frame->timestamp());
-  dst_frame->metadata()->MergeMetadataFrom(source_frame->metadata());
+  dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
   const auto& nv12_planes = dst_frame->layout().planes();
   libyuv::NV12Scale(mapped_frame->visible_data(media::VideoFrame::kYPlane),
                     mapped_frame->stride(media::VideoFrame::kYPlane),

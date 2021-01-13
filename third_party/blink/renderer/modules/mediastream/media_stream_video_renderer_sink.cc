@@ -87,8 +87,8 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
     if (!video_frame)
       return;
 
-    video_frame->metadata()->end_of_stream = true;
-    video_frame->metadata()->reference_time = base::TimeTicks::Now();
+    video_frame->metadata().end_of_stream = true;
+    video_frame->metadata().reference_time = base::TimeTicks::Now();
     OnVideoFrame(video_frame, base::TimeTicks());
   }
 

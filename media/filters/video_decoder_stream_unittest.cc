@@ -358,9 +358,8 @@ class VideoDecoderStreamTest
     DCHECK(pending_read_);
     frame_read_ = frame;
     last_read_status_ = status;
-    if (frame && !frame->metadata()->end_of_stream) {
-      EXPECT_EQ(*frame->metadata()->frame_duration,
-                demuxer_stream_->duration());
+    if (frame && !frame->metadata().end_of_stream) {
+      EXPECT_EQ(*frame->metadata().frame_duration, demuxer_stream_->duration());
 
       num_decoded_frames_++;
     }
@@ -390,7 +389,7 @@ class VideoDecoderStreamTest
   void ReadAllFrames(int expected_decoded_frames) {
     do {
       ReadOneFrame();
-    } while (frame_read_.get() && !frame_read_->metadata()->end_of_stream);
+    } while (frame_read_.get() && !frame_read_->metadata().end_of_stream);
 
     DCHECK_EQ(expected_decoded_frames, num_decoded_frames_);
   }
@@ -691,17 +690,17 @@ TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {
 
   EXPECT_TRUE(frame_read_);
 
-  auto* metadata = frame_read_->metadata();
+  const VideoFrameMetadata& metadata = frame_read_->metadata();
 
   // Verify the decoding metadata is accurate.
-  EXPECT_EQ(*metadata->decode_end_time - *metadata->decode_begin_time,
+  EXPECT_EQ(*metadata.decode_end_time - *metadata.decode_begin_time,
             kDecodeDelay);
 
   // Verify the processing metadata is accurate.
   const base::TimeDelta expected_processing_time =
       GetParam().has_prepare ? (kDecodeDelay + kPrepareDelay) : kDecodeDelay;
 
-  EXPECT_EQ(*metadata->processing_time, expected_processing_time);
+  EXPECT_EQ(*metadata.processing_time, expected_processing_time);
 }
 
 TEST_P(VideoDecoderStreamTest, Read_BlockedDemuxer) {
@@ -818,7 +817,7 @@ TEST_P(VideoDecoderStreamTest, Read_DuringEndOfStreamDecode) {
 
   // The read output should indicate end of stream.
   ASSERT_TRUE(frame_read_.get());
-  EXPECT_TRUE(frame_read_->metadata()->end_of_stream);
+  EXPECT_TRUE(frame_read_->metadata().end_of_stream);
 }
 
 TEST_P(VideoDecoderStreamTest, Read_DemuxerStreamReadError) {
@@ -1066,14 +1065,14 @@ TEST_P(VideoDecoderStreamTest,
   // A frame should have been emitted.
   EXPECT_FALSE(pending_read_);
   EXPECT_EQ(last_read_status_, VideoDecoderStream::OK);
-  EXPECT_FALSE(frame_read_->metadata()->end_of_stream);
+  EXPECT_FALSE(frame_read_->metadata().end_of_stream);
   EXPECT_GT(decoder_->total_bytes_decoded(), 0);
 
   ReadOneFrame();
 
   EXPECT_FALSE(pending_read_);
   EXPECT_EQ(0, video_decoder_stream_->get_fallback_buffers_size_for_testing());
-  EXPECT_TRUE(frame_read_->metadata()->end_of_stream);
+  EXPECT_TRUE(frame_read_->metadata().end_of_stream);
 }
 
 TEST_P(VideoDecoderStreamTest,

@@ -39,7 +39,7 @@ class VideoPlaybackRoughnessReporterTest : public ::testing::Test {
                                       int frame_size = 100) {
     scoped_refptr<VideoFrame> result = media::VideoFrame::CreateColorFrame(
         gfx::Size(frame_size, frame_size), 0x80, 0x80, 0x80, base::TimeDelta());
-    result->metadata()->wallclock_frame_duration = duration;
+    result->metadata().wallclock_frame_duration = duration;
     return result;
   }
 

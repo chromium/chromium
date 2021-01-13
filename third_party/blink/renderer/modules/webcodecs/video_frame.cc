@@ -362,9 +362,9 @@ base::Optional<uint64_t> VideoFrame::timestamp() const {
 base::Optional<uint64_t> VideoFrame::duration() const {
   auto local_frame = handle_->frame();
   // TODO(sandersd): Can a duration be kNoTimestamp?
-  if (!local_frame || !local_frame->metadata()->frame_duration.has_value())
+  if (!local_frame || !local_frame->metadata().frame_duration.has_value())
     return base::nullopt;
-  return local_frame->metadata()->frame_duration->InMicroseconds();
+  return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
 void VideoFrame::destroy() {

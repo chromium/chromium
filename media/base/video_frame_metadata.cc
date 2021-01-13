@@ -21,11 +21,11 @@ VideoFrameMetadata::VideoFrameMetadata(const VideoFrameMetadata& other) =
     default;
 
 #define MERGE_FIELD(a, source) \
-  if (source->a)               \
-    this->a = source->a
+  if (source.a)                \
+  this->a = source.a
 
 void VideoFrameMetadata::MergeMetadataFrom(
-    const VideoFrameMetadata* metadata_source) {
+    const VideoFrameMetadata& metadata_source) {
   MERGE_FIELD(allow_overlay, metadata_source);
   MERGE_FIELD(capture_begin_time, metadata_source);
   MERGE_FIELD(capture_end_time, metadata_source);

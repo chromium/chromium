@@ -301,7 +301,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     std::move(output_cb).Run(nullptr);
     return;
   }
-  frame->metadata()->copy_mode = copy_mode;
+  frame->metadata().copy_mode = copy_mode;
   const bool is_surface_control =
       overlay_mode == OverlayMode::kSurfaceControlSecure ||
       overlay_mode == OverlayMode::kSurfaceControlInsecure;
@@ -319,9 +319,9 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     allow_overlay = !is_texture_owner_backed || wants_promotion_hints;
   }
 
-  frame->metadata()->allow_overlay = allow_overlay;
-  frame->metadata()->wants_promotion_hint = wants_promotion_hints;
-  frame->metadata()->texture_owner = is_texture_owner_backed;
+  frame->metadata().allow_overlay = allow_overlay;
+  frame->metadata().wants_promotion_hint = wants_promotion_hints;
+  frame->metadata().texture_owner = is_texture_owner_backed;
 
   // TODO(liberato): if this is run via being dropped, then it would be nice
   // to find that out rather than treating the image as unused.  If the renderer

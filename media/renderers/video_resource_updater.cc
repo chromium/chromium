@@ -495,9 +495,9 @@ VideoResourceUpdater::~VideoResourceUpdater() {
 
 void VideoResourceUpdater::ObtainFrameResources(
     scoped_refptr<VideoFrame> video_frame) {
-  if (video_frame->metadata()->overlay_plane_id.has_value()) {
+  if (video_frame->metadata().overlay_plane_id.has_value()) {
     // This is a hole punching VideoFrame, there is nothing to display.
-    overlay_plane_id_ = *video_frame->metadata()->overlay_plane_id;
+    overlay_plane_id_ = *video_frame->metadata().overlay_plane_id;
     frame_resource_type_ = VideoFrameResourceType::VIDEO_HOLE;
     return;
   }
@@ -618,8 +618,8 @@ void VideoResourceUpdater::AppendQuads(
           frame_resource_multiplier_, frame_bits_per_channel_);
       if (frame->hdr_metadata().has_value())
         yuv_video_quad->hdr_metadata = frame->hdr_metadata().value();
-      if (frame->metadata()->protected_video) {
-        if (frame->metadata()->hw_protected) {
+      if (frame->metadata().protected_video) {
+        if (frame->metadata().hw_protected) {
           yuv_video_quad->protected_video_type =
               gfx::ProtectedVideoType::kHardwareProtected;
         } else {
@@ -647,8 +647,8 @@ void VideoResourceUpdater::AppendQuads(
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
           gfx::ProtectedVideoType::kClear;
-      if (frame->metadata()->protected_video) {
-        if (frame->metadata()->hw_protected)
+      if (frame->metadata().protected_video) {
+        if (frame->metadata().hw_protected)
           protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
         else
           protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
@@ -848,7 +848,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   VideoFrameExternalResources external_resources;
   gfx::ColorSpace resource_color_space = video_frame->ColorSpace();
 
-  const auto& copy_mode = video_frame->metadata()->copy_mode;
+  const auto& copy_mode = video_frame->metadata().copy_mode;
   GLuint target = video_frame->mailbox_holder(0).texture_target;
   // If texture copy is required, then we will copy into a GL_TEXTURE_2D target.
   if (copy_mode == VideoFrameMetadata::CopyMode::kCopyToNewTexture)
@@ -902,18 +902,18 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       const gfx::Size plane_size(width, height);
       auto transfer_resource = viz::TransferableResource::MakeGL(
           mailbox, GL_LINEAR, mailbox_holder.texture_target, sync_token,
-          plane_size, video_frame->metadata()->allow_overlay);
+          plane_size, video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
       transfer_resource.read_lock_fences_enabled =
-          video_frame->metadata()->read_lock_fences_enabled;
+          video_frame->metadata().read_lock_fences_enabled;
       transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
 #if defined(OS_ANDROID)
       transfer_resource.is_backed_by_surface_texture =
-          video_frame->metadata()->texture_owner;
+          video_frame->metadata().texture_owner;
       transfer_resource.wants_promotion_hint =
-          video_frame->metadata()->wants_promotion_hint;
+          video_frame->metadata().wants_promotion_hint;
 #endif
       external_resources.resources.push_back(std::move(transfer_resource));
       if (copy_mode == VideoFrameMetadata::CopyMode::kCopyMailboxesOnly) {

@@ -107,7 +107,7 @@ void LowLatencyVideoRendererAlgorithm::Reset() {
 void LowLatencyVideoRendererAlgorithm::EnqueueFrame(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK(frame);
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
   frame_queue_.push_back(std::move(frame));
   ++stats_.total_frames;
 }
@@ -138,7 +138,7 @@ size_t LowLatencyVideoRendererAlgorithm::DetermineModeAndNumberOfFramesToRender(
       int max_remaining_queue_length =
           frame_queue_.back()
               ->metadata()
-              ->maximum_composition_delay_in_frames.value_or(
+              .maximum_composition_delay_in_frames.value_or(
                   kDefaultMaxCompositionDelayInFrames);
 
       // The number of frames in the queue is in the range

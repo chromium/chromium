@@ -703,7 +703,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
       gfx::Rect(size), size, std::move(gmb), empty_mailboxes,
       base::NullCallback(), src_frame->timestamp());
   gpu_frame->set_color_space(src_frame->ColorSpace());
-  gpu_frame->metadata()->MergeMetadataFrom(src_frame->metadata());
+  gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
 
   // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
   // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped

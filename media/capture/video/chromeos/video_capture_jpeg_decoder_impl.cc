@@ -131,8 +131,8 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame->BackWithOwnedSharedMemory(std::move(out_region),
                                        std::move(out_mapping));
 
-  out_frame->metadata()->frame_rate = frame_format.frame_rate;
-  out_frame->metadata()->reference_time = reference_time;
+  out_frame->metadata().frame_rate = frame_format.frame_rate;
+  out_frame->metadata().reference_time = reference_time;
 
   media::mojom::VideoFrameInfoPtr out_frame_info =
       media::mojom::VideoFrameInfo::New();
@@ -140,7 +140,7 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame_info->pixel_format = media::PIXEL_FORMAT_I420;
   out_frame_info->coded_size = dimensions;
   out_frame_info->visible_rect = gfx::Rect(dimensions);
-  out_frame_info->metadata = *(out_frame->metadata());
+  out_frame_info->metadata = out_frame->metadata();
   out_frame_info->color_space = out_frame->ColorSpace();
 
   {

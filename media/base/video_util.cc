@@ -426,7 +426,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   }
 
   mapped_frame->set_color_space(video_frame->ColorSpace());
-  mapped_frame->metadata()->MergeMetadataFrom(video_frame->metadata());
+  mapped_frame->metadata().MergeMetadataFrom(video_frame->metadata());
 
   // Pass |video_frame| so that it outlives |mapped_frame| and the mapped buffer
   // is unmapped on destruction.

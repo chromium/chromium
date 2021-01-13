@@ -45,7 +45,7 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame,
                     base::TimeTicks capture_time) {
     *capture_time_ = capture_time;
-    *metadata_ = *frame->metadata();
+    *metadata_ = frame->metadata();
     *natural_size_ = frame->natural_size();
     std::move(got_frame_cb_).Run();
   }
@@ -118,7 +118,7 @@ TEST_F(PushableMediaStreamVideoSourceTest, FramesPropagateToSink) {
   fake_sink.ConnectToTrack(track);
   const scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(100, 50));
-  frame->metadata()->frame_rate = 30.0;
+  frame->metadata().frame_rate = 30.0;
 
   pushable_video_source_->PushFrame(frame, reference_capture_time);
   run_loop.Run();

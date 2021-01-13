@@ -234,8 +234,8 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
     return PostDecodeAction::DELIVER;
 
   // Add a timestamp here to enable buffering delay measurements down the line.
-  buffer->metadata()->decode_begin_time = it->second.decode_begin_time;
-  buffer->metadata()->decode_end_time = base::TimeTicks::Now();
+  buffer->metadata().decode_begin_time = it->second.decode_begin_time;
+  buffer->metadata().decode_end_time = base::TimeTicks::Now();
 
   auto action = it->second.should_drop ? PostDecodeAction::DROP
                                        : PostDecodeAction::DELIVER;
@@ -243,7 +243,7 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
   // Provide duration information to help the rendering algorithm on the very
   // first and very last frames.
   if (it->second.duration != kNoTimestamp)
-    buffer->metadata()->frame_duration = it->second.duration;
+    buffer->metadata().frame_duration = it->second.duration;
 
   // We erase from the beginning onward to our target frame since frames should
   // be returned in presentation order. It's possible to accumulate entries in
@@ -255,12 +255,12 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnOutputReady(
     OutputType* buffer) {
-  if (!buffer->metadata()->decode_begin_time.has_value())
+  if (!buffer->metadata().decode_begin_time.has_value())
     return;
 
   // Tag buffer with elapsed time since creation.
-  buffer->metadata()->processing_time =
-      base::TimeTicks::Now() - *buffer->metadata()->decode_begin_time;
+  buffer->metadata().processing_time =
+      base::TimeTicks::Now() - *buffer->metadata().decode_begin_time;
 }
 
 }  // namespace media

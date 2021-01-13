@@ -322,12 +322,12 @@ int64_t VideoRendererAlgorithm::GetMemoryUsage() const {
 
 void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
 
   // Note: Not all frames have duration. E.g., this class is used with WebRTC
   // which does not provide duration information for its frames.
   base::TimeDelta metadata_frame_duration =
-      frame->metadata()->frame_duration.value_or(base::TimeDelta());
+      frame->metadata().frame_duration.value_or(base::TimeDelta());
   auto timestamp = frame->timestamp();
   ReadyFrame ready_frame(std::move(frame));
   auto it = frame_queue_.empty()
@@ -394,7 +394,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
     wallclock_duration = ready_frame.end_time - ready_frame.start_time;
   }
 
-  ready_frame.frame->metadata()->wallclock_frame_duration = wallclock_duration;
+  ready_frame.frame->metadata().wallclock_frame_duration = wallclock_duration;
 
   // The vast majority of cases should always append to the back, but in rare
   // circumstance we get out of order timestamps, http://crbug.com/386551.
@@ -476,7 +476,7 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
   {
     const auto& last_frame = frame_queue_.back().frame;
     base::TimeDelta metadata_frame_duration =
-        last_frame->metadata()->frame_duration.value_or(base::TimeDelta());
+        last_frame->metadata().frame_duration.value_or(base::TimeDelta());
     if (metadata_frame_duration > base::TimeDelta()) {
       have_metadata_duration = true;
       media_timestamps.push_back(last_frame->timestamp() +

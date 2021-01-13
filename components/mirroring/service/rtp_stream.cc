@@ -52,12 +52,12 @@ VideoRtpStream::~VideoRtpStream() {}
 void VideoRtpStream::InsertVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK(client_);
-  if (!video_frame->metadata()->reference_time.has_value()) {
+  if (!video_frame->metadata().reference_time.has_value()) {
     client_->OnError("Missing REFERENCE_TIME.");
     return;
   }
 
-  base::TimeTicks reference_time = *video_frame->metadata()->reference_time;
+  base::TimeTicks reference_time = *video_frame->metadata().reference_time;
   DCHECK(!reference_time.is_null());
   if (expecting_a_refresh_frame_) {
     // There is uncertainty as to whether the video frame was in response to a

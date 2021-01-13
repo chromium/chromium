@@ -267,7 +267,7 @@ void PlatformVideoFramePool::OnFrameReleased(
 
   if (IsSameFormat_Locked(origin_frame->format(), origin_frame->coded_size(),
                           origin_frame->visible_rect(),
-                          origin_frame->metadata()->hw_protected)) {
+                          origin_frame->metadata().hw_protected)) {
     InsertFreeFrame_Locked(std::move(origin_frame));
   }
 

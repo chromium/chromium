@@ -278,7 +278,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
 
   // Rotation may be explicitly set sometimes.
   if (incoming_frame.rotation() != webrtc::kVideoRotation_0) {
-    video_frame->metadata()->rotation =
+    video_frame->metadata().rotation =
         WebRtcToMediaVideoRotation(incoming_frame.rotation());
   }
 
@@ -303,25 +303,24 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   // Run render smoothness algorithm only when we don't have to render
   // immediately.
   if (!render_immediately)
-    video_frame->metadata()->reference_time = render_time;
+    video_frame->metadata().reference_time = render_time;
 
   if (incoming_frame.max_composition_delay_in_frames()) {
-    video_frame->metadata()->maximum_composition_delay_in_frames =
+    video_frame->metadata().maximum_composition_delay_in_frames =
         *incoming_frame.max_composition_delay_in_frames();
   }
 
-  video_frame->metadata()->decode_end_time = current_time;
+  video_frame->metadata().decode_end_time = current_time;
 
   // RTP_TIMESTAMP, PROCESSING_TIME, and CAPTURE_BEGIN_TIME are all exposed
   // through the JavaScript callback mechanism
   // video.requestVideoFrameCallback().
-  video_frame->metadata()->rtp_timestamp =
+  video_frame->metadata().rtp_timestamp =
       static_cast<double>(incoming_frame.timestamp());
 
   if (incoming_frame.processing_time()) {
-    video_frame->metadata()->processing_time =
-        base::TimeDelta::FromMicroseconds(
-            incoming_frame.processing_time()->Elapsed().us());
+    video_frame->metadata().processing_time = base::TimeDelta::FromMicroseconds(
+        incoming_frame.processing_time()->Elapsed().us());
   }
 
   // Set capture time to the NTP time, which is the estimated capture time
@@ -332,7 +331,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
         base::TimeDelta::FromMilliseconds(incoming_frame.ntp_time_ms() +
                                           ntp_offset_) +
         time_diff_;
-    video_frame->metadata()->capture_begin_time = capture_time;
+    video_frame->metadata().capture_begin_time = capture_time;
   }
 
   // Set receive time to arrival of last packet.
@@ -348,7 +347,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
     const base::TimeTicks receive_time =
         base::TimeTicks() +
         base::TimeDelta::FromMilliseconds(last_packet_arrival_ms) + time_diff_;
-    video_frame->metadata()->receive_time = receive_time;
+    video_frame->metadata().receive_time = receive_time;
   }
 
   // Use our computed render time as estimated capture time. If timestamp_us()

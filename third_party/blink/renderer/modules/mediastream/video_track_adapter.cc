@@ -309,7 +309,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
                    &source_format_settings_.prev_frame_timestamp);
   MaybeUpdateTracksFormat(*frame);
 
-  double frame_rate = frame->metadata()->frame_rate.value_or(
+  double frame_rate = frame->metadata().frame_rate.value_or(
       MediaStreamVideoSource::kUnknownFrameRate);
 
   auto frame_drop_reason = media::VideoCaptureFrameDropReason::kNone;

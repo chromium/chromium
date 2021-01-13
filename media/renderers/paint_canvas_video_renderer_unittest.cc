@@ -1396,7 +1396,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
-  frame->metadata()->read_lock_fences_enabled = true;
+  frame->metadata().read_lock_fences_enabled = true;
 
   CopyVideoFrameTexturesAndCheckPixels(frame, &CheckRGBAFramePixels);
 

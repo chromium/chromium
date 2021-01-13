@@ -221,18 +221,18 @@ void ThreadSafeCaptureOracle::DidCaptureFrame(
   if (!should_deliver_frame || !client_)
     return;
 
-  frame->metadata()->frame_rate = params_.requested_format.frame_rate;
-  frame->metadata()->capture_begin_time = capture->begin_time;
-  frame->metadata()->capture_end_time = base::TimeTicks::Now();
-  frame->metadata()->frame_duration = capture->frame_duration;
-  frame->metadata()->reference_time = reference_time;
+  frame->metadata().frame_rate = params_.requested_format.frame_rate;
+  frame->metadata().capture_begin_time = capture->begin_time;
+  frame->metadata().capture_end_time = base::TimeTicks::Now();
+  frame->metadata().frame_duration = capture->frame_duration;
+  frame->metadata().reference_time = reference_time;
 
   media::VideoCaptureFormat format(frame->coded_size(),
                                    params_.requested_format.frame_rate,
                                    frame->format());
   client_->OnIncomingCapturedBufferExt(
       std::move(capture->buffer), format, frame->ColorSpace(), reference_time,
-      frame->timestamp(), frame->visible_rect(), *frame->metadata());
+      frame->timestamp(), frame->visible_rect(), frame->metadata());
 }
 
 void ThreadSafeCaptureOracle::OnConsumerReportingUtilization(

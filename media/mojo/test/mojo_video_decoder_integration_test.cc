@@ -144,7 +144,7 @@ class MockVideoDecoder : public VideoDecoder {
             PIXEL_FORMAT_ARGB, mailbox_holders, GetReleaseMailboxCB(),
             config_.coded_size(), config_.visible_rect(),
             config_.natural_size(), buffer->timestamp());
-        frame->metadata()->power_efficient = true;
+        frame->metadata().power_efficient = true;
         output_cb_.Run(frame);
       }
     }

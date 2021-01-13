@@ -701,7 +701,7 @@ VideoEncoder::ReadbackTextureBackedFrameToMemory(
       result_format, txt_frame->coded_size(), txt_frame->visible_rect(),
       txt_frame->natural_size(), txt_frame->timestamp());
   result->set_color_space(txt_frame->ColorSpace());
-  result->metadata()->MergeMetadataFrom(txt_frame->metadata());
+  result->metadata().MergeMetadataFrom(txt_frame->metadata());
 
   size_t planes = media::VideoFrame::NumPlanes(result->format());
   for (size_t plane = 0; plane < planes; plane++) {

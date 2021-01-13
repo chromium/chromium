@@ -94,7 +94,7 @@ void FrameRendererDummy::RenderFrame(scoped_refptr<VideoFrame> video_frame) {
   // immediately released for reuse. Only frames dropped due to slow decoding
   // will be counted as dropped frames.
   base::AutoLock auto_lock(renderer_lock_);
-  if (!video_frame->metadata()->end_of_stream) {
+  if (!video_frame->metadata().end_of_stream) {
     if (frames_to_drop_rendering_slow_ > 0) {
       frames_to_drop_rendering_slow_--;
       return;
@@ -174,7 +174,7 @@ void FrameRendererDummy::RenderFrameTask() {
     frames_to_drop_decoding_slow_++;
   }
 
-  if (!active_frame_->metadata()->end_of_stream) {
+  if (!active_frame_->metadata().end_of_stream) {
     ScheduleNextRenderFrameTask();
   } else {
     next_frame_time_ = base::TimeTicks();

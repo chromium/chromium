@@ -345,7 +345,7 @@ base::TimeDelta VpxEncoder::EstimateFrameDuration(const VideoFrame& frame) {
   base::TimeDelta predicted_frame_duration =
       frame.timestamp() - last_frame_timestamp_;
   base::TimeDelta frame_duration =
-      frame.metadata()->frame_duration.value_or(predicted_frame_duration);
+      frame.metadata().frame_duration.value_or(predicted_frame_duration);
   last_frame_timestamp_ = frame.timestamp();
   // Make sure |frame_duration| is in a safe range of values.
   const base::TimeDelta kMaxFrameDuration =

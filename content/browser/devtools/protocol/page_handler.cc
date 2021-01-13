@@ -163,11 +163,11 @@ void GetMetadataFromFrame(const media::VideoFrame& frame,
                           gfx::Vector2dF* root_scroll_offset,
                           double* top_controls_visible_height) {
   // Get metadata from |frame|. This will CHECK if metadata is missing.
-  *device_scale_factor = *frame.metadata()->device_scale_factor;
-  *page_scale_factor = *frame.metadata()->page_scale_factor;
-  root_scroll_offset->set_x(*frame.metadata()->root_scroll_offset_x);
-  root_scroll_offset->set_y(*frame.metadata()->root_scroll_offset_y);
-  *top_controls_visible_height = *frame.metadata()->top_controls_visible_height;
+  *device_scale_factor = *frame.metadata().device_scale_factor;
+  *page_scale_factor = *frame.metadata().page_scale_factor;
+  root_scroll_offset->set_x(*frame.metadata().root_scroll_offset_x);
+  root_scroll_offset->set_y(*frame.metadata().root_scroll_offset_y);
+  *top_controls_visible_height = *frame.metadata().top_controls_visible_height;
 }
 
 template <typename ProtocolCallback>

@@ -314,7 +314,7 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
   WaitAndReplaceSyncTokenClient client(ri);
   video_frame->UpdateReleaseSyncToken(&client);
 
-  if (video_frame->metadata()->read_lock_fences_enabled) {
+  if (video_frame->metadata().read_lock_fences_enabled) {
     // |video_frame| must be kept alive during read operations.
     DCHECK(context_support);
     unsigned query_id = 0;
@@ -1039,7 +1039,7 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   ret->set_color_space(video_frame->ColorSpace());
   // Copy all metadata.
   // (May be enough to copy color space)
-  ret->metadata()->MergeMetadataFrom(video_frame->metadata());
+  ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
   for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane; ++plane) {
     int width = ret->row_bytes(plane);
@@ -1311,7 +1311,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
   if (video_frame->NumTextures() > 1 ||
-      video_frame->metadata()->read_lock_fences_enabled) {
+      video_frame->metadata().read_lock_fences_enabled) {
     if (!raster_context_provider)
       return false;
     GrDirectContext* gr_context = raster_context_provider->GrContext();

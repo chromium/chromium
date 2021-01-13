@@ -436,19 +436,19 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
 
-  EXPECT_FLOAT_EQ(output_frame->metadata()->processing_time->InSecondsF(),
+  EXPECT_FLOAT_EQ(output_frame->metadata().processing_time->InSecondsF(),
                   kProcessingTime);
 
   EXPECT_NEAR(
-      (*output_frame->metadata()->capture_begin_time - kExpectedCaptureTime)
+      (*output_frame->metadata().capture_begin_time - kExpectedCaptureTime)
           .InMillisecondsF(),
       0.0f, kChromiumWebRtcMaxTimeDiffMs);
 
-  EXPECT_NEAR((*output_frame->metadata()->receive_time - kExpectedReceiveTime)
+  EXPECT_NEAR((*output_frame->metadata().receive_time - kExpectedReceiveTime)
                   .InMillisecondsF(),
               0.0f, kChromiumWebRtcMaxTimeDiffMs);
 
-  EXPECT_EQ(static_cast<uint32_t>(*output_frame->metadata()->rtp_timestamp),
+  EXPECT_EQ(static_cast<uint32_t>(*output_frame->metadata().rtp_timestamp),
             kRtpTimestamp);
 
   track->RemoveSink(&sink);
@@ -478,7 +478,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, MAYBE_ReferenceTimeEqualsTimestampUs) {
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
 
-  EXPECT_NEAR((*output_frame->metadata()->reference_time -
+  EXPECT_NEAR((*output_frame->metadata().reference_time -
                (base::TimeTicks() +
                 base::TimeDelta::FromMicroseconds(kTimestampUs) + time_diff()))
                   .InMillisecondsF(),
@@ -508,7 +508,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
 
-  EXPECT_FALSE(output_frame->metadata()->reference_time.has_value());
+  EXPECT_FALSE(output_frame->metadata().reference_time.has_value());
 
   track->RemoveSink(&sink);
 }

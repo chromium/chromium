@@ -261,7 +261,7 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
     ASSERT_TRUE(!!video_frame);
 
   const double kFrameRate = 60.0f;
-  video_frame->metadata()->frame_rate = kFrameRate;
+  video_frame->metadata().frame_rate = kFrameRate;
 
   InSequence s;
   const base::TimeTicks timeticks_now = base::TimeTicks::Now();

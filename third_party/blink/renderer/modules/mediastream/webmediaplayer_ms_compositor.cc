@@ -129,7 +129,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
   }
 
   // Transfer metadata keys.
-  new_frame->metadata()->MergeMetadataFrom(frame->metadata());
+  new_frame->metadata().MergeMetadataFrom(frame->metadata());
   return new_frame;
 }
 
@@ -346,7 +346,7 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   }
 
   // This is a signal frame saying that the stream is stopped.
-  if (frame->metadata()->end_of_stream) {
+  if (frame->metadata().end_of_stream) {
     rendering_frame_buffer_.reset();
     RenderWithoutAlgorithm(std::move(frame), is_copy);
     return;
@@ -360,8 +360,8 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // note that this is an experimental feature that is only active if certain
   // experimental parameters are specified in WebRTC. See crbug.com/1138888 for
   // more information.
-  if (!frame->metadata()->reference_time.has_value() &&
-      !frame->metadata()->maximum_composition_delay_in_frames) {
+  if (!frame->metadata().reference_time.has_value() &&
+      !frame->metadata().maximum_composition_delay_in_frames) {
     DLOG(WARNING)
         << "Incoming VideoFrames have no reference_time, switching off super "
            "sophisticated rendering algorithm";
@@ -369,8 +369,8 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     RenderWithoutAlgorithm(std::move(frame), is_copy);
     return;
   }
-  base::TimeTicks render_time = frame->metadata()->reference_time
-                                    ? *frame->metadata()->reference_time
+  base::TimeTicks render_time = frame->metadata().reference_time
+                                    ? *frame->metadata().reference_time
                                     : base::TimeTicks();
 
   // The code below handles the case where UpdateCurrentFrame() callbacks stop.
@@ -419,9 +419,8 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
 #endif  // DCHECK_IS_ON()
     if (tracing_or_dcheck_enabled) {
       base::TimeTicks render_time =
-          current_frame_->metadata()->reference_time.value_or(
-              base::TimeTicks());
-      DCHECK(current_frame_->metadata()->reference_time.has_value() ||
+          current_frame_->metadata().reference_time.value_or(base::TimeTicks());
+      DCHECK(current_frame_->metadata().reference_time.has_value() ||
              !rendering_frame_buffer_ ||
              (rendering_frame_buffer_ &&
               !rendering_frame_buffer_->NeedsReferenceTime()))
@@ -611,7 +610,7 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   bool has_frame_size_changed = false;
 
   base::Optional<media::VideoRotation> new_rotation =
-      frame->metadata()->rotation.value_or(media::VIDEO_ROTATION_0);
+      frame->metadata().rotation.value_or(media::VIDEO_ROTATION_0);
 
   base::Optional<bool> new_opacity;
   new_opacity = media::IsOpaque(frame->format());
@@ -621,7 +620,7 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
     is_first_frame = false;
 
     media::VideoRotation current_video_rotation =
-        current_frame_->metadata()->rotation.value_or(media::VIDEO_ROTATION_0);
+        current_frame_->metadata().rotation.value_or(media::VIDEO_ROTATION_0);
 
     has_frame_size_changed =
         RotationAdjustedSize(*new_rotation, frame->natural_size()) !=

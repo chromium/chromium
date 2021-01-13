@@ -199,7 +199,7 @@ void FrameRendererThumbnail::RenderFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  if (video_frame->metadata()->end_of_stream)
+  if (video_frame->metadata().end_of_stream)
     return;
 
   if (!renderer_task_runner_)

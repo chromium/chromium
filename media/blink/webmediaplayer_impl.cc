@@ -1496,9 +1496,9 @@ void WebMediaPlayerImpl::ComputeFrameUploadMetadata(
   out_metadata->frame_id = frame->unique_id();
   out_metadata->visible_rect = frame->visible_rect();
   out_metadata->timestamp = frame->timestamp();
-  if (frame->metadata()->frame_duration.has_value()) {
+  if (frame->metadata().frame_duration.has_value()) {
     out_metadata->expected_timestamp =
-        frame->timestamp() + *frame->metadata()->frame_duration;
+        frame->timestamp() + *frame->metadata().frame_duration;
   };
   bool skip_possible = already_uploaded_id != -1;
   bool same_frame_id = frame->unique_id() == already_uploaded_id;

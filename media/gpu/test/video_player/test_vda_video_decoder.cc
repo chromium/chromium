@@ -358,7 +358,7 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
   DCHECK(wrapped_video_frame);
 
   // Flag that the video frame was decoded in a power efficient way.
-  wrapped_video_frame->metadata()->power_efficient = true;
+  wrapped_video_frame->metadata().power_efficient = true;
 
   // It's important to bind the original video frame to the destruction callback
   // of the wrapped frame, to avoid deleting it before rendering of the wrapped

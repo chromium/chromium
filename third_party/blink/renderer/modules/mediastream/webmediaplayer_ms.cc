@@ -253,9 +253,9 @@ class WebMediaPlayerMS::FrameDeliverer {
       bool tracing_enabled = false;
       TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_enabled);
       if (tracing_enabled) {
-        if (frame->metadata()->reference_time.has_value()) {
+        if (frame->metadata().reference_time.has_value()) {
           TRACE_EVENT1("media", "EnqueueFrame", "Ideal Render Instant",
-                       frame->metadata()->reference_time->ToInternalValue());
+                       frame->metadata().reference_time->ToInternalValue());
         } else {
           TRACE_EVENT0("media", "EnqueueFrame");
         }

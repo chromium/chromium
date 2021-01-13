@@ -196,8 +196,8 @@ struct VideoCaptureImpl::BufferContext
         mailbox_holder_array,
         base::BindOnce(&BufferContext::MailboxHolderReleased, buffer_context),
         info->timestamp);
-    frame->metadata()->allow_overlay = true;
-    frame->metadata()->read_lock_fences_enabled = true;
+    frame->metadata().allow_overlay = true;
+    frame->metadata().read_lock_fences_enabled = true;
 
     std::move(on_texture_bound)
         .Run(std::move(info), std::move(frame), std::move(buffer_context));
@@ -752,8 +752,7 @@ void VideoCaptureImpl::OnVideoFrameReady(
   if (info->color_space.has_value() && info->color_space->IsValid())
     frame->set_color_space(info->color_space.value());
 
-  media::VideoFrameMetadata metadata = info->metadata;
-  frame->metadata()->MergeMetadataFrom(&metadata);
+  frame->metadata().MergeMetadataFrom(info->metadata);
 
   // TODO(qiangchen): Dive into the full code path to let frame metadata hold
   // reference time rather than using an extra parameter.

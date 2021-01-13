@@ -77,7 +77,7 @@ TEST_F(VideoFrameStructTraitsTest, EOS) {
 
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
-  EXPECT_TRUE(frame->metadata()->end_of_stream);
+  EXPECT_TRUE(frame->metadata().end_of_stream);
 }
 
 TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
@@ -86,12 +86,12 @@ TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
     scoped_refptr<VideoFrame> frame =
         MojoSharedBufferVideoFrame::CreateDefaultForTesting(
             format, gfx::Size(100, 100), base::TimeDelta::FromSeconds(100));
-    frame->metadata()->frame_rate = 42.0;
+    frame->metadata().frame_rate = 42.0;
 
     ASSERT_TRUE(RoundTrip(&frame));
     ASSERT_TRUE(frame);
-    EXPECT_FALSE(frame->metadata()->end_of_stream);
-    EXPECT_EQ(*frame->metadata()->frame_rate, 42.0);
+    EXPECT_FALSE(frame->metadata().end_of_stream);
+    EXPECT_EQ(*frame->metadata().frame_rate, 42.0);
     EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
     EXPECT_EQ(frame->timestamp(), base::TimeDelta::FromSeconds(100));
 
@@ -126,7 +126,7 @@ TEST_F(VideoFrameStructTraitsTest, DmabufVideoFrame) {
 
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
-  EXPECT_FALSE(frame->metadata()->end_of_stream);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
   EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(frame->coded_size(), gfx::Size(1280, 720));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(0, 0, 1280, 720));
@@ -148,7 +148,7 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
 
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
-  EXPECT_FALSE(frame->metadata()->end_of_stream);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
   EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
   EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
@@ -182,7 +182,7 @@ TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
   ASSERT_TRUE(frame);
   ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   EXPECT_TRUE(frame->HasGpuMemoryBuffer());
-  EXPECT_FALSE(frame->metadata()->end_of_stream);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
   EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);

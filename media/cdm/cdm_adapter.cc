@@ -617,7 +617,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
     return;
   }
 
-  decoded_frame->metadata()->protected_video = is_video_encrypted_;
+  decoded_frame->metadata().protected_video = is_video_encrypted_;
 
   video_decode_cb.Run(Decryptor::kSuccess, decoded_frame);
 }

@@ -391,8 +391,8 @@ MediaStreamVideoTrack::FrameDeliverer::GetBlackFrame(
     return nullptr;
 
   wrapped_black_frame->set_timestamp(reference_frame.timestamp());
-  wrapped_black_frame->metadata()->reference_time =
-      reference_frame.metadata()->reference_time;
+  wrapped_black_frame->metadata().reference_time =
+      reference_frame.metadata().reference_time;
 
   return wrapped_black_frame;
 }

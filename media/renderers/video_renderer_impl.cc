@@ -574,7 +574,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadStatus status,
   last_frame_ready_time_ = tick_clock_->NowTicks();
   last_decoder_stream_avg_duration_ = video_decoder_stream_->AverageDuration();
 
-  const bool is_eos = frame->metadata()->end_of_stream;
+  const bool is_eos = frame->metadata().end_of_stream;
   const bool is_before_start_time = !is_eos && IsBeforeStartTime(*frame);
   const bool cant_read = !video_decoder_stream_->CanReadWithoutStalling();
 
@@ -606,8 +606,8 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadStatus status,
     // RemoveFramesForUnderflowOrBackgroundRendering() below to actually expire
     // this frame if it's too far behind the current media time. Without this,
     // we may resume too soon after a track change in the low delay case.
-    if (!frame->metadata()->frame_duration.has_value())
-      frame->metadata()->frame_duration = last_decoder_stream_avg_duration_;
+    if (!frame->metadata().frame_duration.has_value())
+      frame->metadata().frame_duration = last_decoder_stream_avg_duration_;
 
     AddReadyFrame_Locked(std::move(frame));
   }
@@ -736,11 +736,11 @@ void VideoRendererImpl::TransitionToHaveNothing_Locked() {
 void VideoRendererImpl::AddReadyFrame_Locked(scoped_refptr<VideoFrame> frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   lock_.AssertAcquired();
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
 
   ++stats_.video_frames_decoded;
 
-  if (frame->metadata()->power_efficient)
+  if (frame->metadata().power_efficient)
     ++stats_.video_frames_decoded_power_efficient;
 
   algorithm_->EnqueueFrame(std::move(frame));
@@ -930,7 +930,7 @@ base::TimeTicks VideoRendererImpl::GetCurrentMediaTimeAsWallClockTime() {
 
 bool VideoRendererImpl::IsBeforeStartTime(const VideoFrame& frame) {
   // Prefer the actual frame duration over the average if available.
-  return frame.timestamp() + frame.metadata()->frame_duration.value_or(
+  return frame.timestamp() + frame.metadata().frame_duration.value_or(
                                  last_decoder_stream_avg_duration_) <
          start_timestamp_;
 }

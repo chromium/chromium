@@ -455,8 +455,8 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
   // Frame has duration in metadata, use it.
-  if (frame.metadata()->frame_duration.has_value())
-    return frame.metadata()->frame_duration.value();
+  if (frame.metadata().frame_duration.has_value())
+    return frame.metadata().frame_duration.value();
 
   // Options have framerate specified, use it.
   if (options_.framerate.has_value())

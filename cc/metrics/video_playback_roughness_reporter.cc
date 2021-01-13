@@ -59,11 +59,11 @@ void VideoPlaybackRoughnessReporter::FrameSubmitted(
 
   FrameInfo info;
   info.token = token;
-  info.decode_time = frame.metadata()->decode_end_time;
+  info.decode_time = frame.metadata().decode_end_time;
   info.refresh_rate_hz = int{std::round(1.0 / render_interval.InSecondsF())};
   info.size = frame.natural_size();
 
-  info.intended_duration = frame.metadata()->wallclock_frame_duration;
+  info.intended_duration = frame.metadata().wallclock_frame_duration;
   if (info.intended_duration) {
     if (render_interval > info.intended_duration.value()) {
       // In videos with FPS higher than display refresh rate we acknowledge

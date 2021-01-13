@@ -79,7 +79,7 @@ struct StructTraits<media::mojom::VideoFrameDataView,
   // const &.
   static const media::VideoFrameMetadata& metadata(
       const scoped_refptr<media::VideoFrame>& input) {
-    return *(input->metadata());
+    return input->metadata();
   }
 
   static bool Read(media::mojom::VideoFrameDataView input,

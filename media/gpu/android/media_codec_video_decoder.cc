@@ -1021,7 +1021,7 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   if (reset_generation == reset_generation_) {
     // TODO(liberato): We might actually have a SW decoder.  Consider setting
     // this to false if so, especially for higher bitrates.
-    frame->metadata()->power_efficient = true;
+    frame->metadata().power_efficient = true;
     output_cb_.Run(std::move(frame));
   }
 }

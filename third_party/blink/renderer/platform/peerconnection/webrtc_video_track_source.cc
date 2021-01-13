@@ -64,10 +64,10 @@ gfx::Rect ScaleRectangle(const gfx::Rect& input_rect,
 }
 
 webrtc::VideoRotation GetFrameRotation(const media::VideoFrame* frame) {
-  if (!frame->metadata()->rotation) {
+  if (!frame->metadata().rotation) {
     return webrtc::kVideoRotation_0;
   }
-  switch (*frame->metadata()->rotation) {
+  switch (*frame->metadata().rotation) {
     case media::VIDEO_ROTATION_0:
       return webrtc::kVideoRotation_0;
     case media::VIDEO_ROTATION_90:
@@ -162,9 +162,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // rtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
-  base::Optional<int> capture_counter = frame->metadata()->capture_counter;
-  base::Optional<gfx::Rect> update_rect =
-      frame->metadata()->capture_update_rect;
+  base::Optional<int> capture_counter = frame->metadata().capture_counter;
+  base::Optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
 
   const bool has_valid_update_rect =
       update_rect.has_value() && capture_counter.has_value() &&

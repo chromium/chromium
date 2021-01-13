@@ -560,7 +560,7 @@ scoped_refptr<media::VideoFrame> CreateHighbitVideoFrame(
       video_frame->natural_size(), video_frame->timestamp());
 
   // Copy all metadata.
-  ret->metadata()->MergeMetadataFrom(video_frame->metadata());
+  ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
   for (int plane = media::VideoFrame::kYPlane;
        plane <= media::VideoFrame::kVPlane; ++plane) {
