@@ -41,8 +41,6 @@ class DigitalGoodsImpl
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
   arc::ArcDigitalGoodsBridge* GetArcDigitalGoodsBridge();
-  std::string GetTwaPackageName();
-  std::string GetScope();
 
   content::RenderFrameHost* render_frame_host_;
   mojo::Receiver<payments::mojom::DigitalGoods> receiver_;
