@@ -254,6 +254,9 @@ class KeySystemConfigSelector::ConfigState {
         return !are_hw_secure_codecs_required_;
       case EmeConfigRule::HW_SECURE_CODECS_REQUIRED:
         return !are_hw_secure_codecs_not_allowed_;
+      case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
+        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
+               !are_hw_secure_codecs_not_allowed_;
       case EmeConfigRule::SUPPORTED:
         return true;
     }
@@ -291,6 +294,10 @@ class KeySystemConfigSelector::ConfigState {
         are_hw_secure_codecs_not_allowed_ = true;
         return;
       case EmeConfigRule::HW_SECURE_CODECS_REQUIRED:
+        are_hw_secure_codecs_required_ = true;
+        return;
+      case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
+        is_identifier_required_ = true;
         are_hw_secure_codecs_required_ = true;
         return;
       case EmeConfigRule::SUPPORTED:

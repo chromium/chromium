@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -152,9 +153,14 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Hardware security requires remote attestation.
+  // Hardware security requires HWDRM or remote attestation, both of these
+  // require an identifier.
   if (robustness >= Robustness::HW_SECURE_CRYPTO)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+    return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
+#else
     return EmeConfigRule::IDENTIFIER_REQUIRED;
+#endif
 
   // For video, recommend remote attestation if HW_SECURE_ALL is available,
   // regardless of the value of |robustness|, because it enables hardware

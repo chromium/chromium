@@ -24,6 +24,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "media/base/cdm_context.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
@@ -51,7 +52,9 @@
 #include "sandbox/mac/seatbelt_extension.h"
 #endif  // defined(OS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -453,8 +456,10 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
   DCHECK(thread_checker_.CalledOnValidThread());
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(jkardatzke): Conditionalize this on |cdm_config.use_hw_secure_codecs|
-  if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon)) {
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon) &&
+      cdm_config.use_hw_secure_codecs &&
+      cdm_config.allow_distinctive_identifier) {
     auto* factory = media_interface_factory_ptr_->Get();
     if (factory) {
       // We need to intercept the callback in this case so we can fallback to
@@ -468,6 +473,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
     }
   }
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
+#endif  // USE_CHROMEOS_PROTECTED_MEDIA
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto* factory = GetCdmFactory(key_system);
 #elif BUILDFLAG(ENABLE_CAST_RENDERER)
