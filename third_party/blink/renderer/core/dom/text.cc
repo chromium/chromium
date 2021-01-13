@@ -124,8 +124,13 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (exception_state.HadException())
     return nullptr;
 
-  if (GetLayoutObject())
+  if (GetLayoutObject()) {
     GetLayoutObject()->SetTextWithOffset(DataImpl(), 0, old_str.length());
+    if (data().IsEmpty()) {
+      // To avoid |LayoutText| has empty text, we rebuild layout tree.
+      SetForceReattachLayoutTree();
+    }
+  }
 
   if (parentNode())
     GetDocument().DidSplitTextNode(*this);
