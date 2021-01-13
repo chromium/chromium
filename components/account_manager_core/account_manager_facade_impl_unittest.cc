@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/account_manager_facade_lacros.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -58,21 +58,20 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
 }  // namespace
 
-class AccountManagerFacadeLacrosTest : public testing::Test {
+class AccountManagerFacadeImplTest : public testing::Test {
  public:
-  AccountManagerFacadeLacrosTest() = default;
-  AccountManagerFacadeLacrosTest(const AccountManagerFacadeLacrosTest&) =
+  AccountManagerFacadeImplTest() = default;
+  AccountManagerFacadeImplTest(const AccountManagerFacadeImplTest&) = delete;
+  AccountManagerFacadeImplTest& operator=(const AccountManagerFacadeImplTest&) =
       delete;
-  AccountManagerFacadeLacrosTest& operator=(
-      const AccountManagerFacadeLacrosTest&) = delete;
-  ~AccountManagerFacadeLacrosTest() override = default;
+  ~AccountManagerFacadeImplTest() override = default;
 
  protected:
   FakeAccountManager& account_manager() { return account_manager_; }
 
-  std::unique_ptr<AccountManagerFacadeLacros> CreateFacade() {
+  std::unique_ptr<AccountManagerFacadeImpl> CreateFacade() {
     base::RunLoop run_loop;
-    auto result = std::make_unique<AccountManagerFacadeLacros>(
+    auto result = std::make_unique<AccountManagerFacadeImpl>(
         account_manager().CreateRemote(), run_loop.QuitClosure());
     run_loop.Run();
     return result;
@@ -83,17 +82,17 @@ class AccountManagerFacadeLacrosTest : public testing::Test {
   FakeAccountManager account_manager_;
 };
 
-TEST_F(AccountManagerFacadeLacrosTest,
+TEST_F(AccountManagerFacadeImplTest,
        FacadeIsInitializedOnConnectIfAccountManagerIsInitialized) {
   account_manager().SetIsInitialized(true);
 
-  std::unique_ptr<AccountManagerFacadeLacros> account_manager_facade =
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   EXPECT_TRUE(account_manager_facade->IsInitialized());
 }
 
-TEST_F(AccountManagerFacadeLacrosTest, FacadeIsUninitializedByDefault) {
-  std::unique_ptr<AccountManagerFacadeLacros> account_manager_facade =
+TEST_F(AccountManagerFacadeImplTest, FacadeIsUninitializedByDefault) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   EXPECT_FALSE(account_manager_facade->IsInitialized());
 }

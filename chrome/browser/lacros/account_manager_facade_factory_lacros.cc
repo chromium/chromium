@@ -5,15 +5,15 @@
 #include "chrome/browser/account_manager_facade_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/lacros/account_manager_facade_lacros.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
   // Multi-Login is disabled with Lacros. Always return the same instance.
-  static base::NoDestructor<AccountManagerFacadeLacros> facade([] {
+  static base::NoDestructor<AccountManagerFacadeImpl> facade([] {
     auto* lacros_chrome_service_impl = chromeos::LacrosChromeServiceImpl::Get();
     DCHECK(lacros_chrome_service_impl);
     if (!lacros_chrome_service_impl->IsAccountManagerAvailable()) {

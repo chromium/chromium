@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_FACADE_LACROS_H_
-#define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_FACADE_LACROS_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_IMPL_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_IMPL_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-// Lacros specific implementation of |AccountManagerFacade| that talks to
-// |chromeos::AccountManager|, residing in ash-chrome, over Mojo.
-class AccountManagerFacadeLacros
+// ChromeOS-specific implementation of |AccountManagerFacade| that talks to
+// |chromeos::AccountManager| over Mojo. Used by both Lacros and Ash.
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {
  public:
-  AccountManagerFacadeLacros(
+  AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
       base::OnceClosure init_finished = base::DoNothing());
-  AccountManagerFacadeLacros(const AccountManagerFacadeLacros&) = delete;
-  AccountManagerFacadeLacros& operator=(const AccountManagerFacadeLacros&) =
-      delete;
-  ~AccountManagerFacadeLacros() override;
+  AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
+  AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
+  ~AccountManagerFacadeImpl() override;
 
   // AccountManagerFacade overrides:
   bool IsInitialized() override;
@@ -52,7 +52,7 @@ class AccountManagerFacadeLacros
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
       receiver_;
 
-  base::WeakPtrFactory<AccountManagerFacadeLacros> weak_factory_{this};
+  base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_FACADE_LACROS_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_IMPL_H_

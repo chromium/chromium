@@ -4598,8 +4598,6 @@ static_library("browser") {
       "feedback/show_feedback_page_lacros.cc",
       "first_run/first_run_internal_lacros.cc",
       "lacros/account_manager_facade_factory_lacros.cc",
-      "lacros/account_manager_facade_lacros.cc",
-      "lacros/account_manager_facade_lacros.h",
       "lacros/account_manager_util.cc",
       "lacros/account_manager_util.h",
       "lacros/cert_db_initializer.h",

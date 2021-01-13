@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/account_manager_facade_lacros.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 
 #include <memory>
 #include <utility>
@@ -17,7 +17,7 @@ constexpr uint32_t kMinVersionWithObserver = 1;
 
 }  // namespace
 
-AccountManagerFacadeLacros::AccountManagerFacadeLacros(
+AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
     base::OnceClosure init_finished)
     : account_manager_remote_(std::move(account_manager_remote)),
@@ -29,39 +29,39 @@ AccountManagerFacadeLacros::AccountManagerFacadeLacros(
   }
 
   account_manager_remote_.QueryVersion(base::BindOnce(
-      &AccountManagerFacadeLacros::OnVersionCheck, weak_factory_.GetWeakPtr()));
+      &AccountManagerFacadeImpl::OnVersionCheck, weak_factory_.GetWeakPtr()));
 }
 
-AccountManagerFacadeLacros::~AccountManagerFacadeLacros() = default;
+AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
 
-bool AccountManagerFacadeLacros::IsInitialized() {
+bool AccountManagerFacadeImpl::IsInitialized() {
   return is_initialized_;
 }
 
-void AccountManagerFacadeLacros::ShowAddAccountDialog(
+void AccountManagerFacadeImpl::ShowAddAccountDialog(
     const AccountAdditionSource& source,
     base::OnceCallback<void(const AccountAdditionResult& result)> callback) {
   // TODO(crbug.com/1140469): implement this.
 }
 
-void AccountManagerFacadeLacros::ShowReauthAccountDialog(
+void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     const AccountAdditionSource& source,
     const std::string& email) {
   // TODO(crbug.com/1140469): implement this.
 }
 
-void AccountManagerFacadeLacros::OnVersionCheck(uint32_t version) {
+void AccountManagerFacadeImpl::OnVersionCheck(uint32_t version) {
   if (version < kMinVersionWithObserver) {
     std::move(init_finished_).Run();
     return;
   }
 
   account_manager_remote_->AddObserver(
-      base::BindOnce(&AccountManagerFacadeLacros::OnReceiverReceived,
+      base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 }
 
-void AccountManagerFacadeLacros::OnReceiverReceived(
+void AccountManagerFacadeImpl::OnReceiverReceived(
     mojo::PendingReceiver<AccountManagerObserver> receiver) {
   receiver_ =
       std::make_unique<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>(
@@ -69,19 +69,19 @@ void AccountManagerFacadeLacros::OnReceiverReceived(
   // At this point (|receiver_| exists), we are subscribed to Account Manager.
 
   account_manager_remote_->IsInitialized(base::BindOnce(
-      &AccountManagerFacadeLacros::OnInitialized, weak_factory_.GetWeakPtr()));
+      &AccountManagerFacadeImpl::OnInitialized, weak_factory_.GetWeakPtr()));
 }
-void AccountManagerFacadeLacros::OnInitialized(bool is_initialized) {
+void AccountManagerFacadeImpl::OnInitialized(bool is_initialized) {
   if (is_initialized)
     is_initialized_ = true;
   // else: We will receive a notification in |OnTokenUpserted|.
   std::move(init_finished_).Run();
 }
 
-void AccountManagerFacadeLacros::OnTokenUpserted(
+void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
   is_initialized_ = true;
 }
 
-void AccountManagerFacadeLacros::OnAccountRemoved(
+void AccountManagerFacadeImpl::OnAccountRemoved(
     crosapi::mojom::AccountPtr account) {}
