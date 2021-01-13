@@ -18,6 +18,7 @@
 #include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
+#include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
@@ -62,17 +63,15 @@ const char* kNoValue = FakeAssistantManager::kNoValue;
   EXPECT_EQ(_state, assistant_manager_service()->GetState());
 
 // Adds an AlarmTimerEvent of the given |type| to |events|.
-static void AddAlarmTimerEvent(
-    std::vector<assistant_client::AlarmTimerEvent>* events,
-    assistant_client::AlarmTimerEvent::Type type) {
+void AddAlarmTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
+                        assistant_client::AlarmTimerEvent::Type type) {
   events->push_back(assistant_client::AlarmTimerEvent());
   events->back().type = type;
 }
 
 // Adds an AlarmTimerEvent of type TIMER with the given |state| to |events|.
-static void AddTimerEvent(
-    std::vector<assistant_client::AlarmTimerEvent>* events,
-    assistant_client::Timer::State state) {
+void AddTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
+                   assistant_client::Timer::State state) {
   AddAlarmTimerEvent(events, assistant_client::AlarmTimerEvent::TIMER);
   events->back().timer_data.state = state;
 }
@@ -81,7 +80,7 @@ static void AddTimerEvent(
 // authentication errors. This list is created on demand as there is no clear
 // enum that defines these, and we don't want to hard code this list in the
 // test.
-static std::vector<int> GetAuthenticationErrorCodes() {
+std::vector<int> GetAuthenticationErrorCodes() {
   const int kMinErrorCode = GetLowestErrorCode();
   const int kMaxErrorCode = GetHighestErrorCode();
 
@@ -97,57 +96,9 @@ static std::vector<int> GetAuthenticationErrorCodes() {
 // Return a list of some libassistant error codes that are not considered to be
 // authentication errors.  Note we do not return all such codes as there are
 // simply too many and testing them all significantly slows down the tests.
-static std::vector<int> GetNonAuthenticationErrorCodes() {
+std::vector<int> GetNonAuthenticationErrorCodes() {
   return {-99999, 0, 1};
 }
-
-// Waits until the AssistantManagerService is in the given state, or until the
-// timeout is hit.
-class StateWaiter : private AssistantManagerService::StateObserver {
- public:
-  const base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(5);
-
-  explicit StateWaiter(AssistantManagerService* service) : service_(service) {
-    service_->AddAndFireStateObserver(this);
-  }
-
-  ~StateWaiter() override { service_->RemoveStateObserver(this); }
-
-  void RunUntilState(AssistantManagerService::State expected_state) {
-    if (current_state() == expected_state)
-      return;
-
-    expected_state_ = expected_state;
-
-    // Ensure we time out after kDefaultTimeout.
-    base::test::ScopedRunLoopTimeout timeout(FROM_HERE, kDefaultTimeout);
-
-    base::RunLoop run_loop;
-    base::AutoReset<base::OnceClosure> quit_loop(&quit_loop_,
-                                                 run_loop.QuitClosure());
-
-    // And wait until we hit the expected state.
-    EXPECT_NO_FATAL_FAILURE(run_loop.Run())
-        << "Failed waiting for AssistantManagerService::State change."
-        << " Expected state " << expected_state_ << " but have "
-        << current_state();
-  }
-
- private:
-  // StateObserver implementation:
-  void OnStateChanged(AssistantManagerService::State new_state) override {
-    if (quit_loop_ && (new_state == expected_state_))
-      std::move(quit_loop_).Run();
-  }
-
-  AssistantManagerService::State current_state() {
-    return service_->GetState();
-  }
-
-  AssistantManagerService* const service_;
-  AssistantManagerService::State expected_state_;
-  base::OnceClosure quit_loop_;
-};
 
 class AssistantAlarmTimerControllerMock
     : public ash::AssistantAlarmTimerController {
@@ -218,6 +169,13 @@ class StateObserverMock : public AssistantManagerService::StateObserver {
   DISALLOW_COPY_AND_ASSIGN(StateObserverMock);
 };
 
+class FakeLibassistantV1Api : public LibassistantV1Api {
+ public:
+  explicit FakeLibassistantV1Api(FakeAssistantManager* assistant_manager)
+      : LibassistantV1Api(assistant_manager,
+                          &assistant_manager->assistant_manager_internal()) {}
+};
+
 class AssistantManagerServiceImplTest : public testing::Test {
  public:
   AssistantManagerServiceImplTest() = default;
@@ -238,11 +196,11 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
     service_context_ = std::make_unique<FakeServiceContext>();
     service_context_
-        ->set_main_task_runner(task_environment.GetMainThreadTaskRunner())
+        ->set_main_task_runner(task_environment().GetMainThreadTaskRunner())
         .set_power_manager_client(PowerManagerClient::Get())
         .set_assistant_state(&assistant_state_);
 
-    CreateAssistantManagerServiceImpl(/*libassistant_config=*/{});
+    CreateAssistantManagerServiceImpl();
   }
 
   void CreateAssistantManagerServiceImpl(
@@ -274,7 +232,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   ash::AssistantState* assistant_state() { return &assistant_state_; }
 
-  FakeAssistantManager* fake_assistant_manager() { return &assistant_manager_; }
+  FakeAssistantManager* fake_assistant_manager() {
+    return assistant_manager_.get();
+  }
 
   FakeAssistantManagerInternal* fake_assistant_manager_internal() {
     return &fake_assistant_manager()->assistant_manager_internal();
@@ -290,6 +250,8 @@ class AssistantManagerServiceImplTest : public testing::Test {
   action::CrosActionModule* action_module() {
     return assistant_manager_service_->action_module_for_testing();
   }
+
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void Start() {
     assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
@@ -307,8 +269,11 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   void WaitForState(AssistantManagerService::State expected_state) {
-    StateWaiter waiter(assistant_manager_service());
-    waiter.RunUntilState(expected_state);
+    test::ExpectResult(
+        expected_state,
+        base::BindRepeating(&AssistantManagerServiceImpl::GetState,
+                            base::Unretained(assistant_manager_service())),
+        "AssistantManagerStateImpl");
   }
 
   // Raise all the |libassistant_error_codes| as communication errors from
@@ -338,8 +303,25 @@ class AssistantManagerServiceImplTest : public testing::Test {
     }
   }
 
+  void SetAssistantManagerInternal(std::unique_ptr<FakeAssistantManagerInternal>
+                                       assistant_manager_internal) {
+    assistant_manager_->set_assistant_manager_internal(
+        std::move(assistant_manager_internal));
+    libassistant_v1_api_.reset();
+    libassistant_v1_api_ =
+        std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get());
+  }
+
+  void SetAssistantManager(
+      std::unique_ptr<FakeAssistantManager> assistant_manager) {
+    assistant_manager_ = std::move(assistant_manager);
+    libassistant_v1_api_.reset();
+    libassistant_v1_api_ =
+        std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get());
+  }
+
  private:
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   ScopedAssistantClient assistant_client_;
   ScopedDeviceActions device_actions_;
@@ -348,9 +330,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
   // Fake implementation of the Libassistant Mojom service.
   FakeLibassistantService libassistant_service_;
 
-  FakeAssistantManager assistant_manager_;
-  LibassistantV1Api libassistant_v1_api_{
-      &assistant_manager_, &assistant_manager_.assistant_manager_internal()};
+  std::unique_ptr<FakeAssistantManager> assistant_manager_{
+      std::make_unique<FakeAssistantManager>()};
+  std::unique_ptr<FakeLibassistantV1Api> libassistant_v1_api_{
+      std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get())};
 
   std::unique_ptr<FakeServiceContext> service_context_;
 
@@ -747,6 +730,72 @@ TEST_F(AssistantManagerServiceImplTest,
   Start();
   WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
+}
+
+class AssistantManagerMock : public FakeAssistantManager {
+ public:
+  AssistantManagerMock() = default;
+  ~AssistantManagerMock() override = default;
+
+  MOCK_METHOD(void, StartAssistantInteraction, (), (override));
+};
+
+class AssistantManagerInternalMock : public FakeAssistantManagerInternal {
+ public:
+  AssistantManagerInternalMock() = default;
+  ~AssistantManagerInternalMock() override = default;
+
+  MOCK_METHOD(void, StopAssistantInteractionInternal, (bool), (override));
+};
+
+TEST_F(AssistantManagerServiceImplTest, ShouldStopInteractionAfterDelay) {
+  // Start LibAssistant.
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  auto assistant_manager_internal_mock =
+      std::make_unique<AssistantManagerInternalMock>();
+  auto* mock_ptr = assistant_manager_internal_mock.get();
+  SetAssistantManagerInternal(std::move(assistant_manager_internal_mock));
+
+  EXPECT_CALL(*mock_ptr, StopAssistantInteractionInternal).Times(0);
+
+  assistant_manager_service()->StopActiveInteraction(true);
+  testing::Mock::VerifyAndClearExpectations(mock_ptr);
+
+  WAIT_FOR_CALL(*mock_ptr, StopAssistantInteractionInternal);
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldStopInteractionImmediatelyBeforeNewInteraction) {
+  // Start LibAssistant.
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  auto assistant_manager_mock = std::make_unique<AssistantManagerMock>();
+  auto assistant_manager_internal_mock =
+      std::make_unique<AssistantManagerInternalMock>();
+  auto* assistant_manager_mock_ptr = assistant_manager_mock.get();
+  auto* assistant_manager_internal_mock_ptr =
+      assistant_manager_internal_mock.get();
+
+  assistant_manager_mock->set_assistant_manager_internal(
+      std::move(assistant_manager_internal_mock));
+  SetAssistantManager(std::move(assistant_manager_mock));
+
+  EXPECT_CALL(*assistant_manager_internal_mock_ptr,
+              StopAssistantInteractionInternal)
+      .Times(0);
+
+  assistant_manager_service()->StopActiveInteraction(true);
+  testing::Mock::VerifyAndClearExpectations(
+      assistant_manager_internal_mock_ptr);
+
+  EXPECT_CALL(*assistant_manager_internal_mock_ptr,
+              StopAssistantInteractionInternal)
+      .Times(1);
+  EXPECT_CALL(*assistant_manager_mock_ptr, StartAssistantInteraction).Times(1);
+  assistant_manager_service()->StartVoiceInteraction();
 }
 
 }  // namespace assistant

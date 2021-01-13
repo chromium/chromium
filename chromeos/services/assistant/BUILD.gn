@@ -207,6 +207,7 @@ source_set("tests") {
       "//chromeos/assistant/internal:test_support",
       "//chromeos/assistant/internal:tests",
       "//chromeos/assistant/internal/proto/google3",
+      "//chromeos/assistant/test_support",
       "//chromeos/dbus",
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",

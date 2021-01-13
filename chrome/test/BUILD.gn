@@ -2888,6 +2888,7 @@ if (!is_android) {
         deps += [
           "//chrome/browser/ui/ash/assistant/test_support",
           "//chromeos/assistant/internal:internal",
+          "//chromeos/assistant/test_support",
         ]
 
         data += [ "//chromeos/assistant/internal/test_data/" ]

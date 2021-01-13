@@ -260,23 +260,6 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
   const std::string class_name_;
 };
 
-template <typename T>
-void CheckResult(base::OnceClosure quit,
-                 T expected_value,
-                 base::RepeatingCallback<T()> value_callback) {
-  if (expected_value == value_callback.Run()) {
-    std::move(quit).Run();
-    return;
-  }
-
-  // Check again in the future
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(CheckResult<T>, std::move(quit), expected_value,
-                     value_callback),
-      base::TimeDelta::FromMilliseconds(10));
-}
-
 // Calls a callback when the view hierarchy changes.
 class CallbackViewHierarchyChangedObserver : views::ViewObserver {
  public:
@@ -453,27 +436,6 @@ void AssistantTestMixin::SetPreferVoice(bool prefer_voice) {
 void AssistantTestMixin::SendTextQuery(const std::string& query) {
   test_api_->SendTextQuery(query);
 }
-
-template <typename T>
-void AssistantTestMixin::ExpectResult(
-    T expected_value,
-    base::RepeatingCallback<T()> value_callback) {
-  const base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE,
-                                                     kDefaultWaitTimeout);
-
-  // Wait until we're ready or we hit the timeout.
-  base::RunLoop run_loop;
-  CheckResult(run_loop.QuitClosure(), expected_value, value_callback);
-
-  EXPECT_NO_FATAL_FAILURE(run_loop.Run())
-      << "Failed waiting for expected result.\n"
-      << "Expected \"" << expected_value << "\"\n"
-      << "Got \"" << value_callback.Run() << "\"";
-}
-
-template void AssistantTestMixin::ExpectResult<bool>(
-    bool expected_value,
-    base::RepeatingCallback<bool()> value_callback);
 
 template <typename T>
 T AssistantTestMixin::SyncCall(

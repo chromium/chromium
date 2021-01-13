@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -293,6 +294,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                                 const std::string& description,
                                 bool is_user_initiated);
 
+  void MaybeStopPreviousInteraction();
+
   ash::AssistantAlarmTimerController* assistant_alarm_timer_controller();
   ash::AssistantNotificationController* assistant_notification_controller();
   ash::AssistantScreenContextController* assistant_screen_context_controller();
@@ -305,6 +308,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   ServiceControllerProxy& service_controller();
   const ServiceControllerProxy& service_controller() const;
   base::Thread& background_thread();
+  void set_stop_interaction_delay_for_testing(base::TimeDelta delay) {
+    stop_interactioin_delay_ = delay;
+  }
 
   void SetStateAndInformObservers(State new_state);
 
@@ -356,6 +362,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   // Configuration passed to libassistant.
   std::string libassistant_config_;
+
+  base::TimeDelta stop_interactioin_delay_ =
+      base::TimeDelta::FromMilliseconds(500);
+  std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
 
   base::ScopedObservation<DeviceActions,
                           AppListEventSubscriber,
