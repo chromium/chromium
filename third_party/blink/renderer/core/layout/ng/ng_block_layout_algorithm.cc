@@ -2277,15 +2277,21 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
   }
 
   if (container_builder_.IsFragmentainerBoxType()) {
-    // We're building fragmentainers. Just copy the block-size from the
-    // constraint space. Calculating the size the regular way would cause some
-    // problems with overflow. For one, we don't want to produce a break token
-    // if there's no child content that requires it.
-    LayoutUnit consumed_block_size =
-        BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
-    LayoutUnit block_size = ConstraintSpace().FragmentainerBlockSize();
-    container_builder_.SetFragmentBlockSize(block_size);
-    container_builder_.SetConsumedBlockSize(consumed_block_size + block_size);
+    // We're building fragmentainers. Unless we're in the initial column
+    // balancing pass (when fragmentainer block-size is unknown), just copy the
+    // block-size from the constraint space. Calculating the size the regular
+    // way would cause some problems with overflow. For one, we don't want to
+    // produce a break token if there's no child content that requires it. If we
+    // *are* in the initial column balancing pass, on the other hand, just skip
+    // this part, and keep the fragment size calculated by the block layout
+    // algorithm (rather than setting it to indefinite).
+    if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      LayoutUnit consumed_block_size =
+          BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+      LayoutUnit block_size = ConstraintSpace().FragmentainerBlockSize();
+      container_builder_.SetFragmentBlockSize(block_size);
+      container_builder_.SetConsumedBlockSize(consumed_block_size + block_size);
+    }
     return true;
   }
 
