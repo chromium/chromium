@@ -13,6 +13,7 @@
 // limitations under the License.
 #include "absl/flags/internal/sequence_lock.h"
 
+#include <algorithm>
 #include <atomic>
 #include <thread>  // NOLINT(build/c++11)
 #include <tuple>
@@ -112,13 +113,21 @@ std::vector<int> MultiplicativeRange(int low, int high, int scale) {
   return result;
 }
 
-INSTANTIATE_TEST_SUITE_P(TestManyByteSizes, ConcurrentSequenceLockTest,
-                         testing::Combine(
-                             // Buffer size (bytes).
-                             testing::Range(1, 128),
-                             // Number of reader threads.
-                             testing::ValuesIn(MultiplicativeRange(
-                                 1, absl::base_internal::NumCPUs(), 2))));
+#ifndef ABSL_HAVE_THREAD_SANITIZER
+const int kMaxThreads = absl::base_internal::NumCPUs();
+#else
+// With TSAN, a lot of threads contending for atomic access on the sequence
+// lock make this test run too slowly.
+const int kMaxThreads = std::min(absl::base_internal::NumCPUs(), 4);
+#endif
+
+INSTANTIATE_TEST_SUITE_P(
+    TestManyByteSizes, ConcurrentSequenceLockTest,
+    testing::Combine(
+        // Buffer size (bytes).
+        testing::Range(1, 128),
+        // Number of reader threads.
+        testing::ValuesIn(MultiplicativeRange(1, kMaxThreads, 2))));
 
 // Simple single-threaded test, parameterized by the size of the buffer to be
 // protected.

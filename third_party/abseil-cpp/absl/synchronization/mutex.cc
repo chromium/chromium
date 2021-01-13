@@ -761,11 +761,13 @@ void SetMutexDeadlockDetectionMode(OnDeadlockCycle mode) {
   synch_deadlock_detection.store(mode, std::memory_order_release);
 }
 
-// Return true iff threads x and y are waiting on the same condition for the
-// same type of lock.  Requires that x and y be waiting on the same Mutex
-// queue.
-static bool MuSameCondition(PerThreadSynch *x, PerThreadSynch *y) {
-  return x->waitp->how == y->waitp->how &&
+// Return true iff threads x and y are part of the same equivalence
+// class of waiters. An equivalence class is defined as the set of
+// waiters with the same condition, type of lock, and thread priority.
+//
+// Requires that x and y be waiting on the same Mutex queue.
+static bool MuEquivalentWaiter(PerThreadSynch *x, PerThreadSynch *y) {
+  return x->waitp->how == y->waitp->how && x->priority == y->priority &&
          Condition::GuaranteedEqual(x->waitp->cond, y->waitp->cond);
 }
 
@@ -784,18 +786,19 @@ static inline PerThreadSynch *GetPerThreadSynch(intptr_t v) {
 //     - invalid (iff x is not in a Mutex wait queue),
 //     - null, or
 //     - a pointer to a distinct thread waiting later in the same Mutex queue
-//       such that all threads in [x, x->skip] have the same condition and
-//       lock type (MuSameCondition() is true for all pairs in [x, x->skip]).
+//       such that all threads in [x, x->skip] have the same condition, priority
+//       and lock type (MuEquivalentWaiter() is true for all pairs in [x,
+//       x->skip]).
 // In addition, if x->skip is  valid, (x->may_skip || x->skip == null)
 //
-// By the spec of MuSameCondition(), it is not necessary when removing the
+// By the spec of MuEquivalentWaiter(), it is not necessary when removing the
 // first runnable thread y from the front a Mutex queue to adjust the skip
 // field of another thread x because if x->skip==y, x->skip must (have) become
 // invalid before y is removed.  The function TryRemove can remove a specified
 // thread from an arbitrary position in the queue whether runnable or not, so
 // it fixes up skip fields that would otherwise be left dangling.
 // The statement
-//     if (x->may_skip && MuSameCondition(x, x->next)) { x->skip = x->next; }
+//     if (x->may_skip && MuEquivalentWaiter(x, x->next)) { x->skip = x->next; }
 // maintains the invariant provided x is not the last waiter in a Mutex queue
 // The statement
 //          if (x->skip != null) { x->skip = x->skip->skip; }
@@ -929,24 +932,17 @@ static PerThreadSynch *Enqueue(PerThreadSynch *head,
     if (s->priority > head->priority) {  // s's priority is above head's
       // try to put s in priority-fifo order, or failing that at the front.
       if (!head->maybe_unlocking) {
-        // No unlocker can be scanning the queue, so we can insert between
-        // skip-chains, and within a skip-chain if it has the same condition as
-        // s.  We insert in priority-fifo order, examining the end of every
-        // skip-chain, plus every element with the same condition as s.
+        // No unlocker can be scanning the queue, so we can insert into the
+        // middle of the queue.
+        //
+        // Within a skip chain, all waiters have the same priority, so we can
+        // skip forward through the chains until we find one with a lower
+        // priority than the waiter to be enqueued.
         PerThreadSynch *advance_to = head;    // next value of enqueue_after
-        PerThreadSynch *cur;                  // successor of enqueue_after
         do {
           enqueue_after = advance_to;
-          cur = enqueue_after->next;  // this advance ensures progress
-          advance_to = Skip(cur);   // normally, advance to end of skip chain
-                                    // (side-effect: optimizes skip chain)
-          if (advance_to != cur && s->priority > advance_to->priority &&
-              MuSameCondition(s, cur)) {
-            // but this skip chain is not a singleton, s has higher priority
-            // than its tail and has the same condition as the chain,
-            // so we can insert within the skip-chain
-            advance_to = cur;         // advance by just one
-          }
+          // (side-effect: optimizes skip chain)
+          advance_to = Skip(enqueue_after->next);
         } while (s->priority <= advance_to->priority);
               // termination guaranteed because s->priority > head->priority
               // and head is the end of a skip chain
@@ -965,21 +961,21 @@ static PerThreadSynch *Enqueue(PerThreadSynch *head,
 
       // enqueue_after can be: head, Skip(...), or cur.
       // The first two imply enqueue_after->skip == nullptr, and
-      // the last is used only if MuSameCondition(s, cur).
+      // the last is used only if MuEquivalentWaiter(s, cur).
       // We require this because clearing enqueue_after->skip
       // is impossible; enqueue_after's predecessors might also
       // incorrectly skip over s if we were to allow other
       // insertion points.
-      ABSL_RAW_CHECK(
-          enqueue_after->skip == nullptr || MuSameCondition(enqueue_after, s),
-          "Mutex Enqueue failure");
+      ABSL_RAW_CHECK(enqueue_after->skip == nullptr ||
+                         MuEquivalentWaiter(enqueue_after, s),
+                     "Mutex Enqueue failure");
 
       if (enqueue_after != head && enqueue_after->may_skip &&
-          MuSameCondition(enqueue_after, enqueue_after->next)) {
+          MuEquivalentWaiter(enqueue_after, enqueue_after->next)) {
         // enqueue_after can skip to its new successor, s
         enqueue_after->skip = enqueue_after->next;
       }
-      if (MuSameCondition(s, s->next)) {  // s->may_skip is known to be true
+      if (MuEquivalentWaiter(s, s->next)) {  // s->may_skip is known to be true
         s->skip = s->next;                // s may skip to its successor
       }
     } else {   // enqueue not done any other way, so
@@ -989,7 +985,7 @@ static PerThreadSynch *Enqueue(PerThreadSynch *head,
       head->next = s;
       s->readers = head->readers;  // reader count is from previous head
       s->maybe_unlocking = head->maybe_unlocking;  // same for unlock hint
-      if (head->may_skip && MuSameCondition(head, s)) {
+      if (head->may_skip && MuEquivalentWaiter(head, s)) {
         // head now has successor; may skip
         head->skip = s;
       }
@@ -1009,7 +1005,7 @@ static PerThreadSynch *Dequeue(PerThreadSynch *head, PerThreadSynch *pw) {
   pw->next = w->next;         // snip w out of list
   if (head == w) {            // we removed the head
     head = (pw == w) ? nullptr : pw;  // either emptied list, or pw is new head
-  } else if (pw != head && MuSameCondition(pw, pw->next)) {
+  } else if (pw != head && MuEquivalentWaiter(pw, pw->next)) {
     // pw can skip to its new successor
     if (pw->next->skip !=
         nullptr) {  // either skip to its successors skip target
@@ -1079,11 +1075,13 @@ void Mutex::TryRemove(PerThreadSynch *s) {
       PerThreadSynch *w;
       if ((w = pw->next) != s) {  // search for thread,
         do {                      // processing at least one element
-          if (!MuSameCondition(s, w)) {  // seeking different condition
+          // If the current element isn't equivalent to the waiter to be
+          // removed, we can skip the entire chain.
+          if (!MuEquivalentWaiter(s, w)) {
             pw = Skip(w);                // so skip all that won't match
             // we don't have to worry about dangling skip fields
             // in the threads we skipped; none can point to s
-            // because their condition differs from s
+            // because they are in a different equivalence class.
           } else {          // seeking same condition
             FixSkip(w, s);  // fix up any skip pointer from w to s
             pw = w;
@@ -1374,7 +1372,9 @@ static GraphId DeadlockCheck(Mutex *mu) {
           len += static_cast<int>(strlen(&b->buf[len]));
         }
       }
-      ABSL_RAW_LOG(ERROR, "Acquiring %p    Mutexes held: %s",
+      ABSL_RAW_LOG(ERROR,
+                   "Acquiring absl::Mutex %p while holding %s; a cycle in the "
+                   "historical lock ordering graph has been observed",
                    static_cast<void *>(mu), b->buf);
       ABSL_RAW_LOG(ERROR, "Cycle: ");
       int path_len = deadlock_graph->FindPath(
@@ -2148,7 +2148,7 @@ ABSL_ATTRIBUTE_NOINLINE void Mutex::UnlockSlow(SynchWaitParams *waitp) {
           !old_h->may_skip) {                  // we used old_h as a terminator
         old_h->may_skip = true;                // allow old_h to skip once more
         ABSL_RAW_CHECK(old_h->skip == nullptr, "illegal skip from head");
-        if (h != old_h && MuSameCondition(old_h, old_h->next)) {
+        if (h != old_h && MuEquivalentWaiter(old_h, old_h->next)) {
           old_h->skip = old_h->next;  // old_h not head & can skip to successor
         }
       }

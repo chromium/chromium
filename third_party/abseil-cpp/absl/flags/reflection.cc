@@ -50,7 +50,7 @@ class FlagRegistry {
   ~FlagRegistry() = default;
 
   // Store a flag in this registry. Takes ownership of *flag.
-  void RegisterFlag(CommandLineFlag& flag);
+  void RegisterFlag(CommandLineFlag& flag, const char* filename);
 
   void Lock() ABSL_EXCLUSIVE_LOCK_FUNCTION(lock_) { lock_.Lock(); }
   void Unlock() ABSL_UNLOCK_FUNCTION(lock_) { lock_.Unlock(); }
@@ -110,7 +110,20 @@ CommandLineFlag* FlagRegistry::FindFlag(absl::string_view name) {
   return it != flags_.end() ? it->second : nullptr;
 }
 
-void FlagRegistry::RegisterFlag(CommandLineFlag& flag) {
+void FlagRegistry::RegisterFlag(CommandLineFlag& flag, const char* filename) {
+  if (filename != nullptr &&
+      flag.Filename() != GetUsageConfig().normalize_filename(filename)) {
+    flags_internal::ReportUsageError(
+        absl::StrCat(
+            "Inconsistency between flag object and registration for flag '",
+            flag.Name(),
+            "', likely due to duplicate flags or an ODR violation. Relevant "
+            "files: ",
+            flag.Filename(), " and ", filename),
+        true);
+    std::exit(1);
+  }
+
   FlagRegistryLock registry_lock(*this);
 
   std::pair<FlagIterator, bool> ins =
@@ -175,8 +188,8 @@ void ForEachFlag(std::function<void(CommandLineFlag&)> visitor) {
 
 // --------------------------------------------------------------------
 
-bool RegisterCommandLineFlag(CommandLineFlag& flag) {
-  FlagRegistry::GlobalRegistry().RegisterFlag(flag);
+bool RegisterCommandLineFlag(CommandLineFlag& flag, const char* filename) {
+  FlagRegistry::GlobalRegistry().RegisterFlag(flag, filename);
   return true;
 }
 
@@ -266,7 +279,7 @@ void Retire(const char* name, FlagFastTypeId type_id, char* buf) {
   static_assert(alignof(RetiredFlagObj) == kRetiredFlagObjAlignment, "");
   auto* flag = ::new (static_cast<void*>(buf))
       flags_internal::RetiredFlagObj(name, type_id);
-  FlagRegistry::GlobalRegistry().RegisterFlag(*flag);
+  FlagRegistry::GlobalRegistry().RegisterFlag(*flag, nullptr);
 }
 
 // --------------------------------------------------------------------

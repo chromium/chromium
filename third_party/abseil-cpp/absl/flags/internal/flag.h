@@ -721,8 +721,9 @@ struct FlagRegistrarEmpty {};
 template <typename T, bool do_register>
 class FlagRegistrar {
  public:
-  explicit FlagRegistrar(Flag<T>& flag) : flag_(flag) {
-    if (do_register) flags_internal::RegisterCommandLineFlag(flag_.impl_);
+  explicit FlagRegistrar(Flag<T>& flag, const char* filename) : flag_(flag) {
+    if (do_register)
+      flags_internal::RegisterCommandLineFlag(flag_.impl_, filename);
   }
 
   FlagRegistrar OnUpdate(FlagCallbackFunc cb) && {

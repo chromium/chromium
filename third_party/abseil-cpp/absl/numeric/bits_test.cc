@@ -560,6 +560,14 @@ TEST(IntegralPowersOfTwo, Width) {
   }
 }
 
+// On GCC and Clang, anticiapte that implementations will be constexpr
+#if defined(__GNUC__)
+static_assert(ABSL_INTERNAL_HAS_CONSTEXPR_POPCOUNT,
+              "popcount should be constexpr");
+static_assert(ABSL_INTERNAL_HAS_CONSTEXPR_CLZ, "clz should be constexpr");
+static_assert(ABSL_INTERNAL_HAS_CONSTEXPR_CTZ, "ctz should be constexpr");
+#endif
+
 }  // namespace
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -379,6 +379,15 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_PTHREAD_GETSCHEDPARAM 1
 #endif
 
+// ABSL_HAVE_SCHED_GETCPU
+//
+// Checks whether sched_getcpu is available.
+#ifdef ABSL_HAVE_SCHED_GETCPU
+#error ABSL_HAVE_SCHED_GETCPU cannot be directly set
+#elif defined(__linux__)
+#define ABSL_HAVE_SCHED_GETCPU 1
+#endif
+
 // ABSL_HAVE_SCHED_YIELD
 //
 // Checks whether the platform implements sched_yield(2) as defined in
@@ -490,7 +499,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 
 #ifdef __has_include
-#if __has_include(<any>) && __cplusplus >= 201703L && \
+#if __has_include(<any>) && defined(__cplusplus) && __cplusplus >= 201703L && \
     !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_ANY 1
 #endif
@@ -504,8 +513,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 
 #ifdef __has_include
-#if __has_include(<optional>) && __cplusplus >= 201703L && \
-    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
+#if __has_include(<optional>) && defined(__cplusplus) && \
+    __cplusplus >= 201703L && !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_OPTIONAL 1
 #endif
 #endif
@@ -518,8 +527,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 
 #ifdef __has_include
-#if __has_include(<variant>) && __cplusplus >= 201703L && \
-    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
+#if __has_include(<variant>) && defined(__cplusplus) && \
+    __cplusplus >= 201703L && !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
 #define ABSL_HAVE_STD_VARIANT 1
 #endif
 #endif
@@ -532,7 +541,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 
 #ifdef __has_include
-#if __has_include(<string_view>) && __cplusplus >= 201703L
+#if __has_include(<string_view>) && defined(__cplusplus) && \
+    __cplusplus >= 201703L
 #define ABSL_HAVE_STD_STRING_VIEW 1
 #endif
 #endif
@@ -544,8 +554,9 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // not correctly set by MSVC, so we use `_MSVC_LANG` to check the language
 // version.
 // TODO(zhangxy): fix tests before enabling aliasing for `std::any`.
-#if defined(_MSC_VER) && _MSC_VER >= 1910 && \
-    ((defined(_MSVC_LANG) && _MSVC_LANG > 201402) || __cplusplus > 201402)
+#if defined(_MSC_VER) && _MSC_VER >= 1910 &&         \
+    ((defined(_MSVC_LANG) && _MSVC_LANG > 201402) || \
+     (defined(__cplusplus) && __cplusplus > 201402))
 // #define ABSL_HAVE_STD_ANY 1
 #define ABSL_HAVE_STD_OPTIONAL 1
 #define ABSL_HAVE_STD_VARIANT 1
