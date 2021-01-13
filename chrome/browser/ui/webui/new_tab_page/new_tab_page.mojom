@@ -397,8 +397,10 @@ interface PageHandler {
   // Logs a module impression. Called when a module is loaded and can be seen by
   // the user (scrolled into view).
   OnModuleImpression(string module_id, double time);
-  // Logs when a module is loaded with data.
-  OnModuleLoaded(string module_id, double time);
+  // Logs that a module loaded data for |duration| and finished successfully at
+  // |time|.
+  OnModuleLoaded(string module_id, mojo_base.mojom.TimeDelta duration,
+                 double time);
   // Logs when a user interacts with a module which will result in a navigation.
   OnModuleUsage(string module_id);
   // Logs that the modules have been shown at |time|.

@@ -21,8 +21,11 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('instantiate module with data', async () => {
     // Arrange.
     const element = document.createElement('div');
-    const moduleDescriptor =
-        new ModuleDescriptor('foo', 100, () => Promise.resolve(element));
+    const moduleDescriptor = new ModuleDescriptor('foo', 100, () => {
+      // Move time forward to simulate delay instantiating module.
+      testProxy.setResultFor('now', 128);
+      return Promise.resolve(element);
+    });
     testProxy.setResultFor('now', 123);
 
     // Act.
@@ -30,10 +33,12 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
     // Assert.
     assertEquals(element, moduleDescriptor.element);
-    const [id, now] = await testProxy.handler.whenCalled('onModuleLoaded');
+    const [id, now, delta] =
+        await testProxy.handler.whenCalled('onModuleLoaded');
     assertEquals(1, testProxy.handler.getCallCount('onModuleLoaded'));
     assertEquals('foo', id);
-    assertEquals(123, now);
+    assertEquals(128, now);
+    assertEquals(5000n, delta.microseconds);  // 128ms - 123ms === 5000µs.
   });
 
   test('instantiate module without data', async () => {

@@ -999,9 +999,11 @@ void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
 }
 
 void NewTabPageHandler::OnModuleLoaded(const std::string& module_id,
+                                       base::TimeDelta duration,
                                        double time) {
   logger_.LogModuleLoaded(
-      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_,
+      duration);
 }
 
 void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {

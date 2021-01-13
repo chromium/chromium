@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy} from '../browser_proxy.js';
+import {mojoTimeDelta} from '../utils.js';
 
 /**
  * @fileoverview Provides the module descriptor. Each module must create a
@@ -47,11 +48,13 @@ export class ModuleDescriptor {
   }
 
   async initialize() {
+    const loadStartTime = BrowserProxy.getInstance().now();
     this.element_ = await this.initializeCallback_();
     if (!this.element_) {
       return;
     }
+    const loadEndTime = BrowserProxy.getInstance().now();
     BrowserProxy.getInstance().handler.onModuleLoaded(
-        this.id_, BrowserProxy.getInstance().now());
+        this.id_, loadEndTime, mojoTimeDelta(loadEndTime - loadStartTime));
   }
 }
