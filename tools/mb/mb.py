@@ -121,8 +121,6 @@ class MetaBuildWrapper(object):
       group = subp.add_mutually_exclusive_group()
       group.add_argument(
           '-m',  '--builder-group',
-          # TODO(crbug.com/1117773): Remove the 'master' args.
-          '--master',
           help='builder group name to look up config from')
       subp.add_argument('-b', '--builder',
                         help='builder name to look up config from')
@@ -950,9 +948,7 @@ class MetaBuildWrapper(object):
 
     self.configs = contents['configs']
     self.mixins = contents['mixins']
-    # TODO(crbug.com/1117773): Remove 'masters' below.
-    self.builder_groups = (
-        contents.get('builder_groups') or contents.get('masters'))
+    self.builder_groups = contents.get('builder_groups')
     self.public_artifact_builders = contents.get('public_artifact_builders')
 
   def ReadIsolateMap(self):
