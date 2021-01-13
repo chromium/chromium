@@ -112,8 +112,6 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   size_t GetNumReferenceFrames() const override;
 
  private:
-  // Returns whether the current stream contains a new OBU sequence header.
-  bool HasNewSequenceHeader() const;
   bool DecodeAndOutputPicture(
       scoped_refptr<AV1Picture> pic,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);

@@ -98,23 +98,6 @@ AV1Decoder::~AV1Decoder() {
   state_.reset();
 }
 
-bool AV1Decoder::HasNewSequenceHeader() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(parser_);
-  const auto& obu_headers = parser_->obu_headers();
-  const bool has_sequence_header =
-      std::find_if(obu_headers.begin(), obu_headers.end(),
-                   [](const auto& obu_header) {
-                     return obu_header.type == libgav1::kObuSequenceHeader;
-                   }) != obu_headers.end();
-  if (!has_sequence_header)
-    return false;
-  if (!current_sequence_header_)
-    return true;
-  return parser_->sequence_header().ParametersChanged(
-      *current_sequence_header_);
-}
-
 bool AV1Decoder::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Decoder flush";
@@ -208,9 +191,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
       current_frame_header_ = parser_->frame_header();
       // Detects if a new coded video sequence is starting.
-      // TODO(b/171853869): Replace HasNewSequenceHeader() with whatever
-      // libgav1::ObuParser provides for more than one sequence headers case.
-      if (HasNewSequenceHeader()) {
+      if (parser_->sequence_header_changed()) {
         // TODO(b/171853869): Remove this check once libgav1::ObuParser does
         // this check.
         if (current_frame_header_->frame_type != libgav1::kFrameKey ||
