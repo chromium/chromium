@@ -1331,7 +1331,8 @@ bool OverviewGrid::IsDesksBarViewActive() const {
 
   // The desk bar view is not active if there is only a single desk when
   // overview is started. Once there are more than one desk, it should stay
-  // active even if the 2nd to last desk is deleted.
+  // active even if the 2nd to last desk is deleted in classic desks. Zero state
+  // desks bar in Bento should not be treated as active.
   return DesksController::Get()->desks().size() > 1 ||
          (desks_bar_view_ && !desks_bar_view_->mini_views().empty());
 }

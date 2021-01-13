@@ -15,10 +15,13 @@
 
 namespace ash {
 
-class DeskMiniView;
-class NewDeskButton;
 class DeskBarHoverObserver;
+class DeskMiniView;
+class ExpandedStateNewDeskButton;
+class NewDeskButton;
 class OverviewGrid;
+class ZeroStateDefaultDeskButton;
+class ZeroStateNewDeskButton;
 
 // A bar that resides at the top portion of the overview mode's ShieldView,
 // which contains the virtual desks mini_views, as well as the new desk button.
@@ -27,6 +30,8 @@ class ASH_EXPORT DesksBarView : public views::View,
  public:
   explicit DesksBarView(OverviewGrid* overview_grid);
   ~DesksBarView() override;
+
+  static constexpr int kZeroStateBarHeight = 40;
 
   // Returns the height of the desk bar view which is based on the given |width|
   // of the overview grid that exists on |root| (which is the same as the width
@@ -48,6 +53,18 @@ class ASH_EXPORT DesksBarView : public views::View,
   views::View* background_view() const { return background_view_; }
 
   NewDeskButton* new_desk_button() const { return new_desk_button_; }
+
+  ZeroStateDefaultDeskButton* zero_state_default_desk_button() const {
+    return zero_state_default_desk_button_;
+  }
+
+  ZeroStateNewDeskButton* zero_state_new_desk_button() const {
+    return zero_state_new_desk_button_;
+  }
+
+  ExpandedStateNewDeskButton* expanded_state_new_desk_button() const {
+    return expanded_state_new_desk_button_;
+  }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
@@ -82,6 +99,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   void SetDragDetails(const gfx::Point& screen_location,
                       bool dragged_item_over_bar);
 
+  // Returns true if it is in zero state. It is the state of the desks bar when
+  // there's only a single desk available, in which case the bar is shown in a
+  // minimized state.
+  bool IsZeroState() const;
+
   // views::View:
   const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -102,12 +124,15 @@ class ASH_EXPORT DesksBarView : public views::View,
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
 
- private:
-  // This is called on initialization or when a new desk is created to create
-  // the needed new mini_views. If |initializing_bar_view| is false, the
-  // mini_views will be animated to their final positions.
-  void UpdateNewMiniViews(bool initializing_bar_view);
+  // This is called on initialization, creating a new desk through the
+  // NewDeskButton or ExpandedStateNewDeskButton, or expanding from zero state
+  // bar to the expanded desks bar when Bento is enabled. Performs the expanding
+  // animation if |expanding_bar_view| is true, otherwise animates the
+  // mini_views (also the ExpandedStateNewDeskButton if Bento is enabled) to
+  // their final positions if |initializing_bar_view| is false.
+  void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
+ private:
   // Returns the mini_view associated with |desk| or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
@@ -125,10 +150,20 @@ class ASH_EXPORT DesksBarView : public views::View,
   // child if Bento is enabled.
   DeskMiniView* AddMiniViewAsChild(std::unique_ptr<DeskMiniView> mini_view);
 
+  // Updates the visibility of the two buttons inside the zero state desks bar
+  // and the ExpandedStateNewDeskButton on the desk bar's state. Used only when
+  // Bento is enabled.
+  void UpdateBentoDeskButtonsVisibility();
+
+  // Translates the background view and positions windows in overview while
+  // switching between zero state desks bar and expanded desks bar.
+  void SetExpanded(bool expanded);
+
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
   views::View* background_view_;
 
+  // Used only in classic desks. Will be removed once Bento is fully launched.
   NewDeskButton* new_desk_button_;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
@@ -159,6 +194,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Contents of |scroll_view_|, which includes |mini_views_| and
   // |new_desk_button_| currently. Used only when Bento is enabled.
   views::View* scroll_view_contents_ = nullptr;
+
+  // Used only when Bento is enabled.
+  ZeroStateDefaultDeskButton* zero_state_default_desk_button_;
+  ZeroStateNewDeskButton* zero_state_new_desk_button_;
+  ExpandedStateNewDeskButton* expanded_state_new_desk_button_;
 
   DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };

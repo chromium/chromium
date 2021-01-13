@@ -23,7 +23,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -157,13 +156,6 @@ SkColor NewDeskButton::GetInkDropBaseColor() const {
   return AshColorProvider::Get()
       ->GetRippleAttributes(background_color_)
       .base_color;
-}
-
-std::unique_ptr<views::LabelButtonBorder> NewDeskButton::CreateDefaultBorder()
-    const {
-  std::unique_ptr<views::LabelButtonBorder> border =
-      std::make_unique<views::LabelButtonBorder>();
-  return border;
 }
 
 void NewDeskButton::OnThemeChanged() {

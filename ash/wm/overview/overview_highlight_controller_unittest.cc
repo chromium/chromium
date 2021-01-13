@@ -7,12 +7,15 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/close_desk_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/expanded_state_new_desk_button.h"
 #include "ash/wm/desks/new_desk_button.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -743,7 +746,9 @@ TEST_F(BentoOverviewHighlightControllerTest,
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-  const auto* new_desk_button = desk_bar_view->new_desk_button();
+  ASSERT_FALSE(desk_bar_view->IsZeroState());
+  const auto* new_desk_button =
+      desk_bar_view->expanded_state_new_desk_button()->new_desk_button();
   const auto* desks_controller = DesksController::Get();
 
   auto check_name_view_at_index = [this](const auto* desk_bar_view, int index) {
@@ -774,6 +779,56 @@ TEST_F(BentoOverviewHighlightControllerTest,
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
             desks_controller->desks().size());
+}
+
+TEST_F(BentoOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
+  ToggleOverview();
+  auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+
+  // Remove one desk to enter zero state desks bar.
+  auto* event_generator = GetEventGenerator();
+  auto* mini_view = desks_bar_view->mini_views()[1];
+  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
+  event_generator->MoveMouseTo(
+      mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
+
+  // Both zero state default desk button and zero state new desk button can be
+  // focused in overview mode.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
+
+  // Trigger the zero state default desk button will focus on the default desk's
+  // name view.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(desks_bar_view->mini_views()[0]->desk_name_view(),
+            GetHighlightedView());
+  ToggleOverview();
+
+  // Trigger the zero state new desk button will focus on the new created desk's
+  // name view.
+  ToggleOverview();
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  desks_bar_view = GetOverviewSession()
+                       ->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+                       ->desks_bar_view();
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(desks_bar_view->mini_views()[1]->desk_name_view(),
+            GetHighlightedView());
 }
 
 }  // namespace ash
