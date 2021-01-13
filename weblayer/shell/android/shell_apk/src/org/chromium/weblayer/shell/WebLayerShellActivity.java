@@ -92,7 +92,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     private static final String NON_INCOGNITO_PROFILE_NAME = "DefaultProfile";
-    private static final String EXTRA_WEBVIEW_COMPAT = "EXTRA_WEBVIEW_COMPAT";
 
     private static class ContextMenuCreator
             implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
@@ -257,7 +256,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private boolean mAnimateControlsChanges;
     private boolean mSetDarkMode;
     private boolean mInIncognitoMode;
-    private boolean mEnableWebViewCompat;
     private boolean mEnableAltTopView;
 
     @Override
@@ -265,10 +263,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mSetDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
-        mEnableWebViewCompat = getIntent().getBooleanExtra(EXTRA_WEBVIEW_COMPAT, false);
-        if (mEnableWebViewCompat) {
-            WebLayer.initializeWebViewCompatibilityMode(getApplicationContext());
-        }
         setContentView(R.layout.main);
         TextView versionText = (TextView) findViewById(R.id.version_text);
         versionText.setText(getString(
@@ -313,8 +307,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
         popup.getMenu()
                 .findItem(R.id.translate_menu_id)
                 .setVisible(mBrowser.getActiveTab().canTranslate());
-        popup.getMenu().findItem(R.id.webview_compat_menu_id).setVisible(!mEnableWebViewCompat);
-        popup.getMenu().findItem(R.id.no_webview_compat_menu_id).setVisible(mEnableWebViewCompat);
         boolean isDesktopUserAgent = mBrowser.getActiveTab().isDesktopUserAgentEnabled();
         popup.getMenu().findItem(R.id.desktop_site_menu_id).setVisible(!isDesktopUserAgent);
         popup.getMenu().findItem(R.id.no_desktop_site_menu_id).setVisible(isDesktopUserAgent);
@@ -363,14 +355,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
                                          Toast.LENGTH_SHORT)
                                     .show();
                         });
-            }
-
-            if (item.getItemId() == R.id.webview_compat_menu_id) {
-                restartShell(true);
-            }
-
-            if (item.getItemId() == R.id.no_webview_compat_menu_id) {
-                restartShell(false);
             }
 
             if (item.getItemId() == R.id.desktop_site_menu_id) {
@@ -819,18 +803,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
             }
         }
         super.onBackPressed();
-    }
-
-    @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed since this shouldn't be a crash.
-    private void restartShell(boolean enableWebViewCompat) {
-        finish();
-
-        Intent intent = new Intent();
-        intent.setClassName(getPackageName(), getClass().getName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(EXTRA_WEBVIEW_COMPAT, enableWebViewCompat);
-        startActivity(intent);
-        System.exit(0);
     }
 
     private void updateFavicon(@NonNull Tab tab) {

@@ -78,18 +78,6 @@ public class WebLayer {
     private static long sContextCreationTime;
     private static long sWebLayerLoaderCreationTime;
 
-    /** The result of calling {@link #initializeWebViewCompatibilityMode}. */
-    public enum WebViewCompatibilityResult {
-        /** Compatibility mode has been successfully set up. */
-        SUCCESS,
-
-        /** This version of the WebLayer implementation does not support WebView compatibility. */
-        FAILURE_UNSUPPORTED_VERSION,
-
-        /** An uncategorized failure happened. */
-        FAILURE_OTHER,
-    }
-
     /**
      * Returns true if WebLayer is available. This tries to load WebLayer, but does no
      * initialization. This function may be called by code that uses WebView.
@@ -108,16 +96,6 @@ public class WebLayer {
         if (!isAvailable(context)) {
             throw new UnsupportedVersionException(sLoader.getVersion());
         }
-    }
-
-    /**
-     * Deprecated. This is no longer necessary since WebView compatibility mode is now enabled by
-     * default. This will be removed once the client app is updated.
-     */
-    public static WebViewCompatibilityResult initializeWebViewCompatibilityMode(
-            @NonNull Context appContext) {
-        ThreadCheck.ensureOnUiThread();
-        return WebViewCompatibilityResult.SUCCESS;
     }
 
     /**

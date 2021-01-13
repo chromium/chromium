@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer.test;
 
-import android.support.test.InstrumentationRegistry;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -17,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.weblayer.WebLayer;
 
 /**
  * Tests for compatibility with running WebView and WebLayer in the same process. These tests only
@@ -32,10 +30,6 @@ public class WebViewCompatibilityTest {
     @Test
     @SmallTest
     public void testBothLoadPage() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebLayer.initializeWebViewCompatibilityMode(
-                    InstrumentationRegistry.getTargetContext().getApplicationContext());
-        });
         mActivityTestRule.launchShellWithUrl(mActivityTestRule.getTestDataURL("simple_page.html"));
         WebView webView = TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Loading WebView triggers loading from disk.
