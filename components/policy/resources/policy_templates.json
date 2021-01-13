@@ -402,6 +402,7 @@
         'RemoteAccessHostAllowFileTransfer',
         'RemoteAccessHostEnableUserInterface',
         'RemoteAccessHostAllowRemoteAccessConnections',
+        'RemoteAccessHostMaximumSessionDurationMinutes',
       ],
     },
     {
@@ -2330,6 +2331,26 @@
       'desc': '''If this policy is disabled, the remote access host service cannot be started or configured to accept incoming connections.  This policy does not affect remote support scenarios.
 
           This policy has no effect if it is set to true, left empty, or is not set.''',
+    },
+    {
+      'name': 'RemoteAccessHostMaximumSessionDurationMinutes',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 30, 'maximum': 10080 },
+      'supported_on': ['chrome.*:89-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
+      },
+      'example_value': 1200,
+      'default': None,
+      'id': 814,
+      'caption': '''Maximum session duration allowed for remote access connections''',
+      'tags': [],
+      'desc': '''If this policy is set, remote access connections will automatically disconnect after the number of minutes defined in the policy have elapsed. This does not prevent the client from reconnecting after the maximum session duration has been reached. Setting the policy to a value that is not within the min/max range may prevent the host from starting. This policy does not affect remote support scenarios.
+
+          This policy has no effect if it is not set. In this case, remote access connections will have no maximum duration on this machine.''',
     },
     {
       'name': 'PrintingEnabled',
@@ -24681,6 +24702,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'RemoteAccessHostAllowFileTransfer',
         'RemoteAccessHostEnableUserInterface',
         'RemoteAccessHostAllowRemoteAccessConnections',
+        'RemoteAccessHostMaximumSessionDurationMinutes',
       ],
     },
     {
@@ -25127,6 +25149,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 813,
+  'highest_id_currently_used': 814,
   'highest_atomic_group_id_currently_used': 40
 }

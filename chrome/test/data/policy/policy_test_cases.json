@@ -312,6 +312,8 @@
 
   "RemoteAccessHostAllowRemoteAccessConnections": {},
 
+  "RemoteAccessHostMaximumSessionDurationMinutes": {},
+
   "PrintingEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

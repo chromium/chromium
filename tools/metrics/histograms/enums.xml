@@ -22945,6 +22945,7 @@ Called by update_document_policy_enum.py.-->
   <int value="811" label="SigninInterceptionEnabled"/>
   <int value="812" label="RemoteAccessHostAllowRemoteAccessConnections"/>
   <int value="813" label="ManagedConfigurationsPerOrigin"/>
+  <int value="814" label="RemoteAccessHostMaximumSessionDurationMinutes"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -320,6 +320,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnFileTransferPolicyUpdate(base::DictionaryValue* policies);
   bool OnEnableUserInterfacePolicyUpdate(base::DictionaryValue* policies);
   bool OnAllowRemoteAccessConnections(base::DictionaryValue* policies);
+  bool OnMaxSessionDurationPolicyUpdate(base::DictionaryValue* policies);
 
   void InitializeSignaling();
 
@@ -397,6 +398,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   ThirdPartyAuthConfig third_party_auth_config_;
   bool security_key_auth_policy_enabled_ = false;
   bool security_key_extension_supported_ = true;
+  int max_session_duration_minutes_ = 0;
 
   // Used to specify which window to stream, if enabled.
   webrtc::WindowId window_id_ = 0;
@@ -1061,6 +1063,7 @@ void HostProcess::OnPolicyUpdate(
   restart_required |= OnFileTransferPolicyUpdate(policies.get());
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies.get());
   restart_required |= OnAllowRemoteAccessConnections(policies.get());
+  restart_required |= OnMaxSessionDurationPolicyUpdate(policies.get());
 
   policy_state_ = POLICY_LOADED;
 
@@ -1410,6 +1413,27 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
   return true;
 }
 
+bool HostProcess::OnMaxSessionDurationPolicyUpdate(
+    base::DictionaryValue* policies) {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  if (!policies->GetInteger(
+          policy::key::kRemoteAccessHostMaximumSessionDurationMinutes,
+          &max_session_duration_minutes_)) {
+    return false;
+  }
+
+  if (max_session_duration_minutes_ > 0) {
+    HOST_LOG << "Policy sets maximum session duration to "
+             << max_session_duration_minutes_ << " minutes.";
+  } else {
+    HOST_LOG << "Policy does not set a maximum session duration.";
+  }
+
+  // Restart required.
+  return true;
+}
+
 bool HostProcess::OnAllowRemoteAccessConnections(
     base::DictionaryValue* policies) {
   // Returns false: never restart the host after this policy update.
@@ -1554,10 +1578,15 @@ void HostProcess::StartHost() {
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
 
-  // TODO(simonmorris): Get the maximum session duration from a policy.
+  // TODO(joedow): Remove in M90.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   host_->SetMaximumSessionDuration(base::TimeDelta::FromHours(20));
 #endif
+
+  if (max_session_duration_minutes_ > 0) {
+    host_->SetMaximumSessionDuration(
+        base::TimeDelta::FromMinutes(max_session_duration_minutes_));
+  }
 
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
