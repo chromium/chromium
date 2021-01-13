@@ -154,6 +154,10 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kLoadMoreModelIsNotLoaded:
     case LoadStreamStatus::kLoadNotAllowedDisabledByEnterprisePolicy:
     case LoadStreamStatus::kCannotLoadMoreNoNextPageToken:
+    case LoadStreamStatus::kDataInStoreStaleMissedLastRefresh:
+    case LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure:
+      break;
+    case LoadStreamStatus::kDataInStoreIsExpired:
       break;
   }
   return feedui::ZeroStateSlice::NO_CARDS_AVAILABLE;

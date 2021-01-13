@@ -64,8 +64,10 @@ TEST_F(NextScheduledRequestTimeTest, NormalUsage) {
   base::Time kNow = kAnchorTime + TimeDelta::FromMinutes(12);
   EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(1),
             NextScheduledRequestTime(kNow, &schedule));
+  kNow += TimeDelta::FromHours(1);
   EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(6),
             NextScheduledRequestTime(kNow, &schedule));
+  kNow += TimeDelta::FromHours(6);
   EXPECT_EQ(kNow + kDefaultScheduleInterval,
             NextScheduledRequestTime(kNow, &schedule));
 }
@@ -78,6 +80,7 @@ TEST_F(NextScheduledRequestTimeTest, NowPastRequestTimeSkipsRequest) {
   base::Time kNow = kAnchorTime + TimeDelta::FromMinutes(61);
   EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(6),
             NextScheduledRequestTime(kNow, &schedule));
+  kNow += TimeDelta::FromHours(6);
   EXPECT_EQ(kNow + kDefaultScheduleInterval,
             NextScheduledRequestTime(kNow, &schedule));
 }
@@ -101,10 +104,7 @@ TEST_F(NextScheduledRequestTimeTest, NowInPast) {
   base::Time kNow = kAnchorTime - TimeDelta::FromMinutes(12);
   EXPECT_EQ(kNow + TimeDelta::FromHours(1),
             NextScheduledRequestTime(kNow, &schedule));
-  EXPECT_EQ(kNow + TimeDelta::FromHours(6),
-            NextScheduledRequestTime(kNow, &schedule));
-  EXPECT_EQ(kNow + kDefaultScheduleInterval,
-            NextScheduledRequestTime(kNow, &schedule));
+  EXPECT_EQ(kNow, schedule.anchor_time);
 }
 
 TEST_F(NextScheduledRequestTimeTest, NowInFarFuture) {
@@ -116,10 +116,7 @@ TEST_F(NextScheduledRequestTimeTest, NowInFarFuture) {
   base::Time kNow = kAnchorTime + TimeDelta::FromDays(12);
   EXPECT_EQ(kNow + TimeDelta::FromHours(1),
             NextScheduledRequestTime(kNow, &schedule));
-  EXPECT_EQ(kNow + TimeDelta::FromHours(6),
-            NextScheduledRequestTime(kNow, &schedule));
-  EXPECT_EQ(kNow + kDefaultScheduleInterval,
-            NextScheduledRequestTime(kNow, &schedule));
+  EXPECT_EQ(kNow, schedule.anchor_time);
 }
 
 }  // namespace

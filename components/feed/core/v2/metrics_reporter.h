@@ -70,6 +70,8 @@ class MetricsReporter {
 
   virtual void OnLoadStream(LoadStreamStatus load_from_store_status,
                             LoadStreamStatus final_status,
+                            bool loaded_new_content_from_network,
+                            base::TimeDelta stored_content_age,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(LoadStreamStatus final_status);
   virtual void OnLoadMoreBegin(SurfaceId surface_id);

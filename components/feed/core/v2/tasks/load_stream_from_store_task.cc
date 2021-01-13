@@ -9,7 +9,9 @@
 
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_store.h"
+#include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/scheduling.h"
@@ -26,9 +28,11 @@ LoadStreamFromStoreTask::Result& LoadStreamFromStoreTask::Result::operator=(
 LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     LoadType load_type,
     FeedStore* store,
+    bool missed_last_refresh,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
       store_(store),
+      missed_last_refresh_(missed_last_refresh),
       result_callback_(std::move(callback)),
       update_request_(std::make_unique<StreamModelUpdateRequest>()) {}
 
@@ -57,14 +61,18 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     return;
   }
   if (!ignore_staleness_) {
-    const base::TimeDelta content_age =
+    content_age_ =
         base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
-    if (content_age < base::TimeDelta()) {
-      Complete(LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture);
+    if (content_age_ > GetFeedConfig().content_expiration_threshold) {
+      Complete(LoadStreamStatus::kDataInStoreIsExpired);
       return;
-    } else if (ShouldWaitForNewContent(true, content_age)) {
-      Complete(LoadStreamStatus::kDataInStoreIsStale);
-      return;
+    }
+    if (content_age_ < base::TimeDelta()) {
+      stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
+    } else if (ShouldWaitForNewContent(true, content_age_)) {
+      stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;
+    } else if (missed_last_refresh_) {
+      stale_reason_ = LoadStreamStatus::kDataInStoreStaleMissedLastRefresh;
     }
   }
 
@@ -119,12 +127,19 @@ void LoadStreamFromStoreTask::LoadContentDone(
 
 void LoadStreamFromStoreTask::Complete(LoadStreamStatus status) {
   Result task_result;
-  task_result.status = status;
+
   task_result.pending_actions = std::move(pending_actions_);
   if (status == LoadStreamStatus::kLoadedFromStore &&
       load_type_ == LoadType::kFullLoad) {
     task_result.update_request = std::move(update_request_);
   }
+  if (status == LoadStreamStatus::kLoadedFromStore &&
+      stale_reason_ != LoadStreamStatus::kNoStatus) {
+    task_result.status = stale_reason_;
+  } else {
+    task_result.status = status;
+  }
+  task_result.content_age = content_age_;
   std::move(result_callback_).Run(std::move(task_result));
   TaskComplete();
 }

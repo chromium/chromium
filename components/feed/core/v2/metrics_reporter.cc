@@ -415,6 +415,8 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
 void MetricsReporter::OnLoadStream(
     LoadStreamStatus load_from_store_status,
     LoadStreamStatus final_status,
+    bool loaded_new_content_from_network,
+    base::TimeDelta stored_content_age,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
   DVLOG(1) << "OnLoadStream load_from_store_status=" << load_from_store_status
            << " final_status=" << final_status;
@@ -425,6 +427,26 @@ void MetricsReporter::OnLoadStream(
     base::UmaHistogramEnumeration(
         "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore",
         load_from_store_status);
+  }
+
+  // For stored_content_age, the zero-value means there was no content loaded
+  // from the store. A negative value means there was content loaded, but it had
+  // a timestamp from the future. In either case, we'll avoid recording the
+  // content age.
+  if (stored_content_age > base::TimeDelta()) {
+    if (loaded_new_content_from_network) {
+      base::UmaHistogramCustomTimes(
+          "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh",
+          stored_content_age, base::TimeDelta::FromMinutes(5),
+          base::TimeDelta::FromDays(7),
+          /*buckets=*/50);
+    } else {
+      base::UmaHistogramCustomTimes(
+          "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed",
+          stored_content_age, base::TimeDelta::FromSeconds(5),
+          base::TimeDelta::FromDays(7),
+          /*buckets=*/50);
+    }
   }
 }
 

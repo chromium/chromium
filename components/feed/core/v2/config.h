@@ -17,8 +17,14 @@ struct Config {
   // Maximum number of FeedQuery or action upload requests per day.
   int max_feed_query_requests_per_day = 20;
   int max_action_upload_requests_per_day = 20;
+  // We'll always attempt to refresh content older than this.
+  base::TimeDelta stale_content_threshold = base::TimeDelta::FromHours(24);
   // Content older than this threshold will not be shown to the user.
-  base::TimeDelta stale_content_threshold = base::TimeDelta::FromHours(48);
+  base::TimeDelta content_expiration_threshold = base::TimeDelta::FromHours(48);
+  // How long the window is for background refresh tasks. If the task cannot be
+  // scheduled in the window, the background refresh is aborted.
+  base::TimeDelta background_refresh_window_length =
+      base::TimeDelta::FromHours(24);
   // The time between background refresh attempts. Ignored if a server-defined
   // fetch schedule has been assigned.
   base::TimeDelta default_background_refresh_interval =

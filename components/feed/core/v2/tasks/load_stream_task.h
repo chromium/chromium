@@ -48,6 +48,8 @@ class LoadStreamTask : public offline_pages::Task {
     // Status of just loading the stream from the persistent store, if that
     // was attempted.
     LoadStreamStatus load_from_store_status = LoadStreamStatus::kNoStatus;
+    // Age of content loaded from local storage. Zero if none was loaded.
+    base::TimeDelta stored_content_age;
     LoadType load_type;
 
     // Information about the network request, if one was made.
@@ -80,11 +82,13 @@ class LoadStreamTask : public offline_pages::Task {
   LoadType load_type_;
   FeedStream* stream_;  // Unowned.
   std::unique_ptr<LoadStreamFromStoreTask> load_from_store_task_;
+  std::unique_ptr<StreamModelUpdateRequest> stale_store_state_;
 
   // Information to be stuffed in |Result|.
   LoadStreamStatus load_from_store_status_ = LoadStreamStatus::kNoStatus;
   base::Optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
+  base::TimeDelta stored_content_age_;
 
   std::unique_ptr<LoadLatencyTimes> latencies_;
   base::TimeTicks task_creation_time_;

@@ -55,6 +55,12 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kNetworkFetchFailed";
     case LoadStreamStatus::kCannotLoadMoreNoNextPageToken:
       return out << "kCannotLoadMoreNoNextPageToken";
+    case LoadStreamStatus::kDataInStoreStaleMissedLastRefresh:
+      return out << "kDataInStoreStaleMissedLastRefresh";
+    case LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure:
+      return out << "kLoadedStaleDataFromStoreDueToNetworkFailure";
+    case LoadStreamStatus::kDataInStoreIsExpired:
+      return out << "kDataInStoreIsExpired";
   }
 #else
   return out << (static_cast<int>(value));

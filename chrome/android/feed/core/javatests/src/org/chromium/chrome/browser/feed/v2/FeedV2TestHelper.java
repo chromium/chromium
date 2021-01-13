@@ -99,6 +99,9 @@ class FeedV2TestHelper {
         enumNames.put("kLoadNotAllowedDisabledByEnterprisePolicy", 17);
         enumNames.put("kNetworkFetchFailed", 18);
         enumNames.put("kCannotLoadMoreNoNextPageToken", 19);
+        enumNames.put("kDataInStoreStaleMissedLastRefresh", 20);
+        enumNames.put("kLoadedStaleDataFromStoreDueToNetworkFailure", 21);
+        enumNames.put("kDataInStoreIsExpired", 22);
         return enumNames;
     }
 }

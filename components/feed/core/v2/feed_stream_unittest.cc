@@ -72,7 +72,7 @@ std::unique_ptr<StreamModel> LoadModelFromStore(FeedStore* store) {
   };
   LoadStreamFromStoreTask load_task(
       LoadStreamFromStoreTask::LoadType::kFullLoad, store,
-      base::BindLambdaForTesting(complete));
+      /*missed_last_refresh=*/false, base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale.
   load_task.IgnoreStalenessForTesting();
 
@@ -450,12 +450,16 @@ class TestMetricsReporter : public MetricsReporter {
   }
   void OnLoadStream(LoadStreamStatus load_from_store_status,
                     LoadStreamStatus final_status,
+                    bool loaded_new_content_from_network,
+                    base::TimeDelta stored_content_age,
                     std::unique_ptr<LoadLatencyTimes> latencies) override {
+    load_stream_from_store_status = load_from_store_status;
     load_stream_status = final_status;
     LOG(INFO) << "OnLoadStream: " << final_status
               << " (store status: " << load_from_store_status << ")";
     MetricsReporter::OnLoadStream(load_from_store_status, final_status,
-                                  std::move(latencies));
+                                  loaded_new_content_from_network,
+                                  stored_content_age, std::move(latencies));
   }
   void OnLoadMoreBegin(SurfaceId surface_id) override {
     load_more_surface_id = surface_id;
@@ -482,6 +486,7 @@ class TestMetricsReporter : public MetricsReporter {
 
   base::Optional<int> slice_viewed_index;
   base::Optional<LoadStreamStatus> load_stream_status;
+  base::Optional<LoadStreamStatus> load_stream_from_store_status;
   base::Optional<SurfaceId> load_more_surface_id;
   base::Optional<LoadStreamStatus> load_more_status;
   base::Optional<LoadStreamStatus> background_refresh_status;
@@ -1029,8 +1034,9 @@ TEST_F(FeedStreamTest, RefreshScheduleFlow) {
 
   // Verify |RefreshTaskComplete()| was called and next refresh was scheduled.
   EXPECT_TRUE(refresh_scheduler_.refresh_task_complete);
+  ASSERT_TRUE(refresh_scheduler_.scheduled_run_time);
   EXPECT_EQ(base::TimeDelta::FromSeconds(48 - 12),
-            refresh_scheduler_.scheduled_run_time);
+            *refresh_scheduler_.scheduled_run_time);
 
   // Simulate executing the background task again.
   refresh_scheduler_.Clear();
@@ -1043,6 +1049,46 @@ TEST_F(FeedStreamTest, RefreshScheduleFlow) {
   ASSERT_TRUE(refresh_scheduler_.scheduled_run_time);
   EXPECT_EQ(GetFeedConfig().default_background_refresh_interval,
             *refresh_scheduler_.scheduled_run_time);
+}
+
+TEST_F(FeedStreamTest, ForceRefreshIfMissedScheduledRefresh) {
+  // Inject a typical network response, with a server-defined request schedule.
+  {
+    RequestSchedule schedule;
+    schedule.anchor_time = kTestTimeEpoch;
+    schedule.refresh_offsets = {base::TimeDelta::FromSeconds(12),
+                                base::TimeDelta::FromSeconds(48)};
+    RefreshResponseData response_data;
+    response_data.model_update_request = MakeTypicalInitialModelState();
+    response_data.request_schedule = schedule;
+
+    response_translator_.InjectResponse(std::move(response_data));
+  }
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);
+  surface.Detach();
+  stream_->UnloadModel();
+
+  // Ensure a refresh is foreced only after a scheduled refresh was missed.
+  // First, load the stream after 11 seconds.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(11));
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);  // no refresh yet
+
+  // Load the stream after 13 seconds. We missed the scheduled refresh at
+  // 12 seconds.
+  surface.Detach();
+  stream_->UnloadModel();
+  task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(2));
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ(2, network_.send_query_call_count);
+  EXPECT_EQ(LoadStreamStatus::kDataInStoreStaleMissedLastRefresh,
+            metrics_reporter_->load_stream_from_store_status);
 }
 
 TEST_F(FeedStreamTest, LoadFromNetworkBecauseStoreIsStale) {
@@ -1068,6 +1114,85 @@ TEST_F(FeedStreamTest, LoadFromNetworkBecauseStoreIsStale) {
       network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
   ASSERT_TRUE(surface.initial_state);
+}
+
+// Same as LoadFromNetworkBecauseStoreIsStale, but with expired content.
+TEST_F(FeedStreamTest, LoadFromNetworkBecauseStoreIsExpired) {
+  base::HistogramTester histograms;
+  const base::TimeDelta kContentAge =
+      GetFeedConfig().content_expiration_threshold +
+      base::TimeDelta::FromMinutes(1);
+  store_->OverwriteStream(
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0, kTestTimeEpoch - kContentAge),
+      base::DoNothing());
+  stream_->GetMetadata()->SetConsistencyToken("token-1");
+
+  // Store is stale, so we should fallback to a network request.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent);
+  // The stored continutation token should be sent.
+  EXPECT_EQ(
+      "token-1",
+      network_.query_request_sent->feed_request().consistency_token().token());
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_TRUE(surface.initial_state);
+  EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
+            metrics_reporter_->load_stream_from_store_status);
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", kContentAge,
+      1);
+}
+
+TEST_F(FeedStreamTest, LoadStaleDataBecauseNetworkRequestFails) {
+  // Fill the store with stream data that is just barely stale.
+  base::HistogramTester histograms;
+  const base::TimeDelta kContentAge =
+      GetFeedConfig().stale_content_threshold + base::TimeDelta::FromMinutes(1);
+  store_->OverwriteStream(
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0, kTestTimeEpoch - kContentAge),
+      base::DoNothing());
+  stream_->GetMetadata()->SetConsistencyToken("token-1");
+
+  // Store is stale, so we should fallback to a network request. Since we didn't
+  // inject a network response, the network update will fail.
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent);
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kDataInStoreIsStale,
+            metrics_reporter_->load_stream_from_store_status);
+  EXPECT_EQ(LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure,
+            metrics_reporter_->load_stream_status);
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed", kContentAge, 1);
+}
+
+TEST_F(FeedStreamTest, LoadFailsStoredDataIsExpired) {
+  // Fill the store with stream data that is just barely expired.
+  store_->OverwriteStream(
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0,
+          kTestTimeEpoch - GetFeedConfig().content_expiration_threshold -
+              base::TimeDelta::FromMinutes(1)),
+      base::DoNothing());
+
+  // Store contains expired content, so we should fallback to a network request.
+  // Since we didn't inject a network response, the network update will fail.
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent);
+  EXPECT_EQ("loading -> cant-refresh", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
+            metrics_reporter_->load_stream_from_store_status);
+  EXPECT_EQ(LoadStreamStatus::kProtoTranslationFailed,
+            metrics_reporter_->load_stream_status);
 }
 
 TEST_F(FeedStreamTest, LoadFromNetworkFailsDueToProtoTranslation) {
@@ -1560,9 +1685,12 @@ TEST_F(FeedStreamTest, ReadNetworkResponse) {
   // should have already been scheduled/consumed, leaving only the second
   // entry still in the the refresh_offsets vector.
   RequestSchedule schedule = prefs::GetRequestSchedule(profile_prefs_);
-  EXPECT_EQ(
-      std::vector<base::TimeDelta>({base::TimeDelta::FromSeconds(120000)}),
-      schedule.refresh_offsets);
+  EXPECT_EQ(std::vector<base::TimeDelta>({
+                base::TimeDelta::FromSeconds(86308) +
+                    base::TimeDelta::FromNanoseconds(822963644),
+                base::TimeDelta::FromSeconds(120000),
+            }),
+            schedule.refresh_offsets);
 
   // The stream's user attributes are set, so activity logging is enabled.
   EXPECT_TRUE(stream_->IsActivityLoggingEnabled());

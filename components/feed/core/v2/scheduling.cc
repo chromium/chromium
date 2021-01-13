@@ -72,11 +72,11 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
   while (!schedule->refresh_offsets.empty()) {
     base::Time request_time =
         schedule->anchor_time + schedule->refresh_offsets[0];
-    schedule->refresh_offsets.erase(schedule->refresh_offsets.begin());
-    if (request_time < now) {
-      // The schedule time is in the past. This is most likely to happen if we
-      // fail to run one of our scheduled fetches. Just ignore this fetch so
-      // that we don't risk multiple fetches at a time.
+    if (request_time <= now) {
+      // The schedule time is in the past. This can happen if the scheduled
+      // request already ran, or if the scheduled task was missed. Just ignore
+      // this fetch so that we don't risk multiple fetches at a time.
+      schedule->refresh_offsets.erase(schedule->refresh_offsets.begin());
       continue;
     }
     return request_time;

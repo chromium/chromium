@@ -30869,6 +30869,10 @@ Called by update_feature_policy_enum.py.-->
   <int value="17" label="Failed - feed is disabled by enterprise policy"/>
   <int value="18"
       label="Failed - network fetch failed or returned a non-200 status"/>
+  <int value="19" label="Failed - cannot load more, no next page token"/>
+  <int value="20" label="Failed - data in store is stale, last refresh missed"/>
+  <int value="21" label="Success loading stale data, after network failure"/>
+  <int value="22" label="Failed - data in store is expired"/>
 </enum>
 
 <enum name="FeedRequestReason">

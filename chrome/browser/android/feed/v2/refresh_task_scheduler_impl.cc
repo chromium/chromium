@@ -9,15 +9,11 @@
 #include "components/background_task_scheduler/background_task_scheduler.h"
 #include "components/background_task_scheduler/task_ids.h"
 #include "components/background_task_scheduler/task_info.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
 
 namespace feed {
-namespace {
-// TODO(harringtond): This scheduling window is provisional, I'm not sure how
-// this affects task scheduling.
-constexpr base::TimeDelta kSchedulingWindowSize = base::TimeDelta::FromHours(1);
-}  // namespace
 
 RefreshTaskSchedulerImpl::RefreshTaskSchedulerImpl(
     background_task::BackgroundTaskScheduler* scheduler)
@@ -35,7 +31,9 @@ void RefreshTaskSchedulerImpl::Run(FeedService* service,
 void RefreshTaskSchedulerImpl::EnsureScheduled(base::TimeDelta delay) {
   background_task::OneOffInfo one_off;
   one_off.window_start_time_ms = delay.InMilliseconds();
-  one_off.window_end_time_ms = (delay + kSchedulingWindowSize).InMilliseconds();
+  one_off.window_end_time_ms =
+      delay.InMilliseconds() +
+      GetFeedConfig().background_refresh_window_length.InMilliseconds();
   one_off.expires_after_window_end_time = true;
   background_task::TaskInfo task_info(
       static_cast<int>(background_task::TaskIds::FEEDV2_REFRESH_JOB_ID),

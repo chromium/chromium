@@ -234,6 +234,9 @@ class FeedStream : public FeedStreamApi,
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
   LoadStreamStatus ShouldAttemptLoad(bool model_loading = false);
 
+  // Whether the last scheduled refresh was missed.
+  bool MissedLastRefresh();
+
   // Determines if a FeedQuery request can be made. If successful,
   // returns |LoadStreamStatus::kNoStatus| and acquires throttler quota.
   // Otherwise returns the reason. If |consume_quota| is false, no quota is

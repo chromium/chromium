@@ -237,9 +237,10 @@ void FeedStream::TriggerStreamLoad() {
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   PopulateDebugStreamData(result, *profile_prefs_);
-  metrics_reporter_->OnLoadStream(result.load_from_store_status,
-                                  result.final_status,
-                                  std::move(result.latencies));
+  metrics_reporter_->OnLoadStream(
+      result.load_from_store_status, result.final_status,
+      result.loaded_new_content_from_network, result.stored_content_age,
+      std::move(result.latencies));
   UpdateIsActivityLoggingEnabled();
 
   model_loading_in_progress_ = false;
@@ -573,6 +574,15 @@ LoadStreamStatus FeedStream::ShouldAttemptLoad(bool model_loading) {
     return LoadStreamStatus::kLoadNotAllowedEulaNotAccepted;
 
   return LoadStreamStatus::kNoStatus;
+}
+
+bool FeedStream::MissedLastRefresh() {
+  RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
+  if (schedule.refresh_offsets.empty())
+    return false;
+  base::Time scheduled_time =
+      schedule.anchor_time + schedule.refresh_offsets[0];
+  return scheduled_time < base::Time::Now();
 }
 
 LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(bool is_load_more,

@@ -35,6 +35,9 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // Pending actions to be uploaded if the stream is to be loaded from the
     // network.
     std::vector<feedstore::StoredAction> pending_actions;
+    // How long since the loaded content was fetched from the server.
+    // May be zero if content is not loaded.
+    base::TimeDelta content_age;
   };
 
   enum class LoadType {
@@ -44,6 +47,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamFromStoreTask(LoadType load_type,
                           FeedStore* store,
+                          bool missed_last_refresh,
                           base::OnceCallback<void(Result)> callback);
   ~LoadStreamFromStoreTask() override;
   LoadStreamFromStoreTask(const LoadStreamFromStoreTask&) = delete;
@@ -63,14 +67,17 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  LoadStreamStatus stale_reason_ = LoadStreamStatus::kNoStatus;
   LoadType load_type_;
   FeedStore* store_;  // Unowned.
   bool ignore_staleness_ = false;
+  bool missed_last_refresh_ = false;
   base::OnceCallback<void(Result)> result_callback_;
 
   // Data to be stuffed into the Result when the task is complete.
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   std::vector<feedstore::StoredAction> pending_actions_;
+  base::TimeDelta content_age_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};
 };
