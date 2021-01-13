@@ -46,7 +46,7 @@ class PLATFORM_EXPORT ActiveScriptWrappableBase : public GarbageCollectedMixin {
 #if BUILDFLAG(USE_V8_OILPAN)
 
 namespace cppgc {
-template <typename T, typename = void>
+template <typename T, typename Unused>
 struct PostConstructionCallbackTrait;
 
 template <typename T>
