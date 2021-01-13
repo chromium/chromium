@@ -443,9 +443,9 @@ class FileSystemURLLoaderFactoryTest
     }
   }
 
-  FileSystemOperationContext* NewOperationContext() {
-    FileSystemOperationContext* context(
-        new FileSystemOperationContext(file_system_context_.get()));
+  std::unique_ptr<FileSystemOperationContext> NewOperationContext() {
+    auto context = std::make_unique<FileSystemOperationContext>(
+        file_system_context_.get());
     context->set_allowed_bytes_growth(1024);
     return context;
   }

@@ -54,9 +54,9 @@ class LocalFileUtilTest : public testing::Test {
   }
 
  protected:
-  FileSystemOperationContext* NewContext() {
-    FileSystemOperationContext* context =
-        new FileSystemOperationContext(file_system_context_.get());
+  std::unique_ptr<FileSystemOperationContext> NewContext() {
+    auto context = std::make_unique<FileSystemOperationContext>(
+        file_system_context_.get());
     context->set_update_observers(
         *file_system_context_->GetUpdateObservers(kFileSystemType));
     return context;
@@ -230,7 +230,7 @@ TEST_F(LocalFileUtilTest, Truncate) {
 
   std::unique_ptr<FileSystemOperationContext> context;
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->Truncate(context.get(), CreateURL(file_name), 1020));
 
@@ -247,7 +247,7 @@ TEST_F(LocalFileUtilTest, CopyFile) {
   ASSERT_TRUE(created);
 
   std::unique_ptr<FileSystemOperationContext> context;
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->Truncate(context.get(), CreateURL(from_file), 1020));
 
@@ -259,7 +259,7 @@ TEST_F(LocalFileUtilTest, CopyFile) {
       AsyncFileTestHelper::Copy(file_system_context(), CreateURL(from_file),
                                 CreateURL(to_file1)));
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(
       base::File::FILE_OK,
       AsyncFileTestHelper::Copy(file_system_context(), CreateURL(from_file),
@@ -281,14 +281,14 @@ TEST_F(LocalFileUtilTest, CopyDirectory) {
   bool created;
   std::unique_ptr<FileSystemOperationContext> context;
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(context.get(), CreateURL(from_dir),
                                          false, false));
   ASSERT_EQ(base::File::FILE_OK, EnsureFileExists(from_file, &created));
   ASSERT_TRUE(created);
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->Truncate(context.get(), CreateURL(from_file), 1020));
 
@@ -297,7 +297,7 @@ TEST_F(LocalFileUtilTest, CopyDirectory) {
   EXPECT_EQ(1020, GetSize(from_file));
   EXPECT_FALSE(DirectoryExists(to_dir));
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             AsyncFileTestHelper::Copy(file_system_context(),
                                       CreateURL(from_dir), CreateURL(to_dir)));
@@ -318,14 +318,14 @@ TEST_F(LocalFileUtilTest, MoveFile) {
   ASSERT_TRUE(created);
   std::unique_ptr<FileSystemOperationContext> context;
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->Truncate(context.get(), CreateURL(from_file), 1020));
 
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK, AsyncFileTestHelper::Move(
                                      file_system_context(),
                                      CreateURL(from_file), CreateURL(to_file)));
@@ -343,14 +343,14 @@ TEST_F(LocalFileUtilTest, MoveDirectory) {
   bool created;
   std::unique_ptr<FileSystemOperationContext> context;
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(context.get(), CreateURL(from_dir),
                                          false, false));
   ASSERT_EQ(base::File::FILE_OK, EnsureFileExists(from_file, &created));
   ASSERT_TRUE(created);
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->Truncate(context.get(), CreateURL(from_file), 1020));
 
@@ -359,7 +359,7 @@ TEST_F(LocalFileUtilTest, MoveDirectory) {
   EXPECT_EQ(1020, GetSize(from_file));
   EXPECT_FALSE(DirectoryExists(to_dir));
 
-  context.reset(NewContext());
+  context = NewContext();
   ASSERT_EQ(base::File::FILE_OK,
             AsyncFileTestHelper::Move(file_system_context(),
                                       CreateURL(from_dir), CreateURL(to_dir)));

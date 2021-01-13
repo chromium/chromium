@@ -104,11 +104,10 @@ class FileSystemOperationImplTest : public testing::Test {
   MockFileChangeObserver* change_observer() { return &change_observer_; }
 
   std::unique_ptr<FileSystemOperationContext> NewContext() {
-    FileSystemOperationContext* context =
-        sandbox_file_system_.NewOperationContext();
+    auto context = sandbox_file_system_.NewOperationContext();
     // Grant enough quota for all test cases.
     context->set_allowed_bytes_growth(1000000);
-    return base::WrapUnique(context);
+    return context;
   }
 
   FileSystemURL URLForPath(const std::string& path) const {
