@@ -27,6 +27,7 @@ public final class FullscreenCallbackProxy {
     private IFullscreenCallbackClient mClient;
     private TabImpl mTab;
     private FullscreenToast mToast;
+    private boolean mIsNotifyingClientOfEnter;
 
     FullscreenCallbackProxy(TabImpl tab, long nativeTab, IFullscreenCallbackClient client) {
         assert client != null;
@@ -69,13 +70,22 @@ public final class FullscreenCallbackProxy {
                 if (mNativeFullscreenCallbackProxy == 0) {
                     throw new IllegalStateException("Called after destroy()");
                 }
+                if (mIsNotifyingClientOfEnter) {
+                    throw new IllegalStateException(
+                            "Fullscreen callback must not be called synchronously");
+                }
                 destroyToast();
                 FullscreenCallbackProxyJni.get().doExitFullscreen(mNativeFullscreenCallbackProxy);
             }
         };
         destroyToast();
         mToast = new FullscreenToast(mTab);
-        mClient.enterFullscreen(ObjectWrapper.wrap(exitFullscreenCallback));
+        mIsNotifyingClientOfEnter = true;
+        try {
+            mClient.enterFullscreen(ObjectWrapper.wrap(exitFullscreenCallback));
+        } finally {
+            mIsNotifyingClientOfEnter = false;
+        }
     }
 
     @CalledByNative
