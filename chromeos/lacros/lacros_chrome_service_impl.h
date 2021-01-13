@@ -16,6 +16,7 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -183,6 +184,17 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return cert_database_remote_;
   }
 
+  // Whether the DeviceAttributes API is available.
+  bool IsDeviceAttributesAvailable();
+
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to interface with DeviceAttributes.
+  mojo::Remote<crosapi::mojom::DeviceAttributes>& device_attributes_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsDeviceAttributesAvailable());
+    return device_attributes_remote_;
+  }
+
   // file_manager_remote() can only be used if this method returns true.
   bool IsFileManagerAvailable();
 
@@ -315,6 +327,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
   mojo::Remote<crosapi::mojom::CertDatabase> cert_database_remote_;
+  mojo::Remote<crosapi::mojom::DeviceAttributes> device_attributes_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
   mojo::Remote<crosapi::mojom::TestController> test_controller_remote_;

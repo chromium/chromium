@@ -16,6 +16,7 @@ namespace crosapi {
 class AccountManagerAsh;
 class CertDatabaseAsh;
 class ClipboardAsh;
+class DeviceAttributesAsh;
 class FeedbackAsh;
 class FileManagerAsh;
 class KeystoreServiceAsh;
@@ -40,6 +41,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindClipboard(mojo::PendingReceiver<mojom::Clipboard> receiver) override;
+  void BindDeviceAttributes(
+      mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindFileManager(
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
   void BindKeystoreService(
@@ -73,6 +76,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   mojo::Receiver<mojom::AshChromeService> receiver_;
 
   std::unique_ptr<AccountManagerAsh> account_manager_ash_;
+  std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;

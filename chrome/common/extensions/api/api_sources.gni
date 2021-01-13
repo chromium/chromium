@@ -81,6 +81,7 @@ if (is_chromeos_ash || is_mac || is_win) {
 
 if (is_chromeos_ash || is_chromeos_lacros) {
   schema_sources_ += [
+    "enterprise_device_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
   ]
@@ -92,7 +93,6 @@ if (is_chromeos_ash) {
     "certificate_provider_internal.idl",
     "document_scan.idl",
     "echo_private.json",
-    "enterprise_device_attributes.idl",
     "enterprise_networking_attributes.idl",
     "enterprise_platform_keys_private.json",
     "file_browser_handler_internal.json",

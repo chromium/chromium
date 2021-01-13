@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/cert_database_ash.h"
 #include "chrome/browser/chromeos/crosapi/clipboard_ash.h"
+#include "chrome/browser/chromeos/crosapi/device_attributes_ash.h"
 #include "chrome/browser/chromeos/crosapi/feedback_ash.h"
 #include "chrome/browser/chromeos/crosapi/file_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
@@ -44,6 +45,7 @@ namespace crosapi {
 AshChromeServiceImpl::AshChromeServiceImpl(
     mojo::PendingReceiver<mojom::AshChromeService> pending_receiver)
     : receiver_(this, std::move(pending_receiver)),
+      device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
           g_browser_process->local_state())),
       prefs_ash_(std::make_unique<PrefsAsh>(
@@ -180,6 +182,11 @@ void AshChromeServiceImpl::BindTestController(
 void AshChromeServiceImpl::BindClipboard(
     mojo::PendingReceiver<mojom::Clipboard> receiver) {
   clipboard_ash_->BindReceiver(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindDeviceAttributes(
+    mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
+  device_attributes_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindPrefs(
