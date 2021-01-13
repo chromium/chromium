@@ -85,7 +85,7 @@ target(link_target_type, "gpu_sources") {
     "//ui/latency/ipc",
   ]
 
-  if (!is_ash || !is_chrome_branded) {
+  if (!is_chromeos_ash || !is_chrome_branded) {
     deps += [
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",

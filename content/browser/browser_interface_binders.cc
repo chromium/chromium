@@ -179,7 +179,7 @@ namespace {
 void BindShapeDetectionServiceOnIOThread(
     mojo::PendingReceiver<shape_detection::mojom::ShapeDetectionService>
         receiver) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
   content::ServiceProcessHost::Launch<
       shape_detection::mojom::ShapeDetectionService>(
       std::move(receiver), content::ServiceProcessHost::Options()
