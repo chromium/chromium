@@ -15,7 +15,8 @@ bool StyleRecalcChange::TraverseChildren(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
-  return UpdatePseudoElements() || element.ChildNeedsStyleRecalc();
+  return UpdatePseudoElements() || RecalcContainerQueryDependent() ||
+         element.ChildNeedsStyleRecalc();
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
@@ -47,7 +48,12 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(
     const PseudoElement& pseudo_element) const {
-  return UpdatePseudoElements() || pseudo_element.NeedsStyleRecalc();
+  if (UpdatePseudoElements())
+    return true;
+  if (pseudo_element.NeedsStyleRecalc())
+    return true;
+  return RecalcContainerQueryDependent() &&
+         pseudo_element.ComputedStyleRef().DependsOnContainerQueries();
 }
 
 bool StyleRecalcChange::RecalcContainerQueryDependentChildren(

@@ -3732,14 +3732,17 @@ TEST_F(StyleEngineTest, CSSPseudoHostDynamicSpecificity) {
 
 namespace {
 
-void SetDependsOnContainerQueries(HTMLCollection& affected) {
-  for (Element* element : affected) {
-    if (const ComputedStyle* style = element->GetComputedStyle()) {
-      scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
-      cloned_style->SetDependsOnContainerQueries(true);
-      element->SetComputedStyle(cloned_style);
-    }
+void SetDependsOnContainerQueries(Element& element) {
+  if (const ComputedStyle* style = element.GetComputedStyle()) {
+    scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
+    cloned_style->SetDependsOnContainerQueries(true);
+    element.SetComputedStyle(cloned_style);
   }
+}
+
+void SetDependsOnContainerQueries(HTMLCollection& affected) {
+  for (Element* element : affected)
+    SetDependsOnContainerQueries(*element);
 }
 
 }  // namespace
@@ -3848,6 +3851,39 @@ TEST_F(StyleEngineTest, ContainerQueriesContainmentNotApplying) {
   // types on the element styled with containment. All marked as affected are
   // recalculated.
   EXPECT_EQ(7u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
+TEST_F(StyleEngineTest, PseudoElementContainerQueryRecalc) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container { contain: layout size }
+      #container::before { content: " " }
+      span::before { content: " " }
+    </style>
+    <div id="container">
+      <span id="span"></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  auto* container = GetDocument().getElementById("container");
+  auto* span = GetDocument().getElementById("span");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(span);
+
+  auto* before = span->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+  SetDependsOnContainerQueries(*before);
+
+  before = container->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+  SetDependsOnContainerQueries(*before);
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(*container);
+
+  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
