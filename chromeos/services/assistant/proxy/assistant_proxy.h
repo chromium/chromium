@@ -48,12 +48,16 @@ class AssistantProxy {
   base::Thread& background_thread() { return background_thread_; }
 
  private:
+  using AudioInputControllerMojom =
+      chromeos::libassistant::mojom::AudioInputController;
+  using AudioStreamFactoryDelegateMojom =
+      chromeos::libassistant::mojom::AudioStreamFactoryDelegate;
+  using ConversationControllerMojom =
+      chromeos::libassistant::mojom::ConversationController;
   using LibassistantServiceMojom =
       chromeos::libassistant::mojom::LibassistantService;
   using ServiceControllerMojom =
       chromeos::libassistant::mojom::ServiceController;
-  using ConversationControllerMojom =
-      chromeos::libassistant::mojom::ConversationController;
 
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
 
@@ -63,8 +67,7 @@ class AssistantProxy {
   void StopLibassistantService();
   void StopLibassistantServiceOnBackgroundThread();
 
-  mojo::PendingRemote<ServiceControllerMojom> BindServiceController();
-  mojo::PendingRemote<ConversationControllerMojom> BindConversationController();
+  void BindControllers(LibassistantServiceHost* host);
 
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;

@@ -26,9 +26,16 @@ void FakeLibassistantService::Unbind() {
   service_controller().Unbind();
 }
 
-void FakeLibassistantService::BindServiceController(
-    mojo::PendingReceiver<libassistant::mojom::ServiceController> receiver) {
-  service_controller_.Bind(std::move(receiver));
+void FakeLibassistantService::Bind(
+    mojo::PendingReceiver<libassistant::mojom::AudioInputController>
+        audio_input_controller,
+    mojo::PendingRemote<libassistant::mojom::AudioStreamFactoryDelegate>
+        audio_stream_factory_delegate,
+    mojo::PendingReceiver<libassistant::mojom::ConversationController>
+        conversation_controller,
+    mojo::PendingReceiver<libassistant::mojom::ServiceController>
+        service_controller) {
+  service_controller_.Bind(std::move(service_controller));
 }
 
 }  // namespace assistant

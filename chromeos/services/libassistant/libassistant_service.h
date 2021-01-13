@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,12 +54,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   ServiceController& service_controller() { return *service_controller_; }
 
   // mojom::LibassistantService implementation:
-  void BindServiceController(
-      mojo::PendingReceiver<mojom::ServiceController> receiver) override;
-  void BindConversationController(
-      mojo::PendingReceiver<mojom::ConversationController> receiver) override;
-  void BindAudioInputController() override {}
-  void BindAudioOutputController() override {}
+  void Bind(
+      mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
+      mojo::PendingRemote<mojom::AudioStreamFactoryDelegate>
+          audio_stream_factory_delegate,
+      mojo::PendingReceiver<mojom::ConversationController>
+          conversation_controller,
+      mojo::PendingReceiver<mojom::ServiceController> service_controller)
+      override;
 
   mojo::Receiver<mojom::LibassistantService> receiver_;
   std::unique_ptr<PlatformApi> platform_api_;

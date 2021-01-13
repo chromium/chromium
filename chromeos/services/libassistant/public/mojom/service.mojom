@@ -4,8 +4,9 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
 
 // The main interface to the Libassistant service on ChromeOS.
 // Libassistant provides access to the Google Assistant.
@@ -14,16 +15,12 @@ import "chromeos/services/libassistant/public/mojom/conversation_controller.mojo
 // It is used by //chromeos/services/assistant/proxy, which is a trusted
 // service running in the browser process.
 interface LibassistantService {
-  // Bind the service controller, which provides control over the lifetime
-  // of the Libassistant process (start/stop).
-  BindServiceController(pending_receiver<ServiceController> receiver);
 
-  // Bind the conversation controller, which in charge of handling
-  // conversations with Libassistant.
-  BindConversationController(pending_receiver<ConversationController> receiver);
-
-  // This service will further expose methods to bind all other helper
-  // controllers.
-  BindAudioInputController(/* pending_receiver */);
-  BindAudioOutputController(/* pending_receiver */);
+  // Bind everything needed to start the service.
+  Bind(
+    pending_receiver<AudioInputController> audio_input_controller,
+    pending_remote<AudioStreamFactoryDelegate> audio_stream_factory_delegate,
+    pending_receiver<ConversationController> conversation_controller,
+    pending_receiver<ServiceController> service_controller
+  );
 };

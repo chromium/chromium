@@ -29,11 +29,7 @@ void AssistantProxy::Initialize(LibassistantServiceHost* host) {
   libassistant_service_host_ = host;
   LaunchLibassistantService();
 
-  service_controller_proxy_ =
-      std::make_unique<ServiceControllerProxy>(host, BindServiceController());
-  conversation_controller_proxy_ =
-      std::make_unique<ConversationControllerProxy>(
-          BindConversationController());
+  BindControllers(host);
 }
 
 void AssistantProxy::LaunchLibassistantService() {
@@ -74,20 +70,31 @@ void AssistantProxy::StopLibassistantServiceOnBackgroundThread() {
   libassistant_service_host_->Stop();
 }
 
-mojo::PendingRemote<AssistantProxy::ServiceControllerMojom>
-AssistantProxy::BindServiceController() {
-  mojo::PendingRemote<ServiceControllerMojom> pending_remote;
-  libassistant_service_remote_->BindServiceController(
-      pending_remote.InitWithNewPipeAndPassReceiver());
-  return pending_remote;
-}
+void AssistantProxy::BindControllers(LibassistantServiceHost* host) {
+  mojo::PendingRemote<AudioInputControllerMojom>
+      pending_audio_input_controller_remote;
+  mojo::PendingRemote<AudioStreamFactoryDelegateMojom>
+      pending_audio_stream_factory_delegate_remote;
+  mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
+  mojo::PendingRemote<ConversationControllerMojom>
+      pending_conversation_controller_remote;
 
-mojo::PendingRemote<AssistantProxy::ConversationControllerMojom>
-AssistantProxy::BindConversationController() {
-  mojo::PendingRemote<ConversationControllerMojom> pending_remote;
-  libassistant_service_remote_->BindConversationController(
-      pending_remote.InitWithNewPipeAndPassReceiver());
-  return pending_remote;
+  mojo::PendingReceiver<AudioStreamFactoryDelegateMojom>
+      pending_audio_stream_factory_delegate_receiver =
+          pending_audio_stream_factory_delegate_remote
+              .InitWithNewPipeAndPassReceiver();
+
+  libassistant_service_remote_->Bind(
+      pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(pending_audio_stream_factory_delegate_remote),
+      pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
+      pending_service_controller_remote.InitWithNewPipeAndPassReceiver());
+
+  service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
+      host, std::move(pending_service_controller_remote));
+  conversation_controller_proxy_ =
+      std::make_unique<ConversationControllerProxy>(
+          std::move(pending_conversation_controller_remote));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

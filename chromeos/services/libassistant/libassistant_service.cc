@@ -37,18 +37,19 @@ LibassistantService::LibassistantService(
 
 LibassistantService::~LibassistantService() = default;
 
-void LibassistantService::BindServiceController(
-    mojo::PendingReceiver<mojom::ServiceController> receiver) {
-  service_controller_->Bind(std::move(receiver));
+void LibassistantService::Bind(
+    mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
+    mojo::PendingRemote<mojom::AudioStreamFactoryDelegate>
+        audio_stream_factory_delegate,
+    mojo::PendingReceiver<mojom::ConversationController>
+        conversation_controller,
+    mojo::PendingReceiver<mojom::ServiceController> service_controller) {
+  service_controller_->Bind(std::move(service_controller));
+  conversation_controller_->Bind(std::move(conversation_controller));
 }
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {
   service_controller().SetInitializeCallback(std::move(callback));
-}
-
-void LibassistantService::BindConversationController(
-    mojo::PendingReceiver<mojom::ConversationController> receiver) {
-  conversation_controller_->Bind(std::move(receiver));
 }
 
 }  // namespace libassistant
