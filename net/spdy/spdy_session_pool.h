@@ -145,6 +145,7 @@ class NET_EXPORT SpdySessionPool
                   const spdy::SettingsMap& initial_settings,
                   const base::Optional<GreasedHttp2Frame>& greased_http2_frame,
                   bool http2_end_stream_with_data_frame,
+                  bool enable_priority_update,
                   SpdySessionPool::TimeFunc time_func,
                   NetworkQualityEstimator* network_quality_estimator);
   ~SpdySessionPool() override;
@@ -450,7 +451,14 @@ class NET_EXPORT SpdySessionPool
   // If unset, the HEADERS frame will have the END_STREAM flag set on.
   // This is useful in conjuction with |greased_http2_frame_| so that a frame
   // of reserved type can be sent out even on requests without a body.
-  bool http2_end_stream_with_data_frame_;
+  const bool http2_end_stream_with_data_frame_;
+
+  // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
+  // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE frames
+  // any longer if SETTINGS_DEPRECATE_HTTP2_PRIORITIES is missing or has zero 0,
+  // but continue and also stop sending HTTP/2-style priority information in
+  // HEADERS frames and PRIORITY frames if it has value 1.
+  const bool enable_priority_update_;
 
   SpdySessionRequestMap spdy_session_request_map_;
 

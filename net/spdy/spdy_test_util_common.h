@@ -238,6 +238,7 @@ struct SpdySessionDependencies {
   bool disable_idle_sockets_close_on_memory_pressure;
   bool enable_early_data;
   bool key_auth_cache_server_entries_by_network_isolation_key;
+  bool enable_priority_update;
 };
 
 class SpdyURLRequestContext : public URLRequestContext {

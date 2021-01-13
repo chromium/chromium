@@ -926,6 +926,7 @@ SpdySession::SpdySession(
     const base::Optional<SpdySessionPool::GreasedHttp2Frame>&
         greased_http2_frame,
     bool http2_end_stream_with_data_frame,
+    bool enable_priority_update,
     TimeFunc time_func,
     ServerPushDelegate* push_delegate,
     NetworkQualityEstimator* network_quality_estimator,
@@ -953,6 +954,9 @@ SpdySession::SpdySession(
       initial_settings_(initial_settings),
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
+      enable_priority_update_(enable_priority_update),
+      deprecate_http2_priorities_(false),
+      settings_frame_received_(false),
       in_confirm_handshake_(false),
       max_concurrent_streams_(kInitialMaxConcurrentStreams),
       max_concurrent_pushed_streams_(
@@ -1156,6 +1160,18 @@ void SpdySession::EnqueueGreasedFrame(const base::WeakPtr<SpdyStream>& stream) {
       std::make_unique<GreasedBufferProducer>(
           stream, &greased_http2_frame_.value(), buffered_spdy_framer_.get()),
       stream, stream->traffic_annotation());
+}
+
+bool SpdySession::ShouldSendHttp2Priority() const {
+  return !enable_priority_update_ || !deprecate_http2_priorities_;
+}
+
+bool SpdySession::ShouldSendPriorityUpdate() const {
+  if (!enable_priority_update_) {
+    return false;
+  }
+
+  return settings_frame_received_ ? deprecate_http2_priorities_ : true;
 }
 
 int SpdySession::ConfirmHandshake(CompletionOnceCallback callback) {
@@ -2663,6 +2679,26 @@ void SpdySession::HandleSetting(uint32_t id, uint32_t value) {
         support_websocket_ = true;
       }
       break;
+    case spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES:
+      if (value != 0 && value != 1) {
+        DoDrainSession(
+            ERR_HTTP2_PROTOCOL_ERROR,
+            "Invalid value for spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES.");
+        return;
+      }
+      if (settings_frame_received_) {
+        if (value != (deprecate_http2_priorities_ ? 1 : 0)) {
+          DoDrainSession(ERR_HTTP2_PROTOCOL_ERROR,
+                         "spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES value "
+                         "changed after first SETTINGS frame.");
+          return;
+        }
+      } else {
+        if (value == 1) {
+          deprecate_http2_priorities_ = true;
+        }
+      }
+      break;
   }
 }
 
@@ -3307,6 +3343,10 @@ void SpdySession::OnSetting(spdy::SpdySettingsId id, uint32_t value) {
   // Log the setting.
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTING,
                     [&] { return NetLogSpdyRecvSettingParams(id, value); });
+}
+
+void SpdySession::OnSettingsEnd() {
+  settings_frame_received_ = true;
 }
 
 void SpdySession::OnWindowUpdate(spdy::SpdyStreamId stream_id,

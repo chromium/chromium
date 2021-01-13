@@ -348,7 +348,8 @@ SpdySessionDependencies::SpdySessionDependencies(
       net_log(nullptr),
       disable_idle_sockets_close_on_memory_pressure(false),
       enable_early_data(false),
-      key_auth_cache_server_entries_by_network_isolation_key(false) {
+      key_auth_cache_server_entries_by_network_isolation_key(false),
+      enable_priority_update(false) {
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
@@ -406,6 +407,7 @@ HttpNetworkSession::Params SpdySessionDependencies::CreateSessionParams(
   params.enable_early_data = session_deps->enable_early_data;
   params.key_auth_cache_server_entries_by_network_isolation_key =
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
+  params.enable_priority_update = session_deps->enable_priority_update;
   return params;
 }
 
