@@ -2384,27 +2384,6 @@
             ]
         }
     ],
-    "DeprecateFtp": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "WithoutFtpSupport",
-                    "disable_features": [
-                        "FtpProtocol"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopHats": [
         {
             "platforms": [
