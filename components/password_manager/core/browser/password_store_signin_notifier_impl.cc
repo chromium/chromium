@@ -48,9 +48,13 @@ void PasswordStoreSigninNotifierImpl::NotifySignedOut(
 }
 
 // IdentityManager::Observer implementation.
-void PasswordStoreSigninNotifierImpl::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  NotifySignedOut(account_info.email, /* primary_account= */ true);
+void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    NotifySignedOut(event.GetPreviousState().primary_account.email,
+                    /* primary_account= */ true);
+  }
 }
 
 // IdentityManager::Observer implementation.
