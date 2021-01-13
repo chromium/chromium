@@ -9,11 +9,13 @@ import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +73,8 @@ public class MenuButtonMediatorTest {
     private WindowAndroid mWindowAndroid;
     @Mock
     private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock
+    private View mUtilityView;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -217,7 +221,15 @@ public class MenuButtonMediatorTest {
 
     @Test
     public void testKeyboardIsDismissedWhenMenuShows() {
+        doReturn(mUtilityView).when(mActivity).getCurrentFocus();
         mMenuButtonMediator.onMenuVisibilityChanged(true);
-        verify(mKeyboardDelegate).hideKeyboard(anyObject());
+        verify(mKeyboardDelegate).hideKeyboard(eq(mUtilityView));
+    }
+
+    @Test
+    public void testKeyboardIsNotDismissedWhenMenuShowsWithNoFocusedViews() {
+        doReturn(null).when(mActivity).getCurrentFocus();
+        mMenuButtonMediator.onMenuVisibilityChanged(true);
+        verify(mKeyboardDelegate, never()).hideKeyboard(anyObject());
     }
 }

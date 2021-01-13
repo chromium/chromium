@@ -9,6 +9,7 @@ import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -120,8 +121,13 @@ class MenuButtonMediator implements AppMenuObserver {
             // Defocus here to avoid handling focus in multiple places, e.g., when the
             // forward button is pressed. (see crbug.com/414219)
             mSetUrlBarFocusFunction.setFocus(false, OmniboxFocusReason.UNFOCUS);
-            // Dismiss keyboard in case the user was interacting with an input field on a website.
-            mKeyboardDelegate.hideKeyboard(mActivity.getCurrentFocus());
+
+            View view = mActivity.getCurrentFocus();
+            if (view != null) {
+                // Dismiss keyboard in case the user was interacting with an input field on a
+                // website.
+                mKeyboardDelegate.hideKeyboard(view);
+            }
 
             if (!mIsInOverviewModeSupplier.get() && isShowingAppMenuUpdateBadge()) {
                 // The app menu badge should be removed the first time the menu is opened.
