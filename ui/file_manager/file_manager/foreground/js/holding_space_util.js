@@ -41,7 +41,7 @@
 
   /**
    * Returns the volume types for which the holding space feature is allowed.
-   * @return {!Array<VolumeManagerCommon.VolumeType>}
+   * @return {!Array<?VolumeManagerCommon.VolumeType>}
    */
   static getAllowedVolumeTypes() {
     return [

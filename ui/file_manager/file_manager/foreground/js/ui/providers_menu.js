@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {ProvidersModel} from '../providers_model.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {FilesMenuItem} from './files_menu.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Fills out the menu for mounting or installing new providers.
  */
-class ProvidersMenu {
+/* #export */ class ProvidersMenu {
   /**
    * @param {!ProvidersModel} model
    * @param {!cr.ui.Menu} menu

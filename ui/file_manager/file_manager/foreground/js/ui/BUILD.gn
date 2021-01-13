@@ -26,6 +26,7 @@ js_type_check("closure_compile_jsmodules") {
     ":a11y_announce.m",
     ":action_model_ui.m",
     ":actions_submenu.m",
+    ":banners.m",
     ":breadcrumb.m",
     ":combobutton.m",
     ":commandbutton.m",
@@ -47,9 +48,11 @@ js_type_check("closure_compile_jsmodules") {
     ":import_crostini_image_dialog.m",
     ":install_linux_package_dialog.m",
     ":list_container.m",
+    ":location_line.m",
     ":multi_menu.m",
     ":multi_menu_button.m",
     ":progress_center_panel.m",
+    ":providers_menu.m",
     ":suggest_apps_dialog.m",
     "table:table.m",
     "table:table_column.m",
@@ -198,6 +201,27 @@ js_library("banners") {
     "//ui/webui/resources/js/cr:event_target",
   ]
   externs_list = [ "//ui/file_manager/externs/chrome_echo_private.js" ]
+}
+
+js_library("banners.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/banners.m.js",
+  ]
+  deps = [
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/js:constants.m",
+    "//ui/file_manager/file_manager/foreground/js:directory_model.m",
+    "//ui/file_manager/file_manager/foreground/js:holding_space_util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("breadcrumb") {
@@ -831,6 +855,22 @@ js_library("location_line") {
   ]
 }
 
+js_library("location_line.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/location_line.m.js" ]
+  deps = [
+    ":list_container.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/js:path_component.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("multi_menu") {
   deps = [
     # TODO(files-ng): remove util dep when the files-ng flag is removed.
@@ -930,6 +970,20 @@ js_library("providers_menu") {
   externs_list = [ "//ui/file_manager/externs/menu_item_update_event.js" ]
 }
 
+js_library("providers_menu.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/providers_menu.m.js" ]
+  deps = [
+    ":files_menu.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("search_box") {
   deps = [
     ":autocomplete_list",
@@ -1017,6 +1071,9 @@ js_modulizer("modulize") {
   input_files = [
     "a11y_announce.js",
     "action_model_ui.js",
+    "actions_submenu.js",
+    "banners.js",
+    "breadcrumb.js",
     "combobutton.js",
     "commandbutton.js",
     "default_task_dialog.js",
@@ -1033,16 +1090,16 @@ js_modulizer("modulize") {
     "files_alert_dialog.js",
     "files_confirm_dialog.js",
     "files_menu.js",
-    "list_container.js",
-    "multi_menu.js",
-    "multi_menu_button.js",
-    "progress_center_panel.js",
-    "suggest_apps_dialog.js",
-    "actions_submenu.js",
-    "breadcrumb.js",
     "gear_menu.js",
     "import_crostini_image_dialog.js",
     "install_linux_package_dialog.js",
+    "list_container.js",
+    "location_line.js",
+    "multi_menu.js",
+    "multi_menu_button.js",
+    "progress_center_panel.js",
+    "providers_menu.js",
+    "suggest_apps_dialog.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
