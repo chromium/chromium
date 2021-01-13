@@ -131,6 +131,11 @@ void CreateSyntheticCrashReportForUte(
         base::NumberToString(previous_session.memoryFootprint));
   }
 
+  if (previous_session.applicationWillTerminateWasReceived) {
+    AppendConfigWithBreakpadServerParam(
+        config, "crashed_after_app_will_terminate", "yes");
+  }
+
   // Write empty minidump file, as Breakpad can't upload config without the
   // minidump.
   base::File minidump_file(
