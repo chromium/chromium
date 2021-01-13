@@ -43,6 +43,16 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
     kMaxValue = kCamera,
   };
 
+  using NotificationType =
+      std::bitset<static_cast<size_t>(DeviceType::kMaxValue) + 1>;
+  static constexpr NotificationType kMicNotification{
+      1 << static_cast<size_t>(DeviceType::kMic)};
+  static constexpr NotificationType kCameraNotification{
+      1 << static_cast<size_t>(DeviceType::kCamera)};
+  static constexpr NotificationType kCameraAndMicNotification{
+      (1 << static_cast<size_t>(DeviceType::kMic)) |
+      (1 << static_cast<size_t>(DeviceType::kCamera))};
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnVmCameraMicActiveChanged(VmCameraMicManager*) {}
@@ -64,27 +74,13 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   // Return true if any of the VMs is using the device. Note that if the camera
   // privacy switch is on, this always returns false for `kCamera`.
   bool IsDeviceActive(DeviceType device) const;
+  // Return true if any of the VMs is displaying the `notification`.
+  bool IsNotificationActive(NotificationType notification) const;
 
-  // When a VM is using both camera and mic, we only show a single "camera and
-  // mic" notification, which is considered a camera notification but not a mic
-  // notification because it uses the camera icon. So, if only "camera only" or
-  // "camera and mic" notifications are shown, this function returns true for
-  // `kCamera` but false for `kMic`. If a "mic only" notification is shown, this
-  // function returns true for `kMic`.
-  bool IsNotificationActive(DeviceType device) const;
  private:
   friend class VmCameraMicManagerTest;
 
-  using NotificationType =
-      std::bitset<static_cast<size_t>(DeviceType::kMaxValue) + 1>;
   static constexpr NotificationType kNoNotification{};
-  static constexpr NotificationType kMicNotification{
-      1 << static_cast<size_t>(DeviceType::kMic)};
-  static constexpr NotificationType kCameraNotification{
-      1 << static_cast<size_t>(DeviceType::kCamera)};
-  static constexpr NotificationType kCameraWithMicNotification{
-      (1 << static_cast<size_t>(DeviceType::kMic)) |
-      (1 << static_cast<size_t>(DeviceType::kCamera))};
 
   class VmInfo {
    public:

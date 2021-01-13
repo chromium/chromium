@@ -62,7 +62,7 @@ constexpr VmCameraMicManager::NotificationType
 constexpr VmCameraMicManager::NotificationType
     VmCameraMicManager::kCameraNotification;
 constexpr VmCameraMicManager::NotificationType
-    VmCameraMicManager::kCameraWithMicNotification;
+    VmCameraMicManager::kCameraAndMicNotification;
 
 VmCameraMicManager* VmCameraMicManager::Get() {
   static base::NoDestructor<VmCameraMicManager> manager;
@@ -169,23 +169,11 @@ bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {
   return false;
 }
 
-bool VmCameraMicManager::IsNotificationActive(DeviceType device) const {
+bool VmCameraMicManager::IsNotificationActive(
+    NotificationType notification) const {
   for (const auto& vm_info : vm_info_map_) {
-    const NotificationType& notification_type =
-        vm_info.second.notification_type();
-    switch (device) {
-      case DeviceType::kMic:
-        if (notification_type == kMicNotification) {
-          return true;
-        }
-        break;
-      case DeviceType::kCamera:
-        // Both the "camera only" and "camera and mic" notifications use the
-        // camera icon.
-        if (notification_type[static_cast<size_t>(DeviceType::kCamera)]) {
-          return true;
-        }
-        break;
+    if (vm_info.second.notification_type() == notification) {
+      return true;
     }
   }
   return false;

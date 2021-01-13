@@ -30,7 +30,9 @@ class TestMediaController : public ash::MediaController {
       const base::flat_map<AccountId, ash::MediaCaptureState>& capture_states)
       override {}
 
-  void NotifyVmMediaNotificationState(bool camera, bool mic) override {}
+  void NotifyVmMediaNotificationState(bool camera,
+                                      bool mic,
+                                      bool camera_and_mic) override {}
 
   bool force_media_client_key_handling() const {
     return force_media_client_key_handling_;

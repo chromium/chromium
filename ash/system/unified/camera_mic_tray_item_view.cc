@@ -59,10 +59,13 @@ CameraMicTrayItemView::~CameraMicTrayItemView() {
 }
 
 void CameraMicTrayItemView::OnVmMediaNotificationChanged(bool camera,
-                                                         bool mic) {
+                                                         bool mic,
+                                                         bool camera_and_mic) {
   switch (type_) {
     case Type::kCamera:
-      active_ = camera;
+      active_ = camera || camera_and_mic;
+      with_mic_ = camera_and_mic;
+      FetchMessage();
       break;
     case Type::kMic:
       active_ = mic;
@@ -110,7 +113,9 @@ void CameraMicTrayItemView::HandleLocaleChange() {
 void CameraMicTrayItemView::FetchMessage() {
   switch (type_) {
     case Type::kCamera:
-      message_ = l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_CAMERA);
+      message_ = l10n_util::GetStringUTF16(
+          with_mic_ ? IDS_ASH_CAMERA_MIC_VM_USING_CAMERA_AND_MIC
+                    : IDS_ASH_CAMERA_MIC_VM_USING_CAMERA);
       break;
     case Type::kMic:
       message_ = l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_MIC);

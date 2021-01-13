@@ -43,7 +43,9 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
   void HandleLocaleChange() override;
 
   // MediaCaptureObserver:
-  void OnVmMediaNotificationChanged(bool camera, bool mic) override;
+  void OnVmMediaNotificationChanged(bool camera,
+                                    bool mic,
+                                    bool camera_and_mic) override;
 
  private:
   void Update();
@@ -51,6 +53,7 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
 
   const Type type_;
   bool active_ = false;
+  bool with_mic_ = false;  // Only for `type_ == kCamera`.
   bool is_primary_session_ = false;
   base::string16 message_;
 };

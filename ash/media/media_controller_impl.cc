@@ -93,9 +93,10 @@ void MediaControllerImpl::NotifyCaptureState(
 }
 
 void MediaControllerImpl::NotifyVmMediaNotificationState(bool camera,
-                                                         bool mic) {
+                                                         bool mic,
+                                                         bool camera_and_mic) {
   for (auto& observer : observers_)
-    observer.OnVmMediaNotificationChanged(camera, mic);
+    observer.OnVmMediaNotificationChanged(camera, mic, camera_and_mic);
 }
 
 void MediaControllerImpl::HandleMediaPlayPause() {

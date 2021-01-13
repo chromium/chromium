@@ -41,9 +41,16 @@ class ASH_PUBLIC_EXPORT MediaController {
   // MediaCaptureState representing every user's state.
   virtual void NotifyCaptureState(
       const base::flat_map<AccountId, MediaCaptureState>& capture_states) = 0;
-  // Called when a VM's media notifications change. There is no `AccountId` in
-  // the argument because only the primary account/profile can launch a VM.
-  virtual void NotifyVmMediaNotificationState(bool camera, bool mic) = 0;
+  // Called when VMs' media capture notifications change. Each VM can have 0 or
+  // 1 media notification. It can either be a "camera", "mic", or "camera and
+  // mic" notification. Each of the argument is true if a notification of the
+  // corresponding type is active.
+  //
+  // There is no `AccountId` in the argument because only the primary
+  // account/profile can launch a VM.
+  virtual void NotifyVmMediaNotificationState(bool camera,
+                                              bool mic,
+                                              bool camera_and_mic) = 0;
 
  protected:
   MediaController();

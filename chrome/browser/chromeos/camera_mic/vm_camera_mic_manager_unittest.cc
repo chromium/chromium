@@ -27,12 +27,20 @@ namespace {
 using testing::UnorderedElementsAre;
 using VmType = chromeos::VmCameraMicManager::VmType;
 using DeviceType = chromeos::VmCameraMicManager::DeviceType;
+using NotificationType = chromeos::VmCameraMicManager::NotificationType;
 
 constexpr VmType kCrostiniVm = VmType::kCrostiniVm;
 constexpr VmType kPluginVm = VmType::kPluginVm;
 
 constexpr DeviceType kCamera = DeviceType::kCamera;
 constexpr DeviceType kMic = DeviceType::kMic;
+
+constexpr NotificationType kMicNotification =
+    chromeos::VmCameraMicManager::kMicNotification;
+constexpr NotificationType kCameraNotification =
+    chromeos::VmCameraMicManager::kCameraNotification;
+constexpr NotificationType kCameraAndMicNotification =
+    chromeos::VmCameraMicManager::kCameraAndMicNotification;
 
 class FakeNotificationDisplayService : public NotificationDisplayService {
  public:
@@ -67,9 +75,17 @@ using ActiveMap = base::flat_map<VmType, DeviceActiveMap>;
 
 struct IsActiveTestParam {
   ActiveMap active_map;
-  DeviceActiveMap device_expectations;
-  DeviceActiveMap notification_expectations;
+  // Device types that are expected to be active.
+  std::vector<DeviceType> device_expectations;
+  // Notification types that are expected to be active.
+  std::vector<NotificationType> notification_expectations;
 };
+
+template <typename T, typename V>
+bool contains(const T& container, const V& value) {
+  return std::find(container.begin(), container.end(), value) !=
+         container.end();
+}
 
 }  // namespace
 
@@ -78,25 +94,19 @@ namespace chromeos {
 class VmCameraMicManagerTest : public testing::Test {
  public:
   // Define here to access `VmCameraMicManager` private members.
-  using NotificationType = VmCameraMicManager::NotificationType;
-  static constexpr NotificationType kMicNotification =
-      VmCameraMicManager::kMicNotification;
-  static constexpr NotificationType kCameraNotification =
-      VmCameraMicManager::kCameraNotification;
-  static constexpr NotificationType kCameraWithMicNotification =
-      VmCameraMicManager::kCameraWithMicNotification;
   struct NotificationTestParam {
     ActiveMap active_map;
     std::set<std::string> expected_notifications;
 
     NotificationTestParam(
         const ActiveMap& active_map,
-        const std::vector<std::pair<VmType, NotificationType>>& notifications) {
+        const std::vector<std::pair<VmType, NotificationType>>&
+            expected_notifications) {
       this->active_map = active_map;
-      for (const auto& vm_notification : notifications) {
-        auto result =
-            expected_notifications.insert(VmCameraMicManager::GetNotificationId(
-                vm_notification.first, vm_notification.second));
+      for (const auto& vm_notification : expected_notifications) {
+        auto result = this->expected_notifications.insert(
+            VmCameraMicManager::GetNotificationId(vm_notification.first,
+                                                  vm_notification.second));
         CHECK(result.second);
       }
     }
@@ -178,22 +188,26 @@ TEST_F(VmCameraMicManagerTest, CameraPrivacy) {
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(kPluginVm, false);
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+  EXPECT_FALSE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, true);
   SetCameraPrivacyIsOn(kPluginVm, false);
   EXPECT_TRUE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
-  EXPECT_TRUE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+  EXPECT_TRUE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(kPluginVm, true);
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+  EXPECT_FALSE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 
   SetCameraAccessing(kPluginVm, true);
   SetCameraPrivacyIsOn(kPluginVm, true);
   EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
-  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+  EXPECT_FALSE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 }
 
 // Test `IsDeviceActive()` and `IsNotificationActive()`.
@@ -204,17 +218,15 @@ class VmCameraMicManagerIsActiveTest
 TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
   SetActive(GetParam().active_map);
 
-  for (const auto& device_and_expectation : GetParam().device_expectations) {
-    EXPECT_EQ(
-        vm_camera_mic_manager_->IsDeviceActive(device_and_expectation.first),
-        device_and_expectation.second);
+  for (auto device : {kCamera, kMic}) {
+    EXPECT_EQ(vm_camera_mic_manager_->IsDeviceActive(device),
+              contains(GetParam().device_expectations, device));
   }
 
-  for (const auto& device_and_expectation :
-       GetParam().notification_expectations) {
-    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(
-                  device_and_expectation.first),
-              device_and_expectation.second);
+  for (auto notification :
+       {kCameraNotification, kMicNotification, kCameraAndMicNotification}) {
+    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(notification),
+              contains(GetParam().notification_expectations, notification));
   }
 }
 
@@ -227,32 +239,32 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 0}, {kMic, 0}},
-            /*notificatoin_expectations=*/{{kCamera, 0}, {kMic, 0}},
+            /*device_expectations=*/{},
+            /*notificatoin_expectations=*/{},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 0}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*device_expectations=*/{kCamera},
+            /*notificatoin_expectations=*/{kCameraNotification},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 0}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*device_expectations=*/{kCamera},
+            /*notificatoin_expectations=*/{kCameraNotification},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 0}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 0}, {kMic, 1}},
+            /*device_expectations=*/{kMic},
+            /*notificatoin_expectations=*/{kMicNotification},
         },
         // Only a crostini "camera icon" notification is displayed.
         IsActiveTestParam{
@@ -260,8 +272,8 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*device_expectations=*/{kCamera, kMic},
+            /*notificatoin_expectations=*/{kCameraAndMicNotification},
         },
         // Crostini "camera icon" notification and pluginvm mic notification are
         // displayed.
@@ -270,8 +282,9 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*device_expectations=*/{kCamera, kMic},
+            /*notificatoin_expectations=*/
+            {kCameraAndMicNotification, kMicNotification},
         },
         // Crostini "camera icon" notification and pluginvm camera notification
         // are displayed.
@@ -280,8 +293,9 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*device_expectations=*/{kCamera, kMic},
+            /*notificatoin_expectations=*/
+            {kCameraAndMicNotification, kCameraNotification},
         },
         // Crostini camera notification and pluginvm mic notification are
         // displayed.
@@ -290,8 +304,9 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 1}},
+            /*device_expectations=*/{kCamera, kMic},
+            /*notificatoin_expectations=*/
+            {kCameraNotification, kMicNotification},
         },
         // Crostini and pluginvm "camera icon" notifications are displayed.
         IsActiveTestParam{
@@ -299,8 +314,8 @@ INSTANTIATE_TEST_SUITE_P(
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 1}}},
             },
-            /*device_expectations=*/{{kCamera, 1}, {kMic, 1}},
-            /*notificatoin_expectations=*/{{kCamera, 1}, {kMic, 0}},
+            /*device_expectations=*/{kCamera, kMic},
+            /*notificatoin_expectations=*/{kCameraAndMicNotification},
         }));
 
 class VmCameraMicManagerNotificationTest
@@ -343,7 +358,7 @@ class VmCameraMicManagerNotificationTest
             /*expected_notifications=*/
             {
                 {kCrostiniVm, kCameraNotification},
-                {kPluginVm, kCameraWithMicNotification},
+                {kPluginVm, kCameraAndMicNotification},
             },
         },
     };

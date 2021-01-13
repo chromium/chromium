@@ -313,8 +313,12 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
     vm_media_capture_state_ |= MediaCaptureState::kAudio;
 
   media_controller_->NotifyVmMediaNotificationState(
-      manager->IsNotificationActive(DeviceType::kCamera),
-      manager->IsNotificationActive(DeviceType::kMic));
+      manager->IsNotificationActive(
+          chromeos::VmCameraMicManager::kCameraNotification),
+      manager->IsNotificationActive(
+          chromeos::VmCameraMicManager::kMicNotification),
+      manager->IsNotificationActive(
+          chromeos::VmCameraMicManager::kCameraAndMicNotification));
 }
 
 void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
