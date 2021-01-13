@@ -86,8 +86,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.BatteryLevel.Accepted.LocationSettingsDialog"
-    units="%" expires_after="M90">
-  <owner>timloh@chromium.org</owner>
+    units="%" expires_after="M96">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
   <summary>
     Battery percentage when a location settings dialog was accepted.
   </summary>
@@ -131,10 +135,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.CrowdDeny.DidHoldbackQuietUi" enum="Boolean"
-    expires_after="2021-01-31">
+    expires_after="M96">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
   <summary>
     Whenever a notification permission prompt is to be displayed, crowd deny
     might trigger based on site reputation which will result in a quiet

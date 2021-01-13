@@ -18284,8 +18284,12 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.SessionOnly"
-    enum="ContentType" expires_after="M90">
-  <owner>timloh@chromium.org</owner>
+    enum="ContentType" expires_after="M96">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
   <summary>
     Count of how often a specific content type (permission) is changed to the
     session only value using the content settings menu. This option only exists
