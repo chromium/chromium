@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/embedder/graph_features_helper.h"
@@ -21,10 +20,6 @@
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
-
-#if !defined(OS_ANDROID)
-#include "components/performance_manager/public/decorators/site_data_recorder.h"
-#endif
 
 namespace performance_manager {
 

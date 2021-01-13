@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
+#include "components/performance_manager/v8_memory/web_memory_stress_tester.h"
 
 #if !defined(OS_ANDROID)
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
@@ -69,8 +70,11 @@ void GraphFeaturesHelper::ConfigureGraph(Graph* graph) const {
     Install<execution_context_priority::ExecutionContextPriorityDecorator>(
         graph);
   }
-  if (flags_.v8_context_tracker)
+  if (flags_.v8_context_tracker) {
     Install<v8_memory::V8ContextTracker>(graph);
+    if (v8_memory::WebMeasureMemoryStressTester::FeatureIsEnabled())
+      Install<v8_memory::WebMeasureMemoryStressTester>(graph);
+  }
 }
 
 }  // namespace performance_manager
