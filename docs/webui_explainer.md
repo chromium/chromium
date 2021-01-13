@@ -258,7 +258,7 @@ So, the given C++ code:
 
 ```c++
 void OvenHandler::RegisterMessages() {
-  web_ui()->RegisterMessageHandler("bakeDonuts",
+  web_ui()->RegisterMessageCallback("bakeDonuts",
       base::Bind(&OvenHandler::HandleBakeDonuts, base::Unretained(this)));
 }
 
