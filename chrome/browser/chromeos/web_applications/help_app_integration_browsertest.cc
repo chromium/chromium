@@ -31,14 +31,12 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
-#include "chromeos/components/local_search_service/shared_structs.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -155,75 +153,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   EXPECT_EQ(nullptr,
             SandboxedWebUiAppTestBase::EvalJsInAppFrame(web_contents, kScript));
   EXPECT_EQ(1, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
-}
-
-// Test that the Help App logs metrics on search status.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchStatusMetrics) {
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
-
-  base::HistogramTester histogram_tester;
-
-  // Use ExecuteScriptAndExtractBool instead of EvalJsInAppFrame because the
-  // script needs to run in the same world as the page's code.
-  bool are_results_null;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), R"(
-        (async () => {
-          const res = await DELEGATE.findInSearchIndex('crome');
-          window.domAutomationController.send(res.results === null);
-        })();
-      )",
-      &are_results_null));
-
-  // Since the index has not initialized (which takes ~3.6 seconds), there
-  // should be no results and one histogram count for kEmptyIndex.
-  EXPECT_TRUE(are_results_null);
-  EXPECT_EQ(1,
-            histogram_tester.GetBucketCount(
-                "Discover.Search.SearchStatus",
-                chromeos::local_search_service::ResponseStatus::kEmptyIndex));
-
-  int no_of_results;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), R"(
-        (async () => {
-          await DELEGATE.addOrUpdateSearchIndex([{
-            // Title match. No subheadings.
-            id: 'test-id-1',
-            title: 'verycomplicatedsearchtoken',
-            body: 'Body text',
-            mainCategoryName: 'Help',
-            locale: 'en-US',
-          }]);
-          const res = await DELEGATE.findInSearchIndex(
-              'verycomplicatedsearchtoken');
-          window.domAutomationController.send(res.results.length);
-        })();
-      )",
-      &no_of_results));
-  // Now that the index has been initialized with a test item, there should be
-  // 1 result for the above search, and one histogram count for kSuccess.
-  EXPECT_EQ(1, no_of_results);
-  EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Discover.Search.SearchStatus",
-                   chromeos::local_search_service::ResponseStatus::kSuccess));
-
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), R"(
-        (async () => {
-          const res = await DELEGATE.findInSearchIndex('');
-          window.domAutomationController.send(res.results === null);
-        })();
-      )",
-      &are_results_null));
-  // Searches with empty queries will return {results: null}. Results should be
-  // null and there should be one histogram count for kEmptyQuery.
-  EXPECT_TRUE(are_results_null);
-  EXPECT_EQ(1,
-            histogram_tester.GetBucketCount(
-                "Discover.Search.SearchStatus",
-                chromeos::local_search_service::ResponseStatus::kEmptyQuery));
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
