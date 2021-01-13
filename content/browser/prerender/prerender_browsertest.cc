@@ -8,6 +8,7 @@
 #include "base/thread_annotations.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -132,6 +133,49 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   bool IsActivationDisabled() const { return GetParam(); }
+
+  void TestRenderFrameHostPrerenderingState(const GURL& prerender_url) {
+    const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+
+    // Navigate to an initial page.
+    ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+    // The initial page should not be for prerendering.
+    RenderFrameHostImpl* initiator_render_frame_host =
+        static_cast<RenderFrameHostImpl*>(
+            shell()->web_contents()->GetMainFrame());
+    EXPECT_FALSE(initiator_render_frame_host->IsPrerendering());
+    // Start a prerender.
+    AddPrerender(prerender_url);
+    PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+    PrerenderHost* prerender_host =
+        registry.FindHostByUrlForTesting(prerender_url);
+
+    // Verify all RenderFrameHostImpl in the prerendered page know the
+    // prerendering state.
+    RenderFrameHostImpl* prerendered_render_frame_host =
+        prerender_host->GetPrerenderedMainFrameHostForTesting();
+    std::vector<RenderFrameHost*> frames =
+        prerendered_render_frame_host->GetFramesInSubtree();
+    for (auto* frame : frames) {
+      auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
+      EXPECT_TRUE(rfhi->IsPrerendering());
+    }
+
+    // Activate the prerendered page.
+    NavigateWithLocation(prerender_url);
+
+    // The activated page should no longer be in the prerendering state.
+    RenderFrameHostImpl* navigated_render_frame_host =
+        static_cast<RenderFrameHostImpl*>(
+            shell()->web_contents()->GetMainFrame());
+    // The new page shouldn't be in the prerendering state.
+    frames = navigated_render_frame_host->GetFramesInSubtree();
+    for (auto* frame : frames) {
+      auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
+      EXPECT_FALSE(rfhi->IsPrerendering());
+    }
+  }
 
  private:
   net::test_server::EmbeddedTestServer ssl_server_{
@@ -274,56 +318,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, InformedRenderFrameHost) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
-
-  // The initial page should not be for prerendering.
-  RenderFrameHostImpl* initiator_render_frame_host =
-      static_cast<RenderFrameHostImpl*>(
-          shell()->web_contents()->GetMainFrame());
-  EXPECT_FALSE(initiator_render_frame_host->IsPrerendering());
-
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // A prerender host for the URL should be registered.
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  EXPECT_NE(prerender_host, nullptr);
-
-  // Verify the corresponding RenderFrameHostImpl knows the prerendering state.
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
-  EXPECT_TRUE(prerendered_render_frame_host->IsPrerendering());
-
-  // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl);
-  if (IsActivationDisabled()) {
-    // Activation is disabled, so the page should newly be rendered instead
-    // of the prerendered page.
-    RenderFrameHostImpl* new_render_frame_host =
-        static_cast<RenderFrameHostImpl*>(
-            shell()->web_contents()->GetMainFrame());
-    EXPECT_NE(prerendered_render_frame_host, new_render_frame_host);
-    // The new page shouldn't be in the prerendering state.
-    EXPECT_FALSE(new_render_frame_host->IsPrerendering());
-  } else {
-    // The prerendered page is activated. The page should no longer be in
-    // the prerendering state.
-    ASSERT_EQ(prerendered_render_frame_host,
-              shell()->web_contents()->GetMainFrame());
-    EXPECT_FALSE(prerendered_render_frame_host->IsPrerendering());
-  }
-}
-
 // Makes sure that activations on navigations for iframes don't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
@@ -408,6 +402,18 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
   shell()->GoBackOrForward(-1);
   observer.Wait();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
+}
+
+// Tests that all RenderFrameHostImpls in the prerendering page know the
+// prerendering state.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderIframe) {
+  TestRenderFrameHostPrerenderingState(GetUrl("/page_with_iframe.html"));
+}
+
+// Blank <iframe> is a special case. Tests that the blank iframe knows the
+// prerendering state as well.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
+  TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
 // TODO(https://crbug.com/1132746): Test canceling prerendering.

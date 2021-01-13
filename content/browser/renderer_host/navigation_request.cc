@@ -766,6 +766,12 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     }
   }
 
+  // The prerendering state of a sub-frame is decided by its parent.
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+      frame_tree_node->parent()) {
+    is_prerendering = frame_tree_node->parent()->IsPrerendering();
+  }
+
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(navigation_params),
       std::move(commit_params), browser_initiated,
@@ -880,6 +886,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   int initiator_process_id =
       frame_tree_node->current_frame_host()->GetProcess()->GetID();
 
+  // For sub-frame navigations, inherit the prerendering state from the parent.
+  bool is_prerendering = false;
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+      frame_tree_node->parent()) {
+    is_prerendering = frame_tree_node->parent()->IsPrerendering();
+  }
+
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -888,8 +901,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       false,  // browser_initiated
       true,   // from_begin_navigation
       false,  // is_for_commit
-      false,  // is_prerendering
-      nullptr, entry,
+      is_prerendering,
+      nullptr,  // frame_entry
+      entry,
       nullptr,  // navigation_ui_data
       std::move(navigation_client), std::move(navigation_initiator),
       nullptr,  // rfh_restored_from_back_forward_cache

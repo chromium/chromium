@@ -7812,6 +7812,9 @@ void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
 
+  for (auto& child : children_)
+    child->current_frame_host()->OnPrerenderedPageActivated();
+
   // TODO(https://crbug.com/1132752): Inform `broker_` that the prerendered
   // frame is activated.
 }
@@ -8781,6 +8784,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // create one in order to properly issue DidFinishNavigation calls to
     // WebContentsObservers.
     DCHECK(is_initial_empty_commit || is_same_document_navigation);
+
+    // Handle src-less <iframe> for prerendering.
+    // This is a special case that does not go through CommitNavigation path.
+    if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+        is_initial_empty_commit && !is_main_frame()) {
+      is_prerendering_ = parent_->IsPrerendering();
+    }
+
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForCommit(
