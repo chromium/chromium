@@ -568,7 +568,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Whether the document can be scrolled on load
   bool navigation_scroll_allowed_ = true;
 
-  bool origin_agent_cluster_ = false;
+  bool origin_isolated_ = false;
 
   // Whether this load request is cross browsing context group.
   bool is_cross_browsing_context_group_navigation_ = false;

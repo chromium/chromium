@@ -1724,8 +1724,8 @@ void LocalDOMWindow::SetOriginPolicyIds(const Vector<String>& ids) {
   origin_policy_ids_ = ids;
 }
 
-bool LocalDOMWindow::originAgentCluster() const {
-  return GetAgent()->IsOriginKeyed();
+bool LocalDOMWindow::originIsolated() const {
+  return GetAgent()->IsOriginIsolated();
 }
 
 int LocalDOMWindow::requestIdleCallback(V8IdleRequestCallback* callback,

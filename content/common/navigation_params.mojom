@@ -448,9 +448,9 @@ struct CommitNavigationParams {
   // The names of origin trials to be force enabled for this navigation.
   array<string> force_enabled_origin_trials;
 
-  // Whether the page is in an origin-keyed agent cluster.
-  // https://html.spec.whatwg.org/C/#origin-keyed-agent-clusters
-  bool origin_agent_cluster = false;
+  // Whether the page is origin isolated.
+  // https://github.com/WICG/origin-isolation
+  bool origin_isolated = false;
 
   // Client-hints enabled; this is based on the top-level frame and should be
   // further narrowed down by feature policy.

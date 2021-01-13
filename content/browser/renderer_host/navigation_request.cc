@@ -872,7 +872,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
-          /*origin_agent_cluster=*/false,
+          /*origin_isolated=*/false,
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
@@ -990,7 +990,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           ukm::kInvalidSourceId /* document_ukm_source_id */,
           frame_tree_node->pending_frame_policy(),
           std::vector<std::string>() /* force_enabled_origin_trials */,
-          false /* origin_agent_cluster */,
+          false /* origin_isolated */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */,
@@ -2133,12 +2133,12 @@ void NavigationRequest::DetermineOriginIsolationEndResult(bool is_requested) {
        network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
 
-  // The origin_agent_cluster navigation commit parameter communicates to the
-  // renderer about origin-keying, so it should be true for opaque origin
+  // The origin_isolated navigation commit parameter communicates to the
+  // renderer about origin isolation, so it should be true for opaque origin
   // cases (e.g., for data: URLs). origin_isolation_end_result_ shouldn't be
   // modified since it's used for warnings and use counters, i.e. things that
-  // don't apply to this sort of "automatic" origin-keying.
-  commit_params_->origin_agent_cluster =
+  // don't apply to this sort of "automatic" origin isolation.
+  commit_params_->origin_isolated =
       is_opaque_origin_because_sandbox || origin.opaque() ||
       origin_isolation_end_result_ ==
           OptInOriginIsolationEndResult::kRequestedAndIsolated ||

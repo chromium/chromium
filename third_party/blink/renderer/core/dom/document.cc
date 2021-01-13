@@ -5874,12 +5874,12 @@ void Document::setDomain(const String& raw_domain,
   }
 
   if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
-      dom_window_->GetAgent()->IsOriginKeyed()) {
+      dom_window_->GetAgent()->IsOriginIsolated()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "document.domain mutation is ignored because the surrounding agent "
-        "cluster is origin-keyed."));
+        "cluster is origin-isolated."));
     return;
   }
 
