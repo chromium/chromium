@@ -49,6 +49,20 @@ void FakeServiceController::UnblockStartCalls() {
   start_mutex_.unlock();
 }
 
+std::string FakeServiceController::access_token() {
+  if (authentication_tokens_.size())
+    return authentication_tokens_[0]->access_token;
+  else
+    return kNoValue;
+}
+
+std::string FakeServiceController::gaia_id() {
+  if (authentication_tokens_.size())
+    return authentication_tokens_[0]->gaia_id;
+  else
+    return kNoValue;
+}
+
 void FakeServiceController::Initialize(const std::string& libassistant_config) {
   libassistant_config_ = libassistant_config;
 }
@@ -78,6 +92,11 @@ void FakeServiceController::AddAndFireStateObserver(
   observer->OnStateChanged(state_);
 
   state_observers_.Add(std::move(observer));
+}
+
+void FakeServiceController::SetAuthenticationTokens(
+    std::vector<libassistant::mojom::AuthenticationTokenPtr> tokens) {
+  authentication_tokens_ = std::move(tokens);
 }
 
 }  // namespace assistant

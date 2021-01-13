@@ -7,13 +7,30 @@
 #include <memory>
 
 #include "base/check.h"
+#include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
+#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace chromeos {
 namespace libassistant {
 
+namespace {
+
 using mojom::ServiceState;
+
+std::vector<std::pair<std::string, std::string>> ToAuthTokens(
+    const std::vector<mojom::AuthenticationTokenPtr>& mojo_tokens) {
+  std::vector<std::pair<std::string, std::string>> result;
+
+  for (const auto& token : mojo_tokens)
+    result.emplace_back(token->gaia_id, token->access_token);
+
+  return result;
+}
+
+}  // namespace
 
 ServiceController::ServiceController(
     assistant::AssistantManagerServiceDelegate* delegate,
@@ -100,6 +117,39 @@ void ServiceController::AddAndFireStateObserver(
   observer->OnStateChanged(state_);
 
   state_observers_.Add(std::move(observer));
+}
+
+void ServiceController::SetLocaleOverride(const std::string& value) {
+  DCHECK(IsInitialized());
+
+  assistant_manager_internal()->SetLocaleOverride(value);
+}
+
+void ServiceController::SetInternalOptions(const std::string& locale,
+                                           bool spoken_feedback_enabled) {
+  DCHECK(IsInitialized());
+
+  auto* internal_options =
+      assistant_manager_internal()->CreateDefaultInternalOptions();
+  assistant::SetAssistantOptions(internal_options, locale,
+                                 spoken_feedback_enabled);
+
+  internal_options->SetClientControlEnabled(
+      assistant::features::IsRoutinesEnabled());
+
+  if (!assistant::features::IsVoiceMatchDisabled())
+    internal_options->EnableRequireVoiceMatchVerification();
+
+  assistant_manager_internal()->SetOptions(*internal_options, [](bool success) {
+    DVLOG(2) << "set options: " << success;
+  });
+}
+
+void ServiceController::SetAuthenticationTokens(
+    std::vector<mojom::AuthenticationTokenPtr> tokens) {
+  DCHECK(IsInitialized());
+
+  assistant_manager()->SetAuthTokens(ToAuthTokens(tokens));
 }
 
 void ServiceController::AddAndFireAssistantManagerObserver(

@@ -25,6 +25,15 @@ namespace assistant {
 // any state change, just like the real implementation.
 class FakeServiceController : public libassistant::mojom::ServiceController {
  public:
+  // Value returned when optional fields |access_token| or |user_id| are
+  // missing. Note we use this instead of a |base::Optional| because this
+  // results in a much nicer error message if the test fails. (otherwise you get
+  // a message like this:
+  //     Expected equality of these values:
+  //           "<new-user-id-wrong>"
+  //     with 32-byte object <01-00 snip 00-00>
+  static constexpr const char* kNoValue = "<no-value>";
+
   using State = libassistant::mojom::ServiceState;
   using InitializeCallback =
       base::OnceCallback<void(assistant_client::AssistantManager*,
@@ -56,6 +65,13 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void BlockStartCalls();
   void UnblockStartCalls();
 
+  // Return the access-token that was passed to |SetAuthenticationTokens|, or
+  // |kNoValue| if an empty vector was passed in.
+  std::string access_token();
+  // Return the user-id that was passed to |SetAuthenticationTokens|, or
+  // |kNoValue| if an empty vector was passed in.
+  std::string gaia_id();
+
   // mojom::ServiceController implementation:
   void Initialize(const std::string& libassistant_config) override;
   void Start() override;
@@ -63,6 +79,11 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void AddAndFireStateObserver(
       mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer)
       override;
+  void SetLocaleOverride(const std::string&) override {}
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override {}
+  void SetAuthenticationTokens(
+      std::vector<libassistant::mojom::AuthenticationTokenPtr> tokens) override;
 
  private:
   // Mutex taken in |Start| to allow the calls to block if |BlockStartCalls| was
@@ -71,6 +92,10 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
 
   // Config passed to LibAssistant when it was started.
   std::string libassistant_config_;
+
+  // Authentication tokens passed to SetAuthenticationTokens().
+  std::vector<libassistant::mojom::AuthenticationTokenPtr>
+      authentication_tokens_;
 
   InitializeCallback initialize_callback_;
 

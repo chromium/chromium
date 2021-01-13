@@ -10,6 +10,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
 #include "base/optional.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -258,7 +259,12 @@ class AssistantManagerServiceImplTest : public testing::Test {
                                        /*enable_hotword=*/false);
   }
 
-  void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
+  void RunUntilIdle() {
+    // First ensure our mojom thread is finished.
+    background_thread().FlushForTesting();
+    // Then handle any callbacks.
+    base::RunLoop().RunUntilIdle();
+  }
 
   // Adds a state observer mock, and add the expectation for the fact that it
   // auto-fires the observer.
@@ -321,6 +327,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
  private:
+  base::Thread& background_thread() {
+    return assistant_manager_service()->GetBackgroundThreadForTesting();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   ScopedAssistantClient assistant_client_;
@@ -430,8 +440,8 @@ TEST_F(AssistantManagerServiceImplTest,
 
   WaitForState(AssistantManagerService::STARTED);
 
-  EXPECT_EQ("<user-id>", fake_assistant_manager()->user_id());
-  EXPECT_EQ("<access-token>", fake_assistant_manager()->access_token());
+  EXPECT_EQ("<user-id>", mojom_service_controller().gaia_id());
+  EXPECT_EQ("<access-token>", mojom_service_controller().access_token());
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
@@ -440,9 +450,10 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
 
   assistant_manager_service()->SetUser(
       UserInfo("<new-user-id>", "<new-access-token>"));
+  RunUntilIdle();
 
-  EXPECT_EQ("<new-user-id>", fake_assistant_manager()->user_id());
-  EXPECT_EQ("<new-access-token>", fake_assistant_manager()->access_token());
+  EXPECT_EQ("<new-user-id>", mojom_service_controller().gaia_id());
+  EXPECT_EQ("<new-access-token>", mojom_service_controller().access_token());
 }
 
 TEST_F(AssistantManagerServiceImplTest,
@@ -451,9 +462,10 @@ TEST_F(AssistantManagerServiceImplTest,
   WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->SetUser(base::nullopt);
+  RunUntilIdle();
 
-  EXPECT_EQ(kNoValue, fake_assistant_manager()->user_id());
-  EXPECT_EQ(kNoValue, fake_assistant_manager()->access_token());
+  EXPECT_EQ(kNoValue, mojom_service_controller().gaia_id());
+  EXPECT_EQ(kNoValue, mojom_service_controller().access_token());
 }
 
 TEST_F(AssistantManagerServiceImplTest,

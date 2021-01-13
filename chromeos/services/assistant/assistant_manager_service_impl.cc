@@ -1024,6 +1024,10 @@ void AssistantManagerServiceImpl::InitAssistant(
                      weak_factory_.GetWeakPtr()));
 }
 
+base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
+  return background_thread();
+}
+
 void AssistantManagerServiceImpl::PostInitAssistant() {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   DCHECK_EQ(GetState(), State::STARTING);

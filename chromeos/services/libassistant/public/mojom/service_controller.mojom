@@ -32,6 +32,17 @@ interface ServiceController {
   // Stop the service. Will be a noop if the service is already stopped.
   Stop();
 
+  // Sets the locale override of the device. This field overrides the
+  // value obtained from the user's assistant settings.
+  SetLocaleOverride(string locale_override);
+
+  // Sets the internal Libassistant options.
+  SetInternalOptions(string locale, bool spoken_feedback_enabled);
+
+  // Sets the authentication tokens used by Libassistant.
+  // Passing in an empty array will restart Libassistant in signed-out mode.
+  SetAuthenticationTokens(array<AuthenticationToken> tokens);
+
   // Add a state observer. It will immediately be called with the current state,
   // and then once for each state change.
   AddAndFireStateObserver(pending_remote<StateObserver> observer);
@@ -43,4 +54,10 @@ interface StateObserver {
   // Called when the running state of the service changes.
   // Will never be called twice consecutively with the same state.
   OnStateChanged(ServiceState new_state);
+};
+
+// A token used by Libassistant to authenticate the user.
+struct AuthenticationToken {
+  string gaia_id;
+  string access_token;
 };

@@ -67,6 +67,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void Stop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
+  void SetLocaleOverride(const std::string& value) override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
+  void SetAuthenticationTokens(
+      std::vector<mojom::AuthenticationTokenPtr> tokens) override;
 
   void AddAndFireAssistantManagerObserver(AssistantManagerObserver* observer);
   void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);

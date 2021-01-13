@@ -49,11 +49,6 @@ struct StartArguments {
   assistant_client::ConversationStateListener* conversation_state_listener;
   assistant_client::DeviceStateListener* device_state_listener;
   CrosDisplayConnection* display_connection;
-  std::string libassistant_config;
-  std::string locale;
-  std::string locale_override;
-  bool spoken_feedback_enabled;
-  ServiceControllerProxy::AuthTokens auth_tokens;
 };
 
 void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
@@ -78,25 +73,6 @@ void SetServerExperiments(
   }
 }
 
-void SetInternalOptions(
-    assistant_client::AssistantManagerInternal* assistant_manager_internal,
-    const std::string& locale,
-    bool spoken_feedback_enabled) {
-  auto* internal_options =
-      assistant_manager_internal->CreateDefaultInternalOptions();
-  SetAssistantOptions(internal_options, locale, spoken_feedback_enabled);
-
-  internal_options->SetClientControlEnabled(
-      assistant::features::IsRoutinesEnabled());
-
-  if (!features::IsVoiceMatchDisabled())
-    internal_options->EnableRequireVoiceMatchVerification();
-
-  assistant_manager_internal->SetOptions(*internal_options, [](bool success) {
-    DVLOG(2) << "set options: " << success;
-  });
-}
-
 // TODO(b/171748795): This should all be migrated to the mojom service, which
 // should be responsible for the complete creation of the Libassistant
 // objects.
@@ -105,11 +81,8 @@ void InitializeAssistantManager(
     StartArguments arguments,
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  SetInternalOptions(assistant_manager_internal, arguments.locale,
-                     arguments.spoken_feedback_enabled);
   assistant_manager_internal->SetDisplayConnection(
       arguments.display_connection);
-  assistant_manager_internal->SetLocaleOverride(arguments.locale_override);
   assistant_manager_internal->RegisterActionModule(arguments.action_module);
   assistant_manager_internal->SetAssistantManagerDelegate(
       arguments.assistant_manager_delegate);
@@ -119,7 +92,19 @@ void InitializeAssistantManager(
       arguments.conversation_state_listener);
   assistant_manager->AddDeviceStateListener(arguments.device_state_listener);
   SetServerExperiments(assistant_manager_internal);
-  assistant_manager->SetAuthTokens(arguments.auth_tokens);
+}
+
+std::vector<libassistant::mojom::AuthenticationTokenPtr>
+ToMojomAuthenticationTokens(const ServiceControllerProxy::AuthTokens& tokens) {
+  std::vector<libassistant::mojom::AuthenticationTokenPtr> result;
+
+  for (const std::pair<std::string, std::string>& token : tokens) {
+    result.emplace_back(libassistant::mojom::AuthenticationTokenPtr(
+        base::in_place, /*gaia_id=*/token.first,
+        /*access_token=*/token.second));
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -160,6 +145,9 @@ void ServiceControllerProxy::Start(
 
   // The mojom service will create the |AssistantManager|.
   service_controller_remote_->Initialize(libassistant_config);
+  service_controller_remote_->SetLocaleOverride(locale_override);
+  UpdateInternalOptions(locale, spoken_feedback_enabled);
+  SetAuthTokens(auth_tokens);
   service_controller_remote_->Start();
 
   // We need to initialize the |AssistantManager| once it's created and before
@@ -171,10 +159,6 @@ void ServiceControllerProxy::Start(
   arguments.conversation_state_listener = conversation_state_listener;
   arguments.device_state_listener = device_state_listener;
   arguments.display_connection = pending_display_connection_.get();
-  arguments.locale = locale;
-  arguments.locale_override = locale_override;
-  arguments.spoken_feedback_enabled = spoken_feedback_enabled;
-  arguments.auth_tokens = auth_tokens;
 
   host_->SetInitializeCallback(
       base::BindOnce(InitializeAssistantManager, std::move(arguments)));
@@ -196,12 +180,13 @@ void ServiceControllerProxy::Stop() {
 void ServiceControllerProxy::UpdateInternalOptions(
     const std::string& locale,
     bool spoken_feedback_enabled) {
-  SetInternalOptions(assistant_manager_internal(), locale,
-                     spoken_feedback_enabled);
+  service_controller_remote_->SetInternalOptions(locale,
+                                                 spoken_feedback_enabled);
 }
 
 void ServiceControllerProxy::SetAuthTokens(const AuthTokens& tokens) {
-  assistant_manager()->SetAuthTokens(tokens);
+  service_controller_remote_->SetAuthenticationTokens(
+      ToMojomAuthenticationTokens(tokens));
 }
 
 bool ServiceControllerProxy::IsStarted() const {

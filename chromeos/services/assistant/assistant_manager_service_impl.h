@@ -247,6 +247,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     return action_module_.get();
   }
 
+  base::Thread& GetBackgroundThreadForTesting();
+
  private:
   void InitAssistant(const base::Optional<UserInfo>& user,
                      const std::string& locale);
