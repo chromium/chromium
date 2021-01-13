@@ -4,6 +4,7 @@
 
 source_set("ntp") {
   sources = [
+    "new_tab_page_commands.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
     "new_tab_page_header_constants.h",
@@ -26,6 +27,8 @@ source_set("coordinator") {
     ":ntp_internal",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
@@ -34,7 +37,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/main:scene_state_observer",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/voice",

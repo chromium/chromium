@@ -15,22 +15,29 @@
 #error "This file requires ARC support."
 #endif
 
+@interface ContentSuggestionsLayout ()
+
+// YES if the Discover Feed is currently visible.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+
+@end
+
 @implementation ContentSuggestionsLayout
 
-- (instancetype)initWithOffset:(CGFloat)offset {
+- (instancetype)initWithOffset:(CGFloat)offset feedVisible:(BOOL)visible {
   if (self = [super init]) {
+    _feedVisible = visible;
     _offset = offset;
   }
   return self;
 }
 
 - (CGSize)collectionViewContentSize {
-  if (IsRefactoredNTP()) {
-    // In the refactored NTP, we don't want to extend the view height beyond its
-    // content.
+  if (IsRefactoredNTP() && [self isFeedVisible]) {
+    // In the refactored NTP and when the Feed is visible, we don't want to
+    // extend the view height beyond its content.
     return [super collectionViewContentSize];
   }
-  DCHECK(!IsRefactoredNTP());
   CGFloat collectionViewHeight = self.collectionView.bounds.size.height;
   CGFloat headerHeight = [self firstHeaderHeight];
 
@@ -116,7 +123,7 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
       indexPath.section == 0) {
     CGFloat contentOffset;
-    if (IsRefactoredNTP()) {
+    if (IsRefactoredNTP() && [self isFeedVisible]) {
       contentOffset = self.parentCollectionView.contentOffset.y +
                       self.collectionView.contentSize.height;
     } else {
@@ -136,8 +143,11 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
         ToolbarExpandedHeight(
             [UIApplication sharedApplication].preferredContentSizeCategory) -
         topSafeArea;
-    if (contentOffset > minY &&
-        (!IsRefactoredNTP() || !self.isScrolledIntoFeed)) {
+    // TODO(crbug.com/1114792): Remove mentioned of "refactored" from the
+    // variable name once this launches.
+    BOOL hasScrolledIntoRefactoredDiscoverFeed =
+        [self isFeedVisible] && self.isScrolledIntoFeed && IsRefactoredNTP();
+    if (contentOffset > minY && !hasScrolledIntoRefactoredDiscoverFeed) {
       origin.y = contentOffset - minY;
     }
     attributes.frame = {origin, attributes.frame.size};

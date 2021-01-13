@@ -12,7 +12,9 @@ class WebState;
 }
 
 @class ContentSuggestionsHeaderViewController;
+@protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
+@class NTPHomeMediator;
 @class ViewRevealingVerticalPanHandler;
 
 // Coordinator to manage the Suggestions UI via a
@@ -35,6 +37,15 @@ class WebState;
 
 // The pan gesture handler for the view controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// NTP Mediator used by this Coordinator.
+// TODO(crbug.com/1114792): Move all usage of this mediator to NTPCoordinator.
+// It might also be necessary to split it and create a ContentSuggestions
+// mediator for non NTP logic.
+@property(nonatomic, strong) NTPHomeMediator* ntpMediator;
+
+// Command handler for NTP related commands.
+@property(nonatomic, weak) id<NewTabPageCommands> ntpCommandHandler;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;
@@ -60,6 +71,9 @@ class WebState;
 
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
+
+// YES if the Discover feed is currently visible.
+- (BOOL)isDiscoverFeedVisible;
 
 @end
 

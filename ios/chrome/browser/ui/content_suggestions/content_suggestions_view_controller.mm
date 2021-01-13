@@ -116,9 +116,11 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 #pragma mark - Lifecycle
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
-                       offset:(CGFloat)offset {
+                       offset:(CGFloat)offset
+                  feedVisible:(BOOL)visible {
   _offset = offset;
-  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset];
+  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset
+                                                 feedVisible:visible];
   self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];

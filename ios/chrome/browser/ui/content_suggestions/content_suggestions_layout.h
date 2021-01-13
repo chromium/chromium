@@ -29,8 +29,8 @@
 
 // Creates layout with |offset| as additional height. Allows the view's height
 // to be increased enough to maintain the scroll position. Only needed if
-// Discover feed is enabled.
-- (instancetype)initWithOffset:(CGFloat)offset;
+// Discover feed is visible.
+- (instancetype)initWithOffset:(CGFloat)offset feedVisible:(BOOL)visible;
 
 @end
 

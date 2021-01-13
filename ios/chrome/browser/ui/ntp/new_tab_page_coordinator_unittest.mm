@@ -90,7 +90,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   NewTabPageCoordinator* coordinator_;
 };
 
-// Tests that the coordinator vends a content suggestions VC on the record.
+// Tests that the coordinator doesn't vend an IncognitoViewController VC on the
+// record.
 TEST_F(NewTabPageCoordinatorTest, StartOnTheRecord) {
   CreateCoordinator(/*off_the_record=*/false);
   id omniboxCommandsHandlerMock = OCMProtocolMock(@protocol(OmniboxCommands));
@@ -103,13 +104,7 @@ TEST_F(NewTabPageCoordinatorTest, StartOnTheRecord) {
                    forProtocol:@protocol(SnackbarCommands)];
   [coordinator_ start];
   UIViewController* viewController = [coordinator_ viewController];
-  if (IsRefactoredNTP()) {
-    EXPECT_TRUE(
-        [viewController isKindOfClass:[NewTabPageViewController class]]);
-  } else {
-    EXPECT_TRUE([viewController
-        isKindOfClass:[ContentSuggestionsViewController class]]);
-  }
+  EXPECT_FALSE([viewController isKindOfClass:[IncognitoViewController class]]);
   [coordinator_ stop];
 }
 
