@@ -360,6 +360,13 @@
 <div id="oneGoogleBarOverlayBackdrop"></div>
 <svg>
   <defs>
-    <clipPath id="oneGoogleBarClipPath"></clipPath>
+    <clipPath id="oneGoogleBarClipPath">
+      <!-- Set an initial non-empty clip-path so the OneGoogleBar resize events
+           are processed. When the clip-path is empty, it's possible for the
+           OneGoogleBar to get into a state where it does not send  the
+           'overlayUpdates' message which is used to populate this
+           clip-path. -->
+      <rect x="0" y="0" width="1" height="1"></rect>
+    </clipPath>
   </defs>
 </svg>
