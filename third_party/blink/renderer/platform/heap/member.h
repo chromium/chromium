@@ -74,105 +74,65 @@ struct IsTraceable<blink::WeakMember<T>> {
   static const bool value = true;
 };
 
-template <typename T>
-struct HashTraits<blink::Member<T>> : SimpleClassHashTraits<blink::Member<T>> {
-  STATIC_ONLY(HashTraits);
-  // FIXME: Implement proper const'ness for iterator types. Requires support
-  // in the marking Visitor.
+template <typename T, typename MemberType>
+struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
+  STATIC_ONLY(BaseMemberHashTraits);
+
   using PeekInType = T*;
-  using IteratorGetType = blink::Member<T>*;
-  using IteratorConstGetType = const blink::Member<T>*;
-  using IteratorReferenceType = blink::Member<T>&;
-  using IteratorConstReferenceType = const blink::Member<T>&;
+  using PeekOutType = T*;
+  using IteratorGetType = MemberType*;
+  using IteratorConstGetType = const MemberType*;
+  using IteratorReferenceType = MemberType&;
+  using IteratorConstReferenceType = const MemberType&;
+
+  static PeekOutType Peek(const MemberType& value) { return value; }
+
   static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
     return *x;
   }
+
   static IteratorConstReferenceType GetToReferenceConstConversion(
       IteratorConstGetType x) {
     return *x;
   }
 
-  using PeekOutType = T*;
-
   template <typename U>
-  static void Store(const U& value, blink::Member<T>& storage) {
+  static void Store(const U& value, MemberType& storage) {
     storage = value;
   }
 
-  static PeekOutType Peek(const blink::Member<T>& value) { return value; }
-
-  static void ConstructDeletedValue(blink::Member<T>& slot, bool) {
+  static void ConstructDeletedValue(MemberType& slot, bool) {
+#if BUILDFLAG(USE_V8_OILPAN)
+    slot = cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
     slot = WTF::kHashTableDeletedValue;
+#endif  // !USE_V8_OILPAN
   }
 
+  static bool IsDeletedValue(const MemberType& value) {
+#if BUILDFLAG(USE_V8_OILPAN)
+    return value.Get() == cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
+    return value.IsHashTableDeletedValue();
+#endif  // !USE_V8_OILPAN
+  }
+};
+
+template <typename T>
+struct HashTraits<blink::Member<T>>
+    : BaseMemberHashTraits<T, blink::Member<T>> {
   static constexpr bool kCanTraceConcurrently = true;
 };
 
 template <typename T>
 struct HashTraits<blink::WeakMember<T>>
-    : SimpleClassHashTraits<blink::WeakMember<T>> {
-  STATIC_ONLY(HashTraits);
-  static const bool kNeedsDestruction = false;
-  // FIXME: Implement proper const'ness for iterator types. Requires support
-  // in the marking Visitor.
-  using PeekInType = T*;
-  using IteratorGetType = blink::WeakMember<T>*;
-  using IteratorConstGetType = const blink::WeakMember<T>*;
-  using IteratorReferenceType = blink::WeakMember<T>&;
-  using IteratorConstReferenceType = const blink::WeakMember<T>&;
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
-
-  using PeekOutType = T*;
-
-  template <typename U>
-  static void Store(const U& value, blink::WeakMember<T>& storage) {
-    storage = value;
-  }
-
-  static PeekOutType Peek(const blink::WeakMember<T>& value) { return value; }
-
-  static void ConstructDeletedValue(blink::WeakMember<T>& slot, bool) {
-    slot = WTF::kHashTableDeletedValue;
-  }
-
+    : BaseMemberHashTraits<T, blink::WeakMember<T>> {
   static constexpr bool kCanTraceConcurrently = true;
 };
 
 template <typename T>
 struct HashTraits<blink::UntracedMember<T>>
-    : SimpleClassHashTraits<blink::UntracedMember<T>> {
-  STATIC_ONLY(HashTraits);
-  static const bool kNeedsDestruction = false;
-  // FIXME: Implement proper const'ness for iterator types.
-  using PeekInType = T*;
-  using IteratorGetType = blink::UntracedMember<T>*;
-  using IteratorConstGetType = const blink::UntracedMember<T>*;
-  using IteratorReferenceType = blink::UntracedMember<T>&;
-  using IteratorConstReferenceType = const blink::UntracedMember<T>&;
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
-  using PeekOutType = T*;
-
-  template <typename U>
-  static void Store(const U& value, blink::UntracedMember<T>& storage) {
-    storage = value;
-  }
-
-  static PeekOutType Peek(const blink::UntracedMember<T>& value) {
-    return value;
-  }
-};
+    : BaseMemberHashTraits<T, blink::UntracedMember<T>> {};
 
 }  // namespace WTF
 
