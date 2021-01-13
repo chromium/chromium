@@ -7,14 +7,15 @@
 #include <cstddef>
 #include <string>
 
-#include "chrome/common/pdf_util.h"
 #include "components/payments/content/payments_userdata_key.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
-constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kApplicationJavascript[] = "application/javascript";
+constexpr char kApplicationXml[] = "application/xml";
+constexpr char kApplicationJson[] = "application/json";
 
 PaymentHandlerNavigationThrottle::PaymentHandlerNavigationThrottle(
     content::NavigationHandle* navigation_handle)
@@ -30,9 +31,6 @@ const char* PaymentHandlerNavigationThrottle::GetNameForLogging() {
 std::unique_ptr<PaymentHandlerNavigationThrottle>
 PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame())
-    return nullptr;
-
   if (!handle->GetWebContents()->GetUserData(
           kPaymentHandlerWebContentsUserDataKey)) {
     return nullptr;
@@ -49,9 +47,22 @@ PaymentHandlerNavigationThrottle::WillProcessResponse() {
 
   std::string mime_type;
   response_headers->GetMimeType(&mime_type);
-  if (mime_type != kPdfMimeType)
+  // This allowlist is made to exclude edge-cases whose vulnerabilities could
+  // be exploited (e.g., application/pdf, see crbug.com/1159267).
+  if (base::StartsWith(mime_type, "text/",
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      base::StartsWith(mime_type, "image/",
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      base::StartsWith(mime_type, "video/",
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      mime_type == kApplicationJavascript || mime_type == kApplicationXml ||
+      mime_type == kApplicationJson) {
     return PROCEED;
+  }
 
+  VLOG(0) << "Blocked the payment handler from navigating to a page "
+          << navigation_handle()->GetURL().spec() << " of " << mime_type
+          << " mime type.";
   return BLOCK_RESPONSE;
 }
 }  // namespace payments
