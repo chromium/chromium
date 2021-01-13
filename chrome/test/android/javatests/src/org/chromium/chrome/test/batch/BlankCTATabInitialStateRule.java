@@ -54,6 +54,9 @@ public class BlankCTATabInitialStateRule implements TestRule {
                             () -> { FirstRunStatus.setFirstRunFlowComplete(true); });
                     mActivityTestRule.startMainActivityOnBlankPage();
                     sActivity = mActivityTestRule.getActivity();
+
+                    // Previous tests may have left tabs open and finished the Activity.
+                    if (regularTabCount() > 1) resetTabStateFast();
                 } else {
                     mActivityTestRule.setActivity(sActivity);
                     if (shouldPerformFastReset()) {
@@ -68,15 +71,22 @@ public class BlankCTATabInitialStateRule implements TestRule {
                     // If the activity was relaunched during the test, update the reference to use
                     // the most up to date Activity.
                     sActivity = mActivityTestRule.getActivity();
+                    if (sActivity.isActivityFinishingOrDestroyed()) {
+                        sActivity = null;
+                    }
                 }
             }
         };
     }
 
+    private int regularTabCount() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return sActivity.getTabModelSelector().getModel(false).getCount(); });
+    }
+
     private boolean shouldPerformFastReset() {
         if (mClearAllTabState) return false;
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return sActivity.getTabModelSelector().getModel(false).getCount() > 0; });
+        return regularTabCount() > 0;
     }
 
     // Avoids closing the primary tab (and killing the renderer) in order to reset tab state
