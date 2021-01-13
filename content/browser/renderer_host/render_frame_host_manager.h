@@ -851,7 +851,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Helper to reinitialize the RenderFrame, RenderView, and the opener chain
   // for the provided |render_frame_host|.  Used when the |render_frame_host|
   // needs to be reused for a new navigation, but it is not live.
-  bool ReinitializeRenderFrame(RenderFrameHostImpl* render_frame_host);
+  bool ReinitializeMainRenderFrame(RenderFrameHostImpl* render_frame_host);
 
   // Sets the |pending_rfh| to be the active one. Called when the pending
   // RenderFrameHost commits.

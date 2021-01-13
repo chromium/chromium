@@ -914,10 +914,18 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
           navigation_rfh == speculative_render_frame_host_.get()));
   DCHECK(!navigation_rfh->must_be_replaced());
 
-  // If the RenderFrame that needs to navigate is not live (its process was
-  // just created), initialize it.
+  // If the RenderFrame that needs to navigate is not live (its process was just
+  // created), initialize it. This can only happen for the initial main frame of
+  // a WebContents which starts non-live but non-crashed.
+  //
+  // A speculative RenderFrameHost is created in the live state. A crashed
+  // RenderFrameHost is replaced by a new speculative RenderFrameHost. A
+  // non-speculative RenderFrameHost that is being reused is already live. This
+  // leaves only a non-speculative RenderFrameHost that has never been used
+  // before.
   if (!navigation_rfh->IsRenderFrameLive()) {
-    if (!ReinitializeRenderFrame(navigation_rfh))
+    DCHECK(!frame_tree_node_->parent());
+    if (!ReinitializeMainRenderFrame(navigation_rfh))
       return nullptr;
 
     notify_webui_of_rf_creation = true;
@@ -1756,7 +1764,7 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
 
   render_frame_host_->reset_must_be_replaced();
 
-  if (!ReinitializeRenderFrame(render_frame_host_.get())) {
+  if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {
     NOTREACHED();
     return false;
   }
@@ -2842,8 +2850,10 @@ int RenderFrameHostManager::GetReplacementRoutingId(
   }
 }
 
-bool RenderFrameHostManager::ReinitializeRenderFrame(
+bool RenderFrameHostManager::ReinitializeMainRenderFrame(
     RenderFrameHostImpl* render_frame_host) {
+  CHECK(!frame_tree_node_->parent());
+
   // This should be used only when the RenderFrame is not live.
   DCHECK(!render_frame_host->IsRenderFrameLive());
   DCHECK(!render_frame_host->must_be_replaced());
@@ -2852,29 +2862,10 @@ bool RenderFrameHostManager::ReinitializeRenderFrame(
   CreateOpenerProxies(render_frame_host->GetSiteInstance(), frame_tree_node_);
 
   // Main frames need both the RenderView and RenderFrame reinitialized, so
-  // use InitRenderView.  For cross-process subframes, InitRenderView won't
-  // recreate the RenderFrame, so use InitRenderFrame instead.  Note that for
-  // subframe RenderFrameHosts, the inactive RenderView in their SiteInstance
-  // will be recreated as part of CreateOpenerProxies above.
-  if (!frame_tree_node_->parent()) {
-    DCHECK(!GetRenderFrameProxyHost(render_frame_host->GetSiteInstance()));
-    if (!InitRenderView(render_frame_host->render_view_host(), nullptr))
-      return false;
-  } else {
-    if (!InitRenderFrame(render_frame_host))
-      return false;
-
-    // When a subframe renderer dies, its RenderWidgetHostView is cleared in
-    // its CrossProcessFrameConnector, so we need to restore it now that it
-    // is re-initialized.
-    RenderFrameProxyHost* proxy_to_parent = GetProxyToParent();
-    if (proxy_to_parent) {
-      const gfx::Size* size = render_frame_host->frame_size()
-                                  ? &*render_frame_host->frame_size()
-                                  : nullptr;
-      GetProxyToParent()->SetChildRWHView(render_frame_host->GetView(), size);
-    }
-  }
+  // use InitRenderView.
+  DCHECK(!GetRenderFrameProxyHost(render_frame_host->GetSiteInstance()));
+  if (!InitRenderView(render_frame_host->render_view_host(), nullptr))
+    return false;
 
   DCHECK(render_frame_host->IsRenderFrameLive());
 
