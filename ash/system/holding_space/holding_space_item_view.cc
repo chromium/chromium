@@ -169,6 +169,13 @@ bool HoldingSpaceItemView::HandleAccessibleAction(
          views::InkDropHostView::HandleAccessibleAction(action_data);
 }
 
+void HoldingSpaceItemView::Layout() {
+  views::InkDropHostView::Layout();
+
+  // Ink drop bounds should always match the bounds for this view.
+  ink_drop_container_->SetSize(size());
+}
+
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Inset `bounds` to account for stroke.
   gfx::Rect bounds = GetLocalBounds();
