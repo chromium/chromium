@@ -955,7 +955,7 @@ body:not(.expert) #settings-expert {
   transform: translateY(-50%);
 }
 
-body.grid-4x4 #preview-grid-horizontal::before {
+body.grid.grid-4x4 #preview-grid-horizontal::before {
   border-bottom: 1px solid white;
   content: '';
   height: 0;
@@ -965,7 +965,7 @@ body.grid-4x4 #preview-grid-horizontal::before {
   top: 0;
 }
 
-body.grid-3x3 #preview-grid-horizontal,
+body.grid.grid-3x3 #preview-grid-horizontal,
 body.view-grid-settings.grid-3x3 #preview-grid-horizontal {
   height: 33.333%;
 }
