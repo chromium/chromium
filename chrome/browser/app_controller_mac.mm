@@ -50,6 +50,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -233,6 +234,7 @@ void ConfigureNSAppForKioskMode() {
 - (BOOL)shouldQuitWithInProgressDownloads;
 - (void)executeApplication:(id)sender;
 - (void)profileWasRemoved:(const base::FilePath&)profilePath;
+- (void)setLastProfile:(Profile*)profile;
 
 // Opens a tab for each GURL in |urls|.
 - (void)openUrls:(const std::vector<GURL>&)urls;
@@ -567,6 +569,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // Reset all pref watching, as this object outlives the prefs system.
   _profilePrefRegistrar.reset();
   _localPrefRegistrar.RemoveAll();
+
+  // It's safe to delete |_lastProfile| now.
+  [self setLastProfile:nullptr];
 
   [self unregisterEventHandlers];
 
@@ -957,17 +962,18 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (!_lastProfile || profilePath == _lastProfile->GetPath()) {
     // Force windowChangedToProfile: to set the lastProfile_ and also update the
     // relevant menuBridge objects.
-    _lastProfile = nullptr;
-    // Check that the Profile is already loaded, in case it was deleted by
-    // DestroyProfileOnBrowserClose.
+    [self setLastProfile:nullptr];
     auto* profile_manager = g_browser_process->profile_manager();
-    const base::FilePath last_used_path =
-        profile_manager->GetLastUsedProfileDir(
-            profile_manager->user_data_dir());
-    Profile* last_used_profile =
-        profile_manager->GetProfileByPath(last_used_path);
-    if (last_used_profile)
-      [self windowChangedToProfile:last_used_profile];
+    if (profile_manager) {
+      // |profile_manager| is null in browser tests during shutdown.
+      const base::FilePath last_used_path =
+          profile_manager->GetLastUsedProfileDir(
+              profile_manager->user_data_dir());
+      Profile* last_used_profile =
+          profile_manager->GetProfileByPath(last_used_path);
+      if (last_used_profile)
+        [self windowChangedToProfile:last_used_profile];
+    }
   }
 
   _profileBookmarkMenuBridgeMap.erase(profilePath);
@@ -1644,6 +1650,21 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     _appShimMenuController.reset([[AppShimMenuController alloc] init]);
 }
 
+- (void)setLastProfile:(Profile*)profile {
+  if (profile == _lastProfile)
+    return;
+
+  if (profile == nullptr) {
+    _lastProfile = nullptr;
+    _lastProfileKeepAlive.reset();
+    return;
+  }
+
+  _lastProfile = profile;
+  _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
+      _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
+}
+
 - (void)windowChangedToProfile:(Profile*)profile {
   if (_lastProfile == profile)
     return;
@@ -1663,7 +1684,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   NSMenuItem* bookmarkItem = [[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU];
   BOOL hidden = [bookmarkItem isHidden];
   [bookmarkItem setHidden:NO];
-  _lastProfile = profile;
+  [self setLastProfile:profile];
 
   auto& entry = _profileBookmarkMenuBridgeMap[profile->GetPath()];
   if (!entry) {

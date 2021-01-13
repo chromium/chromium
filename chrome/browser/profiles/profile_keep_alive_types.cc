@@ -19,6 +19,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kOffTheRecordProfile";
     case ProfileKeepAliveOrigin::kDownloadInProgress:
       return out << "kDownloadInProgress";
+    case ProfileKeepAliveOrigin::kAppControllerMac:
+      return out << "kAppControllerMac";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

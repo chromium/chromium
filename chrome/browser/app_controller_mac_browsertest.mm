@@ -25,11 +25,13 @@
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -110,6 +112,37 @@ void RunClosureWhenProfileInitialized(const base::RepeatingClosure& closure,
     closure.Run();
 }
 
+// Called when the ProfileManager has created a profile.
+void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
+                           Profile** out_profile,
+                           Profile* profile,
+                           Profile::CreateStatus status) {
+  EXPECT_TRUE(profile);
+  ASSERT_TRUE(out_profile);
+  *out_profile = profile;
+  EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
+  EXPECT_NE(Profile::CREATE_STATUS_REMOTE_FAIL, status);
+  // This will be called multiple times. Wait until the profile is initialized
+  // fully to quit the loop.
+  if (status == Profile::CREATE_STATUS_INITIALIZED)
+    quit_closure.Run();
+}
+
+Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
+  Profile* profile;
+  ProfileManager::CreateCallback create_callback = base::BindRepeating(
+      &CreateProfileCallback,
+      base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(), &profile);
+  g_browser_process->profile_manager()->CreateProfileAsync(
+      profile_dir, create_callback, base::string16(), std::string());
+  base::RunLoop().Run();
+  return profile;
+}
+
+Profile* CreateAndWaitForSystemProfile() {
+  return CreateAndWaitForProfile(ProfileManager::GetSystemProfilePath());
+}
+
 }  // namespace
 
 @interface TestOpenShortcutOnStartup : NSObject
@@ -182,6 +215,50 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
                          withObject:cmd_n
                          afterDelay:0];
   // Let the run loop get flushed, during process cleanup and try not to crash.
+}
+
+class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
+ protected:
+  AppControllerKeepAliveBrowserTest() {
+    features_.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppControllerKeepAliveBrowserTest,
+                       LastProfileKeepAlive) {
+  // The User Manager uses the system profile as its underlying profile. To
+  // minimize flakiness due to the scheduling/descheduling of tasks on the
+  // different threads, pre-initialize the guest profile before it is needed.
+  CreateAndWaitForSystemProfile();
+  AppController* ac = base::mac::ObjCCast<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
+
+  // Switch the controller to profile1.
+  Profile* profile1 = browser()->profile();
+  Profile* profile2 = CreateAndWaitForProfile(
+      profile_manager->user_data_dir().AppendASCII("Profile 2"));
+  [ac windowChangedToProfile:profile1];
+  ASSERT_EQ(profile1, [ac lastProfile]);
+
+  // |profile1| is active.
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      profile1, ProfileKeepAliveOrigin::kAppControllerMac));
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile2, ProfileKeepAliveOrigin::kAppControllerMac));
+
+  // Make |profile2| active.
+  [ac windowChangedToProfile:profile2];
+  ASSERT_EQ(profile2, [ac lastProfile]);
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile1, ProfileKeepAliveOrigin::kAppControllerMac));
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      profile2, ProfileKeepAliveOrigin::kAppControllerMac));
 }
 
 class AppControllerPlatformAppBrowserTest
@@ -280,31 +357,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerWebAppBrowserTest,
   GURL current_url =
       browser->tab_strip_model()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(GetAppURL(), current_url.spec());
-}
-
-// Called when the ProfileManager has created a profile.
-void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
-                           Profile* profile,
-                           Profile::CreateStatus status) {
-  EXPECT_TRUE(profile);
-  EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
-  EXPECT_NE(Profile::CREATE_STATUS_REMOTE_FAIL, status);
-  // This will be called multiple times. Wait until the profile is initialized
-  // fully to quit the loop.
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    quit_closure.Run();
-}
-
-void CreateAndWaitForSystemProfile() {
-  ProfileManager::CreateCallback create_callback = base::BindRepeating(
-      &CreateProfileCallback,
-      base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      ProfileManager::GetSystemProfilePath(),
-      create_callback,
-      base::string16(),
-      std::string());
-  base::RunLoop().Run();
 }
 
 class AppControllerNewProfileManagementBrowserTest

@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
@@ -45,6 +46,10 @@ class TabMenuBridge;
   // The profile last used by a Browser. It is this profile that was used to
   // build the user-data specific main menu items.
   Profile* _lastProfile;
+
+  // When there is only one profile loaded: this prevents it from being deleted,
+  // so |_lastProfile| is always valid.
+  std::unique_ptr<ScopedProfileKeepAlive> _lastProfileKeepAlive;
 
   // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
   // when a profile has been deleted.

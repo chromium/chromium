@@ -7,6 +7,8 @@
 
 #include <ostream>
 
+#include "build/build_config.h"
+
 // Refers to what a ScopedProfileKeepAlive's lifetime is tied to, to help
 // debugging.
 //
@@ -34,7 +36,12 @@ enum class ProfileKeepAliveOrigin {
   // This Profile is downloading a file.
   kDownloadInProgress = 4,
 
-  kMaxValue = kDownloadInProgress,
+  // On macOS, Chrome doesn't exit when all windows are closed. Keep one Profile
+  // alive so we can open windows for the last-used Profile when the user
+  // "launches" Chrome again.
+  kAppControllerMac = 5,
+
+  kMaxValue = kAppControllerMac,
 };
 
 std::ostream& operator<<(std::ostream& out,
