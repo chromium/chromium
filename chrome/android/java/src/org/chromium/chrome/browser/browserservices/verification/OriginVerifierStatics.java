@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.browserservices.verification;
+
+import org.chromium.components.embedder_support.util.Origin;
+
+import androidx.annotation.VisibleForTesting;
+
+/**
+ * Adds a layer of indirection to calls to static methods on {@link OriginVerifier}. This allows us
+ * to modify that class a bit more freely without having to worry about downstream relying on its
+ * static methods.
+ *
+ * This should be temporary, see https://crbug.com/1164866
+ */
+class OriginVerifierStatics {
+    /** Calls {@link OriginVerifier#clearCachedVerificationsForTesting}. */
+    @VisibleForTesting
+    public static void clearCachedVerificationsForTesting() {
+        OriginVerifier.clearCachedVerificationsForTesting();
+    }
+
+    /** Calls {@link OriginVerifier#addVerificationOverride}. */
+    public static void addVerificationOverride(
+            String packageName, Origin origin, int relationship) {
+        OriginVerifier.addVerificationOverride(packageName, origin, relationship);
+    }
+}
