@@ -155,6 +155,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
+// Next ID: 22
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -230,6 +231,32 @@ message ClientSettingsProto {
     optional string undo_label = 2;
   }
   optional BackButtonSettings back_button_settings = 19;
+
+  // Settings to define the behavior for showing warnings about slow connection
+  // and/or websites to users.
+  message SlowWarningSettings {
+    // Whether to show warnings related to a slow connection to the user.
+    optional bool enable_slow_connection_warnings = 1;
+    // Whether to show warnings related to a slow website to the user.
+    optional bool enable_slow_website_warnings = 2;
+    // If true, the slow connection or website warning will be only shown once.
+    optional bool show_only_once = 3;
+    // Defines the maximum wait on a dom find element operation before showing
+    // the slow website warning.
+    optional int32 warning_delay_ms = 4;
+    // Defines the threshold above which a roundtrip is considered too slow.
+    optional int32 slow_roundtrip_threshold_ms = 5;
+    // Defines the number of consecutive slow roundtrips allowed before showing
+    // the slow connection warning.
+    optional int32 max_consecutive_slow_roundtrips = 6;
+    // The message to show as a warning to inform the user of a slow connection.
+    // If this is not set, no warning will be shown in case of slow connection.
+    optional string slow_connection_message = 7;
+    // The message to show as a warning to inform the user of a slow website.
+    // If this is not set, no warning will be shown in case of a slow website.
+    optional string slow_website_message = 8;
+  }
+  optional SlowWarningSettings slow_warning_settings = 21;
 
   reserved 8 to 11;
 }

@@ -192,6 +192,10 @@ class ScriptExecutorDelegate {
   // calling |EnterState(BROWSE)| to take effect.
   virtual void SetBrowseModeInvisible(bool invisible) = 0;
 
+  // Whether the slow connection or website warning should be shown. Depends on
+  // the state at the moment of the invocation.
+  virtual bool ShouldShowWarning() = 0;
+
  protected:
   virtual ~ScriptExecutorDelegate() {}
 };

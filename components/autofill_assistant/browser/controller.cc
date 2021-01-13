@@ -508,6 +508,11 @@ void Controller::SetBrowseModeInvisible(bool invisible) {
   browse_mode_invisible_ = invisible;
 }
 
+bool Controller::ShouldShowWarning() {
+  return state_ == AutofillAssistantState::RUNNING ||
+         state_ == AutofillAssistantState::PROMPT;
+}
+
 void Controller::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.AddObserver(listener);

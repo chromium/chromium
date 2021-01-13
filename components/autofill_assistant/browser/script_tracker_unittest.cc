@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
@@ -125,6 +126,10 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
     message.SerializeToString(&output);
     return output;
   }
+
+  // task_environment_ must be first to guarantee other field
+  // creation run in that environment.
+  base::test::TaskEnvironment task_environment_;
 
   GURL url_;
   NiceMock<MockService> mock_service_;

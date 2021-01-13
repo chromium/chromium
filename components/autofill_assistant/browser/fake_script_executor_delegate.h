@@ -101,6 +101,8 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetBrowseModeInvisible(bool invisible) override;
 
+  bool ShouldShowWarning() override;
+
   ClientSettings* GetMutableSettings() { return &client_settings_; }
 
   void SetCurrentURL(const GURL& url) { current_url_ = url; }
@@ -120,10 +122,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   }
 
   void SetUserModel(UserModel* user_model) { user_model_ = user_model; }
-
   std::vector<AutofillAssistantState> GetStateHistory() {
     return state_history_;
   }
+
   AutofillAssistantState GetState() const {
     return state_history_.empty() ? AutofillAssistantState::INACTIVE
                                   : state_history_.back();
@@ -161,6 +163,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::string status_message_;
+  std::string bubble_message_;
   std::vector<Details> details_;
   std::unique_ptr<InfoBox> info_box_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;

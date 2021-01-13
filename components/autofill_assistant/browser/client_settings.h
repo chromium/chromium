@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace autofill_assistant {
 
@@ -88,6 +89,17 @@ struct ClientSettings {
   // Optional settings to enable back button error in BottomSheet instead of
   // Snackbar.
   base::Optional<ClientSettingsProto::BackButtonSettings> back_button_settings;
+
+  bool enable_slow_connection_warnings = false;
+  bool enable_slow_website_warnings = false;
+  bool only_show_warning_once = false;
+  base::TimeDelta timeout_warning_delay =
+      base::TimeDelta::FromMilliseconds(1000);
+  int max_consecutive_slow_roundtrips = 3;
+  base::TimeDelta slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(500);
+  std::string slow_connection_message = "";
+  std::string slow_website_message = "";
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ClientSettings);

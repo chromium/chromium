@@ -154,6 +154,7 @@ class Controller : public ScriptExecutorDelegate,
           view_inflation_finished_callback) override;
   void ClearGenericUi() override;
   void SetBrowseModeInvisible(bool invisible) override;
+  bool ShouldShowWarning() override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.

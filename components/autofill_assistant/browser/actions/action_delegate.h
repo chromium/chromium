@@ -445,6 +445,14 @@ class ActionDelegate {
   virtual void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
 
+  // Maybe shows a warning letting the user know that the website is unusually
+  // slow, depending on the current settings.
+  virtual void MaybeShowSlowWebsiteWarning() = 0;
+
+  // Maybe shows a warning letting the user know that a slow connection was
+  // detected, depending on the current settings.
+  virtual void MaybeShowSlowConnectionWarning() = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:

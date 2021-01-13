@@ -105,7 +105,39 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
       back_button_settings.reset();
     }
   }
-
+  if (proto.has_slow_warning_settings()) {
+    if (proto.slow_warning_settings().has_enable_slow_connection_warnings()) {
+      enable_slow_connection_warnings =
+          proto.slow_warning_settings().enable_slow_connection_warnings();
+    }
+    if (proto.slow_warning_settings().has_enable_slow_website_warnings()) {
+      enable_slow_website_warnings =
+          proto.slow_warning_settings().enable_slow_website_warnings();
+    }
+    if (proto.slow_warning_settings().has_show_only_once()) {
+      only_show_warning_once = proto.slow_warning_settings().show_only_once();
+    }
+    if (proto.slow_warning_settings().has_warning_delay_ms()) {
+      timeout_warning_delay = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().warning_delay_ms());
+    }
+    if (proto.slow_warning_settings().has_slow_roundtrip_threshold_ms()) {
+      slow_roundtrip_threshold = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().slow_roundtrip_threshold_ms());
+    }
+    if (proto.slow_warning_settings().has_max_consecutive_slow_roundtrips()) {
+      max_consecutive_slow_roundtrips =
+          proto.slow_warning_settings().max_consecutive_slow_roundtrips();
+    }
+    if (proto.slow_warning_settings().has_slow_connection_message()) {
+      slow_connection_message =
+          proto.slow_warning_settings().slow_connection_message();
+    }
+    if (proto.slow_warning_settings().has_slow_website_message()) {
+      slow_website_message =
+          proto.slow_warning_settings().slow_website_message();
+    }
+  }
   // Test only settings.
   if (proto.has_integration_test_settings()) {
     integration_test_settings = proto.integration_test_settings();

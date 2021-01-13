@@ -296,6 +296,9 @@ void ScriptExecutor::ShortWaitForElement(
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  current_action_data_.wait_for_dom->SetTimeoutWarningCallback(
+      base::BindOnce(&ScriptExecutor::MaybeShowSlowWebsiteWarning,
+                     weak_ptr_factory_.GetWeakPtr()));
   current_action_data_.wait_for_dom->Run();
 }
 
@@ -310,6 +313,9 @@ void ScriptExecutor::WaitForDom(
       this, delegate_, max_wait_time, allow_interrupt, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  current_action_data_.wait_for_dom->SetTimeoutWarningCallback(base::BindOnce(
+      &ScriptExecutor::SetBubbleMessage, weak_ptr_factory_.GetWeakPtr(),
+      delegate_->GetSettings().slow_website_message));
   current_action_data_.wait_for_dom->Run();
 }
 
@@ -829,6 +835,32 @@ void ScriptExecutor::SetOverlayBehavior(
   delegate_->SetOverlayBehavior(overlay_behavior);
 }
 
+void ScriptExecutor::MaybeShowSlowWebsiteWarning() {
+  MaybeShowSlowWarning(delegate_->GetSettings().slow_website_message,
+                       delegate_->GetSettings().enable_slow_website_warnings);
+}
+
+void ScriptExecutor::MaybeShowSlowConnectionWarning() {
+  MaybeShowSlowWarning(
+      delegate_->GetSettings().slow_connection_message,
+      delegate_->GetSettings().enable_slow_connection_warnings);
+}
+
+void ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
+                                          bool enabled) {
+  if (message.empty() || !enabled || !delegate_->ShouldShowWarning()) {
+    return;
+  }
+
+  if (delegate_->GetSettings().only_show_warning_once &&
+      warning_callout_already_shown_) {
+    return;
+  }
+
+  warning_callout_already_shown_ = true;
+  SetBubbleMessage(message);
+}
+
 base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -838,8 +870,10 @@ void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
                                   const std::string& response) {
   VLOG(2) << __func__ << " http-status=" << http_status;
   batch_start_time_ = base::TimeTicks::Now();
+  const base::TimeDelta& roundtrip_duration = batch_start_time_ - start_time;
+  // Doesn't trigger when the script is completed.
   roundtrip_timing_stats_.set_roundtrip_time_ms(
-      (batch_start_time_ - start_time).InMilliseconds());
+      roundtrip_duration.InMilliseconds());
   bool success =
       http_status == net::HTTP_OK && ProcessNextActionResponse(response);
   if (should_stop_script_) {
@@ -857,6 +891,16 @@ void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
   }
 
   if (!actions_.empty()) {
+    if (roundtrip_duration >
+        delegate_->GetSettings().slow_roundtrip_threshold) {
+      consecutive_slow_roundtrip_counter_++;
+      if (consecutive_slow_roundtrip_counter_ >=
+          delegate_->GetSettings().max_consecutive_slow_roundtrips) {
+        MaybeShowSlowConnectionWarning();
+      }
+    } else {
+      consecutive_slow_roundtrip_counter_ = 0;
+    }
     ProcessNextAction();
     return;
   }
@@ -1077,6 +1121,8 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       allow_interrupt_(allow_interrupt),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
+      timeout_warning_period_(
+          main_script->delegate_->GetSettings().timeout_warning_delay),
       retry_timer_(main_script->delegate_->GetSettings()
                        .periodic_element_check_interval) {}
 
@@ -1088,6 +1134,11 @@ void ScriptExecutor::WaitForDomOperation::Run() {
   delegate_->AddNavigationListener(this);
   wait_time_stopwatch_.Start();
   Start();
+}
+
+void ScriptExecutor::WaitForDomOperation::SetTimeoutWarningCallback(
+    base::OnceCallback<void()> timeout_warning) {
+  timeout_warning_callback_ = std::move(timeout_warning);
 }
 
 void ScriptExecutor::WaitForDomOperation::Start() {
@@ -1137,8 +1188,19 @@ void ScriptExecutor::WaitForDomOperation::OnScriptListChanged(
   main_script_->ReportScriptsUpdateToListener(std::move(scripts));
 }
 
+void ScriptExecutor::WaitForDomOperation::TimeoutWarning() {
+  if (timeout_warning_callback_) {
+    std::move(timeout_warning_callback_).Run();
+  }
+}
+
 void ScriptExecutor::WaitForDomOperation::RunChecks(
     base::OnceCallback<void(const ClientStatus&)> report_attempt_result) {
+  warning_timer_ = std::make_unique<base::OneShotTimer>();
+  warning_timer_->Start(
+      FROM_HERE, timeout_warning_period_,
+      base::BindOnce(&ScriptExecutor::WaitForDomOperation::TimeoutWarning,
+                     weak_ptr_factory_.GetWeakPtr()));
   wait_time_total_ =
       (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period())
           // It's the first run of the checks, set the total time waited to 0.
@@ -1196,6 +1258,7 @@ void ScriptExecutor::WaitForDomOperation::OnElementCheckDone(
 
 void ScriptExecutor::WaitForDomOperation::OnAllChecksDone(
     base::OnceCallback<void(const ClientStatus&)> report_attempt_result) {
+  warning_timer_->Stop();
   if (runnable_interrupts_.empty()) {
     // Since no interrupts fired, allow previously-run interrupts to be run
     // again in the next round. This is meant to give elements one round to

@@ -86,11 +86,11 @@ std::string FakeScriptExecutorDelegate::GetStatusMessage() const {
 }
 
 void FakeScriptExecutorDelegate::SetBubbleMessage(const std::string& message) {
-  status_message_ = message;
+  bubble_message_ = message;
 }
 
 std::string FakeScriptExecutorDelegate::GetBubbleMessage() const {
-  return status_message_;
+  return bubble_message_;
 }
 
 void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details,
@@ -263,5 +263,9 @@ void FakeScriptExecutorDelegate::SetOverlayBehavior(
     ConfigureUiStateProto::OverlayBehavior overaly_behavior) {}
 
 void FakeScriptExecutorDelegate::SetBrowseModeInvisible(bool invisible) {}
+
+bool FakeScriptExecutorDelegate::ShouldShowWarning() {
+  return true;
+}
 
 }  // namespace autofill_assistant
