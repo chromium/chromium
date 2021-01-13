@@ -53,7 +53,7 @@
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.netscape.javascript-​source</string>
+				<string>com.netscape.javascript-source</string>
 			</array>
 		</dict>
 		<dict>
