@@ -68700,6 +68700,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Undo">The sync was aborted with an undo button.</int>
 </enum>
 
+<enum name="SigninInterceptGuestAvailability">
+  <int value="0" label="Guest option available"/>
+  <int value="1" label="Guest already open"/>
+  <int value="2" label="Guest mode blocked by policy"/>
+  <int value="3" label="Ephemeral Guest profile disabled"/>
+</enum>
+
 <enum name="SigninInterceptHeuristicOutcome">
   <int value="0" label="Intercept: profile switch"/>
   <int value="1" label="Intercept: multi-user"/>

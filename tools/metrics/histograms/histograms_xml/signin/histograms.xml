@@ -407,6 +407,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.Guest.Availability"
+    enum="SigninInterceptGuestAvailability" expires_after="2021-08-12">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether Guest option was available prior to showing signin intercept
+    and if not, why.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.HeuristicOutcome"
     enum="SigninInterceptHeuristicOutcome" expires_after="2021-08-12">
   <owner>droger@chromium.org</owner>
