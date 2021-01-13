@@ -8,7 +8,8 @@
   await TestRunner.showPanel('timeline');
 
   TestRunner.enableTimelineExtensionAndStart = function(callback) {
-    const provider = Extensions.extensionServer.traceProviders().peekLast();
+    const traceProviders = Extensions.extensionServer.traceProviders();
+    const provider = traceProviders[traceProviders.length - 1];
     const timelinePanel = UI.panels.timeline;
     const setting = Timeline.TimelinePanel._settingForTraceProvider(provider);
     setting.set(true);

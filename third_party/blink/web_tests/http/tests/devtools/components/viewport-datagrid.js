@@ -165,7 +165,7 @@
   var children = root.children.slice();
   root.removeChildren();
   // Assure wheelTarget is anything but null, otherwise it happily bypasses crashing code.
-  dataGrid._wheelTarget = children.peekLast().element;
+  dataGrid._wheelTarget = children[children.length - 1].element;
   for (var i = 0; i < 40; ++i) {
     children[i].refresh();
     root.appendChild(children[i]);

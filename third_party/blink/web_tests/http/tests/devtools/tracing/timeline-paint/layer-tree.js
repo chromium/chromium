@@ -35,7 +35,7 @@
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().frames();
-  const lastFrame = PerformanceTestRunner.timelineFrameModel().frames().peekLast();
+  const lastFrame = frames[frames.length - 1];
   const layerTreeModel = await lastFrame.layerTree.layerTreePromise();
   LayersTestRunner.dumpLayerTree(undefined, layerTreeModel.contentRoot());
 

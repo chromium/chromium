@@ -22,7 +22,8 @@
   TestRunner.evaluateInPage('navigateLink()');
   await snifferPromise;
 
-  var request = NetworkTestRunner.networkRequests().peekLast();
+  const networkRequests = NetworkTestRunner.networkRequests();
+  var request = networkRequests[networkRequests.length - 1];
   if (request.url().endsWith('/')) {
     await TestRunner.addSnifferPromise(SDK.NetworkDispatcher.prototype, 'requestWillBeSent');
     request = NetworkTestRunner.networkRequests().pop();
