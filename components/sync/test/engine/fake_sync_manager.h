@@ -98,6 +98,8 @@ class FakeSyncManager : public SyncManager {
   void OnCookieJarChanged(bool account_mismatch) override;
   void UpdateInvalidationClientId(const std::string&) override;
   void UpdateSingleClientStatus(bool single_client) override;
+  void UpdateActiveDeviceFCMRegistrationTokens(
+      std::vector<std::string> fcm_registration_tokens) override;
 
  private:
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;

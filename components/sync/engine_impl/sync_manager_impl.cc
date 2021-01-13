@@ -568,4 +568,10 @@ void SyncManagerImpl::UpdateSingleClientStatus(bool single_client) {
   cycle_context_->set_single_client(single_client);
 }
 
+void SyncManagerImpl::UpdateActiveDeviceFCMRegistrationTokens(
+    std::vector<std::string> fcm_registration_tokens) {
+  cycle_context_->set_active_device_fcm_registration_tokens(
+      std::move(fcm_registration_tokens));
+}
+
 }  // namespace syncer

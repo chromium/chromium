@@ -196,4 +196,9 @@ void FakeSyncManager::UpdateSingleClientStatus(bool single_client) {
   // Do nothing.
 }
 
+void FakeSyncManager::UpdateActiveDeviceFCMRegistrationTokens(
+    std::vector<std::string> fcm_registration_tokens) {
+  // Do nothing.
+}
+
 }  // namespace syncer

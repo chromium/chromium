@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -121,6 +122,15 @@ class SyncCycleContext {
     poll_interval_ = interval;
   }
 
+  const std::vector<std::string>& active_device_fcm_registration_tokens()
+      const {
+    return active_device_fcm_registration_tokens_;
+  }
+  void set_active_device_fcm_registration_tokens(
+      std::vector<std::string> fcm_registration_tokens) {
+    active_device_fcm_registration_tokens_ = std::move(fcm_registration_tokens);
+  }
+
  private:
   base::ObserverList<SyncEngineEventListener>::Unchecked listeners_;
 
@@ -168,6 +178,9 @@ class SyncCycleContext {
 
   // If there are no other known active devices.
   bool single_client_;
+
+  // A list of FCM registration tokens to send invalidations.
+  std::vector<std::string> active_device_fcm_registration_tokens_;
 
   base::TimeDelta poll_interval_;
 

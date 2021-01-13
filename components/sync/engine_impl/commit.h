@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "components/sync/base/extensions_activity.h"
@@ -45,14 +46,16 @@ class Commit {
   ~Commit();
 
   // |extensions_activity| may be null.
-  static std::unique_ptr<Commit> Init(ModelTypeSet enabled_types,
-                                      size_t max_entries,
-                                      const std::string& account_name,
-                                      const std::string& cache_guid,
-                                      bool cookie_jar_mismatch,
-                                      bool single_client,
-                                      CommitProcessor* commit_processor,
-                                      ExtensionsActivity* extensions_activity);
+  static std::unique_ptr<Commit> Init(
+      ModelTypeSet enabled_types,
+      size_t max_entries,
+      const std::string& account_name,
+      const std::string& cache_guid,
+      bool cookie_jar_mismatch,
+      bool single_client,
+      const std::vector<std::string>& fcm_registration_tokens,
+      CommitProcessor* commit_processor,
+      ExtensionsActivity* extensions_activity);
 
   // |extensions_activity| may be null.
   SyncerError PostAndProcessResponse(NudgeTracker* nudge_tracker,

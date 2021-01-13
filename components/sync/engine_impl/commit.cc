@@ -86,14 +86,16 @@ Commit::Commit(ContributionMap contributions,
 Commit::~Commit() = default;
 
 // static
-std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
-                                     size_t max_entries,
-                                     const std::string& account_name,
-                                     const std::string& cache_guid,
-                                     bool cookie_jar_mismatch,
-                                     bool single_client,
-                                     CommitProcessor* commit_processor,
-                                     ExtensionsActivity* extensions_activity) {
+std::unique_ptr<Commit> Commit::Init(
+    ModelTypeSet enabled_types,
+    size_t max_entries,
+    const std::string& account_name,
+    const std::string& cache_guid,
+    bool cookie_jar_mismatch,
+    bool single_client,
+    const std::vector<std::string>& fcm_registration_tokens,
+    CommitProcessor* commit_processor,
+    ExtensionsActivity* extensions_activity) {
   // Gather per-type contributions.
   ContributionMap contributions =
       commit_processor->GatherCommitContributions(max_entries);
@@ -124,7 +126,8 @@ std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
 
   // Set the client config params.
   commit_util::AddClientConfigParamsToMessage(
-      enabled_types, cookie_jar_mismatch, single_client, commit_message);
+      enabled_types, cookie_jar_mismatch, single_client,
+      fcm_registration_tokens, commit_message);
 
   // Finally, serialize all our contributions.
   for (const auto& contribution : contributions) {

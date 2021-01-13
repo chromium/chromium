@@ -154,8 +154,12 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   bool HasUnsyncedItemsForTest() const;
 
   // Called on each device infos change and might be called more than once with
-  // the same |active_devices|.
-  void DoOnActiveDevicesChanged(size_t active_devices);
+  // the same |active_devices|. |fcm_registration_tokens| contains a list of
+  // tokens for all known active devices (if available and excluding the local
+  // device if reflections are disabled).
+  void DoOnActiveDevicesChanged(
+      size_t active_devices,
+      std::vector<std::string> fcm_registration_tokens);
 
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;

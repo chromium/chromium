@@ -6,6 +6,8 @@
 #define COMPONENTS_SYNC_ENGINE_IMPL_COMMIT_UTIL_H_
 
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
@@ -26,10 +28,12 @@ void AddExtensionsActivityToMessage(
     sync_pb::CommitMessage* message);
 
 // Fills the config_params field of |message|.
-void AddClientConfigParamsToMessage(ModelTypeSet enabled_types,
-                                    bool cookie_jar_mismatch,
-                                    bool single_client,
-                                    sync_pb::CommitMessage* message);
+void AddClientConfigParamsToMessage(
+    ModelTypeSet enabled_types,
+    bool cookie_jar_mismatch,
+    bool single_client,
+    const std::vector<std::string>& fcm_registration_tokens,
+    sync_pb::CommitMessage* message);
 
 }  // namespace commit_util
 

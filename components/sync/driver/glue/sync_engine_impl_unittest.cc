@@ -182,6 +182,10 @@ class MockActiveDevicesProvider : public ActiveDevicesProvider {
               SetActiveDevicesChangedCallback,
               (ActiveDevicesProvider::ActiveDevicesChangedCallback),
               (override));
+  MOCK_METHOD(std::vector<std::string>,
+              CollectFCMRegistrationTokensForInvalidations,
+              (const std::string&),
+              (override));
 };
 
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
