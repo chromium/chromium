@@ -61,7 +61,8 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
     ExceptionState& exception_state) {
   if (!IsMeasureMemoryAvailable(LocalDOMWindow::From(script_state))) {
     exception_state.ThrowSecurityError(
-        "performance.measureMemory is not available in this context");
+        "performance.measureUserAgentSpecificMemory is not available in"
+        " this context");
     return ScriptPromise();
   }
   v8::Isolate* isolate = script_state->GetIsolate();
@@ -175,7 +176,7 @@ MemoryBreakdownEntry* ConvertBreakdown(
     attribution.push_back(ConvertAttribution(entry));
   }
   result->setAttribution(attribution);
-  result->setUserAgentSpecificTypes({});
+  result->setTypes({});
   return result;
 }
 
@@ -183,7 +184,7 @@ MemoryBreakdownEntry* EmptyBreakdown() {
   auto* result = MemoryBreakdownEntry::Create();
   result->setBytes(0);
   result->setAttribution({});
-  result->setUserAgentSpecificTypes({});
+  result->setTypes({});
   return result;
 }
 

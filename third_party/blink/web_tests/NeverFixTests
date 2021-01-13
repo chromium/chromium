@@ -2077,6 +2077,7 @@ virtual/force-eager/external/wpt/measure-memory/* [ Pass ]
 crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/detached.https.window.html [ Skip ]
 crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip ]
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.https.window.html [ Skip ]
+crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.window.html [ Skip ]
 
 # Legacy SameSite cookie tests do not apply when non-legacy behavior is in effect.
 crbug.com/961439 external/wpt/cookies/samesite/fetch.https.html?legacy-samesite [ Skip ]

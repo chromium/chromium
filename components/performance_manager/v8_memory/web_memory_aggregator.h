@@ -22,8 +22,8 @@ namespace v8_memory {
 
 // Traverses the graph of execution contexts to find the results of the last
 // memory measurement and aggregates them according to the rules defined in the
-// performance.measureMemory spec. (See public/v8_memory/web_memory.h for the
-// link and spec version.)
+// performance.measureUserAgentSpecificMemory spec.
+// (See public/v8_memory/web_memory.h for the link and spec version.)
 class WebMemoryAggregator {
  public:
   // Constructs an aggregator for the results of a memory request from

@@ -55,7 +55,7 @@ interface DocumentCoordinationUnit {
   OnFirstContentfulPaint(mojo_base.mojom.TimeDelta time_since_navigation_start);
 
   // Invoked when JS in the renderer requests a memory measurement via
-  // the performance.measureMemory API.
+  // the performance.measureUserAgentSpecificMemory API.
   OnWebMemoryMeasurementRequested(WebMemoryMeasurement.Mode mode) =>
       (WebMemoryMeasurement measurement);
 };

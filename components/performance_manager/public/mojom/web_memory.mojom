@@ -5,8 +5,8 @@
 module performance_manager.mojom;
 
 // All WebMemory* structs below are used for reporting the memory usage of the
-// page via the performance.measureMemory Web API. These structs roughly follow
-// the structs defined by the specification of the API:
+// page via the performance.measureUserAgentSpecificMemory Web API. These
+// structs roughly follow the structs defined by the specification of the API:
 // https://wicg.github.io/performance-measure-memory/
 //
 // The renderer process invokes the OnWebMemoryMeasurementRequested method of

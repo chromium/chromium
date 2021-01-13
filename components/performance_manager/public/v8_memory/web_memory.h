@@ -20,10 +20,10 @@ namespace v8_memory {
 // Verifies that a frame is allowed to call WebMeasureMemory.
 //
 // The production implementation repeats the checks in the
-// performance.measureMemory spec (see the comments on WebMeasureMemory for the
-// link and version). These checks are performed first on the renderer side but
-// repeated in the browser to guard against a compromised renderer invoking
-// performance.measureMemory without them.
+// performance.measureUserAgentSpecificMemory spec (see the comments on
+// WebMeasureMemory for the link and version). These checks are performed
+// first on the renderer side but repeated in the browser to guard against
+// a compromised renderer invoking the API without them.
 class WebMeasureMemorySecurityChecker {
  public:
   // A callback that starts the memory measurement if the security check
@@ -49,9 +49,9 @@ class WebMeasureMemorySecurityChecker {
 };
 
 // Implements mojom::DocumentCoordinationUnit::OnWebMemoryMeasurementRequest to
-// perform a memory measurement as defined in the performance.measureMemory
-// spec at https://wicg.github.io/performance-measure-memory (this
-// implementation targets the draft of 20 October 2020.)
+// perform a memory measurement as defined in
+// https://wicg.github.io/performance-measure-memory (this implementation
+// targets the draft of 20 October 2020.)
 //
 // Verifies that |frame_node| is allowed to measure memory using
 // |security_checker|. If so, measures memory usage of each frame in

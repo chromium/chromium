@@ -97,8 +97,9 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   virtual PerformanceTiming* timing() const;
   virtual PerformanceNavigation* navigation() const;
   virtual MemoryInfo* memory() const;
-  virtual ScriptPromise measureMemory(ScriptState*,
-                                      ExceptionState& exception_state) const;
+  virtual ScriptPromise measureUserAgentSpecificMemory(
+      ScriptState*,
+      ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();
 
   // Reduce the resolution to prevent timing attacks. See:

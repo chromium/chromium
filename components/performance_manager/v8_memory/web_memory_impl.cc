@@ -168,7 +168,9 @@ void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
   if (url::Origin::Create(frame->GetURL()) !=
       url::Origin::Create(frame->GetPageNode()->GetMainFrameNode()->GetURL())) {
     std::move(bad_message_callback)
-        .Run("performance.measureMemory called from cross-origin subframe");
+        .Run(
+            "performance.measureUserAgentSpecificMemory called from "
+            "a cross-origin subframe");
     return;
   }
   content::GetUIThreadTaskRunner({})->PostTask(
