@@ -52,6 +52,10 @@ class DiceSignedInProfileCreatorShutdownNotifierFactory
 
 }  // namespace
 
+const void* const
+    DiceSignedInProfileCreator::kGuestSigninTokenTransferredUserDataKey =
+        &DiceSignedInProfileCreator::kGuestSigninTokenTransferredUserDataKey;
+
 // Waits until the tokens are loaded and calls the callback. The callback is
 // called immediately if the tokens are already loaded, and called with nullptr
 // if the profile is destroyed before the tokens are loaded.
@@ -245,6 +249,8 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
   auto* new_profile_accounts_mutator =
       IdentityManagerFactory::GetForProfile(new_profile)->GetAccountsMutator();
   accounts_mutator->MoveAccount(new_profile_accounts_mutator, account_id_);
+  if (new_profile->IsEphemeralGuestProfile())
+    GuestSigninTokenTransferredUserData::Set(new_profile);
   if (callback_)
     std::move(callback_).Run(new_profile);
 }

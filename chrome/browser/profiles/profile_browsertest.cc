@@ -977,6 +977,8 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {
                             is_ephemeral() ? 0 : 1);
   tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0,
                             is_ephemeral() ? 1 : 0);
+  tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 0, 1);
+  // TODO(https://crbug.com/1157764): Add test for |SigninTransferred| case.
 }
 
 IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
@@ -992,6 +994,8 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
                             is_ephemeral() ? 0 : 1);
   tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60,
                             is_ephemeral() ? 1 : 0);
+  tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 60, 1);
+  // TODO(https://crbug.com/1157764): Add test for |SigninTransferred| case.
 }
 
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,

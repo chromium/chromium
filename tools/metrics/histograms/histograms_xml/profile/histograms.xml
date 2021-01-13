@@ -212,12 +212,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
-    This histogram records the lifetime duration of {Type} Guest profiles. It is
-    recorded once the profile for an {Type} Guest session is closed.
+    This histogram records the lifetime duration of {Type}. It is recorded once
+    the profile for the Guest session is closed.
   </summary>
   <token key="Type">
-    <variant name="Ephemeral"/>
-    <variant name="OTR"/>
+    <variant name="BlankState"
+        summary="a Guest profile where the session is initialized in blank
+                 state"/>
+    <variant name="Ephemeral" summary="an Ephemeral Guest profile"/>
+    <variant name="OTR" summary="an off-the-record Guest profile"/>
+    <variant name="SigninTransferred"
+        summary="a Guest profile to which a sign-in token has been
+                 transferred"/>
   </token>
 </histogram>
 

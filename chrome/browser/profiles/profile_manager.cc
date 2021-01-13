@@ -161,6 +161,10 @@
 #include "chrome/browser/signin/signin_util_win.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
+#endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 using base::UserMetricsAction;
 using content::BrowserThread;
 
@@ -367,6 +371,15 @@ bool IsEphemeral(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) ||
          profile->IsEphemeralGuestProfile();
 }
+
+#if !defined(OS_ANDROID)
+void RecordGuestProfileLifetime(const std::string& histogram_name,
+                                base::TimeDelta duration) {
+  base::UmaHistogramCustomCounts(histogram_name, duration.InMinutes(), 1,
+                                 base::TimeDelta::FromDays(28).InMinutes(),
+                                 100);
+}
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -2024,14 +2037,20 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     auto duration = base::Time::Now() - profile->GetCreationTime();
     if (profile->IsEphemeralGuestProfile()) {
-      base::UmaHistogramCustomCounts(
-          "Profile.Guest.Ephemeral.Lifetime", duration.InMinutes(), 1,
-          base::TimeDelta::FromDays(28).InMinutes(), 100);
+      RecordGuestProfileLifetime("Profile.Guest.Ephemeral.Lifetime", duration);
     } else {
-      base::UmaHistogramCustomCounts(
-          "Profile.Guest.OTR.Lifetime", duration.InMinutes(), 1,
-          base::TimeDelta::FromDays(28).InMinutes(), 100);
+      RecordGuestProfileLifetime("Profile.Guest.OTR.Lifetime", duration);
     }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (DiceSignedInProfileCreator::GuestSigninTokenTransferredUserData::Get(
+            profile)) {
+      RecordGuestProfileLifetime("Profile.Guest.SigninTransferred.Lifetime",
+                                 duration);
+    } else {
+      RecordGuestProfileLifetime("Profile.Guest.BlankState.Lifetime", duration);
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
     CleanUpGuestProfile();
   }
