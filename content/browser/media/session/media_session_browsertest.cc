@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
 
 // Flaky on Linux and Android and Mac. http://crbug.com/1157239,
 // http://crbug.com/1157319
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_MAC) || \
+    defined(OS_CHROMEOS)
 #define MAYBE_SimplePlayPause DISABLED_SimplePlayPause
 #else
 #define MAYBE_SimplePlayPause SimplePlayPause
