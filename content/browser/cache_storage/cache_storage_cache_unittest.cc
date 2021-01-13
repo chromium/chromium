@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
@@ -444,7 +445,7 @@ class TestCacheStorageCache : public LegacyCacheStorageCache {
       const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context)
       : LegacyCacheStorageCache(origin,
-                                CacheStorageOwner::kCacheAPI,
+                                storage::mojom::CacheStorageOwner::kCacheAPI,
                                 cache_name,
                                 path,
                                 cache_storage,
@@ -521,7 +522,7 @@ class MockLegacyCacheStorage : public LegacyCacheStorage {
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       LegacyCacheStorageManager* cache_storage_manager,
       const url::Origin& origin,
-      CacheStorageOwner owner)
+      storage::mojom::CacheStorageOwner owner)
       : LegacyCacheStorage(origin_path,
                            memory_only,
                            cache_task_runner,
@@ -589,7 +590,8 @@ class CacheStorageCacheTest : public testing::Test {
         temp_dir_path_, MemoryOnly(), base::ThreadTaskRunnerHandle::Get().get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        url::Origin::Create(kTestUrl), CacheStorageOwner::kCacheAPI);
+        url::Origin::Create(kTestUrl),
+        storage::mojom::CacheStorageOwner::kCacheAPI);
 
     InitCache(mock_cache_storage_.get());
   }

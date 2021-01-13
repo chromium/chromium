@@ -23,7 +23,7 @@ class CrossSequenceCacheStorage::Inner {
                               blink::mojom::CacheStorageError)>;
 
   Inner(const url::Origin& origin,
-        CacheStorageOwner owner,
+        storage::mojom::CacheStorageOwner owner,
         scoped_refptr<CacheStorageContextWithManager> context) {
     scoped_refptr<CacheStorageManager> manager = context->CacheManager();
     if (manager)
@@ -158,7 +158,7 @@ class CrossSequenceCacheStorage::Inner {
 
 CrossSequenceCacheStorage::CrossSequenceCacheStorage(
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     scoped_refptr<base::SequencedTaskRunner> target_task_runner,
     scoped_refptr<CacheStorageContextWithManager> context)
     : CacheStorage(origin),

@@ -14,7 +14,7 @@ namespace content {
 
 CacheStorageQuotaClient::CacheStorageQuotaClient(
     scoped_refptr<CacheStorageManager> cache_manager,
-    CacheStorageOwner owner)
+    storage::mojom::CacheStorageOwner owner)
     : cache_manager_(std::move(cache_manager)), owner_(owner) {}
 
 CacheStorageQuotaClient::~CacheStorageQuotaClient() = default;
@@ -77,11 +77,11 @@ void CacheStorageQuotaClient::PerformStorageCleanup(
 
 // static
 storage::QuotaClientType CacheStorageQuotaClient::GetClientTypeFromOwner(
-    CacheStorageOwner owner) {
+    storage::mojom::CacheStorageOwner owner) {
   switch (owner) {
-    case CacheStorageOwner::kCacheAPI:
+    case storage::mojom::CacheStorageOwner::kCacheAPI:
       return storage::QuotaClientType::kServiceWorkerCache;
-    case CacheStorageOwner::kBackgroundFetch:
+    case storage::mojom::CacheStorageOwner::kBackgroundFetch:
       return storage::QuotaClientType::kBackgroundFetch;
   }
 }

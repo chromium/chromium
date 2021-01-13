@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -16,7 +17,6 @@
 namespace content {
 
 class CacheStorageManager;
-enum class CacheStorageOwner;
 
 // CacheStorageQuotaClient is owned by the QuotaManager. There is one per
 // CacheStorageManager/CacheStorageOwner tuple.  Created and accessed on
@@ -24,7 +24,7 @@ enum class CacheStorageOwner;
 class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
-                          CacheStorageOwner owner);
+                          storage::mojom::CacheStorageOwner owner);
 
   // QuotaClient.
   void OnQuotaManagerDestroyed() override;
@@ -43,13 +43,13 @@ class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
                              PerformStorageCleanupCallback callback) override;
 
   static storage::QuotaClientType GetClientTypeFromOwner(
-      CacheStorageOwner owner);
+      storage::mojom::CacheStorageOwner owner);
 
  private:
   ~CacheStorageQuotaClient() override;
 
   const scoped_refptr<CacheStorageManager> cache_manager_;
-  const CacheStorageOwner owner_;
+  const storage::mojom::CacheStorageOwner owner_;
 
   DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClient);
 };

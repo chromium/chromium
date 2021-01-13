@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 
 namespace content {
@@ -28,28 +29,29 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
       scoped_refptr<CacheStorageContextWithManager> context);
 
   // CacheStorageManager
-  CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
-                                      CacheStorageOwner owner) override;
+  CacheStorageHandle OpenCacheStorage(
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner) override;
   void GetAllOriginsUsage(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       CacheStorageContext::GetUsageInfoCallback callback) override;
   void GetOriginUsage(
       const url::Origin& origin_url,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginUsageCallback callback) override;
   void GetOrigins(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForTypeCallback callback) override;
   void GetOriginsForHost(
       const std::string& host,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForHostCallback callback) override;
   void DeleteOriginData(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
-                        CacheStorageOwner owner) override;
+                        storage::mojom::CacheStorageOwner owner) override;
   void SetBlobParametersForCache(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
 

@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cache_storage_context.h"
@@ -62,7 +63,8 @@ class CONTENT_EXPORT CacheStorageContextWithManager
 // CacheStorageManager instance, which is only accessed on the target
 // sequence.
 class CONTENT_EXPORT CacheStorageContextImpl
-    : public CacheStorageContextWithManager {
+    : public CacheStorageContextWithManager,
+      public storage::mojom::CacheStorageControl {
  public:
   CacheStorageContextImpl();
 
@@ -91,8 +93,8 @@ class CONTENT_EXPORT CacheStorageContextImpl
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
       const url::Origin& origin,
-      CacheStorageOwner owner,
-      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+      storage::mojom::CacheStorageOwner owner,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
 
   // If called on the cache_storage target sequence the real manager will be
   // returned directly.  If called on any other sequence then a cross-sequence

@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_cache_observer.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -35,7 +36,6 @@ class SequencedTaskRunner;
 namespace content {
 class CacheStorageIndex;
 class CacheStorageScheduler;
-enum class CacheStorageOwner;
 class LegacyCacheStorageManager;
 
 namespace cache_storage_manager_unittest {
@@ -65,7 +65,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       LegacyCacheStorageManager* cache_storage_manager,
       const url::Origin& origin,
-      CacheStorageOwner owner);
+      storage::mojom::CacheStorageOwner owner);
 
   // Any unfinished asynchronous operations may not complete or call their
   // callbacks.
@@ -317,7 +317,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
   scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
 
   // The owner that this CacheStorage is associated with.
-  CacheStorageOwner owner_;
+  storage::mojom::CacheStorageOwner owner_;
 
   CacheStorageSchedulerId init_id_ = -1;
 

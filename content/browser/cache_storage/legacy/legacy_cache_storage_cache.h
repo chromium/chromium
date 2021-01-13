@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -41,7 +42,6 @@ class CacheStorageBlobToDiskCache;
 class CacheStorageCacheEntryHandler;
 class CacheStorageCacheObserver;
 class CacheStorageScheduler;
-enum class CacheStorageOwner;
 class LegacyCacheStorage;
 struct PutContext;
 
@@ -64,7 +64,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   static std::unique_ptr<LegacyCacheStorageCache> CreateMemoryCache(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       LegacyCacheStorage* cache_storage,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -73,7 +73,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
   static std::unique_ptr<LegacyCacheStorageCache> CreatePersistentCache(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       LegacyCacheStorage* cache_storage,
       const base::FilePath& path,
@@ -244,7 +244,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   LegacyCacheStorageCache(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       const base::FilePath& path,
       LegacyCacheStorage* cache_storage,
@@ -509,7 +509,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   std::unique_ptr<disk_cache::Backend> backend_;
 
   url::Origin origin_;
-  CacheStorageOwner owner_;
+  storage::mojom::CacheStorageOwner owner_;
   const std::string cache_name_;
   base::FilePath path_;
 

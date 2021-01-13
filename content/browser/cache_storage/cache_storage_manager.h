@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
@@ -22,18 +23,6 @@ class Origin;
 
 namespace content {
 
-enum class CacheStorageOwner {
-  kMinValue,
-
-  // Caches that can be accessed by the JS CacheStorage API (developer facing).
-  kCacheAPI = kMinValue,
-
-  // Private cache to store background fetch downloads.
-  kBackgroundFetch,
-
-  kMaxValue = kBackgroundFetch
-};
-
 // Keeps track of a CacheStorage per origin. There is one CacheStorageManager
 // per CacheStorageOwner. Created and accessed from a single sequence.
 // TODO(jkarlin): Remove CacheStorage from memory once they're no
@@ -43,30 +32,31 @@ class CONTENT_EXPORT CacheStorageManager
  public:
   // Open the CacheStorage for the given origin and owner.  A reference counting
   // handle is returned which can be stored and used similar to a weak pointer.
-  virtual CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
-                                              CacheStorageOwner owner) = 0;
+  virtual CacheStorageHandle OpenCacheStorage(
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner) = 0;
 
   // QuotaClient and Browsing Data Deletion support.
   virtual void GetAllOriginsUsage(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       CacheStorageContext::GetUsageInfoCallback callback) = 0;
   virtual void GetOriginUsage(
       const url::Origin& origin_url,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginUsageCallback callback) = 0;
   virtual void GetOrigins(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForTypeCallback callback) = 0;
   virtual void GetOriginsForHost(
       const std::string& host,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForHostCallback callback) = 0;
   virtual void DeleteOriginData(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::DeleteOriginDataCallback callback) = 0;
   virtual void DeleteOriginData(const url::Origin& origin,
-                                CacheStorageOwner owner) = 0;
+                                storage::mojom::CacheStorageOwner owner) = 0;
 
   // This must be called before any of the public Cache functions above.
   virtual void SetBlobParametersForCache(

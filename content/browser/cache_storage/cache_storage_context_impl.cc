@@ -103,7 +103,7 @@ void CacheStorageContextImpl::AddReceiver(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!dispatcher_host_) {
@@ -190,8 +190,9 @@ void CacheStorageContextImpl::GetAllOriginsInfo(
               std::move(callback).Run(std::vector<StorageUsageInfo>());
               return;
             }
-            manager->GetAllOriginsUsage(CacheStorageOwner::kCacheAPI,
-                                        std::move(callback));
+            manager->GetAllOriginsUsage(
+                storage::mojom::CacheStorageOwner::kCacheAPI,
+                std::move(callback));
           },
           base::RetainedRef(this), std::move(callback)));
 }
@@ -206,8 +207,9 @@ void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
                            context->CacheManager();
                        if (!manager)
                          return;
-                       manager->DeleteOriginData(origin,
-                                                 CacheStorageOwner::kCacheAPI);
+                       manager->DeleteOriginData(
+                           origin,
+                           storage::mojom::CacheStorageOwner::kCacheAPI);
                      },
                      base::RetainedRef(this), origin));
 }
@@ -244,7 +246,7 @@ void CacheStorageContextImpl::ShutdownOnTaskRunner() {
   if (special_storage_policy_ &&
       special_storage_policy_->HasSessionOnlyOrigins()) {
     cache_manager_->GetAllOriginsUsage(
-        CacheStorageOwner::kCacheAPI,
+        storage::mojom::CacheStorageOwner::kCacheAPI,
         base::BindOnce(
             [](scoped_refptr<CacheStorageManager> cache_manager,
                scoped_refptr<storage::SpecialStoragePolicy>
@@ -256,7 +258,7 @@ void CacheStorageContextImpl::ShutdownOnTaskRunner() {
                     !special_storage_policy->IsStorageProtected(
                         info.origin.GetURL())) {
                   cache_manager->DeleteOriginData(
-                      info.origin, CacheStorageOwner::kCacheAPI,
+                      info.origin, storage::mojom::CacheStorageOwner::kCacheAPI,
 
                       // Retain a reference to the manager until the deletion is
                       // complete, since it internally uses weak pointers for
@@ -309,12 +311,12 @@ void CacheStorageContextImpl::CreateQuotaClientsOnIOThread(
     return;
   quota_manager_proxy->RegisterClient(
       base::MakeRefCounted<CacheStorageQuotaClient>(
-          manager, CacheStorageOwner::kCacheAPI),
+          manager, storage::mojom::CacheStorageOwner::kCacheAPI),
       storage::QuotaClientType::kServiceWorkerCache,
       {blink::mojom::StorageType::kTemporary});
   quota_manager_proxy->RegisterClient(
       base::MakeRefCounted<CacheStorageQuotaClient>(
-          manager, CacheStorageOwner::kBackgroundFetch),
+          manager, storage::mojom::CacheStorageOwner::kBackgroundFetch),
       storage::QuotaClientType::kBackgroundFetch,
       {blink::mojom::StorageType::kTemporary});
 }

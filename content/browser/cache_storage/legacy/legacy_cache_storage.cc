@@ -99,7 +99,7 @@ class LegacyCacheStorage::CacheLoader {
               scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
               LegacyCacheStorage* cache_storage,
               const url::Origin& origin,
-              CacheStorageOwner owner)
+              storage::mojom::CacheStorageOwner owner)
       : cache_task_runner_(cache_task_runner),
         scheduler_task_runner_(std::move(scheduler_task_runner)),
         quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -158,7 +158,7 @@ class LegacyCacheStorage::CacheLoader {
   LegacyCacheStorage* cache_storage_;
 
   url::Origin origin_;
-  CacheStorageOwner owner_;
+  storage::mojom::CacheStorageOwner owner_;
 };
 
 // Creates memory-only ServiceWorkerCaches. Because these caches have no
@@ -174,7 +174,7 @@ class LegacyCacheStorage::MemoryLoader
                scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
                LegacyCacheStorage* cache_storage,
                const url::Origin& origin,
-               CacheStorageOwner owner)
+               storage::mojom::CacheStorageOwner owner)
       : CacheLoader(cache_task_runner,
                     std::move(scheduler_task_runner),
                     std::move(quota_manager_proxy),
@@ -246,7 +246,7 @@ class LegacyCacheStorage::SimpleCacheLoader
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       LegacyCacheStorage* cache_storage,
       const url::Origin& origin,
-      CacheStorageOwner owner)
+      storage::mojom::CacheStorageOwner owner)
       : CacheLoader(cache_task_runner,
                     std::move(scheduler_task_runner),
                     std::move(quota_manager_proxy),
@@ -589,7 +589,7 @@ LegacyCacheStorage::LegacyCacheStorage(
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     LegacyCacheStorageManager* cache_storage_manager,
     const url::Origin& origin,
-    CacheStorageOwner owner)
+    storage::mojom::CacheStorageOwner owner)
     : CacheStorage(origin),
       initialized_(false),
       initializing_(false),

@@ -354,13 +354,13 @@ void CacheStorageCacheEntryHandler::EraseDiskCacheBlobEntry(
 // static
 std::unique_ptr<CacheStorageCacheEntryHandler>
 CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
   switch (owner) {
-    case CacheStorageOwner::kCacheAPI:
+    case storage::mojom::CacheStorageOwner::kCacheAPI:
       return std::make_unique<CacheStorageCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
-    case CacheStorageOwner::kBackgroundFetch:
+    case storage::mojom::CacheStorageOwner::kBackgroundFetch:
       return std::make_unique<background_fetch::CacheEntryHandlerImpl>(
           std::move(blob_storage_context));
   }

@@ -15,6 +15,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
@@ -54,35 +55,37 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       LegacyCacheStorageManager* old_manager);
 
   // Map a database identifier (computed from an origin) to the path.
-  static base::FilePath ConstructOriginPath(const base::FilePath& root_path,
-                                            const url::Origin& origin,
-                                            CacheStorageOwner owner);
+  static base::FilePath ConstructOriginPath(
+      const base::FilePath& root_path,
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner);
 
   // Open the CacheStorage for the given origin and owner.  A reference counting
   // handle is returned which can be stored and used similar to a weak pointer.
-  CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
-                                      CacheStorageOwner owner) override;
+  CacheStorageHandle OpenCacheStorage(
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner) override;
 
   void GetAllOriginsUsage(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       CacheStorageContext::GetUsageInfoCallback callback) override;
   void GetOriginUsage(
       const url::Origin& origin_url,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginUsageCallback callback) override;
   void GetOrigins(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForTypeCallback callback) override;
   void GetOriginsForHost(
       const std::string& host,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::GetOriginsForHostCallback callback) override;
   void DeleteOriginData(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
-                        CacheStorageOwner owner) override;
+                        storage::mojom::CacheStorageOwner owner) override;
 
   void SetBlobParametersForCache(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
@@ -97,13 +100,13 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   // instance is destroyed and its reference count drops to zero.
   void CacheStorageUnreferenced(LegacyCacheStorage* cache_storage,
                                 const url::Origin& origin,
-                                CacheStorageOwner owner);
+                                storage::mojom::CacheStorageOwner owner);
 
  private:
   friend class cache_storage_manager_unittest::CacheStorageManagerTest;
   friend class CacheStorageContextImpl;
 
-  typedef std::map<std::pair<url::Origin, CacheStorageOwner>,
+  typedef std::map<std::pair<url::Origin, storage::mojom::CacheStorageOwner>,
                    std::unique_ptr<LegacyCacheStorage>>
       CacheStorageMap;
 
@@ -122,7 +125,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
 
   void DeleteOriginDidClose(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       storage::QuotaClient::DeleteOriginDataCallback callback,
       std::unique_ptr<LegacyCacheStorage> cache_storage,
       int64_t origin_size);

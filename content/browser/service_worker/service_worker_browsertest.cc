@@ -30,6 +30,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
@@ -2152,7 +2153,8 @@ class CacheStorageSideDataSizeChecker
   void OpenCacheOnCoreThread(int* result, base::OnceClosure continuation) {
     CacheStorageHandle cache_storage =
         cache_storage_context_->CacheManager()->OpenCacheStorage(
-            url::Origin::Create(origin_), CacheStorageOwner::kCacheAPI);
+            url::Origin::Create(origin_),
+            storage::mojom::CacheStorageOwner::kCacheAPI);
     cache_storage.value()->OpenCache(
         cache_name_, /* trace_id = */ 0,
         base::BindOnce(&self::OnCacheStorageOpenCallback, this, result,

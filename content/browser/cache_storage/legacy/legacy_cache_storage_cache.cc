@@ -549,7 +549,7 @@ struct LegacyCacheStorageCache::QueryCacheContext {
 std::unique_ptr<LegacyCacheStorageCache>
 LegacyCacheStorageCache::CreateMemoryCache(
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     LegacyCacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -570,7 +570,7 @@ LegacyCacheStorageCache::CreateMemoryCache(
 std::unique_ptr<LegacyCacheStorageCache>
 LegacyCacheStorageCache::CreatePersistentCache(
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     LegacyCacheStorage* cache_storage,
     const base::FilePath& path,
@@ -1022,7 +1022,7 @@ void LegacyCacheStorageCache::SetSchedulerForTesting(
 
 LegacyCacheStorageCache::LegacyCacheStorageCache(
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     const base::FilePath& path,
     LegacyCacheStorage* cache_storage,
@@ -1079,7 +1079,7 @@ void LegacyCacheStorageCache::QueryCache(
     return;
   }
 
-  if (owner_ != CacheStorageOwner::kBackgroundFetch &&
+  if (owner_ != storage::mojom::CacheStorageOwner::kBackgroundFetch &&
       (!options || !options->ignore_method) && request &&
       !request->method.empty() &&
       request->method != net::HttpRequestHeaders::kGetMethod) {

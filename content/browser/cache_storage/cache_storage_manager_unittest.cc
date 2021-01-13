@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage.pb.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
@@ -456,7 +457,8 @@ class CacheStorageManagerTest : public testing::Test {
 
   bool Open(const url::Origin& origin,
             const std::string& cache_name,
-            CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+            storage::mojom::CacheStorageOwner owner =
+                storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -479,7 +481,8 @@ class CacheStorageManagerTest : public testing::Test {
 
   bool Has(const url::Origin& origin,
            const std::string& cache_name,
-           CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+           storage::mojom::CacheStorageOwner owner =
+               storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -495,7 +498,8 @@ class CacheStorageManagerTest : public testing::Test {
 
   bool Delete(const url::Origin& origin,
               const std::string& cache_name,
-              CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+              storage::mojom::CacheStorageOwner owner =
+                  storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -510,7 +514,8 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   size_t Keys(const url::Origin& origin,
-              CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+              storage::mojom::CacheStorageOwner owner =
+                  storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -528,7 +533,8 @@ class CacheStorageManagerTest : public testing::Test {
                     const std::string& cache_name,
                     const GURL& url,
                     blink::mojom::CacheQueryOptionsPtr match_options = nullptr,
-                    CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+                    storage::mojom::CacheStorageOwner owner =
+                        storage::mojom::CacheStorageOwner::kCacheAPI) {
     auto request = blink::mojom::FetchAPIRequest::New();
     request->url = url;
     return StorageMatchWithRequest(origin, cache_name, std::move(request),
@@ -540,7 +546,8 @@ class CacheStorageManagerTest : public testing::Test {
       const std::string& cache_name,
       blink::mojom::FetchAPIRequestPtr request,
       blink::mojom::CacheQueryOptionsPtr match_options = nullptr,
-      CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -570,7 +577,8 @@ class CacheStorageManagerTest : public testing::Test {
       const url::Origin& origin,
       blink::mojom::FetchAPIRequestPtr request,
       blink::mojom::CacheQueryOptionsPtr match_options = nullptr,
-      CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::HistogramTester histogram_tester;
     base::RunLoop loop;
     CacheStorageHandle cache_storage =
@@ -587,7 +595,7 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool Write(const url::Origin& origin,
-             CacheStorageOwner owner,
+             storage::mojom::CacheStorageOwner owner,
              const std::string& cache_name,
              const std::string& request_url) {
     auto request = blink::mojom::FetchAPIRequest::New();
@@ -725,13 +733,13 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   CacheStorageHandle CacheStorageForOrigin(const url::Origin& origin) {
-    return cache_manager_->OpenCacheStorage(origin,
-                                            CacheStorageOwner::kCacheAPI);
+    return cache_manager_->OpenCacheStorage(
+        origin, storage::mojom::CacheStorageOwner::kCacheAPI);
   }
 
-  int64_t GetOriginUsage(
-      const url::Origin& origin,
-      CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+  int64_t GetOriginUsage(const url::Origin& origin,
+                         storage::mojom::CacheStorageOwner owner =
+                             storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::RunLoop loop;
     cache_manager_->GetOriginUsage(
         origin, owner,
@@ -747,7 +755,8 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   std::vector<StorageUsageInfo> GetAllOriginsUsage(
-      CacheStorageOwner owner = CacheStorageOwner::kCacheAPI) {
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::RunLoop loop;
     cache_manager_->GetAllOriginsUsage(
         owner, base::BindLambdaForTesting(
@@ -876,9 +885,11 @@ TEST_P(CacheStorageManagerTestP, OpenTwoCaches) {
 }
 
 TEST_P(CacheStorageManagerTestP, OpenSameCacheDifferentOwners) {
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(
+      Open(origin1_, "foo", storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_NE(callback_cache_handle_.value(), cache_handle.value());
 }
 
@@ -910,17 +921,23 @@ TEST_P(CacheStorageManagerTestP, HasCache) {
 }
 
 TEST_P(CacheStorageManagerTestP, HasCacheDifferentOwners) {
-  EXPECT_TRUE(Open(origin1_, "public", CacheStorageOwner::kCacheAPI));
-  EXPECT_TRUE(Open(origin1_, "bgf", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(
+      Open(origin1_, "public", storage::mojom::CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(Open(origin1_, "bgf",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
-  EXPECT_TRUE(Has(origin1_, "public", CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(
+      Has(origin1_, "public", storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_TRUE(callback_bool_);
-  EXPECT_FALSE(Has(origin1_, "bgf", CacheStorageOwner::kCacheAPI));
+  EXPECT_FALSE(
+      Has(origin1_, "bgf", storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_FALSE(callback_bool_);
 
-  EXPECT_TRUE(Has(origin1_, "bgf", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Has(origin1_, "bgf",
+                  storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(callback_bool_);
-  EXPECT_FALSE(Has(origin1_, "public", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_FALSE(Has(origin1_, "public",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_FALSE(callback_bool_);
 }
 
@@ -1029,24 +1046,30 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAllNoCaches) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchDifferentOwners) {
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(
+      Open(origin1_, "foo", storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/public")));
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bgf")));
 
   // Check the public cache.
   EXPECT_TRUE(StorageMatch(origin1_, "foo", GURL("http://example.com/public"),
-                           nullptr, CacheStorageOwner::kCacheAPI));
+                           nullptr,
+                           storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_FALSE(StorageMatch(origin1_, "foo", GURL("http://example.com/bgf"),
-                            nullptr, CacheStorageOwner::kCacheAPI));
+                            nullptr,
+                            storage::mojom::CacheStorageOwner::kCacheAPI));
 
   // Check the internal cache.
-  EXPECT_FALSE(StorageMatch(origin1_, "foo", GURL("http://example.com/public"),
-                            nullptr, CacheStorageOwner::kBackgroundFetch));
-  EXPECT_TRUE(StorageMatch(origin1_, "foo", GURL("http://example.com/bgf"),
-                           nullptr, CacheStorageOwner::kBackgroundFetch));
+  EXPECT_FALSE(
+      StorageMatch(origin1_, "foo", GURL("http://example.com/public"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(
+      StorageMatch(origin1_, "foo", GURL("http://example.com/bgf"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
 }
 
 TEST_F(CacheStorageManagerTest, StorageReuseCacheName) {
@@ -1687,28 +1710,34 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsage) {
 }
 
 TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
-  EXPECT_EQ(0ULL, GetAllOriginsUsage(CacheStorageOwner::kCacheAPI).size());
-  EXPECT_EQ(0ULL,
-            GetAllOriginsUsage(CacheStorageOwner::kBackgroundFetch).size());
+  EXPECT_EQ(
+      0ULL,
+      GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kCacheAPI).size());
+  EXPECT_EQ(0ULL, GetAllOriginsUsage(
+                      storage::mojom::CacheStorageOwner::kBackgroundFetch)
+                      .size());
 
   // Put one entry in a cache of owner 1.
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(
+      Open(origin1_, "foo", storage::mojom::CacheStorageOwner::kCacheAPI));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
   // Put two entries (of identical size) in two origins in a cache of owner 2.
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  EXPECT_TRUE(Open(origin2_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin2_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
   std::vector<StorageUsageInfo> usage_cache =
-      GetAllOriginsUsage(CacheStorageOwner::kCacheAPI);
+      GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kCacheAPI);
   EXPECT_EQ(1ULL, usage_cache.size());
   std::vector<StorageUsageInfo> usage_bgf =
-      GetAllOriginsUsage(CacheStorageOwner::kBackgroundFetch);
+      GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kBackgroundFetch);
   EXPECT_EQ(2ULL, usage_bgf.size());
 
   int origin1_index = usage_bgf[0].origin == origin1_ ? 0 : 1;
@@ -1900,9 +1929,11 @@ TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCaches) {
 }
 
 TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCachesTwoOwners) {
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kCacheAPI));
+  EXPECT_TRUE(
+      Open(origin1_, "foo", storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle public_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   CacheStorageCacheHandle bgf_handle = std::move(callback_cache_handle_);
 
   EXPECT_TRUE(
@@ -1949,7 +1980,8 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
   auto* legacy_manager =
       static_cast<LegacyCacheStorageManager*>(cache_manager_.get());
   base::FilePath origin_path = LegacyCacheStorageManager::ConstructOriginPath(
-      legacy_manager->root_path(), origin1_, CacheStorageOwner::kCacheAPI);
+      legacy_manager->root_path(), origin1_,
+      storage::mojom::CacheStorageOwner::kCacheAPI);
   base::FilePath unreferenced_path = origin_path.AppendASCII("bar");
   EXPECT_TRUE(CreateDirectory(unreferenced_path));
   EXPECT_TRUE(base::DirectoryExists(unreferenced_path));
@@ -2267,27 +2299,34 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreVary) {
 }
 
 TEST_P(CacheStorageManagerTestP, StorageWriteToCache) {
-  EXPECT_TRUE(Open(origin1_, "foo", CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(Open(origin1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
-  EXPECT_TRUE(Write(origin1_, CacheStorageOwner::kBackgroundFetch, "foo",
+  EXPECT_TRUE(Write(origin1_,
+                    storage::mojom::CacheStorageOwner::kBackgroundFetch, "foo",
                     "http://example.com/foo"));
 
   // Match request we just wrote.
-  EXPECT_TRUE(StorageMatch(origin1_, "foo", GURL("http://example.com/foo"),
-                           nullptr, CacheStorageOwner::kBackgroundFetch));
+  EXPECT_TRUE(
+      StorageMatch(origin1_, "foo", GURL("http://example.com/foo"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
 
   // Don't match with different origin.
-  EXPECT_FALSE(StorageMatch(origin2_, "foo", GURL("http://example.com/foo"),
-                            nullptr, CacheStorageOwner::kBackgroundFetch));
+  EXPECT_FALSE(
+      StorageMatch(origin2_, "foo", GURL("http://example.com/foo"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different cache name.
-  EXPECT_FALSE(StorageMatch(origin1_, "bar", GURL("http://example.com/foo"),
-                            nullptr, CacheStorageOwner::kBackgroundFetch));
+  EXPECT_FALSE(
+      StorageMatch(origin1_, "bar", GURL("http://example.com/foo"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different request.
-  EXPECT_FALSE(StorageMatch(origin1_, "foo", GURL("http://example.com/bar"),
-                            nullptr, CacheStorageOwner::kBackgroundFetch));
+  EXPECT_FALSE(
+      StorageMatch(origin1_, "foo", GURL("http://example.com/bar"), nullptr,
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   // Don't match with different owner.
   EXPECT_FALSE(StorageMatch(origin1_, "foo", GURL("http://example.com/foo"),
-                            nullptr, CacheStorageOwner::kCacheAPI));
+                            nullptr,
+                            storage::mojom::CacheStorageOwner::kCacheAPI));
 }
 
 TEST_F(CacheStorageManagerTest, WriteIndexOnlyScheduledWhenValueChanges) {
@@ -2377,7 +2416,7 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   void SetUp() override {
     CacheStorageManagerTest::SetUp();
     quota_client_ = base::MakeRefCounted<CacheStorageQuotaClient>(
-        cache_manager_, CacheStorageOwner::kCacheAPI);
+        cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
   }
 
   void QuotaUsageCallback(base::RunLoop* run_loop, int64_t usage) {
@@ -2479,9 +2518,10 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaGetOriginsForType) {
 TEST_P(CacheStorageQuotaClientTestP, QuotaGetOriginsForTypeDifferentOwners) {
   EXPECT_EQ(0u, QuotaGetOriginsForType());
   EXPECT_TRUE(Open(origin1_, "foo"));
-  // The |quota_client_| is registered for CacheStorageOwner::kCacheAPI, so this
-  // Open is ignored.
-  EXPECT_TRUE(Open(origin2_, "bar", CacheStorageOwner::kBackgroundFetch));
+  // The |quota_client_| is registered for
+  // storage::mojom::CacheStorageOwner::kCacheAPI, so this Open is ignored.
+  EXPECT_TRUE(Open(origin2_, "bar",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_EQ(1u, QuotaGetOriginsForType());
 }
 
@@ -2543,7 +2583,7 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedOriginData) {
   quota_manager_proxy_->SimulateQuotaManagerDestroyed();
   RecreateStorageManager();
   quota_client_ = base::MakeRefCounted<CacheStorageQuotaClient>(
-      cache_manager_, CacheStorageOwner::kCacheAPI);
+      cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
 
   EXPECT_TRUE(QuotaDeleteOriginData(origin1_));
   EXPECT_EQ(0, QuotaGetOriginUsage(origin1_));

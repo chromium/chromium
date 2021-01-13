@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 
@@ -29,7 +30,7 @@ class CrossSequenceCacheStorage
  public:
   CrossSequenceCacheStorage(
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       scoped_refptr<base::SequencedTaskRunner> target_task_runner,
       scoped_refptr<CacheStorageContextWithManager> context);
 

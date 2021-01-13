@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -50,7 +51,7 @@ class CacheStorageDispatcherHost {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const url::Origin& origin,
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
   void Shutdown();
@@ -65,7 +66,7 @@ class CacheStorageDispatcherHost {
       mojo::PendingAssociatedReceiver<blink::mojom::CacheStorageCache>
           receiver);
   CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
-                                      CacheStorageOwner owner);
+                                      storage::mojom::CacheStorageOwner owner);
 
   scoped_refptr<CacheStorageContextImpl> context_;
 

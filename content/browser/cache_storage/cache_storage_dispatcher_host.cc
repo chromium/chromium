@@ -170,7 +170,7 @@ class CacheStorageDispatcherHost::CacheImpl
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      CacheStorageOwner owner)
+      storage::mojom::CacheStorageOwner owner)
       : host_(host),
         cache_handle_(std::move(cache_handle)),
         origin_(origin),
@@ -369,7 +369,7 @@ class CacheStorageDispatcherHost::CacheImpl
                             GetAllMatchedEntriesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (owner_ != CacheStorageOwner::kBackgroundFetch) {
+    if (owner_ != storage::mojom::CacheStorageOwner::kBackgroundFetch) {
       host_->cache_receivers_.ReportBadMessage("CSDH_BAD_OWNER");
       return;
     }
@@ -607,7 +607,7 @@ class CacheStorageDispatcherHost::CacheImpl
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
-  const CacheStorageOwner owner_;
+  const storage::mojom::CacheStorageOwner owner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CacheImpl> weak_factory_{this};
@@ -628,7 +628,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      CacheStorageOwner owner)
+      storage::mojom::CacheStorageOwner owner)
       : host_(host),
         origin_(origin),
         cross_origin_embedder_policy_(cross_origin_embedder_policy),
@@ -950,7 +950,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
-  const CacheStorageOwner owner_;
+  const storage::mojom::CacheStorageOwner owner_;
   CacheStorageHandle cache_storage_handle_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -974,7 +974,7 @@ void CacheStorageDispatcherHost::AddReceiver(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     const url::Origin& origin,
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool incognito = context_ ? context_->is_incognito() : false;
@@ -998,7 +998,7 @@ void CacheStorageDispatcherHost::AddCacheReceiver(
 
 CacheStorageHandle CacheStorageDispatcherHost::OpenCacheStorage(
     const url::Origin& origin,
-    CacheStorageOwner owner) {
+    storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_ || !OriginCanAccessCacheStorage(origin))
     return CacheStorageHandle();

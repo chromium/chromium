@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/background_fetch/background_fetch_constants.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
@@ -94,7 +95,8 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
   DCHECK(cache_storage_context_);
   cache_storage_context_->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(), origin,
-      CacheStorageOwner::kBackgroundFetch, remote.BindNewPipeAndPassReceiver());
+      storage::mojom::CacheStorageOwner::kBackgroundFetch,
+      remote.BindNewPipeAndPassReceiver());
 
   auto result = cache_storage_remote_map_.emplace(unique_id, std::move(remote));
   DCHECK(result.second);

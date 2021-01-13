@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -210,7 +211,8 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
   // storage::mojom::CacheStorageControl remote, similar to IndexedDBControl.
   cache_storage_context_->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(), cache_storage_origin,
-      CacheStorageOwner::kCacheAPI, remote.BindNewPipeAndPassReceiver());
+      storage::mojom::CacheStorageOwner::kCacheAPI,
+      remote.BindNewPipeAndPassReceiver());
 
   // Call the remote pointer directly so we can pass the remote to the callback
   // itself to preserve its lifetime.
