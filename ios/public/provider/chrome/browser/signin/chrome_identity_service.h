@@ -79,14 +79,10 @@ class ChromeIdentityService {
     virtual ~Observer() {}
 
     // Handles identity list changed events.
-    // Deprecated, see OnIdentityListChanged(bool).
-    virtual void OnIdentityListChanged() {}
-
-    // Handles identity list changed events.
     // |keychainReload| is true if the identity list is updated by reloading the
     // keychain. This means that a first party Google app had added or removed
     // identities.
-    virtual void OnIdentityListChanged(bool keychainReload);
+    virtual void OnIdentityListChanged(bool keychainReload) {}
 
     // Handles access token refresh failed events.
     // |identity| is the the identity for which the access token refresh failed.
@@ -269,10 +265,6 @@ class ChromeIdentityService {
   virtual bool IsInvalidGrantError(NSDictionary* user_info);
 
  protected:
-  // Fires |OnIdentityListChanged| on all observers.
-  // Deprecated, see FireIdentityListChanged(bool).
-  void FireIdentityListChanged();
-
   // Fires |OnIdentityListChanged| on all observers.
   // |keychainReload| is true if the identity list is updated by reloading the
   // keychain. This means that a first party Google app had added or removed
