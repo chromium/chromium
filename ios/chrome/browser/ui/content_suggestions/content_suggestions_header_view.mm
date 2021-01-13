@@ -340,6 +340,10 @@ CGFloat ToolbarHeight() {
     self.fakeLocationBarTrailingConstraint.constant = 0;
     self.fakeLocationBarTopConstraint.constant = 0;
 
+    self.hintLabelLeadingConstraint.constant =
+        ntp_header::kHintLabelSidePadding;
+    self.voiceSearchTrailingMarginConstraint.constant = 0;
+
     self.separator.alpha = 0;
 
     return;
