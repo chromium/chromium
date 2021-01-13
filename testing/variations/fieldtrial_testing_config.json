@@ -8292,7 +8292,7 @@
             ]
         }
     ],
-    "WebProtectConnectors": [
+    "WebProtectPerProfile": [
         {
             "platforms": [
                 "chromeos",
@@ -8304,7 +8304,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnterpriseConnectorsEnabled"
+                        "PerProfileConnectorsEnabled"
                     ]
                 }
             ]
