@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 class RectF;
@@ -47,7 +48,6 @@ class RectF;
 
 namespace autofill {
 
-class AutofillDataModel;
 class AutofillField;
 class AutofillClient;
 class AutofillManagerTestDelegate;
@@ -365,11 +365,13 @@ class AutofillManager : public AutofillHandler,
 
   // Keeps track of the filling context for a form, used to make refill attemps.
   struct FillingContext {
-    // |optional_profile| or |optional_credit_card| must be non-null.
-    // If |optional_credit_card| is non-null, |optional_cvc| may be non-null.
+    // |profile_or_credit_card| contains either AutofillProfile or CreditCard
+    // and must be non-null.
+    // If |profile_or_credit_card| contains a CreditCard, |optional_cvc| may be
+    // non-null.
     FillingContext(const AutofillField& field,
-                   const AutofillProfile* optional_profile,
-                   const CreditCard* optional_credit_card,
+                   absl::variant<const AutofillProfile*, const CreditCard*>
+                       profile_or_credit_card,
                    const base::string16* optional_cvc);
     ~FillingContext();
 
@@ -378,8 +380,8 @@ class AutofillManager : public AutofillHandler,
     // The profile or credit card that was used for the initial fill.
     // The std::string associated with the credit card is the CVC, which may be
     // empty.
-    const base::Optional<AutofillProfile> profile;
-    const base::Optional<std::pair<CreditCard, base::string16>> credit_card;
+    absl::variant<AutofillProfile, std::pair<CreditCard, base::string16>>
+        profile_or_credit_card_with_cvc;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     // TODO(crbug/896689): Remove |filled_field_unique_name|.
@@ -463,16 +465,17 @@ class AutofillManager : public AutofillHandler,
                                 const AutofillProfile& profile);
 
   // Fills or previews |data_model| in the |form|.
-  void FillOrPreviewDataModelForm(AutofillDriver::RendererFormDataAction action,
-                                  int query_id,
-                                  const FormData& form,
-                                  const FormFieldData& field,
-                                  const AutofillProfile* optional_profile,
-                                  const CreditCard* optional_credit_card,
-                                  const base::string16* optional_cvc,
-                                  FormStructure* form_structure,
-                                  AutofillField* autofill_field,
-                                  bool is_refill = false);
+  void FillOrPreviewDataModelForm(
+      AutofillDriver::RendererFormDataAction action,
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      const base::string16* optional_cvc,
+      FormStructure* form_structure,
+      AutofillField* autofill_field,
+      bool is_refill = false);
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
@@ -547,13 +550,15 @@ class AutofillManager : public AutofillHandler,
       size_t current_index,
       const ServerFieldTypeSet& upload_types);
 
-  void FillFieldWithValue(AutofillField* autofill_field,
-                          const AutofillDataModel& data_model,
-                          FormFieldData* field_data,
-                          bool should_notify,
-                          const base::string16& cvc,
-                          uint32_t profile_form_bitmask,
-                          std::string* failure_to_fill);
+  void FillFieldWithValue(
+      AutofillField* autofill_field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      FormFieldData* field_data,
+      bool should_notify,
+      const base::string16& cvc,
+      uint32_t profile_form_bitmask,
+      std::string* failure_to_fill);
 
   // TODO(crbug/896689): Remove code duplication once experiment is finished.
   void SetFillingContext(const FormStructure& form,

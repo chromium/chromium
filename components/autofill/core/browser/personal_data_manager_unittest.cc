@@ -3970,7 +3970,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
       .WillOnce(QuitMessageLoop(&profile_run_loop));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
-  personal_data_->RecordUseOf(profile);
+  personal_data_->RecordUseOf(&profile);
   profile_run_loop.Run();
 
   added_profile = personal_data_->GetProfileByGUID(profile.guid());
@@ -3985,7 +3985,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
       .WillOnce(QuitMessageLoop(&credit_card_run_loop));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
-  personal_data_->RecordUseOf(credit_card);
+  personal_data_->RecordUseOf(&credit_card);
   credit_card_run_loop.Run();
 
   added_profile = personal_data_->GetProfileByGUID(profile.guid());

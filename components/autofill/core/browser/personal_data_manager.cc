@@ -601,46 +601,58 @@ void PersonalDataManager::MarkObserversInsufficientFormDataForImport() {
     observer.OnInsufficientFormData();
 }
 
-void PersonalDataManager::RecordUseOf(const AutofillDataModel& data_model) {
+void PersonalDataManager::RecordUseOf(
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card) {
   if (is_off_the_record_)
     return;
 
-  CreditCard* credit_card = GetCreditCardByGUID(data_model.guid());
-  if (credit_card) {
-    credit_card->RecordAndLogUse();
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
+    CreditCard* credit_card = GetCreditCardByGUID(
+        absl::get<const CreditCard*>(profile_or_credit_card)->guid());
 
-    if (credit_card->record_type() == CreditCard::LOCAL_CARD) {
-      // Fail silently if there's no local database, because we need to support
-      // this for tests.
-      if (database_helper_->GetLocalDatabase()) {
-        database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
+    if (credit_card) {
+      credit_card->RecordAndLogUse();
+
+      if (credit_card->record_type() == CreditCard::LOCAL_CARD) {
+        // Fail silently if there's no local database, because we need to
+        // support this for tests.
+        if (database_helper_->GetLocalDatabase()) {
+          database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
+        }
+      } else {
+        DCHECK(database_helper_->GetServerDatabase())
+            << "Recording use of server card without server storage.";
+        database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
+            *credit_card);
       }
-    } else {
-      DCHECK(database_helper_->GetServerDatabase())
-          << "Recording use of server card without server storage.";
-      database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
-          *credit_card);
-    }
 
-    Refresh();
-    return;
+      Refresh();
+      return;
+    }
   }
 
-  AutofillProfile* profile = GetProfileByGUID(data_model.guid());
-  if (profile) {
-    profile->RecordAndLogUse();
+  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
+    // TODO(crbug.com/941498): Server profiles are not recorded therefore
+    // GetProfileByGUID returns null for them.
+    AutofillProfile* profile = GetProfileByGUID(
+        absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
 
-    switch (profile->record_type()) {
-      case AutofillProfile::LOCAL_PROFILE:
-        UpdateProfileInDB(*profile, /*enforced=*/true);
-        break;
-      case AutofillProfile::SERVER_PROFILE:
-        DCHECK(database_helper_->GetServerDatabase())
-            << "Recording use of server address without server storage.";
-        database_helper_->GetServerDatabase()->UpdateServerAddressMetadata(
-            *profile);
-        Refresh();
-        break;
+    if (profile) {
+      profile->RecordAndLogUse();
+
+      switch (profile->record_type()) {
+        case AutofillProfile::LOCAL_PROFILE:
+          UpdateProfileInDB(*profile, /*enforced=*/true);
+          break;
+        case AutofillProfile::SERVER_PROFILE:
+          DCHECK(database_helper_->GetServerDatabase())
+              << "Recording use of server address without server storage.";
+          database_helper_->GetServerDatabase()->UpdateServerAddressMetadata(
+              *profile);
+          Refresh();
+          break;
+      }
     }
   }
 }

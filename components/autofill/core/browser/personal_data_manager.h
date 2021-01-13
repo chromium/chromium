@@ -145,9 +145,11 @@ class PersonalDataManager : public KeyedService,
   // imported from a form.
   void MarkObserversInsufficientFormDataForImport();
 
-  // Called to indicate |data_model| was used (to fill in a form). Updates
-  // the database accordingly. Can invalidate |data_model|.
-  virtual void RecordUseOf(const AutofillDataModel& data_model);
+  // Called to indicate |profile_or_credit_card| was used (to fill in a form).
+  // Updates the database accordingly.
+  virtual void RecordUseOf(
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card);
 
   // Saves |imported_profile| to the WebDB if it exists. Returns the guid of
   // the new or updated profile, or the empty string if no profile was saved.

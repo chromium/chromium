@@ -9,12 +9,14 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
 class AddressNormalizer;
-class AutofillDataModel;
 class AutofillField;
 
 // Helper class to put user content in fields, to eventually send to the
@@ -25,14 +27,14 @@ class FieldFiller {
               AddressNormalizer* address_normalizer);
   ~FieldFiller();
 
-  // Set |field_data|'s value to the right value in |data_model|. Uses |field|
-  // to determine which field type should be filled, and |app_locale_| as hint
-  // when filling exceptional cases like phone number values. Returns |true| if
-  // the field has been filled, false otherwise. |cvc| is not stored in the
-  // data model and may be needed at fill time. If |failure_to_fill| is not
-  // null, errors are reported to that string.
+  // Set |field_data|'s value to the right value in |profile_or_credit_card|.
+  // Uses |field| to determine which field type should be filled, and
+  // |app_locale_| as hint when filling exceptional cases like phone number
+  // values. Returns |true| if the field has been filled, false otherwise. If
+  // |failure_to_fill| is not null, errors are reported to that string.
   bool FillFormField(const AutofillField& field,
-                     const AutofillDataModel& data_model,
+                     absl::variant<const AutofillProfile*, const CreditCard*>
+                         profile_or_credit_card,
                      FormFieldData* field_data,
                      const base::string16& cvc,
                      std::string* failure_to_fill = nullptr);

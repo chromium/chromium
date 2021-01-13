@@ -405,7 +405,7 @@ void PaymentRequestState::OnPaymentAppWindowClosed() {
 void PaymentRequestState::RecordUseStats() {
   if (ShouldShowShippingSection()) {
     DCHECK(selected_shipping_profile_);
-    personal_data_manager_->RecordUseOf(*selected_shipping_profile_);
+    personal_data_manager_->RecordUseOf(selected_shipping_profile_);
   }
 
   if (ShouldShowContactSection()) {
@@ -415,7 +415,7 @@ void PaymentRequestState::RecordUseStats() {
     // should only be updated once.
     if (!ShouldShowShippingSection() || (selected_shipping_profile_->guid() !=
                                          selected_contact_profile_->guid())) {
-      personal_data_manager_->RecordUseOf(*selected_contact_profile_);
+      personal_data_manager_->RecordUseOf(selected_contact_profile_);
     }
   }
 

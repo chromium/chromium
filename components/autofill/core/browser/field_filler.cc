@@ -19,8 +19,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -540,9 +538,10 @@ void FillCreditCardNumberField(const AutofillField& field,
 // found, falls back to alternate filling strategies based on the |type|.
 bool FillSelectControl(const AutofillType& type,
                        const base::string16& value,
-                       FormFieldData* field,
-                       const AutofillDataModel& data_model,
+                       absl::variant<const AutofillProfile*, const CreditCard*>
+                           profile_or_credit_card,
                        const std::string& app_locale,
+                       FormFieldData* field,
                        AddressNormalizer* address_normalizer,
                        std::string* failure_to_fill) {
   DCHECK_EQ("select-one", field->form_control_type);
@@ -571,9 +570,10 @@ bool FillSelectControl(const AutofillType& type,
 
   // If that fails, try specific fallbacks based on the field type.
   if (storable_type == ADDRESS_HOME_STATE) {
-    // Safe to cast the data model to AutofillProfile here.
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
     const std::string country_code = data_util::GetCountryCodeWithFallback(
-        static_cast<const AutofillProfile&>(data_model), app_locale);
+        *absl::get<const AutofillProfile*>(profile_or_credit_card), app_locale);
     return FillStateSelectControl(value, field, country_code,
                                   address_normalizer, failure_to_fill);
   }
@@ -813,12 +813,20 @@ FieldFiller::FieldFiller(const std::string& app_locale,
 
 FieldFiller::~FieldFiller() {}
 
-bool FieldFiller::FillFormField(const AutofillField& field,
-                                const AutofillDataModel& data_model,
-                                FormFieldData* field_data,
-                                const base::string16& cvc,
-                                std::string* failure_to_fill) {
+bool FieldFiller::FillFormField(
+    const AutofillField& field,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    FormFieldData* field_data,
+    const base::string16& cvc,
+    std::string* failure_to_fill) {
   const AutofillType type = field.Type();
+  const AutofillDataModel& data_model = [&]() -> const AutofillDataModel& {
+    if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card))
+      return *absl::get<const AutofillProfile*>(profile_or_credit_card);
+    else
+      return *absl::get<const CreditCard*>(profile_or_credit_card);
+  }();
 
   if (data_model.ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
     if (failure_to_fill)
@@ -851,19 +859,21 @@ bool FieldFiller::FillFormField(const AutofillField& field,
     return true;
   }
   if (field_data->form_control_type == "select-one") {
-    return FillSelectControl(type, value, field_data, data_model, app_locale_,
-                             address_normalizer_, failure_to_fill);
+    return FillSelectControl(type, value, profile_or_credit_card, app_locale_,
+                             field_data, address_normalizer_, failure_to_fill);
   }
   if (field_data->form_control_type == "month") {
-    // Safe to cast to CreditCard here because month control type only applying
-    // to credit card expirations.
-    FillMonthControl(static_cast<const CreditCard&>(data_model), field_data);
+    DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card));
+    FillMonthControl(*absl::get<const CreditCard*>(profile_or_credit_card),
+                     field_data);
     return true;
   }
   if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
-    // Safe to cast to AutofillProfile here because of the address |type|.
-    const std::string profile_language_code =
-        static_cast<const AutofillProfile&>(data_model).language_code();
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    const std::string& profile_language_code =
+        absl::get<const AutofillProfile*>(profile_or_credit_card)
+            ->language_code();
     FillStreetAddress(value, profile_language_code, field_data);
     return true;
   }
@@ -872,9 +882,11 @@ bool FieldFiller::FillFormField(const AutofillField& field,
     return true;
   }
   if (type.GetStorableType() == ADDRESS_HOME_STATE) {
-    // TODO(crbug.com/1147883): Static casts are unsafe
-    const std::string country_code = data_util::GetCountryCodeWithFallback(
-        static_cast<const AutofillProfile&>(data_model), app_locale_);
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    const std::string& country_code = data_util::GetCountryCodeWithFallback(
+        *absl::get<const AutofillProfile*>(profile_or_credit_card),
+        app_locale_);
     return FillStateText(value, country_code, field_data, failure_to_fill);
   }
   if (field_data->form_control_type == "text" &&

@@ -119,7 +119,7 @@ bool AutofillPaymentApp::HasEnrolledInstrument() const {
 void AutofillPaymentApp::RecordUse() {
   // Record the use of the credit card.
   payment_request_delegate_->GetPersonalDataManager()->RecordUseOf(
-      credit_card_);
+      &credit_card_);
 }
 
 bool AutofillPaymentApp::NeedsInstallation() const {

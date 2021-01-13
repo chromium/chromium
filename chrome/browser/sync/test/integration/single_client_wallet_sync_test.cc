@@ -665,11 +665,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  pdm->RecordUseOf(*cards[0]);
+  pdm->RecordUseOf(cards[0]);
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   // TODO(crbug.com/941498): Server profiles are not recorded.
-  pdm->RecordUseOf(*profiles[0]);
+  pdm->RecordUseOf(profiles[0]);
 
   // Keep the same data (only change the customer data and the cloud token to
   // force the FakeServer to send the full update).
@@ -723,11 +723,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  pdm->RecordUseOf(*cards[0]);
+  pdm->RecordUseOf(cards[0]);
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   // TODO(crbug.com/941498): Server profiles are not recorded.
-  pdm->RecordUseOf(*profiles[0]);
+  pdm->RecordUseOf(profiles[0]);
 
   // Update the data (also change the customer data to force the full update as
   // FakeServer computes the hash for progress markers only based on ids). For

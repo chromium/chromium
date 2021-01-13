@@ -413,23 +413,25 @@ size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
 
 AutofillManager::FillingContext::FillingContext(
     const AutofillField& field,
-    const AutofillProfile* optional_profile,
-    const CreditCard* optional_credit_card,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
     const base::string16* optional_cvc)
-    : profile(optional_profile ? base::make_optional(*optional_profile)
-                               : base::nullopt),
-      credit_card(optional_credit_card
-                      ? base::make_optional(std::make_pair(
-                            *optional_credit_card,
-                            optional_cvc ? *optional_cvc : base::string16()))
-                      : base::nullopt),
-      filled_field_renderer_id(field.unique_renderer_id),
+    : filled_field_renderer_id(field.unique_renderer_id),
       filled_field_signature(field.GetFieldSignature()),
       filled_field_unique_name(field.unique_name()),
       original_fill_time(AutofillTickClock::NowTicks()) {
-  DCHECK(optional_profile || optional_credit_card);
-  DCHECK(optional_credit_card || !optional_cvc);
-  DCHECK(profile || credit_card);
+  DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
+         !optional_cvc);
+
+  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
+    profile_or_credit_card_with_cvc =
+        *absl::get<const AutofillProfile*>(profile_or_credit_card);
+  } else if (absl::holds_alternative<const CreditCard*>(
+                 profile_or_credit_card)) {
+    profile_or_credit_card_with_cvc =
+        std::make_pair(*absl::get<const CreditCard*>(profile_or_credit_card),
+                       optional_cvc ? *optional_cvc : base::string16());
+  }
 }
 
 AutofillManager::FillingContext::~FillingContext() = default;
@@ -1071,9 +1073,8 @@ void AutofillManager::FillOrPreviewCreditCardForm(
         credit_card_, *form_structure, *autofill_field, sync_state_);
   }
 
-  FillOrPreviewDataModelForm(action, query_id, form, field, /*profile=*/nullptr,
-                             &credit_card_, /*cvc=*/nullptr, form_structure,
-                             autofill_field);
+  FillOrPreviewDataModelForm(action, query_id, form, field, &credit_card_,
+                             /*cvc=*/nullptr, form_structure, autofill_field);
 }
 
 void AutofillManager::FillOrPreviewProfileForm(
@@ -1092,7 +1093,6 @@ void AutofillManager::FillOrPreviewProfileForm(
   }
 
   FillOrPreviewDataModelForm(action, query_id, form, field, &profile,
-                             /*credit_card=*/nullptr,
                              /*cvc=*/nullptr, form_structure, autofill_field);
 }
 
@@ -1135,8 +1135,8 @@ void AutofillManager::FillCreditCardForm(int query_id,
     return;
 
   FillOrPreviewDataModelForm(AutofillDriver::FORM_DATA_ACTION_FILL, query_id,
-                             form, field, /*profile=*/nullptr, &credit_card,
-                             &cvc, form_structure, autofill_field);
+                             form, field, &credit_card, &cvc, form_structure,
+                             autofill_field);
 }
 
 void AutofillManager::FillProfileForm(const autofill::AutofillProfile& profile,
@@ -1630,24 +1630,18 @@ void AutofillManager::FillOrPreviewDataModelForm(
     int query_id,
     const FormData& form,
     const FormFieldData& field,
-    const AutofillProfile* optional_profile,
-    const CreditCard* optional_credit_card,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
     const base::string16* optional_cvc,
     FormStructure* form_structure,
     AutofillField* autofill_field,
     bool is_refill) {
-  DCHECK(optional_profile || optional_credit_card);
-  DCHECK(optional_credit_card || !optional_cvc);
+  bool is_credit_card =
+      absl::holds_alternative<const CreditCard*>(profile_or_credit_card);
+
+  DCHECK(is_credit_card || !optional_cvc);
   DCHECK(form_structure);
   DCHECK(autofill_field);
-
-  const AutofillDataModel& data_model = [&]() -> const AutofillDataModel& {
-    if (optional_profile)
-      return *optional_profile;
-    else
-      return *optional_credit_card;
-  }();
-  bool is_credit_card = !!optional_credit_card;
 
   LogBuffer buffer;
   buffer << "is credit card section: " << is_credit_card << Br{};
@@ -1661,9 +1655,10 @@ void AutofillManager::FillOrPreviewDataModelForm(
   DCHECK_EQ(form_structure->field_count(), form.fields.size());
 
   if (action == AutofillDriver::FORM_DATA_ACTION_FILL && !is_refill) {
-    SetFillingContext(*form_structure, std::make_unique<FillingContext>(
-                                           *autofill_field, optional_profile,
-                                           optional_credit_card, optional_cvc));
+    SetFillingContext(
+        *form_structure,
+        std::make_unique<FillingContext>(*autofill_field,
+                                         profile_or_credit_card, optional_cvc));
   }
 
   // Only record the types that are filled for an eventual refill if all the
@@ -1761,8 +1756,8 @@ void AutofillManager::FillOrPreviewDataModelForm(
 
     // Don't fill expired cards expiration date.
     if (data_util::IsCreditCardExpirationType(field_type) &&
-        (!optional_credit_card ||
-         optional_credit_card->IsExpired(AutofillClock::Now()))) {
+        (is_credit_card && absl::get<const CreditCard*>(profile_or_credit_card)
+                               ->IsExpired(AutofillClock::Now()))) {
       buffer << Tr{} << field_number
              << "Skipped: don't fill expiration date of expired cards";
       continue;
@@ -1795,9 +1790,9 @@ void AutofillManager::FillOrPreviewDataModelForm(
     const base::string16 kEmptyCvc{};
     std::string failure_to_fill;  // Reason for failing to fill.
 
-    // Fill the non-empty value from |data_model| into the result vector, which
-    // will be sent to the renderer.
-    FillFieldWithValue(cached_field, data_model, &result.fields[i],
+    // Fill the non-empty value from |profile_or_credit_card| into the result
+    // vector, which will be sent to the renderer.
+    FillFieldWithValue(cached_field, profile_or_credit_card, &result.fields[i],
                        should_notify, optional_cvc ? *optional_cvc : kEmptyCvc,
                        data_util::DetermineGroups(*form_structure),
                        &failure_to_fill);
@@ -1822,9 +1817,9 @@ void AutofillManager::FillOrPreviewDataModelForm(
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
     autofilled_form_signatures_.pop_back();
 
-  // Note that this may invalidate |data_model|.
+  // Note that this may invalidate |profile_or_credit_card|.
   if (action == AutofillDriver::FORM_DATA_ACTION_FILL && !is_refill)
-    personal_data_->RecordUseOf(data_model);
+    personal_data_->RecordUseOf(profile_or_credit_card);
 
   if (log_manager_) {
     log_manager_->Log() << LoggingScope::kFilling
@@ -2309,15 +2304,17 @@ void AutofillManager::DisambiguateNameUploadTypes(
   }
 }
 
-void AutofillManager::FillFieldWithValue(AutofillField* autofill_field,
-                                         const AutofillDataModel& data_model,
-                                         FormFieldData* field_data,
-                                         bool should_notify,
-                                         const base::string16& cvc,
-                                         uint32_t profile_form_bitmask,
-                                         std::string* failure_to_fill) {
-  if (field_filler_.FillFormField(*autofill_field, data_model, field_data, cvc,
-                                  failure_to_fill)) {
+void AutofillManager::FillFieldWithValue(
+    AutofillField* autofill_field,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    FormFieldData* field_data,
+    bool should_notify,
+    const base::string16& cvc,
+    uint32_t profile_form_bitmask,
+    std::string* failure_to_fill) {
+  if (field_filler_.FillFormField(*autofill_field, profile_or_credit_card,
+                                  field_data, cvc, failure_to_fill)) {
     if (failure_to_fill)
       *failure_to_fill = "Decided to fill";
     // Mark the cached field as autofilled, so that we can detect when a
@@ -2333,10 +2330,14 @@ void AutofillManager::FillFieldWithValue(AutofillField* autofill_field,
         client_->GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
 
     if (should_notify) {
+      DCHECK(absl::holds_alternative<const AutofillProfile*>(
+          profile_or_credit_card));
+      const AutofillProfile* profile =
+          absl::get<const AutofillProfile*>(profile_or_credit_card);
       client_->DidFillOrPreviewField(
-          /*value=*/data_model.GetInfo(autofill_field->Type(), app_locale_),
-          /*profile_full_name=*/data_model.GetInfo(AutofillType(NAME_FULL),
-                                                   app_locale_));
+          /*value=*/profile->GetInfo(autofill_field->Type(), app_locale_),
+          /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
+                                                 app_locale_));
     }
   }
 }
@@ -2463,22 +2464,28 @@ void AutofillManager::TriggerRefill(const FormData& form) {
     return;
 
   FormFieldData field = *autofill_field;
-  if (filling_context->credit_card) {
+  if (absl::holds_alternative<std::pair<CreditCard, base::string16>>(
+          filling_context->profile_or_credit_card_with_cvc)) {
     FillOrPreviewDataModelForm(
         AutofillDriver::RendererFormDataAction::FORM_DATA_ACTION_FILL,
         /*query_id=*/-1, form, field,
-        /*profile=*/nullptr, &filling_context->credit_card.value().first,
-        &filling_context->credit_card.value().second, form_structure,
-        autofill_field,
+        &absl::get<std::pair<CreditCard, base::string16>>(
+             filling_context->profile_or_credit_card_with_cvc)
+             .first,
+        &absl::get<std::pair<CreditCard, base::string16>>(
+             filling_context->profile_or_credit_card_with_cvc)
+             .second,
+        form_structure, autofill_field,
         /*is_refill=*/true);
   }
-  if (filling_context->profile) {
+  if (absl::holds_alternative<AutofillProfile>(
+          filling_context->profile_or_credit_card_with_cvc)) {
     FillOrPreviewDataModelForm(
         AutofillDriver::RendererFormDataAction::FORM_DATA_ACTION_FILL,
-        /*query_id=*/-1, form, field, &filling_context->profile.value(),
-        /*credic_card=*/nullptr, /*cvc=*/nullptr, form_structure,
-        autofill_field,
-        /*is_refill=*/true);
+        /*query_id=*/-1, form, field,
+        &absl::get<AutofillProfile>(
+            filling_context->profile_or_credit_card_with_cvc),
+        /*cvc=*/nullptr, form_structure, autofill_field, /*is_refill=*/true);
   }
 }
 
