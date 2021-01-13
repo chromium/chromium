@@ -6508,12 +6508,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTranslateSubFrames)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"suggested-content-toggle", flag_descriptions::kSuggestedContentToggleName,
-     flag_descriptions::kSuggestedContentToggleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSuggestedContentToggle)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !defined(OS_ANDROID)
     {"enable-media-feeds", flag_descriptions::kEnableMediaFeedsName,
      flag_descriptions::kEnableMediaFeedsDescription, kOsDesktop,

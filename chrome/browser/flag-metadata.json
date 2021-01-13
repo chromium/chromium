@@ -4622,11 +4622,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "suggested-content-toggle",
-    "owners": [ "jiameng", "wrong" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "sync-autofill-wallet-offer-data",
     "owners": ["siyua", "treib"],
     "expiry_milestone": 90

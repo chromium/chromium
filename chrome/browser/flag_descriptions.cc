@@ -2224,11 +2224,6 @@ const char kStoragePressureEventDescription[] =
     "If enabled, Chrome will dispatch a DOM event, informing applications "
     "about storage pressure (low disk space)";
 
-const char kSuggestedContentToggleName[] = "Enable Suggested Content toggle";
-const char kSuggestedContentToggleDescription[] =
-    "Enables a settings UI toggle that controls Suggested Content status. Also "
-    "enables a corresponding notice in the Launcher about Suggested Content.";
-
 const char kSuggestionsWithSubStringMatchName[] =
     "Substring matching for Autofill suggestions";
 const char kSuggestionsWithSubStringMatchDescription[] =

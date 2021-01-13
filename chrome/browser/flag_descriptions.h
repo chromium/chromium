@@ -1297,9 +1297,6 @@ extern const char kStylusBatteryStatusDescription[];
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
 
-extern const char kSuggestedContentToggleName[];
-extern const char kSuggestedContentToggleDescription[];
-
 extern const char kSuggestionsWithSubStringMatchName[];
 extern const char kSuggestionsWithSubStringMatchDescription[];
 
