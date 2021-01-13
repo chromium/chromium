@@ -40,7 +40,8 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/webapps/|'\
                   'chrome/android/junit/src/org/chromium/chrome/browser/webapps/|'\
                   'chrome/browser/android/shortcut_.*|'\
-                  'chrome/browser/android/webapps/',
+                  'chrome/browser/android/webapps/|'\
+                  'components/webapps/browser/android/',
     },
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group.*|.*agent_group_scheduler.*',
@@ -230,6 +231,7 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/banners/|'\
                   'chrome/browser/banners/|'\
                   'chrome/browser/ui/android/infobars/app_banner_.*|'\
+                  'components/webapps/browser/banners/|'\
                   'third_party/blink/public/platform/modules/app_banner/|'\
                   'third_party/blink/renderer/modules/app_banner/',
     },
@@ -1153,7 +1155,8 @@
     },
     'installable': {
       'filepath': 'chrome/browser/extensions/bookmark_app*'\
-                  '|chrome/browser/installable/',
+                  '|chrome/browser/installable/'
+                  '|components/webapps/browser/installable/',
     },
     'installer_linux': {
       'filepath': 'chrome/installer/linux/',
