@@ -29,6 +29,10 @@ public class ContextManager {
         nativeSetSurface(mNativeContextManager, surface);
     }
 
+    public void setOverlaysSurface(Surface surface) {
+        nativeSetOverlaysSurface(mNativeContextManager, surface);
+    }
+
     public void sync(int functor, boolean applyForceDark) {
         nativeSync(mNativeContextManager, functor, applyForceDark);
     }
@@ -42,6 +46,7 @@ public class ContextManager {
     private static native long nativeGetDrawFnFunctionTable();
     private static native long nativeInit();
     private static native void nativeSetSurface(long nativeContextManager, Surface surface);
+    private static native void nativeSetOverlaysSurface(long nativeContextManager, Surface surface);
     private static native void nativeSync(
             long nativeContextManager, int functor, boolean applyForceDark);
     private static native int[] nativeDraw(long nativeContextManager, int width, int height,

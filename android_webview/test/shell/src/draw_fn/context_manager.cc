@@ -14,7 +14,6 @@
 #include "base/android/jni_array.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace draw_fn {
@@ -129,29 +128,27 @@ void ContextManager::SetSurface(
   }
 }
 
+void ContextManager::SetOverlaysSurface(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& surface) {
+  overlays_manager_.SetSurface(current_functor_, env, surface);
+}
+
 void ContextManager::Sync(JNIEnv* env, int functor, bool apply_force_dark) {
   if (current_functor_ && current_functor_ != functor) {
-    FunctorData data = Allocator::Get()->get(current_functor_);
+    FunctorData& data = Allocator::Get()->get(current_functor_);
+    overlays_manager_.RemoveOverlays(data);
     data.functor_callbacks->on_context_destroyed(data.functor, data.data);
     Allocator::Get()->MarkReleasedByManager(current_functor_);
   }
   current_functor_ = functor;
 
-  FunctorData data = Allocator::Get()->get(current_functor_);
+  FunctorData& data = Allocator::Get()->get(current_functor_);
   AwDrawFn_OnSyncParams params{kAwDrawFnVersion, apply_force_dark};
   data.functor_callbacks->on_sync(current_functor_, data.data, &params);
 }
 
 namespace {
-
-ASurfaceControl* GetSurfaceControl() {
-  NOTREACHED();
-  return nullptr;
-}
-
-void MergeTransaction(ASurfaceTransaction* transaction) {
-  NOTREACHED();
-}
 
 EGLDisplay GetDisplay() {
   static EGLDisplay display = eglGetDisplayFn(EGL_DEFAULT_DISPLAY);
@@ -183,7 +180,6 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManager::Draw(
 
   MakeCurrent();
 
-  FunctorData data = Allocator::Get()->get(current_functor_);
   AwDrawFn_DrawGLParams params{kAwDrawFnVersion};
   params.width = width;
   params.height = height;
@@ -229,10 +225,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManager::Draw(
   params.color_space_toXYZD50[7] = 0.0970921f;
   params.color_space_toXYZD50[8] = 0.714191;
 
-  params.overlays_mode = AW_DRAW_FN_OVERLAYS_MODE_DISABLED;
-  params.get_surface_control = GetSurfaceControl;
-  params.merge_transaction = MergeTransaction;
-
+  FunctorData& data = Allocator::Get()->get(current_functor_);
+  OverlaysManager::ScopedDraw scoped_draw(overlays_manager_, data, params);
   data.functor_callbacks->draw_gl(current_functor_, data.data, &params);
 
   if (readback_quadrants) {
@@ -351,7 +345,8 @@ void ContextManager::DestroyContext() {
 
   if (current_functor_) {
     MakeCurrent();
-    FunctorData data = Allocator::Get()->get(current_functor_);
+    FunctorData& data = Allocator::Get()->get(current_functor_);
+    overlays_manager_.RemoveOverlays(data);
     data.functor_callbacks->on_context_destroyed(data.functor, data.data);
   }
 

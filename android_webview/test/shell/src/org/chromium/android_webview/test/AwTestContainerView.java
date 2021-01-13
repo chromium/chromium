@@ -83,6 +83,7 @@ public class AwTestContainerView extends FrameLayout {
         private int mLastScrollY;
         private boolean mHaveSurface;
         private Runnable mReadyToRenderCallback;
+        private SurfaceView mOverlaysSurfaceView;
 
         // Only accessed on render thread.
         private final ContextManager mContextManager;
@@ -95,8 +96,17 @@ public class AwTestContainerView extends FrameLayout {
                 sRenderThreadHandler = new Handler(sRenderThread.getLooper());
             }
             mContextManager = new ContextManager();
-            getHolder().setFormat(PixelFormat.OPAQUE);
+            getHolder().setFormat(PixelFormat.TRANSPARENT);
             getHolder().addCallback(this);
+
+            // Main SurfaceView needs to be positioned above the media content.
+            setZOrderMediaOverlay(true);
+
+            mOverlaysSurfaceView = new SurfaceView(context);
+            mOverlaysSurfaceView.getHolder().addCallback(this);
+
+            // This SurfaceView is used to present media and must be positioned below main surface.
+            mOverlaysSurfaceView.setZOrderMediaOverlay(false);
         }
 
         public void readbackQuadrantColors(Callback<int[]> callback) {
@@ -115,11 +125,21 @@ public class AwTestContainerView extends FrameLayout {
             mReadyToRenderCallback = runner;
         }
 
+        public SurfaceView getOverlaysView() {
+            return mOverlaysSurfaceView;
+        }
+
         @Override
         public void surfaceCreated(SurfaceHolder holder) {}
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            if (holder == mOverlaysSurfaceView.getHolder()) {
+                Surface surface = holder.getSurface();
+                sRenderThreadHandler.post(() -> { mContextManager.setOverlaysSurface(surface); });
+                return;
+            }
+
             mWidth = width;
             mHeight = height;
             mHaveSurface = true;
@@ -135,6 +155,16 @@ public class AwTestContainerView extends FrameLayout {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+            if (holder == mOverlaysSurfaceView.getHolder()) {
+                WaitableEvent event = new WaitableEvent();
+                sRenderThreadHandler.post(() -> {
+                    mContextManager.setOverlaysSurface(null);
+                    event.signal();
+                });
+                event.waitForEvent();
+                return;
+            }
+
             mHaveSurface = false;
             WaitableEvent event = new WaitableEvent();
             sRenderThreadHandler.post(() -> {
@@ -182,6 +212,9 @@ public class AwTestContainerView extends FrameLayout {
             mHardwareView = createHardwareViewOnlyOnce(context);
         }
         if (isBackedByHardwareView()) {
+            addView(mHardwareView.getOverlaysView(),
+                    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT));
             addView(mHardwareView,
                     new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,

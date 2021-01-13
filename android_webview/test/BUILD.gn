@@ -149,6 +149,8 @@ shared_library("libstandalonelibwebviewchromium") {
     "shell/src/draw_fn/allocator.h",
     "shell/src/draw_fn/context_manager.cc",
     "shell/src/draw_fn/context_manager.h",
+    "shell/src/draw_fn/overlays_manager.cc",
+    "shell/src/draw_fn/overlays_manager.h",
   ]
   ldflags = [ "-Wl,-shared,-Bsymbolic" ]
   deps = [

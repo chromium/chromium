@@ -351,6 +351,10 @@ bool SurfaceControl::SupportsSetFrameRate() {
              nullptr;
 }
 
+void SurfaceControl::ApplyTransaction(ASurfaceTransaction* transaction) {
+  SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction);
+}
+
 SurfaceControl::Surface::Surface() = default;
 
 SurfaceControl::Surface::Surface(const Surface& parent, const char* name) {

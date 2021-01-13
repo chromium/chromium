@@ -8,6 +8,7 @@
 #include <android/native_window.h>
 #include <jni.h>
 
+#include "android_webview/test/shell/src/draw_fn/overlays_manager.h"
 #include "base/android/scoped_java_ref.h"
 
 typedef void* EGLContext;
@@ -21,6 +22,8 @@ class ContextManager {
   ~ContextManager();
 
   void SetSurface(JNIEnv* env, const base::android::JavaRef<jobject>& surface);
+  void SetOverlaysSurface(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& surface);
   void Sync(JNIEnv* env, int functor, bool apply_force_dark);
   base::android::ScopedJavaLocalRef<jintArray> Draw(
       JNIEnv* env,
@@ -42,6 +45,8 @@ class ContextManager {
   EGLContext context_ = nullptr;
 
   int current_functor_ = 0;
+
+  OverlaysManager overlays_manager_;
 };
 
 }  // namespace draw_fn

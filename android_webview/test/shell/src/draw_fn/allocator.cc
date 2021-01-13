@@ -41,6 +41,16 @@ AwDrawFnFunctionTable* GetDrawFnFunctionTable() {
   return &table;
 }
 
+FunctorData::FunctorData() = default;
+FunctorData::~FunctorData() = default;
+FunctorData::FunctorData(FunctorData&&) = default;
+FunctorData& FunctorData::operator=(FunctorData&&) = default;
+
+FunctorData::FunctorData(int functor,
+                         void* data,
+                         AwDrawFnFunctorCallbacks* functor_callbacks)
+    : functor(functor), data(data), functor_callbacks(functor_callbacks) {}
+
 // static
 Allocator* Allocator::Get() {
   static base::NoDestructor<Allocator> map;
@@ -54,11 +64,11 @@ int Allocator::allocate(void* data,
                         AwDrawFnFunctorCallbacks* functor_callbacks) {
   base::AutoLock lock(lock_);
   int functor = next_functor_++;
-  map_.emplace(functor, FunctorData{functor, data, functor_callbacks});
+  map_.emplace(functor, FunctorData(functor, data, functor_callbacks));
   return functor;
 }
 
-FunctorData Allocator::get(int functor) {
+FunctorData& Allocator::get(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
   DCHECK(itr != map_.end());
