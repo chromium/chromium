@@ -905,6 +905,20 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       if (GetRenderFrameProxyHost(dest_site_instance.get()))
         navigation_rfh->SwapIn();
       navigation_rfh->OnCommittedSpeculativeBeforeNavigationCommit();
+
+      // An Active RenderFrameHost MUST always have a PolicyContainerHost. A new
+      // document is either:
+      // - The initial empty document, via frame creation.
+      // - A new document replacing the previous one, via a navigation.
+      // Here this is an additional case: A new document (in a weird state) is
+      // replacing the one crashed. In this case, it is not entirely clear what
+      // PolicyContainerHost should be used. In the absence of anything better,
+      // we simply keep the PolicyContainerHost that was previously active.
+      // TODO(https://crbug.com/1072817): Remove this logic when removing the
+      // early commit.
+      navigation_rfh->SetPolicyContainerForEarlyCommitAfterCrash(
+          current_frame_host()->policy_container_host()->Clone());
+
       CommitPending(std::move(speculative_render_frame_host_), nullptr,
                     request->coop_status().require_browsing_instance_swap());
     }

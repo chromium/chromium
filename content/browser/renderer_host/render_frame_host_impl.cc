@@ -10398,6 +10398,13 @@ bool RenderFrameHostImpl::DocumentUsedWebOTP() {
   return document_used_web_otp_;
 }
 
+void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
+    std::unique_ptr<PolicyContainerHost> policy_container_host) {
+  DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
+  DCHECK(!policy_container_host_);
+  policy_container_host_ = std::move(policy_container_host);
+}
+
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleState& s) {
   return o << LifecycleStateToString(s);

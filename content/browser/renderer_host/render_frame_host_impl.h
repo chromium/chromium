@@ -1547,6 +1547,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return policy_container_host_.get();
   }
 
+  // This is used by RenderFrameHostManager to ensure the replacement
+  // RenderFrameHost is properly initialized when performing an early commit
+  // as a recovery for a crashed frame.
+  // TODO(https://crbug.com/1072817): Remove this logic when removing the
+  // early commit.
+  void SetPolicyContainerForEarlyCommitAfterCrash(
+      std::unique_ptr<PolicyContainerHost> policy_container_host);
+
   // This function mimics DidCommitProvisionalLoad for navigations served from
   // the back-forward cache.
   void DidCommitBackForwardCacheNavigation(
