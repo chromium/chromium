@@ -122,6 +122,7 @@
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
+#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/media/feeds/media_feeds_service_factory.h"
@@ -449,6 +450,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !defined(OS_ANDROID)
   CartServiceFactory::GetInstance();
+  ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
 #endif
 }
 

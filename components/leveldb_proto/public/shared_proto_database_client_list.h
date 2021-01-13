@@ -55,6 +55,7 @@ enum class ProtoDbType {
   NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE = 29,
   VIDEO_TUTORIALS_DATABASE = 30,
   FEED_KEY_VALUE_DATABASE = 31,
+  CART_DATABASE = 32,
   LAST,
 };
 
@@ -71,6 +72,7 @@ constexpr ProtoDbType kWhitelistedDbForSharedImpl[]{
     ProtoDbType::NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE,
     ProtoDbType::VIDEO_TUTORIALS_DATABASE,
     ProtoDbType::FEED_KEY_VALUE_DATABASE,
+    ProtoDbType::CART_DATABASE,
     ProtoDbType::LAST,  // Marks the end of list.
 };
 

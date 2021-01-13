@@ -8194,6 +8194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Database for storing budget information for origins."/>
   <suffix name="CachedImageFetcherDatabase"
       label="Database for CachedImageFetcher metadata."/>
+  <suffix name="CartDatabase" label="Database for chrome cart."/>
   <suffix name="DomDistillerStore" label="Databases for DomDistillerStore">
     <obsolete>
       Deprecated since 2019-10.

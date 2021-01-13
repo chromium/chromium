@@ -7,7 +7,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 
-CartService::CartService(Profile* profile) : profile_(profile) {}
+CartService::CartService(Profile* profile)
+    : profile_(profile), cart_db_(std::make_unique<CartDB>(profile_)) {}
 CartService::~CartService() = default;
 
 void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {

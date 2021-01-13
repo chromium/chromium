@@ -3477,6 +3477,8 @@ static_library("browser") {
       "browsing_data/chrome_browsing_data_lifetime_manager.h",
       "browsing_data/chrome_browsing_data_lifetime_manager_factory.cc",
       "browsing_data/chrome_browsing_data_lifetime_manager_factory.h",
+      "cart/cart_db.cc",
+      "cart/cart_db.h",
       "cart/cart_handler.cc",
       "cart/cart_handler.h",
       "cart/cart_service.cc",
@@ -4140,6 +4142,7 @@ static_library("browser") {
       "webauthn/observable_authenticator_list.h",
     ]
     deps += [
+      ":cart_db_content_proto",
       ":theme_properties",
       "//base/util/memory_pressure",
       "//base/util/timer",
@@ -7002,4 +7005,10 @@ if (is_android) {
 proto_library("status_proto") {
   sources = [ "policy/messaging_layer/util/status.proto" ]
   generate_python = false
+}
+
+if (!is_android) {
+  proto_library("cart_db_content_proto") {
+    sources = [ "cart/cart_db_content.proto" ]
+  }
 }

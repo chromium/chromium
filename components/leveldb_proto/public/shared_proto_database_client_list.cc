@@ -90,6 +90,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "VideoTutorialsDatabase";
     case ProtoDbType::FEED_KEY_VALUE_DATABASE:
       return "FeedKeyValueDatabase";
+    case ProtoDbType::CART_DATABASE:
+      return "CartDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

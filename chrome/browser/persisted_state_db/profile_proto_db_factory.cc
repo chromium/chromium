@@ -21,3 +21,19 @@ ProfileProtoDBFactory<
     persisted_state_db::PersistedStateContentProto>::GetInstance() {
   return GetPersistedStateProfileProtoDBFactory();
 }
+
+#if !defined(OS_ANDROID)
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
+GetChromeCartProfileProtoDBFactory() {
+  static base::NoDestructor<
+      ProfileProtoDBFactory<cart_db::ChromeCartContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance() {
+  return GetChromeCartProfileProtoDBFactory();
+}
+#endif

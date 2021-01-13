@@ -5,12 +5,15 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 
 // Service to maintain and read/write data for chrome cart module.
+// TODO(crbug.com/1157892) Make this BrowserContext-based and get rid of Profile
+// usage so that we can modularize this.
 class CartService : public KeyedService {
  public:
   CartService(const CartService&) = delete;
@@ -32,6 +35,7 @@ class CartService : public KeyedService {
   // service.
   explicit CartService(Profile* profile);
   Profile* profile_;
+  std::unique_ptr<CartDB> cart_db_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
