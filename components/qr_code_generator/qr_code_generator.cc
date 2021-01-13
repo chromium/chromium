@@ -13,9 +13,9 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
-// kMaxVersionWith8BitLength is the maximum QR version that uses an 8 (rather
-// than 16) bit length in 8-bit byte mode. See table 3.
-static constexpr int kMaxVersionWith8BitLength = 9;
+// kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
+// length fields. See table 3.
+static constexpr int kMaxVersionWithSmallLengths = 9;
 
 // A structure containing QR version-specific constants and data.
 // All versions currently use error correction at level M.
@@ -49,7 +49,7 @@ struct QRVersionInfo {
         (version < 7 && encoded_version != 0) ||
         (version >= 7 &&
          encoded_version >> 12 != static_cast<uint32_t>(version)) ||
-        (version <= kMaxVersionWith8BitLength && input_bytes() >= 256) ||
+        (version <= kMaxVersionWithSmallLengths && input_bytes() >= 256) ||
         (group2_num_blocks != 0 &&
          group2_block_ec_bytes() != group1_block_ec_bytes())) {
       __builtin_unreachable();
@@ -276,6 +276,72 @@ static const uint16_t kFormatInformation[kMaxMask + 1] = {
     0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0,
 };
 
+// kAlphanumValue maps from the beginning of the ASCII codespace to the value
+// of a character in QR's alphanumeric mode, or 255 if the ASCII byte isn't
+// represented. This is taken from table five of ISO 18004 (2015 edition).
+static constexpr uint8_t kAlphanumValue[91] = {
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 36,  255, 255, 255, 37,  38,  255,
+    255, 255, 255, 39,  40,  255, 41,  42,  43,  0,   1,   2,   3,
+    4,   5,   6,   7,   8,   9,   44,  255, 255, 255, 255, 255, 255,
+    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,
+    23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,
+};
+
+// These assertions are spot checks of a few values from the table.
+static_assert(kAlphanumValue[static_cast<int>('0')] == 0, "");
+static_assert(kAlphanumValue[static_cast<int>('A')] == 10, "");
+static_assert(kAlphanumValue[static_cast<int>('Z')] == 35, "");
+static_assert(kAlphanumValue[static_cast<int>(' ')] == 36, "");
+static_assert(kAlphanumValue[static_cast<int>(':')] == 44, "");
+static_assert(kAlphanumValue[static_cast<int>('"')] == 255, "");
+
+// BitPacker appends bits to |output|, packing them from most-significant place
+// to least significant.
+class BitPacker {
+ public:
+  enum class Mode {
+    ALPHANUM = 2,
+    BINARY = 4,
+  };
+
+  explicit BitPacker(std::vector<uint8_t>* output) : out_(output) {}
+
+  void AppendBits(uint8_t v, int num_bits) {
+    DCHECK_LE(num_bits, 8);
+
+    v <<= 8 - num_bits;
+
+    if (bits_remaining_in_final_byte_ > 0) {
+      out_->back() |= v >> (8 - bits_remaining_in_final_byte_);
+    }
+    bits_remaining_in_final_byte_ -= num_bits;
+    if (bits_remaining_in_final_byte_ < 0) {
+      out_->push_back(v << (num_bits + bits_remaining_in_final_byte_));
+      bits_remaining_in_final_byte_ += 8;
+    }
+  }
+
+  void AppendMode(Mode mode) { AppendBits(static_cast<uint8_t>(mode), 4); }
+
+  void Append9Bits(uint16_t v) {
+    AppendBits(static_cast<uint8_t>(v >> 1), 8);
+    AppendBits(static_cast<uint8_t>(v & 11), 1);
+  }
+
+  void Append11Bits(uint16_t v) {
+    AppendBits(static_cast<uint8_t>(v >> 3), 8);
+    AppendBits(static_cast<uint8_t>(v & 0b111), 3);
+  }
+
+  void AppendTerminator() { AppendBits(0, 4); }
+
+ private:
+  std::vector<uint8_t>* const out_;
+  int bits_remaining_in_final_byte_ = 0;
+};
+
 }  // namespace
 
 QRCodeGenerator::QRCodeGenerator() = default;
@@ -292,12 +358,48 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     base::Optional<uint8_t> mask) {
   CHECK(!mask || *mask <= kMaxMask);
 
-  // We're currently using a minimal set of versions to shrink test surface.
-  // When expanding, take care to validate across different platforms and
-  // a selection of QR Scanner apps.
-  const QRVersionInfo* const version_info = GetVersionForDataSize(in.size());
+  const bool is_alphanum =
+      std::all_of(in.begin(), in.end(), [](uint8_t input_byte) -> bool {
+        return input_byte < sizeof(kAlphanumValue) &&
+               kAlphanumValue[input_byte] != 0xff;
+      });
+
+  // The size of the length field varies depending on the size of the QR code
+  // so that smaller QR codes don't have to carry a length field that supports
+  // sizes larger than they can encode. Therefore two lengths are calculated:
+  // one assuming a small QR code, and one assuming the larger.
+  size_t small_length_bits;
+  size_t large_length_bits;
+
+  if (is_alphanum) {
+    small_length_bits = /* mode indicator */ 4 + 9 /* length field */;
+    // Each input byte is converted into a value from 0 to 44. Each pair of
+    // input characters is encoded in 11 bits, with six bits for the final byte,
+    // if any.
+    small_length_bits += 11 * (in.size() / 2) + 6 * (in.size() % 2);
+    small_length_bits += 4 /* terminator */;
+    // For larger QR codes, the length is 11 bits, not 9.
+    large_length_bits = small_length_bits + 2;
+  } else {
+    small_length_bits = /* mode indicator */ 4 + 8 /* length field */;
+    small_length_bits += 8 * in.size();
+    small_length_bits += 4 /* terminator */;
+    // For larger QR codes, the length is 16 bits, not 8.
+    large_length_bits = small_length_bits + 8;
+  }
+
+  const size_t small_length_bytes = (small_length_bits + 7) / 8;
+  const size_t large_length_bytes = (large_length_bits + 7) / 8;
+
+  const QRVersionInfo* version_info = GetVersionForDataSize(small_length_bytes);
   if (!version_info) {
     return base::nullopt;
+  }
+
+  if (version_info->version > kMaxVersionWithSmallLengths) {
+    // The data is too large to fit in a small QR code, but the larger length
+    // now needed may change the selected version.
+    version_info = GetVersionForDataSize(large_length_bytes);
   }
 
   if (version_info != version_info_) {
@@ -306,6 +408,57 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
   // Previous data and "set" bits must be cleared.
   memset(&d_[0], 0, version_info_->total_size());
+
+  const size_t framed_input_size =
+      version_info_->group1_data_bytes() + version_info_->group2_data_bytes();
+  std::vector<uint8_t> prefixed_data;
+  prefixed_data.reserve(framed_input_size);
+  BitPacker packer(&prefixed_data);
+
+  if (is_alphanum) {
+    packer.AppendMode(BitPacker::Mode::ALPHANUM);
+    if (version_info_->version <= kMaxVersionWithSmallLengths) {
+      DCHECK_LT(in.size(), 1u << 9);
+      packer.Append9Bits(in.size());
+    } else {
+      DCHECK_LT(in.size(), 1u << 11);
+      packer.Append11Bits(in.size());
+    }
+
+    for (size_t i = 0; i < in.size(); i += 2) {
+      if (i == in.size() - 1) {
+        packer.AppendBits(kAlphanumValue[in[i]], 6);
+      } else {
+        packer.Append11Bits(static_cast<uint16_t>(kAlphanumValue[in[i]]) * 45 +
+                            kAlphanumValue[in[i + 1]]);
+      }
+    }
+  } else {
+    packer.AppendMode(BitPacker::Mode::BINARY);
+    if (version_info_->version <= kMaxVersionWithSmallLengths) {
+      DCHECK_LT(in.size(), 1u << 8);
+      packer.AppendBits(in.size(), 8);
+    } else {
+      DCHECK_LT(in.size(), 1u << 16);
+      packer.AppendBits(in.size() >> 8, 8);
+      packer.AppendBits(in.size() & 0xff, 8);
+    }
+
+    for (size_t i = 0; i < in.size(); i++) {
+      packer.AppendBits(in[i], 8);
+    }
+  }
+
+  packer.AppendTerminator();
+
+  // The remainder of the space is filled with alternatining 0xec and 0x11
+  // bytes, as per the standard. (Although the contents of this padding do not,
+  // in practice, matter.)
+  bool padding_phase = false;
+  while (prefixed_data.size() < framed_input_size) {
+    prefixed_data.push_back(padding_phase ? 0x11 : 0xec);
+    padding_phase = !padding_phase;
+  }
 
   PutVerticalTiming(6);
   PutHorizontalTiming(6);
@@ -336,55 +489,6 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
 
   if (version_info_->encoded_version != 0) {
     PutVersionBlocks(version_info_->encoded_version);
-  }
-
-  // Add the mode and character count.
-
-  // QR codes require some framing of the data. This requires:
-  // Version 1-9:   4 bits for mode + 8 bits for char count = 12 bits
-  // Version 10-40: 4 bits for mode + 16 bits for char count = 20 bits
-  // Details are in Table 3.
-  // Since 12 and 20 are not a multiple of eight, a frame-shift of all
-  // subsequent bytes is required.
-  const size_t framed_input_size =
-      version_info_->group1_data_bytes() + version_info_->group2_data_bytes();
-  std::vector<uint8_t> prefixed_data(framed_input_size);
-  size_t framing_offset_bytes = 0;
-  if (version_info->version <= kMaxVersionWith8BitLength) {
-    DCHECK_LT(in.size(), 0x100u) << "in.size() too large for 8-bit length";
-    const uint8_t len8 = static_cast<uint8_t>(in.size());
-    prefixed_data[0] = 0x40 | (len8 >> 4);
-    prefixed_data[1] = len8 << 4;
-    if (!in.empty()) {
-      prefixed_data[1] |= in[0] >> 4;
-    }
-    framing_offset_bytes = 2;
-  } else {
-    DCHECK_LT(in.size(), 0x10000u) << "in.size() too large for 16-bit length";
-    const uint16_t len16 = static_cast<uint16_t>(in.size());
-    prefixed_data[0] = 0x40 | (len16 >> 12);
-    prefixed_data[1] = len16 >> 4;
-    prefixed_data[2] = len16 << 4;
-    if (!in.empty()) {
-      prefixed_data[2] |= in[0] >> 4;
-    }
-    framing_offset_bytes = 3;
-  }
-  DCHECK_LE(in.size() + framing_offset_bytes, prefixed_data.size());
-
-  for (size_t i = 0; i < in.size() - 1; i++) {
-    prefixed_data[i + framing_offset_bytes] = (in[i] << 4) | (in[i + 1] >> 4);
-  }
-  if (!in.empty()) {
-    prefixed_data[in.size() - 1 + framing_offset_bytes] = in[in.size() - 1]
-                                                          << 4;
-  }
-
-  // The QR code looks a little odd with fixed padding. Thus replicate the
-  // message to fill the input.
-  for (size_t i = in.size() + framing_offset_bytes; i < framed_input_size;
-       i++) {
-    prefixed_data[i] = prefixed_data[i % (in.size() + framing_offset_bytes)];
   }
 
   // Each block of input data is expanded with error correcting

@@ -12,44 +12,44 @@ TEST(QRCodeGenerator, Generate) {
   // that no DCHECKs are hit and that the output has the correct structure. When
   // run under ASan, this will also check that every byte of the output has been
   // written to.
-  QRCodeGenerator qr;
-  uint8_t input[QRCodeGenerator::V5::kInputBytes];
-  memset(input, 'a', sizeof(input));
-  base::Optional<QRCodeGenerator::GeneratedCode> qr_code = qr.Generate(input);
-  ASSERT_NE(qr_code, base::nullopt);
-  auto& qr_data = qr_code->data;
 
-  int index = 0;
-  ASSERT_EQ(qr_data.size(),
-            static_cast<size_t>(QRCodeGenerator::V5::kTotalSize));
-  for (int y = 0; y < QRCodeGenerator::V5::kSize; y++) {
-    for (int x = 0; x < QRCodeGenerator::V5::kSize; x++) {
-      ASSERT_EQ(0, qr_data[index++] & 0b11111100);
+  constexpr size_t kMaxInputLen = 210;
+  uint8_t input[kMaxInputLen];
+  QRCodeGenerator qr;
+  base::Optional<int> smallest_size;
+  base::Optional<int> largest_size;
+
+  for (const bool use_alphanum : {false, true}) {
+    SCOPED_TRACE(use_alphanum);
+    // 'A' is in the alphanumeric set, but 'a' is not.
+    memset(input, use_alphanum ? 'A' : 'a', sizeof(input));
+
+    for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
+      SCOPED_TRACE(input_len);
+
+      base::Optional<QRCodeGenerator::GeneratedCode> qr_code =
+          qr.Generate(base::span<const uint8_t>(input, input_len));
+      ASSERT_NE(qr_code, base::nullopt);
+      auto& qr_data = qr_code->data;
+
+      if (!smallest_size || qr_code->qr_size < *smallest_size) {
+        smallest_size = qr_code->qr_size;
+      }
+      if (!largest_size || qr_code->qr_size > *largest_size) {
+        largest_size = qr_code->qr_size;
+      }
+
+      int index = 0;
+      for (int y = 0; y < qr_code->qr_size; y++) {
+        for (int x = 0; x < qr_code->qr_size; x++) {
+          ASSERT_EQ(0, qr_data[index++] & 0b11111100);
+        }
+      }
     }
   }
-}
 
-TEST(QRCodeGenerator, GenerateVersionSelection) {
-  // Ensure that dynamic version selection works,
-  // even when reusing the same QR Generator object.
-  // Longer inputs produce longer codes.
-  QRCodeGenerator qr;
-
-  uint8_t input_small[10];
-  memset(input_small, 'a', sizeof(input_small));
-  base::Optional<QRCodeGenerator::GeneratedCode> qr_code_small(
-      qr.Generate(input_small));
-  ASSERT_NE(qr_code_small, base::nullopt);
-  int size_small = qr_code_small->data.size();
-
-  uint8_t input_large[100];
-  memset(input_large, 'a', sizeof(input_large));
-  base::Optional<QRCodeGenerator::GeneratedCode> qr_code_large(
-      qr.Generate(input_large));
-  ASSERT_NE(qr_code_large, base::nullopt);
-  int size_large = qr_code_large->data.size();
-
-  ASSERT_GT(size_small, 0);
-  ASSERT_GT(size_large, 0);
-  ASSERT_GT(size_large, size_small);
+  // The generator should generate a variety of QR sizes.
+  ASSERT_TRUE(smallest_size);
+  ASSERT_TRUE(largest_size);
+  ASSERT_LT(*smallest_size, *largest_size);
 }
