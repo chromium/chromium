@@ -63,7 +63,11 @@ class MODULES_EXPORT MediaRecorderHandler final
                   const String& type,
                   const String& codecs,
                   int32_t audio_bits_per_second,
-                  int32_t video_bits_per_second);
+                  int32_t video_bits_per_second,
+                  AudioTrackRecorder::BitrateMode audio_bitrate_mode);
+
+  AudioTrackRecorder::BitrateMode AudioBitrateMode();
+
   bool Start(int timeslice);
   void Stop();
   void Pause();
@@ -136,6 +140,9 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   // Audio Codec, OPUS is used by default.
   AudioTrackRecorder::CodecId audio_codec_id_;
+
+  // Audio bitrate mode (constant, variable, etc.), VBR is used by default.
+  AudioTrackRecorder::BitrateMode audio_bitrate_mode_;
 
   // |recorder_| has no notion of time, thus may configure us via
   // start(timeslice) to notify it after a certain |timeslice_| has passed. We

@@ -65,9 +65,11 @@ namespace blink {
 
 AudioTrackOpusEncoder::AudioTrackOpusEncoder(
     OnEncodedAudioCB on_encoded_audio_cb,
-    int32_t bits_per_second)
+    int32_t bits_per_second,
+    bool vbr_enabled)
     : AudioTrackEncoder(std::move(on_encoded_audio_cb)),
       bits_per_second_(bits_per_second),
+      vbr_enabled_(vbr_enabled),
       opus_encoder_(nullptr) {}
 
 AudioTrackOpusEncoder::~AudioTrackOpusEncoder() {
@@ -142,6 +144,12 @@ void AudioTrackOpusEncoder::OnSetFormat(
       (bits_per_second_ > 0) ? bits_per_second_ : OPUS_AUTO;
   if (opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
+    return;
+  }
+
+  const opus_int32 vbr_enabled = static_cast<opus_int32>(vbr_enabled_);
+  if (opus_encoder_ctl(opus_encoder_, OPUS_SET_VBR(vbr_enabled)) != OPUS_OK) {
+    DLOG(ERROR) << "Failed to set Opus VBR mode: " << vbr_enabled;
     return;
   }
 }

@@ -5101,6 +5101,7 @@ interface MediaQueryListEvent : Event
 interface MediaRecorder : EventTarget
     static method isTypeSupported
     attribute @@toStringTag
+    getter audioBitrateMode
     getter audioBitsPerSecond
     getter mimeType
     getter ondataavailable

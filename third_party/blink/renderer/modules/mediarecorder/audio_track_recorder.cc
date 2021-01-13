@@ -48,12 +48,14 @@ AudioTrackRecorder::AudioTrackRecorder(
     MediaStreamComponent* track,
     OnEncodedAudioCB on_encoded_audio_cb,
     base::OnceClosure on_track_source_ended_cb,
-    int32_t bits_per_second)
+    int32_t bits_per_second,
+    BitrateMode bitrate_mode)
     : TrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
       encoder_(CreateAudioEncoder(codec,
                                   std::move(on_encoded_audio_cb),
-                                  bits_per_second)),
+                                  bits_per_second,
+                                  bitrate_mode)),
       encoder_thread_(Thread::CreateThread(
           ThreadCreationParams(ThreadType::kAudioEncoderThread))),
       encoder_task_runner_(encoder_thread_->GetTaskRunner()) {
@@ -75,7 +77,8 @@ AudioTrackRecorder::~AudioTrackRecorder() {
 scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     CodecId codec,
     OnEncodedAudioCB on_encoded_audio_cb,
-    int32_t bits_per_second) {
+    int32_t bits_per_second,
+    BitrateMode bitrate_mode) {
   if (codec == CodecId::PCM) {
     return base::MakeRefCounted<AudioTrackPcmEncoder>(
         media::BindToCurrentLoop(std::move(on_encoded_audio_cb)));
@@ -83,8 +86,8 @@ scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
 
   // All other paths will use the AudioTrackOpusEncoder.
   return base::MakeRefCounted<AudioTrackOpusEncoder>(
-      media::BindToCurrentLoop(std::move(on_encoded_audio_cb)),
-      bits_per_second);
+      media::BindToCurrentLoop(std::move(on_encoded_audio_cb)), bits_per_second,
+      bitrate_mode == BitrateMode::VARIABLE);
 }
 
 void AudioTrackRecorder::OnSetFormat(const media::AudioParameters& params) {
