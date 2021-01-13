@@ -261,11 +261,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     float scaling_up_ratio = 0.f;
     switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kBitmap: {
-        if (width_ratio >= 1.f && height_ratio >= 1.f)
-          scaling_up_ratio = 1.f;
-        else
-          scaling_up_ratio = std::fmin(width_ratio, height_ratio);
-        DCHECK_LE(scaling_up_ratio, 1.f);
+        scaling_up_ratio = std::fmin(width_ratio, height_ratio);
         break;
       }
       case ui::ClipboardInternalFormat::kHtml: {
