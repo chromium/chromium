@@ -397,6 +397,7 @@ const FrameNode* GetSameOriginParentOrOpener(const FrameNode* frame_node,
 const FrameNode* FindAggregationStartNode(const FrameNode* requesting_node) {
   DCHECK(requesting_node);
   auto requesting_origin = GetOrigin(requesting_node);
+  DCHECK(!requesting_origin.opaque());
 
   // Follow parent and opener links to find the most general same-site node to
   // start the aggregation traversal from.

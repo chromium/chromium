@@ -24,6 +24,7 @@
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -92,6 +93,8 @@ void WebMeasureMemoryStressTester::OnLoadingStateChanged(
     return;
   const FrameNode* main_frame = page_node->GetMainFrameNode();
   if (!main_frame)
+    return;
+  if (url::Origin::Create(main_frame->GetURL()).opaque())
     return;
   if (base::RandDouble() > kStressTestProbabilityParam.Get())
     return;
