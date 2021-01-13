@@ -19,6 +19,7 @@
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +36,10 @@ using testing::NotNull;
 using testing::UnorderedElementsAre;
 
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
+
+MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
+  return arg.specifics().device_info().cache_guid() == expected_cache_guid;
+}
 
 MATCHER_P(InterestedDataTypesAre, expected_data_types, "") {
   syncer::ModelTypeSet data_types;
@@ -383,5 +388,48 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 #endif  // !OS_CHROMEOS
+
+class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
+    : public SyncTest {
+ public:
+  SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes()
+      : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitWithFeatureState(switches::kSyncSendInterestedDataTypes,
+                                       !content::IsPreTest());
+  }
+
+  std::string GetLocalCacheGuid() {
+    syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
+    return prefs.GetCacheGuid();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes,
+    PRE_ShouldResendDeviceInfoWithInterestedDataTypes) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes,
+    ShouldResendDeviceInfoWithInterestedDataTypes) {
+  ASSERT_TRUE(SetupClients());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
+  // to get a non-empty refresh token on startup.
+  GetClient(0)->SignInPrimaryAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  ElementsAre(InterestedDataTypesContain(syncer::NIGORI)))
+                  .Wait());
+}
 
 }  // namespace
