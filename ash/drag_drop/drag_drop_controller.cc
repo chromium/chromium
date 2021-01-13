@@ -88,11 +88,9 @@ bool IsDragDropAllowed(const ui::OSExchangeData* drag_data,
                        bool is_drop) {
   DCHECK(drag_data);
 
-  drag_info.data_endpoint.set_notify_if_restricted(is_drop);
-
   return ui::DataTransferPolicyController::HasInstance()
              ? ui::DataTransferPolicyController::Get()->IsDragDropAllowed(
-                   drag_data->GetSource(), &drag_info.data_endpoint)
+                   drag_data->GetSource(), &drag_info.data_endpoint, is_drop)
              : true;
 }
 

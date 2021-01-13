@@ -36,9 +36,9 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   bool IsClipboardReadAllowed(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
-  bool IsDragDropAllowed(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override;
+  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
+                         const ui::DataTransferEndpoint* const data_dst,
+                         const bool is_drop) override;
 
  protected:
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);

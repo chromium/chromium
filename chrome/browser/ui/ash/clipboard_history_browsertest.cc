@@ -806,9 +806,9 @@ class FakeDataTransferPolicyController
            (*data_src->origin() == allowed_origin_);
   }
 
-  bool IsDragDropAllowed(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {
+  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
+                         const ui::DataTransferEndpoint* const data_dst,
+                         const bool is_drop) override {
     return false;
   }
 

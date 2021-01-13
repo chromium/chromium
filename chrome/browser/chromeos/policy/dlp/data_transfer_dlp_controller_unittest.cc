@@ -82,34 +82,53 @@ class DataTransferDlpControllerTest : public testing::Test {
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(nullptr, nullptr));
+  EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(nullptr, nullptr,
+                                                    /*is_drop=*/false));
 }
 
 TEST_F(DataTransferDlpControllerTest, NullDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsClipboardReadAllowed(&data_src, nullptr));
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, nullptr));
+  }
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, nullptr,
+                                                       /*is_drop=*/false));
+  }
 }
 
 TEST_F(DataTransferDlpControllerTest, DefaultDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
-  ui::DataTransferEndpoint data_dst_1(ui::EndpointType::kDefault);
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_1));
-  testing::Mock::VerifyAndClearExpectations(&rules_manager_);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
-
-  // Turn off notifications
-  ui::DataTransferEndpoint data_dst_2(ui::EndpointType::kDefault,
-                                      /*notify_if_restricted=*/false);
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault);
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  }
+  {
+    // Turn off notifications
+    ui::DataTransferEndpoint data_dst_2(ui::EndpointType::kDefault,
+                                        /*notify_if_restricted=*/false);
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
+  }
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
+                                                       /*is_drop=*/true));
+  }
 }
 
 TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
@@ -120,42 +139,67 @@ TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
 
 TEST_F(DataTransferDlpControllerTest, UrlSrcDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
-  ui::DataTransferEndpoint data_dst_1(url::Origin::Create(GURL(kYoutubeUrl)));
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_1));
-  testing::Mock::VerifyAndClearExpectations(&rules_manager_);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
-
-  // Turn off notifications
-  ui::DataTransferEndpoint data_dst_2(url::Origin::Create(GURL(kYoutubeUrl)),
-                                      /*notify_if_restricted=*/false);
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
+  ui::DataTransferEndpoint data_dst(url::Origin::Create(GURL(kYoutubeUrl)));
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  }
+  {
+    // Turn off notifications
+    ui::DataTransferEndpoint data_dst_2(url::Origin::Create(GURL(kYoutubeUrl)),
+                                        /*notify_if_restricted=*/false);
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
+  }
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
+                                                       /*is_drop=*/false));
+  }
 }
 
 TEST_F(DataTransferDlpControllerTest, ArcDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
-  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  }
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
+                                                       /*is_drop=*/true));
+  }
 }
 
 TEST_F(DataTransferDlpControllerTest, CrostiniDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kCrostini);
-  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false,
-            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false,
+              dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  }
+  {
+    EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+    EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
+    EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
+                                                       /*is_drop=*/true));
+  }
 }
 
 }  // namespace policy

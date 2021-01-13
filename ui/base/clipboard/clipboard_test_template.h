@@ -112,9 +112,10 @@ class MockPolicyController : public DataTransferPolicyController {
   MOCK_METHOD2(IsClipboardReadAllowed,
                bool(const DataTransferEndpoint* const data_src,
                     const DataTransferEndpoint* const data_dst));
-  MOCK_METHOD2(IsDragDropAllowed,
+  MOCK_METHOD3(IsDragDropAllowed,
                bool(const DataTransferEndpoint* const data_src,
-                    const DataTransferEndpoint* const data_dst));
+                    const DataTransferEndpoint* const data_dst,
+                    const bool is_drop));
 };
 
 MockPolicyController::MockPolicyController() = default;

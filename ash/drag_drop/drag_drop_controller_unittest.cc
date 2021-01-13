@@ -1488,9 +1488,10 @@ class MockDataTransferPolicyController
   MOCK_METHOD2(IsClipboardReadAllowed,
                bool(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
-  MOCK_METHOD2(IsDragDropAllowed,
+  MOCK_METHOD3(IsDragDropAllowed,
                bool(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst));
+                    const ui::DataTransferEndpoint* const data_dst,
+                    const bool is_drop));
 };
 
 }  // namespace
@@ -1511,9 +1512,12 @@ TEST_F(DragDropControllerTest, DlpAllowDragDrop) {
   auto data(std::make_unique<ui::OSExchangeData>());
   data->SetString(base::UTF8ToUTF16("I am being dragged"));
 
-  EXPECT_CALL(dlp_contoller, IsDragDropAllowed)
-      .Times(2)
-      .WillRepeatedly(::testing::Return(true));
+  // Drag update.
+  EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/false))
+      .WillOnce(::testing::Return(true));
+  // Drop.
+  EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/true))
+      .WillOnce(::testing::Return(true));
 
   drag_drop_controller_->StartDragAndDrop(
       std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
@@ -1546,9 +1550,12 @@ TEST_F(DragDropControllerTest, DlpDisallowDragDrop) {
   auto data(std::make_unique<ui::OSExchangeData>());
   data->SetString(base::UTF8ToUTF16("I am being dragged"));
 
-  EXPECT_CALL(dlp_contoller, IsDragDropAllowed)
-      .Times(2)
-      .WillRepeatedly(::testing::Return(false));
+  // Drag update.
+  EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/false))
+      .WillOnce(::testing::Return(false));
+  // Drop.
+  EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/true))
+      .WillOnce(::testing::Return(false));
 
   drag_drop_controller_->StartDragAndDrop(
       std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
