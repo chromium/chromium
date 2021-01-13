@@ -67,8 +67,7 @@ enum MergeMode {
   kUseNewerIfDifferent = 1 << 5,
   // If the newer component contains one token more, apply a recursive strategy
   // to merge the tokens.
-  kRecursivelyMergeSingleTokenSubset =
-      1 << 6 | kRecursivelyMergeTokenEquivalentValues,
+  kRecursivelyMergeSingleTokenSubset = 1 << 6,
   // If one is a substring use the most recent one.
   kUseMostRecentSubstring = 1 << 7,
   // Merge the child nodes and reformat the node from its children after merge.
