@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_REQUEST_FEATURES_H_
 
 #include "components/permissions/permission_request_enums.h"
+#include "components/permissions/request_type.h"
 
 namespace permissions {
 
@@ -21,7 +22,7 @@ struct PredictionRequestFeatures {
   PermissionRequestGestureType gesture;
 
   // Which permissions request type this is for.
-  PermissionRequestType type;
+  RequestType type;
 
   // The permission action counts for this specific permission type.
   ActionCounts requested_permission_counts;

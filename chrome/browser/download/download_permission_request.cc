@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_permission_request.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
@@ -22,13 +23,8 @@ DownloadPermissionRequest::DownloadPermissionRequest(
 
 DownloadPermissionRequest::~DownloadPermissionRequest() {}
 
-permissions::PermissionRequest::IconId DownloadPermissionRequest::GetIconId()
-    const {
-#if defined(OS_ANDROID)
-  return IDR_ANDROID_INFOBAR_MULTIPLE_DOWNLOADS;
-#else
-  return vector_icons::kFileDownloadIcon;
-#endif
+permissions::RequestType DownloadPermissionRequest::GetRequestType() const {
+  return permissions::RequestType::kMultipleDownloads;
 }
 
 #if defined(OS_ANDROID)
@@ -73,9 +69,4 @@ void DownloadPermissionRequest::Cancelled() {
 
 void DownloadPermissionRequest::RequestFinished() {
   delete this;
-}
-
-permissions::PermissionRequestType
-DownloadPermissionRequest::GetPermissionRequestType() const {
-  return permissions::PermissionRequestType::DOWNLOAD;
 }

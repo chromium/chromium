@@ -38,9 +38,6 @@ class PermissionUtil {
   // Returns the permission string for the given permission.
   static std::string GetPermissionString(ContentSettingsType);
 
-  // Returns the request type corresponding to a permission type.
-  static PermissionRequestType GetRequestType(ContentSettingsType permission);
-
   // Returns the gesture type corresponding to whether a permission request is
   // made with or without a user gesture.
   static PermissionRequestGestureType GetGestureType(bool user_gesture);

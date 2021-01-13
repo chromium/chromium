@@ -30,6 +30,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -816,18 +817,15 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerPtzTest, ContentSettings) {
         CreateRequest(example_audio_id(), example_video_id(), true));
 
     ASSERT_LE(prompt_factory()->TotalRequestCount(), 3);
-    EXPECT_EQ(
-        test.ExpectMicInfobar(control_support),
-        prompt_factory()->RequestTypeSeen(
-            permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC));
-    EXPECT_EQ(
-        test.ExpectCamInfobar(control_support),
-        prompt_factory()->RequestTypeSeen(
-            permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA));
-    EXPECT_EQ(
-        test.ExpectPtzInfobar(control_support),
-        prompt_factory()->RequestTypeSeen(permissions::PermissionRequestType::
-                                              PERMISSION_CAMERA_PAN_TILT_ZOOM));
+    EXPECT_EQ(test.ExpectMicInfobar(control_support),
+              prompt_factory()->RequestTypeSeen(
+                  permissions::RequestType::kMicStream));
+    EXPECT_EQ(test.ExpectCamInfobar(control_support),
+              prompt_factory()->RequestTypeSeen(
+                  permissions::RequestType::kCameraStream));
+    EXPECT_EQ(test.ExpectPtzInfobar(control_support),
+              prompt_factory()->RequestTypeSeen(
+                  permissions::RequestType::kCameraPanTiltZoom));
 
     // Check the media stream result is expected and the devices returned are
     // expected;
@@ -876,9 +874,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
       CreateRequest(example_audio_id(), example_video_id(), false));
   ASSERT_EQ(2, prompt_factory()->TotalRequestCount());
   ASSERT_TRUE(prompt_factory()->RequestTypeSeen(
-      permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA));
-  ASSERT_TRUE(prompt_factory()->RequestTypeSeen(
-      permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC));
+      permissions::RequestType::kCameraStream));
+  ASSERT_TRUE(
+      prompt_factory()->RequestTypeSeen(permissions::RequestType::kMicStream));
 
   VerifyResultState(blink::mojom::MediaStreamRequestResult::OK, true, true);
 

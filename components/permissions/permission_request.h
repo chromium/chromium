@@ -13,11 +13,8 @@
 #include "components/permissions/permission_request_enums.h"
 #include "url/gurl.h"
 
-namespace gfx {
-struct VectorIcon;
-}
-
 namespace permissions {
+enum class RequestType;
 
 // Describes the interface a feature making permission requests should
 // implement. A class of this type is registered with the permission request
@@ -29,19 +26,11 @@ namespace permissions {
 // requests, or depending on the situation, not shown at all.
 class PermissionRequest {
  public:
-#if defined(OS_ANDROID)
-  // On Android, icons are represented with an IDR_ identifier.
-  typedef int IconId;
-#else
-  // On desktop, we use a vector icon.
-  typedef const gfx::VectorIcon& IconId;
-#endif
-
   PermissionRequest();
   virtual ~PermissionRequest() {}
 
-  // The icon to use next to the message text fragment in the permission bubble.
-  virtual IconId GetIconId() const = 0;
+  // The type of this request.
+  virtual RequestType GetRequestType() const = 0;
 
 #if defined(OS_ANDROID)
   // Returns the full prompt text for this permission. This is currently only
@@ -94,9 +83,6 @@ class PermissionRequest {
   // PermissionGranted(), PermissionDenied() or Canceled(). However, it will not
   // resolve the javascript promise from the requesting origin.
   virtual void RequestFinished() = 0;
-
-  // Used to record UMA metrics for permission requests.
-  virtual PermissionRequestType GetPermissionRequestType() const = 0;
 
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular

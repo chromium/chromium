@@ -24,6 +24,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/switches.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -77,15 +78,16 @@ bool IsMessageTextEqual(PermissionRequest* a, PermissionRequest* b) {
   return false;
 }
 
-bool isMediaRequest(PermissionRequestType type) {
-  return type == PermissionRequestType::PERMISSION_MEDIASTREAM_MIC ||
-         type == PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA ||
-         type == PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM;
+bool IsMediaRequest(RequestType type) {
+#if !defined(OS_ANDROID)
+  if (type == RequestType::kCameraPanTiltZoom)
+    return true;
+#endif
+  return type == RequestType::kMicStream || type == RequestType::kCameraStream;
 }
 
-bool isArOrCameraRequest(PermissionRequestType type) {
-  return type == PermissionRequestType::PERMISSION_AR ||
-         type == PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA;
+bool IsArOrCameraRequest(RequestType type) {
+  return type == RequestType::kArSession || type == RequestType::kCameraStream;
 }
 
 bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
@@ -93,14 +95,14 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
     return false;
 
   // Group if both requests are media requests.
-  if (isMediaRequest(a->GetPermissionRequestType()) &&
-      isMediaRequest(b->GetPermissionRequestType())) {
+  if (IsMediaRequest(a->GetRequestType()) &&
+      IsMediaRequest(b->GetRequestType())) {
     return true;
   }
 
   // Group if the requests are an AR and a Camera Access request.
-  if (isArOrCameraRequest(a->GetPermissionRequestType()) &&
-      isArOrCameraRequest(b->GetPermissionRequestType())) {
+  if (IsArOrCameraRequest(a->GetRequestType()) &&
+      IsArOrCameraRequest(b->GetRequestType())) {
     return true;
   }
 
@@ -507,8 +509,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   }
 
   if (!notification_permission_ui_selectors_.empty() &&
-      requests_.front()->GetPermissionRequestType() ==
-          PermissionRequestType::PERMISSION_NOTIFICATIONS) {
+      requests_.front()->GetRequestType() == RequestType::kNotifications) {
     DCHECK(!current_request_ui_to_use_.has_value());
     // Initialize the selector decisions vector.
     DCHECK(selector_decisions_.empty());
@@ -633,7 +634,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       continue;
 
     PermissionsClient::Get()->OnPromptResolved(
-        browser_context, request->GetPermissionRequestType(), permission_action,
+        browser_context, request->GetRequestType(), permission_action,
         request->GetOrigin(), quiet_ui_reason);
 
     PermissionEmbargoStatus embargo_status =

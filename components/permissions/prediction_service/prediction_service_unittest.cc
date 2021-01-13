@@ -20,6 +20,7 @@
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_common.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "components/permissions/request_type.h"
 #include "google/protobuf/message_lite.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -36,33 +37,33 @@ namespace {
 // A request that has all counts 0. With user gesture.
 const permissions::PredictionRequestFeatures kFeaturesAllCountsZero = {
     permissions::PermissionRequestGestureType::GESTURE,
-    permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+    permissions::RequestType::kNotifications,
     {0, 0, 0, 0},
     {0, 0, 0, 0}};
 // A request that has all counts 5 expect for "grants" which are 6. Without user
 // gesture.
 const permissions::PredictionRequestFeatures kFeaturesCountsNeedingRounding = {
     permissions::PermissionRequestGestureType::NO_GESTURE,
-    permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+    permissions::RequestType::kNotifications,
     {6, 5, 5, 5},
     {6, 5, 5, 5}};
 // A request that has all counts 50. With user gesture.
 const permissions::PredictionRequestFeatures kFeaturesEvenCountsOver100 = {
     permissions::PermissionRequestGestureType::GESTURE,
-    permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+    permissions::RequestType::kNotifications,
     {50, 50, 50, 50},
     {50, 50, 50, 50}};
 // A request that has all counts 100. With user gesture.
 const permissions::PredictionRequestFeatures kFeaturesEvenCountsOver100Alt = {
     permissions::PermissionRequestGestureType::GESTURE,
-    permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+    permissions::RequestType::kNotifications,
     {100, 100, 100, 100},
     {100, 100, 100, 100}};
 // A request that has generic counts 50, and notification counts 0. Without user
 // gesture.
 const permissions::PredictionRequestFeatures kFeaturesDifferentCounts = {
     permissions::PermissionRequestGestureType::NO_GESTURE,
-    permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+    permissions::RequestType::kNotifications,
     {0, 0, 0, 0},
     {50, 50, 50, 50}};
 

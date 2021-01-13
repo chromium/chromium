@@ -60,8 +60,7 @@ void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
   std::move(callback).Run(base::nullopt);
 }
 
-PermissionRequest::IconId PermissionsClient::GetOverrideIconId(
-    ContentSettingsType type) {
+IconId PermissionsClient::GetOverrideIconId(RequestType request_type) {
 #if defined(OS_ANDROID)
   return 0;
 #else
@@ -77,7 +76,7 @@ PermissionsClient::CreateNotificationPermissionUiSelectors(
 
 void PermissionsClient::OnPromptResolved(
     content::BrowserContext* browser_context,
-    PermissionRequestType request_type,
+    RequestType request_type,
     PermissionAction action,
     const GURL& origin,
     base::Optional<QuietUiReason> quiet_ui_reason) {}

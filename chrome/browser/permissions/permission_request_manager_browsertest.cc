@@ -32,6 +32,7 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_impl.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/variations/variations_associated_data.h"
@@ -634,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // First add a quiet permission request. Ensure that this request is decided
   // by the end of this test.
   permissions::MockPermissionRequest request_quiet(
-      "quiet", permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+      "quiet", permissions::RequestType::kNotifications,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_quiet);
   base::RunLoop().RunUntilIdle();
@@ -642,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // Add a second permission request. This ones should cause the initial
   // request to be cancelled.
   permissions::MockPermissionRequest request_loud(
-      "loud", permissions::PermissionRequestType::PERMISSION_GEOLOCATION,
+      "loud", permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_loud);
   base::RunLoop().RunUntilIdle();
@@ -692,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents);
 
     permissions::MockPermissionRequest request_quiet(
-        "quiet", permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+        "quiet", permissions::RequestType::kNotifications,
         permissions::PermissionRequestGestureType::UNKNOWN);
     GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
                                               &request_quiet);
@@ -725,14 +726,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        LoudPendingRequestsQueued) {
   content::RenderFrameHost* source_frame = GetActiveMainFrame();
   permissions::MockPermissionRequest request1(
-      "request1",
-      permissions::PermissionRequestType::PERMISSION_CLIPBOARD_READ_WRITE,
+      "request1", permissions::RequestType::kClipboard,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request1);
   base::RunLoop().RunUntilIdle();
 
   permissions::MockPermissionRequest request2(
-      "request2", permissions::PermissionRequestType::PERMISSION_GEOLOCATION,
+      "request2", permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request2);
   base::RunLoop().RunUntilIdle();
@@ -811,19 +811,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   // have different urls in the navigations above but use the same url (default)
   // for the MockPermissionRequest here.
   permissions::MockPermissionRequest req_a_1(
-      "req_a_1",
-      permissions::PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM,
+      "req_a_1", permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_a_2(
-      "req_a_2",
-      permissions::PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM,
+      "req_a_2", permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_1(
-      "req_b_1",
-      permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA,
+      "req_b_1", permissions::RequestType::kCameraStream,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_2(
-      "req_b_2", permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC,
+      "req_b_2", permissions::RequestType::kMicStream,
       permissions::PermissionRequestGestureType::GESTURE);
   GetPermissionRequestManager()->AddRequest(rfh_a,
                                             &req_a_1);  // Should be skipped

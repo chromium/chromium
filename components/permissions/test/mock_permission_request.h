@@ -11,16 +11,17 @@
 #include "url/gurl.h"
 
 namespace permissions {
+enum class RequestType;
 
 class MockPermissionRequest : public PermissionRequest {
  public:
   MockPermissionRequest();
   explicit MockPermissionRequest(const std::string& text);
   MockPermissionRequest(const std::string& text,
-                        PermissionRequestType request_type,
+                        RequestType request_type,
                         PermissionRequestGestureType gesture_type);
   MockPermissionRequest(const std::string& text,
-                        PermissionRequestType request_type,
+                        RequestType request_type,
                         const GURL& url);
   MockPermissionRequest(const std::string& text,
                         const std::string& accept_label,
@@ -30,7 +31,8 @@ class MockPermissionRequest : public PermissionRequest {
 
   ~MockPermissionRequest() override;
 
-  IconId GetIconId() const override;
+  RequestType GetRequestType() const override;
+
 #if defined(OS_ANDROID)
   base::string16 GetMessageText() const override;
 #endif
@@ -41,7 +43,6 @@ class MockPermissionRequest : public PermissionRequest {
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;
-  PermissionRequestType GetPermissionRequestType() const override;
   PermissionRequestGestureType GetGestureType() const override;
   ContentSettingsType GetContentSettingsType() const override;
 
@@ -54,13 +55,13 @@ class MockPermissionRequest : public PermissionRequest {
                         const std::string& accept_label,
                         const std::string& deny_label,
                         const GURL& url,
-                        PermissionRequestType request_type,
+                        RequestType request_type,
                         PermissionRequestGestureType gesture_type,
                         ContentSettingsType content_settings_type);
   bool granted_;
   bool cancelled_;
   bool finished_;
-  PermissionRequestType request_type_;
+  RequestType request_type_;
   PermissionRequestGestureType gesture_type_;
   ContentSettingsType content_settings_type_;
 

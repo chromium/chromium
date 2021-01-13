@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
+#include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
 RegisterProtocolHandlerPermissionRequest::
@@ -27,9 +27,9 @@ RegisterProtocolHandlerPermissionRequest::
 RegisterProtocolHandlerPermissionRequest::
     ~RegisterProtocolHandlerPermissionRequest() = default;
 
-permissions::PermissionRequest::IconId
-RegisterProtocolHandlerPermissionRequest::GetIconId() const {
-  return vector_icons::kProtocolHandlerIcon;
+permissions::RequestType
+RegisterProtocolHandlerPermissionRequest::GetRequestType() const {
+  return permissions::RequestType::kRegisterProtocolHandler;
 }
 
 base::string16
@@ -71,9 +71,4 @@ void RegisterProtocolHandlerPermissionRequest::Cancelled() {
 
 void RegisterProtocolHandlerPermissionRequest::RequestFinished() {
   delete this;
-}
-
-permissions::PermissionRequestType
-RegisterProtocolHandlerPermissionRequest::GetPermissionRequestType() const {
-  return permissions::PermissionRequestType::REGISTER_PROTOCOL_HANDLER;
 }

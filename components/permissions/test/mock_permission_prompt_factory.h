@@ -19,6 +19,7 @@ class WebContents;
 
 namespace permissions {
 class MockPermissionPrompt;
+enum class RequestType;
 
 // Provides a skeleton class for both unit and browser testing when trying to
 // test the bubble manager logic. Should not be used for anything that requires
@@ -56,7 +57,7 @@ class MockPermissionPromptFactory {
   // Number of requests seen.
   int TotalRequestCount();
   // Whether the specified permission was shown in a prompt.
-  bool RequestTypeSeen(PermissionRequestType type);
+  bool RequestTypeSeen(RequestType type);
   // Whether a prompt with the given origin was shown.
   bool RequestOriginSeen(const GURL& origin);
 
@@ -75,7 +76,7 @@ class MockPermissionPromptFactory {
 
   int show_count_;
   int requests_count_;
-  std::vector<PermissionRequestType> request_types_seen_;
+  std::vector<RequestType> request_types_seen_;
   std::vector<GURL> request_origins_seen_;
 
   std::vector<MockPermissionPrompt*> prompts_;

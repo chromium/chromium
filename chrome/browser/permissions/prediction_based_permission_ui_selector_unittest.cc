@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,7 +44,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
     base::RunLoop run_loop;
 
     permissions::MockPermissionRequest request(
-        "request", permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+        "request", permissions::RequestType::kNotifications,
         permissions::PermissionRequestGestureType::GESTURE);
 
     selector->SelectUiToUse(

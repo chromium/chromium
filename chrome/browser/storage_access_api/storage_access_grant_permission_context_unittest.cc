@@ -150,7 +150,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   ASSERT_TRUE(request);
   ASSERT_EQ(1u, manager->Requests().size());
   // Prompt should have both origins.
-  EXPECT_EQ(GetRequesterURL(), request->GetOrigin());
+  EXPECT_EQ(GetRequesterURL(), manager->GetRequestingOrigin());
   EXPECT_EQ(GetTopLevelURL(), manager->GetEmbeddingOrigin());
 
   manager->Closing();

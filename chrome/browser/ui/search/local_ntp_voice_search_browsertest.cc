@@ -17,6 +17,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -102,8 +103,8 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest,
   EXPECT_EQ(1, prompt_factory.show_count());
   EXPECT_EQ(1, prompt_factory.request_count());
   EXPECT_EQ(1, prompt_factory.TotalRequestCount());
-  EXPECT_TRUE(prompt_factory.RequestTypeSeen(
-      permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC));
+  EXPECT_TRUE(
+      prompt_factory.RequestTypeSeen(permissions::RequestType::kMicStream));
   // ...and that it showed the local NTP URL.
   EXPECT_FALSE(prompt_factory.RequestOriginSeen(
       GURL(chrome::kChromeUINewTabURL).GetOrigin()));

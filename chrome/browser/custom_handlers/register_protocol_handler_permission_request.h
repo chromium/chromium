@@ -10,6 +10,11 @@
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"
 
+namespace permissions {
+enum class RequestType;
+}  // namespace permissions
+
+class GURL;
 class ProtocolHandlerRegistry;
 
 // This class provides display data for a permission request, shown when a page
@@ -27,14 +32,13 @@ class RegisterProtocolHandlerPermissionRequest
 
  private:
   // permissions::PermissionRequest:
-  IconId GetIconId() const override;
+  permissions::RequestType GetRequestType() const override;
   base::string16 GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;
-  permissions::PermissionRequestType GetPermissionRequestType() const override;
 
   ProtocolHandlerRegistry* registry_;
   ProtocolHandler handler_;

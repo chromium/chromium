@@ -7,8 +7,12 @@ source_set("permissions_common") {
     "features.cc",
     "features.h",
     "permission_request_enums.h",
+    "request_type.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 source_set("permissions") {
@@ -58,6 +62,8 @@ source_set("permissions") {
     "pref_names.h",
     "quota_permission_context_impl.cc",
     "quota_permission_context_impl.h",
+    "request_type.cc",
+    "request_type.h",
     "switches.cc",
     "switches.h",
   ]

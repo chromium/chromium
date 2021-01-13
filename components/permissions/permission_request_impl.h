@@ -17,6 +17,7 @@
 class GURL;
 
 namespace permissions {
+enum class RequestType;
 
 // Default implementation of PermissionRequest, it is assumed that
 // the caller owns it and that it can be deleted once the |delete_callback| is
@@ -36,7 +37,7 @@ class PermissionRequestImpl : public PermissionRequest {
 
  private:
   // PermissionRequest:
-  IconId GetIconId() const override;
+  RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
   base::string16 GetMessageText() const override;
   base::string16 GetQuietTitleText() const override;
@@ -51,7 +52,6 @@ class PermissionRequestImpl : public PermissionRequest {
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;
-  PermissionRequestType GetPermissionRequestType() const override;
   PermissionRequestGestureType GetGestureType() const override;
   ContentSettingsType GetContentSettingsType() const override;
 

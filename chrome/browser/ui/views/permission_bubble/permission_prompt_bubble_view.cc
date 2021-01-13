@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -179,15 +180,13 @@ PermissionPromptBubbleView::GetVisibleRequests() {
 
 bool PermissionPromptBubbleView::ShouldShowPermissionRequest(
     permissions::PermissionRequest* request) {
-  if (request->GetContentSettingsType() !=
-      ContentSettingsType::MEDIASTREAM_CAMERA) {
+  if (request->GetRequestType() != permissions::RequestType::kCameraStream)
     return true;
-  }
 
   // Hide camera request only if camera PTZ request is present as well.
   for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (request->GetContentSettingsType() ==
-        ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+    if (request->GetRequestType() ==
+        permissions::RequestType::kCameraPanTiltZoom) {
       return false;
     }
   }
@@ -208,8 +207,9 @@ void PermissionPromptBubbleView::AddPermissionRequestLine(
 
   constexpr int kPermissionIconSize = 18;
   auto* icon = line_container->AddChildView(
-      std::make_unique<views::ColorTrackingIconView>(request->GetIconId(),
-                                                     kPermissionIconSize));
+      std::make_unique<views::ColorTrackingIconView>(
+          permissions::GetIconId(request->GetRequestType()),
+          kPermissionIconSize));
   icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
   auto* label = line_container->AddChildView(
@@ -333,8 +333,8 @@ PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
 
 base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
     const {
-  switch (visible_requests_[0]->GetContentSettingsType()) {
-    case ContentSettingsType::STORAGE_ACCESS:
+  switch (visible_requests_[0]->GetRequestType()) {
+    case permissions::RequestType::kStorageAccess:
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
           url_formatter::FormatUrlForSecurityDisplay(
@@ -382,6 +382,6 @@ bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
   if (delegate_->Requests().size() > 1)
     return false;
   CHECK_GT(delegate_->Requests().size(), 0u);
-  return delegate_->Requests()[0]->GetContentSettingsType() ==
-         ContentSettingsType::GEOLOCATION;
+  return delegate_->Requests()[0]->GetRequestType() ==
+         permissions::RequestType::kGeolocation;
 }

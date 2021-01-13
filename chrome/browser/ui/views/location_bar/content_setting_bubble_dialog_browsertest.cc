@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -169,8 +170,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
               simulated_reason_for_quiet_ui));
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
-      "notifications",
-      permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+      "notifications", permissions::RequestType::kNotifications,
       GURL("https://example.com"));
   permission_request_manager->AddRequest(web_contents->GetMainFrame(),
                                          &*notification_permission_request_);

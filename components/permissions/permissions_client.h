@@ -14,6 +14,7 @@
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -120,7 +121,7 @@ class PermissionsClient {
   // Returns the icon ID that should be used for permissions UI for |type|. If
   // the embedder returns an empty IconId, the default icon for |type| will be
   // used.
-  virtual PermissionRequest::IconId GetOverrideIconId(ContentSettingsType type);
+  virtual IconId GetOverrideIconId(RequestType request_type);
 
   // Allows the embedder to provide a list of selectors for choosing the UI to
   // use for notification permission requests. If the embedder returns an empty
@@ -135,7 +136,7 @@ class PermissionsClient {
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(content::BrowserContext* browser_context,
-                                PermissionRequestType request_type,
+                                RequestType request_type,
                                 PermissionAction action,
                                 const GURL& origin,
                                 base::Optional<QuietUiReason> quiet_ui_reason);

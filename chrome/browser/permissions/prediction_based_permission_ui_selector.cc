@@ -130,7 +130,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
     permissions::PermissionRequest* request) {
   permissions::PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
-  features.type = request->GetPermissionRequestType();
+  features.type = request->GetRequestType();
   auto* permission_actions =
       profile_->GetPrefs()->GetList(prefs::kNotificationPermissionActions);
 

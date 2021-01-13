@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -35,14 +36,13 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-bool IsCameraPermission(permissions::PermissionRequestType type) {
-  return type ==
-         permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA;
+bool IsCameraPermission(permissions::RequestType type) {
+  return type == permissions::RequestType::kCameraStream;
 }
 
-bool IsCameraOrMicPermission(permissions::PermissionRequestType type) {
+bool IsCameraOrMicPermission(permissions::RequestType type) {
   return IsCameraPermission(type) ||
-         type == permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC;
+         type == permissions::RequestType::kMicStream;
 }
 }  // namespace
 
@@ -123,10 +123,9 @@ void PermissionChip::DisplayRequest(
   // update delegate to contain only one request at a time.
   DCHECK(requests.size() == 1u || requests.size() == 2u);
   if (requests.size() == 2) {
-    DCHECK(IsCameraOrMicPermission(requests[0]->GetPermissionRequestType()));
-    DCHECK(IsCameraOrMicPermission(requests[1]->GetPermissionRequestType()));
-    DCHECK_NE(requests[0]->GetPermissionRequestType(),
-              requests[1]->GetPermissionRequestType());
+    DCHECK(IsCameraOrMicPermission(requests[0]->GetRequestType()));
+    DCHECK(IsCameraOrMicPermission(requests[1]->GetRequestType()));
+    DCHECK_NE(requests[0]->GetRequestType(), requests[1]->GetRequestType());
   }
 
   chip_button_->SetText(GetPermissionMessage());
@@ -287,13 +286,13 @@ void PermissionChip::UpdatePermissionIconAndTextColor() {
 const gfx::VectorIcon& PermissionChip::GetPermissionIconId() {
   auto requests = delegate_->Requests();
   if (requests.size() == 1)
-    return requests[0]->GetIconId();
+    return permissions::GetIconId(requests[0]->GetRequestType());
 
   // When we have two requests, it must be microphone & camera. Then we need to
   // use the icon from the camera request.
-  return IsCameraPermission(requests[0]->GetPermissionRequestType())
-             ? requests[0]->GetIconId()
-             : requests[1]->GetIconId();
+  return IsCameraPermission(requests[0]->GetRequestType())
+             ? permissions::GetIconId(requests[0]->GetRequestType())
+             : permissions::GetIconId(requests[1]->GetRequestType());
 }
 
 base::string16 PermissionChip::GetPermissionMessage() {

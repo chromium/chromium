@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -197,8 +198,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
       base::Optional<QuietUiReason> quiet_ui_reason,
       base::Optional<WarningReason> warning_reason) {
     permissions::MockPermissionRequest mock_request(
-        std::string(),
-        permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS, origin);
+        std::string(), permissions::RequestType::kNotifications, origin);
     base::MockCallback<
         ContextualNotificationPermissionUiSelector::DecisionMadeCallback>
         mock_callback;

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -52,7 +53,7 @@ class QuotaPermissionRequest : public PermissionRequest {
 
  private:
   // PermissionRequest:
-  IconId GetIconId() const override;
+  RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
   base::string16 GetMessageText() const override;
 #endif
@@ -62,7 +63,6 @@ class QuotaPermissionRequest : public PermissionRequest {
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;
-  PermissionRequestType GetPermissionRequestType() const override;
 
   const scoped_refptr<QuotaPermissionContextImpl> context_;
   const GURL origin_url_;
@@ -87,12 +87,8 @@ QuotaPermissionRequest::QuotaPermissionRequest(
 
 QuotaPermissionRequest::~QuotaPermissionRequest() {}
 
-PermissionRequest::IconId QuotaPermissionRequest::GetIconId() const {
-#if defined(OS_ANDROID)
-  return IDR_ANDROID_INFOBAR_FOLDER;
-#else
-  return vector_icons::kFolderIcon;
-#endif
+RequestType QuotaPermissionRequest::GetRequestType() const {
+  return RequestType::kDiskQuota;
 }
 
 #if defined(OS_ANDROID)
@@ -137,10 +133,6 @@ void QuotaPermissionRequest::RequestFinished() {
   }
 
   delete this;
-}
-
-PermissionRequestType QuotaPermissionRequest::GetPermissionRequestType() const {
-  return PermissionRequestType::QUOTA;
 }
 
 }  // namespace

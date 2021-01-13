@@ -26,6 +26,50 @@ namespace permissions {
 enum class PermissionRequestGestureType;
 class PermissionRequest;
 
+// Used for UMA to record the types of permission prompts shown.
+// When updating, you also need to update:
+//   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
+//   2) The PermissionRequestTypes suffix list in
+//      tools/metrics/histograms/histograms.xml.
+//   3) GetPermissionRequestString below.
+//
+// The usual rules of updating UMA values applies to this enum:
+// - don't remove values
+// - only ever add values at the end
+enum class RequestTypeForUma {
+  UNKNOWN = 0,
+  MULTIPLE = 1,
+  // UNUSED_PERMISSION = 2,
+  QUOTA = 3,
+  DOWNLOAD = 4,
+  // MEDIA_STREAM = 5,
+  REGISTER_PROTOCOL_HANDLER = 6,
+  PERMISSION_GEOLOCATION = 7,
+  PERMISSION_MIDI_SYSEX = 8,
+  PERMISSION_NOTIFICATIONS = 9,
+  PERMISSION_PROTECTED_MEDIA_IDENTIFIER = 10,
+  // PERMISSION_PUSH_MESSAGING = 11,
+  PERMISSION_FLASH = 12,
+  PERMISSION_MEDIASTREAM_MIC = 13,
+  PERMISSION_MEDIASTREAM_CAMERA = 14,
+  PERMISSION_ACCESSIBILITY_EVENTS = 15,
+  // PERMISSION_CLIPBOARD_READ = 16, // Replaced by
+  // PERMISSION_CLIPBOARD_READ_WRITE in M81.
+  PERMISSION_SECURITY_KEY_ATTESTATION = 17,
+  PERMISSION_PAYMENT_HANDLER = 18,
+  PERMISSION_NFC = 19,
+  PERMISSION_CLIPBOARD_READ_WRITE = 20,
+  PERMISSION_VR = 21,
+  PERMISSION_AR = 22,
+  PERMISSION_STORAGE_ACCESS = 23,
+  PERMISSION_CAMERA_PAN_TILT_ZOOM = 24,
+  PERMISSION_WINDOW_PLACEMENT = 25,
+  PERMISSION_FONT_ACCESS = 26,
+  PERMISSION_IDLE_DETECTION = 27,
+  // NUM must be the last value in the enum.
+  NUM
+};
+
 // Any new values should be inserted immediately prior to NUM.
 enum class PermissionSourceUI {
   // Permission prompt.

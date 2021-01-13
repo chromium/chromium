@@ -6,6 +6,7 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/permissions/request_type.h"
 
 #if defined(OS_ANDROID)
 #include "components/resources/android/theme_resources.h"
@@ -20,7 +21,7 @@ MockPermissionRequest::MockPermissionRequest()
                             "button",
                             "button",
                             GURL("http://www.google.com"),
-                            PermissionRequestType::PERMISSION_NOTIFICATIONS,
+                            RequestType::kNotifications,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
@@ -29,13 +30,13 @@ MockPermissionRequest::MockPermissionRequest(const std::string& text)
                             "button",
                             "button",
                             GURL("http://www.google.com"),
-                            PermissionRequestType::PERMISSION_NOTIFICATIONS,
+                            RequestType::kNotifications,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
 MockPermissionRequest::MockPermissionRequest(
     const std::string& text,
-    PermissionRequestType request_type,
+    RequestType request_type,
     PermissionRequestGestureType gesture_type)
     : MockPermissionRequest(text,
                             "button",
@@ -46,7 +47,7 @@ MockPermissionRequest::MockPermissionRequest(
                             ContentSettingsType::NOTIFICATIONS) {}
 
 MockPermissionRequest::MockPermissionRequest(const std::string& text,
-                                             PermissionRequestType request_type,
+                                             RequestType request_type,
                                              const GURL& url)
     : MockPermissionRequest(text,
                             "button",
@@ -63,30 +64,26 @@ MockPermissionRequest::MockPermissionRequest(const std::string& text,
                             accept_label,
                             deny_label,
                             GURL("http://www.google.com"),
-                            PermissionRequestType::PERMISSION_NOTIFICATIONS,
+                            RequestType::kNotifications,
                             PermissionRequestGestureType::UNKNOWN,
                             ContentSettingsType::NOTIFICATIONS) {}
 
 MockPermissionRequest::MockPermissionRequest(
     const std::string& text,
-    ContentSettingsType content_settings_type_)
-    : MockPermissionRequest(text,
-                            "button",
-                            "button",
-                            GURL("http://www.google.com"),
-                            PermissionRequestType::PERMISSION_NOTIFICATIONS,
-                            PermissionRequestGestureType::UNKNOWN,
-                            content_settings_type_) {}
+    ContentSettingsType content_settings_type)
+    : MockPermissionRequest(
+          text,
+          "button",
+          "button",
+          GURL("http://www.google.com"),
+          permissions::ContentSettingsTypeToRequestType(content_settings_type),
+          PermissionRequestGestureType::UNKNOWN,
+          content_settings_type) {}
 
 MockPermissionRequest::~MockPermissionRequest() = default;
 
-PermissionRequest::IconId MockPermissionRequest::GetIconId() const {
-  // Use a valid icon ID to support UI tests.
-#if defined(OS_ANDROID)
-  return IDR_ANDROID_INFOBAR_WARNING;
-#else
-  return vector_icons::kWarningIcon;
-#endif
+RequestType MockPermissionRequest::GetRequestType() const {
+  return request_type_;
 }
 
 #if defined(OS_ANDROID)
@@ -120,10 +117,6 @@ void MockPermissionRequest::RequestFinished() {
   finished_ = true;
 }
 
-PermissionRequestType MockPermissionRequest::GetPermissionRequestType() const {
-  return request_type_;
-}
-
 PermissionRequestGestureType MockPermissionRequest::GetGestureType() const {
   return gesture_type_;
 }
@@ -149,7 +142,7 @@ MockPermissionRequest::MockPermissionRequest(
     const std::string& accept_label,
     const std::string& deny_label,
     const GURL& origin,
-    PermissionRequestType request_type,
+    RequestType request_type,
     PermissionRequestGestureType gesture_type,
     ContentSettingsType content_settings_type)
     : granted_(false),

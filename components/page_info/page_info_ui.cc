@@ -723,7 +723,7 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
       icon = &vector_icons::kVrHeadsetIcon;
       break;
     case ContentSettingsType::WINDOW_PLACEMENT:
-      icon = &vector_icons::kWindowPlacementIcon;
+      icon = &vector_icons::kSelectWindowIcon;
       break;
     case ContentSettingsType::FONT_ACCESS:
       icon = &vector_icons::kFontDownloadIcon;

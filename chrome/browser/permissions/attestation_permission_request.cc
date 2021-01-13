@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -25,8 +26,8 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
                                base::OnceCallback<void(bool)> callback)
       : origin_(origin), callback_(std::move(callback)) {}
 
-  permissions::PermissionRequest::IconId GetIconId() const override {
-    return kUsbSecurityKeyIcon;
+  permissions::RequestType GetRequestType() const override {
+    return permissions::RequestType::kSecurityAttestation;
   }
 
   base::string16 GetMessageTextFragment() const override {
@@ -47,11 +48,6 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
     if (callback_)
       std::move(callback_).Run(false);
     delete this;
-  }
-
-  permissions::PermissionRequestType GetPermissionRequestType() const override {
-    return permissions::PermissionRequestType::
-        PERMISSION_SECURITY_KEY_ATTESTATION;
   }
 
  private:

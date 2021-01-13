@@ -15,6 +15,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
@@ -30,9 +31,9 @@
 
 namespace permissions {
 
-#define PERMISSION_BUBBLE_TYPE_UMA(metric_name, permission_bubble_type) \
-  base::UmaHistogramEnumeration(metric_name, permission_bubble_type,    \
-                                PermissionRequestType::NUM)
+#define PERMISSION_BUBBLE_TYPE_UMA(metric_name, request_type_for_uma) \
+  base::UmaHistogramEnumeration(metric_name, request_type_for_uma,    \
+                                RequestTypeForUma::NUM)
 
 #define PERMISSION_BUBBLE_GESTURE_TYPE_UMA(                                  \
     gesture_metric_name, no_gesture_metric_name, gesture_type,               \
@@ -48,51 +49,108 @@ using content::PermissionType;
 
 namespace {
 
+RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
+  switch (request_type) {
+    case RequestType::kAccessibilityEvents:
+      return RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS;
+    case RequestType::kArSession:
+      return RequestTypeForUma::PERMISSION_AR;
+#if !defined(OS_ANDROID)
+    case RequestType::kCameraPanTiltZoom:
+      return RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM;
+#endif
+    case RequestType::kCameraStream:
+      return RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA;
+    case RequestType::kClipboard:
+      return RequestTypeForUma::PERMISSION_CLIPBOARD_READ_WRITE;
+    case RequestType::kDiskQuota:
+      return RequestTypeForUma::QUOTA;
+#if !defined(OS_ANDROID)
+    case RequestType::kFontAccess:
+      return RequestTypeForUma::PERMISSION_FONT_ACCESS;
+#endif
+    case RequestType::kGeolocation:
+      return RequestTypeForUma::PERMISSION_GEOLOCATION;
+    case RequestType::kIdleDetection:
+      return RequestTypeForUma::PERMISSION_IDLE_DETECTION;
+    case RequestType::kMicStream:
+      return RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC;
+    case RequestType::kMidiSysex:
+      return RequestTypeForUma::PERMISSION_MIDI_SYSEX;
+    case RequestType::kMultipleDownloads:
+      return RequestTypeForUma::DOWNLOAD;
+#if defined(OS_ANDROID)
+    case RequestType::kNfcDevice:
+      return RequestTypeForUma::PERMISSION_NFC;
+#endif
+    case RequestType::kNotifications:
+      return RequestTypeForUma::PERMISSION_NOTIFICATIONS;
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+    case RequestType::kProtectedMediaIdentifier:
+      return RequestTypeForUma::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
+#endif
+#if !defined(OS_ANDROID)
+    case RequestType::kRegisterProtocolHandler:
+      return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
+    case RequestType::kSecurityAttestation:
+      return RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION;
+#endif
+    case RequestType::kStorageAccess:
+      return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
+    case RequestType::kVrSession:
+      return RequestTypeForUma::PERMISSION_VR;
+#if !defined(OS_ANDROID)
+    case RequestType::kWindowPlacement:
+      return RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT;
+#endif
+  }
+}
+
 const int kPriorCountCap = 10;
 
-std::string GetPermissionRequestString(PermissionRequestType type) {
+std::string GetPermissionRequestString(RequestTypeForUma type) {
   switch (type) {
-    case PermissionRequestType::MULTIPLE:
+    case RequestTypeForUma::MULTIPLE:
       return "AudioAndVideoCapture";
-    case PermissionRequestType::QUOTA:
+    case RequestTypeForUma::QUOTA:
       return "Quota";
-    case PermissionRequestType::DOWNLOAD:
+    case RequestTypeForUma::DOWNLOAD:
       return "MultipleDownload";
-    case PermissionRequestType::REGISTER_PROTOCOL_HANDLER:
+    case RequestTypeForUma::REGISTER_PROTOCOL_HANDLER:
       return "RegisterProtocolHandler";
-    case PermissionRequestType::PERMISSION_GEOLOCATION:
+    case RequestTypeForUma::PERMISSION_GEOLOCATION:
       return "Geolocation";
-    case PermissionRequestType::PERMISSION_MIDI_SYSEX:
+    case RequestTypeForUma::PERMISSION_MIDI_SYSEX:
       return "MidiSysEx";
-    case PermissionRequestType::PERMISSION_NOTIFICATIONS:
+    case RequestTypeForUma::PERMISSION_NOTIFICATIONS:
       return "Notifications";
-    case PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER:
+    case RequestTypeForUma::PERMISSION_PROTECTED_MEDIA_IDENTIFIER:
       return "ProtectedMedia";
-    case PermissionRequestType::PERMISSION_MEDIASTREAM_MIC:
+    case RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC:
       return "AudioCapture";
-    case PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA:
+    case RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA:
       return "VideoCapture";
-    case PermissionRequestType::PERMISSION_SECURITY_KEY_ATTESTATION:
+    case RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION:
       return "SecurityKeyAttestation";
-    case PermissionRequestType::PERMISSION_PAYMENT_HANDLER:
+    case RequestTypeForUma::PERMISSION_PAYMENT_HANDLER:
       return "PaymentHandler";
-    case PermissionRequestType::PERMISSION_NFC:
+    case RequestTypeForUma::PERMISSION_NFC:
       return "Nfc";
-    case PermissionRequestType::PERMISSION_CLIPBOARD_READ_WRITE:
+    case RequestTypeForUma::PERMISSION_CLIPBOARD_READ_WRITE:
       return "ClipboardReadWrite";
-    case PermissionRequestType::PERMISSION_VR:
+    case RequestTypeForUma::PERMISSION_VR:
       return "VR";
-    case PermissionRequestType::PERMISSION_AR:
+    case RequestTypeForUma::PERMISSION_AR:
       return "AR";
-    case PermissionRequestType::PERMISSION_STORAGE_ACCESS:
+    case RequestTypeForUma::PERMISSION_STORAGE_ACCESS:
       return "StorageAccess";
-    case PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM:
+    case RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
-    case PermissionRequestType::PERMISSION_WINDOW_PLACEMENT:
+    case RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT:
       return "WindowPlacement";
-    case PermissionRequestType::PERMISSION_FONT_ACCESS:
+    case RequestTypeForUma::PERMISSION_FONT_ACCESS:
       return "FontAccess";
-    case PermissionRequestType::PERMISSION_IDLE_DETECTION:
+    case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
     default:
       NOTREACHED();
@@ -103,9 +161,10 @@ std::string GetPermissionRequestString(PermissionRequestType type) {
 void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
                             content::WebContents* web_contents,
                             const std::string& action) {
-  PermissionRequestType type = requests[0]->GetPermissionRequestType();
+  RequestTypeForUma type =
+      GetUmaValueForRequestType(requests[0]->GetRequestType());
   if (requests.size() > 1)
-    type = PermissionRequestType::MULTIPLE;
+    type = RequestTypeForUma::MULTIPLE;
 
   DCHECK(action == "Accepted" || action == "Denied" || action == "Dismissed" ||
          action == "Ignored" || action == "AcceptedOnce");
@@ -349,11 +408,11 @@ void PermissionUmaUtil::PermissionPromptShown(
     const std::vector<PermissionRequest*>& requests) {
   DCHECK(!requests.empty());
 
-  PermissionRequestType request_type = PermissionRequestType::MULTIPLE;
+  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
   PermissionRequestGestureType gesture_type =
       PermissionRequestGestureType::UNKNOWN;
   if (requests.size() == 1) {
-    request_type = requests[0]->GetPermissionRequestType();
+    request_type = GetUmaValueForRequestType(requests[0]->GetRequestType());
     gesture_type = requests[0]->GetGestureType();
   }
 
@@ -684,11 +743,11 @@ void PermissionUmaUtil::RecordPromptDecided(
     bool is_one_time) {
   DCHECK(!requests.empty());
 
-  PermissionRequestType request_type = PermissionRequestType::MULTIPLE;
+  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
   PermissionRequestGestureType gesture_type =
       PermissionRequestGestureType::UNKNOWN;
   if (requests.size() == 1) {
-    request_type = requests[0]->GetPermissionRequestType();
+    request_type = GetUmaValueForRequestType(requests[0]->GetRequestType());
     gesture_type = requests[0]->GetGestureType();
   }
 

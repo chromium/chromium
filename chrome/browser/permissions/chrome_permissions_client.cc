@@ -33,6 +33,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/permissions/features.h"
+#include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -192,14 +193,14 @@ void ChromePermissionsClient::GetUkmSourceId(
   }
 }
 
-permissions::PermissionRequest::IconId
-ChromePermissionsClient::GetOverrideIconId(ContentSettingsType type) {
+permissions::IconId ChromePermissionsClient::GetOverrideIconId(
+    permissions::RequestType request_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(xhwang): fix this icon, see crbug.com/446263.
-  if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
+  if (request_type == permissions::RequestType::kProtectedMediaIdentifier)
     return kProductIcon;
 #endif
-  return PermissionsClient::GetOverrideIconId(type);
+  return PermissionsClient::GetOverrideIconId(request_type);
 }
 
 std::vector<std::unique_ptr<permissions::NotificationPermissionUiSelector>>
@@ -218,12 +219,11 @@ ChromePermissionsClient::CreateNotificationPermissionUiSelectors(
 
 void ChromePermissionsClient::OnPromptResolved(
     content::BrowserContext* browser_context,
-    permissions::PermissionRequestType request_type,
+    permissions::RequestType request_type,
     permissions::PermissionAction action,
     const GURL& origin,
     base::Optional<QuietUiReason> quiet_ui_reason) {
-  if (request_type ==
-      permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS) {
+  if (request_type == permissions::RequestType::kNotifications) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
 
     AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile)

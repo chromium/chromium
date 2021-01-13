@@ -19,6 +19,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -38,36 +39,34 @@ class PermissionRequestManagerTest
   PermissionRequestManagerTest()
       : content::RenderViewHostTestHarness(),
         request1_("test1",
-                  PermissionRequestType::QUOTA,
+                  RequestType::kDiskQuota,
                   PermissionRequestGestureType::GESTURE),
         request2_("test2",
-                  PermissionRequestType::DOWNLOAD,
+                  RequestType::kMultipleDownloads,
                   PermissionRequestGestureType::NO_GESTURE),
         request_mic_("mic",
-                     PermissionRequestType::PERMISSION_MEDIASTREAM_MIC,
+                     RequestType::kMicStream,
                      PermissionRequestGestureType::NO_GESTURE),
         request_camera_("cam",
-                        PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA,
+                        RequestType::kCameraStream,
                         PermissionRequestGestureType::NO_GESTURE),
+#if !defined(OS_ANDROID)
         request_ptz_("ptz",
-                     PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM,
+                     RequestType::kCameraPanTiltZoom,
                      PermissionRequestGestureType::NO_GESTURE),
-        iframe_request_same_domain_(
-            "iframe",
-            PermissionRequestType::PERMISSION_NOTIFICATIONS,
-            GURL("http://www.google.com/some/url")),
-        iframe_request_other_domain_(
-            "iframe",
-            PermissionRequestType::PERMISSION_GEOLOCATION,
-            GURL("http://www.youtube.com")),
-        iframe_request_camera_other_domain_(
-            "iframe",
-            PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA,
-            GURL("http://www.youtube.com")),
-        iframe_request_mic_other_domain_(
-            "iframe",
-            PermissionRequestType::PERMISSION_MEDIASTREAM_MIC,
-            GURL("http://www.youtube.com")) {
+#endif
+        iframe_request_same_domain_("iframe",
+                                    RequestType::kNotifications,
+                                    GURL("http://www.google.com/some/url")),
+        iframe_request_other_domain_("iframe",
+                                     RequestType::kGeolocation,
+                                     GURL("http://www.youtube.com")),
+        iframe_request_camera_other_domain_("iframe",
+                                            RequestType::kCameraStream,
+                                            GURL("http://www.youtube.com")),
+        iframe_request_mic_other_domain_("iframe",
+                                         RequestType::kMicStream,
+                                         GURL("http://www.youtube.com")) {
     feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
                                        GetParam());
   }
@@ -133,7 +132,9 @@ class PermissionRequestManagerTest
   MockPermissionRequest request2_;
   MockPermissionRequest request_mic_;
   MockPermissionRequest request_camera_;
+#if !defined(OS_ANDROID)
   MockPermissionRequest request_ptz_;
+#endif
   MockPermissionRequest iframe_request_same_domain_;
   MockPermissionRequest iframe_request_other_domain_;
   MockPermissionRequest iframe_request_camera_other_domain_;
@@ -341,6 +342,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraGrouped) {
   ASSERT_EQ(prompt_factory_->request_count(), 1);
 }
 
+#if !defined(OS_ANDROID)
 // Only camera/ptz requests from the same origin should be grouped.
 TEST_P(PermissionRequestManagerTest, CameraPtzGrouped) {
   manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
@@ -396,6 +398,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraPtzGrouped) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_LT(prompt_factory_->request_count(), 3);
 }
+#endif  // !defined(OS_ANDROID)
 
 // Tests mix of grouped media requests and non-groupable request.
 TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
@@ -444,33 +447,6 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   Accept();
   EXPECT_TRUE(request_mic_.granted());
   EXPECT_TRUE(request_camera_.granted());
-}
-
-TEST_P(PermissionRequestManagerTest, ThreeRequestsTabSwitch) {
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_mic_);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_ptz_);
-  WaitForBubbleToBeShown();
-
-  EXPECT_TRUE(prompt_factory_->is_visible());
-  ASSERT_EQ(prompt_factory_->request_count(), 3);
-
-  MockTabSwitchAway();
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(prompt_factory_->is_visible());
-#else
-  EXPECT_FALSE(prompt_factory_->is_visible());
-#endif
-
-  MockTabSwitchBack();
-  WaitForBubbleToBeShown();
-  EXPECT_TRUE(prompt_factory_->is_visible());
-  ASSERT_EQ(prompt_factory_->request_count(), 3);
-
-  Accept();
-  EXPECT_TRUE(request_mic_.granted());
-  EXPECT_TRUE(request_camera_.granted());
-  EXPECT_TRUE(request_ptz_.granted());
 }
 
 TEST_P(PermissionRequestManagerTest, PermissionRequestWhileTabSwitchedAway) {
@@ -681,8 +657,7 @@ TEST_P(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
   Deny();
   histograms.ExpectUniqueSample(
       PermissionUmaUtil::kPermissionsPromptDenied,
-      static_cast<base::HistogramBase::Sample>(PermissionRequestType::QUOTA),
-      1);
+      static_cast<base::HistogramBase::Sample>(RequestTypeForUma::QUOTA), 1);
 }
 
 TEST_P(PermissionRequestManagerTest, UMAForTabSwitching) {
@@ -692,15 +667,13 @@ TEST_P(PermissionRequestManagerTest, UMAForTabSwitching) {
   WaitForBubbleToBeShown();
   histograms.ExpectUniqueSample(
       PermissionUmaUtil::kPermissionsPromptShown,
-      static_cast<base::HistogramBase::Sample>(PermissionRequestType::QUOTA),
-      1);
+      static_cast<base::HistogramBase::Sample>(RequestTypeForUma::QUOTA), 1);
 
   MockTabSwitchAway();
   MockTabSwitchBack();
   histograms.ExpectUniqueSample(
       PermissionUmaUtil::kPermissionsPromptShown,
-      static_cast<base::HistogramBase::Sample>(PermissionRequestType::QUOTA),
-      1);
+      static_cast<base::HistogramBase::Sample>(RequestTypeForUma::QUOTA), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -745,24 +718,22 @@ class MockNotificationPermissionUiSelector
 
 TEST_P(PermissionRequestManagerTest,
        UiSelectorNotUsedForPermissionsOtherThanNotification) {
-  for (auto* request : {&request_mic_, &request_camera_, &request_ptz_}) {
-    manager_->clear_notification_permission_ui_selector_for_testing();
-    MockNotificationPermissionUiSelector::CreateForManager(
-        manager_,
-        NotificationPermissionUiSelector::QuietUiReason::kEnabledInPrefs,
-        false /* async */);
+  manager_->clear_notification_permission_ui_selector_for_testing();
+  MockNotificationPermissionUiSelector::CreateForManager(
+      manager_,
+      NotificationPermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+      false /* async */);
 
-    manager_->AddRequest(web_contents()->GetMainFrame(), request);
-    WaitForBubbleToBeShown();
+  manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
+  WaitForBubbleToBeShown();
 
-    ASSERT_TRUE(prompt_factory_->is_visible());
-    ASSERT_TRUE(
-        prompt_factory_->RequestTypeSeen(request->GetPermissionRequestType()));
-    EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
-    Accept();
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  ASSERT_TRUE(
+      prompt_factory_->RequestTypeSeen(request_camera_.GetRequestType()));
+  EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
+  Accept();
 
-    EXPECT_TRUE(request->granted());
-  }
+  EXPECT_TRUE(request_camera_.granted());
 }
 
 TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
@@ -782,16 +753,14 @@ TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
     MockNotificationPermissionUiSelector::CreateForManager(
         manager_, test.quiet_ui_reason, test.async);
 
-    MockPermissionRequest request(
-        "foo", PermissionRequestType::PERMISSION_NOTIFICATIONS,
-        PermissionRequestGestureType::GESTURE);
+    MockPermissionRequest request("foo", RequestType::kNotifications,
+                                  PermissionRequestGestureType::GESTURE);
 
     manager_->AddRequest(web_contents()->GetMainFrame(), &request);
     WaitForBubbleToBeShown();
 
     EXPECT_TRUE(prompt_factory_->is_visible());
-    EXPECT_TRUE(
-        prompt_factory_->RequestTypeSeen(request.GetPermissionRequestType()));
+    EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request.GetRequestType()));
     EXPECT_EQ(!!test.quiet_ui_reason,
               manager_->ShouldCurrentRequestUseQuietUI());
     Accept();
@@ -806,17 +775,15 @@ TEST_P(PermissionRequestManagerTest,
   manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, QuietUiReason::kEnabledInPrefs, true);
-  MockPermissionRequest request1(
-      "request1", PermissionRequestType::PERMISSION_NOTIFICATIONS,
-      PermissionRequestGestureType::GESTURE);
+  MockPermissionRequest request1("request1", RequestType::kNotifications,
+                                 PermissionRequestGestureType::GESTURE);
   manager_->AddRequest(web_contents()->GetMainFrame(), &request1);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
 
-  MockPermissionRequest request2(
-      "request2", PermissionRequestType::PERMISSION_NOTIFICATIONS,
-      PermissionRequestGestureType::GESTURE);
+  MockPermissionRequest request2("request2", RequestType::kNotifications,
+                                 PermissionRequestGestureType::GESTURE);
   manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, NotificationPermissionUiSelector::Decision::UseNormalUi(),
@@ -881,16 +848,14 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
           test.simulate_delayed_decision[i]);
     }
 
-    MockPermissionRequest request(
-        "foo", PermissionRequestType::PERMISSION_NOTIFICATIONS,
-        PermissionRequestGestureType::GESTURE);
+    MockPermissionRequest request("foo", RequestType::kNotifications,
+                                  PermissionRequestGestureType::GESTURE);
 
     manager_->AddRequest(web_contents()->GetMainFrame(), &request);
     WaitForBubbleToBeShown();
 
     EXPECT_TRUE(prompt_factory_->is_visible());
-    EXPECT_TRUE(
-        prompt_factory_->RequestTypeSeen(request.GetPermissionRequestType()));
+    EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request.GetRequestType()));
     if (test.expected_reason.has_value()) {
       EXPECT_EQ(test.expected_reason, manager_->ReasonForUsingQuietUi());
     } else {

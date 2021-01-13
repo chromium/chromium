@@ -77,11 +77,13 @@ aggregate_vector_icons("components_vector_icons") {
     "save_original_file.icon",
     "screen_share.icon",
     "search.icon",
+    "select_window.icon",
     "sensors.icon",
     "serial_port.icon",
     "settings.icon",
     "sync.icon",
     "usb.icon",
+    "usb_security_key.icon",
     "videocam.icon",
     "videocam_off.icon",
     "videogame_asset.icon",
@@ -89,7 +91,6 @@ aggregate_vector_icons("components_vector_icons") {
     "vr_headset.icon",
     "warning.icon",
     "wifi_add.icon",
-    "window_placement.icon",
   ]
 }
 
