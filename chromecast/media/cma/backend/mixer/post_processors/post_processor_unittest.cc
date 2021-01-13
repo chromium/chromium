@@ -21,7 +21,7 @@ namespace post_processor_test {
 
 namespace {
 
-const float kEpsilon = std::numeric_limits<float>::epsilon();
+const float kEpsilon = std::numeric_limits<float>::epsilon() * 2;
 
 // Benchmark parameters.
 const float kTestDurationSec = 1.0;
