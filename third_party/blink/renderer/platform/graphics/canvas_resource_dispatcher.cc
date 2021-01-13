@@ -140,8 +140,6 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
 void CanvasResourceDispatcher::PostImageToPlaceholder(
     scoped_refptr<CanvasResource> canvas_resource,
     viz::ResourceId resource_id) {
-  scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner =
-      Thread::Current()->GetTaskRunner();
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
   canvas_resource->Transfer();
