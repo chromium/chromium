@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {BreadCrumb} from './breadcrumb.m.js';
 
 /** @const {boolean} */
 window.UNIT_TEST = true;
@@ -11,7 +14,7 @@ window.UNIT_TEST = true;
  * Creates new <bread-drumb> element for each test. Asserts it has no initial
  * path using the element.path getter.
  */
-function setUp() {
+export function setUp() {
   document.body.innerHTML = '<bread-crumb></bread-crumb>';
   const path = assert(document.querySelector('bread-crumb')).path;
   assertEquals('', path);
@@ -19,13 +22,13 @@ function setUp() {
 
 /**
  * Returns the <bread-crumb> element.
- * @return {!BreadCrumb|!Element}
+ * @return {!BreadCrumb}
  */
 function getBreadCrumb() {
   const element = assert(document.querySelector('bread-crumb'));
-  assertNotEqual('none', window.getComputedStyle(element).display);
+  assertNotEquals('none', window.getComputedStyle(element).display);
   assertFalse(element.hasAttribute('hidden'));
-  return element;
+  return /** @type {!BreadCrumb} */ (element);
 }
 
 /**
@@ -66,7 +69,7 @@ function getBreadCrumbEliderButton() {
   const elider = 'button[elider]';
   const button = getBreadCrumb().shadowRoot.querySelectorAll(elider);
   assert(button) && assert(button.length === 1, 'invalid elider button');
-  return button[0];
+  return /** @type {!HTMLButtonElement} */ (button[0]);
 }
 
 /**
@@ -189,7 +192,7 @@ function getBreadCrumbButtonState() {
 /**
  * Tests rendering an empty path.
  */
-function testBreadcrumbEmptyPath() {
+export function testBreadcrumbEmptyPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -211,7 +214,7 @@ function testBreadcrumbEmptyPath() {
 /**
  * Tests rendering a one element path.
  */
-function testBreadcrumbOnePartPath() {
+export function testBreadcrumbOnePartPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -233,7 +236,7 @@ function testBreadcrumbOnePartPath() {
 /**
  * Tests rendering a two element path.
  */
-function testBreadcrumbTwoPartPath() {
+export function testBreadcrumbTwoPartPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -255,7 +258,7 @@ function testBreadcrumbTwoPartPath() {
 /**
  * Tests rendering a three element path.
  */
-function testBreadcrumbThreePartPath() {
+export function testBreadcrumbThreePartPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -277,7 +280,7 @@ function testBreadcrumbThreePartPath() {
 /**
  * Tests rendering a four element path.
  */
-function testBreadcrumbFourPartPath() {
+export function testBreadcrumbFourPartPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -303,7 +306,7 @@ function testBreadcrumbFourPartPath() {
  * The drop-down menu button should contain the elided path parts and can have
  * display, but are invisible because the elider drop-down menu is closed.
  */
-function testBreadcrumbMoreThanFourElementPathsElide() {
+export function testBreadcrumbMoreThanFourElementPathsElide() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -337,7 +340,7 @@ function testBreadcrumbMoreThanFourElementPathsElide() {
  * The drop-down menu button should contain the elided path parts and can have
  * display, but are invisible because the elider drop-down menu is closed.
  */
-function testBreadcrumbRendersEscapedPathParts() {
+export function testBreadcrumbRendersEscapedPathParts() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -367,7 +370,7 @@ function testBreadcrumbRendersEscapedPathParts() {
  * Tests rendering a path of more than four parts. The elider button should be
  * visible and clicking it should 'open' and 'close' its drop-down menu.
  */
-function testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu() {
+export function testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -419,7 +422,7 @@ function testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu() {
  * Tests that clicking on the main buttons emits a signal that indicates which
  * part of the breadcrumb path was clicked.
  */
-async function testBreadcrumbMainButtonClicksEmitNumberSignal(done) {
+export async function testBreadcrumbMainButtonClicksEmitNumberSignal(done) {
   const element = getBreadCrumb();
 
   // Set path.
@@ -475,7 +478,7 @@ async function testBreadcrumbMainButtonClicksEmitNumberSignal(done) {
  * Tests that clicking on the menu buttons emits a signal that indicates which
  * part of the breadcrumb path was clicked.
  */
-async function testBreadcrumbMenuButtonClicksEmitNumberSignal(done) {
+export async function testBreadcrumbMenuButtonClicksEmitNumberSignal(done) {
   const element = getBreadCrumb();
 
   // Set path.
@@ -533,7 +536,7 @@ async function testBreadcrumbMenuButtonClicksEmitNumberSignal(done) {
  * Tests that setting the path emits a signal when the rendering of the new
  * path begins, and when it ends.
  */
-async function testBreadcrumbSetPathEmitsRenderSignals(done) {
+export async function testBreadcrumbSetPathEmitsRenderSignals(done) {
   const element = getBreadCrumb();
 
   // Set the BreadCrumb signals callback.
@@ -559,7 +562,7 @@ async function testBreadcrumbSetPathEmitsRenderSignals(done) {
  * Tests that opening the elider button drop-down menu emits a render signal
  * to indicate that the elided menu items were rendered.
  */
-async function testBreadcrumbEliderButtonOpenEmitsRenderSignal(done) {
+export async function testBreadcrumbEliderButtonOpenEmitsRenderSignal(done) {
   const element = getBreadCrumb();
 
   // Set path.
@@ -591,7 +594,7 @@ async function testBreadcrumbEliderButtonOpenEmitsRenderSignal(done) {
 /**
  * Tests that setting the path closes the the drop-down menu.
  */
-function testBreadcrumbSetPathClosesEliderButtonDropDownMenu() {
+export function testBreadcrumbSetPathClosesEliderButtonDropDownMenu() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -640,7 +643,7 @@ function testBreadcrumbSetPathClosesEliderButtonDropDownMenu() {
 /**
  * Tests that setting the path updates the <bread-crumb path> attribute.
  */
-function testBreadcrumbSetPathChangesElementPath() {
+export function testBreadcrumbSetPathChangesElementPath() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -656,7 +659,7 @@ function testBreadcrumbSetPathChangesElementPath() {
  * Tests that opening and closing the elider button drop-down menu adds and
  * removes <bread-crumb checked> attribute.
  */
-function testBreadcrumbEliderButtonOpenCloseChangesElementChecked() {
+export function testBreadcrumbEliderButtonOpenCloseChangesElementChecked() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -685,7 +688,7 @@ function testBreadcrumbEliderButtonOpenCloseChangesElementChecked() {
  * Tests that opening and closing the elider button drop-down menu adds and
  * removes global <html> element state.
  */
-function testBreadcrumbEliderButtonOpenCloseChangesGlobalState() {
+export function testBreadcrumbEliderButtonOpenCloseChangesGlobalState() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -719,7 +722,7 @@ function testBreadcrumbEliderButtonOpenCloseChangesGlobalState() {
  * Tests that wide text path components are rendered elided with ellipsis ...
  * an opportunity for adding a tooltip.
  */
-function testBreadcrumbPartPartsEllipsisElide() {
+export function testBreadcrumbPartPartsEllipsisElide() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -756,7 +759,7 @@ function testBreadcrumbPartPartsEllipsisElide() {
  * Tests that wide text path components in the drop-down menu are rendered
  * elided with ellipsis ... an opportunity for adding a tooltip.
  */
-function testBreadcrumbDropDownMenuPathPartsEllipsisElide() {
+export function testBreadcrumbDropDownMenuPathPartsEllipsisElide() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -796,7 +799,7 @@ function testBreadcrumbDropDownMenuPathPartsEllipsisElide() {
  * Tests that breadcrumb getToolTipButtons() service returns all buttons that
  * have a [has-tooltip] attribute.
  */
-function testBreadcrumbButtonHasToolTipAttribute() {
+export function testBreadcrumbButtonHasToolTipAttribute() {
   const element = getBreadCrumb();
 
   // Set path.
@@ -848,6 +851,6 @@ function testBreadcrumbButtonHasToolTipAttribute() {
   element.path = elider.getAttribute('aria-label');
   const ellipsis = element.getEllipsisButtons();
   assertEquals(getVisibleBreadCrumbMainButtons()[0], ellipsis[0]);
-  assertNotEqual(elider, ellipsis[0]);
+  assertNotEquals(elider, ellipsis[0]);
   assertEquals(1, ellipsis.length);
 }

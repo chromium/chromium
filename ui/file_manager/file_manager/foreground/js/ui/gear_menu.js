@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class GearMenu {
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {str, util, strf} from '../../../common/js/util.m.js';
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+/* #export */ class GearMenu {
   /**
    * @param {!HTMLElement} element
    */

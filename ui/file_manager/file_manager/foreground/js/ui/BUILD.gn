@@ -17,16 +17,16 @@ group("closure_compile") {
     ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
-    ":js_test_gen_html_type_check_auto",
   ]
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
+  is_polymer3 = true
   deps = [
     ":a11y_announce.m",
     ":action_model_ui.m",
     ":actions_submenu.m",
+    ":breadcrumb.m",
     ":combobutton.m",
     ":commandbutton.m",
     ":default_task_dialog.m",
@@ -43,6 +43,9 @@ js_type_check("closure_compile_jsmodules") {
     ":files_alert_dialog.m",
     ":files_confirm_dialog.m",
     ":files_menu.m",
+    ":gear_menu.m",
+    ":import_crostini_image_dialog.m",
+    ":install_linux_package_dialog.m",
     ":list_container.m",
     ":multi_menu.m",
     ":multi_menu_button.m",
@@ -201,11 +204,19 @@ js_library("breadcrumb") {
   deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu" ]
 }
 
-js_unittest("breadcrumb_unittest") {
+js_library("breadcrumb.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/breadcrumb.m.js" ]
+
+  deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("breadcrumb_unittest.m") {
   deps = [
-    ":breadcrumb",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":breadcrumb.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -721,6 +732,18 @@ js_library("gear_menu") {
   deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
+js_library("gear_menu.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/gear_menu.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("install_linux_package_dialog") {
   deps = [
     ":file_manager_dialog_base",
@@ -728,11 +751,23 @@ js_library("install_linux_package_dialog") {
   ]
 }
 
-js_unittest("install_linux_package_dialog_unittest") {
+js_library("install_linux_package_dialog.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/install_linux_package_dialog.m.js" ]
   deps = [
-    ":install_linux_package_dialog",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":file_manager_dialog_base.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("install_linux_package_dialog_unittest.m") {
+  deps = [
+    ":install_linux_package_dialog.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -742,6 +777,16 @@ js_library("import_crostini_image_dialog") {
     "//ui/webui/resources/js/cr:ui",
     "//ui/webui/resources/js/cr/ui:dialogs",
   ]
+}
+
+js_library("import_crostini_image_dialog.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/import_crostini_image_dialog.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("list_container") {
@@ -946,15 +991,17 @@ js_library("suggest_apps_dialog.m") {
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":actions_submenu_unittest.m",
+    ":breadcrumb_unittest.m",
     ":directory_tree_unittest.m",
     ":file_list_selection_model_unittest.m",
     ":file_manager_dialog_base_unittest.m",
     ":file_table_list_unittest.m",
     ":file_table_unittest.m",
     ":file_tap_handler_unittest.m",
+    ":install_linux_package_dialog_unittest.m",
     ":multi_menu_unittest.m",
   ]
-  js_module = true
+  is_polymer3 = true
 
   closure_flags =
       strict_error_checking_closure_args + [
@@ -964,13 +1011,6 @@ js_test_gen_html("js_test_gen_html_modules") {
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
         "hide_warnings_for=third_party/",
       ]
-}
-
-js_test_gen_html("js_test_gen_html") {
-  deps = [
-    ":breadcrumb_unittest",
-    ":install_linux_package_dialog_unittest",
-  ]
 }
 
 js_modulizer("modulize") {
@@ -999,6 +1039,10 @@ js_modulizer("modulize") {
     "progress_center_panel.js",
     "suggest_apps_dialog.js",
     "actions_submenu.js",
+    "breadcrumb.js",
+    "gear_menu.js",
+    "import_crostini_image_dialog.js",
+    "install_linux_package_dialog.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

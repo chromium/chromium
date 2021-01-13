@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsSubmenuTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Breadcrumb) {
-  RunTestURL("foreground/js/ui/breadcrumb_unittest_gen.html");
+  RunTestURL("foreground/js/ui/breadcrumb_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
@@ -169,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportHistoryTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, InstallLinuxPackageDialogTest) {
-  RunTestURL("foreground/js/ui/install_linux_package_dialog_unittest_gen.html");
+  RunTestURL(
+      "foreground/js/ui/install_linux_package_dialog_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ListThumbnailLoader) {

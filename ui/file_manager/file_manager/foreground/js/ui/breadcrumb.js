@@ -180,7 +180,7 @@ const breadCrumbTemplate = `
 /**
  * Class BreadCrumb.
  */
-class BreadCrumb extends HTMLElement {
+/* #export */ class BreadCrumb extends HTMLElement {
   constructor() {
     /**
      * Create element content.
@@ -449,7 +449,8 @@ class BreadCrumb extends HTMLElement {
     }
 
     // Show drop-down below the elider button.
-    const menu = this.shadowRoot.querySelector('cr-action-menu');
+    const menu = /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'));
     const top = elider.offsetTop + elider.offsetHeight + 8;
     !window.UNIT_TEST && menu.showAt(elider, {top: top});
 

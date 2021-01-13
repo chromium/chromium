@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testInstallButtonHiddenUntilInfoReady() {
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
+
+export function testInstallButtonHiddenUntilInfoReady() {
   // Polyfill chrome.app.window.current().
   /** @suppress {checkTypes,const} */
   chrome.app = {window: {current: () => null}};
@@ -20,7 +26,7 @@ function testInstallButtonHiddenUntilInfoReady() {
       assertInstanceof(document.createElement('div'), HTMLElement);
 
   const info = {name: 'n', version: 'v', info: 'i', summary: 's'};
-  const dialog = new cr.filebrowser.InstallLinuxPackageDialog(container);
+  const dialog = new InstallLinuxPackageDialog(container);
 
   // Show dialog and very that install button is disabled.
   dialog.showInstallLinuxPackageDialog(/** @type {!Entry} */ ({}));

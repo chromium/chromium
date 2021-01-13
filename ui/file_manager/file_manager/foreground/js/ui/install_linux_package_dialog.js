@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {str} from '../../../common/js/util.m.js';
+// #import {FileManagerDialogBase} from './file_manager_dialog_base.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * InstallLinuxPackageDialog is used as the handler for .deb files.
  */
@@ -9,7 +13,7 @@ cr.define('cr.filebrowser', () => {
   /**
    * Creates dialog in DOM tree.
    */
-  class InstallLinuxPackageDialog extends FileManagerDialogBase {
+  /* #export */ class InstallLinuxPackageDialog extends FileManagerDialogBase {
     /**
      * @param {HTMLElement} parentNode Node to be parent for this dialog.
      */
@@ -196,5 +200,6 @@ cr.define('cr.filebrowser', () => {
     }
   }
 
+  // #cr_define_end
   return {InstallLinuxPackageDialog: InstallLinuxPackageDialog};
 });
