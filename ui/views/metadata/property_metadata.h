@@ -14,6 +14,7 @@
 #include "ui/views/metadata/metadata_cache.h"
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -32,7 +33,7 @@ class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
   using MemberMetaDataBase::MemberMetaDataBase;
   ~ClassPropertyReadOnlyMetaData() override = default;
 
-  base::string16 GetValueAsString(void* obj) const override {
+  base::string16 GetValueAsString(View* obj) const override {
     if (!kIsSerializable)
       return base::string16();
     return TypeConverter<TValue>::ToString((static_cast<TClass*>(obj)->*Get)());
@@ -69,7 +70,7 @@ class ClassPropertyMetaData
       ClassPropertyReadOnlyMetaData;
   ~ClassPropertyMetaData() override = default;
 
-  void SetValueAsString(void* obj, const base::string16& new_value) override {
+  void SetValueAsString(View* obj, const base::string16& new_value) override {
     if (!kIsSerializable)
       return;
     if (base::Optional<TValue> result =

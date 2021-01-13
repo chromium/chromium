@@ -14,6 +14,9 @@
 #include "ui/views/views_export.h"
 
 namespace views {
+
+class View;
+
 namespace metadata {
 
 enum class PropertyFlags : uint32_t {
@@ -151,12 +154,12 @@ class VIEWS_EXPORT MemberMetaDataBase {
   // Access the value of this member and return it as a string.
   // |obj| is the instance on which to obtain the value of the property this
   // metadata represents.
-  virtual base::string16 GetValueAsString(void* obj) const = 0;
+  virtual base::string16 GetValueAsString(View* obj) const = 0;
 
   // Set the value of this member through a string on a specified object.
   // |obj| is the instance on which to set the value of the property this
   // metadata represents.
-  virtual void SetValueAsString(void* obj, const base::string16& new_value);
+  virtual void SetValueAsString(View* obj, const base::string16& new_value);
 
   // Return various information flags about the property.
   virtual PropertyFlags GetPropertyFlags() const = 0;
