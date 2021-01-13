@@ -380,7 +380,7 @@ class Function(object):
         raise ValueError('Only a single parameter can be specific on '
                          'returns_async: %s.%s' % (namespace.name, name))
       self.returns_async = ReturnsAsync(self, returns_async, namespace,
-                                        Origin(from_client=True))
+                                        Origin(from_client=True), True)
       # TODO(https://crbug.com/1143032): Returning a synchronous value is
       # incompatible with returning a promise. There are APIs that specify this,
       # though. Some appear to be incorrectly specified (i.e., don't return a
@@ -406,8 +406,12 @@ class Function(object):
         self.params.append(GeneratePropertyFromParam(param))
 
     if callback_param:
+      # Even though we are creating a ReturnsAsync type here, this does not
+      # support being returned via a Promise, as this is implied by
+      # "returns_async" being found in the JSON.
+      # This is just a holder type for the callback.
       self.returns_async = ReturnsAsync(self, callback_param, namespace,
-                                        Origin(from_client=True))
+                                        Origin(from_client=True), False)
 
     self.returns = None
     if 'returns' in json:
@@ -432,14 +436,17 @@ class ReturnsAsync(object):
   - |params| a list of parameters supplied to the function in the case of using
              callbacks, or the list of properties on the returned object in the
              case of using promises
+  - |can_return_promise| whether this can be treated as a Promise as well as
+                         callback
   """
-  def __init__(self, parent, json, namespace, origin):
+  def __init__(self, parent, json, namespace, origin, can_return_promise):
     self.name = json.get('name')
     self.simple_name = _StripNamespace(self.name, namespace)
     self.description = json.get('description')
     self.optional = json.get('optional', False)
     self.nocompile = json.get('nocompile')
     self.parent = parent
+    self.can_return_promise = can_return_promise
 
     if json.get('returns') is not None:
       raise ValueError('Cannot return a value from an asynchronous return: '

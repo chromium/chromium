@@ -40,6 +40,10 @@ class ModelTest(unittest.TestCase):
         'path/to/idl_namespace_non_specific_platforms.idl')
     self.idl_namespace_non_specific_platforms = self.model.namespaces.get(
         'idl_namespace_non_specific_platforms')
+    self.returns_async_json = CachedLoad('test/returns_async.json')
+    self.model.AddNamespace(self.returns_async_json[0],
+        'path/to/returns_async.json')
+    self.returns_async = self.model.namespaces.get('returns_async')
     self.nodoc_json = CachedLoad('test/namespace_nodoc.json')
     self.model.AddNamespace(self.nodoc_json[0],
         'path/to/namespace_nodoc.json')
@@ -50,7 +54,7 @@ class ModelTest(unittest.TestCase):
     self.fakeapi = self.model.namespaces.get('fakeapi')
 
   def testNamespaces(self):
-    self.assertEquals(8, len(self.model.namespaces))
+    self.assertEquals(9, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
@@ -105,6 +109,12 @@ class ModelTest(unittest.TestCase):
     self.assertEquals(
         'True if the extension has the specified permissions.', self.
         permissions.functions['contains'].returns_async.params[0].description)
+
+  def testAsyncPromise(self):
+    returnsFunction = self.returns_async.functions['returnsObject']
+    self.assertTrue(returnsFunction.returns_async.can_return_promise)
+    callbackFunction = self.returns_async.functions['callbackObject']
+    self.assertFalse(callbackFunction.returns_async.can_return_promise)
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]
