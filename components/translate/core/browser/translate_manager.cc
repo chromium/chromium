@@ -312,10 +312,10 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
 
 void TranslateManager::InitiateManualTranslation(bool auto_translate,
                                                  bool triggered_from_menu) {
-  // If a translation has already been triggered, do nothing.
-  if (language_state_.IsPageTranslated() ||
-      language_state_.translation_pending())
+  // If a translation is in progress, do nothing.
+  if (language_state_.translation_pending()) {
     return;
+  }
 
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
@@ -326,20 +326,19 @@ void TranslateManager::InitiateManualTranslation(bool auto_translate,
 
   language_state_.SetTranslateEnabled(true);
 
+  const TranslateStep step = language_state_.IsPageTranslated()
+                                 ? TRANSLATE_STEP_AFTER_TRANSLATE
+                                 : TRANSLATE_STEP_BEFORE_TRANSLATE;
   // Translate the page if it has not been translated and manual translate
   // should trigger translation automatically. Otherwise, only show the infobar.
-  if (auto_translate) {
+  if (auto_translate && !language_state_.IsPageTranslated()) {
     TranslatePage(source_code, target_lang, triggered_from_menu);
     return;
   }
 
-  const translate::TranslateStep step =
-      language_state_.IsPageTranslated()
-          ? translate::TRANSLATE_STEP_AFTER_TRANSLATE
-          : translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
   translate_client_->ShowTranslateUI(step, source_code, target_lang,
                                      TranslateErrors::NONE,
-                                     true /* triggered_by_menu */);
+                                     triggered_from_menu);
 }
 
 void TranslateManager::TranslatePage(const std::string& original_source_lang,

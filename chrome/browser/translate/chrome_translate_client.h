@@ -136,7 +136,8 @@ class ChromeTranslateClient
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type);
+      translate::TranslateErrors::Type error_type,
+      bool is_user_gesture);
 #endif
 
   std::unique_ptr<translate::ContentTranslateDriver> translate_driver_;

@@ -258,8 +258,8 @@ bool ChromeTranslateClient::ShowTranslateUI(
     return false;
   }
 
-  ShowTranslateBubbleResult result =
-      ShowBubble(step, source_language, target_language, error_type);
+  ShowTranslateBubbleResult result = ShowBubble(
+      step, source_language, target_language, error_type, triggered_from_menu);
   if (result != ShowTranslateBubbleResult::SUCCESS &&
       step == translate::TRANSLATE_STEP_BEFORE_TRANSLATE) {
     translate_manager_->RecordTranslateEvent(
@@ -390,7 +390,8 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors::Type error_type,
+    bool is_user_gesture) {
   DCHECK(translate_manager_);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
 
@@ -399,7 +400,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
   if (!browser) {
     return TranslateBubbleFactory::Show(NULL, web_contents(), step,
                                         source_language, target_language,
-                                        error_type);
+                                        error_type, is_user_gesture);
   }
 
   if (web_contents() != browser->tab_strip_model()->GetActiveWebContents())
@@ -414,15 +415,15 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE;
 
   // During auto-translating, the bubble should not be shown.
-  if (step == translate::TRANSLATE_STEP_TRANSLATING ||
-      step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) {
+  if (!is_user_gesture && (step == translate::TRANSLATE_STEP_TRANSLATING ||
+                           step == translate::TRANSLATE_STEP_AFTER_TRANSLATE)) {
     if (GetLanguageState().InTranslateNavigation())
       return ShowTranslateBubbleResult::SUCCESS;
   }
 
   return TranslateBubbleFactory::Show(browser->window(), web_contents(), step,
                                       source_language, target_language,
-                                      error_type);
+                                      error_type, is_user_gesture);
 }
 #endif
 

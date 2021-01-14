@@ -1195,9 +1195,7 @@ TEST_F(TranslateManagerTest, InitiateManualTranslation) {
   TranslateAcceptLanguages accept_langugages(&prefs_, accept_languages_prefs);
   ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_langugages));
-  EXPECT_CALL(mock_translate_client_,
-              ShowTranslateUI(_, _, _, _, true /* triggered_from_menu */))
-      .WillOnce(Return(true));
+  EXPECT_CALL(mock_translate_client_, ShowTranslateUI).WillOnce(Return(true));
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
