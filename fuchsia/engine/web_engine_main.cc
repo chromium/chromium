@@ -9,14 +9,16 @@
 #include "content/public/common/content_switches.h"
 #include "fuchsia/engine/context_provider_impl.h"
 #include "fuchsia/engine/context_provider_main.h"
+#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/web_engine_main_delegate.h"
+#include "google_apis/google_api_keys.h"
 
 int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
+      command_line->GetSwitchValueASCII(switches::kProcessType);
   fidl::InterfaceRequest<fuchsia::web::Context> context;
 
   if (process_type.empty()) {
@@ -40,6 +42,11 @@ int main(int argc, const char** argv) {
   // args here.
   params.argc = 0;
   params.argv = nullptr;
+
+  if (command_line->HasSwitch(switches::kGoogleApiKey)) {
+    google_apis::SetAPIKey(
+        command_line->GetSwitchValueASCII(switches::kGoogleApiKey));
+  }
 
   return content::ContentMain(params);
 }
