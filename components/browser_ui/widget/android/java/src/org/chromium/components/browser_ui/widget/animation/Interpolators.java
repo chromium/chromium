@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.animation;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
@@ -25,4 +26,5 @@ public class Interpolators {
     public static final LinearInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
     public static final LinearOutSlowInInterpolator LINEAR_OUT_SLOW_IN_INTERPOLATOR =
             new LinearOutSlowInInterpolator();
+    public static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator();
 }

@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -59,17 +60,18 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
         doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
-        final MessageBannerView view = Mockito.mock(MessageBannerView.class);
+        final MessageBannerView view = new MessageBannerView(getActivity(), null);
+        view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
         message.show();
         Assert.assertEquals(
                 "Message container should have one message view after the message is shown.", 1,
                 container.getChildCount());
-        final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        doNothing().when(messageBanner).hide(runnableCaptor.capture());
         message.hide(true, () -> {});
         // Let's pretend the animation ended, and the mediator called the callback as a result.
+        final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(messageBanner).hide(runnableCaptor.capture());
         runnableCaptor.getValue().run();
         Assert.assertEquals(
                 "Message container should not have any view after the message is hidden.", 0,
@@ -90,7 +92,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
-        final MessageBannerView view1 = Mockito.mock(MessageBannerView.class);
+        final MessageBannerView view1 = new MessageBannerView(getActivity(), null);
+        view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
         SingleActionMessage message2 =
@@ -98,7 +101,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));
-        final MessageBannerView view2 = Mockito.mock(MessageBannerView.class);
+        final MessageBannerView view2 = new MessageBannerView(getActivity(), null);
+        view2.setId(R.id.message_banner);
         message2.setMessageBannerForTesting(messageBanner2);
         message2.setViewForTesting(view2);
         message1.show();

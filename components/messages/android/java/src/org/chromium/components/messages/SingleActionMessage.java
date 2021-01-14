@@ -74,7 +74,7 @@ public class SingleActionMessage implements MessageStateHandler {
         // Wait until the message and the container are measured before showing the message. This
         // is required in case the animation set-up requires the height of the container, e.g.
         // showing messages without the top controls visible.
-        mContainer.runAfterInitialLayout(showRunnable);
+        mContainer.runAfterInitialMessageLayout(showRunnable);
     }
 
     /**

@@ -50,17 +50,19 @@ public class MessageContainer extends FrameLayout {
     }
 
     /**
-     * Runs a {@link Runnable} after the initial layout. If the view is already laid out, the
-     * {@link Runnable} will be called immediately.
+     * Runs a {@link Runnable} after the message's initial layout. If the view is already laid out,
+     * the {@link Runnable} will be called immediately.
      * @param runnable The {@link Runnable}.
      */
-    void runAfterInitialLayout(Runnable runnable) {
-        if (getHeight() > 0) {
+    void runAfterInitialMessageLayout(Runnable runnable) {
+        final View message = findViewById(R.id.message_banner);
+        assert message != null;
+        if (message.getHeight() > 0) {
             runnable.run();
             return;
         }
 
-        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+        message.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {

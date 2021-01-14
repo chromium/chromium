@@ -42,6 +42,7 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
 
     // Following properties should only be accessed by the message banner component.
+    static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
     static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
@@ -53,15 +54,15 @@ public class MessageBannerProperties {
 
     // TODO(pavely): There is no need to maintain two lists of property keys. Remove one and clean
     // up references.
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
-                    SECONDARY_ACTION_TEXT, SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA,
-                    ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
+            PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, ICON_RESOURCE_ID,
+            SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_ACTION_TEXT,
+            SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_X, TRANSLATION_Y, ALPHA,
+            ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
 
     public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
                     DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
-                    SECONDARY_ACTION_TEXT, ON_DISMISSED, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE,
-                    ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
+                    SECONDARY_ACTION_TEXT, ON_DISMISSED, TRANSLATION_X, TRANSLATION_Y, ALPHA,
+                    ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
 }

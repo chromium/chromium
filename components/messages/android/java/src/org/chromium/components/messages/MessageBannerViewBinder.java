@@ -17,6 +17,7 @@ import static org.chromium.components.messages.MessageBannerProperties.SECONDARY
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
+import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 
 import android.annotation.SuppressLint;
@@ -68,6 +69,8 @@ public class MessageBannerViewBinder {
             }
         } else if (propertyKey == ALPHA) {
             view.setAlpha(model.get(ALPHA));
+        } else if (propertyKey == TRANSLATION_X) {
+            view.setTranslationX(model.get(TRANSLATION_X));
         } else if (propertyKey == TRANSLATION_Y) {
             view.setTranslationY(model.get(TRANSLATION_Y));
         }
