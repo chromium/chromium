@@ -5496,32 +5496,6 @@
             ]
         }
     ],
-    "ProactivelyThrottleLowPriorityRequests": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20190722",
-                    "params": {
-                        "http_rtt_multiplier_for_proactive_throttling_2G": "1.0",
-                        "http_rtt_multiplier_for_proactive_throttling_3G": "1.0",
-                        "http_rtt_multiplier_for_proactive_throttling_Slow-2G": "1.0",
-                        "queued_requests_dispatch_periodicity_ms": "5"
-                    },
-                    "enable_features": [
-                        "ProactivelyThrottleLowPriorityRequests"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProbabilisticCryptidRenderer": [
         {
             "platforms": [
