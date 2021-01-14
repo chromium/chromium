@@ -155,10 +155,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Bento is enabled.
   void UpdateBentoDeskButtonsVisibility();
 
-  // Translates the background view and positions windows in overview while
-  // switching between zero state desks bar and expanded desks bar.
-  void SetExpanded(bool expanded);
-
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
   views::View* background_view_;

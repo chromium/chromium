@@ -505,7 +505,6 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   auto partition_iter = mini_views_.erase(iter);
 
   UpdateMinimumWidthToFitContents();
-  overview_grid_->OnDesksChanged();
   const bool is_bento_enabled = features::IsBentoEnabled();
   if (is_bento_enabled)
     expanded_state_new_desk_button_->UpdateButtonState();
@@ -517,12 +516,15 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
 
   // Switch to zero state if there is a single desk after removing.
   if (is_bento_enabled && mini_views_.size() == 1) {
-    scroll_view_contents_->RemoveChildView(removed_mini_view);
-    scroll_view_contents_->RemoveChildView(mini_views_[0]);
+    std::vector<DeskMiniView*> removed_mini_views;
+    removed_mini_views.push_back(removed_mini_view);
+    removed_mini_views.push_back(mini_views_[0]);
     mini_views_.clear();
-    SetExpanded(false);
+    // Keep current layout until the animation is completed.
+    PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
     return;
   }
+  overview_grid_->OnDesksChanged();
   PerformRemoveDeskMiniViewAnimation(
       removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
@@ -549,7 +551,10 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   const auto& desks = DesksController::Get()->desks();
   if (is_bento_enabled) {
     if (IsZeroState() && !expanding_bar_view) {
-      SetExpanded(false);
+      UpdateBentoDeskButtonsVisibility();
+      gfx::Transform transform;
+      transform.Translate(0, -(height() - kZeroStateBarHeight));
+      background_view_->layer()->SetTransform(transform);
       return;
     }
   } else if (desks.size() < 2) {
@@ -602,9 +607,9 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   UpdateMinimumWidthToFitContents();
   overview_grid_->OnDesksChanged();
 
-  // TODO(mimch): Add the expanding animation.
   if (expanding_bar_view) {
-    SetExpanded(true);
+    UpdateBentoDeskButtonsVisibility();
+    PerformZeroStateToExpandedStateMiniViewAnimation(this);
     return;
   }
 
@@ -661,18 +666,6 @@ void DesksBarView::UpdateBentoDeskButtonsVisibility() {
   zero_state_default_desk_button_->SetVisible(is_zero_state);
   zero_state_new_desk_button_->SetVisible(is_zero_state);
   expanded_state_new_desk_button_->SetVisible(!is_zero_state);
-}
-
-void DesksBarView::SetExpanded(bool expanded) {
-  DCHECK(features::IsBentoEnabled());
-
-  UpdateBentoDeskButtonsVisibility();
-  gfx::Transform transform;
-  if (!expanded)
-    transform.Translate(0, -(height() - kZeroStateBarHeight));
-
-  background_view_->layer()->SetTransform(transform);
-  overview_grid_->PositionWindows(/*animate=*/true, /*ignored_items=*/{});
 }
 
 }  // namespace ash

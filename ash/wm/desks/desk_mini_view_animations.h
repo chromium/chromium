@@ -54,6 +54,29 @@ void PerformRemoveDeskMiniViewAnimation(
     ExpandedStateNewDeskButton* expanded_state_new_desk_button,
     int shift_x);
 
+// Performs the animation of switching from zero state desks bar to expanded
+// state desks bar. It scales up and fades in the current mini views and the
+// ExpandedStateNewDeskButton. Also animates the bar's background view from the
+// zero state bar's height to the expanded bar's height.
+void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
+
+// Performs the animation of switching from expanded state desks bar to zero
+// state desks bar. This happens when a desk is removed such that a single desk
+// is remaining. It scales down and fades out the |removed_mini_views| and the
+// ExpandedStateNewDeskButton. |removed_mini_views| will be removed from the
+// views hierarchy. But the ExpandedStateNewDeskButton will be kept and set to
+// invisible. It will also animate the bar's background view from the expanded
+// bar's height to zero state bar's height.
+//
+// * Notes:
+// - It assumes the background view, |removed_mini_views| and the
+//   ExpandedStateNewDeskButton are still laid out at their previous positions
+//   before the bar state transition.
+// - Layout will be done once the animation is completed.
+void PerformExpandedStateToZeroStateMiniViewAnimation(
+    DesksBarView* bar_view,
+    std::vector<DeskMiniView*> removed_mini_views);
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESK_MINI_VIEW_ANIMATIONS_H_
