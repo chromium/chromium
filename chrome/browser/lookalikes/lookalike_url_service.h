@@ -17,7 +17,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/url_formatter/url_formatter.h"
 
 class Profile;
 
@@ -54,18 +53,17 @@ class LookalikeUrlService : public KeyedService {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  void UpdateEngagedSitesInBackground(
-      scoped_refptr<HostContentSettingsMap> map);
+  void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
   Profile* profile_;
   base::Clock* clock_;
   base::Time last_engagement_fetch_time_;
-  std::vector<DomainInfo> engaged_sites_;
+  std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Indicates that an update to the engaged sites list has been queued. Serves
   // to prevent enqueuing excessive updates.
-  bool update_in_progress_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  bool update_in_progress_ = false;
+  std::vector<EngagedSitesCallback> pending_update_complete_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

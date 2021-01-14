@@ -30,7 +30,8 @@
 
 namespace {
 
-constexpr uint32_t kEngagedSiteUpdateIntervalInSeconds = 60;
+constexpr base::TimeDelta kEngagedSiteUpdateInterval =
+    base::TimeDelta::FromSeconds(60);
 
 class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -70,76 +71,15 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(LookalikeUrlServiceFactory);
 };
 
-}  // namespace
-
-LookalikeUrlService::LookalikeUrlService(Profile* profile)
-    : profile_(profile),
-      clock_(base::DefaultClock::GetInstance()),
-      update_in_progress_(false) {}
-
-LookalikeUrlService::~LookalikeUrlService() {}
-
 // static
-LookalikeUrlService* LookalikeUrlService::Get(Profile* profile) {
-  return LookalikeUrlServiceFactory::GetForProfile(profile);
-}
-
-bool LookalikeUrlService::EngagedSitesNeedUpdating() const {
-  if (!last_engagement_fetch_time_.is_null()) {
-    const base::TimeDelta elapsed = clock_->Now() - last_engagement_fetch_time_;
-    return (elapsed >=
-            base::TimeDelta::FromSeconds(kEngagedSiteUpdateIntervalInSeconds));
-  }
-  return true;
-}
-
-void LookalikeUrlService::ForceUpdateEngagedSites(
-    EngagedSitesCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Queue an update if necessary.
-  if (!update_in_progress_) {
-    update_in_progress_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LookalikeUrlService::UpdateEngagedSitesInBackground,
-            weak_factory_.GetWeakPtr(),
-            base::WrapRefCounted(
-                HostContentSettingsMapFactory::GetForProfile(profile_))));
-  }
-
-  // Post the callback to the same sequenced task runner, which will run it
-  // after the update is complete.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::cref(engaged_sites_)));
-}
-
-const std::vector<DomainInfo> LookalikeUrlService::GetLatestEngagedSites()
-    const {
-  return engaged_sites_;
-}
-
-void LookalikeUrlService::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
-}
-
-void LookalikeUrlService::UpdateEngagedSitesInBackground(
+std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
+    base::Time now,
     scoped_refptr<HostContentSettingsMap> map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(update_in_progress_);
-
-  // Bail if another update has occurred since this update was scheduled.
-  if (!EngagedSitesNeedUpdating()) {
-    return;
-  }
+  std::vector<DomainInfo> new_engaged_sites;
 
   auto details =
-      site_engagement::SiteEngagementService::GetAllDetailsInBackground(
-          clock_->Now(), map);
-
-  std::vector<DomainInfo> new_engaged_sites;
+      site_engagement::SiteEngagementService::GetAllDetailsInBackground(now,
+                                                                        map);
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
       continue;
@@ -155,7 +95,75 @@ void LookalikeUrlService::UpdateEngagedSitesInBackground(
     }
     new_engaged_sites.push_back(domain_info);
   }
+
+  return new_engaged_sites;
+}
+
+}  // namespace
+
+LookalikeUrlService::LookalikeUrlService(Profile* profile)
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
+
+LookalikeUrlService::~LookalikeUrlService() = default;
+
+// static
+LookalikeUrlService* LookalikeUrlService::Get(Profile* profile) {
+  return LookalikeUrlServiceFactory::GetForProfile(profile);
+}
+
+bool LookalikeUrlService::EngagedSitesNeedUpdating() const {
+  if (last_engagement_fetch_time_.is_null())
+    return true;
+  const base::TimeDelta elapsed = clock_->Now() - last_engagement_fetch_time_;
+  return elapsed >= kEngagedSiteUpdateInterval;
+}
+
+void LookalikeUrlService::ForceUpdateEngagedSites(
+    EngagedSitesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Queue an update on a worker thread if necessary.
+  if (!update_in_progress_) {
+    update_in_progress_ = true;
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(
+            &UpdateEngagedSitesOnWorkerThread,
+            clock_->Now(),
+            base::WrapRefCounted(
+                HostContentSettingsMapFactory::GetForProfile(profile_))),
+        base::BindOnce(&LookalikeUrlService::OnUpdateEngagedSitesCompleted,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  // Postpone the execution of the callback after the update is completed.
+  pending_update_complete_callbacks_.push_back(std::move(callback));
+}
+
+const std::vector<DomainInfo> LookalikeUrlService::GetLatestEngagedSites()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return engaged_sites_;
+}
+
+void LookalikeUrlService::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+}
+
+void LookalikeUrlService::OnUpdateEngagedSitesCompleted(
+    std::vector<DomainInfo> new_engaged_sites) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   engaged_sites_.swap(new_engaged_sites);
   last_engagement_fetch_time_ = clock_->Now();
   update_in_progress_ = false;
+
+  // Call pending callbacks.
+  std::vector<EngagedSitesCallback> callbacks;
+  callbacks.swap(pending_update_complete_callbacks_);
+  for (auto&& callback : callbacks)
+    std::move(callback).Run(engaged_sites_);
 }
