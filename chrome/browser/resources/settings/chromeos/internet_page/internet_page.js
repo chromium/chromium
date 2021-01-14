@@ -251,6 +251,7 @@ Polymer({
       // e.g. chrome://settings/internet/networks?type=WiFi
       const queryParams = settings.Router.getInstance().getQueryParameters();
       const type = queryParams.get('type');
+      this.showCellularSetupDialog_ = !!queryParams.get('showCellularSetup');
       if (type) {
         this.subpageType_ = OncMojo.getNetworkTypeFromString(type);
       }
