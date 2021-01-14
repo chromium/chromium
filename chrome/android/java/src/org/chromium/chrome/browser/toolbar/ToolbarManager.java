@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -679,12 +680,27 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         };
 
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
+            private OnLayoutChangeListener mLayoutChangeListener;
             @Override
             public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                 // Controls need to be offset to match the composited layer, which is
                 // anchored at the bottom of the controls container.
-                setControlContainerTopMargin(getToolbarExtraYOffset());
+                // https://crbug.com/1157859 wait until the background is cleared so that
+                // the height won't be measured by the background image.
+                if (mControlContainer.getBackground() == null) {
+                    setControlContainerTopMargin(getToolbarExtraYOffset());
+                } else if (mLayoutChangeListener == null) {
+                    mLayoutChangeListener = (view, left, top, right, bottom, oldLeft, oldTop,
+                            oldRight, oldBottom) -> {
+                        if (mControlContainer.getBackground() == null) {
+                            setControlContainerTopMargin(getToolbarExtraYOffset());
+                            mControlContainer.removeOnLayoutChangeListener(mLayoutChangeListener);
+                            mLayoutChangeListener = null;
+                        }
+                    };
+                    mControlContainer.addOnLayoutChangeListener(mLayoutChangeListener);
+                }
             }
         };
         mBrowserControlsSizer.addObserver(mBrowserControlsObserver);
