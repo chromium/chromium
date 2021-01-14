@@ -412,10 +412,6 @@ void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
   TerminateRecordingUiElements();
 }
 
-void CaptureModeController::OpenFeedbackDialog() {
-  delegate_->OpenFeedbackDialog();
-}
-
 void CaptureModeController::SetWindowProtectionMask(aura::Window* window,
                                                     uint32_t protection_mask) {
   if (protection_mask == display::CONTENT_PROTECTION_METHOD_NONE)

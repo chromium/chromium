@@ -219,12 +219,6 @@ class CaptureModeTest : public AshTestBase {
         ->window_toggle_button();
   }
 
-  CaptureModeButton* GetFeedbackButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->feedback_button_for_testing();
-  }
-
   CaptureModeButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
@@ -426,15 +420,6 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
-  EXPECT_FALSE(controller->IsActive());
-}
-
-TEST_F(CaptureModeTest, FeedbackButtonExits) {
-  auto* controller = CaptureModeController::Get();
-  controller->Start(CaptureModeEntryType::kQuickSettings);
-  EXPECT_TRUE(controller->IsActive());
-
-  ClickOnView(GetFeedbackButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
 }
 

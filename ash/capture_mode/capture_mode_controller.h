@@ -92,9 +92,6 @@ class ASH_EXPORT CaptureModeController
 
   void EndVideoRecording(EndRecordingReason reason);
 
-  // Called when the feedback button on the capture bar is pressed.
-  void OpenFeedbackDialog();
-
   // Sets the |protection_mask| that is currently set on the given |window|. If
   // the |protection_mask| is |display::CONTENT_PROTECTION_METHOD_NONE|, then
   // the window will no longer be tracked.

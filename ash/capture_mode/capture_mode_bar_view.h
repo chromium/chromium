@@ -61,18 +61,12 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
-  CaptureModeButton* feedback_button_for_testing() const {
-    return feedback_button_;
-  }
   CaptureModeButton* close_button_for_testing() const { return close_button_; }
 
  private:
-  void OnFeedbackButtonPressed();
   void OnCloseButtonPressed();
 
   // Owned by the views hierarchy.
-  CaptureModeButton* feedback_button_;
-  views::Separator* separator_0_;
   CaptureModeTypeView* capture_type_view_;
   views::Separator* separator_1_;
   CaptureModeSourceView* capture_source_view_;

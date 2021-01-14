@@ -78,9 +78,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Called when the running video capture is stopped.
   virtual void StopObservingRestrictedContent() = 0;
 
-  // Called when the feedback button is pressed.
-  virtual void OpenFeedbackDialog() = 0;
-
   // Launches the Recording Service into a separate utility process.
   virtual mojo::Remote<recording::mojom::RecordingService>
   LaunchRecordingService() = 0;

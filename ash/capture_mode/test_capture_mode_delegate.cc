@@ -112,8 +112,6 @@ void TestCaptureModeDelegate::StartObservingRestrictedContent(
 
 void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
 
-void TestCaptureModeDelegate::OpenFeedbackDialog() {}
-
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {
   fake_service_ = std::make_unique<FakeRecordingService>();

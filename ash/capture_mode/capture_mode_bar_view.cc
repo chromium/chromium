@@ -28,9 +28,7 @@ namespace ash {
 
 namespace {
 
-// TODO(crbug.com/1144254): Change this back to {328, 64} when removing the
-// feedback button.
-constexpr gfx::Size kBarSize{392, 64};
+constexpr gfx::Size kBarSize{328, 64};
 
 constexpr gfx::Insets kBarPadding{/*vertical=*/14, /*horizontal=*/16};
 
@@ -48,12 +46,7 @@ constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 }  // namespace
 
 CaptureModeBarView::CaptureModeBarView()
-    : feedback_button_(AddChildView(std::make_unique<CaptureModeButton>(
-          base::BindRepeating(&CaptureModeBarView::OnFeedbackButtonPressed,
-                              base::Unretained(this)),
-          kCaptureModeFeedbackIcon))),
-      separator_0_(AddChildView(std::make_unique<views::Separator>())),
-      capture_type_view_(AddChildView(std::make_unique<CaptureModeTypeView>())),
+    : capture_type_view_(AddChildView(std::make_unique<CaptureModeTypeView>())),
       separator_1_(AddChildView(std::make_unique<views::Separator>())),
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
@@ -80,8 +73,6 @@ CaptureModeBarView::CaptureModeBarView()
 
   const SkColor separator_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
-  separator_0_->SetColor(separator_color);
-  separator_0_->SetPreferredHeight(kSeparatorHeight);
   separator_1_->SetColor(separator_color);
   separator_1_->SetPreferredHeight(kSeparatorHeight);
   separator_2_->SetColor(separator_color);
@@ -113,12 +104,6 @@ gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root) {
   bounds.ClampToCenteredSize(kBarSize);
   bounds.set_y(bar_y);
   return bounds;
-}
-
-void CaptureModeBarView::OnFeedbackButtonPressed() {
-  auto* controller = CaptureModeController::Get();
-  controller->OpenFeedbackDialog();
-  controller->Stop();
 }
 
 void CaptureModeBarView::OnCaptureSourceChanged(CaptureModeSource new_source) {
