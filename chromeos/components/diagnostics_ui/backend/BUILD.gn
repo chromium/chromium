@@ -22,6 +22,8 @@ static_library("backend") {
     "system_data_provider.h",
     "system_routine_controller.cc",
     "system_routine_controller.h",
+    "telemetry_log.cc",
+    "telemetry_log.h",
   ]
 
   deps = [
@@ -46,6 +48,7 @@ source_set("unit_tests") {
     "routine_log_unittest.cc",
     "system_data_provider_unittest.cc",
     "system_routine_controller_unittest.cc",
+    "telemetry_log_unittest.cc",
   ]
 
   deps = [
