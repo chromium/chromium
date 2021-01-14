@@ -431,7 +431,7 @@ void FrameLoader::SetOpener(LocalFrame* opener) {
   frame_->SetOpener(opener);
 }
 
-bool FrameLoader::AllowPlugins(ReasonForCallingAllowPlugins reason) {
+bool FrameLoader::AllowPlugins() {
   // With Oilpan, a FrameLoader might be accessed after the Page has been
   // detached. FrameClient will not be accessible, so bail early.
   if (!Client())

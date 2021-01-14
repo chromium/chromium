@@ -1809,7 +1809,7 @@ WebContentSettingsClient* LocalFrame::GetContentSettingsClient() {
 }
 
 PluginData* LocalFrame::GetPluginData() const {
-  if (!Loader().AllowPlugins(kNotAboutToInstantiatePlugin))
+  if (!Loader().AllowPlugins())
     return nullptr;
   return GetPage()->GetPluginData(
       Tree().Top().GetSecurityContext()->GetSecurityOrigin());

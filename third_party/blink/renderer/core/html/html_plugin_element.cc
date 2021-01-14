@@ -646,7 +646,7 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
     return false;
 
   LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame->Loader().AllowPlugins(kAboutToInstantiatePlugin))
+  if (!frame->Loader().AllowPlugins())
     return false;
 
   auto* layout_object = GetLayoutEmbeddedObject();

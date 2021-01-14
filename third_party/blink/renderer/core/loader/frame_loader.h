@@ -196,7 +196,7 @@ class CORE_EXPORT FrameLoader final {
   void DispatchUnloadEvent(SecurityOrigin* committing_origin,
                            base::Optional<Document::UnloadEventTiming>*);
 
-  bool AllowPlugins(ReasonForCallingAllowPlugins);
+  bool AllowPlugins();
 
   void SaveScrollAnchor();
   void SaveScrollState();

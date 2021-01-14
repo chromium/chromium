@@ -136,8 +136,7 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
   if (HTMLMediaElement::GetSupportsType(ContentType(mime_type)))
     return Type::kMedia;
 
-  if (frame && frame->GetPage() &&
-      frame->Loader().AllowPlugins(kNotAboutToInstantiatePlugin)) {
+  if (frame && frame->GetPage() && frame->Loader().AllowPlugins()) {
     PluginData* plugin_data = GetPluginData(frame, url);
 
     // Everything else except text/plain can be overridden by plugins.
