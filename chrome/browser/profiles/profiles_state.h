@@ -121,7 +121,8 @@ bool ArePublicSessionRestrictionsEnabled();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the default name for a new enterprise profile.
-base::string16 GetDefaultNameForNewEnterpriseProfile();
+base::string16 GetDefaultNameForNewEnterpriseProfile(
+    const std::string& hosted_domain = std::string());
 
 // Returns the default name for a new signed-in profile, based on
 // `account_info`.

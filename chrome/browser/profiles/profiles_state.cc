@@ -310,7 +310,10 @@ bool ArePublicSessionRestrictionsEnabled() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-base::string16 GetDefaultNameForNewEnterpriseProfile() {
+base::string16 GetDefaultNameForNewEnterpriseProfile(
+    const std::string& hosted_domain) {
+  if (AccountInfo::IsManaged(hosted_domain))
+    return base::UTF8ToUTF16(hosted_domain);
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
 }
@@ -320,7 +323,7 @@ base::string16 GetDefaultNameForNewSignedInProfile(
   DCHECK(account_info.IsValid());
   if (!account_info.IsManaged())
     return base::UTF8ToUTF16(account_info.given_name);
-  return GetDefaultNameForNewEnterpriseProfile();
+  return GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
 }
 
 base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
