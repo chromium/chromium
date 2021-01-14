@@ -4,6 +4,8 @@
 {{ source_files_for_generated_file(template_file, input_files) }}
 
 #include "base/no_destructor.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
 #include "third_party/blink/public/common/feature_policy/policy_value.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_value.mojom.h"
@@ -13,17 +15,38 @@
 namespace blink {
 
 const DocumentPolicyFeatureInfoMap& GetDocumentPolicyFeatureInfoMap() {
-  static const base::NoDestructor<DocumentPolicyFeatureInfoMap> feature_info_map({
-    {%- for feature in features %}
-      {
-        mojom::DocumentPolicyFeature::k{{feature.name}},
+  static const base::NoDestructor<DocumentPolicyFeatureInfoMap> feature_info_map([] {
+    DocumentPolicyFeatureInfoMap map({
+      {%- for feature in features %}
         {
-          "{{feature.document_policy_name}}",
-          {{parse_default_value(feature.default_value, feature.value_type)}}
+          mojom::DocumentPolicyFeature::k{{feature.name}},
+          {
+            "{{feature.document_policy_name}}",
+            {{parse_default_value(feature.default_value, feature.value_type)}}
+          }
+        },
+      {%- endfor %}
+    });
+
+    {%- for feature in features %}
+    {%- if feature.default_value_behind_flag %}
+      {%- for flag, default_value in feature.default_value_behind_flag %}
+        {%- if not loop.first %} else {% endif %}
+        if (base::FeatureList::IsEnabled(features::k{{flag}})) {
+          map.insert_or_assign(
+            mojom::DocumentPolicyFeature::k{{feature.name}},
+            DocumentPolicyFeatureInfo {
+              "{{feature.document_policy_name}}",
+              {{parse_default_value(default_value, feature.value_type)}}
+            }
+          );
         }
-      },
+      {%- endfor %}
+    {%- endif %}
     {%- endfor %}
-  });
+
+    return map;
+  }());
   return *feature_info_map;
 }
 
@@ -38,5 +61,3 @@ const DocumentPolicyNameFeatureMap& GetDocumentPolicyNameFeatureMap() {
 }
 
 } // namespace blink
-
-

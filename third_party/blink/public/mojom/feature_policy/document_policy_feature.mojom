@@ -36,6 +36,9 @@ enum DocumentPolicyFeature {
   kJSProfiling = 11,
   // Controls use of synchronous XMLHTTPRequest API.
   kSyncXHR = 12,
+  // Feature for testing 'default_value_behind_flag' field in
+  // document_policy_features.json5.
+  kDefaultValueFeatureForTest = 13,
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_document_policy_enum.py in

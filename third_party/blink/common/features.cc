@@ -866,5 +866,11 @@ const base::Feature kInterestCohortAPIOriginTrial{
 const base::Feature kInterestCohortFeaturePolicy{
     "InterestCohortFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Flags only used for testing purposes. No effect when enabled.
+const base::Feature kDocumentPolicyRuntimeFlag1ForTest{
+    "kDocumentPolicyRuntimeFlag1ForTest", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDocumentPolicyRuntimeFlag2ForTest{
+    "kDocumentPolicyRuntimeFlag2ForTest", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

@@ -1,8 +1,8 @@
 {
   // All document policy (https://w3c.github.io/webappsec-feature-policy/document-policy.html)
   // features are defined here.
-  // All Features have to be defined in FeaturePolicyFeature enum as well
-  // (defined in third_party/blink/public/mojom/feature_policy/feature_policy.mojom).
+  // All Features have to be defined in DocumentPolicyFeature enum as well
+  // (defined in third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom).
   // The enum value has to have the same name as the feature name here.
 
   parameters: {
@@ -26,9 +26,42 @@
       default: [],
       valid_type: "list",
     },
+    // "default_value_behind_flag" specifies default_value override values
+    // based on different runtime flags set.
+    //
+    // When multiple flags are set, default_value correspond to the first
+    // flag in the list will be used, e.g.
+    //   default_value_behind_flag: [
+    //    ["A", 1.0],
+    //    ["B", 2.0],
+    //   ]
+    // 1.0 will be used as default value when both flag A and B are set.
+    //
+    // Note: the runtime flags here refer to features defined in
+    // "third_party/blink/public/common/features.h", instead of those defined in
+    // "runtime_enabled_features.json5" because the latter is only available
+    // on renderer side, while default_value is needed from browser side as
+    // well.
+    default_value_behind_flag: {
+      default: [],
+      valid_type: "list",
+    }
   },
 
   data: [
+    {
+      name: "DefaultValueFeatureForTest",
+      // Setting document_policy_name to "", so that it will not be recognized
+      // by the parser, as structured header token cannot be empty.
+      document_policy_name: "",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: [],
+      default_value_behind_flag: [
+        ["DocumentPolicyRuntimeFlag1ForTest", "false"],
+        ["DocumentPolicyRuntimeFlag2ForTest", "true"],
+      ]
+    },
     {
       name: "Default",
       document_policy_name: "*",
