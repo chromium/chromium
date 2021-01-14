@@ -522,7 +522,6 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;
   blink::WebLocalFrame* CreateChildFrame(
-      blink::WebLocalFrame* parent,
       blink::mojom::TreeScopeType scope,
       const blink::WebString& name,
       const blink::WebString& fallback_name,
@@ -532,6 +531,7 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override;
+  void InitializeAsChildFrame(blink::WebLocalFrame* parent) override;
   std::pair<blink::WebRemoteFrame*, blink::PortalToken> CreatePortal(
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PortalInterfaceBase> portal_endpoint,
@@ -1153,6 +1153,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // The `AgentSchedulingGroup` this frame is associated with.
   AgentSchedulingGroup& agent_scheduling_group_;
 
+  // False until Initialize() is run, to avoid actions before the frame's
+  // observers are created.
+  bool initialized_ = false;
   // Boolean value indicating whether this RenderFrameImpl object is for the
   // main frame or not. It remains accurate during destruction, even when
   // |frame_| has been invalidated.

@@ -200,7 +200,6 @@ class TestPluginWithEditableText : public FakeWebPlugin {
 
 class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString& name,
       const WebString& fallback_name,
@@ -210,7 +209,7 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override {
-    return CreateLocalChild(*parent, scope,
+    return CreateLocalChild(*Frame(), scope,
                             std::make_unique<TestPluginWebFrameClient>());
   }
 

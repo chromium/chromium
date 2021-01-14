@@ -597,9 +597,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
         std::make_unique<subresource_filter::AdResourceTracker>();
     metrics_render_frame_observer->SetAdResourceTracker(
         ad_resource_tracker.get());
-    new subresource_filter::SubresourceFilterAgent(
-        render_frame, subresource_filter_ruleset_dealer_.get(),
-        std::move(ad_resource_tracker));
+    auto* subresource_filter_agent =
+        new subresource_filter::SubresourceFilterAgent(
+            render_frame, subresource_filter_ruleset_dealer_.get(),
+            std::move(ad_resource_tracker));
+    subresource_filter_agent->Initialize();
   }
 
   if (lite_video::IsLiteVideoEnabled())

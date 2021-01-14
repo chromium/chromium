@@ -493,8 +493,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   // WebLocalFrameClient:
   void FrameDetached() override;
-  WebLocalFrame* CreateChildFrame(WebLocalFrame* parent,
-                                  blink::mojom::blink::TreeScopeType,
+  WebLocalFrame* CreateChildFrame(blink::mojom::blink::TreeScopeType,
                                   const WebString& name,
                                   const WebString& fallback_name,
                                   const FramePolicy&,
@@ -503,6 +502,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
                                   blink::CrossVariantMojoAssociatedReceiver<
                                       mojom::PolicyContainerHostInterfaceBase>
                                       policy_container_host_receiver) override;
+  void InitializeAsChildFrame(WebLocalFrame* parent) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
   bool SwapIn(WebFrame* previous_frame) override;

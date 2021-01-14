@@ -814,7 +814,6 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   // blink::WebLocalFrameClient:
   void BindToFrame(blink::WebNavigationControl* frame) override;
   blink::WebLocalFrame* CreateChildFrame(
-      blink::WebLocalFrame* parent,
       blink::mojom::TreeScopeType scope,
       const blink::WebString& name,
       const blink::WebString& fallback_name,
@@ -1011,7 +1010,6 @@ void PrepareFrameAndViewForPrint::BindToFrame(
 }
 
 blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
-    blink::WebLocalFrame* parent,
     blink::mojom::TreeScopeType scope,
     const blink::WebString& name,
     const blink::WebString& fallback_name,

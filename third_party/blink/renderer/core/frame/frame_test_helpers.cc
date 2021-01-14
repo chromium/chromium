@@ -632,7 +632,6 @@ void TestWebFrameClient::FrameDetached() {
 }
 
 WebLocalFrame* TestWebFrameClient::CreateChildFrame(
-    WebLocalFrame* parent,
     mojom::blink::TreeScopeType scope,
     const WebString& name,
     const WebString& fallback_name,
@@ -642,8 +641,10 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
     blink::CrossVariantMojoAssociatedReceiver<
         mojom::PolicyContainerHostInterfaceBase>
         policy_container_host_receiver) {
-  return CreateLocalChild(*parent, scope);
+  return CreateLocalChild(*frame_, scope);
 }
+
+void TestWebFrameClient::InitializeAsChildFrame(WebLocalFrame* parent) {}
 
 void TestWebFrameClient::DidStartLoading() {
   ++loads_in_progress_;

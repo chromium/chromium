@@ -4353,7 +4353,6 @@ class ContextLifetimeTestWebFrameClient
 
   // WebLocalFrameClient:
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString& name,
       const WebString& fallback_name,
@@ -4363,7 +4362,7 @@ class ContextLifetimeTestWebFrameClient
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override {
-    return CreateLocalChild(*parent, scope,
+    return CreateLocalChild(*Frame(), scope,
                             std::make_unique<ContextLifetimeTestWebFrameClient>(
                                 create_notifications_, release_notifications_));
   }
@@ -7156,7 +7155,6 @@ class TestCachePolicyWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString&,
       const WebString&,
@@ -7169,7 +7167,7 @@ class TestCachePolicyWebFrameClient
     auto child = std::make_unique<TestCachePolicyWebFrameClient>();
     auto* child_ptr = child.get();
     child_clients_.push_back(std::move(child));
-    return CreateLocalChild(*parent, scope, child_ptr);
+    return CreateLocalChild(*Frame(), scope, child_ptr);
   }
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     cache_mode_ = info->url_request.GetCacheMode();
@@ -7650,7 +7648,6 @@ class FailCreateChildFrame : public frame_test_helpers::TestWebFrameClient {
 
   // frame_test_helpers::TestWebFrameClient:
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString& name,
       const WebString& fallback_name,
@@ -8759,7 +8756,6 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
   }
 
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString& name,
       const WebString& fallback_name,
@@ -8769,7 +8765,7 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override {
-    return CreateLocalChild(*parent, scope,
+    return CreateLocalChild(*Frame(), scope,
                             std::make_unique<WebFrameSwapTestClient>(this));
   }
 
@@ -10953,7 +10949,6 @@ class WebLocalFrameVisibilityChangeTest
 
   // frame_test_helpers::TestWebFrameClient:
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString& name,
       const WebString& fallback_name,
@@ -10963,7 +10958,7 @@ class WebLocalFrameVisibilityChangeTest
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override {
-    return CreateLocalChild(*parent, scope, &child_client_);
+    return CreateLocalChild(*Frame(), scope, &child_client_);
   }
 
   TestLocalFrameHostForVisibility& ChildHost() { return child_host_; }
@@ -12654,7 +12649,6 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
 
     // frame_test_helpers::TestWebFrameClient:
     WebLocalFrame* CreateChildFrame(
-        WebLocalFrame* parent,
         mojom::blink::TreeScopeType scope,
         const WebString& name,
         const WebString& fallback_name,
@@ -12664,7 +12658,7 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
         blink::CrossVariantMojoAssociatedReceiver<
             blink::mojom::PolicyContainerHostInterfaceBase>
             policy_container_host_receiver) override {
-      return CreateLocalChild(*parent, scope, &child_client_);
+      return CreateLocalChild(*Frame(), scope, &child_client_);
     }
 
     LoadingObserverFrameClient& ChildClient() { return child_client_; }
@@ -12915,7 +12909,6 @@ class TestFallbackWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType scope,
       const WebString&,
       const WebString&,
@@ -12926,7 +12919,7 @@ class TestFallbackWebFrameClient
           blink::mojom::PolicyContainerHostInterfaceBase>
           policy_container_host_receiver) override {
     DCHECK(child_client_);
-    return CreateLocalChild(*parent, scope, child_client_);
+    return CreateLocalChild(*Frame(), scope, child_client_);
   }
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     if (child_client_ || KURL(info->url_request.Url()) == BlankURL()) {

@@ -44,24 +44,53 @@ SubresourceFilterAgent::SubresourceFilterAgent(
       ruleset_dealer_(ruleset_dealer),
       ad_resource_tracker_(std::move(ad_resource_tracker)) {
   DCHECK(ruleset_dealer);
-  // |render_frame| can be nullptr in unit tests.
-  if (render_frame) {
-    // If a mainframe has an activated opener, we activate the initial empty
-    // document, which is created before this constructor. This ensures that a
-    // popup's final document is appropriately activated, even when the the
-    // initial navigation is aborted and there are no further documents created.
-    if (render_frame->IsMainFrame() &&
-        GetInheritedActivationState(render_frame).activation_level !=
-            mojom::ActivationLevel::kDisabled) {
-      const GURL& url = GetDocumentURL();
-      DCHECK(url.is_empty());
-      DCHECK(ShouldInheritActivation(url));
-      ConstructFilter(GetInheritedActivationState(render_frame), url);
-    }
-    render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+}
+
+void SubresourceFilterAgent::Initialize() {
+  const GURL& url = GetDocumentURL();
+  // The initial empty document will always inherit activation.
+  DCHECK(ShouldInheritActivation(url));
+
+  // We must check for provisional here because in that case 2 RenderFrames will
+  // be created for the same FrameTreeNode in the browser. The browser service
+  // only expects us to call SendFrameIsAdSubframe() a single time for a newly
+  // created RenderFrame, so we must choose one. A provisional frame is created
+  // when a navigation is performed cross-site and the navigation is done there
+  // to isolate it from the previous frame tree. We choose to send this message
+  // from the initial (non-provisional) "about:blank" frame that is created
+  // before the navigation to match previous behaviour, and because this frame
+  // will always exist. Whereas the provisional frame would only be created to
+  // perform the navigation conditionally, so we ignore sending the IPC there.
+  if (!IsMainFrame() && IsAdSubframe() && !IsProvisional())
+    SendFrameIsAdSubframe();
+
+  // `render_frame()` can be null in unit tests.
+  if (render_frame()) {
+    render_frame()->GetAssociatedInterfaceRegistry()->AddInterface(
         base::BindRepeating(
             &SubresourceFilterAgent::OnSubresourceFilterAgentRequest,
             base::Unretained(this)));
+
+    if (IsMainFrame()) {
+      // If a main frame has an activated opener, we will activate the
+      // subresource filter for the initial empty document, which was created
+      // before the constructor for `this`. This ensures that a popup's final
+      // document is appropriately activated, even when the the initial
+      // navigation is aborted and there are no further documents created.
+      // TODO(dcheng): Navigation is an asynchronous operation, and the opener
+      // frame may have been destroyed between the time the window is opened
+      // and the RenderFrame in the window is constructed leading us to here.
+      // To avoid that race condition the activation state would need to be
+      // determined without the use of the opener frame.
+      if (GetInheritedActivationState(render_frame()).activation_level !=
+          mojom::ActivationLevel::kDisabled) {
+        ConstructFilter(GetInheritedActivationStateForNewDocument(), url);
+      }
+    } else {
+      // Child frames always have a parent, so the empty initial document can
+      // always inherit activation.
+      ConstructFilter(GetInheritedActivationStateForNewDocument(), url);
+    }
   }
 }
 
@@ -77,6 +106,10 @@ GURL SubresourceFilterAgent::GetDocumentURL() {
 
 bool SubresourceFilterAgent::IsMainFrame() {
   return render_frame()->IsMainFrame();
+}
+
+bool SubresourceFilterAgent::IsProvisional() {
+  return render_frame()->GetWebFrame()->IsProvisional();
 }
 
 bool SubresourceFilterAgent::HasDocumentLoader() {
@@ -197,29 +230,6 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
   // TODO(csharrison): Use WebURL and WebSecurityOrigin for efficiency here,
   // which requires changes to the unit tests.
   const GURL& url = GetDocumentURL();
-  // Do not pollute the histograms with the empty main frame documents and
-  // initial empty documents, even though some will not have a second document.
-  const bool should_record_histograms =
-      !first_document_ &&
-      !(IsMainFrame() && !url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile());
-  if (first_document_ && !IsMainFrame()) {
-    DCHECK(!filter_for_last_created_document_);
-
-    // Local subframes will first create an initial empty document (with url
-    // kAboutBlankURL) no matter what the src is set to (or if it is not set).
-    // Then, if the src is set (including to kAboutBlankURL), there is a second
-    // document created with url equal to the set src. Due to a bug, currently
-    // a second document (with url kAboutBlankURL) is created even if the src is
-    // unset (see crbug.com/778318), but we should not rely on this erroneous
-    // behavior. Frames created by the browser initialize the LocalFrame before
-    // creating RenderFrameObservers, so the initial empty document isn't
-    // observed. We only care about local subframes.
-    if (url == url::kAboutBlankURL) {
-      if (IsAdSubframe())
-        SendFrameIsAdSubframe();
-    }
-  }
-  first_document_ = false;
 
   const mojom::ActivationState activation_state =
       ShouldInheritActivation(url) ? GetInheritedActivationStateForNewDocument()
@@ -227,6 +237,9 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
 
   ResetInfoForNextDocument();
 
+  // Do not pollute the histograms with uninteresting main frame documents.
+  const bool should_record_histograms =
+      !IsMainFrame() || url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile();
   if (should_record_histograms) {
     RecordHistogramsOnFilterCreation(activation_state);
   }

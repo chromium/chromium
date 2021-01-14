@@ -112,16 +112,15 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
                                            Dispatcher* extension_dispatcher)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<ExtensionFrameHelper>(render_frame),
-      view_type_(VIEW_TYPE_INVALID),
-      tab_id_(-1),
-      browser_window_id_(-1),
-      extension_dispatcher_(extension_dispatcher),
-      did_create_current_document_element_(false) {
+      extension_dispatcher_(extension_dispatcher) {
   g_frame_helpers.Get().insert(this);
   if (render_frame->IsMainFrame()) {
     // Manages its own lifetime.
     new AutomationApiHelper(render_frame);
   }
+  // The RenderFrame comes with the initial empty document already created, and
+  // we want to act on it in the same way as a new document.
+  DidCreateDocumentElement();
 }
 
 ExtensionFrameHelper::~ExtensionFrameHelper() {

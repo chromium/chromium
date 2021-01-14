@@ -2088,7 +2088,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   // which can identify the element.
   WebLocalFrameImpl* webframe_child =
       To<WebLocalFrameImpl>(client_->CreateChildFrame(
-          this, scope, name,
+          scope, name,
           owner_element->getAttribute(
               owner_element->SubResourceAttributeName()),
           owner_element->GetFramePolicy(), owner_properties,
@@ -2110,6 +2110,8 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           ? nullptr
           : &GetFrame()->window_agent_factory(),
       nullptr, std::move(policy_container));
+
+  webframe_child->Client()->InitializeAsChildFrame(/*parent=*/this);
 
   DCHECK(webframe_child->Parent());
   return webframe_child->GetFrame();

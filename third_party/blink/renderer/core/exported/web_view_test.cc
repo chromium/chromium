@@ -3990,7 +3990,6 @@ class CreateChildCounterFrameClient
  public:
   CreateChildCounterFrameClient() : count_(0) {}
   WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::blink::TreeScopeType,
       const WebString& name,
       const WebString& fallback_name,
@@ -4008,7 +4007,6 @@ class CreateChildCounterFrameClient
 };
 
 WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
-    WebLocalFrame* parent,
     mojom::blink::TreeScopeType scope,
     const WebString& name,
     const WebString& fallback_name,
@@ -4020,7 +4018,7 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
         policy_container_host_receiver) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(
-      parent, scope, name, fallback_name, frame_policy, frame_owner_properties,
+      scope, name, fallback_name, frame_policy, frame_owner_properties,
       frame_owner_element_type, std::move(policy_container_host_receiver));
 }
 

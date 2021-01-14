@@ -106,7 +106,10 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Called when a RenderFrame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
 
-  // These match the Blink API notifications
+  // These match the Blink API notifications. These will not be called for the
+  // initial empty document, since that already exists before an observer for a
+  // frame has a chance to be created (before notification about the RenderFrame
+  // being created occurs).
   virtual void DidCreateNewDocument() {}
   virtual void DidCreateDocumentElement() {}
   // TODO(dgozman): replace next two methods with DidFinishNavigation.

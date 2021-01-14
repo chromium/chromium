@@ -224,7 +224,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // should create a new WebLocalFrame, insert it into the frame tree, and
   // return the created frame.
   virtual WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::TreeScopeType,
       const WebString& name,
       const WebString& fallback_name,
@@ -236,6 +235,11 @@ class BLINK_EXPORT WebLocalFrameClient {
           policy_container_host_receiver) {
     return nullptr;
   }
+  // When CreateChildFrame() returns there is no core LocalFrame backing the
+  // WebFrame yet so using the WebLocalFrame is not entirely valid. This is
+  // called after finishing the initialization of WebLocalFrame so that the
+  // client can complete its initialization making use of it.
+  virtual void InitializeAsChildFrame(WebLocalFrame* parent) {}
 
   // Request the creation of a new portal.
   virtual std::pair<WebRemoteFrame*, PortalToken> CreatePortal(

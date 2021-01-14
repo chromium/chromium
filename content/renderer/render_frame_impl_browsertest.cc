@@ -458,7 +458,14 @@ struct SourceAnnotation {
     return document_url == rhs.document_url &&
            render_frame_event == rhs.render_frame_event;
   }
+  bool operator!=(const SourceAnnotation& rhs) const { return !(*this == rhs); }
 };
+
+std::ostream& operator<<(std::ostream& out, const SourceAnnotation& s) {
+  out << s.document_url.possibly_invalid_spec() << " : "
+      << s.render_frame_event;
+  return out;
+}
 
 // RenderFrameRemoteInterfacesTest ------------------------------------
 
@@ -828,9 +835,7 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
   ExpectPendingInterfaceReceiversFromSources(
       child_frame_exerciser
           .browser_interface_broker_receiver_for_initial_empty_document(),
-      {{GURL(kNoDocumentMarkerURL), kFrameEventDidCreateNewFrame},
-       {initial_empty_url, kFrameEventDidCreateNewDocument},
-       {initial_empty_url, kFrameEventDidCreateDocumentElement},
+      {{initial_empty_url, kFrameEventDidCreateNewFrame},
        {child_frame_url, kFrameEventReadyToCommitNavigation},
        // TODO(https://crbug.com/555773): It seems strange that the new
        // document is created and DidCreateNewDocument is invoked *before* the
@@ -935,9 +940,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
     ExpectPendingInterfaceReceiversFromSources(
         child_frame_exerciser
             .browser_interface_broker_receiver_for_initial_empty_document(),
-        {{GURL(kNoDocumentMarkerURL), kFrameEventDidCreateNewFrame},
-         {initial_empty_url, kFrameEventDidCreateNewDocument},
-         {initial_empty_url, kFrameEventDidCreateDocumentElement},
+        {{initial_empty_url, kFrameEventDidCreateNewFrame},
          {child_frame_url, kFrameEventReadyToCommitNavigation},
          {child_frame_url, kFrameEventDidCreateNewDocument},
          {child_frame_url, kFrameEventDidCommitProvisionalLoad},

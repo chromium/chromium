@@ -2043,6 +2043,7 @@ RenderFrameImpl::~RenderFrameImpl() {
 }
 
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
+  initialized_ = true;
   is_main_frame_ = !parent;
 
   WebFrame* local_root = frame_;
@@ -2068,6 +2069,9 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   // We delay calling this until we have the WebFrame so that any observer or
   // embedder can call GetWebFrame on any RenderFrame.
   GetContentClient()->renderer()->RenderFrameCreated(this);
+  // Dispatch events for the initial empty document after all frame observers
+  // have been created.
+  RunScriptsAtDocumentElementAvailable();
 
   // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
   auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
@@ -3810,7 +3814,6 @@ RenderFrameImpl::GetRemoteNavigationAssociatedInterfaces() {
 }
 
 blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
-    blink::WebLocalFrame* parent,
     blink::mojom::TreeScopeType scope,
     const blink::WebString& name,
     const blink::WebString& fallback_name,
@@ -3820,8 +3823,6 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     blink::CrossVariantMojoAssociatedReceiver<
         blink::mojom::PolicyContainerHostInterfaceBase>
         policy_container_host_receiver) {
-  DCHECK_EQ(frame_, parent);
-
   // Allocate child routing ID. This is a synchronous call.
   int child_routing_id;
   base::UnguessableToken frame_token;
@@ -3878,14 +3879,20 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   if (is_created_by_script)
     child_render_frame->unique_name_helper_.Freeze();
   child_render_frame->InitializeBlameContext(this);
-  blink::WebLocalFrame* web_frame = parent->CreateLocalChild(
+  blink::WebLocalFrame* web_frame = frame_->CreateLocalChild(
       scope, child_render_frame,
       child_render_frame->blink_interface_registry_.get(), frame_token);
 
   child_render_frame->in_frame_tree_ = true;
-  child_render_frame->Initialize(parent);
 
+  // The WebLocalFrame created here is not fully initialized yet, so we delay
+  // our Initialize() step until that has completed, at which point
+  // InitializeAsChildFrame() is called.
   return web_frame;
+}
+
+void RenderFrameImpl::InitializeAsChildFrame(blink::WebLocalFrame* parent) {
+  Initialize(parent);
 }
 
 std::pair<blink::WebRemoteFrame*, blink::PortalToken>
@@ -4232,6 +4239,10 @@ void RenderFrameImpl::DidCreateDocumentElement() {
 }
 
 void RenderFrameImpl::RunScriptsAtDocumentElementAvailable() {
+  // Wait until any RenderFrameObservers for this frame have a chance to be
+  // constructed.
+  if (!initialized_)
+    return;
   GetContentClient()->renderer()->RunScriptsAtDocumentStart(this);
   // Do not use |this|! ContentClient might have deleted them by now!
 }
@@ -4269,6 +4280,7 @@ void RenderFrameImpl::DidFinishDocumentLoad() {
 }
 
 void RenderFrameImpl::RunScriptsAtDocumentReady() {
+  DCHECK(initialized_);
   GetContentClient()->renderer()->RunScriptsAtDocumentEnd(this);
 }
 

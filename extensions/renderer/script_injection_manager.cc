@@ -70,6 +70,8 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
             ScriptInjectionManager* manager);
   ~RFOHelper() override;
 
+  void Initialize();
+
  private:
   // RenderFrameObserver implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -101,18 +103,35 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   // The owning ScriptInjectionManager.
   ScriptInjectionManager* manager_;
 
-  bool should_run_idle_;
+  bool should_run_idle_ = true;
 
   base::WeakPtrFactory<RFOHelper> weak_factory_{this};
 };
 
 ScriptInjectionManager::RFOHelper::RFOHelper(content::RenderFrame* render_frame,
                                              ScriptInjectionManager* manager)
-    : content::RenderFrameObserver(render_frame),
-      manager_(manager),
-      should_run_idle_(true) {}
+    : content::RenderFrameObserver(render_frame), manager_(manager) {}
 
 ScriptInjectionManager::RFOHelper::~RFOHelper() {
+}
+
+void ScriptInjectionManager::RFOHelper::Initialize() {
+  // Set up for the initial empty document, for which the Document created
+  // events do not happen as it's already present.
+  DidCreateNewDocument();
+  // The initial empty document for a main frame may have scripts attached to it
+  // but we do not want to invalidate the frame and lose them when the next
+  // document loads. For example the IncognitoApiTest.IncognitoSplitMode test
+  // does `chrome.tabs.create()` with a script to be run, which is added to the
+  // frame before it navigates, so it needs to be preserved. However scripts in
+  // child frames are expected to be run inside the initial empty document. For
+  // example the ExecuteScriptApiTest.FrameWithHttp204 test creates a child
+  // frame at about:blank and expects to run injected scripts inside it.
+  // This is all quite inconsistent however tests both depend on us queuing and
+  // not queueing the DOCUMENT_START events in the initial empty document.
+  if (!render_frame()->IsMainFrame()) {
+    DidCreateDocumentElement();
+  }
 }
 
 bool ScriptInjectionManager::RFOHelper::OnMessageReceived(
@@ -286,6 +305,7 @@ ScriptInjectionManager::~ScriptInjectionManager() {
 void ScriptInjectionManager::OnRenderFrameCreated(
     content::RenderFrame* render_frame) {
   rfo_helpers_.push_back(std::make_unique<RFOHelper>(render_frame, this));
+  rfo_helpers_.back()->Initialize();
 }
 
 void ScriptInjectionManager::OnExtensionUnloaded(

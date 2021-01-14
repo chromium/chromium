@@ -138,10 +138,6 @@ class MetricsRenderFrameObserver
       bool limited_sending_mode);
   virtual bool HasNoRenderFrame() const;
 
-  // Whether the initial about:blank document loaded into every frame was
-  // observed.
-  bool first_document_observed_ = false;
-
   // Collects the data use of the frame request for a provisional load until the
   // load is committed. We want to collect data use for completed navigations in
   // this class, but the various navigation callbacks do not provide enough data

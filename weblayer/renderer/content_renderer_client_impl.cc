@@ -115,9 +115,11 @@ void ContentRendererClientImpl::RenderFrameCreated(
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 
   // TODO(crbug.com/1116095): Bring up AdResourceTracker?
-  new subresource_filter::SubresourceFilterAgent(
-      render_frame, subresource_filter_ruleset_dealer_.get(),
-      /*ad_resource_tracker=*/nullptr);
+  auto* subresource_filter_agent =
+      new subresource_filter::SubresourceFilterAgent(
+          render_frame, subresource_filter_ruleset_dealer_.get(),
+          /*ad_resource_tracker=*/nullptr);
+  subresource_filter_agent->Initialize();
 
 #if defined(OS_ANDROID)
   // |SpellCheckProvider| manages its own lifetime (and destroys itself when the

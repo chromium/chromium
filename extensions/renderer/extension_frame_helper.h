@@ -164,18 +164,20 @@ class ExtensionFrameHelper
   void OnSetSpatialNavigationEnabled(bool enabled);
 
   // Type of view associated with the RenderFrame.
-  ViewType view_type_;
+  ViewType view_type_ = VIEW_TYPE_INVALID;
 
   // The id of the tab the render frame is attached to.
-  int tab_id_;
+  int tab_id_ = -1;
 
   // The id of the browser window the render frame is attached to.
-  int browser_window_id_;
+  int browser_window_id_ = -1;
 
   Dispatcher* extension_dispatcher_;
 
   // Whether or not the current document element has been created.
-  bool did_create_current_document_element_;
+  // TODO(danakj): Does this still need to be tracked? We now have consisitent
+  // notifications for initial empty documents on all frames.
+  bool did_create_current_document_element_ = false;
 
   // Callbacks to be run at the next RunScriptsAtDocumentStart notification.
   std::vector<base::OnceClosure> document_element_created_callbacks_;

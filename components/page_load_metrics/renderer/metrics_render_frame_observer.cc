@@ -303,14 +303,6 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
   if (render_frame()->IsMainFrame())
     return;
 
-  // Every frame creates an initial about:blank document element prior to
-  // receiving a navigation to about:blank. Ignore this initial document
-  // element.
-  if (!first_document_observed_) {
-    first_document_observed_ = true;
-    return;
-  }
-
   // A new document element was created in a frame that did not commit a
   // provisional load. This can be due to a doc.write in the frame that aborted
   // a navigation. Create a page timing sender to track this load. This sender
