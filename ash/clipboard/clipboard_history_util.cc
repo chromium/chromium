@@ -10,6 +10,7 @@
 #include "ash/metrics/histogram_macros.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -84,6 +85,39 @@ void RecordClipboardHistoryItemPasted(const ClipboardHistoryItem& item) {
 
 bool ContainsFileSystemData(const ui::ClipboardData& data) {
   return !GetFileSystemSources(data).empty();
+}
+
+void GetSplitFileSystemData(const ui::ClipboardData& data,
+                            std::vector<base::StringPiece16>* source_list,
+                            base::string16* sources) {
+  DCHECK(sources);
+  DCHECK(sources->empty());
+  DCHECK(source_list);
+  DCHECK(source_list->empty());
+
+  *sources = GetFileSystemSources(data);
+  if (sources->empty()) {
+    // Not a file system data.
+    return;
+  }
+
+  // Split sources into a list.
+  *source_list =
+      base::SplitStringPiece(*sources, base::UTF8ToUTF16("\n"),
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
+size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
+  base::string16 sources;
+  std::vector<base::StringPiece16> source_list;
+  GetSplitFileSystemData(data, &source_list, &sources);
+
+  if (sources.empty()) {
+    // Not a file system data.
+    return 0;
+  }
+
+  return source_list.size();
 }
 
 base::string16 GetFileSystemSources(const ui::ClipboardData& data) {

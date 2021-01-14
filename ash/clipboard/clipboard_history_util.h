@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace ui {
 class ClipboardData;
@@ -93,6 +94,18 @@ ASH_EXPORT void RecordClipboardHistoryItemPasted(
 
 // Returns true if `data` contains file system data.
 ASH_EXPORT bool ContainsFileSystemData(const ui::ClipboardData& data);
+
+// Updates `sources` with the file system sources contained in `data`; updates
+// `source_list` by splitting `sources` into pieces each of which corresponds to
+// a file. Note that multiple files can be copied simultaneously. `sources` is
+// referenced by `source_list` to reduce memory copies.
+ASH_EXPORT void GetSplitFileSystemData(
+    const ui::ClipboardData& data,
+    std::vector<base::StringPiece16>* source_list,
+    base::string16* sources);
+
+// Returns the count of copied files contained by the clipboard data.
+ASH_EXPORT size_t GetCountOfCopiedFiles(const ui::ClipboardData& data);
 
 // Returns file system sources contained in `data`. If `data` does not contain
 // file system sources, an empty string is returned.

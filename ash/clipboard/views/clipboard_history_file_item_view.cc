@@ -4,9 +4,15 @@
 
 #include "ash/clipboard/views/clipboard_history_file_item_view.h"
 
+#include <array>
+
+#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/files/file_path.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -32,24 +38,49 @@ ClipboardHistoryFileItemView::~ClipboardHistoryFileItemView() = default;
 
 std::unique_ptr<ClipboardHistoryFileItemView::ContentsView>
 ClipboardHistoryFileItemView::CreateContentsView() {
-  auto file_icon = std::make_unique<views::ImageView>();
-  const std::string copied_file_name = base::UTF16ToUTF8(text());
-  file_icon->SetImage(GetIconForPath(
-      base::FilePath(copied_file_name),
-      ash::AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  file_icon->SetImageSize(kIconSize);
-  file_icon->SetProperty(views::kMarginsKey, kIconMargin);
   auto contents_view = ClipboardHistoryTextItemView::CreateContentsView();
 
   // `file_icon` should be `contents_view`'s first child.
-  contents_view->AddChildViewAt(std::move(file_icon), /*index=*/0);
+  file_icon_ = contents_view->AddChildViewAt(
+      std::make_unique<views::ImageView>(), /*index=*/0);
+  file_icon_->SetImageSize(kIconSize);
+  file_icon_->SetProperty(views::kMarginsKey, kIconMargin);
 
   return contents_view;
 }
 
 const char* ClipboardHistoryFileItemView::GetClassName() const {
   return "ClipboardHistoryFileItemView";
+}
+
+void ClipboardHistoryFileItemView::OnThemeChanged() {
+  ClipboardHistoryTextItemView::OnThemeChanged();
+
+  // Use the light mode as default because the light mode is the default mode
+  // of the native theme which decides the context menu's background color.
+  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  const SkColor icon_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  const int copied_files_count = ClipboardHistoryUtil::GetCountOfCopiedFiles(
+      clipboard_history_item()->data());
+  if (copied_files_count == 1) {
+    // Choose the icon based on the file type that is deduced by the file
+    // name.
+    const std::string copied_file_name = base::UTF16ToUTF8(text());
+    file_icon_->SetImage(
+        GetIconForPath(base::FilePath(copied_file_name), icon_color));
+    return;
+  }
+
+  constexpr std::array<const gfx::VectorIcon*, 9> icons = {
+      &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
+      &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
+      &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
+  file_icon_->SetImage(CreateVectorIcon(
+      *icons[std::min(copied_files_count, 10) - 2], icon_color));
 }
 
 }  // namespace ash

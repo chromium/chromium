@@ -95,16 +95,13 @@ base::string16 GetLocalizedString(int resource_id) {
 base::string16 GetLabelForCustomData(const ui::ClipboardData& data) {
   // Currently the only supported type of custom data is file system data. This
   // code should not be reached if `data` does not contain file system data.
-  base::string16 sources = ClipboardHistoryUtil::GetFileSystemSources(data);
+  base::string16 sources;
+  std::vector<base::StringPiece16> source_list;
+  ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
     return base::string16();
   }
-
-  // Split sources into a list.
-  std::vector<base::StringPiece16> source_list =
-      base::SplitStringPiece(sources, base::UTF8ToUTF16("\n"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Strip path information, so all that's left are file names.
   for (auto it = source_list.begin(); it != source_list.end(); ++it)
