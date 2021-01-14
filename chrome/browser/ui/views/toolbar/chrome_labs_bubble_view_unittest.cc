@@ -70,15 +70,15 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
   void CreateTestLabInfo() {
     test_feature_info_.emplace_back(
         LabInfo(kFirstTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
+                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
 
     test_feature_info_.emplace_back(
         LabInfo(kSecondTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
+                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
 
     test_feature_info_.emplace_back(
         LabInfo(kThirdTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::UNKNOWN));
+                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
   }
 
   const std::vector<LabInfo>& GetTestLabInfo() { return test_feature_info_; }
