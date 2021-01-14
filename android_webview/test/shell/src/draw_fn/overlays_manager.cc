@@ -20,6 +20,7 @@ bool AreOverlaysSupported() {
 }
 
 OverlaysManager::ScopedCurrentFunctorCall* g_current_functor_call = nullptr;
+
 }  // namespace
 
 class OverlaysManager::ScopedCurrentFunctorCall {
@@ -67,17 +68,33 @@ class OverlaysManager::ScopedCurrentFunctorCall {
   ANativeWindow* native_window_;
 };
 
+template <typename T>
+void SetDrawParams(T& params, bool has_window) {
+  params.overlays_mode = (AreOverlaysSupported() && has_window)
+                             ? AW_DRAW_FN_OVERLAYS_MODE_ENABLED
+                             : AW_DRAW_FN_OVERLAYS_MODE_DISABLED;
+  params.get_surface_control =
+      OverlaysManager::ScopedCurrentFunctorCall::GetSurfaceControlFn;
+  params.merge_transaction =
+      OverlaysManager::ScopedCurrentFunctorCall::MergeTransactionFn;
+}
+
 OverlaysManager::ScopedDraw::ScopedDraw(OverlaysManager& manager,
                                         FunctorData& functor,
                                         AwDrawFn_DrawGLParams& params)
     : scoped_functor_call_(
           std::make_unique<ScopedCurrentFunctorCall>(functor,
                                                      manager.native_window_)) {
-  params.overlays_mode = (AreOverlaysSupported() && manager.native_window_)
-                             ? AW_DRAW_FN_OVERLAYS_MODE_ENABLED
-                             : AW_DRAW_FN_OVERLAYS_MODE_DISABLED;
-  params.get_surface_control = ScopedCurrentFunctorCall::GetSurfaceControlFn;
-  params.merge_transaction = ScopedCurrentFunctorCall::MergeTransactionFn;
+  SetDrawParams(params, !!manager.native_window_);
+}
+
+OverlaysManager::ScopedDraw::ScopedDraw(OverlaysManager& manager,
+                                        FunctorData& functor,
+                                        AwDrawFn_DrawVkParams& params)
+    : scoped_functor_call_(
+          std::make_unique<ScopedCurrentFunctorCall>(functor,
+                                                     manager.native_window_)) {
+  SetDrawParams(params, !!manager.native_window_);
 }
 
 OverlaysManager::ScopedDraw::~ScopedDraw() = default;

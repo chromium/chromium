@@ -195,11 +195,22 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     public void startBrowserProcess() {
+        doStartBrowserProcess(false);
+    }
+
+    public void startBrowserProcessWithVulkan() {
+        doStartBrowserProcess(true);
+    }
+
+    private void doStartBrowserProcess(boolean useVulkan) {
         // The Activity must be launched in order for proper webview statics to be setup.
         launchActivity();
         if (!sBrowserProcessStarted) {
             sBrowserProcessStarted = true;
-            TestThreadUtils.runOnUiThreadBlocking(() -> AwBrowserProcess.start());
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AwTestContainerView.installDrawFnFunctionTable(useVulkan);
+                AwBrowserProcess.start();
+            });
         }
         if (mBrowserContext != null) {
             TestThreadUtils.runOnUiThreadBlocking(

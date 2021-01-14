@@ -75,6 +75,10 @@ public class AwTestContainerView extends FrameLayout {
         }
     }
 
+    public static void installDrawFnFunctionTable(boolean useVulkan) {
+        AwDrawFnImpl.setDrawFnFunctionTable(ContextManager.getDrawFnFunctionTable(useVulkan));
+    }
+
     private class HardwareView extends SurfaceView implements SurfaceHolder.Callback {
         // Only accessed on UI thread.
         private int mWidth;
@@ -145,7 +149,8 @@ public class AwTestContainerView extends FrameLayout {
             mHaveSurface = true;
 
             Surface surface = holder.getSurface();
-            sRenderThreadHandler.post(() -> { mContextManager.setSurface(surface); });
+            sRenderThreadHandler.post(
+                    () -> { mContextManager.setSurface(surface, width, height); });
 
             if (mReadyToRenderCallback != null) {
                 mReadyToRenderCallback.run();
@@ -168,7 +173,7 @@ public class AwTestContainerView extends FrameLayout {
             mHaveSurface = false;
             WaitableEvent event = new WaitableEvent();
             sRenderThreadHandler.post(() -> {
-                mContextManager.setSurface(null);
+                mContextManager.setSurface(null, 0, 0);
                 event.signal();
             });
             event.waitForEvent();
@@ -230,9 +235,6 @@ public class AwTestContainerView extends FrameLayout {
 
     public void initialize(AwContents awContents) {
         mAwContents = awContents;
-        if (isBackedByHardwareView()) {
-            AwDrawFnImpl.setDrawFnFunctionTable(ContextManager.getDrawFnFunctionTable());
-        }
     }
 
     public void setWindowVisibleDisplayFrameOverride(Rect rect) {

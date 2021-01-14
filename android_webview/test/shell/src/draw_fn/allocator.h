@@ -13,6 +13,8 @@
 
 namespace draw_fn {
 
+void SetDrawFnUseVulkan(bool use_vulkan);
+
 AwDrawFnFunctionTable* GetDrawFnFunctionTable();
 
 struct FunctorData {

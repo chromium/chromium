@@ -129,6 +129,7 @@ public class AwSecondBrowserProcessTest {
         // runOnMainSync does not catch RuntimeExceptions, they just terminate the test.
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             try {
+                AwTestContainerView.installDrawFnFunctionTable(/*useVulkan=*/false);
                 AwBrowserProcess.start();
                 success[0] = true;
             } catch (RuntimeException e) {

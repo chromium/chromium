@@ -165,7 +165,9 @@ shared_library("libstandalonelibwebviewchromium") {
     "//components/autofill/android/provider/test_support:component_autofill_provider_native_test_support",
     "//components/heap_profiling/multi_process:test_support",
     "//content/public/test/android:content_native_test_support",
-    "//ui/gl",
+    "//gpu/vulkan",
+    "//gpu/vulkan/init",
+    "//gpu/vulkan/init:skia",
   ]
   libs = [ "android" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

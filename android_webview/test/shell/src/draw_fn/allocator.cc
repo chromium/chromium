@@ -12,8 +12,11 @@ namespace draw_fn {
 
 namespace {
 
+bool g_use_vulkan = false;
+
 AwDrawFnRenderMode QueryRenderMode() {
-  return AW_DRAW_FN_RENDER_MODE_OPENGL_ES;
+  return g_use_vulkan ? AW_DRAW_FN_RENDER_MODE_VULKAN
+                      : AW_DRAW_FN_RENDER_MODE_OPENGL_ES;
 }
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
@@ -33,6 +36,10 @@ void ReleaseFunctor(int functor) {
 }
 
 }  // namespace
+
+void SetDrawFnUseVulkan(bool use_vulkan) {
+  g_use_vulkan = use_vulkan;
+}
 
 AwDrawFnFunctionTable* GetDrawFnFunctionTable() {
   static AwDrawFnFunctionTable table{kAwDrawFnVersion, &QueryRenderMode,

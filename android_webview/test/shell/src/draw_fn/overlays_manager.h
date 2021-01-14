@@ -12,6 +12,7 @@
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 struct AwDrawFn_DrawGLParams;
+struct AwDrawFn_DrawVkParams;
 
 namespace draw_fn {
 
@@ -25,6 +26,9 @@ class OverlaysManager {
     ScopedDraw(OverlaysManager& manager,
                FunctorData& functor,
                AwDrawFn_DrawGLParams& params);
+    ScopedDraw(OverlaysManager& manager,
+               FunctorData& functor,
+               AwDrawFn_DrawVkParams& params);
     ~ScopedDraw();
 
    private:
