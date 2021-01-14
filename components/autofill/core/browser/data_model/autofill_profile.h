@@ -279,7 +279,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Check for the validity of the data. Leave the field empty if the data is
   // invalid and the relevant feature is enabled.
-  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const override;
+  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const;
 
   base::WeakPtr<const AutofillProfile> GetWeakPtr() const {
     return weak_ptr_factory_.GetWeakPtr();

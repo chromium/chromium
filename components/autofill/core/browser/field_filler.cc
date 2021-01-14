@@ -821,22 +821,28 @@ bool FieldFiller::FillFormField(
     const base::string16& cvc,
     std::string* failure_to_fill) {
   const AutofillType type = field.Type();
-  const AutofillDataModel& data_model = [&]() -> const AutofillDataModel& {
-    if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card))
-      return *absl::get<const AutofillProfile*>(profile_or_credit_card);
-    else
-      return *absl::get<const CreditCard*>(profile_or_credit_card);
-  }();
 
-  if (data_model.ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
-    if (failure_to_fill)
-      *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";
-    return false;
+  base::string16 value;
+  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
+    const AutofillProfile* profile =
+        absl::get<const AutofillProfile*>(profile_or_credit_card);
+    if (profile->ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
+      if (failure_to_fill)
+        *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";
+      return false;
+    }
+
+    value = profile->GetInfo(type, app_locale_);
+  } else {
+    DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card));
+
+    if (type.GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
+      value = cvc;
+    } else {
+      value = absl::get<const CreditCard*>(profile_or_credit_card)
+                  ->GetInfo(type, app_locale_);
+    }
   }
-
-  base::string16 value = data_model.GetInfo(type, app_locale_);
-  if (type.GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)
-    value = cvc;
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (value.empty()) {

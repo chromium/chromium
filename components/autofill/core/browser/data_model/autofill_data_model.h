@@ -94,10 +94,6 @@ class AutofillDataModel : public FormGroup {
   virtual ValidityState GetValidityState(ServerFieldType type,
                                          ValidationSource source) const;
 
-  // Check for the validity of the data. Leave the field empty if the data is
-  // invalid and the relevant feature is enabled.
-  virtual bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const;
-
  protected:
   // Called to update |use_count_| and |use_date_| when this data model is
   // the subject of user interaction (usually, when it's used to fill a form).
