@@ -633,7 +633,7 @@ class PolicyTemplateChecker(object):
               self._Error(
                   ('Policy %s of type main has an item with a value %s, value '
                    'must be one of %s') %
-                  (policy.get('name'), name, required_names))
+                  (policy.get('name'), value, required_values))
 
       if not values_seen.issuperset(required_values):
         self._Error(
