@@ -74,10 +74,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   void InitLayout();
 
-  // Updates the previews in the icon without an animation. Assumes that the
-  // target previews state has been set for all items in `previews_by_id_`.
-  void UpdatePreviewsWithoutAnimation();
-
   // Invoked when the specified preview has completed animating out. At this
   // point it is owned by `removed_previews_` and should be destroyed.
   void OnOldItemAnimatedOut(HoldingSpaceTrayIconPreview*,
@@ -93,9 +89,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // Animates new items in. Done while updating the previews shown in the icon.
   void AnimateInNewItems();
-
-  // Ensure that preview layers stacking matches their order in the item list.
-  void UpdatePreviewLayerStacking();
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;

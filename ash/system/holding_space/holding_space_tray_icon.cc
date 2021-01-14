@@ -129,7 +129,6 @@ HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
 
 void HoldingSpaceTrayIcon::Clear() {
   previews_update_weak_factory_.InvalidateWeakPtrs();
-  item_ids_.clear();
   previews_by_id_.clear();
   removed_previews_.clear();
   SetPreferredSize(CalculatePreferredSize());
@@ -177,25 +176,11 @@ void HoldingSpaceTrayIcon::InitLayout() {
   previews_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
-void HoldingSpaceTrayIcon::UpdatePreviewsWithoutAnimation() {
-  for (auto& preview : previews_by_id_)
-    preview.second->UpdateWithoutAnimation();
-
-  UpdatePreviewLayerStacking();
-
-  if (resize_animation_)
-    resize_animation_.reset();
-  SetPreferredSize(CalculatePreferredSize());
-}
-
 void HoldingSpaceTrayIcon::UpdatePreviews(
     const std::vector<const HoldingSpaceItem*> items) {
   // Cancel any in progress updates.
   previews_update_weak_factory_.InvalidateWeakPtrs();
 
-  // Don't animate if transitioning from empty previews icon to prevent
-  // previews from animating while the tray icon is animating in.
-  const bool animate = !item_ids_.empty();
   item_ids_.clear();
 
   // Go over the new item list, create previews for new items, and assign new
@@ -225,14 +210,6 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
   for (const auto& preview_pair : previews_by_id_) {
     if (!base::Contains(item_ids, preview_pair.first))
       items_to_remove.push_back(preview_pair.first);
-  }
-
-  if (!animate) {
-    for (auto& item_id : items_to_remove)
-      previews_by_id_.erase(item_id);
-
-    UpdatePreviewsWithoutAnimation();
-    return;
   }
 
   if (items_to_remove.empty()) {
@@ -327,7 +304,13 @@ void HoldingSpaceTrayIcon::OnOldItemsRemoved() {
   ShiftExistingItems();
   AnimateInNewItems();
 
-  UpdatePreviewLayerStacking();
+  // Ensure that preview layers stacking matches their order in the item list.
+  for (auto& item_id : item_ids_) {
+    auto preview_it = previews_by_id_.find(item_id);
+    HoldingSpaceTrayIconPreview* preview_ptr = preview_it->second.get();
+    if (preview_ptr->layer())
+      previews_container_->layer()->StackAtBottom(preview_ptr->layer());
+  }
 }
 
 void HoldingSpaceTrayIcon::ShiftExistingItems() {
@@ -401,15 +384,6 @@ void HoldingSpaceTrayIcon::AnimateInNewItems() {
       if (addition_delay < base::TimeDelta())
         addition_delay = base::TimeDelta();
     }
-  }
-}
-
-void HoldingSpaceTrayIcon::UpdatePreviewLayerStacking() {
-  for (auto& item_id : item_ids_) {
-    auto preview_it = previews_by_id_.find(item_id);
-    HoldingSpaceTrayIconPreview* preview_ptr = preview_it->second.get();
-    if (preview_ptr->layer())
-      previews_container_->layer()->StackAtBottom(preview_ptr->layer());
   }
 }
 
