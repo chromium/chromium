@@ -85,6 +85,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void OnThemeChanged() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
@@ -109,6 +110,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Builds the views hieararchy.
   void BuildLayout();
+
+  void UpdateToolbarColor();
 
   // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
   // `url` is empty, it only shows `contents` with its currently loaded url.

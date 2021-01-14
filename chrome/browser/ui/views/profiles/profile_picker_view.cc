@@ -512,31 +512,25 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // Listen for sign-in getting completed.
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(profile));
-  // TODO(crbug.com/1126913): When there is back button from the signed-in page,
-  // make sure the flow does not create multiple profiles simultaneously.
   signed_in_profile_being_created_ = profile;
 
-  // Build the toolbar. Do it as late as here because the elements depend on the
+  // Build the toolbar. Do it as late as here because the button depends on the
   // ThemeProvider which is available only by signed_in_profile_being_created_.
-  const ui::ThemeProvider* tp = GetThemeProviderForProfileBeingCreated();
-  toolbar_->SetBackground(views::CreateSolidBackground(
-      tp->GetColor(ThemeProperties::COLOR_TOOLBAR)));
-
   auto back_button = std::make_unique<SimpleBackButton>(base::BindRepeating(
       &ProfilePickerView::BackButtonPressed, base::Unretained(this)));
   toolbar_->AddChildView(std::move(back_button));
-
-  // TODO(crbug.com/1126913): Build the read-only omnibox.
 
   new_profile_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(signed_in_profile_being_created_));
   new_profile_contents_->SetDelegate(this);
 
-  // Make sure the web contents used for sign-in has proper background (for dark
-  // mode).
+  // Make sure the web contents used for sign-in has proper background to match
+  // the toolbar (for dark mode).
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       new_profile_contents_.get(),
-      tp->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND));
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+
+  UpdateToolbarColor();
 
   ShowScreen(new_profile_contents_.get(), GetSigninURL(),
              /*show_toolbar=*/true);
@@ -628,6 +622,13 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
+void ProfilePickerView::OnThemeChanged() {
+  views::WidgetDelegateView::OnThemeChanged();
+  if (!IsSigningIn())
+    return;
+  UpdateToolbarColor();
+}
+
 bool ProfilePickerView::HandleContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
@@ -696,6 +697,12 @@ void ProfilePickerView::BuildLayout() {
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);
   web_view_ = AddChildView(std::move(web_view));
+}
+
+void ProfilePickerView::UpdateToolbarColor() {
+  DCHECK(new_profile_contents_);
+  toolbar_->SetBackground(views::CreateSolidBackground(
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR)));
 }
 
 void ProfilePickerView::ShowScreen(content::WebContents* contents,
