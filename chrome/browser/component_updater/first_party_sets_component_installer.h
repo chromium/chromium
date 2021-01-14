@@ -41,11 +41,19 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void ReconfigureAfterNetworkRestart(
       const base::RepeatingCallback<void(const std::string&)>&);
 
+  static const char kDogfoodInstallerAttributeName[];
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnNetworkRestart);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           GetInstallerAttributes_Disabled);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           GetInstallerAttributes_NonDogfooder);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           GetInstallerAttributes_Dogfooder);
 
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
