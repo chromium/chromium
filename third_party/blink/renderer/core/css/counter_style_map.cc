@@ -15,10 +15,17 @@ namespace blink {
 
 namespace {
 
+const char* predefined_symbol_markers[] = {
+    "disc", "square", "circle", "disclosure-open", "disclosure-closed"};
+
 CounterStyleMap* CreateUACounterStyleMap() {
   CounterStyleMap* map =
       MakeGarbageCollected<CounterStyleMap>(nullptr, nullptr);
   map->AddCounterStyles(*CSSDefaultStyleSheets::Instance().DefaultStyle());
+  for (const char* symbol_marker : predefined_symbol_markers) {
+    map->FindCounterStyleAcrossScopes(symbol_marker)
+        .SetIsPredefinedSymbolMarker();
+  }
   map->ResolveReferences();
   return map;
 }

@@ -75,9 +75,9 @@ PASS list marker is 0.
 PASS list marker is 1.
 
 tamil
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is -௧.
+PASS list marker is ௦.
+PASS list marker is ௧.
 
 trad-chinese-formal
 PASS list marker is 負壹.

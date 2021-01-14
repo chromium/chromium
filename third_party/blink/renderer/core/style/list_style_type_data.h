@@ -53,6 +53,8 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
     return name_or_string_value_;
   }
 
+  const TreeScope* GetTreeScope() const { return tree_scope_; }
+
   EListStyleType ToDeprecatedListStyleTypeEnum() const;
 
  private:

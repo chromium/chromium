@@ -262,9 +262,9 @@ The CSS2.0 specification doesn't define the algorithm for the Hebrew numbering.
 ד four, should show ד
 ה five, should show ה
 
-זצ ninety-seven, undefined, may show צז
-חצ ninety-eight, undefined, may show צח
-טצ ninety-nine, undefined, may show צט
+צז ninety-seven, undefined, may show צז
+צח ninety-eight, undefined, may show צח
+צט ninety-nine, undefined, may show צט
 ק hundred, undefined, may show ק
 אק a hundred and one, undefined, may show קא
 

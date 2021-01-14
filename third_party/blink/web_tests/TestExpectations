@@ -828,10 +828,45 @@ crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure 
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 
-# [css-counter-styles]
-# Need to implement predefined counter style 'simp-chinese-informal' as a
-# custom counter style.
+# [css-counter-styles-3]
+# Need to implement as custom counter styles:
+# 'simp-chinese-informal', 'simp-chinese-formal', 'trad-chinese-informal',
+# 'trad-chinese-formal', 'ethiopic-halehame', 'ethiopic-halehame-ti-er',
+# 'ethiopic-halehame-ti-et', and 'hangul-consonant', 'hangul', 'urdu'
+# Implemented as custom counter styles, but not exactly match existing behavior:
+# - Complex CJK styles should fallback to 'cjk-decimal', not 'decimal'
+# - 'armenian', 'upper-armenian', 'hebrew', and CJK styles should support
+#   larger value ranges, matching the old behavior
+# - 'hebrew' representation of 0
 crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-054.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-059.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-064.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-071.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-072.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-073.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-074.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-075.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-076.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-077.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-078.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-079.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-080.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-081.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-082.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-083.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-084.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-085.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-086.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-087.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-088.html [ Failure ]
+crbug.com/687225 fast/lists/css3-counter-styles-089.html [ Failure ]
+crbug.com/687225 fast/lists/decimal-leading-zero.html [ Failure ]
+crbug.com/687225 fast/lists/li-values.html [ Failure ]
+crbug.com/687225 fast/lists/w3-css3-list-styles-alphabetic.html [ Failure ]
+crbug.com/687225 fast/lists/w3-css3-list-styles-fallback-style.html [ Failure ]
+crbug.com/687225 fast/lists/w3-css3-list-styles-numeric.html [ Failure ]
+crbug.com/687225 fast/lists/w3-list-styles.html [ Failure ]
 
 # [css-overflow]
 # Incorrect WPT tests.
@@ -2956,7 +2991,6 @@ crbug.com/626703 external/wpt/html/browsers/history/joint-session-history/joint-
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-descriptor-01.html [ Failure ]
 crbug.com/626703 [ Win7 ] external/wpt/css/css-fonts/variations/font-opentype-collections.html [ Timeout ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-numeric.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-suffix-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-range.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-negative-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/redefine-attr-mapping.html [ Failure ]
@@ -2964,24 +2998,18 @@ crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-additive.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-negative.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-pad.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-suffix.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-fallback-invalid.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-cyclic.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-prefix.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/dependent-builtin.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-prefix-invalid.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-alphabetic.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-fallback.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-extends.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-fixed.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/name-case-sensitivity.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-range-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/disclosure-styles.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-symbols-invalid.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-symbolic.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-symbols.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-extends-invalid.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/redefine-builtin.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-05.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-06.xht [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ Failure ]

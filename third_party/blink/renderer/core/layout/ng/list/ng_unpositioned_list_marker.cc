@@ -32,8 +32,8 @@ LayoutUnit NGUnpositionedListMarker::InlineOffset(
   LayoutObject* list_item =
       marker_layout_object_->Marker().ListItem(*marker_layout_object_);
   auto margins = ListMarker::InlineMarginsForOutside(
-      marker_layout_object_->StyleRef(), list_item->StyleRef(),
-      marker_inline_size);
+      list_item->GetDocument(), marker_layout_object_->StyleRef(),
+      list_item->StyleRef(), marker_inline_size);
   return margins.first;
 }
 

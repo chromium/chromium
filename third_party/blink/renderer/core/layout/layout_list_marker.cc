@@ -25,12 +25,14 @@
 
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/list_marker_text.h"
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
+#include "third_party/blink/renderer/core/style/list_style_type_data.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 namespace blink {
@@ -175,12 +177,20 @@ void LayoutListMarker::UpdateContent() {
     case ListMarker::ListStyleCategory::kNone:
       break;
     case ListMarker::ListStyleCategory::kSymbol:
-      text_ = list_marker_text::GetText(StyleRef().ListStyleType(),
-                                        0);  // value is ignored for these types
+      // value is ignored for these types
+      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+        text_ = GetCounterStyle().GenerateRepresentation(0);
+      } else {
+        text_ = list_marker_text::GetText(StyleRef().ListStyleType(), 0);
+      }
       break;
     case ListMarker::ListStyleCategory::kLanguage:
-      text_ = list_marker_text::GetText(StyleRef().ListStyleType(),
-                                        ListItem()->Value());
+      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+        text_ = GetCounterStyle().GenerateRepresentation(ListItem()->Value());
+      } else {
+        text_ = list_marker_text::GetText(StyleRef().ListStyleType(),
+                                          ListItem()->Value());
+      }
       break;
     case ListMarker::ListStyleCategory::kStaticString:
       text_ = StyleRef().ListStyleStringValue();
@@ -192,9 +202,17 @@ String LayoutListMarker::TextAlternative() const {
   NOT_DESTROYED();
   if (GetListStyleCategory() == ListMarker::ListStyleCategory::kStaticString)
     return text_;
+
+  // Return prefix, marker text and then suffix even in RTL, reflecting speech
+  // order.
+
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    const CounterStyle& counter_style = GetCounterStyle();
+    return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
+  }
+
   UChar suffix =
       list_marker_text::Suffix(StyleRef().ListStyleType(), ListItem()->Value());
-  // Return suffix after the marker text, even in RTL, reflecting speech order.
   return text_ + suffix + ' ';
 }
 
@@ -210,6 +228,18 @@ LayoutUnit LayoutListMarker::GetWidthOfText(
     // Don't add a suffix.
     return item_width;
   }
+
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    // This doesn't seem correct, e.g., ligatures. We don't fix it since it's
+    // legacy layout.
+    const CounterStyle& counter_style = GetCounterStyle();
+    if (counter_style.GetPrefix())
+      item_width += LayoutUnit(font.Width(TextRun(counter_style.GetPrefix())));
+    if (counter_style.GetSuffix())
+      item_width += LayoutUnit(font.Width(TextRun(counter_style.GetSuffix())));
+    return item_width;
+  }
+
   // TODO(wkorman): Look into constructing a text run for both text and suffix
   // and painting them together.
   UChar suffix[2] = {
@@ -262,11 +292,11 @@ void LayoutListMarker::UpdateMargins(LayoutUnit marker_inline_size) {
   const ComputedStyle& style = StyleRef();
   const ComputedStyle& list_item_style = ListItem()->StyleRef();
   if (IsInside()) {
-    std::tie(margin_start, margin_end) =
-        ListMarker::InlineMarginsForInside(style, list_item_style);
+    std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForInside(
+        GetDocument(), style, list_item_style);
   } else {
     std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForOutside(
-        style, list_item_style, marker_inline_size);
+        GetDocument(), style, list_item_style, marker_inline_size);
   }
 
   SetMarginStart(margin_start);
@@ -305,7 +335,16 @@ LayoutUnit LayoutListMarker::BaselinePosition(
 
 ListMarker::ListStyleCategory LayoutListMarker::GetListStyleCategory() const {
   NOT_DESTROYED();
-  return ListMarker::GetListStyleCategory(StyleRef().ListStyleType());
+  return ListMarker::GetListStyleCategory(GetDocument(), StyleRef());
+}
+
+const CounterStyle& LayoutListMarker::GetCounterStyle() const {
+  NOT_DESTROYED();
+  const ListStyleTypeData* list_style_data = StyleRef().GetListStyleType();
+  DCHECK(list_style_data);
+  DCHECK(list_style_data->IsCounterStyle());
+  return GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
+      list_style_data->GetCounterStyleName(), list_style_data->GetTreeScope());
 }
 
 bool LayoutListMarker::IsInside() const {

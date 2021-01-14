@@ -256,14 +256,14 @@
 
 @counter-style disclosure-open {
   system: cyclic;
+  symbols: \25BE;
   suffix: " ";
-  /* for symbols, see normative text below */
 }
 
 @counter-style disclosure-closed {
   system: cyclic;
+  symbols: \25B8;
   suffix: " ";
-  /* for symbols, see normative text below */
 }
 
 /* https://drafts.csswg.org/css-counter-styles-3/#simple-fixed */

@@ -34,6 +34,11 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   AtomicString GetName() const;
   CounterStyleSystem GetSystem() const { return system_; }
 
+  // Returns true for the predefined symbolic counter styles 'disc', 'circle',
+  // 'square', 'disclosure-open' and 'disclosure-closed'.
+  bool IsPredefinedSymbolMarker() const { return is_predefined_symbol_marker_; }
+  void SetIsPredefinedSymbolMarker() { is_predefined_symbol_marker_ = true; }
+
   // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
   String GenerateRepresentation(int value) const;
 
@@ -118,6 +123,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   // First symbol value, for 'fixed' system only.
   wtf_size_t first_symbol_value_ = 1;
+
+  bool is_predefined_symbol_marker_ = false;
 
   friend class CounterStyleMapTest;
 };

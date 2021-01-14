@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class CounterStyle;
 class LayoutListItem;
 class LayoutNGListItem;
 class LayoutText;
@@ -50,9 +51,11 @@ class CORE_EXPORT ListMarker {
 
   // Compute inline margins for 'list-style-position: inside' and 'outside'.
   static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForInside(
+      Document&,
       const ComputedStyle& marker_style,
       const ComputedStyle& list_item_style);
   static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForOutside(
+      Document&,
       const ComputedStyle& marker_style,
       const ComputedStyle& list_item_style,
       LayoutUnit marker_inline_size);
@@ -66,10 +69,13 @@ class CORE_EXPORT ListMarker {
 
   // Returns the list's style as one of a reduced high level categorical set of
   // styles.
-  static ListStyleCategory GetListStyleCategory(EListStyleType);
+  static ListStyleCategory GetListStyleCategory(Document&,
+                                                const ComputedStyle&);
+
+  static const CounterStyle& GetCounterStyle(Document&, const ComputedStyle&);
 
  private:
-  enum MarkerTextFormat { kWithSuffix, kWithoutSuffix };
+  enum MarkerTextFormat { kWithPrefixSuffix, kWithoutPrefixSuffix };
   enum MarkerTextType {
     kNotText,  // The marker doesn't have a LayoutText, either because it has
                // not been created yet or because 'list-style-type' is 'none',

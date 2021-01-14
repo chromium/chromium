@@ -51,6 +51,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   String TextAlternative() const;
 
   ListMarker::ListStyleCategory GetListStyleCategory() const;
+  const CounterStyle& GetCounterStyle() const;
 
   bool IsInside() const;
 
