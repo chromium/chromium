@@ -1,0 +1,8 @@
+<iframe srcdoc="
+<script>
+  savedTop = top;
+  frameElement.remove();
+
+  document.interestCohort()
+    .catch(error => savedTop.document.body.appendChild(document.createElement('div')).appendChild(document.createTextNode('[error from subframe document] ' + error)));
+</script>"></iframe>

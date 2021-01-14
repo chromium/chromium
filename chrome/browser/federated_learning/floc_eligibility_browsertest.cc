@@ -23,6 +23,7 @@
 #include "content/public/test/test_host_resolver.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -40,9 +41,16 @@ class FixedFlocIdProvider : public federated_learning::FlocIdProvider {
 
 }  // namespace
 
+// Tests behaviors that affect whether the floc API is allowed and/or whether
+// the navigation's associated history entry is eligible for floc computation.
 class FlocEligibilityBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
+  FlocEligibilityBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kInterestCohortFeaturePolicy);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "InterestCohortAPI");
@@ -128,31 +136,32 @@ class FlocEligibilityBrowserTest
     return std::make_unique<FixedFlocIdProvider>();
   }
 
-  GURL NavigateToTestPage() {
+  void NavigateAndWaitForResourcesCompeletion(const GURL& url,
+                                              int expected_complete_resources) {
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
             web_contents());
 
-    GURL main_page_url(embedded_test_server()->GetURL(
-        "a.test", "/ad_tagging/frame_factory.html"));
+    ui_test_utils::NavigateToURL(browser(), url);
 
-    ui_test_utils::NavigateToURL(browser(), main_page_url);
-
-    // Four resources in the main frame and one favicon.
-    waiter->AddMinimumCompleteResourcesExpectation(5);
+    waiter->AddMinimumCompleteResourcesExpectation(expected_complete_resources);
     waiter->Wait();
-
-    return main_page_url;
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, NotEligibleByDefault) {
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       NotEligibleForHistoryByDefault) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  GURL main_page_url = NavigateToTestPage();
+  GURL main_page_url = embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
 
@@ -160,26 +169,33 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, NotEligibleByDefault) {
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, EligibleAfterAdResource) {
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       EligibleForHistoryAfterAdResource) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
   SetRulesetWithRules(
-      {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
 
-  GURL main_page_url = NavigateToTestPage();
+  GURL main_page_url = embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   // Expect that the navigation history is eligible for floc computation as the
   // page contains an ad resource.
   EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, EligibleAfterApiCall) {
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       EligibleForHistoryAfterApiCall) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  GURL main_page_url = NavigateToTestPage();
+  GURL main_page_url = embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
 
-  ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
-  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   // Expect that the navigation history is eligible for floc computation after
   // an API call.
@@ -187,26 +203,52 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, EligibleAfterApiCall) {
   EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, NotEligibleDueToPrivateIP) {
-  SetRulesetWithRules(
-      {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       NotEligibleForHistoryDueToFeaturePolicy) {
+  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  GURL main_page_url = NavigateToTestPage();
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
+
+  GURL main_page_url = embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/feature_policy_interest_cohort_none.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Expect that the navigation history is not eligible for floc computation as
+  // the feature policy disallows it.
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+}
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       NotEligibleForHistoryDueToPrivateIP) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
+
+  GURL main_page_url = embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   // Expect that the navigation history is not eligible for floc computation as
   // the IP was not publicly routable.
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, NotEligibleSubframeHistory) {
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       NotEligibleForHistorySubframeCommit) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  GURL main_page_url(embedded_test_server()->GetURL("a.test", "/iframe.html"));
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html"));
   GURL auto_subframe_url(
       embedded_test_server()->GetURL("a.test", "/title1.html"));
 
   // Navigate to a page that contains an iframe ("title1.html").
-  ui_test_utils::NavigateToURL(browser(), main_page_url);
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
   ASSERT_FALSE(HistoryContainsUrlVisit(auto_subframe_url));
@@ -233,7 +275,11 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        SettingFlocAllowedNoopOnDeletedHistory) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  GURL main_page_url = NavigateToTestPage();
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html"));
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   ASSERT_TRUE(HistoryContainsUrlVisit(main_page_url));
 
@@ -243,4 +289,136 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // page visit doesn't exist.
   EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
   ASSERT_FALSE(HistoryContainsUrlVisit(main_page_url));
+}
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, ApiAllowedByDefault) {
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html"));
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Navigate the iframe to a cross-origin site.
+  GURL subframe_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(web_contents(),
+                               /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  // Expect that both main frame and subframe are allowed to access floc.
+  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(child));
+}
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       ApiNotAllowedDueToFeaturePolicy) {
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test",
+      "/federated_learning/feature_policy_interest_cohort_none.html"));
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Navigate the iframe to a cross-origin site.
+  GURL subframe_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(web_contents(),
+                               /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  // Expect that both main frame and subframe are not allowed to access floc.
+  EXPECT_EQ("rejected", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
+}
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       ApiNotAllowedInSubframeDueToFeaturePolicySelf) {
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test",
+      "/federated_learning/feature_policy_interest_cohort_self.html"));
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Navigate the iframe to a cross-origin site.
+  GURL subframe_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(web_contents(),
+                               /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  // Expect that only the main frame can access floc.
+  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
+}
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
+                       ApiNotAllowedInDetachedDocument) {
+  ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "a.test",
+          "/federated_learning/interest_cohort_api_in_detached_document.html"));
+
+  EXPECT_EQ(
+      "[error from subframe document] InvalidAccessError: Failed to execute "
+      "'interestCohort' on 'Document': A browsing context is required when "
+      "calling document.interestCohort.",
+      EvalJs(web_contents()->GetMainFrame(), R"(
+        document.body.textContent
+      )")
+          .ExtractString());
+}
+
+class FlocEligibilityBrowserTestChromeFeaturePolicyDisabled
+    : public FlocEligibilityBrowserTest {
+ public:
+  FlocEligibilityBrowserTestChromeFeaturePolicyDisabled() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kInterestCohortFeaturePolicy);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
+                       FeaturePolicyFeatureNotAvailable) {
+  GURL main_page_url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), main_page_url);
+
+  EXPECT_FALSE(EvalJs(web_contents(), R"(
+      document.featurePolicy.features().includes("interest-cohort")
+    )")
+                   .ExtractBool());
+}
+
+// Try configuring the feature policy anyway. Check that the API succeeds and
+// the history is eligible for floc computation.
+IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
+                       FeaturePolicyFeatureNotEffective) {
+  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+
+  GURL main_page_url(embedded_test_server()->GetURL(
+      "a.test",
+      "/federated_learning/feature_policy_interest_cohort_none.html"));
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Navigate the iframe to a cross-origin site.
+  GURL subframe_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  content::NavigateIframeToURL(web_contents(),
+                               /*iframe_id=*/"test", subframe_url);
+
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  // Expect that both main frame and subframe are allowed to access floc.
+  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(child));
+
+  // Expect that the navigation history is eligible for floc computation.
+  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }

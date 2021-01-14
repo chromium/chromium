@@ -35,6 +35,7 @@ geolocation
 gyroscope
 hid
 idle-detection
+interest-cohort
 magnetometer
 microphone
 midi

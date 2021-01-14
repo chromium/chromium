@@ -33,6 +33,14 @@ FlocEligibilityObserver::OnCommit(
   if (!navigation_handle->GetSocketAddress().address().IsPubliclyRoutable())
     return ObservePolicy::STOP_OBSERVING;
 
+  // If the interest-cohort permissions policy in the main document disallows
+  // the floc inclusion, the navigation history is not eligible for floc. We can
+  // stop observing now.
+  if (!navigation_handle->GetRenderFrameHost()->IsFeatureEnabled(
+          blink::mojom::FeaturePolicyFeature::kInterestCohort)) {
+    return ObservePolicy::STOP_OBSERVING;
+  }
+
   DCHECK(!eligible_commit_);
   eligible_commit_ = true;
 

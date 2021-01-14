@@ -1066,10 +1066,10 @@ class CORE_EXPORT Document : public ContainerNode,
       ExecutionContext* execution_context);
 
   // Sends a query via Mojo to ask for the interest cohort. This can reject on
-  // permissions errors (e.g. cookies not allowed, etc.) or when the interest
-  // cohort is unavailable.
+  // permissions errors (e.g. preferences, content settings, feature policy,
+  // etc.) or when the interest cohort is unavailable.
   // https://github.com/jkarlin/floc
-  ScriptPromise interestCohort(ScriptState* script_state);
+  ScriptPromise interestCohort(ScriptState* script_state, ExceptionState&);
 
   // The following implements the rule from HTML 4 for what valid names are.
   // To get this right for all the XML cases, we probably have to improve this

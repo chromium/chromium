@@ -360,6 +360,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kForceSynchronousHTMLParsing},
           {"IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
            blink::features::kIgnoreCrossOriginWindowWhenNamedAccessOnWindow},
+          {"InterestCohortFeaturePolicy",
+           blink::features::kInterestCohortFeaturePolicy},
           {"LangClientHintHeader", features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LayoutNGTable", blink::features::kLayoutNGTable},

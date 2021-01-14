@@ -356,6 +356,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortAPIOriginTrial;
 
+BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortFeaturePolicy;
+
 }  // namespace features
 }  // namespace blink
 

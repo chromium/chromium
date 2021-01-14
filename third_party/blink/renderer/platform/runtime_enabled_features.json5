@@ -1037,6 +1037,10 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "InterestCohortFeaturePolicy",
+      status: "experimental",
+    },
+    {
       name: "IntersectionObserverDocumentScrollingElementRoot",
       status: "stable",
     },

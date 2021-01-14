@@ -140,6 +140,11 @@ enum FeaturePolicyFeature {
   // Controls access to getDisplayMedia() and getCurrentBrowsingContextMedia().
   kDisplayCapture = 81,
 
+  // Controls the access to the interest cohort as well as the eligibility for
+  // the navigation history entry to be included in the interest cohort
+  // computation. (https://github.com/WICG/floc)
+  kInterestCohort = 82,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_feature_policy_enum.py in

@@ -211,6 +211,12 @@
       depends_on: ["IdleDetection"],
     },
     {
+      name: "InterestCohort",
+      feature_policy_name: "interest-cohort",
+      feature_default: "EnableForAll",
+      depends_on: ["InterestCohortFeaturePolicy"],
+    },
+    {
       name: "Magnetometer",
       feature_policy_name: "magnetometer",
     },

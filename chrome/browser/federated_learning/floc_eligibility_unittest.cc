@@ -74,7 +74,9 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
                                            web_contents()->GetMainFrame());
   }
 
-  void NavigateToPage(const GURL& url, bool publicly_routable) {
+  void NavigateToPage(const GURL& url,
+                      bool publicly_routable,
+                      bool floc_feature_policy_enabled) {
     auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
         url, web_contents());
     simulator->SetTransition(ui::PageTransition::PAGE_TRANSITION_TYPED);
@@ -83,6 +85,13 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
       net::IPAddress address;
       EXPECT_TRUE(address.AssignFromIPLiteral("0.0.0.0"));
       simulator->SetSocketAddress(net::IPEndPoint(address, /*port=*/0));
+    }
+
+    if (!floc_feature_policy_enabled) {
+      simulator->SetFeaturePolicyHeader(
+          {{blink::mojom::FeaturePolicyFeature::kInterestCohort,
+            /*values=*/{}, /*matches_all_origins=*/false,
+            /*matches_opaque_src=*/false}});
     }
 
     simulator->Commit();
@@ -116,7 +125,8 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(FlocEligibilityUnitTest, OnInterestCohortApiUsed) {
   GURL url("https://foo.com");
-  NavigateToPage(url, /*publicly_routable=*/true);
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
 
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
@@ -126,7 +136,8 @@ TEST_F(FlocEligibilityUnitTest, OnInterestCohortApiUsed) {
 
 TEST_F(FlocEligibilityUnitTest, OnAdResourceObserved) {
   GURL url("https://foo.com");
-  NavigateToPage(url, /*publicly_routable=*/true);
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
 
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
@@ -136,7 +147,8 @@ TEST_F(FlocEligibilityUnitTest, OnAdResourceObserved) {
 
 TEST_F(FlocEligibilityUnitTest, OnNonAdResourceObserved) {
   GURL url("https://foo.com");
-  NavigateToPage(url, /*publicly_routable=*/true);
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
 
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
@@ -146,7 +158,22 @@ TEST_F(FlocEligibilityUnitTest, OnNonAdResourceObserved) {
 
 TEST_F(FlocEligibilityUnitTest, StopObservingPrivateIP) {
   GURL url("https://foo.com");
-  NavigateToPage(url, /*publicly_routable=*/false);
+  NavigateToPage(url, /*publicly_routable=*/false,
+                 /*floc_feature_policy_enabled=*/true);
+
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+
+  SimulateResourceDataUseUpdate(/*is_ad_resource=*/true);
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+
+  GetFlocEligibilityObserver()->OnInterestCohortApiUsed();
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+}
+
+TEST_F(FlocEligibilityUnitTest, StopObservingFlocFeaturePolicyDisabled) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/false);
 
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 

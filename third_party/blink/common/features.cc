@@ -865,5 +865,9 @@ const base::Feature kSendCnameAliasesToSubresourceFilterFromRenderer{
 const base::Feature kInterestCohortAPIOriginTrial{
     "InterestCohortAPIOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the availability of the "interest-cohort" feature policy.
+const base::Feature kInterestCohortFeaturePolicy{
+    "InterestCohortFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

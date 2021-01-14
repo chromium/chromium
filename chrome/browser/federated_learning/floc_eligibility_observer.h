@@ -19,7 +19,9 @@ namespace federated_learning {
 // computation. The history entry is eligible for floc computation if all of the
 // following conditions hold:
 // 1) the IP of the navigation was publicly routable.
-// 2) either the page has an ad resource, or the document.interestCohort API is
+// 2) the interest-cohort permissions policy in the main document allows the
+// floc history inclusion.
+// 3) either the page has an ad resource, or the document.interestCohort API is
 // used in the page.
 //
 // When the page is considered eligible for floc computation, a corresponding
