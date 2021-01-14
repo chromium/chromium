@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -99,6 +100,7 @@ class CORE_EXPORT ElementRuleCollector {
 
  public:
   ElementRuleCollector(const ElementResolveContext&,
+                       const StyleRecalcContext&,
                        const SelectorFilter&,
                        MatchResult&,
                        ComputedStyle*,
@@ -177,6 +179,7 @@ class CORE_EXPORT ElementRuleCollector {
 
  private:
   const ElementResolveContext& context_;
+  StyleRecalcContext style_recalc_context_;
   const SelectorFilter& selector_filter_;
   scoped_refptr<ComputedStyle>
       style_;  // FIXME: This can be mutated during matching!

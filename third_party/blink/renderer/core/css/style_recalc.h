@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace blink {
 
 class Element;
@@ -94,6 +96,17 @@ class StyleRecalcChange {
   bool reattach_ = false;
   // Force recalc of elements depending on container queries.
   bool recalc_container_query_dependent_ = false;
+};
+
+// StyleRecalcContext is an object that is passed on the stack during
+// the style recalc process.
+//
+// In the future, it will contain data which makes it possible to
+// evaluate Container Queries, but for now it's an empty placeholder.
+//
+// TODO(crbug.com/1145970): Populate this class.
+class StyleRecalcContext {
+  STACK_ALLOCATED();
 };
 
 }  // namespace blink

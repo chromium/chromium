@@ -956,8 +956,9 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     StyleResolverState state(GetDocument(), *host);
     SelectorFilter filter;
     MatchResult match_result;
-    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
-                                   state.Style(), EInsideLink::kNotInsideLink);
+    ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                   filter, match_result, state.Style(),
+                                   EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
     const auto& properties = match_result.GetMatchedProperties();
@@ -982,8 +983,9 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     StyleResolverState state(GetDocument(), *span);
     SelectorFilter filter;
     MatchResult match_result;
-    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
-                                   state.Style(), EInsideLink::kNotInsideLink);
+    ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                   filter, match_result, state.Style(),
+                                   EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
     const auto& properties = match_result.GetMatchedProperties();

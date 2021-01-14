@@ -60,12 +60,15 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
 
 }  // namespace
 
-ElementRuleCollector::ElementRuleCollector(const ElementResolveContext& context,
-                                           const SelectorFilter& filter,
-                                           MatchResult& result,
-                                           ComputedStyle* style,
-                                           EInsideLink inside_link)
+ElementRuleCollector::ElementRuleCollector(
+    const ElementResolveContext& context,
+    const StyleRecalcContext& style_recalc_context,
+    const SelectorFilter& filter,
+    MatchResult& result,
+    ComputedStyle* style,
+    EInsideLink inside_link)
     : context_(context),
+      style_recalc_context_(style_recalc_context),
       selector_filter_(filter),
       style_(style),
       pseudo_style_request_(kPseudoIdNone),
