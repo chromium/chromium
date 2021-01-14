@@ -5842,3 +5842,6 @@ crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [
 
 # Sheriff 2021-01-13
 crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure ]
+
+# Sheriff 2021-01-14
+crbug.com/1166540 [ Mac ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Pass Failure ]
