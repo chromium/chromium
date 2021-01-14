@@ -16,6 +16,35 @@
       }
     }
 
+    async function writeLoop(writer, requiredBytes) {
+      if (!(writer instanceof WritableStreamDefaultWriter))
+        return 'write failed: writer is not a WritableStreamDefaultWriter';
+      let bytesWritten = 0;
+      let chunkLength = 0;
+      while (bytesWritten < requiredBytes) {
+        chunkLength = Math.min(chunkLength + 1,
+                               requiredBytes - bytesWritten);
+        let chunk = new Uint8Array(chunkLength);
+        for (let index = 0; index < chunkLength; ++index) {
+          chunk[index] = bytesWritten % 256;
+          ++bytesWritten;
+        }
+        await writer.ready;
+        await writer.write(chunk);
+      }
+      return 'write succeeded';
+    }
+
+    async function writeTcp(options, requiredBytes) {
+      try {
+        let tcpSocket = await navigator.openTCPSocket(options);
+        let writer = tcpSocket.writable.getWriter();
+        return await writeLoop(writer, requiredBytes);
+      } catch(error) {
+        return ('writeTcp failed: ' + error);
+      }
+    }
+
     async function closeTcp(options, closeWriter) {
       try {
         let tcpSocket = await navigator.openTCPSocket(options);

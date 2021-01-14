@@ -190,6 +190,87 @@ net::Error UnconditionallyPermitConnection(
   return net::OK;
 }
 
+class ReadWaiter {
+ public:
+  explicit ReadWaiter(uint32_t required_bytes)
+      : required_bytes_(required_bytes) {}
+
+  void Init(mojo::Remote<network::mojom::TCPServerSocket>& tcp_server_socket) {
+    tcp_server_socket->Accept(
+        /*observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [this](int result,
+                   const base::Optional<net::IPEndPoint>& remote_addr,
+                   mojo::PendingRemote<network::mojom::TCPConnectedSocket>
+                       accepted_socket,
+                   mojo::ScopedDataPipeConsumerHandle consumer_handle,
+                   mojo::ScopedDataPipeProducerHandle producer_handle) {
+              DCHECK(!accepted_socket_);
+              DCHECK_EQ(result, net::OK);
+
+              accepted_socket_.Bind(std::move(accepted_socket));
+              receive_stream_ = std::move(consumer_handle);
+              read_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+                  FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+              read_watcher_->Watch(
+                  receive_stream_.get(),
+                  MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                  base::BindRepeating(&ReadWaiter::OnReadReady,
+                                      base::Unretained(this)));
+
+              read_watcher_->ArmOrNotify();
+            }));
+  }
+
+  void Await() { run_loop_.Run(); }
+
+ private:
+  void OnReadReady(MojoResult result, const mojo::HandleSignalsState& state) {
+    ReadData();
+  }
+
+  void ReadData() {
+    while (true) {
+      DCHECK(receive_stream_.is_valid());
+      DCHECK_LT(bytes_read_, required_bytes_);
+      const void* buffer = nullptr;
+      uint32_t num_bytes = 0;
+      const MojoResult mojo_result = receive_stream_->BeginReadData(
+          &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+      if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
+        read_watcher_->ArmOrNotify();
+        return;
+      }
+      DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
+
+      // This is guaranteed by Mojo.
+      DCHECK_GT(num_bytes, 0u);
+
+      const unsigned char* current = static_cast<const unsigned char*>(buffer);
+      const unsigned char* const end = current + num_bytes;
+      while (current < end) {
+        EXPECT_EQ(*current, bytes_read_ % 256);
+        ++current;
+        ++bytes_read_;
+      }
+
+      receive_stream_->EndReadData(num_bytes);
+      if (bytes_read_ == required_bytes_) {
+        run_loop_.Quit();
+        return;
+      }
+    }
+  }
+
+  base::RunLoop run_loop_;
+  const uint32_t required_bytes_;
+  mojo::Remote<network::mojom::TCPConnectedSocket> accepted_socket_;
+  mojo::ScopedDataPipeConsumerHandle receive_stream_;
+  std::unique_ptr<mojo::SimpleWatcher> read_watcher_;
+  uint32_t bytes_read_ = 0;
+};
+
 }  // anonymous namespace
 
 class DirectSocketsBrowserTest : public ContentBrowserTest {
@@ -248,6 +329,10 @@ class DirectSocketsBrowserTest : public ContentBrowserTest {
             }));
     run_loop.Run();
     return local_addr.port();
+  }
+
+  mojo::Remote<network::mojom::TCPServerSocket>& tcp_server_socket() {
+    return tcp_server_socket_;
   }
 
  protected:
@@ -408,6 +493,21 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_EQ(0, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
   EXPECT_EQ(true, call.no_delay);
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, WriteTcp) {
+  const uint32_t kRequiredBytes = 10000;
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  ReadWaiter read_waiter(kRequiredBytes);
+  const uint16_t listening_port = StartTcpServer();
+  read_waiter.Init(tcp_server_socket());
+
+  const std::string script = base::StringPrintf(
+      "writeTcp({remoteAddress: '127.0.0.1', remotePort: %d}, %u)",
+      listening_port, kRequiredBytes);
+  EXPECT_EQ("write succeeded", EvalJs(shell(), script));
+  read_waiter.Await();
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, CloseTcp) {
