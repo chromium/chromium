@@ -33,6 +33,19 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "";
+  editContext.addEventListener("textupdate", e => {
+    test.innerHTML = e.updateText;
+  });
+  editContext.focus();
+  eventSender.keyDown('a');
+  assert_equals(test.innerHTML, "a");
+}, 'Testing EditContext English typing');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div

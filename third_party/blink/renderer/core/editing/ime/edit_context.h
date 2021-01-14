@@ -174,6 +174,9 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
       int composition_end,
       const WebVector<ui::ImeTextSpan>& ime_text_spans);
 
+  // For English typing.
+  bool InsertText(const WebString& text);
+
   bool IsVirtualKeyboardPolicyManual() const override;
   bool IsEditContextActive() const override;
   // Returns whether show()/hide() API is called from virtualkeyboard or not.

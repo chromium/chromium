@@ -457,6 +457,20 @@ bool EditContext::SetCompositionFromExistingText(
   return true;
 }
 
+bool EditContext::InsertText(const WebString& text) {
+  String update_text(text);
+  text_ = text_.Substring(0, selection_start_) + update_text +
+          text_.Substring(selection_end_);
+  uint32_t update_range_start = selection_start_;
+  uint32_t update_range_end = selection_end_;
+  selection_start_ = selection_start_ + text.length();
+  selection_end_ = selection_start_;
+
+  DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
+                          selection_start_, selection_end_);
+  return true;
+}
+
 bool EditContext::CommitText(const WebString& text,
                              const WebVector<ui::ImeTextSpan>& ime_text_spans,
                              const WebRange& replacement_range,
