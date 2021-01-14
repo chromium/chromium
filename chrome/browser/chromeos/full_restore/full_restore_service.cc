@@ -39,6 +39,12 @@ const char kSetRestorePrefNotificationId[] = "set_restore_pref_notification";
 // set restore pref notification.
 const int kMaxConsecutiveRestoreSelectionCount = 3;
 
+// static
+FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
+  return static_cast<FullRestoreService*>(
+      FullRestoreServiceFactory::GetInstance()->GetForProfile(profile));
+}
+
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
       app_launch_handler_(std::make_unique<AppLaunchHandler>(profile_)),
@@ -83,6 +89,10 @@ FullRestoreService::FullRestoreService(Profile* profile)
 }
 
 FullRestoreService::~FullRestoreService() = default;
+
+void FullRestoreService::LauncherBrowserWhenReady() {
+  app_launch_handler_->LauncherBrowserWhenReady();
+}
 
 void FullRestoreService::Shutdown() {
   is_shut_down_ = true;

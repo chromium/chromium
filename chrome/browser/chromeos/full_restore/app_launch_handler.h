@@ -42,6 +42,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  // Launches the browser, When the restore data is loaded, and the user chooses
+  // to restore.
+  void LauncherBrowserWhenReady();
+
   // If the user preference sets always restore or the user selects 'Restore'
   // from the notification dialog, sets the restore flag |should_restore_| as
   // true to allow the restoration.
@@ -57,6 +61,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // true, launches apps based on the restore data when apps are ready.
   void MaybeRestore();
 
+  void LaunchBrowser();
+
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
 
   void LaunchWebAppOrExtension(
@@ -66,6 +72,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   Profile* profile_ = nullptr;
 
   bool should_restore_ = false;
+
+  bool should_launch_browser_ = false;
 
   std::unique_ptr<::full_restore::RestoreData> restore_data_;
 

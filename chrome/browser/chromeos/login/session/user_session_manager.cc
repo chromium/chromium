@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/child_accounts/child_policy_observer.h"
 #include "chrome/browser/chromeos/first_run/first_run.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/logging.h"
 #include "chrome/browser/chromeos/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/chromeos/login/chrome_restart_request.h"
@@ -2104,17 +2106,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   VLOG(1) << "Launching browser...";
   TRACE_EVENT0("login", "LaunchBrowser");
 
-  if (should_launch_browser_) {
-    StartupBrowserCreator browser_creator;
-    chrome::startup::IsFirstRun first_run =
-        ::first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                        : chrome::startup::IS_NOT_FIRST_RUN;
-
-    browser_creator.LaunchBrowser(
-        *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
-        chrome::startup::IS_PROCESS_STARTUP, first_run,
-        std::make_unique<LaunchModeRecorder>());
-  }
+  if (should_launch_browser_ && !IsFullRestoreEnabled(profile))
+    LaunchBrowser(profile);
 
   if (HatsNotificationController::ShouldShowSurveyToProfile(profile))
     hats_notification_controller_ = new HatsNotificationController(profile);
@@ -2141,8 +2134,14 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   ShowNotificationsIfNeeded(profile);
 
   if (should_launch_browser_) {
-    MaybeLaunchSettings(profile);
+    if (IsFullRestoreEnabled(profile)) {
+      full_restore::FullRestoreService::GetForProfile(profile)
+          ->LauncherBrowserWhenReady();
+    } else {
+      MaybeLaunchSettings(profile);
+    }
   }
+
   StartAccountManagerMigration(profile);
 }
 
@@ -2165,6 +2164,18 @@ void UserSessionManager::RespectLocalePreferenceWrapper(
                                std::move(locale_switched_callback))) {
     std::move(repeating_callback).Run();
   }
+}
+
+void UserSessionManager::LaunchBrowser(Profile* profile) {
+  StartupBrowserCreator browser_creator;
+  chrome::startup::IsFirstRun first_run =
+      ::first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
+                                      : chrome::startup::IS_NOT_FIRST_RUN;
+
+  browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
+                                profile, base::FilePath(),
+                                chrome::startup::IS_PROCESS_STARTUP, first_run,
+                                std::make_unique<LaunchModeRecorder>());
 }
 
 // static
@@ -2297,6 +2308,12 @@ void UserSessionManager::WaitForEasyUnlockKeyOpsFinished(
     return;
   }
   easy_unlock_key_ops_finished_callbacks_.push_back(std::move(callback));
+}
+
+bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
+  auto* full_restore_service =
+      full_restore::FullRestoreService::GetForProfile(profile);
+  return full_restore_service != nullptr;
 }
 
 }  // namespace chromeos

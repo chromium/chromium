@@ -251,6 +251,8 @@ class UserSessionManager
   void RespectLocalePreferenceWrapper(Profile* profile,
                                       base::OnceClosure callback);
 
+  void LaunchBrowser(Profile* profile);
+
   // Restarts Chrome if needed. This happens when user session has custom
   // flags/switches enabled. Another case when owner has setup custom flags,
   // they are applied on login screen as well but not to user session.
@@ -515,6 +517,8 @@ class UserSessionManager
       const base::RepeatingClosure& attempt_restart_closure);
 
   void NotifyEasyUnlockKeyOpsFinished();
+
+  bool IsFullRestoreEnabled(Profile* profile);
 
   UserSessionManagerDelegate* delegate_;
 

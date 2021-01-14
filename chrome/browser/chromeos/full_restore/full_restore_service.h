@@ -47,11 +47,17 @@ enum class RestoreNotificationButtonIndex {
 // and restore apps and app windows.
 class FullRestoreService : public KeyedService {
  public:
+  static FullRestoreService* GetForProfile(Profile* profile);
+
   explicit FullRestoreService(Profile* profile);
   ~FullRestoreService() override;
 
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
+
+  // Launches the browser, When the restore data is loaded, and the user chooses
+  // to restore.
+  void LauncherBrowserWhenReady();
 
  private:
   // KeyedService overrides.

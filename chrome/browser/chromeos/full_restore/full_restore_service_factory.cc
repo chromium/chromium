@@ -20,6 +20,12 @@ FullRestoreServiceFactory* FullRestoreServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+FullRestoreService* FullRestoreServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<FullRestoreService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
 FullRestoreServiceFactory::FullRestoreServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FullRestoreService",

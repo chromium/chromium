@@ -21,6 +21,8 @@ class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static FullRestoreServiceFactory* GetInstance();
 
+  static FullRestoreService* GetForProfile(Profile* profile);
+
  private:
   friend base::NoDestructor<FullRestoreServiceFactory>;
 

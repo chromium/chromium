@@ -13,12 +13,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace chromeos {
@@ -62,6 +64,20 @@ void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
   apps::AppRegistryCache::Observer::Observe(nullptr);
 }
 
+void AppLaunchHandler::LauncherBrowserWhenReady() {
+  // If the restore data has been loaded, and the user has chosen to restore,
+  // launch the browser.
+  if (should_restore_ && restore_data_) {
+    LaunchBrowser();
+    return;
+  }
+
+  // If the restore data hasn't been loaded, or the user hasn't chosen to
+  // restore, set should_launch_browser_ as true, and wait the restore data
+  // loaded, and the user selection, then we can launch the browser.
+  should_launch_browser_ = true;
+}
+
 void AppLaunchHandler::SetShouldRestore() {
   should_restore_ = true;
   MaybePostRestore();
@@ -91,6 +107,11 @@ void AppLaunchHandler::MaybePostRestore() {
 }
 
 void AppLaunchHandler::MaybeRestore() {
+  if (should_launch_browser_) {
+    LaunchBrowser();
+    should_launch_browser_ = false;
+  }
+
   // If there is no launch list from the restore data, we don't need to handle
   // the restoration.
   const auto& launch_list = restore_data_->app_id_to_launch_list();
@@ -116,6 +137,11 @@ void AppLaunchHandler::MaybeRestore() {
 
   for (const auto& app_id : app_ids)
     LaunchApp(cache->GetAppType(app_id), app_id);
+}
+
+void AppLaunchHandler::LaunchBrowser() {
+  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
 
 void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
