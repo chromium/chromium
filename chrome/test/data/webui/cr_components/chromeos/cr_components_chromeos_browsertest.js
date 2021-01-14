@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 
 // Polymer 2 test list format:
 //
@@ -92,7 +93,11 @@ GEN('#include "content/public/test/browser_test.h"');
   ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js', [
     './cellular_setup/fake_cellular_setup_delegate.js',
   ]],
-].forEach(test => registerTest('CellularSetup', 'cellular-setup', ...test));
+  ['CellularEidPopup', 'cellular_setup/cellular_eid_popup_test.js', [
+    './cellular_setup/fake_canvas_context.js',
+    './cellular_setup/fake_esim_manager_remote.js',
+  ]],
+].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
 
 function registerTest(componentName, webuiHost, testName, module, deps) {
@@ -106,6 +111,15 @@ function registerTest(componentName, webuiHost, testName, module, deps) {
     /** @override */
     get extraLibraries() {
       return super.extraLibraries.concat(module).concat(deps);
+    }
+
+    /** @override */
+    get featureList() {
+      return {
+        enabled: [
+          'chromeos::features::kUpdatedCellularActivationUi',
+        ],
+      };
     }
   };
 

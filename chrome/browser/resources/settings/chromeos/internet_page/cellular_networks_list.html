@@ -52,16 +52,6 @@
         flex-direction: column;
       }
 
-      .eid-popup {
-        background-color: white;
-        border-radius: 4px;
-        box-shadow:  0 2px 5px rgba(0,0,0,0.18);
-        margin: 34px 0 0 12px;
-        position: absolute;
-        width: 224px;
-        z-index: 1;
-      }
-
       #eidPopupButton {
         cursor: pointer;
         margin-inline-start: 0;
@@ -85,7 +75,7 @@
               on-click="toggleEidPopup_">
           </cr-icon-button>
           <template is="dom-if" if="[[shouldShowEidPopup_]]" restamp>
-            <cellular-eid-popup class="eid-popup">
+            <cellular-eid-popup class="eid-popup" euicc="[[euicc_]]">
             </cellular-eid-popup>
           </template>
         </div>

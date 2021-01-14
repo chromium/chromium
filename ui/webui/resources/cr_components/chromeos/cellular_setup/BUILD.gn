@@ -190,6 +190,7 @@ js_type_check("closure_compile_module") {
     ":activation_code_page.m",
     ":base_page.m",
     ":button_bar.m",
+    ":cellular_eid_popup.m",
     ":cellular_setup.m",
     ":cellular_setup_delegate.m",
     ":cellular_types.m",

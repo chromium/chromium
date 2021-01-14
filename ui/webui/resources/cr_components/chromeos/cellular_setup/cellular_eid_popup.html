@@ -8,6 +8,15 @@
 <dom-module id="cellular-eid-popup">
   <template>
     <style include="cr-shared-style iron-flex">
+      :host {
+        background-color: white;
+        border-radius: 4px;
+        box-shadow:  0 2px 5px rgba(0,0,0,0.18);
+        margin: 34px 0 0 12px;
+        position: absolute;
+        width: 275px;
+        z-index: 1;
+      }
 
       .cellular-network-list-header {
         border-top: var(--cr-separator-line);
@@ -46,6 +55,13 @@
         cursor: pointer;
       }
 
+      #qrCodeCanvas {
+        width: 100%;
+      }
+
+      #eid {
+        margin-top: 15px;
+      }
     </style>
     <div id="container"
         class="dialog"
@@ -68,7 +84,11 @@
         <div id="eidDescription" arian-hidden="true">
           [[i18n('eidPopupDescription')]]
         </div>
-        <!-- TODO(crbug/1093185): Add eid code -->
+        <div id="eid">[[eid_]]</div>
+        <canvas id="qrCodeCanvas"
+            width="[[canvasSize_]]"
+            height="[[canvasSize_]]">
+        </canvas>
       </div>
     </div>
   </template>
