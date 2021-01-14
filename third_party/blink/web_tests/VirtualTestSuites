@@ -331,11 +331,8 @@
   },
   {
     "prefix": "cors-rfc1918",
-    "bases": ["http/tests/security/cors-rfc1918",
-              "external/wpt/cors-rfc1918",
-              "external/wpt/fetch/cors-rfc1918"],
-    "args": ["--enable-blink-features=CorsRFC1918",
-             "--enable-features=BlockInsecurePrivateNetworkRequests"]
+    "bases": ["http/tests/security/cors-rfc1918"],
+    "args": ["--enable-blink-features=CorsRFC1918"]
   },
   {
     "prefix": "single-renderer-process",

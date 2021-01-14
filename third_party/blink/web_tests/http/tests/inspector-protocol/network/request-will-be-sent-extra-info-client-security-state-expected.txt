@@ -3,6 +3,6 @@ Network Enabled
 {
     initiatorIPAddressSpace : Local
     initiatorIsSecureContext : true
-    privateNetworkRequestPolicy : Allow
+    privateNetworkRequestPolicy : BlockFromInsecureToMorePrivate
 }
 

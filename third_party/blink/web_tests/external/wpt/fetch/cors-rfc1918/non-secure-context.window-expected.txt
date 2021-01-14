@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Local non secure page fetches local page.
-FAIL Public non secure page fetches local page. assert_equals: expected "failure" but got "success"
-Harness: the test ran to completion.
-
