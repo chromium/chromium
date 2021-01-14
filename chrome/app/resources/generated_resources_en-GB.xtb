@@ -50,7 +50,7 @@
 <translation id="1049324577536766607">{COUNT,plural, =1{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Language settings</translation>
-<translation id="1054153489933238809">Open Original Image in New Tab</translation>
+<translation id="1054153489933238809">Open original image in new tab</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="1055806300943943258">Searching for Bluetooth and USB devices...</translation>
 <translation id="1056466516655540509">Updated <ph name="MINUTES" /> min ago</translation>
@@ -477,7 +477,7 @@
 <translation id="1520689915144573455">{COUNT,plural, =1{1 app}other{# apps}}</translation>
 <translation id="1521442365706402292">Manage certificates</translation>
 <translation id="1521774566618522728">Active today</translation>
-<translation id="152234381334907219">Never Saved</translation>
+<translation id="152234381334907219">Never saved</translation>
 <translation id="1523978563989812243">Text-to-speech engines</translation>
 <translation id="1524430321211440688">Keyboard</translation>
 <translation id="1524563461097350801">No, thanks</translation>
@@ -709,7 +709,7 @@
 <translation id="1779468444204342338">Minimum</translation>
 <translation id="1779652936965200207">Please enter this passkey on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880"><ph name="ANDROID_PACKAGE_NAME" />, app</translation>
-<translation id="1780152987505130652">Close Group</translation>
+<translation id="1780152987505130652">Close group</translation>
 <translation id="1781291988450150470">Current PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="1781502536226964113">Open the New Tab page</translation>
@@ -933,7 +933,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{You have 1 compromised password}other{You have # compromised passwords}}</translation>
 <translation id="2040863272941698761">Set up Linux</translation>
-<translation id="204497730941176055">Microsoft Certificate Template Name</translation>
+<translation id="204497730941176055">Microsoft certificate template name</translation>
 <translation id="2045117674524495717">Keyboard Shortcut Helper</translation>
 <translation id="2045969484888636535">Continue blocking cookies</translation>
 <translation id="204622017488417136">Your device will be returned to the previously installed version of Chrome. All user accounts and local data will be removed. This cannot be undone.</translation>
@@ -2515,7 +2515,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3854967233147778866">Offer to translate websites in other languages</translation>
 <translation id="3854976556788175030">Output tray is full</translation>
 <translation id="3855441664322950881">Pack extension</translation>
-<translation id="3855676282923585394">Import Bookmarks and Settings...</translation>
+<translation id="3855676282923585394">Import bookmarks and settings...</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3857807444929313943">Lift, then touch again</translation>
@@ -6776,7 +6776,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8871551568777368300">Pinned by administrator</translation>
 <translation id="8871696467337989339">You are using an unsupported command-line flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
-<translation id="8871974300055371298">Content Settings ...</translation>
+<translation id="8871974300055371298">Content settings</translation>
 <translation id="8872155268274985541">Invalid Kiosk external update manifest file found. Failed to update Kiosk app. Please remove the USB stick.</translation>
 <translation id="8872777911145321141">Ask when a site wants to use your virtual reality devices and data (recommended)</translation>
 <translation id="8874184842967597500">Not connected</translation>

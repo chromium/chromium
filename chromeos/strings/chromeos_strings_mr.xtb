@@ -5,7 +5,7 @@
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
-<translation id="1204296502688602597">DNS लेटंसी</translation>
+<translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="1238612778414822719">HTTPS लेटन्सी</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -49,7 +49,7 @@
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
-<translation id="3310640316857623290">DNS लेटंसी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
+<translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
@@ -164,15 +164,15 @@
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>
 <translation id="8475690821716466388">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP PSK सह सुरक्षित केले गेले आहे</translation>
-<translation id="8477551185774834963">DNS लेटंसी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
+<translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
-<translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटंसी सीमेपेक्षा जास्त आहे</translation>
+<translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटन्सी सीमेपेक्षा जास्त आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8747900814994928677">बदलाची खात्री करा</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
-<translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटंसी सीमेच्या वर आहे</translation>
+<translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटन्सी सीमेच्या वर आहे</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>

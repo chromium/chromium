@@ -51,7 +51,7 @@
 <translation id="3423542133075182604">תהליך תקשורת מרוחקת למפתח אבטחה</translation>
 <translation id="3581045510967524389">לא ניתן היה להתחבר לרשת. יש לבדוק שהמכשיר שלך אונליין.</translation>
 <translation id="3596628256176442606">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chromoting.</translation>
-<translation id="369442766917958684">במצב לא מקוון.</translation>
+<translation id="369442766917958684">במצב אופליין.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3776024066357219166">‏הפעילות של Chrome Remote Desktop הסתיימה.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
@@ -130,7 +130,7 @@
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוך בואך אל Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
-<translation id="7312846573060934304">המארח במצב לא מקוון.</translation>
+<translation id="7312846573060934304">המארח במצב אופליין.</translation>
 <translation id="7319983568955948908">הפסקת השיתוף</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">נדחתה גישה עבור לקוח: <ph name="CLIENT_USERNAME" />.</translation>

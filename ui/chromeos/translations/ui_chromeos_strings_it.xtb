@@ -62,7 +62,7 @@
 <translation id="1561842594491319104">Dispositivi Chrome</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1620510694547887537">Videocamera</translation>
+<translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1622022025445651011">Francese (Francia)</translation>
 <translation id="1646019627374511909">Preparazione per la visualizzazione offline di <ph name="NUMBER_OF_ITEMS" /> file…</translation>
 <translation id="1649464394998806860">Russo con tastiera fonetica AATSEEL</translation>
@@ -437,7 +437,7 @@
 <translation id="570049376144986742">Francese (Svizzera)</translation>
 <translation id="5731409020711461763">1 nuova foto</translation>
 <translation id="573799789564358869">Inglese (USA) con tastiera Colemak</translation>
-<translation id="5752453871435543420">Backup nella cloud Chrome OS</translation>
+<translation id="5752453871435543420">Backup nel cloud Chrome OS</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
 <translation id="5776325638577448643">Resetta e formatta</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
@@ -465,7 +465,7 @@
 <translation id="6012987430370760224">Tastiera Marathi (fonetica)</translation>
 <translation id="6019169947004469866">Ritaglia</translation>
 <translation id="60357267506638014">Tastiera QWERTY Ceco</translation>
-<translation id="604001903249547235">Backup nella cloud</translation>
+<translation id="604001903249547235">Backup nel cloud</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6041767187407754614">Cinese rapido</translation>
 <translation id="6074825444536523002">Modulo Google</translation>
@@ -609,7 +609,7 @@
 <translation id="7705251383879779343">Elemento <ph name="FILE_NAME" /> copiato.</translation>
 <translation id="7711920809702896782">Info immagine</translation>
 <translation id="7724603315864178912">Taglia</translation>
-<translation id="7730494089396812859">Mostra dettagli backup nella cloud</translation>
+<translation id="7730494089396812859">Mostra dettagli backup nel cloud</translation>
 <translation id="7748626145866214022">Nella barra delle azioni sono disponibili altre opzioni. Premi ALT + A per impostare lo stato attivo sulla barra.</translation>
 <translation id="7756956835689272676">Francese (Canada) con tastiera multilingue</translation>
 <translation id="7765158879357617694">Sposta</translation>

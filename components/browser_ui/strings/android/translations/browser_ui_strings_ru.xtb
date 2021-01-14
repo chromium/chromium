@@ -63,7 +63,7 @@
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
-<translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта.</translation>
+<translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
@@ -107,7 +107,7 @@
 <translation id="3987993985790029246">Копировать ссылку</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> из ?</translation>
 <translation id="4002066346123236978">Название</translation>
-<translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie.</translation>
+<translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
@@ -120,7 +120,7 @@
 <translation id="4433925000917964731">Lite-версия страницы получена с помощью Google</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="445467742685312942">Разрешить сайтам воспроизводить защищенный контент</translation>
-<translation id="4468959413250150279">Отключить звуки на определенном сайте.</translation>
+<translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
 <translation id="4479647676395637221">Запрашивать разрешение на доступ к камере (рекомендуется)</translation>
 <translation id="4505788138578415521">URL развернут</translation>
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -229,7 +229,7 @@
 <translation id="7250468141469952378">Выбрано: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Разрешено: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Обычно вы блокируете уведомления. Чтобы разрешить их показ, нажмите "Подробнее".</translation>
-<translation id="7423098979219808738">Всегда спрашивать</translation>
+<translation id="7423098979219808738">Сначала спрашивать</translation>
 <translation id="7423538860840206698">Доступ к данным в буфере обмена заблокирован</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт использует ваш микрофон</translation>
@@ -249,7 +249,7 @@
 <translation id="783819812427904514">Включить звук для видео</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7846621471902887024">Вы выйдете из аккаунта на всех сайтах.</translation>
-<translation id="7882806643839505685">Включить звуки на определенном сайте.</translation>
+<translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
 <translation id="7993619969781047893">Некоторые функции на сайтах могут работать некорректно</translation>
 <translation id="7999064672810608036">Вы уверены, что хотите удалить все данные этого веб-сайта, включая файлы cookie, и сбросить заданные разрешения?</translation>
@@ -267,7 +267,7 @@
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8300705686683892304">Под управлением приложения</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
-<translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта.</translation>
+<translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта</translation>
 <translation id="8376384591331888629">В том числе сторонние файлы cookie на сайте</translation>
 <translation id="83792324527827022">Сайт использует вашу камеру и микрофон</translation>
 <translation id="8380167699614421159">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу</translation>
@@ -290,7 +290,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8737217482364735741">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
-<translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте.</translation>
+<translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
