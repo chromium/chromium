@@ -40,6 +40,7 @@ class Element;
 class ExceptionState;
 class HTMLCollection;
 class RadioNodeList;
+class StyleRecalcContext;
 class WhitespaceAttacher;
 
 using StaticElementList = StaticNodeTypeList<Element>;
@@ -286,7 +287,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                    Element* changed_element,
                                    Node* node_before_change,
                                    Node* node_after_change);
-  void RecalcDescendantStyles(const StyleRecalcChange);
+  void RecalcDescendantStyles(const StyleRecalcChange,
+                              const StyleRecalcContext&);
   void RebuildChildrenLayoutTrees(WhitespaceAttacher&);
   void RebuildLayoutTreeForChild(Node* child, WhitespaceAttacher&);
 

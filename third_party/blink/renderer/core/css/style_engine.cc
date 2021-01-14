@@ -1978,8 +1978,13 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
 
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
+  // TODO(crbug.com/1145970): Populate this context with a
+  // ContainerQueryEvaluator.
+  StyleRecalcContext style_recalc_context;
+
   style_recalc_root_.Update(nullptr, &container);
-  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent});
+  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},
+              style_recalc_context);
 
   if (container.ChildNeedsReattachLayoutTree()) {
     DCHECK(layout_tree_rebuild_root_.GetRootNode());
@@ -1994,13 +1999,14 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
   }
 }
 
-void StyleEngine::RecalcStyle(StyleRecalcChange change) {
+void StyleEngine::RecalcStyle(StyleRecalcChange change,
+                              const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().documentElement());
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
   SelectorFilterRootScope filter_scope(parent);
-  root_element.RecalcStyle(change);
+  root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {

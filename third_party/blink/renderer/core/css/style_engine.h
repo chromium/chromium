@@ -401,7 +401,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleAndLayoutTree();
   // To be called from layout when container queries change for the container.
   void UpdateStyleAndLayoutTreeForContainer(Element& container);
-  void RecalcStyle() { RecalcStyle({}); }
+  void RecalcStyle() { RecalcStyle({}, StyleRecalcContext()); }
 
   void ClearEnsuredDescendantStyles(Element& element);
   void RebuildLayoutTree();
@@ -540,7 +540,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void ViewportDefiningElementDidChange();
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
-  void RecalcStyle(StyleRecalcChange);
+  void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
 
   Member<Document> document_;
 

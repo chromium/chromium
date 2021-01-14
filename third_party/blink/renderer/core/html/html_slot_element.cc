@@ -470,12 +470,13 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLSlotElement::RecalcStyleForSlotChildren(
-    const StyleRecalcChange change) {
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
   for (auto& node : flat_tree_children_) {
     if (!change.TraverseChild(*node))
       continue;
     if (auto* element = DynamicTo<Element>(node.Get()))
-      element->RecalcStyle(change);
+      element->RecalcStyle(change, style_recalc_context);
     else if (auto* text_node = DynamicTo<Text>(node.Get()))
       text_node->RecalcTextStyle(change);
   }

@@ -2818,7 +2818,8 @@ void Element::RecalcStyleForTraversalRootAncestor() {
     DidRecalcStyle({});
 }
 
-void Element::RecalcStyle(const StyleRecalcChange change) {
+void Element::RecalcStyle(const StyleRecalcChange change,
+                          const StyleRecalcContext& style_recalc_context) {
   DCHECK(InActiveDocument());
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!GetDocument().Lifecycle().InDetach());
@@ -2829,7 +2830,7 @@ void Element::RecalcStyle(const StyleRecalcChange change) {
 
   StyleRecalcChange child_change = change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
-    child_change = RecalcOwnStyle(change);
+    child_change = RecalcOwnStyle(change, style_recalc_context);
     if (GetStyleChangeType() == kSubtreeStyleChange)
       child_change = child_change.ForceRecalcDescendants();
     ClearNeedsStyleRecalc();
@@ -2876,18 +2877,20 @@ void Element::RecalcStyle(const StyleRecalcChange change) {
   if (child_change.TraverseChildren(*this)) {
     SelectorFilterParentScope filter_scope(*this);
     if (ShadowRoot* root = GetShadowRoot()) {
-      root->RecalcDescendantStyles(child_change);
+      root->RecalcDescendantStyles(child_change, style_recalc_context);
       // Sad panda. This is only to clear ensured ComputedStyles for elements
       // outside the flat tree for getComputedStyle() in the cases where we
       // kSubtreeStyleChange. Style invalidation and kLocalStyleChange will
       // make sure we clear out-of-date ComputedStyles outside the flat tree
       // in Element::EnsureComputedStyle().
-      if (child_change.RecalcDescendants())
-        RecalcDescendantStyles(StyleRecalcChange::kClearEnsured);
+      if (child_change.RecalcDescendants()) {
+        RecalcDescendantStyles(StyleRecalcChange::kClearEnsured,
+                               style_recalc_context);
+      }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      slot->RecalcStyleForSlotChildren(child_change);
+      slot->RecalcStyleForSlotChildren(child_change, style_recalc_context);
     } else {
-      RecalcDescendantStyles(child_change);
+      RecalcDescendantStyles(child_change, style_recalc_context);
     }
   }
 
@@ -2945,7 +2948,9 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
   return change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
 }
 
-StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
+StyleRecalcChange Element::RecalcOwnStyle(
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
   if (change.RecalcChildren() && HasRareData() && NeedsStyleRecalc()) {
     // This element needs recalc because its parent changed inherited
@@ -2969,8 +2974,6 @@ StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
       // can simply clone the old ComputedStyle and set these directly.
       new_style = PropagateInheritedProperties();
     }
-    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-    StyleRecalcContext style_recalc_context;
     if (!new_style)
       new_style = StyleForLayoutObject(style_recalc_context);
     if (new_style && !ShouldStoreComputedStyle(*new_style))
@@ -4971,7 +4974,7 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
   if (text_node_changed || remaining_text_layout_object->PreviousSibling() !=
                                element->GetLayoutObject())
     change = change.ForceReattachLayoutTree();
-  element->RecalcStyle(change);
+  element->RecalcStyle(change, style_recalc_context);
 
   if (element->NeedsReattachLayoutTree() &&
       !PseudoElementLayoutObjectIsNeeded(element->GetComputedStyle(), this)) {
@@ -4994,7 +4997,9 @@ void Element::UpdatePseudoElement(PseudoId pseudo_id,
 
   if (change.ShouldUpdatePseudoElement(*element)) {
     if (CanGeneratePseudoElement(pseudo_id)) {
-      element->RecalcStyle(change.ForPseudoElement());
+      // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+      StyleRecalcContext style_recalc_context;
+      element->RecalcStyle(change.ForPseudoElement(), style_recalc_context);
       if (!element->NeedsReattachLayoutTree())
         return;
       if (PseudoElementLayoutObjectIsNeeded(element->GetComputedStyle(), this))

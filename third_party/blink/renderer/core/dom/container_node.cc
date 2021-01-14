@@ -1344,7 +1344,9 @@ void ContainerNode::SetRestyleFlag(DynamicRestyleFlags mask) {
   EnsureRareData().SetRestyleFlag(mask);
 }
 
-void ContainerNode::RecalcDescendantStyles(const StyleRecalcChange change) {
+void ContainerNode::RecalcDescendantStyles(
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!NeedsStyleRecalc());
 
@@ -1355,7 +1357,7 @@ void ContainerNode::RecalcDescendantStyles(const StyleRecalcChange change) {
       child_text_node->RecalcTextStyle(change);
 
     if (auto* child_element = DynamicTo<Element>(child))
-      child_element->RecalcStyle(change);
+      child_element->RecalcStyle(change, style_recalc_context);
   }
 }
 
