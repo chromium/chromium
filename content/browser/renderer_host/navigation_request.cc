@@ -5404,4 +5404,8 @@ bool NavigationRequest::IsPrerenderedPageActivation() const {
   return !!prerender_host_;
 }
 
+bool NavigationRequest::IsWaitingForBeforeUnload() {
+  return state_ < WILL_START_NAVIGATION;
+}
+
 }  // namespace content

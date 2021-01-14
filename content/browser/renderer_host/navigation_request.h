@@ -797,6 +797,10 @@ class CONTENT_EXPORT NavigationRequest
     return private_network_request_policy_;
   }
 
+  // Whether this navigation request waits for the result of beforeunload before
+  // proceeding.
+  bool IsWaitingForBeforeUnload();
+
  private:
   friend class NavigationRequestTest;
 
