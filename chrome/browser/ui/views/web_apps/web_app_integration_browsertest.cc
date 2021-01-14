@@ -44,6 +44,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -231,7 +232,7 @@ class WebAppIntegrationBrowserTest
       InstallCreateShortcutTabbed();
     } else if (action_string == "install_omnibox_or_menu") {
       InstallOmniboxOrMenu();
-    } else if (base::StartsWith(action_string, "launch_internal")) {
+    } else if (action_string == "launch_internal") {
       LaunchInternal();
     } else if (action_string == "list_apps_internal") {
       ListAppsInternal();
@@ -243,6 +244,8 @@ class WebAppIntegrationBrowserTest
       NavigateToSite(browser(), GetNonInstallableAppURL());
     } else if (action_string == "remove_policy_app") {
       RemovePolicyApp();
+    } else if (base::StartsWith(action_string, "set_open_in_tab_internal")) {
+      SetOpenInTabInternal();
     } else if (action_string == "set_open_in_window_internal") {
       SetOpenInWindowInternal();
     } else if (action_string == "uninstall_from_menu") {
@@ -262,6 +265,8 @@ class WebAppIntegrationBrowserTest
     } else if (action_string == "assert_launch_icon_not_shown") {
       AssertLaunchIconNotShown();
     } else if (action_string == "assert_no_crash") {
+    } else if (action_string == "assert_tab_created") {
+      AssertTabCreated();
     } else if (action_string == "assert_window_created") {
       AssertWindowCreated();
     } else {
@@ -272,11 +277,10 @@ class WebAppIntegrationBrowserTest
   // Automated Testing Actions
   void AddPolicyAppInternalTabbed() {
     GURL url = GetInstallableAppURL();
-    auto* web_app_registrar = WebAppProvider::Get(browser()->profile())
-                                  ->registrar()
-                                  .AsWebAppRegistrar();
+    auto* web_app_registrar =
+        WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
     base::RunLoop run_loop;
-    WebAppInstallObserver observer(browser()->profile());
+    WebAppInstallObserver observer(profile());
     observer.SetWebAppInstalledDelegate(
         base::BindLambdaForTesting([&](const AppId& app_id) {
           bool is_installed = web_app_registrar->IsInstalled(app_id);
@@ -292,7 +296,7 @@ class WebAppIntegrationBrowserTest
       item.SetKey(kUrlKey, base::Value(url.spec()));
       item.SetKey(kDefaultLaunchContainerKey,
                   base::Value(kDefaultLaunchContainerTabValue));
-      ListPrefUpdate update(browser()->profile()->GetPrefs(),
+      ListPrefUpdate update(profile()->GetPrefs(),
                             prefs::kWebAppInstallForceList);
       update->Append(item.Clone());
     }
@@ -308,7 +312,7 @@ class WebAppIntegrationBrowserTest
   void InstallCreateShortcutTabbed() {
     chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                                 /*auto_open_in_window=*/false);
-    WebAppInstallObserver observer(browser()->profile());
+    WebAppInstallObserver observer(profile());
     CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
     app_id_ = observer.AwaitNextInstall();
     chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
@@ -339,16 +343,28 @@ class WebAppIntegrationBrowserTest
     return app_id;
   }
 
-  Browser* LaunchInternal() {
-    app_browser_ = LaunchWebAppBrowserAndWait(
-        ProfileManager::GetActiveUserProfile(), app_id_);
-    return app_browser_;
+  void LaunchInternal() {
+    auto* web_app_provider = WebAppProvider::Get(profile());
+    AppRegistrar& app_registrar = web_app_provider->registrar();
+    DisplayMode display_mode =
+        app_registrar.GetAppEffectiveDisplayMode(app_id_);
+    if (display_mode == blink::mojom::DisplayMode::kStandalone) {
+      app_browser_ = LaunchWebAppBrowserAndWait(
+          ProfileManager::GetActiveUserProfile(), app_id_);
+    } else {
+      ui_test_utils::UrlLoadObserver url_observer(
+          WebAppProviderBase::GetProviderBase(profile())
+              ->registrar()
+              .GetAppLaunchUrl(app_id_),
+          content::NotificationService::AllSources());
+      LaunchBrowserForWebAppInTab(profile(), app_id_);
+      url_observer.Wait();
+    }
   }
 
   void ListAppsInternal() {
-    auto* web_app_registrar = WebAppProvider::Get(browser()->profile())
-                                  ->registrar()
-                                  .AsWebAppRegistrar();
+    auto* web_app_registrar =
+        WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
     app_ids_ = web_app_registrar->GetAppIds();
   }
 
@@ -369,7 +385,7 @@ class WebAppIntegrationBrowserTest
   void RemovePolicyApp() {
     GURL url = GetInstallableAppURL();
     base::RunLoop run_loop;
-    WebAppInstallObserver observer(browser()->profile());
+    WebAppInstallObserver observer(profile());
     observer.SetWebAppUninstalledDelegate(
         base::BindLambdaForTesting([&](const AppId& app_id) {
           if (app_id_ == app_id) {
@@ -377,7 +393,7 @@ class WebAppIntegrationBrowserTest
           }
         }));
     {
-      ListPrefUpdate update(browser()->profile()->GetPrefs(),
+      ListPrefUpdate update(profile()->GetPrefs(),
                             prefs::kWebAppInstallForceList);
       update->EraseListValueIf([&](const base::Value& item) {
         const base::Value* url_value = item.FindKey(kUrlKey);
@@ -387,9 +403,16 @@ class WebAppIntegrationBrowserTest
     run_loop.Run();
   }
 
+  void SetOpenInTabInternal() {
+    auto& app_registry_controller =
+        WebAppProvider::Get(profile())->registry_controller();
+    app_registry_controller.SetAppUserDisplayMode(
+        app_id_, blink::mojom::DisplayMode::kBrowser, true);
+  }
+
   void SetOpenInWindowInternal() {
     auto& app_registry_controller =
-        WebAppProvider::Get(browser()->profile())->registry_controller();
+        WebAppProvider::Get(profile())->registry_controller();
     app_registry_controller.SetAppUserDisplayMode(
         app_id_, blink::mojom::DisplayMode::kStandalone, true);
   }
@@ -398,7 +421,7 @@ class WebAppIntegrationBrowserTest
   void UninstallFromMenu() {
     DCHECK(app_browser_);
     base::RunLoop run_loop;
-    WebAppInstallObserver observer(browser()->profile());
+    WebAppInstallObserver observer(profile());
     observer.SetWebAppUninstalledDelegate(
         base::BindLambdaForTesting([&](const AppId& app_id) {
           if (app_id == app_id_) {
@@ -430,7 +453,7 @@ class WebAppIntegrationBrowserTest
 
   void UninstallInternal() {
     WebAppProviderBase* const provider =
-        WebAppProviderBase::GetProviderBase(browser()->profile());
+        WebAppProviderBase::GetProviderBase(profile());
     base::RunLoop run_loop;
 
     DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id_));
@@ -467,6 +490,14 @@ class WebAppIntegrationBrowserTest
               kNotPresent);
   }
 
+  void AssertTabCreated() {
+    auto* tab_strip_model = browser()->tab_strip_model();
+    EXPECT_TRUE(tab_strip_model->count() == 2);
+    auto* web_contents = tab_strip_model->GetActiveWebContents();
+    const GURL& url = web_contents->GetLastCommittedURL();
+    EXPECT_EQ(GetInstallableAppURL(), url);
+  }
+
   void AssertWindowCreated() { EXPECT_TRUE(app_browser_); }
 
   GURL GetInstallableAppURL() {
@@ -489,6 +520,7 @@ class WebAppIntegrationBrowserTest
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
+  Profile* profile() { return browser()->profile(); }
   Browser* app_browser() { return app_browser_; }
   std::vector<std::string>& testing_actions() { return testing_actions_; }
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
