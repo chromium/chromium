@@ -138,7 +138,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"

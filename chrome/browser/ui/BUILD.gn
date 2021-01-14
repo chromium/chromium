@@ -2222,6 +2222,8 @@ static_library("ui") {
       "webui/chromeos/edu_coexistence_login_handler_chromeos.h",
       "webui/chromeos/edu_coexistence_state_tracker.cc",
       "webui/chromeos/edu_coexistence_state_tracker.h",
+      "webui/chromeos/emoji/emoji_dialog.cc",
+      "webui/chromeos/emoji/emoji_dialog.h",
       "webui/chromeos/emoji/emoji_picker.cc",
       "webui/chromeos/emoji/emoji_picker.h",
       "webui/chromeos/image_source.cc",
