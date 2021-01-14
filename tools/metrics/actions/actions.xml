@@ -20769,6 +20769,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Search.ContextualSearch.All.ResultsSeen.true">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Records that the user opened the contextual search panel when it was shown.
+    Implemented for Android.
+
+    This is logged at the same time that a true value is logged to the
+    Search.ContextualSearch.All.ResultsSeen histogram.
+
+    This action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="Search.QueryTiles.NTP.FakeSearchBox.Chip.Cleared">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding@google.com</owner>

@@ -34,6 +34,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records whether the user opened the panel when it was shown. Recorded for
     all gestures for all users when the UX is hidden. Implemented for Android.
 
+    The user action Search.ContextualSearch.All.ResultsSeen.true is also logged
+    in the case that true is logged to this histogram.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
