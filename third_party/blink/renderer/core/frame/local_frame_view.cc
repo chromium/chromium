@@ -1009,14 +1009,8 @@ void LocalFrameView::DidFinishForcedLayout(DocumentUpdateReason reason) {
   forced_layout_stack_depth_--;
   if (!forced_layout_stack_depth_ && base::TimeTicks::IsHighResolution()) {
     LocalFrameUkmAggregator& aggregator = EnsureUkmAggregator();
-    aggregator.RecordSample(
-        static_cast<size_t>(LocalFrameUkmAggregator::kForcedStyleAndLayout),
-        forced_layout_start_time_, base::TimeTicks::Now());
-    if (reason == DocumentUpdateReason::kHitTest) {
-      aggregator.RecordSample(
-          static_cast<size_t>(LocalFrameUkmAggregator::kHitTestDocumentUpdate),
-          forced_layout_start_time_, base::TimeTicks::Now());
-    }
+    aggregator.RecordForcedLayoutSample(reason, forced_layout_start_time_,
+                                        base::TimeTicks::Now());
   }
 }
 

@@ -521,6 +521,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent preparing the document for a canvas draw, SVG image draw or
+    plugin during a main frame update. Includes time spent in style update and
+    layout.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CookieStore.MatchType" enum="CookieStoreMatchType"
     expires_after="M87">
   <obsolete>
@@ -862,7 +882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent computing layouts due to Javascript value requests. Specifically,
-    time spent in Blink Document::UpdateStyleAndLayoutIgnorePendingStylesheets.
+    time spent in Blink Document::UpdateStyleAndLayout.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
@@ -1140,6 +1160,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Blink.JavascriptDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent preparing the document to answer a Javascript API query or
+    request. Examples include scrool offset requests, queries of layout
+    dimensions, SVG path queries, etc. Includes time spent in style update and
+    layout, or via EnsurePaintLocationDataValidForNode. Some of these calls may
+    be servicing internal needs, but we have no way to disambiguate those from
+    JS driven activity.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -1850,6 +1893,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent preparing the document to ensure correct scroll behavior, such as
+    scroll chaining or other programatic scrolling. Includes time spent in style
+    update and layout.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.ScrollingCoordinator.UpdateTime"
     units="microseconds" expires_after="M88">
   <obsolete>
@@ -1874,6 +1937,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent preparing the document to service browser driven behaviors.
+    Examples include accessibility, intersection observer, display locking and
+    spell checking. Includes time spent in style update and layout.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -2324,6 +2407,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram counts usage of web features in main frame only. Refer to
     Blink.UseCounter.Features for more details.
   </details>
+</histogram>
+
+<histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
+    units="microseconds" expires_after="2021-07-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent preparing the document to service user driven behaviors. Examples
+    include inspector, selection, editing, find-in-page and focus. Includes time
+    spent in style update and layout.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold"

@@ -2001,6 +2001,13 @@ be describing additional metrics about the same event.
       First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="ContentDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to update sub-document
+      content, between navigation and First Contentful Paint, in microseconds.
+      Includes SVG, Canvas and Plugins.
+    </summary>
+  </metric>
   <metric name="DisplayLockIntersectionObserver">
     <summary>
       Time spent computing IntersectionObservations for
@@ -2036,6 +2043,15 @@ be describing additional metrics about the same event.
     <summary>
       The time spent computing intersection observer state, between navigation
       and First Contentful Paint, in microseconds.
+    </summary>
+  </metric>
+  <metric name="JavascriptDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to generic Javascript API
+      requests, between navigation and First Contentful Paint, in microseconds.
+      Note this primarily captures Javascript that explicitly requires Style and
+      Layout, but not implicit requests such as through setting focus or scroll
+      position.
     </summary>
   </metric>
   <metric name="JavascriptIntersectionObserver">
@@ -2090,6 +2106,13 @@ be describing additional metrics about the same event.
       between navigation and First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="ScrollDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to update scroll-related
+      data, between navigation and First Contentful Paint, in microseconds.
+      Includes actions like scroll-to-fragment.
+    </summary>
+  </metric>
   <metric name="ScrollingCoordinator">
     <obsolete>
       Merged into CompositingCommit in http://crrev.com/815947 in M88.
@@ -2097,6 +2120,13 @@ be describing additional metrics about the same event.
     <summary>
       The time spent in ScrollingCoordinator, between navigation and First
       Contentful Paint, in microseconds.
+    </summary>
+  </metric>
+  <metric name="ServiceDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to browser requested
+      actions, such as accessibility, intersection observer or spell checking,
+      between navigation and First Contentful Paint, in microseconds.
     </summary>
   </metric>
   <metric name="Style">
@@ -2123,8 +2153,15 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="UpdateViewportIntersection">
     <summary>
-      Time spent computing internal geometry information about iframes, in
-      microseconds.
+      Time spent computing internal geometry information about iframes, between
+      navigation and First Contentful Paint, in microseconds.
+    </summary>
+  </metric>
+  <metric name="UserDrivenDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to a user action such as
+      input, find-in-page or printing, between navigation and First Contentful
+      Paint, in microseconds.
     </summary>
   </metric>
   <metric name="WaitForCommit">
@@ -2456,6 +2493,20 @@ be describing additional metrics about the same event.
       int in the range [0,100].
     </summary>
   </metric>
+  <metric name="ContentDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to update sub-document
+      content, during a sampled frame, in microseconds. Includes SVG, Canvas and
+      Plugins.
+    </summary>
+  </metric>
+  <metric name="ContentDocumentUpdateBeginMainFrame">
+    <summary>
+      The time spent doing forced document updates due to update sub-document
+      content, during the BeginMainFrame block of a sampled frame, in
+      microseconds. Includes SVG, Canvas and Plugins.
+    </summary>
+  </metric>
   <metric name="DisplayLockIntersectionObserver">
     <summary>
       Time spent computing IntersectionObservations for
@@ -2768,6 +2819,23 @@ be describing additional metrics about the same event.
     <summary>
       The percentage of the main frame time used in computing intersection
       observer state. An int in the range [0,100].
+    </summary>
+  </metric>
+  <metric name="JavascriptDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to generic Javascript API
+      requests, during a sampled frame, in microseconds. Note this primarily
+      captures Javascript that explicitly requires Style and Layout, but not
+      implicit requests such as through setting focus or scroll position.
+    </summary>
+  </metric>
+  <metric name="JavascriptDocumentUpdateBeginMainFrame">
+    <summary>
+      The time spent doing forced document updates due to generic Javascript API
+      requests, during the BeginMainFrame block of a sampled frame, in
+      microseconds. Note this primarily captures Javascript that explicitly
+      requires Style and Layout, but not implicit requests such as through
+      setting focus or scroll position.
     </summary>
   </metric>
   <metric name="JavascriptIntersectionObserver">
@@ -3087,6 +3155,18 @@ be describing additional metrics about the same event.
       An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="ScrollDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to update scroll-related
+      data, during a sampled frame, in microseconds.
+    </summary>
+  </metric>
+  <metric name="ScrollDocumentUpdateBeginMainFrame">
+    <summary>
+      The time spent doing forced document updates due to update scroll-related
+      data, during the BeginMainFrame block of a sampled frame, in microseconds.
+    </summary>
+  </metric>
   <metric name="ScrollingCoordinator">
     <obsolete>
       Merged into Blink.MainFrame.CompositingCommitRatio in
@@ -3159,6 +3239,20 @@ be describing additional metrics about the same event.
     <summary>
       The percentage of the main frame time used in scrolling coordinator. An
       int in the range [0,100].
+    </summary>
+  </metric>
+  <metric name="ServiceDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to browser requested
+      actions, such as accessibility, intersection observer or spell checking,
+      during a sampled frame, in microseconds.
+    </summary>
+  </metric>
+  <metric name="ServiceDocumentUpdateBeginMainFrame">
+    <summary>
+      The time spent doing forced document updates due to browser requested
+      actions, such as accessibility, intersection observer or spell checking,
+      during the BeginMainFrame block of a sampled frame, in microseconds.
     </summary>
   </metric>
   <metric name="Style">
@@ -3305,6 +3399,19 @@ be describing additional metrics about the same event.
     <summary>
       The total main frame time used to compute internal geometry information
       about iframes, in microseconds.
+    </summary>
+  </metric>
+  <metric name="UserDrivenDocumentUpdate">
+    <summary>
+      The time spent doing forced document updates due to a user action such as
+      input, find-in-page or printing, during a sampled frame, in microseconds.
+    </summary>
+  </metric>
+  <metric name="UserDrivenDocumentUpdateBeginMainFrame">
+    <summary>
+      The time spent doing forced document updates due to a user action such as
+      input, find-in-page or printing, during the BeginMainFrame block of a
+      sampled frame, in microseconds.
     </summary>
   </metric>
   <metric name="WaitForCommit">

@@ -11,6 +11,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -174,22 +175,6 @@ void LocalFrameUkmAggregator::SetTickClockForTesting(
   clock_ = clock;
 }
 
-void LocalFrameUkmAggregator::RecordForcedStyleLayoutUMA(
-    base::TimeDelta& duration) {
-  if (!calls_to_next_forced_style_layout_uma_) {
-    auto& record = absolute_metric_records_[kForcedStyleAndLayout];
-    if (fcp_state_ == kHavePassedFCP)
-      record.post_fcp_uma_counter->CountMicroseconds(duration);
-    else
-      record.pre_fcp_uma_counter->CountMicroseconds(duration);
-    calls_to_next_forced_style_layout_uma_ =
-        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
-  } else {
-    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
-    --calls_to_next_forced_style_layout_uma_;
-  }
-}
-
 void LocalFrameUkmAggregator::DidReachFirstContentfulPaint(
     bool are_painting_main_frame) {
   DCHECK(fcp_state_ != kHavePassedFCP);
@@ -205,6 +190,10 @@ void LocalFrameUkmAggregator::DidReachFirstContentfulPaint(
 void LocalFrameUkmAggregator::RecordSample(size_t metric_index,
                                            base::TimeTicks start,
                                            base::TimeTicks end) {
+  // Always use RecordForcedLayoutSample for the kForcedStyleAndLayout
+  // metric id.
+  DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));
+
   base::TimeDelta duration = end - start;
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
@@ -221,14 +210,118 @@ void LocalFrameUkmAggregator::RecordSample(size_t metric_index,
   // the signed 32 counter for number of events in a 30 minute period. So
   // randomly record with probability 1/100.
   if (record.pre_fcp_uma_counter) {
-    if (metric_index == static_cast<size_t>(kForcedStyleAndLayout)) {
-      RecordForcedStyleLayoutUMA(duration);
+    if (is_pre_fcp) {
+      record.pre_fcp_uma_counter->CountMicroseconds(duration);
     } else {
-      if (is_pre_fcp) {
+      record.post_fcp_uma_counter->CountMicroseconds(duration);
+    }
+  }
+}
+
+void LocalFrameUkmAggregator::RecordForcedLayoutSample(
+    DocumentUpdateReason reason,
+    base::TimeTicks start,
+    base::TimeTicks end) {
+  base::TimeDelta duration = end - start;
+  bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
+
+  // Accumulate for UKM always, but only record the UMA for a subset of cases to
+  // avoid overflowing the counters.
+  bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
+  if (should_report_uma_this_frame) {
+    calls_to_next_forced_style_layout_uma_ =
+        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
+  } else {
+    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
+    --calls_to_next_forced_style_layout_uma_;
+  }
+
+  auto& record =
+      absolute_metric_records_[static_cast<size_t>(kForcedStyleAndLayout)];
+  record.interval_duration += duration;
+  if (in_main_frame_update_)
+    record.main_frame_duration += duration;
+  if (is_pre_fcp)
+    record.pre_fcp_aggregate += duration;
+
+  if (should_report_uma_this_frame) {
+    if (is_pre_fcp)
+      record.pre_fcp_uma_counter->CountMicroseconds(duration);
+    else
+      record.post_fcp_uma_counter->CountMicroseconds(duration);
+  }
+
+  // Record a variety of DocumentUpdateReasons as distinct metrics
+  // Figure out which sub-metric, if any, we wish to report for UKM.
+  MetricId sub_metric = kCount;
+  switch (reason) {
+    case DocumentUpdateReason::kContextMenu:
+    case DocumentUpdateReason::kDragImage:
+    case DocumentUpdateReason::kEditing:
+    case DocumentUpdateReason::kFindInPage:
+    case DocumentUpdateReason::kFocus:
+    case DocumentUpdateReason::kForm:
+    case DocumentUpdateReason::kInput:
+    case DocumentUpdateReason::kInspector:
+    case DocumentUpdateReason::kPrinting:
+    case DocumentUpdateReason::kSelection:
+    case DocumentUpdateReason::kSpatialNavigation:
+    case DocumentUpdateReason::kTapHighlight:
+      sub_metric = kUserDrivenDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kAccessibility:
+    case DocumentUpdateReason::kBaseColor:
+    case DocumentUpdateReason::kDisplayLock:
+    case DocumentUpdateReason::kIntersectionObservation:
+    case DocumentUpdateReason::kOverlay:
+    case DocumentUpdateReason::kPagePopup:
+    case DocumentUpdateReason::kSizeChange:
+    case DocumentUpdateReason::kSpellCheck:
+      sub_metric = kServiceDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kCanvas:
+    case DocumentUpdateReason::kPlugin:
+    case DocumentUpdateReason::kSVGImage:
+      sub_metric = kContentDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kScroll:
+      sub_metric = kScrollDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kHitTest:
+      sub_metric = kHitTestDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kJavaScript:
+      sub_metric = kJavascriptDocumentUpdate;
+      break;
+
+    // Do not report main frame because we have it already from
+    // in_main_frame_update_ above.
+    case DocumentUpdateReason::kBeginMainFrame:
+    // No metrics from testing.
+    case DocumentUpdateReason::kTest:
+    // Don't report if we don't know why.
+    case DocumentUpdateReason::kUnknown:
+      break;
+  }
+
+  if (sub_metric != kCount) {
+    auto& sub_record =
+        absolute_metric_records_[static_cast<size_t>(sub_metric)];
+    sub_record.interval_duration += duration;
+    if (in_main_frame_update_)
+      sub_record.main_frame_duration += duration;
+    if (is_pre_fcp)
+      sub_record.pre_fcp_aggregate += duration;
+    if (should_report_uma_this_frame) {
+      if (is_pre_fcp)
         record.pre_fcp_uma_counter->CountMicroseconds(duration);
-      } else {
+      else
         record.post_fcp_uma_counter->CountMicroseconds(duration);
-      }
     }
   }
 }
@@ -365,7 +458,6 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       CASE_FOR_ID(Style);
       CASE_FOR_ID(Layout);
       CASE_FOR_ID(ForcedStyleAndLayout);
-      CASE_FOR_ID(HitTestDocumentUpdate);
       CASE_FOR_ID(HandleInputEvents);
       CASE_FOR_ID(Animate);
       CASE_FOR_ID(UpdateLayers);
@@ -375,6 +467,12 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       CASE_FOR_ID(LazyLoadIntersectionObserver);
       CASE_FOR_ID(MediaIntersectionObserver);
       CASE_FOR_ID(UpdateViewportIntersection);
+      CASE_FOR_ID(UserDrivenDocumentUpdate);
+      CASE_FOR_ID(ServiceDocumentUpdate);
+      CASE_FOR_ID(ContentDocumentUpdate);
+      CASE_FOR_ID(ScrollDocumentUpdate);
+      CASE_FOR_ID(HitTestDocumentUpdate);
+      CASE_FOR_ID(JavascriptDocumentUpdate);
       case kCount:
       case kMainFrame:
         NOTREACHED();
@@ -416,7 +514,6 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       CASE_FOR_ID(Style, i);
       CASE_FOR_ID(Layout, i);
       CASE_FOR_ID(ForcedStyleAndLayout, i);
-      CASE_FOR_ID(HitTestDocumentUpdate, i);
       CASE_FOR_ID(HandleInputEvents, i);
       CASE_FOR_ID(Animate, i);
       CASE_FOR_ID(UpdateLayers, i);
@@ -426,6 +523,12 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       CASE_FOR_ID(LazyLoadIntersectionObserver, i);
       CASE_FOR_ID(MediaIntersectionObserver, i);
       CASE_FOR_ID(UpdateViewportIntersection, i);
+      CASE_FOR_ID(UserDrivenDocumentUpdate, i);
+      CASE_FOR_ID(ServiceDocumentUpdate, i);
+      CASE_FOR_ID(ContentDocumentUpdate, i);
+      CASE_FOR_ID(ScrollDocumentUpdate, i);
+      CASE_FOR_ID(HitTestDocumentUpdate, i);
+      CASE_FOR_ID(JavascriptDocumentUpdate, i);
       case kCount:
       case kMainFrame:
         NOTREACHED();
