@@ -140,7 +140,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 #endif  // defined(OS_ANDROID)
  protected:
   MediaSessionControllersManager* session_controllers_manager() {
-    return &session_controllers_manager_;
+    return session_controllers_manager_.get();
   }
 
  private:
@@ -272,7 +272,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   base::Optional<bool> picture_in_picture_allowed_in_fullscreen_;
   bool has_audio_wake_lock_for_testing_ = false;
 
-  MediaSessionControllersManager session_controllers_manager_;
+  std::unique_ptr<MediaSessionControllersManager> session_controllers_manager_;
   MediaPowerExperimentManager* power_experiment_manager_ = nullptr;
 
   std::map<RenderFrameHost*,

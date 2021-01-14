@@ -142,7 +142,8 @@ MediaWebContentsObserver::MediaWebContentsObserver(
     WebContentsImpl* web_contents)
     : WebContentsObserver(web_contents),
       audible_metrics_(GetAudibleMetrics()),
-      session_controllers_manager_(web_contents),
+      session_controllers_manager_(
+          std::make_unique<MediaSessionControllersManager>(web_contents)),
       power_experiment_manager_(MediaPowerExperimentManager::Instance()) {}
 
 MediaWebContentsObserver::~MediaWebContentsObserver() = default;
@@ -165,6 +166,8 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
   media_player_hosts_.clear();
   media_player_observer_hosts_.clear();
   media_player_remotes_.clear();
+
+  session_controllers_manager_.reset();
 }
 
 void MediaWebContentsObserver::RenderFrameDeleted(
@@ -199,7 +202,7 @@ void MediaWebContentsObserver::RenderFrameDeleted(
                media_player_remotes_value_type.first.render_frame_host;
       });
 
-  session_controllers_manager_.RenderFrameDeleted(render_frame_host);
+  session_controllers_manager_->RenderFrameDeleted(render_frame_host);
 
   if (fullscreen_player_ &&
       fullscreen_player_->render_frame_host == render_frame_host) {
@@ -272,12 +275,12 @@ bool MediaWebContentsObserver::OnMessageReceived(
 
 void MediaWebContentsObserver::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
-  session_controllers_manager_.PictureInPictureStateChanged(
+  session_controllers_manager_->PictureInPictureStateChanged(
       is_picture_in_picture);
 }
 
 void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
-  session_controllers_manager_.WebContentsMutedStateChanged(muted);
+  session_controllers_manager_->WebContentsMutedStateChanged(muted);
 }
 
 void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
@@ -412,7 +415,7 @@ void MediaWebContentsObserver::OnMediaPaused(RenderFrameHost* render_frame_host,
 
   player_info->SetIsStopped(reached_end_of_stream);
 
-  session_controllers_manager_.OnPause(player_id, reached_end_of_stream);
+  session_controllers_manager_->OnPause(player_id, reached_end_of_stream);
 }
 
 void MediaWebContentsObserver::OnMediaMetadataChanged(
@@ -434,8 +437,8 @@ void MediaWebContentsObserver::OnMediaMetadataChanged(
   player_info->set_has_audio(has_audio);
   player_info->set_has_video(has_video);
 
-  session_controllers_manager_.OnMetadata(player_id, has_audio, has_video,
-                                          media_content_type);
+  session_controllers_manager_->OnMetadata(player_id, has_audio, has_video,
+                                           media_content_type);
 }
 
 void MediaWebContentsObserver::OnMediaPlaying(
@@ -447,7 +450,7 @@ void MediaWebContentsObserver::OnMediaPlaying(
   if (!player_info)
     return;
 
-  if (!session_controllers_manager_.RequestPlay(player_id)) {
+  if (!session_controllers_manager_->RequestPlay(player_id)) {
     // Return early to avoid spamming WebContents with playing/stopped
     // notifications.  If RequestPlay() fails, media session will send a pause
     // signal right away.
@@ -521,7 +524,7 @@ void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
     RenderFrameHost* render_frame_host,
     int delegate_id,
     const std::string& raw_device_id) {
-  session_controllers_manager_.OnAudioOutputSinkChanged(
+  session_controllers_manager_->OnAudioOutputSinkChanged(
       MediaPlayerId(render_frame_host, delegate_id), raw_device_id);
 }
 
@@ -604,7 +607,7 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
       [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
         observer->player_info_map_.erase(player_id);
         observer->media_player_remotes_.erase(player_id);
-        observer->session_controllers_manager_.OnEnd(player_id);
+        observer->session_controllers_manager_->OnEnd(player_id);
         observer->web_contents_impl()->MediaDestroyed(player_id);
       },
       base::Unretained(this), player_id));
