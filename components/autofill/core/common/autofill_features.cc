@@ -188,9 +188,6 @@ const base::Feature kAutofillPruneSuggestions{
 const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, Autofill will load remote patterns via the component updater.
 // TODO(crbug/1121990): Remove once launched.
 extern const base::Feature kAutofillParsingPatternsFromRemote{

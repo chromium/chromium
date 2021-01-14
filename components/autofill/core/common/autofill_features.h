@@ -51,7 +51,6 @@ extern const base::Feature kAutofillKeyboardAccessory;
 extern const base::Feature kAutofillLabelAffixRemoval;
 extern const base::Feature kAutofillPruneSuggestions;
 extern const base::Feature kAutofillMetadataUploads;
-extern const base::Feature kAutofillOffNoServerData;
 extern const base::Feature kAutofillParsingPatternsFromRemote;
 extern const base::Feature kAutofillParsingPatternsNegativeMatching;
 extern const base::Feature kAutofillParsingPatternsLanguageDependent;

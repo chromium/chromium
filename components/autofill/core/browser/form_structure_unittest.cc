@@ -7501,14 +7501,8 @@ INSTANTIATE_TEST_SUITE_P(All, ParameterizedFormStructureTest, testing::Bool());
 // Tests that, when the flag is off, we will not set the predicted type to
 // unknown for fields that have no server data and autocomplete off, and when
 // the flag is ON, we will overwrite the predicted type.
-TEST_P(ParameterizedFormStructureTest,
+TEST_F(ParameterizedFormStructureTest,
        NoServerData_AutocompleteOff_FlagDisabled_NoOverwrite) {
-  base::test::ScopedFeatureList scoped_features;
-
-  bool flag_enabled = GetParam();
-  scoped_features.InitWithFeatureState(features::kAutofillOffNoServerData,
-                                       flag_enabled);
-
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
@@ -7565,8 +7559,7 @@ TEST_P(ParameterizedFormStructureTest,
   ASSERT_EQ(4U, forms[0]->field_count());
 
   // Only NAME_LAST should be affected by the flag.
-  EXPECT_EQ(flag_enabled ? UNKNOWN_TYPE : NAME_LAST,
-            forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(NAME_LAST, forms[0]->field(1)->Type().GetStorableType());
 
   EXPECT_EQ(NAME_FIRST, forms[0]->field(0)->Type().GetStorableType());
   EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(2)->Type().GetStorableType());
@@ -7575,13 +7568,7 @@ TEST_P(ParameterizedFormStructureTest,
 
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
 // is no server data (votes) for every CC fields.
-TEST_P(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
-  base::test::ScopedFeatureList scoped_features;
-
-  bool flag_enabled = GetParam();
-  scoped_features.InitWithFeatureState(features::kAutofillOffNoServerData,
-                                       flag_enabled);
-
+TEST_F(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
@@ -7634,18 +7621,11 @@ TEST_P(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
 
-  // If flag is enabled, fields should have been overwritten to Unknown.
-  if (flag_enabled) {
-    EXPECT_EQ(UNKNOWN_TYPE, forms[0]->field(0)->Type().GetStorableType());
-    EXPECT_EQ(UNKNOWN_TYPE, forms[0]->field(1)->Type().GetStorableType());
-    EXPECT_EQ(UNKNOWN_TYPE, forms[0]->field(2)->Type().GetStorableType());
-  } else {
-    EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-              forms[0]->field(0)->Type().GetStorableType());
-    EXPECT_EQ(CREDIT_CARD_NUMBER, forms[0]->field(1)->Type().GetStorableType());
-    EXPECT_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-              forms[0]->field(2)->Type().GetStorableType());
-  }
+  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
+            forms[0]->field(0)->Type().GetStorableType());
+  EXPECT_EQ(CREDIT_CARD_NUMBER, forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+            forms[0]->field(2)->Type().GetStorableType());
 
   // Regardless of the flag, the CVC field should not have been overwritten.
   EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
@@ -7654,13 +7634,7 @@ TEST_P(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
 
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
 // is server data (votes) for every other CC fields.
-TEST_P(ParameterizedFormStructureTest, WithServerDataCCFields_CVC_NoOverwrite) {
-  base::test::ScopedFeatureList scoped_features;
-
-  bool flag_enabled = GetParam();
-  scoped_features.InitWithFeatureState(features::kAutofillOffNoServerData,
-                                       flag_enabled);
-
+TEST_F(ParameterizedFormStructureTest, WithServerDataCCFields_CVC_NoOverwrite) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;

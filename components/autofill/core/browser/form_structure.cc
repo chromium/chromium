@@ -1968,19 +1968,7 @@ void FormStructure::RationalizeRepeatedFields(
 void FormStructure::RationalizeFieldTypePredictions() {
   RationalizeCreditCardFieldPredictions();
   for (const auto& field : fields_) {
-    if (base::FeatureList::IsEnabled(features::kAutofillOffNoServerData) &&
-        !field->should_autocomplete && field->server_type() == NO_SERVER_DATA &&
-        field->heuristic_type() != CREDIT_CARD_VERIFICATION_CODE) {
-      // When the field has autocomplete off, and the server returned no
-      // prediction, then assume Autofill is not useful for the current field.
-      // Special case for CVC (crbug.com/968036). We never send votes for CVC
-      // fields, but we still fill them when the user inputs them via the CVC
-      // prompt. Since Autofill doesn't trigger from a CVC field, we can keep
-      // the client-side predictions for this type.
-      field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-    } else {
-      field->SetTypeTo(field->Type());
-    }
+    field->SetTypeTo(field->Type());
   }
   RationalizeTypeRelationships();
 }

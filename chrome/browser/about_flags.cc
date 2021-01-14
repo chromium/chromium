@@ -5561,11 +5561,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"autofill-off-no-server-data",
-     flag_descriptions::kAutofillOffNoServerDataName,
-     flag_descriptions::kAutofillOffNoServerDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillOffNoServerData)},
-
     {"enable-portals", flag_descriptions::kEnablePortalsName,
      flag_descriptions::kEnablePortalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPortals)},

@@ -254,11 +254,6 @@ const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
 
-const char kAutofillOffNoServerDataName[] = "Autofill Off No Server Data";
-const char kAutofillOffNoServerDataDescription[] =
-    "Disables Autofill for fields with autocomplete off that have no "
-    "crowd-sourced evidence that Autofill would be helpful.";
-
 const char kAutofillProfileClientValidationName[] =
     "Autofill Validates Profiles By Client";
 const char kAutofillProfileClientValidationDescription[] =
