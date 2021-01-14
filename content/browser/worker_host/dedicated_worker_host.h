@@ -54,6 +54,7 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       const blink::DedicatedWorkerToken& token,
       RenderProcessHost* worker_process_host,
       base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
@@ -117,6 +118,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
     return cross_origin_embedder_policy_;
+  }
+
+  ServiceWorkerMainResourceHandle* service_worker_handle() {
+    return service_worker_handle_.get();
   }
 
  private:
@@ -186,6 +191,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // The ID of the frame that directly starts this worker. This is base::nullopt
   // when this worker is nested.
   const base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+
+  // The token of the dedicated worker that directly starts this worker. This is
+  // base::nullopt when this worker is created from a frame.
+  const base::Optional<blink::DedicatedWorkerToken> creator_worker_token_;
 
   // The ID of the frame that owns this worker, either directly, or (in the case
   // of nested workers) indirectly via a tree of dedicated workers.

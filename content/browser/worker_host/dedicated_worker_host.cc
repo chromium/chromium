@@ -44,6 +44,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     const blink::DedicatedWorkerToken& token,
     RenderProcessHost* worker_process_host,
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
@@ -54,6 +55,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       token_(token),
       worker_process_host_(worker_process_host),
       creator_render_frame_host_id_(creator_render_frame_host_id),
+      creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
@@ -66,6 +68,8 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
   DCHECK(coep_reporter_);
+  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
+         (!creator_render_frame_host_id_ && creator_worker_token_));
 
   scoped_process_host_observation_.Observe(worker_process_host_);
 
@@ -190,16 +194,28 @@ void DedicatedWorkerHost::StartScriptLoad(
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
   if (script_url.SchemeIsBlob()) {
     if (creator_render_frame_host_id_) {
+      // The creator of this worker is a frame.
       base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
           RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
               ->GetLastCommittedServiceWorkerHost();
 
       service_worker_handle_->set_parent_container_host(creator_container_host);
     } else {
-      // TODO(https://crbug.com/1017034): When this worker is nested, the worker
-      // should inherit the active service worker from the parent worker host.
-      // Implement this behavior.
-      NOTIMPLEMENTED();
+      // The creator of this worker is a dedicated worker.
+      DCHECK(creator_worker_token_);
+
+      DedicatedWorkerHost* creator_worker =
+          service_->GetDedicatedWorkerHostFromToken(
+              creator_worker_token_.value());
+      if (!creator_worker) {
+        client_->OnScriptLoadStartFailed();
+        return;
+      }
+
+      base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
+          creator_worker->service_worker_handle()->container_host();
+
+      service_worker_handle_->set_parent_container_host(creator_container_host);
     }
   }
 
@@ -426,14 +442,16 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-  // There is no creator frame when the worker is nested.
+  // Set this worker as the creator of the new worker and inherit the ancestor
+  // render frame.
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/base::nullopt,
-          ancestor_render_frame_host_id_, worker_origin_, isolation_info_,
-          cross_origin_embedder_policy_, std::move(coep_reporter)),
+          /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
+          worker_origin_, isolation_info_, cross_origin_embedder_policy_,
+          std::move(coep_reporter)),
       std::move(receiver));
 }
 

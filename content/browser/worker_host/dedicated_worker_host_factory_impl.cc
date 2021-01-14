@@ -38,6 +38,7 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     int worker_process_id,
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
@@ -46,12 +47,15 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
         coep_reporter)
     : worker_process_id_(worker_process_id),
       creator_render_frame_host_id_(creator_render_frame_host_id),
+      creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
       isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
+         (!creator_render_frame_host_id_ && creator_worker_token_));
 }
 
 DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
@@ -92,8 +96,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
-      cross_origin_embedder_policy_, std::move(coep_reporter));
+      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
 }
 
@@ -134,8 +138,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
-      cross_origin_embedder_policy_, std::move(coep_reporter));
+      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());

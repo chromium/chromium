@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Nested blob URL workers should be intercepted by a service worker. assert_equals: fetch() should be intercepted. expected "intercepted by service worker" but got "{\"error\": {\"code\": 404, \"message\": \"\"}}"
-PASS Nested worker created from a blob URL worker should be intercepted by a service worker.
-FAIL Nested blob URL worker created from a worker should be intercepted by a service worker. assert_equals: fetch() should be intercepted. expected "intercepted by service worker" but got "{\"error\": {\"code\": 404, \"message\": \"\"}}"
-Harness: the test ran to completion.
-

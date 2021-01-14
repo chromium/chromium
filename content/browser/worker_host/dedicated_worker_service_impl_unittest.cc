@@ -42,7 +42,8 @@ class MockDedicatedWorker
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
-            worker_process_id, render_frame_host_id, render_frame_host_id,
+            worker_process_id, render_frame_host_id,
+            /*creator_worker_token=*/base::nullopt, render_frame_host_id,
             url::Origin(), net::IsolationInfo::CreateTransient(),
             network::CrossOriginEmbedderPolicy(),
             std::move(coep_reporter_remote)),
