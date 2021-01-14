@@ -15,7 +15,7 @@ class MockFileSystemAccessPermissionContext
     : public FileSystemAccessPermissionContext {
  public:
   MockFileSystemAccessPermissionContext();
-  ~MockFileSystemAccessPermissionContext();
+  ~MockFileSystemAccessPermissionContext() override;
 
   MOCK_METHOD4(GetReadPermissionGrant,
                scoped_refptr<FileSystemAccessPermissionGrant>(

@@ -30,7 +30,7 @@ class MockFileSystemAccessPermissionGrant
   using FileSystemAccessPermissionGrant::NotifyPermissionStatusChanged;
 
  protected:
-  ~MockFileSystemAccessPermissionGrant();
+  ~MockFileSystemAccessPermissionGrant() override;
 };
 
 }  // namespace content
