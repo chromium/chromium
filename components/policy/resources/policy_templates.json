@@ -23616,14 +23616,9 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
-        'enum': [ 0, 1, 2],
+        'enum': [ 1, 2],
       },
       'items': [
-        {
-          'name': 'Unset',
-          'value': 0,
-          'caption': '''Use default browser behavior, shows the ToS and waits for the user to accept.''',
-        },
         {
           'name': 'StandardTosDialog',
           'value': 1,
