@@ -52,6 +52,12 @@ bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
   return false;
 }
 
+// Returns whether the holding space tray icon should show previews.
+bool ShouldShowPreviews() {
+  return IsPreviewsEnabled() && HoldingSpaceController::Get()->model() &&
+         ModelContainsFinalizedItems(HoldingSpaceController::Get()->model());
+}
+
 std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(kHoldingSpaceTrayDefaultIconId);
@@ -132,7 +138,7 @@ void HoldingSpaceTray::AnchorUpdated() {
 }
 
 void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
-  UpdateVisibility();
+  UpdateState();
 }
 
 bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
@@ -206,11 +212,6 @@ void HoldingSpaceTray::SetVisiblePreferred(bool visible_preferred) {
     CloseBubble();
 }
 
-void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
-  if (previews_update_.IsRunning())
-    previews_update_.FireNow();
-}
-
 void HoldingSpaceTray::UpdateVisibility() {
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
   LoginStatus login_status = shelf()->GetStatusAreaWidget()->login_status();
@@ -252,32 +253,27 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
   model_observer_.Observe(model);
-  UpdateVisibility();
-  UpdatePreviewsState();
+  UpdateState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
   model_observer_.Reset();
-  UpdateVisibility();
-  UpdatePreviewsState();
+  UpdateState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  UpdateVisibility();
-  UpdatePreviewsState();
+  UpdateState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  UpdateVisibility();
-  UpdatePreviewsState();
+  UpdateState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
-  UpdateVisibility();
-  UpdatePreviewsState();
+  UpdateState();
 }
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
@@ -361,7 +357,7 @@ void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
-  UpdatePreviewsState();
+  UpdateState();
   ObservePrefService(prefs);
 }
 
@@ -373,43 +369,24 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
   // is owned by `this` so it is safe to bind with an unretained raw pointer.
   holding_space_prefs::AddPreviewsEnabledChangedCallback(
       pref_change_registrar_.get(),
-      base::BindRepeating(&HoldingSpaceTray::UpdatePreviewsState,
+      base::BindRepeating(&HoldingSpaceTray::UpdateState,
                           base::Unretained(this)));
 }
 
-void HoldingSpaceTray::UpdatePreviewsState() {
+void HoldingSpaceTray::UpdateState() {
+  UpdateVisibility();
   UpdatePreviewsVisibility();
-  SchedulePreviewsIconUpdate();
+  UpdatePreviewsIcon();
 }
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
-  const bool show_previews =
-      IsPreviewsEnabled() && HoldingSpaceController::Get()->model() &&
-      ModelContainsFinalizedItems(HoldingSpaceController::Get()->model());
-
+  const bool show_previews = ShouldShowPreviews();
   if (PreviewsShown() == show_previews)
     return;
   default_tray_icon_->SetVisible(!show_previews);
 
   DCHECK(previews_tray_icon_);
   previews_tray_icon_->SetVisible(show_previews);
-
-  if (!show_previews)
-    previews_update_.Stop();
-}
-
-void HoldingSpaceTray::SchedulePreviewsIconUpdate() {
-  if (previews_update_.IsRunning())
-    return;
-
-  // Schedule async task with a short (somewhat arbitrary) delay to update
-  // previews so items added in quick succession are handled together.
-  base::TimeDelta delay = use_zero_previews_update_delay_
-                              ? base::TimeDelta()
-                              : base::TimeDelta::FromMilliseconds(50);
-  previews_update_.Start(FROM_HERE, delay,
-                         base::BindOnce(&HoldingSpaceTray::UpdatePreviewsIcon,
-                                        base::Unretained(this)));
 }
 
 void HoldingSpaceTray::UpdatePreviewsIcon() {

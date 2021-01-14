@@ -135,6 +135,23 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
 
 HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;
 
+void HoldingSpaceTrayIconPreview::UpdateWithoutAnimation() {
+  DCHECK(pending_index_.has_value());
+
+  index_ = *pending_index_;
+
+  transform_ = gfx::Transform();
+  gfx::Vector2dF translation(index_.value() * GetPreviewSize().width() / 2, 0);
+  AdjustForShelfAlignmentAndTextDirection(&translation);
+  transform_.Translate(translation);
+
+  if (NeedsLayer()) {
+    CreateLayer(transform_);
+  } else {
+    DestroyLayer();
+  }
+}
+
 void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   DCHECK(transform_.IsIdentity());
   DCHECK(!index_.has_value());
@@ -342,10 +359,8 @@ void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
 }
 
 void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
-  if (!NeedsLayer()) {
-    container_->layer()->Remove(layer_.get());
-    layer_.reset();
-  }
+  if (!NeedsLayer())
+    DestroyLayer();
 
   // NOTE: Running `animate_out_closure_` may delete `this`.
   if (animate_out_closure_)
@@ -381,6 +396,13 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   UpdateLayerBounds();
 
   container_->layer()->Add(layer_.get());
+}
+
+void HoldingSpaceTrayIconPreview::DestroyLayer() {
+  if (!layer_)
+    return;
+  container_->layer()->Remove(layer_.get());
+  layer_.reset();
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {

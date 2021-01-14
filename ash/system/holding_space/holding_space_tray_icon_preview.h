@@ -46,6 +46,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
       delete;
   ~HoldingSpaceTrayIconPreview() override;
 
+  // Updates the preview state to match its `pending_index_` without an
+  // animation.
+  void UpdateWithoutAnimation();
+
   // Animates this preview in. The item is animated at `*pending_index_`. This
   // will move `pending_index_` value to `index_`.
   // `additional_delay` - the delay that should be added on top of initial delay
@@ -101,6 +105,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // exist while in the viewport for the holding space tray `container_`.
   // |initial_transform| - The transform that should be set on the layer.
   void CreateLayer(const gfx::Transform& initial_transform);
+
+  // Destroys the `layer_` for this preview, if it was previously created.
+  void DestroyLayer();
 
   // Returns whether this preview needs a layer for its current `transform_`.
   // Since we only maintain `layer_` while it appears in the viewport for the

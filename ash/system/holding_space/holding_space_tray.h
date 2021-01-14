@@ -20,7 +20,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -70,12 +69,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   TrayBubbleView* GetBubbleView() override;
   void SetVisiblePreferred(bool visible_preferred) override;
 
-  void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
-    use_zero_previews_update_delay_ = zero_delay;
-  }
-
-  void FirePreviewsUpdateTimerIfRunningForTesting();
-
  private:
   void UpdateVisibility();
 
@@ -114,18 +107,16 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // space tray state.
   void ObservePrefService(PrefService* prefs);
 
-  // Called when the state reflected in the previews icon changes - it updates
-  // the previews icon visibility and schedules the previews icon update.
-  void UpdatePreviewsState();
+  // Updates the tray state:
+  // *   Updates the tray visibility.
+  // *   Selects whether previews or default icon should be shown.
+  // *   Updates the list of items represented in the previews icon.
+  void UpdateState();
 
   // Updates the visibility of the tray icon showing item previews.
   // If the previews are not enabled, or the holding space is empty, the default
   // holding space tray icon will be shown.
   void UpdatePreviewsVisibility();
-
-  // Schedules a task to update the list of items shown in the previews tray
-  // icon.
-  void SchedulePreviewsIconUpdate();
 
   // Calculates the set of items that should be added to the holding space
   // preview icon, and updates the icon state. No-op if previews are not
@@ -155,13 +146,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // user pref service and notifies the holding space tray icon of changes to
   // the user's preference.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  // Timer for updating previews shown in the content forward tray icon.
-  base::OneShotTimer previews_update_;
-
-  // Used in tests to shorten the timeout for updating previews in the content
-  // forward tray icon.
-  bool use_zero_previews_update_delay_ = false;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
