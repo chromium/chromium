@@ -40,7 +40,7 @@ TEST(DatesTest, ParsePdfDateBadPrefix) {
 
 TEST(DatesTest, ParsePdfDateNoValidYear) {
   EXPECT_PRED1(IsInvalidPdfDate, "");
-  EXPECT_PRED1(IsInvalidPdfDate, "");
+  EXPECT_PRED1(IsInvalidPdfDate, "D:");
   EXPECT_PRED1(IsInvalidPdfDate, "D:999");
 }
 
@@ -100,15 +100,25 @@ TEST(DatesTest, ParsePdfDateWithTimeOffset) {
   ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 10:11:20", &expected));
   EXPECT_EQ(ParsePdfDate("D:20200604214120+11'30"), expected);
 
+  ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 14:56:20", &expected));
+  EXPECT_EQ(ParsePdfDate("D:20200604214120+06'45'"), expected);
+}
+
+TEST(DatesTest, ParsePdfDateTruncatedOffset) {
+  base::Time expected;
+
   ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 21:41:20", &expected));
   EXPECT_EQ(ParsePdfDate("D:20200604214120+6'45'"), expected);
+
+  ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 15:41:20", &expected));
+  EXPECT_EQ(ParsePdfDate("D:20200604214120+06'4'"), expected);
 }
 
 TEST(DatesTest, ParsePdfDateWithSecondsOffset) {
   // Seconds offset is not supported.
   base::Time expected;
-  ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 21:41:20", &expected));
-  EXPECT_EQ(ParsePdfDate("D:20200604214120+6'45'56'"), expected);
+  ASSERT_TRUE(base::Time::FromUTCString("2020-06-04 14:56:20", &expected));
+  EXPECT_EQ(ParsePdfDate("D:20200604214120+06'45'56'"), expected);
 }
 
 TEST(DatesTest, ParsePdfDateWithTimeOffsetNoApostrophe) {
