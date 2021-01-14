@@ -54,10 +54,12 @@ class PinboardToolTests(unittest.TestCase):
   def testStartPinpointJobs(self, load_configs, get_last_commit):
     load_configs.return_value = [{
         'name': 'config1',
-        'configuration': 'AndroidGo'
+        'configuration': 'AndroidGo',
+        'patch': '1234'
     }, {
         'name': 'config2',
-        'configuration': 'Pixel2'
+        'configuration': 'Pixel2',
+        'patch': '5678'
     }]
     get_last_commit.return_value = ('2a66bac4', '2019-03-17T23:50:16-07:00')
     self.subprocess.check_output.side_effect = [
@@ -75,11 +77,13 @@ class PinboardToolTests(unittest.TestCase):
         'jobs': [{
             'id': '14b4c451f40000',
             'status': 'queued',
-            'bot': 'AndroidGo'
+            'bot': 'AndroidGo',
+            'patch': '1234'
         }, {
             'id': '11fae481f40000',
             'status': 'queued',
-            'bot': 'Pixel2'
+            'bot': 'Pixel2',
+            'patch': '5678'
         }]
     }])
 
