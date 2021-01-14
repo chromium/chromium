@@ -15,6 +15,8 @@ namespace {
 TEST(DisabledSitesTest, AllPaths) {
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.youtube.com")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.youtube.com/somepage")));
+  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://m.youtube.com")));
+  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://m.youtube.com/somepage")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com/somepage")));
 }

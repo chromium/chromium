@@ -19,13 +19,23 @@ bool ShouldOfferLinkToText(const GURL& url) {
     // against the RE stored in the value. For example, {"foo.com", ".*"} means
     // any page on the foo.com domain.
     const static std::map<std::string, std::string> kBlocklist = {
-        {"youtube.com", ".*"},
+        {"facebook.com", ".*"},
         // TODO(crbug.com/1157981): special case this to cover other Google TLDs
-        {"google.com", "^\\/amp\\/.*"}};
+        {"google.com", "^\\/amp\\/.*"},
+        {"instagram.com", ".*"},
+        {"reddit.com", ".*"},
+        {"web.whatsapp.com", ".*"},
+        {"youtube.com", ".*"},
 
-    const std::string domain = url.host().compare(0, 4, "www.") == 0
-                                   ? url.host().substr(4)
-                                   : url.host();
+    };
+
+    std::string domain = url.host();
+    if (domain.compare(0, 4, "www.") == 0) {
+      domain = domain.substr(4);
+    } else if (domain.compare(0, 2, "m.") == 0) {
+      domain = domain.substr(2);
+    }
+
     auto it = kBlocklist.find(domain);
     if (it != kBlocklist.end()) {
       return !re2::RE2::FullMatch(url.path(), it->second);
