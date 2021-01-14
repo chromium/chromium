@@ -92,7 +92,12 @@ void PwaInstallView::UpdateImpl() {
   else
     ResetSlideAnimation(false);
 
-  if (is_probably_promotable && ShouldShowIph(web_contents, manager)) {
+  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+
+  // Only try to show IPH when |PwaInstallView.IsDrawn|. This catches the case
+  // that view is set to visible but not drawn in fullscreen mode.
+  if (is_probably_promotable && ShouldShowIph(web_contents, manager) &&
+      IsDrawn()) {
     FeaturePromoControllerViews* controller =
         FeaturePromoControllerViews::GetForView(this);
     if (controller) {
@@ -109,7 +114,6 @@ void PwaInstallView::UpdateImpl() {
         SetHighlighted(true);
     }
   }
-  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
 }
 
 void PwaInstallView::OnIphClosed() {
