@@ -1001,46 +1001,6 @@
             ]
         }
     ],
-    "AutofillProfileValidation": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledClient_20190211",
-                    "enable_features": [
-                        "AutofillProfileClientValidation"
-                    ],
-                    "disable_features": [
-                        "AutofillProfileServerValidation"
-                    ]
-                },
-                {
-                    "name": "EnabledClientServer_20190211",
-                    "enable_features": [
-                        "AutofillProfileClientValidation",
-                        "AutofillProfileServerValidation"
-                    ]
-                },
-                {
-                    "name": "EnabledServer_20190211",
-                    "enable_features": [
-                        "AutofillProfileServerValidation"
-                    ],
-                    "disable_features": [
-                        "AutofillProfileClientValidation "
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPruneSuggestions": [
         {
             "platforms": [
