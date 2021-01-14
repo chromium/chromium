@@ -4,7 +4,8 @@
 
 import {
   AppWindow,  // eslint-disable-line no-unused-vars
-  getDefaultWindowSize,
+  DEFAULT_PREVIEW_16X9_WINDOW_SIZE,
+  DEFAULT_PREVIEW_4X3_WINDOW_SIZE,
 } from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
@@ -261,8 +262,11 @@ export class App {
 
       if (isSuccess) {
         const aspectRatio = this.cameraView_.getPreviewAspectRatio();
-        const {width, height} = getDefaultWindowSize(aspectRatio);
-        window.resizeTo(width, height);
+        if (Math.abs(4 / 3 - aspectRatio) < Math.abs(16 / 9 - aspectRatio)) {
+          window.resizeTo(...DEFAULT_PREVIEW_4X3_WINDOW_SIZE);
+        } else {
+          window.resizeTo(...DEFAULT_PREVIEW_16X9_WINDOW_SIZE);
+        }
       }
 
       nav.close(ViewName.SPLASH);
