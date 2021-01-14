@@ -31,11 +31,8 @@ class FileSystemFileUtil;
 class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
     : public AsyncFileUtil {
  public:
-  // Creates a new AsyncFileUtil for |sync_file_util|. This takes the
-  // ownership of |sync_file_util|. (This doesn't take std::unique_ptr<> just
-  // to save extra base::WrapUnique; in all use cases a new fresh FileUtil is
-  // created only for this adapter.)
-  explicit AsyncFileUtilAdapter(FileSystemFileUtil* sync_file_util);
+  explicit AsyncFileUtilAdapter(
+      std::unique_ptr<FileSystemFileUtil> sync_file_util);
 
   ~AsyncFileUtilAdapter() override;
 

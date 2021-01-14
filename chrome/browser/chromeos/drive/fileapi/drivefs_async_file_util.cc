@@ -204,7 +204,8 @@ class DeleteOperation {
 }  // namespace
 
 DriveFsAsyncFileUtil::DriveFsAsyncFileUtil(Profile* profile)
-    : AsyncFileUtilAdapter(new DriveFsFileUtil), profile_(profile) {}
+    : AsyncFileUtilAdapter(std::make_unique<DriveFsFileUtil>()),
+      profile_(profile) {}
 
 DriveFsAsyncFileUtil::~DriveFsAsyncFileUtil() = default;
 

@@ -162,8 +162,9 @@ void RunCreateOrOpenCallback(FileSystemOperationContext* context,
 
 }  // namespace
 
-AsyncFileUtilAdapter::AsyncFileUtilAdapter(FileSystemFileUtil* sync_file_util)
-    : sync_file_util_(sync_file_util) {
+AsyncFileUtilAdapter::AsyncFileUtilAdapter(
+    std::unique_ptr<FileSystemFileUtil> sync_file_util)
+    : sync_file_util_(std::move(sync_file_util)) {
   DCHECK(sync_file_util_.get());
 }
 

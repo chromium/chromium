@@ -103,11 +103,13 @@ PluginPrivateFileSystemBackend::PluginPrivateFileSystemBackend(
       base_path_(profile_path.Append(kFileSystemDirectory)
                      .Append(kPluginPrivateDirectory)),
       plugin_map_(new FileSystemIDToPluginMap(file_task_runner)) {
-  file_util_ = std::make_unique<AsyncFileUtilAdapter>(new ObfuscatedFileUtil(
-      special_storage_policy, base_path_, env_override,
-      base::BindRepeating(&FileSystemIDToPluginMap::GetPluginIDForURL,
-                          base::Owned(plugin_map_)),
-      std::set<std::string>(), nullptr, file_system_options.is_incognito()));
+  file_util_ = std::make_unique<AsyncFileUtilAdapter>(
+      std::make_unique<ObfuscatedFileUtil>(
+          special_storage_policy, base_path_, env_override,
+          base::BindRepeating(&FileSystemIDToPluginMap::GetPluginIDForURL,
+                              base::Owned(plugin_map_)),
+          std::set<std::string>(), nullptr,
+          file_system_options.is_incognito()));
 }
 
 PluginPrivateFileSystemBackend::~PluginPrivateFileSystemBackend() {

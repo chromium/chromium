@@ -99,7 +99,8 @@ class DeleteRecursivelyOperation {
 }  // namespace
 
 SmbFsAsyncFileUtil::SmbFsAsyncFileUtil(Profile* profile)
-    : AsyncFileUtilAdapter(new storage::LocalFileUtil), profile_(profile) {
+    : AsyncFileUtilAdapter(std::make_unique<storage::LocalFileUtil>()),
+      profile_(profile) {
   DCHECK(profile_);
 }
 

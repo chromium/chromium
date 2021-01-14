@@ -118,8 +118,8 @@ TestFileSystemBackend::TestFileSystemBackend(
     const base::FilePath& base_path)
     : base_path_(base_path),
       task_runner_(task_runner),
-      file_util_(
-          std::make_unique<AsyncFileUtilAdapter>(new TestFileUtil(base_path))),
+      file_util_(std::make_unique<AsyncFileUtilAdapter>(
+          std::make_unique<TestFileUtil>(base_path))),
       quota_util_(std::make_unique<QuotaUtil>()),
       require_copy_or_move_validator_(false) {
   update_observers_ =

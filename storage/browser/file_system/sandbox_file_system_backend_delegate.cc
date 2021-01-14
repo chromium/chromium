@@ -188,13 +188,14 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
     : file_task_runner_(file_task_runner),
       quota_manager_proxy_(quota_manager_proxy),
       sandbox_file_util_(std::make_unique<AsyncFileUtilAdapter>(
-          new ObfuscatedFileUtil(special_storage_policy,
-                                 profile_path.Append(kFileSystemDirectory),
-                                 env_override,
-                                 base::BindRepeating(&GetTypeStringForURL),
-                                 GetKnownTypeStrings(),
-                                 this,
-                                 file_system_options.is_incognito()))),
+          std::make_unique<ObfuscatedFileUtil>(
+              special_storage_policy,
+              profile_path.Append(kFileSystemDirectory),
+              env_override,
+              base::BindRepeating(&GetTypeStringForURL),
+              GetKnownTypeStrings(),
+              this,
+              file_system_options.is_incognito()))),
       file_system_usage_cache_(std::make_unique<FileSystemUsageCache>(
           file_system_options.is_incognito())),
       quota_observer_(

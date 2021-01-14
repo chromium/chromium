@@ -23,7 +23,7 @@
 namespace storage {
 
 AsyncFileUtil* AsyncFileUtil::CreateForLocalFileSystem() {
-  return new AsyncFileUtilAdapter(new LocalFileUtil());
+  return new AsyncFileUtilAdapter(std::make_unique<LocalFileUtil>());
 }
 
 class LocalFileUtil::LocalFileEnumerator
