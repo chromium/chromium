@@ -48,8 +48,6 @@ Polymer({
     const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
     networkConfig.getNetworkState(guid).then(response => {
-      // TODO(crbug.com/1093185): Add check for specifically eSIM when
-      // cellular has an EID property.
       if (response.result.type !==
           chromeos.networkConfig.mojom.NetworkType.kCellular) {
         return;
@@ -67,7 +65,8 @@ Polymer({
   setESimIccid_(networkConfig, guid) {
     networkConfig.getManagedProperties(guid).then(response => {
       const managedProperty = response.result;
-      if (managedProperty.typeProperties.cellular.iccid) {
+      if (managedProperty.typeProperties.cellular.iccid &&
+          managedProperty.typeProperties.cellular.eid) {
         this.iccid_ = managedProperty.typeProperties.cellular.iccid;
       }
     });
