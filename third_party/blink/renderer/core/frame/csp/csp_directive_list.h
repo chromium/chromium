@@ -134,18 +134,9 @@ class CORE_EXPORT CSPDirectiveList final
   bool AllowHash(const network::mojom::blink::CSPHashSource& hash_value,
                  const ContentSecurityPolicy::InlineType inline_type) const;
 
-  // Export a subset of the Policy. The primary goal of this method is to make
+  // Export the policies. The primary goal of this method is to make
   // the embedders aware of the directives that affect navigation, as the
   // embedder is responsible for navigational enforcement.
-  // It currently contains the following ones:
-  // * default-src
-  // * child-src
-  // * frame-src
-  // * form-action
-  // * upgrade-insecure-requests
-  // * navigate-to
-  // The exported directives only contains sources that affect navigation. For
-  // instance it doesn't contains 'unsafe-inline' or 'unsafe-eval'
   network::mojom::blink::ContentSecurityPolicyPtr ExposeForNavigationalChecks()
       const;
 
@@ -295,27 +286,8 @@ class CORE_EXPORT CSPDirectiveList final
   bool upgrade_insecure_requests_;
 
   base::Optional<Vector<String>> plugin_types_;
-  network::mojom::blink::CSPSourceListPtr base_uri_;
-  network::mojom::blink::CSPSourceListPtr child_src_;
-  network::mojom::blink::CSPSourceListPtr connect_src_;
-  network::mojom::blink::CSPSourceListPtr default_src_;
-  network::mojom::blink::CSPSourceListPtr font_src_;
-  network::mojom::blink::CSPSourceListPtr form_action_;
-  network::mojom::blink::CSPSourceListPtr frame_ancestors_;
-  network::mojom::blink::CSPSourceListPtr frame_src_;
-  network::mojom::blink::CSPSourceListPtr img_src_;
-  network::mojom::blink::CSPSourceListPtr media_src_;
-  network::mojom::blink::CSPSourceListPtr manifest_src_;
-  network::mojom::blink::CSPSourceListPtr object_src_;
-  network::mojom::blink::CSPSourceListPtr prefetch_src_;
-  network::mojom::blink::CSPSourceListPtr script_src_;
-  network::mojom::blink::CSPSourceListPtr script_src_attr_;
-  network::mojom::blink::CSPSourceListPtr script_src_elem_;
-  network::mojom::blink::CSPSourceListPtr style_src_;
-  network::mojom::blink::CSPSourceListPtr style_src_attr_;
-  network::mojom::blink::CSPSourceListPtr style_src_elem_;
-  network::mojom::blink::CSPSourceListPtr worker_src_;
-  network::mojom::blink::CSPSourceListPtr navigate_to_;
+  HashMap<CSPDirectiveName, network::mojom::blink::CSPSourceListPtr>
+      directives_;
   network::mojom::blink::CSPTrustedTypesPtr trusted_types_;
   network::mojom::blink::CSPRequireTrustedTypesFor require_trusted_types_for_;
 

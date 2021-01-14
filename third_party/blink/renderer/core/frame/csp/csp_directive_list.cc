@@ -1180,32 +1180,31 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
     return;
   }
 
+  network::mojom::blink::CSPSourceListPtr source_list = nullptr;
+
   switch (type) {
     case CSPDirectiveName::BaseURI:
-      base_uri_ = CSPSourceListParse(name, value, policy_);
+      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::BlockAllMixedContent:
       EnforceStrictMixedContentChecking(name, value);
       return;
     case CSPDirectiveName::ChildSrc:
-      child_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::ConnectSrc:
-      connect_src_ = CSPSourceListParse(name, value, policy_);
+      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::DefaultSrc:
-      default_src_ = CSPSourceListParse(name, value, policy_);
+      source_list = CSPSourceListParse(name, value, policy_);
       // TODO(mkwst) It seems unlikely that developers would use different
       // algorithms for scripts and styles. We may want to combine the
       // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
-      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(default_src_.get()));
-      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(default_src_.get()));
+      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
+      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
+      directives_.insert(type, std::move(source_list));
       return;
     case CSPDirectiveName::FontSrc:
-      font_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::FormAction:
-      form_action_ = CSPSourceListParse(name, value, policy_);
+      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::FrameAncestors:
       // Remove frame-ancestors directives in meta policies, per
@@ -1213,26 +1212,16 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       if (header_->source == ContentSecurityPolicySource::kMeta) {
         policy_->ReportInvalidDirectiveInMeta(name);
       } else {
-        frame_ancestors_ = CSPSourceListParse(name, value, policy_);
+        directives_.insert(type, CSPSourceListParse(name, value, policy_));
       }
       return;
     case CSPDirectiveName::FrameSrc:
-      frame_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::ImgSrc:
-      img_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::ManifestSrc:
-      manifest_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::MediaSrc:
-      media_src_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::NavigateTo:
-      navigate_to_ = CSPSourceListParse(name, value, policy_);
-      return;
     case CSPDirectiveName::ObjectSrc:
-      object_src_ = CSPSourceListParse(name, value, policy_);
+      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::PluginTypes:
       plugin_types_ = CSPPluginTypesParse(value, policy_);
@@ -1241,7 +1230,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       if (!policy_->ExperimentalFeaturesEnabled())
         policy_->ReportUnsupportedDirective(name);
       else
-        prefetch_src_ = CSPSourceListParse(name, value, policy_);
+        directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::ReportTo:
       if (base::FeatureList::IsEnabled(network::features::kReporting))
@@ -1260,32 +1249,18 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       ApplySandboxPolicy(name, value);
       return;
     case CSPDirectiveName::ScriptSrc:
-      script_src_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(script_src_.get()));
-      return;
     case CSPDirectiveName::ScriptSrcAttr:
-      script_src_attr_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesScriptHashAlgorithms(
-          HashAlgorithmsUsed(script_src_attr_.get()));
-      return;
     case CSPDirectiveName::ScriptSrcElem:
-      script_src_elem_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesScriptHashAlgorithms(
-          HashAlgorithmsUsed(script_src_elem_.get()));
+      source_list = CSPSourceListParse(name, value, policy_);
+      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
+      directives_.insert(type, std::move(source_list));
       return;
     case CSPDirectiveName::StyleSrc:
-      style_src_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(style_src_.get()));
-      return;
     case CSPDirectiveName::StyleSrcAttr:
-      style_src_attr_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesStyleHashAlgorithms(
-          HashAlgorithmsUsed(style_src_attr_.get()));
-      return;
     case CSPDirectiveName::StyleSrcElem:
-      style_src_elem_ = CSPSourceListParse(name, value, policy_);
-      policy_->UsesStyleHashAlgorithms(
-          HashAlgorithmsUsed(style_src_elem_.get()));
+      source_list = CSPSourceListParse(name, value, policy_);
+      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
+      directives_.insert(type, std::move(source_list));
       return;
     case CSPDirectiveName::TreatAsPublicAddress:
       ApplyTreatAsPublicAddress();
@@ -1300,7 +1275,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       NOTREACHED();
       return;
     case CSPDirectiveName::WorkerSrc:
-      worker_src_ = CSPSourceListParse(name, value, policy_);
+      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
   }
 }
@@ -1362,83 +1337,17 @@ CSPOperativeDirective CSPDirectiveList::OperativeDirective(
     return CSPOperativeDirective{CSPDirectiveName::Unknown, nullptr};
   }
 
-  const network::mojom::blink::CSPSourceList* directive;
   if (original_type == CSPDirectiveName::Unknown) {
     original_type = type;
   }
 
-  switch (type) {
-    case CSPDirectiveName::BaseURI:
-      directive = base_uri_.get();
-      break;
-    case CSPDirectiveName::DefaultSrc:
-      directive = default_src_.get();
-      break;
-    case CSPDirectiveName::FrameAncestors:
-      directive = frame_ancestors_.get();
-      break;
-    case CSPDirectiveName::FormAction:
-      directive = form_action_.get();
-      break;
-    case CSPDirectiveName::NavigateTo:
-      directive = navigate_to_.get();
-      break;
-    case CSPDirectiveName::ChildSrc:
-      directive = child_src_.get();
-      break;
-    case CSPDirectiveName::ConnectSrc:
-      directive = connect_src_.get();
-      break;
-    case CSPDirectiveName::FontSrc:
-      directive = font_src_.get();
-      break;
-    case CSPDirectiveName::ImgSrc:
-      directive = img_src_.get();
-      break;
-    case CSPDirectiveName::ManifestSrc:
-      directive = manifest_src_.get();
-      break;
-    case CSPDirectiveName::MediaSrc:
-      directive = media_src_.get();
-      break;
-    case CSPDirectiveName::ObjectSrc:
-      directive = object_src_.get();
-      break;
-    case CSPDirectiveName::PrefetchSrc:
-      directive = prefetch_src_.get();
-      break;
-    case CSPDirectiveName::ScriptSrc:
-      directive = script_src_.get();
-      break;
-    case CSPDirectiveName::ScriptSrcAttr:
-      directive = script_src_attr_.get();
-      break;
-    case CSPDirectiveName::ScriptSrcElem:
-      directive = script_src_elem_.get();
-      break;
-    case CSPDirectiveName::StyleSrc:
-      directive = style_src_.get();
-      break;
-    case CSPDirectiveName::StyleSrcAttr:
-      directive = style_src_attr_.get();
-      break;
-    case CSPDirectiveName::StyleSrcElem:
-      directive = style_src_elem_.get();
-      break;
-    case CSPDirectiveName::FrameSrc:
-      directive = frame_src_.get();
-      break;
-    case CSPDirectiveName::WorkerSrc:
-      directive = worker_src_.get();
-      break;
-    default:
-      return CSPOperativeDirective{CSPDirectiveName::Unknown, nullptr};
-  }
+  const auto directive = directives_.find(type);
 
   // if the directive does not exist, rely on the fallback directive
-  return directive ? CSPOperativeDirective{type, directive}
-                   : OperativeDirective(FallbackDirective(type, original_type),
-                                        original_type);
+  return (directive != directives_.end())
+             ? CSPOperativeDirective{type, directive->value.get()}
+             : OperativeDirective(FallbackDirective(type, original_type),
+                                  original_type);
 }
 
 network::mojom::blink::ContentSecurityPolicyPtr
@@ -1450,27 +1359,7 @@ CSPDirectiveList::ExposeForNavigationalChecks() const {
   policy->use_reporting_api = use_reporting_api_;
   policy->report_endpoints = report_endpoints_;
   policy->header = header_.Clone();
-
-  if (child_src_) {
-    policy->directives.Set(CSPDirectiveName::ChildSrc, child_src_.Clone());
-  }
-
-  if (default_src_) {
-    policy->directives.Set(CSPDirectiveName::DefaultSrc, default_src_.Clone());
-  }
-
-  if (form_action_) {
-    policy->directives.Set(CSPDirectiveName::FormAction, form_action_.Clone());
-  }
-
-  if (frame_src_) {
-    policy->directives.Set(CSPDirectiveName::FrameSrc, frame_src_.Clone());
-  }
-
-  if (navigate_to_) {
-    policy->directives.Set(CSPDirectiveName::NavigateTo, navigate_to_.Clone());
-  }
-
+  policy->directives = mojo::Clone(directives_);
   policy->upgrade_insecure_requests = upgrade_insecure_requests_;
 
   return policy;
@@ -1483,8 +1372,10 @@ bool CSPDirectiveList::IsObjectRestrictionReasonable() const {
 }
 
 bool CSPDirectiveList::IsBaseRestrictionReasonable() const {
-  return base_uri_ &&
-         (CSPSourceListIsNone(*base_uri_) || CSPSourceListIsSelf(*base_uri_));
+  const auto base_uri = directives_.find(CSPDirectiveName::BaseURI);
+  return (base_uri != directives_.end()) &&
+         (CSPSourceListIsNone(*base_uri->value) ||
+          CSPSourceListIsSelf(*base_uri->value));
 }
 
 bool CSPDirectiveList::IsScriptRestrictionReasonable() const {
