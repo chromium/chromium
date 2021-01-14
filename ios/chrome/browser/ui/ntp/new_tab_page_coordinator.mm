@@ -168,10 +168,12 @@
 
   [self.contentSuggestionsCoordinator start];
 
+  self.ntpMediator.refactoredFeedVisible = [self isNTPRefactoredAndFeedVisible];
   if ([self isNTPRefactoredAndFeedVisible]) {
     self.ntpViewController = [[NewTabPageViewController alloc]
         initWithContentSuggestionsViewController:
             self.contentSuggestionsCoordinator.viewController];
+    self.ntpMediator.ntpViewController = self.ntpViewController;
 
     UIViewController* discoverFeedViewController =
         ios::GetChromeBrowserProvider()
@@ -297,7 +299,8 @@
 }
 
 - (void)willUpdateSnapshot {
-  if ([self isNTPRefactoredAndFeedVisible]) {
+  if (self.contentSuggestionsCoordinator.started &&
+      [self isNTPRefactoredAndFeedVisible]) {
     [self.ntpViewController willUpdateSnapshot];
   } else {
     [self.contentSuggestionsCoordinator willUpdateSnapshot];
@@ -436,6 +439,9 @@
 
 // YES if we're using the refactored NTP and the Discover Feed is visible.
 - (BOOL)isNTPRefactoredAndFeedVisible {
+  // Make sure we call this only if self.contentSuggestionsCoordinator has been
+  // started.
+  DCHECK(self.contentSuggestionsCoordinator.started);
   return IsRefactoredNTP() &&
          [self.contentSuggestionsCoordinator isDiscoverFeedVisible];
 }

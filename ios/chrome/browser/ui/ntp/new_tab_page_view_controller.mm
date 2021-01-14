@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -50,6 +51,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // view.
 @property(nonatomic, weak) ContentSuggestionsLayout* contentSuggestionsLayout;
 
+// Initial scrolling offset, used to restore the previous scrolling position.
+@property(nonatomic, assign) CGFloat initialContentOffset;
+
 @end
 
 @implementation NewTabPageViewController
@@ -66,6 +70,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
     // TODO(crbug.com/1114792): Instantiate this depending on the initial scroll
     // position.
     _scrolledIntoFeed = NO;
+    _initialContentOffset = NAN;
   }
 
   return self;
@@ -142,6 +147,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
   self.headerSynchronizer.additionalOffset = collectionView.contentSize.height;
+
+  [self applyContentOffset];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -202,8 +209,18 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self updateOverscrollActionsState];
 }
 
+#pragma mark - Public
+
 - (void)willUpdateSnapshot {
   [self.overscrollActionsController clear];
+}
+
+- (void)setContentOffset:(CGFloat)offset {
+  self.initialContentOffset = offset;
+  if (self.isViewLoaded && self.collectionView.window &&
+      self.collectionView.contentSize.height != 0) {
+    [self applyContentOffset];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -324,6 +341,28 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // belongs. This can probably be optimized by just reloading the header, if
   // that doesn't mess up any collection/header interactions.
   [self.ntpContentDelegate reloadContentSuggestions];
+}
+
+// Sets the collectionView's contentOffset if |_initialContentOffset| is set.
+- (void)applyContentOffset {
+  if (!isnan(self.initialContentOffset)) {
+    UICollectionView* collection =
+        self.discoverFeedWrapperViewController.feedCollectionView;
+    // Don't set the offset such as the content of the collection is smaller
+    // than the part of the collection which should be displayed with that
+    // offset, taking into account the size of the toolbar.
+    CGFloat offset = MAX(
+        0, MIN(self.initialContentOffset,
+               collection.contentSize.height - collection.bounds.size.height -
+                   ToolbarExpandedHeight(
+                       self.traitCollection.preferredContentSizeCategory) +
+                   collection.contentInset.bottom));
+    if (collection.contentOffset.y != offset) {
+      collection.contentOffset = CGPointMake(0, offset);
+      // TODO(crbug.com/1114792): Add the FakeOmnibox if necessary.
+    }
+  }
+  self.initialContentOffset = NAN;
 }
 
 #pragma mark - Setters

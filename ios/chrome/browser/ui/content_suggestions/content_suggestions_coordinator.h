@@ -26,8 +26,8 @@ class WebState;
 
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
-// Whether the Suggestions UI is displayed. If this is true, start is a no-op.
-@property(nonatomic, readonly) BOOL visible;
+// YES if the coordinator has started. If YES, start is a no-op.
+@property(nonatomic, readonly) BOOL started;
 
 @property(nonatomic, strong, readonly)
     ContentSuggestionsHeaderViewController* headerController;

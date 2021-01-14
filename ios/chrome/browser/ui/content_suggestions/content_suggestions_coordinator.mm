@@ -137,12 +137,12 @@
 - (void)start {
   DCHECK(self.browser);
   DCHECK(self.ntpMediator);
-  if (self.visible) {
+  if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
   }
 
-  _visible = YES;
+  _started = YES;
 
   // Make sure that the omnibox is unfocused to prevent having it visually
   // focused while the NTP is just created (with the fakebox visible).
@@ -349,7 +349,7 @@
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.contentSuggestionsExpanded = nil;
-  _visible = NO;
+  _started = NO;
 }
 
 - (UIViewController*)viewController {

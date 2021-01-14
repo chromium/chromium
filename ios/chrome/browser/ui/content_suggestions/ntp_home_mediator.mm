@@ -42,8 +42,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -642,10 +644,17 @@ const char kNTPHelpURL[] =
   web::NavigationManager* manager = webState->GetNavigationManager();
   web::NavigationItem* item = manager->GetLastCommittedItem();
   web::PageDisplayState displayState;
-  UIEdgeInsets contentInset =
-      self.suggestionsViewController.collectionView.contentInset;
-  CGPoint contentOffset =
-      self.suggestionsViewController.collectionView.contentOffset;
+
+  // TODO(crbug.com/1114792): Create a protocol to stop having references to
+  // both of these ViewControllers directly.
+  UICollectionView* collectionView =
+      self.refactoredFeedVisible
+          ? self.ntpViewController.discoverFeedWrapperViewController
+                .feedCollectionView
+          : self.suggestionsViewController.collectionView;
+  UIEdgeInsets contentInset = collectionView.contentInset;
+  CGPoint contentOffset = collectionView.contentOffset;
+
   contentOffset.y -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;
   displayState.scroll_state() =
@@ -662,8 +671,15 @@ const char kNTPHelpURL[] =
   web::NavigationItem* item = navigationManager->GetVisibleItem();
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
-  if (offset > 0)
-    [self.suggestionsViewController setContentOffset:offset];
+  if (offset > 0) {
+    // TODO(crbug.com/1114792): Create a protocol to stop having references to
+    // both of these ViewControllers directly.
+    if ([self isRefactoredFeedVisible]) {
+      [self.ntpViewController setContentOffset:offset];
+    } else {
+      [self.suggestionsViewController setContentOffset:offset];
+    }
+  }
 }
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is

@@ -50,6 +50,10 @@
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
+// Sets the collection contentOffset to |offset|, or caches the value and
+// applies it after the first layout.
+- (void)setContentOffset:(CGFloat)offset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_
