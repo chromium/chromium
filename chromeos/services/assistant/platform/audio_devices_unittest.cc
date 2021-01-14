@@ -148,7 +148,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendHotwordDeviceToObserver) {
   FakeAudioDevicesObserver observer;
   audio_devices().AddAndFireObserver(&observer);
 
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).Build()});
+  UpdateDeviceList(
+      {DeviceBuilder(AudioDeviceType::kHotword).WithId(111).Build()});
 
   EXPECT_EQ("111", observer.hotword_device_id());
   EXPECT_EQ("<none>", observer.preferred_device_id());
@@ -158,7 +159,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendUsbDeviceToObserver) {
   FakeAudioDevicesObserver observer;
   audio_devices().AddAndFireObserver(&observer);
 
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_USB).WithId(222).Build()});
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kUsb).WithId(222).Build()});
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
   EXPECT_EQ("222", observer.preferred_device_id());
@@ -168,7 +169,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendHeadphonesDeviceToObserver) {
   FakeAudioDevicesObserver observer;
   audio_devices().AddAndFireObserver(&observer);
 
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HEADPHONE).WithId(333).Build()});
+  UpdateDeviceList(
+      {DeviceBuilder(AudioDeviceType::kHeadphone).WithId(333).Build()});
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
   EXPECT_EQ("333", observer.preferred_device_id());
@@ -179,7 +181,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendInternalMicDeviceToObserver) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList(
-      {DeviceBuilder(AUDIO_TYPE_INTERNAL_MIC).WithId(444).Build()});
+      {DeviceBuilder(AudioDeviceType::kInternalMic).WithId(444).Build()});
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
   EXPECT_EQ("444", observer.preferred_device_id());
@@ -189,7 +191,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendFrontMicDeviceToObserver) {
   FakeAudioDevicesObserver observer;
   audio_devices().AddAndFireObserver(&observer);
 
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_FRONT_MIC).WithId(555).Build()});
+  UpdateDeviceList(
+      {DeviceBuilder(AudioDeviceType::kFrontMic).WithId(555).Build()});
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
   EXPECT_EQ("555", observer.preferred_device_id());
@@ -200,9 +203,18 @@ TEST_F(AssistantAudioDevicesTest, ShouldUseHighestPriorityHotwordDevice) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).WithPriority(1).Build(),
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(555).WithPriority(5).Build(),
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(222).WithPriority(2).Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(111)
+          .WithPriority(1)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(555)
+          .WithPriority(5)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(222)
+          .WithPriority(2)
+          .Build(),
   });
 
   EXPECT_EQ("555", observer.hotword_device_id());
@@ -214,9 +226,18 @@ TEST_F(AssistantAudioDevicesTest, ShouldIgnoreNonInputHotwordDevices) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).WithIsInput(false).Build(),
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(222).WithIsInput(true).Build(),
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(333).WithIsInput(false).Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(111)
+          .WithIsInput(false)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(222)
+          .WithIsInput(true)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kHotword)
+          .WithId(333)
+          .WithIsInput(false)
+          .Build(),
   });
 
   EXPECT_EQ("222", observer.hotword_device_id());
@@ -228,9 +249,9 @@ TEST_F(AssistantAudioDevicesTest, ShouldUseHighestPriorityDevice) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(111).WithPriority(1).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(555).WithPriority(5).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(222).WithPriority(2).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb).WithId(111).WithPriority(1).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb).WithId(555).WithPriority(5).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb).WithId(222).WithPriority(2).Build(),
   });
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
@@ -242,9 +263,18 @@ TEST_F(AssistantAudioDevicesTest, ShouldIgnoreNonInputDevices) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(111).WithIsInput(false).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(222).WithIsInput(true).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(333).WithIsInput(false).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb)
+          .WithId(111)
+          .WithIsInput(false)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kUsb)
+          .WithId(222)
+          .WithIsInput(true)
+          .Build(),
+      DeviceBuilder(AudioDeviceType::kUsb)
+          .WithId(333)
+          .WithIsInput(false)
+          .Build(),
   });
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
@@ -256,17 +286,17 @@ TEST_F(AssistantAudioDevicesTest, ShouldIgnoreUnsupportedDeviceTypes) {
   audio_devices().AddAndFireObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_BLUETOOTH).WithId(2).Build(),
-      DeviceBuilder(AUDIO_TYPE_BLUETOOTH_NB_MIC).WithId(3).Build(),
-      DeviceBuilder(AUDIO_TYPE_HDMI).WithId(4).Build(),
-      DeviceBuilder(AUDIO_TYPE_INTERNAL_SPEAKER).WithId(5).Build(),
-      DeviceBuilder(AUDIO_TYPE_REAR_MIC).WithId(6).Build(),
-      DeviceBuilder(AUDIO_TYPE_KEYBOARD_MIC).WithId(7).Build(),
-      DeviceBuilder(AUDIO_TYPE_LINEOUT).WithId(8).Build(),
-      DeviceBuilder(AUDIO_TYPE_POST_MIX_LOOPBACK).WithId(9).Build(),
-      DeviceBuilder(AUDIO_TYPE_POST_DSP_LOOPBACK).WithId(10).Build(),
-      DeviceBuilder(AUDIO_TYPE_ALSA_LOOPBACK).WithId(11).Build(),
-      DeviceBuilder(AUDIO_TYPE_OTHER).WithId(12).Build(),
+      DeviceBuilder(AudioDeviceType::kBluetooth).WithId(2).Build(),
+      DeviceBuilder(AudioDeviceType::kBluetoothNbMic).WithId(3).Build(),
+      DeviceBuilder(AudioDeviceType::kHdmi).WithId(4).Build(),
+      DeviceBuilder(AudioDeviceType::kInternalSpeaker).WithId(5).Build(),
+      DeviceBuilder(AudioDeviceType::kRearMic).WithId(6).Build(),
+      DeviceBuilder(AudioDeviceType::kKeyboardMic).WithId(7).Build(),
+      DeviceBuilder(AudioDeviceType::kLineout).WithId(8).Build(),
+      DeviceBuilder(AudioDeviceType::kPostMixLoopback).WithId(9).Build(),
+      DeviceBuilder(AudioDeviceType::kPostDspLoopback).WithId(10).Build(),
+      DeviceBuilder(AudioDeviceType::kAlsaLoopback).WithId(11).Build(),
+      DeviceBuilder(AudioDeviceType::kOther).WithId(12).Build(),
   });
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
@@ -275,8 +305,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldIgnoreUnsupportedDeviceTypes) {
 
 TEST_F(AssistantAudioDevicesTest, ShouldFireObserverWhenAdded) {
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(222).Build(),
+      DeviceBuilder(AudioDeviceType::kHotword).WithId(111).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb).WithId(222).Build(),
   });
 
   FakeAudioDevicesObserver observer;
@@ -292,8 +322,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldNotFireObserverAfterItsRemoved) {
   audio_devices().RemoveObserver(&observer);
 
   UpdateDeviceList({
-      DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).Build(),
-      DeviceBuilder(AUDIO_TYPE_USB).WithId(222).Build(),
+      DeviceBuilder(AudioDeviceType::kHotword).WithId(111).Build(),
+      DeviceBuilder(AudioDeviceType::kUsb).WithId(222).Build(),
   });
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
@@ -304,11 +334,12 @@ TEST_F(AssistantAudioDevicesTest,
        ShouldUpdateHotwordModelWhenHotwordDeviceIsAdded) {
   EXPECT_CALL(cras_audio_client_mock(), SetHotwordModel);
 
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).Build()});
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kHotword).Build()});
 }
 
 TEST_F(AssistantAudioDevicesTest, ShouldFormatLocaleToHotwordModel) {
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(111).Build()});
+  UpdateDeviceList(
+      {DeviceBuilder(AudioDeviceType::kHotword).WithId(111).Build()});
 
   // Normal case
   EXPECT_CALL(cras_audio_client_mock(), SetHotwordModel(111, "nl_be", _));
@@ -327,7 +358,8 @@ TEST_F(AssistantAudioDevicesTest, ShouldFormatLocaleToHotwordModel) {
 }
 
 TEST_F(AssistantAudioDevicesTest, ShouldUseDefaultLocaleIfUserPrefIsRejected) {
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).WithId(222).Build()});
+  UpdateDeviceList(
+      {DeviceBuilder(AudioDeviceType::kHotword).WithId(222).Build()});
 
   EXPECT_CALL(cras_audio_client_mock(),
               SetHotwordModel(_, "rejected_locale", _))
@@ -344,7 +376,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldUseDefaultLocaleIfUserPrefIsRejected) {
 }
 
 TEST_F(AssistantAudioDevicesTest, ShouldUseDefaultLocaleIfUserPrefIsEmpty) {
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).Build()});
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kHotword).Build()});
 
   EXPECT_CALL(cras_audio_client_mock(), SetHotwordModel(_, kDefaultLocale, _));
 
@@ -352,7 +384,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldUseDefaultLocaleIfUserPrefIsEmpty) {
 }
 
 TEST_F(AssistantAudioDevicesTest, ShouldDoNothingIfUserPrefIsAccepted) {
-  UpdateDeviceList({DeviceBuilder(AUDIO_TYPE_HOTWORD).Build()});
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kHotword).Build()});
 
   EXPECT_CALL(cras_audio_client_mock(),
               SetHotwordModel(_, "accepted_locale", _))

@@ -17,24 +17,24 @@
 namespace chromeos {
 
 // Ordered from the highest priority to the lowest.
-enum AudioDeviceType {
-  AUDIO_TYPE_HEADPHONE,
-  AUDIO_TYPE_MIC,
-  AUDIO_TYPE_USB,
-  AUDIO_TYPE_BLUETOOTH,
-  AUDIO_TYPE_BLUETOOTH_NB_MIC,
-  AUDIO_TYPE_HDMI,
-  AUDIO_TYPE_INTERNAL_SPEAKER,
-  AUDIO_TYPE_INTERNAL_MIC,
-  AUDIO_TYPE_FRONT_MIC,
-  AUDIO_TYPE_REAR_MIC,
-  AUDIO_TYPE_KEYBOARD_MIC,
-  AUDIO_TYPE_HOTWORD,
-  AUDIO_TYPE_LINEOUT,
-  AUDIO_TYPE_POST_MIX_LOOPBACK,
-  AUDIO_TYPE_POST_DSP_LOOPBACK,
-  AUDIO_TYPE_ALSA_LOOPBACK,
-  AUDIO_TYPE_OTHER,
+enum class AudioDeviceType {
+  kHeadphone,
+  kMic,
+  kUsb,
+  kBluetooth,
+  kBluetoothNbMic,
+  kHdmi,
+  kInternalSpeaker,
+  kInternalMic,
+  kFrontMic,
+  kRearMic,
+  kKeyboardMic,
+  kHotword,
+  kLineout,
+  kPostMixLoopback,
+  kPostDspLoopback,
+  kAlsaLoopback,
+  kOther,
 };
 
 struct COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevice {
@@ -45,8 +45,8 @@ struct COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevice {
 
   // Converts between the string type sent via D-Bus and AudioDeviceType.
   // Static so they can be used by tests.
-  static std::string GetTypeString(chromeos::AudioDeviceType type);
-  static chromeos::AudioDeviceType GetAudioType(const std::string& node_type);
+  static std::string GetTypeString(AudioDeviceType type);
+  static AudioDeviceType GetAudioType(const std::string& node_type);
 
   // Indicates that an input or output audio device is for simple usage like
   // playback or recording for user. In contrast, audio device such as
@@ -55,18 +55,17 @@ struct COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevice {
   // One special case is ALSA loopback device, which will only exist under
   // testing, and we want it visible to users for e2e tests.
   bool is_for_simple_usage() const {
-    return (type == AUDIO_TYPE_HEADPHONE ||
-            type == AUDIO_TYPE_INTERNAL_MIC ||
-            type == AUDIO_TYPE_FRONT_MIC ||
-            type == AUDIO_TYPE_REAR_MIC ||
-            type == AUDIO_TYPE_MIC ||
-            type == AUDIO_TYPE_USB ||
-            type == AUDIO_TYPE_BLUETOOTH ||
-            type == AUDIO_TYPE_BLUETOOTH_NB_MIC ||
-            type == AUDIO_TYPE_HDMI ||
-            type == AUDIO_TYPE_INTERNAL_SPEAKER ||
-            type == AUDIO_TYPE_LINEOUT ||
-            type == AUDIO_TYPE_ALSA_LOOPBACK);
+    return (type == AudioDeviceType::kHeadphone ||
+            type == AudioDeviceType::kInternalMic ||
+            type == AudioDeviceType::kFrontMic ||
+            type == AudioDeviceType::kRearMic ||
+            type == AudioDeviceType::kMic || type == AudioDeviceType::kUsb ||
+            type == AudioDeviceType::kBluetooth ||
+            type == AudioDeviceType::kBluetoothNbMic ||
+            type == AudioDeviceType::kHdmi ||
+            type == AudioDeviceType::kInternalSpeaker ||
+            type == AudioDeviceType::kLineout ||
+            type == AudioDeviceType::kAlsaLoopback);
   }
 
   bool IsExternalDevice() const;
@@ -97,7 +96,7 @@ struct COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevice {
   uint64_t deprecated_stable_device_id = 0;
   std::string display_name;
   std::string device_name;
-  AudioDeviceType type = AUDIO_TYPE_OTHER;
+  AudioDeviceType type = AudioDeviceType::kOther;
   uint8_t priority = 0;
   bool active = false;
   uint64_t plugged_time = 0;

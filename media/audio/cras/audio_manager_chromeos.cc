@@ -56,7 +56,8 @@ enum CrosBeamformingDeviceState {
 
 bool HasKeyboardMic(const chromeos::AudioDeviceList& devices) {
   for (const auto& device : devices) {
-    if (device.is_input && device.type == chromeos::AUDIO_TYPE_KEYBOARD_MIC) {
+    if (device.is_input &&
+        device.type == chromeos::AudioDeviceType::kKeyboardMic) {
       return true;
     }
   }
@@ -79,12 +80,14 @@ const chromeos::AudioDevice* GetDeviceFromId(
 void ProcessVirtualDeviceName(AudioDeviceNames* device_names,
                               const chromeos::AudioDeviceList& device_list) {
   DCHECK_EQ(2U, device_list.size());
-  if (device_list[0].type == chromeos::AUDIO_TYPE_LINEOUT ||
-      device_list[1].type == chromeos::AUDIO_TYPE_LINEOUT) {
+  if (device_list[0].type == chromeos::AudioDeviceType::kLineout ||
+      device_list[1].type == chromeos::AudioDeviceType::kLineout) {
     device_names->emplace_back(kHeadphoneLineOutVirtualDevice,
                                base::NumberToString(device_list[0].id));
-  } else if (device_list[0].type == chromeos::AUDIO_TYPE_INTERNAL_SPEAKER ||
-             device_list[1].type == chromeos::AUDIO_TYPE_INTERNAL_SPEAKER) {
+  } else if (device_list[0].type ==
+                 chromeos::AudioDeviceType::kInternalSpeaker ||
+             device_list[1].type ==
+                 chromeos::AudioDeviceType::kInternalSpeaker) {
     device_names->emplace_back(kInternalOutputVirtualDevice,
                                base::NumberToString(device_list[0].id));
   } else {

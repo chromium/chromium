@@ -88,18 +88,16 @@ void ArcAudioBridge::OnAudioNodesChanged() {
       cras_audio_handler_->GetDeviceFromId(output_id);
   bool headphone_inserted =
       (output_device &&
-       (output_device->type ==
-        chromeos::AudioDeviceType::AUDIO_TYPE_HEADPHONE ||
-        output_device->type == chromeos::AudioDeviceType::AUDIO_TYPE_USB ||
-        output_device->type == chromeos::AudioDeviceType::AUDIO_TYPE_LINEOUT));
+       (output_device->type == chromeos::AudioDeviceType::kHeadphone ||
+        output_device->type == chromeos::AudioDeviceType::kUsb ||
+        output_device->type == chromeos::AudioDeviceType::kLineout));
 
   uint64_t input_id = cras_audio_handler_->GetPrimaryActiveInputNode();
   const chromeos::AudioDevice* input_device =
       cras_audio_handler_->GetDeviceFromId(input_id);
   bool microphone_inserted =
-      (input_device &&
-       (input_device->type == chromeos::AudioDeviceType::AUDIO_TYPE_MIC ||
-        input_device->type == chromeos::AudioDeviceType::AUDIO_TYPE_USB));
+      (input_device && (input_device->type == chromeos::AudioDeviceType::kMic ||
+                        input_device->type == chromeos::AudioDeviceType::kUsb));
 
   DVLOG(1) << "HEADPHONE " << headphone_inserted << " MICROPHONE "
            << microphone_inserted;

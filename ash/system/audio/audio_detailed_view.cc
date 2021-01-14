@@ -23,30 +23,30 @@ namespace {
 
 base::string16 GetAudioDeviceName(const chromeos::AudioDevice& device) {
   switch (device.type) {
-    case chromeos::AUDIO_TYPE_FRONT_MIC:
+    case chromeos::AudioDeviceType::kFrontMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_FRONT_MIC);
-    case chromeos::AUDIO_TYPE_HEADPHONE:
+    case chromeos::AudioDeviceType::kHeadphone:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HEADPHONE);
-    case chromeos::AUDIO_TYPE_INTERNAL_SPEAKER:
+    case chromeos::AudioDeviceType::kInternalSpeaker:
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_SPEAKER);
-    case chromeos::AUDIO_TYPE_INTERNAL_MIC:
+    case chromeos::AudioDeviceType::kInternalMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_MIC);
-    case chromeos::AUDIO_TYPE_REAR_MIC:
+    case chromeos::AudioDeviceType::kRearMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_REAR_MIC);
-    case chromeos::AUDIO_TYPE_USB:
+    case chromeos::AudioDeviceType::kUsb:
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_BLUETOOTH:
+    case chromeos::AudioDeviceType::kBluetooth:
       FALLTHROUGH;
-    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case chromeos::AudioDeviceType::kBluetoothNbMic:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
           base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_HDMI:
+    case chromeos::AudioDeviceType::kHdmi:
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HDMI_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_MIC:
+    case chromeos::AudioDeviceType::kMic:
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_MIC_JACK_DEVICE);
     default:
@@ -122,7 +122,7 @@ void AudioDetailedView::UpdateAudioDevices() {
     chromeos::AudioDevice internal_mic;
     internal_mic.is_input = true;
     internal_mic.stable_device_id_version = 2;
-    internal_mic.type = chromeos::AUDIO_TYPE_INTERNAL_MIC;
+    internal_mic.type = chromeos::AudioDeviceType::kInternalMic;
     internal_mic.active = is_front_or_rear_mic_active;
     input_devices_.push_back(internal_mic);
   }
@@ -179,7 +179,7 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
     return;
   chromeos::AudioDevice device = iter->second;
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
-  if (device.type == chromeos::AUDIO_TYPE_INTERNAL_MIC &&
+  if (device.type == chromeos::AudioDeviceType::kInternalMic &&
       audio_handler->HasDualInternalMic()) {
     audio_handler->SwitchToFrontOrRearMic();
   } else {

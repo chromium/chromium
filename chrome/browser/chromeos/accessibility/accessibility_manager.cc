@@ -1057,7 +1057,7 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
 
   AudioDevice device;
   CrasAudioHandler::Get()->GetPrimaryActiveOutputDevice(&device);
-  if (device.type == AudioDeviceType::AUDIO_TYPE_OTHER)
+  if (device.type == AudioDeviceType::kOther)
     return;
 
   CrasAudioHandler::Get()->RemoveAudioObserver(this);

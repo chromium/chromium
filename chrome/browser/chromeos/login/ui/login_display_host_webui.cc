@@ -399,7 +399,7 @@ bool CanPlayStartupSound() {
   bool found =
       chromeos::CrasAudioHandler::Get()->GetPrimaryActiveOutputDevice(&device);
   return found && device.stable_device_id_version &&
-         device.type != chromeos::AudioDeviceType::AUDIO_TYPE_OTHER;
+         device.type != AudioDeviceType::kOther;
 }
 
 }  // namespace

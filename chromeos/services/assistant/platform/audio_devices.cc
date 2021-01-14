@@ -78,7 +78,7 @@ base::Optional<uint64_t> GetHotwordDeviceId(
       continue;
 
     switch (device.type) {
-      case chromeos::AUDIO_TYPE_HOTWORD:
+      case AudioDeviceType::kHotword:
         result = GetHighestPriorityDevice(result, &device);
         break;
       default:
@@ -99,10 +99,10 @@ base::Optional<uint64_t> GetPreferredDeviceId(
       continue;
 
     switch (device.type) {
-      case chromeos::AUDIO_TYPE_USB:
-      case chromeos::AUDIO_TYPE_HEADPHONE:
-      case chromeos::AUDIO_TYPE_INTERNAL_MIC:
-      case chromeos::AUDIO_TYPE_FRONT_MIC:
+      case chromeos::AudioDeviceType::kUsb:
+      case chromeos::AudioDeviceType::kHeadphone:
+      case chromeos::AudioDeviceType::kInternalMic:
+      case chromeos::AudioDeviceType::kFrontMic:
         result = GetHighestPriorityDevice(result, &device);
         break;
       default:

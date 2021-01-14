@@ -19,31 +19,31 @@ namespace {
 // will be between 0 to 3, the higher number meaning a higher priority.
 uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
   switch (type) {
-    case AUDIO_TYPE_HEADPHONE:
-    case AUDIO_TYPE_LINEOUT:
-    case AUDIO_TYPE_MIC:
-    case AUDIO_TYPE_USB:
-    case AUDIO_TYPE_BLUETOOTH:
+    case AudioDeviceType::kHeadphone:
+    case AudioDeviceType::kLineout:
+    case AudioDeviceType::kMic:
+    case AudioDeviceType::kUsb:
+    case AudioDeviceType::kBluetooth:
       return 3;
-    case AUDIO_TYPE_HDMI:
+    case AudioDeviceType::kHdmi:
       return 2;
-    case AUDIO_TYPE_INTERNAL_SPEAKER:
-    case AUDIO_TYPE_INTERNAL_MIC:
-    case AUDIO_TYPE_FRONT_MIC:
+    case AudioDeviceType::kInternalSpeaker:
+    case AudioDeviceType::kInternalMic:
+    case AudioDeviceType::kFrontMic:
       return 1;
     // Lower the priority of bluetooth mic to prevent unexpected bad eperience
     // to user because of bluetooth audio profile switching. Make priority to
     // zero so this mic will never be automatically chosen.
-    case AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case AudioDeviceType::kBluetoothNbMic:
     // Rear mic should have priority lower than front mic to prevent poor
     // quality input caused by accidental selecting to rear side mic.
-    case AUDIO_TYPE_REAR_MIC:
-    case AUDIO_TYPE_KEYBOARD_MIC:
-    case AUDIO_TYPE_HOTWORD:
-    case AUDIO_TYPE_POST_MIX_LOOPBACK:
-    case AUDIO_TYPE_POST_DSP_LOOPBACK:
-    case AUDIO_TYPE_ALSA_LOOPBACK:
-    case AUDIO_TYPE_OTHER:
+    case AudioDeviceType::kRearMic:
+    case AudioDeviceType::kKeyboardMic:
+    case AudioDeviceType::kHotword:
+    case AudioDeviceType::kPostMixLoopback:
+    case AudioDeviceType::kPostDspLoopback:
+    case AudioDeviceType::kAlsaLoopback:
+    case AudioDeviceType::kOther:
     default:
       return 0;
   }
@@ -54,39 +54,39 @@ uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
 // static
 std::string AudioDevice::GetTypeString(AudioDeviceType type) {
   switch (type) {
-    case AUDIO_TYPE_HEADPHONE:
+    case AudioDeviceType::kHeadphone:
       return "HEADPHONE";
-    case AUDIO_TYPE_MIC:
+    case AudioDeviceType::kMic:
       return "MIC";
-    case AUDIO_TYPE_USB:
+    case AudioDeviceType::kUsb:
       return "USB";
-    case AUDIO_TYPE_BLUETOOTH:
+    case AudioDeviceType::kBluetooth:
       return "BLUETOOTH";
-    case AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case AudioDeviceType::kBluetoothNbMic:
       return "BLUETOOTH_NB_MIC";
-    case AUDIO_TYPE_HDMI:
+    case AudioDeviceType::kHdmi:
       return "HDMI";
-    case AUDIO_TYPE_INTERNAL_SPEAKER:
+    case AudioDeviceType::kInternalSpeaker:
       return "INTERNAL_SPEAKER";
-    case AUDIO_TYPE_INTERNAL_MIC:
+    case AudioDeviceType::kInternalMic:
       return "INTERNAL_MIC";
-    case AUDIO_TYPE_FRONT_MIC:
+    case AudioDeviceType::kFrontMic:
       return "FRONT_MIC";
-    case AUDIO_TYPE_REAR_MIC:
+    case AudioDeviceType::kRearMic:
       return "REAR_MIC";
-    case AUDIO_TYPE_KEYBOARD_MIC:
+    case AudioDeviceType::kKeyboardMic:
       return "KEYBOARD_MIC";
-    case AUDIO_TYPE_HOTWORD:
+    case AudioDeviceType::kHotword:
       return "HOTWORD";
-    case AUDIO_TYPE_LINEOUT:
+    case AudioDeviceType::kLineout:
       return "LINEOUT";
-    case AUDIO_TYPE_POST_MIX_LOOPBACK:
+    case AudioDeviceType::kPostMixLoopback:
       return "POST_MIX_LOOPBACK";
-    case AUDIO_TYPE_POST_DSP_LOOPBACK:
+    case AudioDeviceType::kPostDspLoopback:
       return "POST_DSP_LOOPBACK";
-    case AUDIO_TYPE_ALSA_LOOPBACK:
+    case AudioDeviceType::kAlsaLoopback:
       return "ALSA_LOOPBACK";
-    case AUDIO_TYPE_OTHER:
+    case AudioDeviceType::kOther:
     default:
       return "OTHER";
   }
@@ -96,43 +96,43 @@ std::string AudioDevice::GetTypeString(AudioDeviceType type) {
 AudioDeviceType AudioDevice::GetAudioType(
     const std::string& node_type) {
   if (node_type.find("HEADPHONE") != std::string::npos)
-    return AUDIO_TYPE_HEADPHONE;
+    return AudioDeviceType::kHeadphone;
   else if (node_type.find("INTERNAL_MIC") != std::string::npos)
-    return AUDIO_TYPE_INTERNAL_MIC;
+    return AudioDeviceType::kInternalMic;
   else if (node_type.find("FRONT_MIC") != std::string::npos)
-    return AUDIO_TYPE_FRONT_MIC;
+    return AudioDeviceType::kFrontMic;
   else if (node_type.find("REAR_MIC") != std::string::npos)
-    return AUDIO_TYPE_REAR_MIC;
+    return AudioDeviceType::kRearMic;
   else if (node_type.find("KEYBOARD_MIC") != std::string::npos)
-    return AUDIO_TYPE_KEYBOARD_MIC;
+    return AudioDeviceType::kKeyboardMic;
   else if (node_type.find("BLUETOOTH_NB_MIC") != std::string::npos)
-    return AUDIO_TYPE_BLUETOOTH_NB_MIC;
+    return AudioDeviceType::kBluetoothNbMic;
   else if (node_type.find("MIC") != std::string::npos)
-    return AUDIO_TYPE_MIC;
+    return AudioDeviceType::kMic;
   else if (node_type.find("USB") != std::string::npos)
-    return AUDIO_TYPE_USB;
+    return AudioDeviceType::kUsb;
   else if (node_type.find("BLUETOOTH") != std::string::npos)
-    return AUDIO_TYPE_BLUETOOTH;
+    return AudioDeviceType::kBluetooth;
   else if (node_type.find("HDMI") != std::string::npos)
-    return AUDIO_TYPE_HDMI;
+    return AudioDeviceType::kHdmi;
   else if (node_type.find("INTERNAL_SPEAKER") != std::string::npos)
-    return AUDIO_TYPE_INTERNAL_SPEAKER;
+    return AudioDeviceType::kInternalSpeaker;
   // TODO(hychao): Remove the 'AOKR' matching line after CRAS switches
   // node type naming to 'HOTWORD'.
   else if (node_type.find("AOKR") != std::string::npos)
-    return AUDIO_TYPE_HOTWORD;
+    return AudioDeviceType::kHotword;
   else if (node_type.find("HOTWORD") != std::string::npos)
-    return AUDIO_TYPE_HOTWORD;
+    return AudioDeviceType::kHotword;
   else if (node_type.find("LINEOUT") != std::string::npos)
-    return AUDIO_TYPE_LINEOUT;
+    return AudioDeviceType::kLineout;
   else if (node_type.find("POST_MIX_LOOPBACK") != std::string::npos)
-    return AUDIO_TYPE_POST_MIX_LOOPBACK;
+    return AudioDeviceType::kPostMixLoopback;
   else if (node_type.find("POST_DSP_LOOPBACK") != std::string::npos)
-    return AUDIO_TYPE_POST_DSP_LOOPBACK;
+    return AudioDeviceType::kPostDspLoopback;
   else if (node_type.find("ALSA_LOOPBACK") != std::string::npos)
-    return AUDIO_TYPE_ALSA_LOOPBACK;
+    return AudioDeviceType::kAlsaLoopback;
   else
-    return AUDIO_TYPE_OTHER;
+    return AudioDeviceType::kOther;
 }
 
 AudioDevice::AudioDevice() = default;
@@ -199,15 +199,15 @@ bool AudioDevice::IsExternalDevice() const {
   if (is_input) {
     return !IsInternalMic();
   } else {
-    return (type != AUDIO_TYPE_INTERNAL_SPEAKER);
+    return (type != AudioDeviceType::kInternalSpeaker);
   }
 }
 
 bool AudioDevice::IsInternalMic() const {
   switch (type) {
-    case AUDIO_TYPE_INTERNAL_MIC:
-    case AUDIO_TYPE_FRONT_MIC:
-    case AUDIO_TYPE_REAR_MIC:
+    case AudioDeviceType::kInternalMic:
+    case AudioDeviceType::kFrontMic:
+    case AudioDeviceType::kRearMic:
       return true;
     default:
       return false;

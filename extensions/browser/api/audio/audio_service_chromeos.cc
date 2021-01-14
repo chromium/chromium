@@ -29,38 +29,38 @@ namespace {
 
 api::audio::DeviceType GetAsAudioApiDeviceType(chromeos::AudioDeviceType type) {
   switch (type) {
-    case chromeos::AUDIO_TYPE_HEADPHONE:
+    case chromeos::AudioDeviceType::kHeadphone:
       return api::audio::DEVICE_TYPE_HEADPHONE;
-    case chromeos::AUDIO_TYPE_MIC:
+    case chromeos::AudioDeviceType::kMic:
       return api::audio::DEVICE_TYPE_MIC;
-    case chromeos::AUDIO_TYPE_USB:
+    case chromeos::AudioDeviceType::kUsb:
       return api::audio::DEVICE_TYPE_USB;
-    case chromeos::AUDIO_TYPE_BLUETOOTH:
-    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case chromeos::AudioDeviceType::kBluetooth:
+    case chromeos::AudioDeviceType::kBluetoothNbMic:
       return api::audio::DEVICE_TYPE_BLUETOOTH;
-    case chromeos::AUDIO_TYPE_HDMI:
+    case chromeos::AudioDeviceType::kHdmi:
       return api::audio::DEVICE_TYPE_HDMI;
-    case chromeos::AUDIO_TYPE_INTERNAL_SPEAKER:
+    case chromeos::AudioDeviceType::kInternalSpeaker:
       return api::audio::DEVICE_TYPE_INTERNAL_SPEAKER;
-    case chromeos::AUDIO_TYPE_INTERNAL_MIC:
+    case chromeos::AudioDeviceType::kInternalMic:
       return api::audio::DEVICE_TYPE_INTERNAL_MIC;
-    case chromeos::AUDIO_TYPE_FRONT_MIC:
+    case chromeos::AudioDeviceType::kFrontMic:
       return api::audio::DEVICE_TYPE_FRONT_MIC;
-    case chromeos::AUDIO_TYPE_REAR_MIC:
+    case chromeos::AudioDeviceType::kRearMic:
       return api::audio::DEVICE_TYPE_REAR_MIC;
-    case chromeos::AUDIO_TYPE_KEYBOARD_MIC:
+    case chromeos::AudioDeviceType::kKeyboardMic:
       return api::audio::DEVICE_TYPE_KEYBOARD_MIC;
-    case chromeos::AUDIO_TYPE_HOTWORD:
+    case chromeos::AudioDeviceType::kHotword:
       return api::audio::DEVICE_TYPE_HOTWORD;
-    case chromeos::AUDIO_TYPE_LINEOUT:
+    case chromeos::AudioDeviceType::kLineout:
       return api::audio::DEVICE_TYPE_LINEOUT;
-    case chromeos::AUDIO_TYPE_POST_MIX_LOOPBACK:
+    case chromeos::AudioDeviceType::kPostMixLoopback:
       return api::audio::DEVICE_TYPE_POST_MIX_LOOPBACK;
-    case chromeos::AUDIO_TYPE_POST_DSP_LOOPBACK:
+    case chromeos::AudioDeviceType::kPostDspLoopback:
       return api::audio::DEVICE_TYPE_POST_DSP_LOOPBACK;
-    case chromeos::AUDIO_TYPE_ALSA_LOOPBACK:
+    case chromeos::AudioDeviceType::kAlsaLoopback:
       return api::audio::DEVICE_TYPE_ALSA_LOOPBACK;
-    case chromeos::AUDIO_TYPE_OTHER:
+    case chromeos::AudioDeviceType::kOther:
       return api::audio::DEVICE_TYPE_OTHER;
   }
 

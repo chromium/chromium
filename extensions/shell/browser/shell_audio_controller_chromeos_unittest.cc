@@ -43,10 +43,9 @@ class ShellAudioControllerTest : public testing::Test {
   // Fills a AudioNode for use by tests.
   AudioNode CreateNode(chromeos::AudioDeviceType type) {
     AudioNode node;
-    node.is_input =
-        type == chromeos::AUDIO_TYPE_MIC ||
-        type == chromeos::AUDIO_TYPE_INTERNAL_MIC ||
-        type == chromeos::AUDIO_TYPE_KEYBOARD_MIC;
+    node.is_input = type == chromeos::AudioDeviceType::kMic ||
+                    type == chromeos::AudioDeviceType::kInternalMic ||
+                    type == chromeos::AudioDeviceType::kKeyboardMic;
     node.id = next_node_id_++;
     node.type = AudioDevice::GetTypeString(type);
     return node;
@@ -85,10 +84,10 @@ class ShellAudioControllerTest : public testing::Test {
 // connected.
 TEST_F(ShellAudioControllerTest, SelectBestDevices) {
   AudioNode internal_speaker =
-      CreateNode(chromeos::AUDIO_TYPE_INTERNAL_SPEAKER);
-  AudioNode internal_mic = CreateNode(chromeos::AUDIO_TYPE_INTERNAL_MIC);
-  AudioNode headphone = CreateNode(chromeos::AUDIO_TYPE_HEADPHONE);
-  AudioNode external_mic = CreateNode(chromeos::AUDIO_TYPE_MIC);
+      CreateNode(chromeos::AudioDeviceType::kInternalSpeaker);
+  AudioNode internal_mic = CreateNode(chromeos::AudioDeviceType::kInternalMic);
+  AudioNode headphone = CreateNode(chromeos::AudioDeviceType::kHeadphone);
+  AudioNode external_mic = CreateNode(chromeos::AudioDeviceType::kMic);
 
   // AudioDevice gives the headphone jack a higher priority than the internal
   // speaker and an external mic a higher priority than the internal mic, so we
@@ -123,8 +122,8 @@ TEST_F(ShellAudioControllerTest, SelectBestDevices) {
 // Tests that active audio devices are unmuted and have correct initial volume.
 TEST_F(ShellAudioControllerTest, InitialVolume) {
   AudioNodeList nodes;
-  nodes.push_back(CreateNode(chromeos::AUDIO_TYPE_INTERNAL_SPEAKER));
-  nodes.push_back(CreateNode(chromeos::AUDIO_TYPE_INTERNAL_MIC));
+  nodes.push_back(CreateNode(chromeos::AudioDeviceType::kInternalSpeaker));
+  nodes.push_back(CreateNode(chromeos::AudioDeviceType::kInternalMic));
   audio_client()->SetAudioNodesAndNotifyObserversForTesting(nodes);
 
   EXPECT_FALSE(audio_handler()->IsOutputMuted());

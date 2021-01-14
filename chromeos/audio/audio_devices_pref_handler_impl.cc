@@ -262,7 +262,7 @@ double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
 
 double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
     const AudioDevice& device) {
-  if (device.type == AUDIO_TYPE_HDMI)
+  if (device.type == AudioDeviceType::kHdmi)
     return kDefaultHdmiOutputVolumePercent;
   else
     return kDefaultOutputVolumePercent;

@@ -236,7 +236,8 @@ void CrasAudioHandler::OnVideoCaptureStoppedOnMainThread(
   // Switch to front mic properly.
   DeviceActivateType activated_by =
       HasExternalDevice(true) ? ACTIVATE_BY_USER : ACTIVATE_BY_PRIORITY;
-  SwitchToDevice(*GetDeviceByType(AUDIO_TYPE_FRONT_MIC), true, activated_by);
+  SwitchToDevice(*GetDeviceByType(AudioDeviceType::kFrontMic), true,
+                 activated_by);
 }
 
 void CrasAudioHandler::HandleMediaSessionMetadataReset() {
@@ -552,7 +553,7 @@ void CrasAudioHandler::SetHotwordModel(uint64_t node_id,
 void CrasAudioHandler::SwapInternalSpeakerLeftRightChannel(bool swap) {
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
-    if (!device.is_input && device.type == AUDIO_TYPE_INTERNAL_SPEAKER) {
+    if (!device.is_input && device.type == AudioDeviceType::kInternalSpeaker) {
       CrasAudioClient::Get()->SwapLeftRight(device.id, swap);
       break;
     }
@@ -892,7 +893,7 @@ AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
     const AudioNode& node) {
   AudioDevice device(node);
   if (deprioritize_bt_wbs_mic_ && device.is_input &&
-      (device.type == AUDIO_TYPE_BLUETOOTH))
+      (device.type == AudioDeviceType::kBluetooth))
     device.priority = 0;
   return device;
 }
@@ -910,7 +911,7 @@ const AudioDevice* CrasAudioHandler::GetDeviceFromStableDeviceId(
 const AudioDevice* CrasAudioHandler::GetKeyboardMic() const {
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
-    if (device.is_input && device.type == AUDIO_TYPE_KEYBOARD_MIC)
+    if (device.is_input && device.type == AudioDeviceType::kKeyboardMic)
       return &device;
   }
   return nullptr;
@@ -919,7 +920,7 @@ const AudioDevice* CrasAudioHandler::GetKeyboardMic() const {
 const AudioDevice* CrasAudioHandler::GetHotwordDevice() const {
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
-    if (device.is_input && device.type == AUDIO_TYPE_HOTWORD)
+    if (device.is_input && device.type == AudioDeviceType::kHotword)
       return &device;
   }
   return nullptr;
@@ -1310,7 +1311,7 @@ bool CrasAudioHandler::GetActiveDeviceFromUserPref(bool is_input,
     // This is an odd case which is rare but possible to happen during cras
     // initialization depeneding the audio device enumation process. The only
     // audio node coming from cras is an internal audio device not visible
-    // to user, such as AUDIO_TYPE_POST_MIX_LOOPBACK.
+    // to user, such as AudioDeviceType::kPostMixLoopback.
     return false;
   }
 
@@ -1377,8 +1378,8 @@ void CrasAudioHandler::HandleHotPlugDevice(
 
   // Whenever 35mm headphone or mic is hot plugged, always pick it as the active
   // device.
-  if (hotplug_device.type == AUDIO_TYPE_HEADPHONE ||
-      hotplug_device.type == AUDIO_TYPE_MIC) {
+  if (hotplug_device.type == AudioDeviceType::kHeadphone ||
+      hotplug_device.type == AudioDeviceType::kMic) {
     SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
     return;
   }
@@ -1694,7 +1695,7 @@ void CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod() {
 
 bool CrasAudioHandler::IsHDMIPrimaryOutputDevice() const {
   const AudioDevice* device = GetDeviceFromId(active_output_node_id_);
-  return device && device->type == AUDIO_TYPE_HDMI;
+  return device && device->type == AudioDeviceType::kHdmi;
 }
 
 void CrasAudioHandler::StartHDMIRediscoverGracePeriod() {
@@ -1742,7 +1743,7 @@ void CrasAudioHandler::SwitchToFrontOrRearMic() {
   if (IsCameraOn()) {
     ActivateInternalMicForActiveCamera();
   } else {
-    SwitchToDevice(*GetDeviceByType(AUDIO_TYPE_FRONT_MIC), true,
+    SwitchToDevice(*GetDeviceByType(AudioDeviceType::kFrontMic), true,
                    ACTIVATE_BY_USER);
   }
 }
@@ -1751,9 +1752,9 @@ const AudioDevice* CrasAudioHandler::GetMicForCamera(
     media::VideoFacingMode camera_facing) {
   switch (camera_facing) {
     case media::MEDIA_VIDEO_FACING_USER:
-      return GetDeviceByType(AUDIO_TYPE_FRONT_MIC);
+      return GetDeviceByType(AudioDeviceType::kFrontMic);
     case media::MEDIA_VIDEO_FACING_ENVIRONMENT:
-      return GetDeviceByType(AUDIO_TYPE_REAR_MIC);
+      return GetDeviceByType(AudioDeviceType::kRearMic);
     default:
       NOTREACHED();
   }
@@ -1765,9 +1766,9 @@ bool CrasAudioHandler::HasDualInternalMic() const {
   bool has_rear_mic = false;
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
-    if (device.type == AUDIO_TYPE_FRONT_MIC)
+    if (device.type == AudioDeviceType::kFrontMic)
       has_front_mic = true;
-    else if (device.type == AUDIO_TYPE_REAR_MIC)
+    else if (device.type == AudioDeviceType::kRearMic)
       has_rear_mic = true;
     if (has_front_mic && has_rear_mic)
       break;
@@ -1776,8 +1777,8 @@ bool CrasAudioHandler::HasDualInternalMic() const {
 }
 
 bool CrasAudioHandler::IsFrontOrRearMic(const AudioDevice& device) const {
-  return device.is_input && (device.type == AUDIO_TYPE_FRONT_MIC ||
-                             device.type == AUDIO_TYPE_REAR_MIC);
+  return device.is_input && (device.type == AudioDeviceType::kFrontMic ||
+                             device.type == AudioDeviceType::kRearMic);
 }
 
 bool CrasAudioHandler::IsCameraOn() const {
