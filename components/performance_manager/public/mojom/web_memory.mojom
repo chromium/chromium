@@ -63,7 +63,6 @@ struct WebMemoryBreakdownEntry {
   WebMemoryUsage? memory;
 
   array<WebMemoryAttribution> attribution;
-  // TODO(1085129): Add memory types once they are implemented.
 };
 
 // The result of the MeasureMemory function.
@@ -75,5 +74,14 @@ struct WebMemoryMeasurement {
     kDefault,
     kEager
   };
+
+  // A breakdown of memory used for all ExecutionContexts that were measured.
   array<WebMemoryBreakdownEntry> breakdown;
+
+  // Memory that is used by V8 contexts that are no longer attached to any
+  // ExecutionContext.
+  WebMemoryUsage? detached_memory;
+
+  // Memory that is not associated with any particular V8 context.
+  WebMemoryUsage? shared_memory;
 };

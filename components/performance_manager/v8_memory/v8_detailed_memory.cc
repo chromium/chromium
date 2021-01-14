@@ -466,8 +466,9 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // Distribute the data to the frames.
   // If a frame doesn't have corresponding data in the result, clear any data
   // it may have had. Any datum in the result that doesn't correspond to an
-  // existing frame is likewise accured to unassociated usage.
-  uint64_t unassociated_v8_bytes_used = 0;
+  // existing frame is likewise accrued to detached bytes.
+  uint64_t detached_v8_bytes_used = 0;
+  uint64_t shared_v8_bytes_used = 0;
 
   // Create a mapping from token to execution context usage for the merge below.
   std::vector<std::pair<blink::ExecutionContextToken,
@@ -477,7 +478,8 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
     for (auto& entry : isolate->contexts) {
       tmp.emplace_back(entry->token, std::move(entry));
     }
-    unassociated_v8_bytes_used += isolate->unassociated_bytes_used;
+    detached_v8_bytes_used += isolate->detached_bytes_used;
+    shared_v8_bytes_used += isolate->shared_bytes_used;
   }
 
   size_t found_frame_count = tmp.size();
@@ -522,12 +524,13 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       // Execution context was already consumed.
       continue;
     }
-    // Accrue the data for non-existent frames to unassociated bytes.
-    unassociated_v8_bytes_used += it.second->bytes_used;
+    // Accrue the data for non-existent frames to detached bytes.
+    detached_v8_bytes_used += it.second->bytes_used;
   }
 
   data_available_ = true;
-  data_.set_unassociated_v8_bytes_used(unassociated_v8_bytes_used);
+  data_.set_detached_v8_bytes_used(detached_v8_bytes_used);
+  data_.set_shared_v8_bytes_used(shared_v8_bytes_used);
 
   // Schedule another measurement for this process node unless one is already
   // scheduled.
@@ -1016,8 +1019,9 @@ base::Value V8DetailedMemoryDecorator::DescribeProcessNodeData(
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("unassociated_v8_bytes_used",
-                 process_data->unassociated_v8_bytes_used());
+  dict.SetIntKey("detached_v8_bytes_used",
+                 process_data->detached_v8_bytes_used());
+  dict.SetIntKey("shared_v8_bytes_used", process_data->shared_v8_bytes_used());
   return dict;
 }
 

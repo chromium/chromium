@@ -34,6 +34,7 @@ using performance_manager::mojom::blink::WebMemoryAttributionPtr;
 using performance_manager::mojom::blink::WebMemoryBreakdownEntryPtr;
 using performance_manager::mojom::blink::WebMemoryMeasurement;
 using performance_manager::mojom::blink::WebMemoryMeasurementPtr;
+using performance_manager::mojom::blink::WebMemoryUsagePtr;
 
 namespace blink {
 
@@ -180,6 +181,19 @@ MemoryBreakdownEntry* ConvertBreakdown(
   return result;
 }
 
+MemoryBreakdownEntry* CreateUnattributedBreakdown(
+    const WebMemoryUsagePtr& memory,
+    const WTF::String& memory_type) {
+  auto* result = MemoryBreakdownEntry::Create();
+  DCHECK(memory);
+  result->setBytes(memory->bytes);
+  result->setAttribution({});
+  Vector<String> types;
+  types.push_back(memory_type);
+  result->setTypes(types);
+  return result;
+}
+
 MemoryBreakdownEntry* EmptyBreakdown() {
   auto* result = MemoryBreakdownEntry::Create();
   result->setBytes(0);
@@ -195,6 +209,11 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
     if (entry->memory)
       breakdown.push_back(ConvertBreakdown(entry));
   }
+  // Add breakdowns for memory that isn't attributed to an execution context.
+  breakdown.push_back(
+      CreateUnattributedBreakdown(measurement->detached_memory, "Detached"));
+  breakdown.push_back(
+      CreateUnattributedBreakdown(measurement->shared_memory, "Shared"));
   // Add an empty breakdown entry as required by the spec.
   // See https://github.com/WICG/performance-measure-memory/issues/10.
   breakdown.push_back(EmptyBreakdown());

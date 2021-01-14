@@ -77,8 +77,11 @@ namespace v8_memory {
 //         const V8DetailedMemoryProcessData* data) override {
 //       DCHECK(data);
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->unassociated_v8_bytes_used() <<
+//           " reported " << data->detached_v8_bytes_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
+//       LOG(INFO) << "Process " << process_node->GetProcessId() <<
+//           " reported " << data->shared_v8_bytes_used() <<
+//           " bytes of V8 memory that are shared between all frames";
 //       for (auto* frame_node : process_node->GetFrameNodes()) {
 //         auto* frame_data =
 //             V8DetailedMemoryExecutionContextData::ForFrame(frame_node);
@@ -142,8 +145,11 @@ namespace v8_memory {
 //         return;
 //       }
 //       LOG(INFO) << "Process " << process->GetID() <<
-//           " reported " << process_data.unassociated_v8_bytes_used() <<
+//           " reported " << process_data.detached_v8_bytes_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
+//       LOG(INFO) << "Process " << process_node->GetProcessId() <<
+//           " reported " << data->shared_v8_bytes_used() <<
+//           " bytes of V8 memory that are shared between all frames";
 //       for (std::pair<
 //             content::GlobalFrameRoutingId,
 //             V8DetailedMemoryExecutionContextData
@@ -323,17 +329,24 @@ class V8DetailedMemoryProcessData {
   virtual ~V8DetailedMemoryProcessData() = default;
 
   bool operator==(const V8DetailedMemoryProcessData& other) const {
-    return unassociated_v8_bytes_used_ == other.unassociated_v8_bytes_used_;
+    return detached_v8_bytes_used_ == other.detached_v8_bytes_used_ &&
+           shared_v8_bytes_used_ == other.shared_v8_bytes_used_;
   }
 
   // Returns the number of bytes used by V8 at the last measurement in this
   // process that could not be attributed to a frame.
-  uint64_t unassociated_v8_bytes_used() const {
-    return unassociated_v8_bytes_used_;
+  uint64_t detached_v8_bytes_used() const { return detached_v8_bytes_used_; }
+
+  void set_detached_v8_bytes_used(uint64_t detached_v8_bytes_used) {
+    detached_v8_bytes_used_ = detached_v8_bytes_used;
   }
 
-  void set_unassociated_v8_bytes_used(uint64_t unassociated_v8_bytes_used) {
-    unassociated_v8_bytes_used_ = unassociated_v8_bytes_used;
+  // Returns the number of bytes used by V8 at the last measurement in this
+  // process that are shared between all frames.
+  uint64_t shared_v8_bytes_used() const { return shared_v8_bytes_used_; }
+
+  void set_shared_v8_bytes_used(uint64_t shared_v8_bytes_used) {
+    shared_v8_bytes_used_ = shared_v8_bytes_used;
   }
 
   // Returns process data for the given node, or nullptr if no measurement has
@@ -343,7 +356,8 @@ class V8DetailedMemoryProcessData {
       const ProcessNode* node);
 
  private:
-  uint64_t unassociated_v8_bytes_used_ = 0;
+  uint64_t detached_v8_bytes_used_ = 0;
+  uint64_t shared_v8_bytes_used_ = 0;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {

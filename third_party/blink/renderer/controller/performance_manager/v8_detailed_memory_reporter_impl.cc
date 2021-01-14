@@ -63,8 +63,8 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
         // TODO(crbug.com/1080672): It would be prefereable to count the
         // V8SchemaRegistry context's overhead with unassociated_bytes, but at
         // present there isn't a public API that allows this distinction.
-        ++(isolate_memory_usage->num_unassociated_contexts);
-        isolate_memory_usage->unassociated_context_bytes_used += size;
+        ++(isolate_memory_usage->num_detached_contexts);
+        isolate_memory_usage->detached_bytes_used += size;
         continue;
       }
       if (DOMWrapperWorld::World(context).GetWorldId() !=
@@ -85,7 +85,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
-    isolate_memory_usage->unassociated_bytes_used = unattributed_size_in_bytes;
+    isolate_memory_usage->shared_bytes_used = unattributed_size_in_bytes;
     std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 
