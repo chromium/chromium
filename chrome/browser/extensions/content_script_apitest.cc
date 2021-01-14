@@ -575,8 +575,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   EXPECT_FALSE(crx_path.empty());
 
   // Load first time to get extension id.
-  const Extension* extension =
-      LoadExtensionWithFlags(crx_path, kFlagEnableFileAccess);
+  const Extension* extension = LoadExtension(crx_path);
   ASSERT_TRUE(extension);
   auto extension_id = extension->id();
   UnloadExtension(extension_id);
@@ -592,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   base::RunLoop().RunUntilIdle();
 
   extensions::ResultCatcher catcher;
-  EXPECT_TRUE(LoadExtensionWithFlags(crx_path, kFlagEnableFileAccess));
+  EXPECT_TRUE(LoadExtension(crx_path));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

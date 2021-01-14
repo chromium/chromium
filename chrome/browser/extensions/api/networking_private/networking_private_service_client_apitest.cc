@@ -89,7 +89,7 @@ class NetworkingPrivateServiceClientApiTest
 
   bool RunNetworkingSubtest(const std::string& subtest) {
     return RunExtensionSubtest("networking_private/service_client",
-                               "main.html?" + subtest, kFlagEnableFileAccess,
+                               "main.html?" + subtest, kFlagNone,
                                kFlagLoadAsComponent);
   }
 

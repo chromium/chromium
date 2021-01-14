@@ -198,13 +198,14 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
-  EXPECT_TRUE(RunExtensionTestWithArg("debugger_file_access", "enabled"))
+  EXPECT_TRUE(RunExtensionTestWithFlagsAndArg("debugger_file_access", "enabled",
+                                              kFlagEnableFileAccess, kFlagNone))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
-  EXPECT_TRUE(RunExtensionTestNoFileAccess("debugger_file_access")) << message_;
+  EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {

@@ -2020,10 +2020,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_PRE_StoragePersistence) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
-  // Since this test is PRE_ step, we need file access.
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "platform_apps/web_view/storage_persistence", "PRE_StoragePersistence",
-      kFlagEnableFileAccess, kFlagNone))
+  ASSERT_TRUE(RunPlatformAppTestWithArg(
+      "platform_apps/web_view/storage_persistence", "PRE_StoragePersistence"))
       << message_;
   content::EnsureCookiesFlushed(profile());
 }
@@ -2036,11 +2034,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_StoragePersistence) {
   // We don't care where the main browser is on this test.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // Since this test has PRE_ step, we need file access (possibly because we
-  // need to access previous profile).
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "platform_apps/web_view/storage_persistence", "StoragePersistence",
-      kFlagEnableFileAccess, kFlagNone))
+  ASSERT_TRUE(RunPlatformAppTestWithArg(
+      "platform_apps/web_view/storage_persistence", "StoragePersistence"))
       << message_;
 }
 

@@ -286,13 +286,12 @@ void ExtensionBrowserTest::TearDownOnMainThread() {
 
 const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path) {
-  return LoadExtensionWithFlags(path, kFlagEnableFileAccess);
+  return LoadExtensionWithFlags(path, kFlagNone);
 }
 
 const Extension* ExtensionBrowserTest::LoadExtensionIncognito(
     const base::FilePath& path) {
-  return LoadExtensionWithFlags(path,
-                                kFlagEnableFileAccess | kFlagEnableIncognito);
+  return LoadExtensionWithFlags(path, kFlagEnableIncognito);
 }
 
 const Extension* ExtensionBrowserTest::LoadExtensionWithFlags(

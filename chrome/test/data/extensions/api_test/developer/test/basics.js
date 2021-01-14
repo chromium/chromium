@@ -38,7 +38,7 @@ var tests = [
       chrome.test.assertTrue(info != null);
       var extId = info.id;
       chrome.test.assertFalse(info.incognitoAccess.isActive);
-      chrome.test.assertTrue(info.fileAccess.isActive);
+      chrome.test.assertFalse(info.fileAccess.isActive);
       chrome.test.assertEq(chrome.developerPrivate.ExtensionState.ENABLED,
                            info.state);
       var allowIncognitoCallback = chrome.test.callbackAdded();
@@ -52,9 +52,9 @@ var tests = [
       });
       var allowFileAccessCallback = chrome.test.callbackAdded();
       chrome.test.runWithUserGesture(function() {
-        chrome.developerPrivate.allowFileAccess(extId, false, function() {
+        chrome.developerPrivate.allowFileAccess(extId, true, function() {
           chrome.developerPrivate.getExtensionInfo(extId, function(info) {
-            chrome.test.assertFalse(info.fileAccess.isActive);
+            chrome.test.assertTrue(info.fileAccess.isActive);
             allowFileAccessCallback();
           });
         });
