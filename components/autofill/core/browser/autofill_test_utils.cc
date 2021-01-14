@@ -909,13 +909,40 @@ std::vector<FormSignature> GetEncodedSignatures(
 }
 
 void AddFieldSuggestionToForm(
-    autofill::FormFieldData field_data,
+    const autofill::FormFieldData& field_data,
     ServerFieldType field_type,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
   field_suggestion->set_primary_type_prediction(field_type);
+}
+
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<int>& field_types,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  std::vector<ServerFieldType> types;
+  for (auto type : field_types) {
+    types.emplace_back(static_cast<ServerFieldType>(type));
+  }
+  AddFieldPredictionsToForm(field_data, types, form_suggestion);
+}
+
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<ServerFieldType>& field_types,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  // According to api_v1.proto, the first element is always set to primary type.
+  auto* field_suggestion = form_suggestion->add_field_suggestions();
+  field_suggestion->set_field_signature(
+      CalculateFieldSignatureForField(field_data).value());
+  field_suggestion->set_primary_type_prediction(*field_types.begin());
+  for (auto field_type : field_types) {
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction*
+        prediction = field_suggestion->add_predictions();
+    prediction->set_type(field_type);
+  }
 }
 
 }  // namespace test

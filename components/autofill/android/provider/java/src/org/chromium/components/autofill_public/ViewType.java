@@ -14,6 +14,9 @@ import org.chromium.base.annotations.VerifiesOnO;
 
 /**
  * This class is used to send the server and computed view type to the autofill service.
+ * The valid types are listed in the two FieldTypeToStringPiece() functions in
+ * components/autofill/core/browser/field_types.cc. Note that the list of possibly returned strings
+ * can and will change in the future.
  */
 @TargetApi(Build.VERSION_CODES.O)
 @VerifiesOnO
@@ -24,16 +27,16 @@ public class ViewType implements Parcelable {
     public final AutofillId mAutofillId;
 
     /**
-     * The type from Chrome autofill server. The valid types are listed in the two
-     * FieldTypeToStringPiece() functions in components/autofill/core/browser/field_types.cc. Note
-     * that the list of possibly returned strings can and will change in the future.
+     * The type from Chrome autofill server.
      */
     public final String mServerType;
 
     /**
-     * The type computed overall type. The valid types types are the same as for mServerType.
+     * The type computed overall type. The valid types are the same as for mServerType.
      */
     public final String mComputedType;
+
+    private String[] mServerPredictions;
 
     public static final Parcelable.Creator<ViewType> CREATOR = new Parcelable.Creator<ViewType>() {
         @Override
@@ -47,17 +50,21 @@ public class ViewType implements Parcelable {
         }
     };
 
-    public ViewType(AutofillId id, String serverType, String computedType) {
+    public ViewType(
+            AutofillId id, String serverType, String computedType, String[] serverPredictions) {
         mAutofillId = id;
         mServerType = serverType;
         mComputedType = computedType;
+        mServerPredictions = serverPredictions;
     }
 
     private ViewType(Parcel in) {
         mAutofillId = AutofillId.CREATOR.createFromParcel(in);
         mServerType = in.readString();
         mComputedType = in.readString();
+        in.readStringArray(mServerPredictions);
     }
+
     @Override
     public int describeContents() {
         return 0;
@@ -68,5 +75,14 @@ public class ViewType implements Parcelable {
         mAutofillId.writeToParcel(parcel, flags);
         parcel.writeString(mServerType);
         parcel.writeString(mComputedType);
+        parcel.writeStringArray(mServerPredictions);
+    }
+
+    /**
+     * @return the server predictions, they are in the order of the confidence. The mServerType
+     * shall be used if the server predictions aren't available.
+     */
+    public String[] getServerPredictions() {
+        return mServerPredictions;
     }
 }

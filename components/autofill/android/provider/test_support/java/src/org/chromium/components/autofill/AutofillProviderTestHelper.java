@@ -19,10 +19,23 @@ import org.chromium.content_public.browser.WebContents;
 @TargetApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProviderTestHelper {
+    /**
+     * Simulate the primary server type only.
+     */
     public static boolean simulateMainFrameAutofillServerResponseForTesting(
             WebContents webContents, String[] fieldIds, int[] fieldTypes) {
         return AutofillProviderTestHelperJni.get()
                 .simulateMainFrameAutofillServerResponseForTesting(
+                        webContents, fieldIds, fieldTypes);
+    }
+
+    /**
+     * Simulate the server predictions, the first prediction will be set as primary server type.
+     */
+    public static boolean simulateMainFramePredictionsAutofillServerResponseForTesting(
+            WebContents webContents, String[] fieldIds, int[][] fieldTypes) {
+        return AutofillProviderTestHelperJni.get()
+                .simulateMainFramePredictionsAutofillServerResponseForTesting(
                         webContents, fieldIds, fieldTypes);
     }
 
@@ -35,6 +48,8 @@ public class AutofillProviderTestHelper {
     interface Natives {
         boolean simulateMainFrameAutofillServerResponseForTesting(
                 WebContents webContents, String[] fieldIds, int[] fieldTypes);
+        boolean simulateMainFramePredictionsAutofillServerResponseForTesting(
+                WebContents webContents, String[] fieldIds, int[][] fieldTypes);
         void simulateMainFrameAutofillQueryFailedForTesting(WebContents webContents);
     }
 }

@@ -85,6 +85,58 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   return true;
 }
 
+static jboolean
+JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerResponseForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaParamRef<jobjectArray>& jfield_ids,
+    const base::android::JavaParamRef<jobjectArray>& jfield_types) {
+  std::vector<base::string16> field_ids;
+  base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
+                                                     &field_ids);
+  std::vector<std::vector<int>> field_types;
+  base::android::JavaArrayOfIntArrayToIntVector(env, jfield_types,
+                                                &field_types);
+
+  AutofillHandler* autofill_handler = ToMainFrameAutofillHandler(jweb_contents);
+  const std::map<FormRendererId, std::unique_ptr<FormStructure>>&
+      form_structures = autofill_handler->form_structures();
+  CHECK(!form_structures.empty());
+
+  // Make API response with suggestions.
+  AutofillQueryResponse response;
+  AutofillQueryResponse::FormSuggestion* form_suggestion;
+
+  form_suggestion = response.add_form_suggestions();
+  size_t found_fields_count = 0;
+  std::vector<FormSignature> signatures;
+  for (auto& j : form_structures) {
+    FormData formData = j.second->ToFormData();
+    for (size_t i = 0; i < field_ids.size(); ++i) {
+      for (auto form_field_data : formData.fields) {
+        if (form_field_data.id_attribute == field_ids[i]) {
+          autofill::test::AddFieldPredictionsToForm(
+              form_field_data, field_types[i], form_suggestion);
+          found_fields_count++;
+          break;
+        }
+      }
+    }
+    if (found_fields_count > 0) {
+      signatures = autofill::test::GetEncodedSignatures(*(j.second));
+      CHECK(found_fields_count == field_ids.size());
+    }
+  }
+
+  std::string response_string;
+  CHECK(response.SerializeToString(&response_string));
+  std::string encoded_response_string;
+  base::Base64Encode(response_string, &encoded_response_string);
+  autofill_handler->OnLoadedServerPredictionsForTest(encoded_response_string,
+                                                     signatures);
+  return true;
+}
+
 static void
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillQueryFailedForTesting(
     JNIEnv* env,

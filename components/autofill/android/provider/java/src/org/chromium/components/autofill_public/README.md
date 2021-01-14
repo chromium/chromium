@@ -43,7 +43,11 @@
     ```java
     public void onViewTypeAvailable(List<ViewType> viewTypeList) {
         for(ViewType viewType : viewTypeList) {
-            Log.d("MyAutofillService", viewType.mAutofillId.toString() + ":" + viewType.mType);
+          if (viewType.getServerPredictions() ! = null) {
+              // Uses server predictions if they are available.
+          } else {
+              // otherwise, uses viewType.mServerType.
+          }
         }
     }
     ```

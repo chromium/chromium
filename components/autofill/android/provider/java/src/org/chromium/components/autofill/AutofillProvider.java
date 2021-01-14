@@ -138,8 +138,13 @@ public class AutofillProvider {
                 if (isQueryServerFieldTypesEnabled()) {
                     builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
                     builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                    // Compose multiple predictions to a string separated by ','.
+                    String[] predictions = field.getServerPredictions();
+                    if (predictions != null && predictions.length > 0) {
+                        builder.addAttribute("crowdsourcing-predictions-autofill-hints",
+                                String.join(",", predictions));
+                    }
                 }
-
                 switch (field.getControlType()) {
                     case FormFieldData.ControlType.LIST:
                         child.setAutofillType(View.AUTOFILL_TYPE_LIST);
@@ -281,8 +286,8 @@ public class AutofillProvider {
             if (success) {
                 ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
                 for (FormFieldData field : mFormData.mFields) {
-                    viewTypes.add(new ViewType(
-                            field.getAutofillId(), field.getServerType(), field.getComputedType()));
+                    viewTypes.add(new ViewType(field.getAutofillId(), field.getServerType(),
+                            field.getComputedType(), field.getServerPredictions()));
                 }
                 mAutofillHintsService.onViewTypeAvailable(viewTypes);
             } else {
