@@ -4096,26 +4096,6 @@
             ]
         }
     ],
-    "LegacyTLSDeprecation2": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LegacyTLSEnforced"
-                    ]
-                }
-            ]
-        }
-    ],
     "LiteVideo": [
         {
             "platforms": [
