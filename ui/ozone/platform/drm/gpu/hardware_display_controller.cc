@@ -105,7 +105,7 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     overlays.push_back(primary.Clone());
 
     CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
-        controller->crtc(), controller->connector(), modeset_mode,
+        controller->crtc(), controller->connector(), modeset_mode, origin_,
         &owned_hardware_planes_, std::move(overlays));
     commit_request->push_back(std::move(request));
   }

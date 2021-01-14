@@ -288,7 +288,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
 
       ui::CrtcCommitRequest request = ui::CrtcCommitRequest::EnableCrtcRequest(
           crtc_properties_[i].id, connector_properties[i].id, kDefaultMode,
-          &state, std::move(overlays));
+          gfx::Point(), &state, std::move(overlays));
       commit_request.push_back(std::move(request));
     }
 
@@ -309,22 +309,22 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
       ui::DrmOverlayPlaneList overlays;
       overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
       commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-          crtc_properties_[0].id, kConnectorIdBase, kDefaultMode, &state,
-          std::move(overlays)));
+          crtc_properties_[0].id, kConnectorIdBase, kDefaultMode, gfx::Point(),
+          &state, std::move(overlays)));
     }
     {
       ui::DrmOverlayPlaneList overlays;
       overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
       commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-          crtc_properties_[1].id, kConnectorIdBase + 1, kDefaultMode, &state,
-          std::move(overlays)));
+          crtc_properties_[1].id, kConnectorIdBase + 1, kDefaultMode,
+          gfx::Point(), &state, std::move(overlays)));
     }
     {
       ui::DrmOverlayPlaneList overlays;
       overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
       commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-          crtc_properties_[2].id, kConnectorIdBase + 3, kDefaultMode, &state,
-          std::move(overlays)));
+          crtc_properties_[2].id, kConnectorIdBase + 3, kDefaultMode,
+          gfx::Point(), &state, std::move(overlays)));
     }
 
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
@@ -346,8 +346,8 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, Modeset) {
   ui::DrmOverlayPlaneList overlays;
   overlays.push_back(plane.Clone());
   commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode, &state,
-      std::move(overlays)));
+      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
+      gfx::Point(), &state, std::move(overlays)));
   EXPECT_FALSE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -495,8 +495,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, Modeset) {
   overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
 
   commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode, &state,
-      std::move(overlays)));
+      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
+      gfx::Point(), &state, std::move(overlays)));
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -530,8 +530,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
   ui::DrmOverlayPlaneList overlays;
   overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
   commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
-      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode, &state,
-      std::move(overlays)));
+      crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
+      gfx::Point(), &state, std::move(overlays)));
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -570,7 +570,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
     overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
     commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
         crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
-        &state, std::move(overlays)));
+        gfx::Point(), &state, std::move(overlays)));
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
         std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
   }

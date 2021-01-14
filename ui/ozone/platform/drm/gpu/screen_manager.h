@@ -106,7 +106,6 @@ class ScreenManager {
       uint32_t crtc);
 
   bool TestModeset(const ControllerConfigsList& controllers_params);
-
   bool Modeset(const ControllerConfigsList& controllers_params);
 
   // Configures a display controller to be enabled. The display controller is
@@ -131,12 +130,13 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
 
-  void UpdateControllerStateAfterModeset(const ControllerConfigParams& config,
+  void UpdateControllerStateAfterModeset(const scoped_refptr<DrmDevice>& drm,
                                          const CommitRequest& commit_request,
                                          bool did_succeed);
 
   void HandleMirrorIfExists(
-      const ControllerConfigParams& config,
+      const scoped_refptr<DrmDevice>& drm,
+      const CrtcCommitRequest& crtc_request,
       const HardwareDisplayControllers::iterator& controller);
 
   // Returns an iterator into |controllers_| for the controller located at

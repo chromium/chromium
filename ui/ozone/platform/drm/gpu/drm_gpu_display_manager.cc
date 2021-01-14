@@ -168,7 +168,6 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
 
 bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  bool config_success = true;
   ScreenManager::ControllerConfigsList controllers_to_configure;
 
   for (const auto& config : config_requests) {
@@ -176,8 +175,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     DrmDisplay* display = FindDisplay(display_id);
     if (!display) {
       LOG(ERROR) << "There is no display with ID " << display_id;
-      config_success = false;
-      continue;
+      return false;
     }
 
     std::unique_ptr<drmModeModeInfo> mode_ptr =
@@ -185,8 +183,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     if (config.mode) {
       if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
                               display->modes(), displays_)) {
-        config_success = false;
-        continue;
+        return false;
       }
     }
 
@@ -205,33 +202,25 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     controllers_to_configure.push_back(std::move(params));
   }
 
-  if (controllers_to_configure.empty())
-    return config_success;
-
   if (clear_overlay_cache_callback_)
     clear_overlay_cache_callback_.Run();
 
-  config_success &=
+  bool config_success =
       screen_manager_->ConfigureDisplayControllers(controllers_to_configure);
-  for (const auto& controller : controllers_to_configure) {
-    int64_t display_id = controller.display_id;
-    DrmDisplay* display = FindDisplay(display_id);
-    auto config = std::find_if(
-        config_requests.begin(), config_requests.end(),
-        [display_id](const auto& request) { return request.id == display_id; });
 
+  for (const auto& controller : controllers_to_configure) {
     if (config_success) {
-      display->SetOrigin(config->origin);
+      FindDisplay(controller.display_id)->SetOrigin(controller.origin);
     } else {
-      if (config->mode) {
+      if (controller.mode) {
         VLOG(1) << "Failed to enable device="
-                << display->drm()->device_path().value()
-                << " crtc=" << display->crtc()
-                << " connector=" << display->connector();
+                << controller.drm->device_path().value()
+                << " crtc=" << controller.crtc
+                << " connector=" << controller.connector;
       } else {
         VLOG(1) << "Failed to disable device="
-                << display->drm()->device_path().value()
-                << " crtc=" << display->crtc();
+                << controller.drm->device_path().value()
+                << " crtc=" << controller.crtc;
       }
     }
   }
