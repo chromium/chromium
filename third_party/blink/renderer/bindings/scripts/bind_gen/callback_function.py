@@ -592,8 +592,9 @@ def generate_callback_function(callback_function_identifier):
     ])
     (header_forward_decls, header_include_headers, source_forward_decls,
      source_include_headers) = collect_forward_decls_and_include_headers(
-         [callback_function.return_type] +
-         map(lambda argument: argument.idl_type, callback_function.arguments))
+         [callback_function.return_type] + list(
+             map(lambda argument: argument.idl_type,
+                 callback_function.arguments)))
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)

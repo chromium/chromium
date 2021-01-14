@@ -428,7 +428,8 @@ already present in the provided output root.""")
   else:
     allowed_imports = None
 
-  module_metadata = map(lambda kvp: tuple(kvp.split('=')), args.module_metadata)
+  module_metadata = list(
+      map(lambda kvp: tuple(kvp.split('=')), args.module_metadata))
   _ParseMojoms(mojom_files, input_roots, output_root, args.enabled_features,
                module_metadata, allowed_imports)
   logging.info('Finished')

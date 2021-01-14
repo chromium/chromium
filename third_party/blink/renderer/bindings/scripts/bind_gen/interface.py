@@ -5184,9 +5184,9 @@ def make_install_interface_template(cg_context, function_name, class_name,
     ])
 
     if class_like.identifier == "CSSStyleDeclaration":
-        css_properties = filter(
-            lambda attr: "CSSProperty" in attr.extended_attributes,
-            class_like.attributes)
+        css_properties = list(
+            filter(lambda attr: "CSSProperty" in attr.extended_attributes,
+                   class_like.attributes))
         if css_properties:
             prop_name_list = "".join(
                 map(lambda attr: "\"{}\", ".format(attr.identifier),
@@ -5625,12 +5625,14 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         pattern,
         install_func="IDLMemberInstaller::InstallOperations",
         table_name=table_name)
-    entries = filter(lambda entry: not entry.no_alloc_direct_callback_name,
-                     operation_entries)
+    entries = list(
+        filter(lambda entry: not entry.no_alloc_direct_callback_name,
+               operation_entries))
     install_properties(table_name, entries, _make_operation_registration_table,
                        installer_call_text)
-    entries = filter(lambda entry: entry.no_alloc_direct_callback_name,
-                     operation_entries)
+    entries = list(
+        filter(lambda entry: entry.no_alloc_direct_callback_name,
+               operation_entries))
     install_properties(table_name, entries, _make_operation_registration_table,
                        installer_call_text)
 
