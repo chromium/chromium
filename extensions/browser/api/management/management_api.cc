@@ -147,11 +147,9 @@ management::ExtensionInfo CreateExtensionInfo(
         !system->management_policy()->MustRemainDisabled(&extension, nullptr,
                                                          nullptr));
   }
-
-  if (!ManifestURL::GetUpdateURL(&extension).is_empty()) {
-    info.update_url.reset(
-        new std::string(ManifestURL::GetUpdateURL(&extension).spec()));
-  }
+  const GURL update_url = delegate->GetEffectiveUpdateURL(extension, context);
+  if (!update_url.is_empty())
+    info.update_url = std::make_unique<std::string>(update_url.spec());
 
   if (extension.is_app()) {
     info.app_launch_url.reset(

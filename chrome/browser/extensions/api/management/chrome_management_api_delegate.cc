@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -656,4 +657,12 @@ GURL ChromeManagementAPIDelegate::GetIconURL(
     bool grayscale) const {
   return extensions::ExtensionIconSource::GetIconURL(extension, icon_size,
                                                      match, grayscale);
+}
+
+GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
+    const extensions::Extension& extension,
+    content::BrowserContext* context) const {
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(context);
+  return extension_management->GetEffectiveUpdateURL(extension);
 }

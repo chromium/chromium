@@ -838,6 +838,10 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
                   bool grayscale) const override {
     return GURL();
   }
+  GURL GetEffectiveUpdateURL(const extensions::Extension& extension,
+                             content::BrowserContext* context) const override {
+    return GURL();
+  }
 
   // EnableExtension is const, so this is mutable.
   mutable int enable_count_ = 0;

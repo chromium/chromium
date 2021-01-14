@@ -163,6 +163,11 @@ class ManagementAPIDelegate {
                           int icon_size,
                           ExtensionIconSet::MatchType match,
                           bool grayscale) const = 0;
+
+  // Returns effective update URL from ExtensionManagement.
+  virtual GURL GetEffectiveUpdateURL(
+      const Extension& extension,
+      content::BrowserContext* context) const = 0;
 };
 
 }  // namespace extensions
