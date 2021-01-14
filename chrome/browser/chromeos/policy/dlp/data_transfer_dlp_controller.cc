@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -119,6 +120,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
     notify_on_paste = false;
 
   if (level == DlpRulesManager::Level::kBlock && notify_on_paste) {
+    SYSLOG(INFO) << "DLP blocked paste from clipboard";
     DoNotifyBlockedPaste(data_src, data_dst);
   }
 
@@ -133,6 +135,7 @@ bool DataTransferDlpController::IsDragDropAllowed(
       IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst);
 
   if (level == DlpRulesManager::Level::kBlock && is_drop) {
+    SYSLOG(INFO) << "DLP blocked drop of dragged data";
     DoNotifyBlockedPaste(data_src, data_dst);
   }
 
