@@ -2089,6 +2089,9 @@ L$open_sse_128_xor_hash:
 
 
 
+
+
+
 .globl	_chacha20_poly1305_seal
 .private_extern _chacha20_poly1305_seal
 

@@ -9,12 +9,13 @@
 #endif
 
 #if !defined(OPENSSL_NO_ASM)
+#if defined(__aarch64__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
 #include <openssl/arm_arch.h>
 
-.section	__TEXT,__const
+.section	.rodata
 
 
 .align	7	// totally strategic alignment
@@ -114,11 +115,13 @@ Lk_deskew:	//	deskew tables: inverts the sbox's "skew"
 ##  Fills register %r10 -> .aes_consts (so you can -fPIC)
 ##  and %xmm9-%xmm15 as specified below.
 ##
-
+.def _vpaes_encrypt_preheat
+   .type 32
+.endef
 .align	4
 _vpaes_encrypt_preheat:
-	adrp	x10, Lk_inv@PAGE
-	add	x10, x10, Lk_inv@PAGEOFF
+	adrp	x10, Lk_inv
+	add	x10, x10, :lo12:Lk_inv
 	movi	v17.16b, #0x0f
 	ld1	{v18.2d,v19.2d}, [x10],#32	// Lk_inv
 	ld1	{v20.2d,v21.2d,v22.2d,v23.2d}, [x10],#64	// Lk_ipt, Lk_sbo
@@ -141,13 +144,15 @@ _vpaes_encrypt_preheat:
 ##  Preserves %xmm6 - %xmm8 so you get some local vectors
 ##
 ##
-
+.def _vpaes_encrypt_core
+   .type 32
+.endef
 .align	4
 _vpaes_encrypt_core:
 	mov	x9, x2
 	ldr	w8, [x2,#240]			// pull rounds
-	adrp	x11, Lk_mc_forward@PAGE+16
-	add	x11, x11, Lk_mc_forward@PAGEOFF+16
+	adrp	x11, Lk_mc_forward+16
+	add	x11, x11, :lo12:Lk_mc_forward+16
 						// vmovdqa	.Lk_ipt(%rip),	%xmm2	# iptlo
 	ld1	{v16.2d}, [x9], #16		// vmovdqu	(%r9),	%xmm5		# round0 key
 	and	v1.16b, v7.16b, v17.16b		// vpand	%xmm9,	%xmm0,	%xmm1
@@ -211,11 +216,13 @@ Lenc_entry:
 	ret
 
 
-.globl	_vpaes_encrypt
-.private_extern	_vpaes_encrypt
+.globl	vpaes_encrypt
 
+.def vpaes_encrypt
+   .type 32
+.endef
 .align	4
-_vpaes_encrypt:
+vpaes_encrypt:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
@@ -230,13 +237,15 @@ _vpaes_encrypt:
 	ret
 
 
-
+.def _vpaes_encrypt_2x
+   .type 32
+.endef
 .align	4
 _vpaes_encrypt_2x:
 	mov	x9, x2
 	ldr	w8, [x2,#240]			// pull rounds
-	adrp	x11, Lk_mc_forward@PAGE+16
-	add	x11, x11, Lk_mc_forward@PAGEOFF+16
+	adrp	x11, Lk_mc_forward+16
+	add	x11, x11, :lo12:Lk_mc_forward+16
 						// vmovdqa	.Lk_ipt(%rip),	%xmm2	# iptlo
 	ld1	{v16.2d}, [x9], #16		// vmovdqu	(%r9),	%xmm5		# round0 key
 	and	v1.16b,  v14.16b,  v17.16b	// vpand	%xmm9,	%xmm0,	%xmm1
@@ -336,14 +345,16 @@ Lenc_2x_entry:
 	ret
 
 
-
+.def _vpaes_decrypt_preheat
+   .type 32
+.endef
 .align	4
 _vpaes_decrypt_preheat:
-	adrp	x10, Lk_inv@PAGE
-	add	x10, x10, Lk_inv@PAGEOFF
+	adrp	x10, Lk_inv
+	add	x10, x10, :lo12:Lk_inv
 	movi	v17.16b, #0x0f
-	adrp	x11, Lk_dipt@PAGE
-	add	x11, x11, Lk_dipt@PAGEOFF
+	adrp	x11, Lk_dipt
+	add	x11, x11, :lo12:Lk_dipt
 	ld1	{v18.2d,v19.2d}, [x10],#32	// Lk_inv
 	ld1	{v20.2d,v21.2d,v22.2d,v23.2d}, [x11],#64	// Lk_dipt, Lk_dsbo
 	ld1	{v24.2d,v25.2d,v26.2d,v27.2d}, [x11],#64	// Lk_dsb9, Lk_dsbd
@@ -356,7 +367,9 @@ _vpaes_decrypt_preheat:
 ##
 ##  Same API as encryption core.
 ##
-
+.def _vpaes_decrypt_core
+   .type 32
+.endef
 .align	4
 _vpaes_decrypt_core:
 	mov	x9, x2
@@ -365,12 +378,12 @@ _vpaes_decrypt_core:
 						// vmovdqa	.Lk_dipt(%rip), %xmm2	# iptlo
 	lsl	x11, x8, #4			// mov	%rax,	%r11;	shl	$4, %r11
 	eor	x11, x11, #0x30			// xor		$0x30,	%r11
-	adrp	x10, Lk_sr@PAGE
-	add	x10, x10, Lk_sr@PAGEOFF
+	adrp	x10, Lk_sr
+	add	x10, x10, :lo12:Lk_sr
 	and	x11, x11, #0x30			// and		$0x30,	%r11
 	add	x11, x11, x10
-	adrp	x10, Lk_mc_forward@PAGE+48
-	add	x10, x10, Lk_mc_forward@PAGEOFF+48
+	adrp	x10, Lk_mc_forward+48
+	add	x10, x10, :lo12:Lk_mc_forward+48
 
 	ld1	{v16.2d}, [x9],#16		// vmovdqu	(%r9),	%xmm4		# round0 key
 	and	v1.16b, v7.16b, v17.16b		// vpand	%xmm9,	%xmm0,	%xmm1
@@ -450,11 +463,13 @@ Ldec_entry:
 	ret
 
 
-.globl	_vpaes_decrypt
-.private_extern	_vpaes_decrypt
+.globl	vpaes_decrypt
 
+.def vpaes_decrypt
+   .type 32
+.endef
 .align	4
-_vpaes_decrypt:
+vpaes_decrypt:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
@@ -470,7 +485,9 @@ _vpaes_decrypt:
 
 
 // v14-v15 input, v0-v1 output
-
+.def _vpaes_decrypt_2x
+   .type 32
+.endef
 .align	4
 _vpaes_decrypt_2x:
 	mov	x9, x2
@@ -479,12 +496,12 @@ _vpaes_decrypt_2x:
 						// vmovdqa	.Lk_dipt(%rip), %xmm2	# iptlo
 	lsl	x11, x8, #4			// mov	%rax,	%r11;	shl	$4, %r11
 	eor	x11, x11, #0x30			// xor		$0x30,	%r11
-	adrp	x10, Lk_sr@PAGE
-	add	x10, x10, Lk_sr@PAGEOFF
+	adrp	x10, Lk_sr
+	add	x10, x10, :lo12:Lk_sr
 	and	x11, x11, #0x30			// and		$0x30,	%r11
 	add	x11, x11, x10
-	adrp	x10, Lk_mc_forward@PAGE+48
-	add	x10, x10, Lk_mc_forward@PAGEOFF+48
+	adrp	x10, Lk_mc_forward+48
+	add	x10, x10, :lo12:Lk_mc_forward+48
 
 	ld1	{v16.2d}, [x9],#16		// vmovdqu	(%r9),	%xmm4		# round0 key
 	and	v1.16b,  v14.16b, v17.16b	// vpand	%xmm9,	%xmm0,	%xmm1
@@ -610,21 +627,23 @@ Ldec_2x_entry:
 ##                  AES key schedule                  ##
 ##                                                    ##
 ########################################################
-
+.def _vpaes_key_preheat
+   .type 32
+.endef
 .align	4
 _vpaes_key_preheat:
-	adrp	x10, Lk_inv@PAGE
-	add	x10, x10, Lk_inv@PAGEOFF
+	adrp	x10, Lk_inv
+	add	x10, x10, :lo12:Lk_inv
 	movi	v16.16b, #0x5b			// Lk_s63
-	adrp	x11, Lk_sb1@PAGE
-	add	x11, x11, Lk_sb1@PAGEOFF
+	adrp	x11, Lk_sb1
+	add	x11, x11, :lo12:Lk_sb1
 	movi	v17.16b, #0x0f			// Lk_s0F
 	ld1	{v18.2d,v19.2d,v20.2d,v21.2d}, [x10]		// Lk_inv, Lk_ipt
-	adrp	x10, Lk_dksd@PAGE
-	add	x10, x10, Lk_dksd@PAGEOFF
+	adrp	x10, Lk_dksd
+	add	x10, x10, :lo12:Lk_dksd
 	ld1	{v22.2d,v23.2d}, [x11]		// Lk_sb1
-	adrp	x11, Lk_mc_forward@PAGE
-	add	x11, x11, Lk_mc_forward@PAGEOFF
+	adrp	x11, Lk_mc_forward
+	add	x11, x11, :lo12:Lk_mc_forward
 	ld1	{v24.2d,v25.2d,v26.2d,v27.2d}, [x10],#64	// Lk_dksd, Lk_dksb
 	ld1	{v28.2d,v29.2d,v30.2d,v31.2d}, [x10],#64	// Lk_dkse, Lk_dks9
 	ld1	{v8.2d}, [x10]			// Lk_rcon
@@ -632,7 +651,9 @@ _vpaes_key_preheat:
 	ret
 
 
-
+.def _vpaes_schedule_core
+   .type 32
+.endef
 .align	4
 _vpaes_schedule_core:
 	AARCH64_SIGN_LINK_REGISTER
@@ -648,8 +669,8 @@ _vpaes_schedule_core:
 	bl	_vpaes_schedule_transform
 	mov	v7.16b, v0.16b			// vmovdqa	%xmm0,	%xmm7
 
-	adrp	x10, Lk_sr@PAGE		// lea	Lk_sr(%rip),%r10
-	add	x10, x10, Lk_sr@PAGEOFF
+	adrp	x10, Lk_sr		// lea	Lk_sr(%rip),%r10
+	add	x10, x10, :lo12:Lk_sr
 
 	add	x8, x8, x10
 	cbnz	w3, Lschedule_am_decrypting
@@ -776,15 +797,15 @@ Loop_schedule_256:
 .align	4
 Lschedule_mangle_last:
 	// schedule last round key from xmm0
-	adrp	x11, Lk_deskew@PAGE	// lea	Lk_deskew(%rip),%r11	# prepare to deskew
-	add	x11, x11, Lk_deskew@PAGEOFF
+	adrp	x11, Lk_deskew	// lea	Lk_deskew(%rip),%r11	# prepare to deskew
+	add	x11, x11, :lo12:Lk_deskew
 
 	cbnz	w3, Lschedule_mangle_last_dec
 
 	// encrypting
 	ld1	{v1.2d}, [x8]			// vmovdqa	(%r8,%r10),%xmm1
-	adrp	x11, Lk_opt@PAGE		// lea	Lk_opt(%rip),	%r11		# prepare to output transform
-	add	x11, x11, Lk_opt@PAGEOFF
+	adrp	x11, Lk_opt		// lea	Lk_opt(%rip),	%r11		# prepare to output transform
+	add	x11, x11, :lo12:Lk_opt
 	add	x2, x2, #32			// add	$32,	%rdx
 	tbl	v0.16b, {v0.16b}, v1.16b	// vpshufb	%xmm1,	%xmm0,	%xmm0		# output permute
 
@@ -823,7 +844,9 @@ Lschedule_mangle_last_dec:
 ##    %xmm6: b+c+d  b+c  0  0
 ##    %xmm0: b+c+d  b+c  b  a
 ##
-
+.def _vpaes_schedule_192_smear
+   .type 32
+.endef
 .align	4
 _vpaes_schedule_192_smear:
 	movi	v1.16b, #0
@@ -856,7 +879,9 @@ _vpaes_schedule_192_smear:
 ##  Returns results in %xmm7 = %xmm0.
 ##  Clobbers %xmm1-%xmm4, %r11.
 ##
-
+.def _vpaes_schedule_round
+   .type 32
+.endef
 .align	4
 _vpaes_schedule_round:
 	// extract rcon from xmm8
@@ -912,7 +937,9 @@ _vpaes_schedule_low_round:
 ##  Output in %xmm0
 ##  Clobbers %xmm1, %xmm2
 ##
-
+.def _vpaes_schedule_transform
+   .type 32
+.endef
 .align	4
 _vpaes_schedule_transform:
 	and	v1.16b, v0.16b, v17.16b		// vpand	%xmm9,	%xmm0,	%xmm1
@@ -948,7 +975,9 @@ _vpaes_schedule_transform:
 ##  Preserves xmm0
 ##  Clobbers xmm1-xmm5
 ##
-
+.def _vpaes_schedule_mangle
+   .type 32
+.endef
 .align	4
 _vpaes_schedule_mangle:
 	mov	v4.16b, v0.16b			// vmovdqa	%xmm0,	%xmm4	# save xmm0 for later
@@ -1014,11 +1043,13 @@ Lschedule_mangle_both:
 	ret
 
 
-.globl	_vpaes_set_encrypt_key
-.private_extern	_vpaes_set_encrypt_key
+.globl	vpaes_set_encrypt_key
 
+.def vpaes_set_encrypt_key
+   .type 32
+.endef
 .align	4
-_vpaes_set_encrypt_key:
+vpaes_set_encrypt_key:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
@@ -1039,11 +1070,13 @@ _vpaes_set_encrypt_key:
 	ret
 
 
-.globl	_vpaes_set_decrypt_key
-.private_extern	_vpaes_set_decrypt_key
+.globl	vpaes_set_decrypt_key
 
+.def vpaes_set_decrypt_key
+   .type 32
+.endef
 .align	4
-_vpaes_set_decrypt_key:
+vpaes_set_decrypt_key:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
@@ -1067,11 +1100,13 @@ _vpaes_set_decrypt_key:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
-.globl	_vpaes_cbc_encrypt
-.private_extern	_vpaes_cbc_encrypt
+.globl	vpaes_cbc_encrypt
 
+.def vpaes_cbc_encrypt
+   .type 32
+.endef
 .align	4
-_vpaes_cbc_encrypt:
+vpaes_cbc_encrypt:
 	AARCH64_SIGN_LINK_REGISTER
 	cbz	x2, Lcbc_abort
 	cmp	w5, #0			// check direction
@@ -1104,7 +1139,9 @@ Lcbc_abort:
 	ret
 
 
-
+.def vpaes_cbc_decrypt
+   .type 32
+.endef
 .align	4
 vpaes_cbc_decrypt:
 	// Not adding AARCH64_SIGN_LINK_REGISTER here because vpaes_cbc_decrypt is jumped to
@@ -1153,11 +1190,13 @@ Lcbc_dec_done:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
-.globl	_vpaes_ctr32_encrypt_blocks
-.private_extern	_vpaes_ctr32_encrypt_blocks
+.globl	vpaes_ctr32_encrypt_blocks
 
+.def vpaes_ctr32_encrypt_blocks
+   .type 32
+.endef
 .align	4
-_vpaes_ctr32_encrypt_blocks:
+vpaes_ctr32_encrypt_blocks:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
@@ -1229,4 +1268,5 @@ Lctr32_done:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
+#endif
 #endif  // !OPENSSL_NO_ASM

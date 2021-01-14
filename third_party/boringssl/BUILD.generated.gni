@@ -78,6 +78,7 @@ crypto_sources = [
   "src/crypto/conf/internal.h",
   "src/crypto/cpu-aarch64-fuchsia.c",
   "src/crypto/cpu-aarch64-linux.c",
+  "src/crypto/cpu-aarch64-win.c",
   "src/crypto/cpu-arm-linux.c",
   "src/crypto/cpu-arm-linux.h",
   "src/crypto/cpu-arm.c",
@@ -570,6 +571,19 @@ crypto_sources_mac_x86_64 = [
   "mac-x86_64/crypto/fipsmodule/x86_64-mont.S",
   "mac-x86_64/crypto/fipsmodule/x86_64-mont5.S",
   "mac-x86_64/crypto/test/trampoline-x86_64.S",
+]
+
+crypto_sources_win_aarch64 = [
+  "win-aarch64/crypto/chacha/chacha-armv8.S",
+  "win-aarch64/crypto/fipsmodule/aesv8-armx64.S",
+  "win-aarch64/crypto/fipsmodule/armv8-mont.S",
+  "win-aarch64/crypto/fipsmodule/ghash-neon-armv8.S",
+  "win-aarch64/crypto/fipsmodule/ghashv8-armx64.S",
+  "win-aarch64/crypto/fipsmodule/sha1-armv8.S",
+  "win-aarch64/crypto/fipsmodule/sha256-armv8.S",
+  "win-aarch64/crypto/fipsmodule/sha512-armv8.S",
+  "win-aarch64/crypto/fipsmodule/vpaes-armv8.S",
+  "win-aarch64/crypto/test/trampoline-armv8.S",
 ]
 
 crypto_sources_win_x86 = [

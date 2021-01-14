@@ -2123,6 +2123,9 @@ $L$SEH_end_chacha20_poly1305_open:
 
 
 
+
+
+
 global	chacha20_poly1305_seal
 
 ALIGN	64
