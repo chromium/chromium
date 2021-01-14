@@ -546,7 +546,12 @@ void ClientControlledShellSurface::AttemptToStartDrag(
   if (toplevel_handler->gesture_target() ||
       (mouse_pressed_handler && target->Contains(mouse_pressed_handler))) {
     gfx::PointF point_in_root(location);
-    wm::ConvertPointFromScreen(target->GetRootWindow(), &point_in_root);
+    if (use_default_scale_cancellation_) {
+      // When default scale cancellation is enabled, the client sends the
+      // location in screen coordinates. Otherwise, the location should already
+      // be in the display's coordinates.
+      wm::ConvertPointFromScreen(target->GetRootWindow(), &point_in_root);
+    }
     toplevel_handler->AttemptToStartDrag(
         target, point_in_root, component,
         ash::ToplevelWindowEventHandler::EndClosure());
