@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -38,6 +38,8 @@ class BubbleDialogDelegateView;
 class ContentSettingImageView : public IconLabelBubbleView,
                                 public views::WidgetObserver {
  public:
+  METADATA_HEADER(ContentSettingImageView);
+
   class Delegate {
    public:
     // Delegate should return true if the content setting icon should be hidden.
@@ -60,20 +62,22 @@ class ContentSettingImageView : public IconLabelBubbleView,
                           IconLabelBubbleView::Delegate* parent_delegate,
                           Delegate* delegate,
                           const gfx::FontList& font_list);
+  ContentSettingImageView(const ContentSettingImageView&) = delete;
+  ContentSettingImageView& operator=(const ContentSettingImageView&) = delete;
   ~ContentSettingImageView() override;
 
   // Updates the decoration from the shown WebContents.
   void Update();
 
   // Set the color of the button icon. Based on the text color by default.
-  void SetIconColor(SkColor color);
+  void SetIconColor(base::Optional<SkColor> color);
+  base::Optional<SkColor> GetIconColor() const;
 
   void disable_animation() { can_animate_ = false; }
 
   bool ShowBubbleImpl();
 
   // IconLabelBubbleView:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnThemeChanged() override;
@@ -100,8 +104,6 @@ class ContentSettingImageView : public IconLabelBubbleView,
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
   bool can_animate_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

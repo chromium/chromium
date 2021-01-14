@@ -32,6 +32,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -125,10 +126,6 @@ base::string16 StarView::GetTextForTooltipAndAccessibleName() const {
                                                : IDS_TOOLTIP_STAR);
 }
 
-const char* StarView::GetClassName() const {
-  return "StarView";
-}
-
 void StarView::EditBookmarksPrefUpdated() {
   Update();
 }
@@ -162,3 +159,6 @@ void StarView::MenuClosed(ui::SimpleMenuModel* source) {
   }
   menu_runner_.reset();
 }
+
+BEGIN_METADATA(StarView, PageActionIconView)
+END_METADATA

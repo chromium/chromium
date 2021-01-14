@@ -31,6 +31,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -93,6 +94,10 @@ KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
 
 KeywordHintView::~KeywordHintView() {}
 
+base::string16 KeywordHintView::GetKeyword() const {
+  return keyword_;
+}
+
 void KeywordHintView::SetKeyword(const base::string16& keyword) {
   // When the virtual keyboard is visible, we show a modified touch UI
   // containing only the chip and no surrounding labels.
@@ -103,6 +108,9 @@ void KeywordHintView::SetKeyword(const base::string16& keyword) {
     return;
 
   keyword_ = keyword;
+  OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
+  // TODO(pkasting): Arguably, much of the code below would be better as
+  // property change handlers in file-scope subclasses of Label etc.
   if (keyword_.empty())
     return;
   DCHECK(profile_);
@@ -181,10 +189,6 @@ gfx::Size KeywordHintView::GetMinimumSize() const {
   return chip_size;
 }
 
-const char* KeywordHintView::GetClassName() const {
-  return "KeywordHintView";
-}
-
 void KeywordHintView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
@@ -217,3 +221,7 @@ void KeywordHintView::OnThemeChanged() {
   trailing_label_->SetEnabledColor(text_color);
   trailing_label_->SetBackgroundColor(background_color);
 }
+
+BEGIN_METADATA(KeywordHintView, views::Button)
+ADD_PROPERTY_METADATA(base::string16, Keyword)
+END_METADATA

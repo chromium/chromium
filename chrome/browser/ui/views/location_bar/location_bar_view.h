@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -36,6 +35,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
@@ -74,6 +74,8 @@ class LocationBarView : public LocationBar,
                         public ContentSettingImageView::Delegate,
                         public PageActionIconView::Delegate {
  public:
+  METADATA_HEADER(LocationBarView);
+
   class Delegate {
    public:
     // Should return the current web contents.
@@ -90,15 +92,13 @@ class LocationBarView : public LocationBar,
     virtual ~Delegate() {}
   };
 
-  // The location bar view's class name.
-  static const char kViewClassName[];
-
   LocationBarView(Browser* browser,
                   Profile* profile,
                   CommandUpdater* command_updater,
                   Delegate* delegate,
                   bool is_popup_mode);
-
+  LocationBarView(const LocationBarView&) = delete;
+  LocationBarView& operator=(const LocationBarView&) = delete;
   ~LocationBarView() override;
 
   // Returns the location bar border radius in DIPs.
@@ -141,6 +141,7 @@ class LocationBarView : public LocationBar,
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
   void SetImeInlineAutocompletion(const base::string16& text);
+  base::string16 GetImeInlineAutocompletion() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -157,6 +158,7 @@ class LocationBarView : public LocationBar,
   // Sets the additional omnibox text. E.g. the title corresponding to the URL
   // displayed in the OmniboxView.
   void SetOmniboxAdditionalText(const base::string16& text);
+  base::string16 GetOmniboxAdditionalText() const;
 
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
@@ -296,7 +298,6 @@ class LocationBarView : public LocationBar,
   bool IsContentSettingBubbleShowing(size_t index) override;
 
   // views::View:
-  const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -359,6 +360,8 @@ class LocationBarView : public LocationBar,
   // for directing LocationBarView events to the |omnibox_view_|.
   ui::MouseEvent AdjustMouseEventLocationForOmniboxView(
       const ui::MouseEvent& event) const;
+
+  bool GetPopupMode() const;
 
   // The Browser this LocationBarView is in.  Note that at least
   // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
@@ -437,8 +440,6 @@ class LocationBarView : public LocationBar,
                               base::Unretained(this)));
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_VIEW_H_

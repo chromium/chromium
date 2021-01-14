@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 
 #include "base/check.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -18,6 +16,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 // static
 SelectedKeywordView::KeywordLabelNames
@@ -36,10 +35,13 @@ SelectedKeywordView::GetKeywordLabelNames(const base::string16& keyword,
   return names;
 }
 
-SelectedKeywordView::SelectedKeywordView(LocationBarView* location_bar,
-                                         const gfx::FontList& font_list)
+SelectedKeywordView::SelectedKeywordView(
+    LocationBarView* location_bar,
+    TemplateURLService* template_url_service,
+    const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, location_bar),
-      location_bar_(location_bar) {
+      location_bar_(location_bar),
+      template_url_service_(template_url_service) {
   full_label_.SetFontList(font_list);
   full_label_.SetVisible(false);
   partial_label_.SetFontList(font_list);
@@ -84,19 +86,18 @@ void SelectedKeywordView::OnThemeChanged() {
     SetCustomImage(gfx::Image());
 }
 
-void SelectedKeywordView::SetKeyword(const base::string16& keyword,
-                                     Profile* profile) {
+void SelectedKeywordView::SetKeyword(const base::string16& keyword) {
+  if (keyword_ == keyword)
+    return;
   keyword_ = keyword;
-  if (keyword.empty())
+  OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
+  // TODO(pkasting): Arguably, much of the code below would be better as
+  // property change handlers in file-scope subclasses of Label etc.
+  if (keyword.empty() || !template_url_service_)
     return;
 
-  DCHECK(profile);
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  if (!service)
-    return;
-
-  KeywordLabelNames names = GetKeywordLabelNames(keyword, service);
+  KeywordLabelNames names =
+      GetKeywordLabelNames(keyword, template_url_service_);
   full_label_.SetText(names.full_name);
   partial_label_.SetText(names.short_name);
 
@@ -107,13 +108,13 @@ void SelectedKeywordView::SetKeyword(const base::string16& keyword,
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }
 
+const base::string16& SelectedKeywordView::GetKeyword() const {
+  return keyword_;
+}
+
 int SelectedKeywordView::GetExtraInternalSpacing() const {
   // Align the label text with the suggestion text.
   return 11;
-}
-
-const char* SelectedKeywordView::GetClassName() const {
-  return "SelectedKeywordView";
 }
 
 void SelectedKeywordView::SetLabelForCurrentWidth() {
@@ -125,3 +126,7 @@ void SelectedKeywordView::SetLabelForCurrentWidth() {
       GetSizeForLabelWidth(partial_label_.GetPreferredSize().width()).width();
   SetLabel(use_full_label ? full_label_.GetText() : partial_label_.GetText());
 }
+
+BEGIN_METADATA(SelectedKeywordView, IconLabelBubbleView)
+ADD_PROPERTY_METADATA(base::string16, Keyword)
+END_METADATA

@@ -118,7 +118,9 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -135,9 +137,6 @@ using views::View;
 
 // LocationBarView -----------------------------------------------------------
 
-// static
-const char LocationBarView::kViewClassName[] = "LocationBarView";
-
 LocationBarView::LocationBarView(Browser* browser,
                                  Profile* profile,
                                  CommandUpdater* command_updater,
@@ -152,7 +151,7 @@ LocationBarView::LocationBarView(Browser* browser,
   if (!is_popup_mode_) {
     focus_ring_ = views::FocusRing::Install(this);
     focus_ring_->SetHasFocusPredicate([](View* view) -> bool {
-      DCHECK_EQ(view->GetClassName(), LocationBarView::kViewClassName);
+      DCHECK(views::IsViewClass<LocationBarView>(view));
       auto* v = static_cast<LocationBarView*>(view);
 
       // Show focus ring when the Omnibox is visibly focused and the popup is
@@ -237,8 +236,8 @@ void LocationBarView::Init() {
         AddChildView(std::move(omnibox_additional_text_view));
   }
 
-  selected_keyword_view_ =
-      AddChildView(std::make_unique<SelectedKeywordView>(this, font_list));
+  selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
+      this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
 
   keyword_hint_view_ = AddChildView(std::make_unique<KeywordHintView>(
       base::BindRepeating(&LocationBarView::KeywordHintViewPressed,
@@ -371,8 +370,16 @@ gfx::Point LocationBarView::GetOmniboxViewOrigin() const {
 }
 
 void LocationBarView::SetImeInlineAutocompletion(const base::string16& text) {
+  if (text == GetImeInlineAutocompletion())
+    return;
   ime_inline_autocomplete_view_->SetText(text);
   ime_inline_autocomplete_view_->SetVisible(!text.empty());
+  OnPropertyChanged(&ime_inline_autocomplete_view_,
+                    views::kPropertyEffectsLayout);
+}
+
+base::string16 LocationBarView::GetImeInlineAutocompletion() const {
+  return ime_inline_autocomplete_view_->GetText();
 }
 
 void LocationBarView::SelectAll() {
@@ -524,8 +531,8 @@ void LocationBarView::Layout() {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       kLeadingDecorationMaxFraction,
                                       edge_padding, selected_keyword_view_);
-    if (selected_keyword_view_->keyword() != keyword) {
-      selected_keyword_view_->SetKeyword(keyword, profile_);
+    if (selected_keyword_view_->GetKeyword() != keyword) {
+      selected_keyword_view_->SetKeyword(keyword);
       const TemplateURL* template_url =
           TemplateURLServiceFactory::GetForProfile(profile_)
               ->GetTemplateURLForKeyword(keyword);
@@ -628,7 +635,7 @@ void LocationBarView::Layout() {
   // Layout |ime_inline_autocomplete_view_| next to the user input.
   if (ime_inline_autocomplete_view_->GetVisible()) {
     int width =
-        gfx::GetStringWidth(ime_inline_autocomplete_view_->GetText(),
+        gfx::GetStringWidth(GetImeInlineAutocompletion(),
                             ime_inline_autocomplete_view_->font_list()) +
         ime_inline_autocomplete_view_->GetInsets().width();
     // All the target languages (IMEs) are LTR, and we do not need to support
@@ -705,10 +712,20 @@ void LocationBarView::SetOmniboxAdditionalText(const base::string16& text) {
   if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText())
     return;
   auto wrapped_text =
-      text.empty() ? text
-                   : base::UTF8ToUTF16("(") + text + base::UTF8ToUTF16(")");
+      text.empty()
+          ? text
+          // TODO(pkasting): This should use a localizable string constant.
+          : base::UTF8ToUTF16("(") + text + base::UTF8ToUTF16(")");
+  if (wrapped_text == GetOmniboxAdditionalText())
+    return;
   omnibox_additional_text_view_->SetText(wrapped_text);
   omnibox_additional_text_view_->SetVisible(!wrapped_text.empty());
+  OnPropertyChanged(&omnibox_additional_text_view_,
+                    views::kPropertyEffectsLayout);
+}
+
+base::string16 LocationBarView::GetOmniboxAdditionalText() const {
+  return omnibox_additional_text_view_->GetText();
 }
 
 void LocationBarView::Update(WebContents* contents) {
@@ -1052,10 +1069,6 @@ bool LocationBarView::IsContentSettingBubbleShowing(size_t index) {
          content_setting_views_[index]->IsBubbleShowing();
 }
 
-const char* LocationBarView::GetClassName() const {
-  return kViewClassName;
-}
-
 void LocationBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   RefreshBackground();
 }
@@ -1334,3 +1347,20 @@ ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
   adjusted.ConvertLocationToTarget<View>(this, omnibox_view_);
   return adjusted;
 }
+
+bool LocationBarView::GetPopupMode() const {
+  return is_popup_mode_;
+}
+
+BEGIN_METADATA(LocationBarView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
+ADD_READONLY_PROPERTY_METADATA(SkColor, OpaqueBorderColor)
+ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
+ADD_PROPERTY_METADATA(base::string16, ImeInlineAutocompletion)
+ADD_PROPERTY_METADATA(base::string16, OmniboxAdditionalText)
+ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)
+ADD_READONLY_PROPERTY_METADATA(int, MinimumTrailingWidth)
+ADD_READONLY_PROPERTY_METADATA(SkColor, BorderColor)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, LocalBoundsWithoutEndcaps)
+ADD_READONLY_PROPERTY_METADATA(bool, PopupMode)
+END_METADATA

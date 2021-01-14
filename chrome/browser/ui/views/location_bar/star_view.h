@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Browser;
 class CommandUpdater;
@@ -20,10 +20,13 @@ class StarMenuModel;
 class StarView : public PageActionIconView,
                  public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(StarView);
   StarView(CommandUpdater* command_updater,
            Browser* browser,
            IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
            PageActionIconView::Delegate* page_action_icon_delegate);
+  StarView(const StarView&) = delete;
+  StarView& operator=(const StarView&) = delete;
   ~StarView() override;
 
   StarMenuModel* menu_model_for_test() { return menu_model_.get(); }
@@ -36,11 +39,9 @@ class StarView : public PageActionIconView,
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   base::string16 GetTextForTooltipAndAccessibleName() const override;
-  const char* GetClassName() const override;
 
  private:
   void EditBookmarksPrefUpdated();
-  bool IsBookmarkStarHiddenByExtension() const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -52,8 +53,6 @@ class StarView : public PageActionIconView,
   std::unique_ptr<StarMenuModel> menu_model_;
 
   BooleanPrefMember edit_bookmarks_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(StarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_

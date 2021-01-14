@@ -8,13 +8,12 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class LocationBarView;
-class Profile;
 class TemplateURLService;
 
 namespace gfx {
@@ -25,6 +24,8 @@ class Size;
 // SelectedKeywordView displays the tab-to-search UI in the location bar view.
 class SelectedKeywordView : public IconLabelBubbleView {
  public:
+  METADATA_HEADER(SelectedKeywordView);
+
   struct KeywordLabelNames {
     base::string16 short_name;
     base::string16 full_name;
@@ -37,7 +38,10 @@ class SelectedKeywordView : public IconLabelBubbleView {
                                                 TemplateURLService* service);
 
   SelectedKeywordView(LocationBarView* location_bar,
+                      TemplateURLService* template_url_service,
                       const gfx::FontList& font_list);
+  SelectedKeywordView(const SelectedKeywordView&) = delete;
+  SelectedKeywordView& operator=(const SelectedKeywordView&) = delete;
   ~SelectedKeywordView() override;
 
   // Sets the icon for this chip to |image|.  If there is no custom image (i.e.
@@ -51,8 +55,8 @@ class SelectedKeywordView : public IconLabelBubbleView {
   SkColor GetForegroundColor() const override;
 
   // The current keyword, or an empty string if no keyword is displayed.
-  void SetKeyword(const base::string16& keyword, Profile* profile);
-  const base::string16& keyword() const { return keyword_; }
+  void SetKeyword(const base::string16& keyword);
+  const base::string16& GetKeyword() const;
 
   using IconLabelBubbleView::label;
 
@@ -60,11 +64,11 @@ class SelectedKeywordView : public IconLabelBubbleView {
   // IconLabelBubbleView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   int GetExtraInternalSpacing() const override;
-  const char* GetClassName() const override;
 
   void SetLabelForCurrentWidth();
 
   LocationBarView* location_bar_;
+  TemplateURLService* template_url_service_;
 
   // The keyword we're showing. If empty, no keyword is selected.
   // NOTE: we don't cache the TemplateURL as it is possible for it to get
@@ -80,8 +84,6 @@ class SelectedKeywordView : public IconLabelBubbleView {
 
   // True when the chip icon has been changed via SetCustomImage().
   bool using_custom_image_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectedKeywordView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_SELECTED_KEYWORD_VIEW_H_

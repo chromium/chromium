@@ -42,6 +42,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -190,9 +191,6 @@ class CustomTabBarTitleOriginView : public views::View {
   views::Label* location_label_ = nullptr;
 };
 
-// static
-const char CustomTabBarView::kViewClassName[] = "CustomTabBarView";
-
 CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
                                    LocationBarView::Delegate* delegate)
     : delegate_(delegate), browser_(browser_view->browser()) {
@@ -215,7 +213,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
       AddChildView(std::make_unique<LocationIconView>(font_list, this, this));
 
   auto title_origin_view = std::make_unique<CustomTabBarTitleOriginView>(
-      background_color_, ShouldShowTitle());
+      background_color_, GetShowTitle());
   title_origin_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -254,10 +252,6 @@ CustomTabBarView::~CustomTabBarView() {}
 gfx::Rect CustomTabBarView::GetAnchorBoundsInScreen() const {
   return gfx::UnionRects(location_icon_view_->GetAnchorBoundsInScreen(),
                          title_origin_view_->GetAnchorBoundsInScreen());
-}
-
-const char* CustomTabBarView::GetClassName() const {
-  return kViewClassName;
 }
 
 void CustomTabBarView::SetVisible(bool visible) {
@@ -536,6 +530,12 @@ base::Optional<SkColor> CustomTabBarView::GetThemeColor() const {
                                 : base::nullopt;
 }
 
-bool CustomTabBarView::ShouldShowTitle() const {
+bool CustomTabBarView::GetShowTitle() const {
   return app_controller() != nullptr;
 }
+
+BEGIN_METADATA(CustomTabBarView, views::AccessiblePaneView)
+ADD_READONLY_PROPERTY_METADATA(SkColor, DefaultFrameColor)
+ADD_READONLY_PROPERTY_METADATA(base::Optional<SkColor>, ThemeColor)
+ADD_READONLY_PROPERTY_METADATA(bool, ShowTitle)
+END_METADATA
