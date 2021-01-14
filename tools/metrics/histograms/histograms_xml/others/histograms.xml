@@ -16523,8 +16523,11 @@ should be kept until we use this API.  -->
   </details>
 </histogram>
 
-<histogram name="TPM.EarlyResetDuringCommand" units="count" expires_after="M85">
-  <owner>semenzato@google.com</owner>
+<histogram name="TPM.EarlyResetDuringCommand" units="count"
+    expires_after="2021-12-21">
+  <owner>apronin@chromium.org</owner>
+  <owner>mnissler@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     Reported at boot if the previous boot session was interrupted in the middle
     of a TPM command during the first 30 seconds of uptime.
