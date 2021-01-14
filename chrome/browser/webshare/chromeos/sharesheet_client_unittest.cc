@@ -35,13 +35,26 @@ class SharesheetClientUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    StoreFileTask::SkipCopyingForTesting();
     SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&SharesheetClientUnitTest::AcceptShareRequest));
   }
 
-  void SetIncognito() {
+  void SetGuest() {
     Profile* const otr_profile = profile()->GetOffTheRecordProfile(
         Profile::OTRProfileID("Test::SharesheetClient"));
+    EXPECT_TRUE(otr_profile->IsOffTheRecord());
+    EXPECT_FALSE(otr_profile->IsIncognitoProfile());
+    scoped_refptr<content::SiteInstance> instance =
+        content::SiteInstance::Create(otr_profile);
+    SetContents(content::WebContentsTester::CreateTestWebContents(
+        otr_profile, std::move(instance)));
+  }
+
+  void SetIncognito() {
+    Profile* const otr_profile = profile()->GetPrimaryOTRProfile();
+    EXPECT_TRUE(otr_profile->IsOffTheRecord());
+    EXPECT_TRUE(otr_profile->IsIncognitoProfile());
     scoped_refptr<content::SiteInstance> instance =
         content::SiteInstance::Create(otr_profile);
     SetContents(content::WebContentsTester::CreateTestWebContents(
@@ -108,6 +121,7 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
 }
 
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
+  SetGuest();
   SharesheetClient sharesheet_client(web_contents());
   const base::FilePath my_files =
       file_manager::util::GetMyFilesFolderForProfile(profile());
@@ -127,7 +141,6 @@ TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
 
   base::RunLoop run_loop;
   blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
-  StoreFileTask::SkipCopyingForTesting();
   sharesheet_client.Share(
       title, text, share_url, std::move(files),
       base::BindLambdaForTesting(
