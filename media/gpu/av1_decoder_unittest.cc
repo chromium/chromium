@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -416,6 +417,54 @@ TEST_F(AV1DecoderTest, DenyDecodeNonYUV420) {
   // until Reset().
   EXPECT_EQ(Decode(buffers[0]), expected);
 }
+
+TEST_F(AV1DecoderTest, DecodeFilmGrain) {
+  // Note: This video also contains show_existing_frame.
+  const std::string kFilmGrainStream("av1-film_grain.ivf");
+  std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadIVF(kFilmGrainStream);
+  ASSERT_FALSE(buffers.empty());
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+  // Once AV1Decoder gets into an error state, Decode() returns kDecodeError
+  // until Reset().
+  EXPECT_EQ(Decode(buffers[0]), expected);
+#else
+  constexpr size_t kDecodedFrames = 11;
+  constexpr size_t kOutputFrames = 10;
+  constexpr gfx::Size kFrameSize(352, 288);
+  constexpr gfx::Size kRenderSize(352, 288);
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange};
+  std::vector<DecodeResult> results;
+
+  // TODO(hiroh): test that CreateAV1Picture is called with the right parameter
+  // which depends on the frame
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+      .Times(kDecodedFrames)
+      .WillRepeatedly(Return(base::MakeRefCounted<FakeAV1Picture>()));
+  EXPECT_CALL(
+      *mock_accelerator_,
+      SubmitDecode(
+          MatchesFrameSizeAndRenderSize(kFrameSize, kRenderSize),
+          MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
+                                      /*film_grain_params_present=*/true),
+          _, NonEmptyTileBuffers(), _))
+      .Times(kDecodedFrames)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_accelerator_, OutputPicture(_))
+      .Times(kOutputFrames)
+      .WillRepeatedly(Return(true));
+
+  for (auto buffer : buffers) {
+    for (DecodeResult r : Decode(buffer))
+      results.push_back(r);
+    expected.push_back(DecodeResult::kRanOutOfStreamData);
+  }
+  EXPECT_EQ(results, expected);
+#endif
+}
+
 // TODO(hiroh): Add more tests, Reset() flow, mid-stream configuration change,
 // and reference frame tracking.
 }  // namespace

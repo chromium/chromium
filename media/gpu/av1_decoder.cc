@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
@@ -219,12 +220,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           return kDecodeError;
         }
 
-        const gfx::Size new_frame_size(
-            base::strict_cast<int>(current_sequence_header_->max_frame_width),
-            base::strict_cast<int>(current_sequence_header_->max_frame_height));
-        gfx::Rect new_visible_rect(
-            base::strict_cast<int>(current_frame_header_->render_width),
-            base::strict_cast<int>(current_frame_header_->render_height));
         const VideoCodecProfile new_profile =
             AV1ProfileToVideoCodecProfile(current_sequence_header_->profile);
         const uint8_t new_bit_depth = base::checked_cast<uint8_t>(
@@ -235,7 +230,21 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                    << ", profile=" << GetProfileName(new_profile);
           return kDecodeError;
         }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+        if (current_sequence_header_->film_grain_params_present) {
+          // TODO(b/176927551): Decode film grain streams on ChromeOS once the
+          // issue is fixed.
+          DVLOG(1) << "Film grain streams are not supported";
+          return kDecodeError;
+        }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+        const gfx::Size new_frame_size(
+            base::strict_cast<int>(current_sequence_header_->max_frame_width),
+            base::strict_cast<int>(current_sequence_header_->max_frame_height));
+        gfx::Rect new_visible_rect(
+            base::strict_cast<int>(current_frame_header_->render_width),
+            base::strict_cast<int>(current_frame_header_->render_height));
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
@@ -338,6 +347,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       return kDecodeError;
     }
 
+    DCHECK(current_sequence_header_->film_grain_params_present ||
+           !frame_header.film_grain_params.apply_grain);
     auto pic = accelerator_->CreateAV1Picture(
         frame_header.film_grain_params.apply_grain);
     if (!pic) {

@@ -190,6 +190,11 @@ https://people.xiph.org/~tterribe/av1/samples-all/
 The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command.
 `ffmpeg -i blackwhite_yuv444p.mp4 -strict -2 -vcodec av1 -vframes 1 blackwhite_yuv444p-frame.av1.ivf`
 
+#### av1-film\_grain.ivf
+AV1 data where film grain feature is used.
+This is the same as av1-1-b8-23-film\_grain-50.ivf in
+[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+
 ### Alpha Channel
 
 #### bear-vp8a.webm

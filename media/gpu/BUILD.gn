@@ -541,7 +541,10 @@ source_set("unit_tests") {
 
   if ((is_chromeos_ash && use_vaapi) || is_win) {
     sources += [ "av1_decoder_unittest.cc" ]
-    deps += [ "//third_party/ffmpeg" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//third_party/ffmpeg",
+    ]
   }
 
   if (is_win && enable_library_cdms) {
