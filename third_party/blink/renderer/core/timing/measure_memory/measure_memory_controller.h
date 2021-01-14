@@ -17,7 +17,6 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class ScriptState;
 class ExceptionState;
 
@@ -44,7 +43,6 @@ class MeasureMemoryController final
   void Trace(Visitor* visitor) const;
 
  private:
-  static bool IsMeasureMemoryAvailable(LocalDOMWindow* window);
   // Invoked when the memory of the main V8 isolate is measured.
   void MeasurementComplete(
       performance_manager::mojom::blink::WebMemoryMeasurementPtr);

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -77,7 +79,9 @@ void CheckIsCrossOriginIsolatedOnUISeq(
     return;
   }
   if (rfh->GetCrossOriginIsolationStatus() ==
-      content::RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated) {
+          content::RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity)) {
     std::move(bad_message_callback)
         .Run("Requesting frame must be cross-origin isolated.");
     return;

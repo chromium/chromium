@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -57,14 +58,81 @@ void MeasureMemoryController::Trace(Visitor* visitor) const {
   visitor->Trace(promise_resolver_);
 }
 
+namespace {
+
+enum class ApiStatus {
+  kAvailable,
+  kNotAvailableDueToFlag,
+  kNotAvailableDueToDetachedContext,
+  kNotAvailableDueToCrossOriginContext,
+  kNotAvailableDueToCrossOriginIsolation,
+  kNotAvailableDueToResourceCoordinator,
+};
+
+ApiStatus CheckMeasureMemoryAvailability(LocalDOMWindow* window) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebMeasureMemoryViaPerformanceManager)) {
+    return ApiStatus::kNotAvailableDueToFlag;
+  }
+  if (!window) {
+    return ApiStatus::kNotAvailableDueToDetachedContext;
+  }
+  LocalFrame* local_frame = window->GetFrame();
+  if (!local_frame) {
+    return ApiStatus::kNotAvailableDueToDetachedContext;
+  }
+  if (!window->CrossOriginIsolatedCapability() &&
+      local_frame->GetSettings()->GetWebSecurityEnabled()) {
+    return ApiStatus::kNotAvailableDueToCrossOriginIsolation;
+  }
+  // CrossOriginIsolated is also set for same-agent cross-origin iframe.
+  // Allow only iframes that have the same origin as the main frame.
+  // Note that COOP guarantees that all main frames have the same origin.
+  if (local_frame->IsCrossOriginToMainFrame()) {
+    return ApiStatus::kNotAvailableDueToCrossOriginContext;
+  }
+
+  // We need DocumentResourceCoordinator to query PerformanceManager.
+  if (!window->document()) {
+    return ApiStatus::kNotAvailableDueToDetachedContext;
+  }
+
+  if (!window->document()->GetResourceCoordinator()) {
+    return ApiStatus::kNotAvailableDueToResourceCoordinator;
+  }
+
+  return ApiStatus::kAvailable;
+}
+
+}  // anonymous namespace
+
 ScriptPromise MeasureMemoryController::StartMeasurement(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!IsMeasureMemoryAvailable(LocalDOMWindow::From(script_state))) {
-    exception_state.ThrowSecurityError(
-        "performance.measureUserAgentSpecificMemory is not available in"
-        " this context");
-    return ScriptPromise();
+  switch (auto status = CheckMeasureMemoryAvailability(
+              LocalDOMWindow::From(script_state))) {
+    case ApiStatus::kAvailable:
+      break;
+    case ApiStatus::kNotAvailableDueToFlag:
+    case ApiStatus::kNotAvailableDueToResourceCoordinator:
+      exception_state.ThrowSecurityError(
+          "performance.measureUserAgentSpecificMemory is not available.");
+      return ScriptPromise();
+    case ApiStatus::kNotAvailableDueToDetachedContext:
+      exception_state.ThrowSecurityError(
+          "performance.measureUserAgentSpecificMemory is not supported"
+          " in detached iframes.");
+      return ScriptPromise();
+    case ApiStatus::kNotAvailableDueToCrossOriginContext:
+      exception_state.ThrowSecurityError(
+          "performance.measureUserAgentSpecificMemory is not supported"
+          " in cross-origin iframes.");
+      return ScriptPromise();
+    case ApiStatus::kNotAvailableDueToCrossOriginIsolation:
+      exception_state.ThrowSecurityError(
+          "performance.measureUserAgentSpecificMemory requires"
+          " cross-origin isolation.");
+      return ScriptPromise();
   }
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
@@ -91,29 +159,6 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
   return ScriptPromise(script_state, promise_resolver->GetPromise());
 }
 
-bool MeasureMemoryController::IsMeasureMemoryAvailable(LocalDOMWindow* window) {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebMeasureMemoryViaPerformanceManager)) {
-    return false;
-  }
-  if (!window || !window->CrossOriginIsolatedCapability()) {
-    return false;
-  }
-  // CrossOriginIsolated is also set for same-agent cross-origin iframe.
-  // Allow only iframes that have the same origin as the main frame.
-  // Note that COOP guarantees that all main frames have the same origin.
-  LocalFrame* local_frame = window->GetFrame();
-  if (!local_frame || local_frame->IsCrossOriginToMainFrame()) {
-    return false;
-  }
-
-  // We need DocumentResourceCoordinator to query PerformanceManager.
-  if (!window->document() || !window->document()->GetResourceCoordinator()) {
-    return false;
-  }
-
-  return true;
-}
 
 namespace {
 
