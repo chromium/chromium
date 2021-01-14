@@ -37,6 +37,10 @@ interface RemoteObject {
   [Sync] GetMethods() => (array<string> method_names);
   [Sync] InvokeMethod(string name, array<RemoteInvocationArgument> arguments)
       => (RemoteInvocationResult result);
+
+  // Notifies ReleaseObject is called by RemoteObjectHost interface to ensure
+  // the object's unreference when the pipe is closed.
+  NotifyReleasedObject();
 };
 
 // Implemented in the renderer.

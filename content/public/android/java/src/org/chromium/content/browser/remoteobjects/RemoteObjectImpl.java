@@ -56,6 +56,7 @@ class RemoteObjectImpl implements RemoteObject {
     interface ObjectIdAllocator {
         int getObjectId(Object object, Class<? extends Annotation> safeAnnotationClass);
         Object getObjectById(int id);
+        void unrefObjectByObject(Object object);
     }
 
     /**
@@ -109,6 +110,8 @@ class RemoteObjectImpl implements RemoteObject {
      */
     private final boolean mAllowInspection;
 
+    private boolean mNotifiedReleasedObject;
+
     public RemoteObjectImpl(Object target, Class<? extends Annotation> safeAnnotationClass,
             Auditor auditor, ObjectIdAllocator objectIdAllocator, boolean allowInspection) {
         mTarget = new WeakReference<>(target);
@@ -116,6 +119,7 @@ class RemoteObjectImpl implements RemoteObject {
         mAuditor = auditor;
         mObjectIdAllocator = new WeakReference<>(objectIdAllocator);
         mAllowInspection = allowInspection;
+        mNotifiedReleasedObject = false;
 
         for (Method method : target.getClass().getMethods()) {
             if (safeAnnotationClass != null && !method.isAnnotationPresent(safeAnnotationClass)) {
@@ -216,7 +220,21 @@ class RemoteObjectImpl implements RemoteObject {
     }
 
     @Override
+    public void notifyReleasedObject() {
+        mNotifiedReleasedObject = true;
+    }
+
+    @Override
     public void close() {
+        Object target = mTarget.get();
+        ObjectIdAllocator objectIdAllocator = mObjectIdAllocator.get();
+        // If |mNotifiedReleasedObject| is false, this outlives the RemoteObjectHost and the object
+        // is not unreferenced by the RemoteObjectHost. So, we should unreference the object when
+        // the mojo pipe is closed.
+        if (target != null && objectIdAllocator != null && !mNotifiedReleasedObject) {
+            objectIdAllocator.unrefObjectByObject(target);
+        }
+
         mTarget.clear();
     }
 

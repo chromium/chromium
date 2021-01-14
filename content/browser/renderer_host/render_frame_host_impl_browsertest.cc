@@ -6492,6 +6492,7 @@ class MockInnerObject : public blink::mojom::RemoteObject {
         kInnerObject.id);
     std::move(callback).Run(std::move(result));
   }
+  void NotifyReleasedObject() override {}
 };
 
 class MockObject : public blink::mojom::RemoteObject {
@@ -6531,6 +6532,8 @@ class MockObject : public blink::mojom::RemoteObject {
     }
     std::move(callback).Run(std::move(result));
   }
+
+  void NotifyReleasedObject() override {}
 
   int get_num_elements_received() const { return num_elements_received_; }
 
