@@ -2,7 +2,7 @@ Document
 ++Group IsControlElement=false
 ++++Text Name='Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553.'
 ++List
-++++ListItem
+++++ListItem Name='Cats'
 ++++++Text Name='Cats' IsControlElement=false
-++++ListItem
+++++ListItem Name='Dogs'
 ++++++Text Name='Dogs' IsControlElement=false

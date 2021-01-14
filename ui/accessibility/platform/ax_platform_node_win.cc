@@ -4243,7 +4243,15 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
     case UIA_NamePropertyId:
       if (IsNameExposed()) {
         result->vt = VT_BSTR;
-        GetNameAsBstr(&result->bstrVal);
+
+        // We need to handle listitems name property differently because UIA
+        // expects a name for listitems, whereas other APIs do not.
+        if (GetData().role == ax::mojom::Role::kListItem &&
+            !HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+          ComputeListItemNameAsBstr(&result->bstrVal);
+        } else {
+          GetNameAsBstr(&result->bstrVal);
+        }
       }
       break;
 
@@ -7636,6 +7644,21 @@ HRESULT AXPlatformNodeWin::GetStringAttributeAsBstr(
 
 HRESULT AXPlatformNodeWin::GetNameAsBstr(BSTR* value_bstr) const {
   base::string16 str = GetNameAsString16();
+  *value_bstr = SysAllocString(str.c_str());
+  DCHECK(*value_bstr);
+  return S_OK;
+}
+
+HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
+  DCHECK(GetData().role == ax::mojom::Role::kListItem);
+  DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
+  base::string16 str;
+  for (int i = 0; i < GetChildCount(); ++i) {
+    auto* child = static_cast<AXPlatformNodeWin*>(
+        FromNativeViewAccessible(ChildAtIndex(i)));
+    if (child->GetDelegate()->IsText())
+      str += child->GetNameAsString16();
+  }
   *value_bstr = SysAllocString(str.c_str());
   DCHECK(*value_bstr);
   return S_OK;

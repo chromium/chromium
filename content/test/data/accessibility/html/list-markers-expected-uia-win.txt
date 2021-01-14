@@ -1,18 +1,18 @@
 Document
 ++List
-++++ListItem
+++++ListItem Name='First item properly groups itself despite bolded text.'
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='First item properly groups itself despite ' IsControlElement=false
 ++++++Text Name='bolded' IsControlElement=false
 ++++++Text Name=' text.' IsControlElement=false
-++++ListItem
+++++ListItem Name='This should also be seen as a group.'
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='This should also be ' IsControlElement=false
 ++++++Text Name='seen' IsControlElement=false
 ++++++Text Name=' as a group.' IsControlElement=false
-++++ListItem
+++++ListItem Name='Some more text.'
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='Some ' IsControlElement=false

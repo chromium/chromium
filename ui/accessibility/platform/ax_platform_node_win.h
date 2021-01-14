@@ -1220,6 +1220,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   HRESULT GetNameAsBstr(BSTR* value_bstr) const;
 
+  HRESULT ComputeListItemNameAsBstr(BSTR* value_bstr) const;
+
   // Sets the selection given a start and end offset in IA2 Hypertext.
   void SetIA2HypertextSelection(LONG start_offset, LONG end_offset);
 
