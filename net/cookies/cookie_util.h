@@ -21,6 +21,11 @@
 class GURL;
 
 namespace net {
+
+class IsolationInfo;
+class SchemefulSite;
+class CookieAccessDelegate;
+
 namespace cookie_util {
 
 // Constants for use in VLOG
@@ -217,6 +222,16 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 
 NET_EXPORT bool IsFirstPartySetsEnabled();
 
+// Compute SameParty context, determines which of the cookies for `request_url`
+// can be accessed. Returns either kCrossParty or kSameParty. `isolation_info`
+// must be fully populated. In Chrome, all requests with credentials enabled
+// have a fully populated IsolationInfo.  But that might not be true for other
+// embedders yet (including cast, WebView, etc).  Also not sure about iOS.
+NET_EXPORT CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
+    const net::SchemefulSite& request_url,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate);
+
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.
@@ -241,6 +256,7 @@ StripAccessResults(const CookieAccessResultList& cookie_access_result_list);
 NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url);
 
 }  // namespace cookie_util
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_UTIL_H_

@@ -173,29 +173,6 @@ net::CookieOptions CreateCookieOptions(
   return options;
 }
 
-// Return SamePartyCookieContextType::kCrossParty when:
-// 1) `isolation_info` is not fully populated.
-// 2) `isolation_info.party_context` is null.
-// 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
-//
-// In Chrome, all requests with credentials enabled have a fully populated
-// IsolationInfo.  But that might not be true for other embedders yet
-// (including cast, WebView, etc).  Also not sure about iOS.
-net::CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
-    const net::SchemefulSite& request_site,
-    const net::IsolationInfo& isolation_info,
-    const net::CookieAccessDelegate* cookie_access_delegate) {
-  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
-      cookie_access_delegate &&
-      cookie_access_delegate->IsContextSamePartyWithSite(
-          request_site,
-          isolation_info.network_isolation_key().GetTopFrameSite().value(),
-          isolation_info.party_context().value())) {
-    return net::CookieOptions::SamePartyCookieContextType::kSameParty;
-  }
-  return net::CookieOptions::SamePartyCookieContextType::kCrossParty;
-}
-
 }  // namespace
 
 namespace net {
@@ -582,8 +559,8 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
         cookie_store->cookie_access_delegate();
 
     CookieOptions::SamePartyCookieContextType same_party_context =
-        ComputeSamePartyContext(request_site, request_->isolation_info(),
-                                delegate);
+        net::cookie_util::ComputeSamePartyContext(
+            request_site, request_->isolation_info(), delegate);
     bool is_in_nontrivial_first_party_set =
         delegate && delegate->IsInNontrivialFirstPartySet(request_site);
     CookieOptions options = CreateCookieOptions(
@@ -729,12 +706,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
   const CookieAccessDelegate* delegate = cookie_store->cookie_access_delegate();
   net::SchemefulSite request_site(request_->url());
+
   CookieOptions::SamePartyCookieContextType same_party_context =
-      ComputeSamePartyContext(request_site, request_->isolation_info(),
-                              delegate);
+      net::cookie_util::ComputeSamePartyContext(
+          request_site, request_->isolation_info(), delegate);
   bool is_in_nontrivial_first_party_set =
       delegate && delegate->IsInNontrivialFirstPartySet(request_site);
-
   CookieOptions options = CreateCookieOptions(
       same_site_context, same_party_context, request_->isolation_info(),
       is_in_nontrivial_first_party_set);

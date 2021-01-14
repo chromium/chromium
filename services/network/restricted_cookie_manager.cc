@@ -40,7 +40,9 @@ net::CookieOptions MakeOptionsForSet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const CookieSettings* cookie_settings) {
+    const net::IsolationInfo& isolation_info,
+    const CookieSettings* cookie_settings,
+    const net::CookieAccessDelegate* cookie_access_delegate) {
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
       cookie_settings->ShouldIgnoreSameSiteRestrictions(
@@ -57,6 +59,16 @@ net::CookieOptions MakeOptionsForSet(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
+  net::SchemefulSite request_site(url);
+  options.set_same_party_cookie_context_type(
+      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
+                                                cookie_access_delegate));
+  bool is_in_nontrivial_first_party_set =
+      cookie_access_delegate &&
+      cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
+  options.set_is_in_nontrivial_first_party_set(
+      is_in_nontrivial_first_party_set);
+
   return options;
 }
 
@@ -64,7 +76,9 @@ net::CookieOptions MakeOptionsForGet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const CookieSettings* cookie_settings) {
+    const net::IsolationInfo& isolation_info,
+    const CookieSettings* cookie_settings,
+    const net::CookieAccessDelegate* cookie_access_delegate) {
   // TODO(https://crbug.com/925311): Wire initiator here.
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
@@ -83,6 +97,16 @@ net::CookieOptions MakeOptionsForGet(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
+  net::SchemefulSite request_site(url);
+  options.set_same_party_cookie_context_type(
+      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
+                                                cookie_access_delegate));
+  bool is_in_nontrivial_first_party_set =
+      cookie_access_delegate &&
+      cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
+  options.set_is_in_nontrivial_first_party_set(
+      is_in_nontrivial_first_party_set);
+
   return options;
 }
 
@@ -202,6 +226,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       origin_(isolation_info.frame_origin().value()),
       site_for_cookies_(isolation_info.site_for_cookies()),
       top_frame_origin_(isolation_info.top_frame_origin().value()),
+      isolation_info_(isolation_info),
       cookie_observer_(std::move(cookie_observer)) {
   DCHECK(cookie_store);
 }
@@ -233,8 +258,9 @@ void RestrictedCookieManager::GetAllForUrl(
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
 
-  net::CookieOptions net_options =
-      MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
+  net::CookieOptions net_options = MakeOptionsForGet(
+      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
+      cookie_store_->cookie_access_delegate());
   // TODO(https://crbug.com/977040): remove set_return_excluded_cookies() once
   //                                 removing deprecation warnings.
   net_options.set_return_excluded_cookies();
@@ -376,8 +402,9 @@ void RestrictedCookieManager::SetCanonicalCookie(
   DCHECK(sanitized_cookie);
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
-  net::CookieOptions options =
-      MakeOptionsForSet(role_, url, site_for_cookies, cookie_settings());
+  net::CookieOptions options = MakeOptionsForSet(
+      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
+      cookie_store_->cookie_access_delegate());
   // TODO(chlily): |url| is validated to be the same origin as |origin_|, but
   // the path is not checked. If we ever decide to enforce the path constraint
   // for setting a cookie, we would need to validate the path of |url| somehow
@@ -425,8 +452,9 @@ void RestrictedCookieManager::AddChangeListener(
     return;
   }
 
-  net::CookieOptions net_options =
-      MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
+  net::CookieOptions net_options = MakeOptionsForGet(
+      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
+      cookie_store_->cookie_access_delegate());
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin, net_options,
       std::move(mojo_listener));

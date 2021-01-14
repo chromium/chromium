@@ -21,8 +21,10 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_access_delegate.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -608,6 +610,25 @@ bool IsSchemefulSameSiteEnabled() {
 
 bool IsFirstPartySetsEnabled() {
   return base::FeatureList::IsEnabled(features::kFirstPartySets);
+}
+
+// Return SamePartyCookieContextType::kCrossParty when:
+// 1) `isolation_info` is not fully populated.
+// 2) `isolation_info.party_context` is null.
+// 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
+CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
+    const net::SchemefulSite& request_site,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate) {
+  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
+      cookie_access_delegate &&
+      cookie_access_delegate->IsContextSamePartyWithSite(
+          request_site,
+          isolation_info.network_isolation_key().GetTopFrameSite().value(),
+          isolation_info.party_context().value())) {
+    return CookieOptions::SamePartyCookieContextType::kSameParty;
+  }
+  return CookieOptions::SamePartyCookieContextType::kCrossParty;
 }
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
