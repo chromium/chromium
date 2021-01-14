@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/sync/driver/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -30,7 +29,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         VerdictCacheManager* cache_manager,
         Profile* profile,
-        syncer::SyncService* sync_service,
+        const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
         enterprise_connectors::ConnectorsService* connectors_service,
         PrefService* pref_service,
         const ChromeUserPopulation::ProfileManagementStatus&
@@ -39,7 +38,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         bool is_off_the_record)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   sync_service,
+                                   is_history_sync_enabled_callback,
                                    pref_service,
                                    profile_management_status,
                                    is_under_advanced_protection,

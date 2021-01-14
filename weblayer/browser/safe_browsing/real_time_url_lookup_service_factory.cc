@@ -50,7 +50,8 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return new safe_browsing::RealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForBrowserContext(context),
-      nullptr /* profile sync service */,
+      // History sync is never enabled in WebLayer.
+      base::BindRepeating([]() { return false; }),
       static_cast<BrowserContextImpl*>(context)->pref_service(),
       // TODO(crbug.com/1080748): Bring up token fetching for URL lookups and
       // configure the following two parameters accordingly.

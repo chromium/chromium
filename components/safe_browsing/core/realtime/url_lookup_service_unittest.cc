@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -74,8 +73,9 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
     raw_token_fetcher_ = token_fetcher.get();
     rt_service_ = std::make_unique<RealTimeUrlLookupService>(
-        test_shared_loader_factory_, cache_manager_.get(), &test_sync_service_,
-        &test_pref_service_, std::move(token_fetcher),
+        test_shared_loader_factory_, cache_manager_.get(),
+        base::BindRepeating([]() { return true; }), &test_pref_service_,
+        std::move(token_fetcher),
         base::BindRepeating(
             &RealTimeUrlLookupServiceTest::AreTokenFetchesConfiguredInClient,
             base::Unretained(this)),
@@ -183,7 +183,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   TestSafeBrowsingTokenFetcher* raw_token_fetcher_ = nullptr;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
-  syncer::TestSyncService test_sync_service_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -203,6 +202,9 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
     EXPECT_EQ(RTLookupRequest::NAVIGATION, result->lookup_type());
     EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
               result->population().user_population());
+
+    // The value of is_history_sync_enabled() should reflect that of the
+    // callback passed in by the client, which in this case is true.
     EXPECT_TRUE(result->population().is_history_sync_enabled());
     EXPECT_EQ(ChromeUserPopulation::NOT_MANAGED,
               result->population().profile_management_status());

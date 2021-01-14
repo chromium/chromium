@@ -171,7 +171,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
       : RealTimeUrlLookupService(
             /*url_loader_factory=*/nullptr,
             /*cache_manager=*/nullptr,
-            /*sync_service=*/nullptr,
+            /*is_history_sync_enabled_callback=*/base::BindRepeating([]() {
+              return false;
+            }),
             /*pref_service=*/nullptr,
             /*token_fetcher=*/nullptr,
             /*client_token_config_callback=*/base::BindRepeating([](bool) {

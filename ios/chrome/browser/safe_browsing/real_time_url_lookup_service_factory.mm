@@ -60,7 +60,9 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state),
+      base::BindRepeating(
+          &safe_browsing::SyncUtils::IsHistorySyncEnabled,
+          ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state)),
       chrome_browser_state->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),

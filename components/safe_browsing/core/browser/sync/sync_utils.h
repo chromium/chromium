@@ -28,6 +28,10 @@ class SyncUtils {
       signin::IdentityManager* identity_manager,
       bool user_has_enabled_enhanced_protection);
 
+  // Returns true iff history sync is enabled in |sync_service|. |sync_service|
+  // may be null, in which case this method returns false.
+  static bool IsHistorySyncEnabled(syncer::SyncService* sync_service);
+
  private:
   // Whether the primary account is signed in. Sync is not required.
   static bool IsPrimaryAccountSignedIn(

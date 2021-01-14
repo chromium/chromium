@@ -47,4 +47,13 @@ bool SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
          !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase();
 }
 
+// TODO(bdea): Migrate other SB classes that define this method to call the one
+// here instead.
+bool SyncUtils::IsHistorySyncEnabled(syncer::SyncService* sync_service) {
+  return sync_service && sync_service->IsSyncFeatureActive() &&
+         !sync_service->IsLocalSyncEnabled() &&
+         sync_service->GetActiveDataTypes().Has(
+             syncer::HISTORY_DELETE_DIRECTIVES);
+}
+
 }  // namespace safe_browsing

@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/sync/driver/sync_service.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -124,7 +123,7 @@ RTLookupRequest::OSType GetRTLookupRequestOSType() {
 RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
-    syncer::SyncService* sync_service,
+    const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
     PrefService* pref_service,
     const ChromeUserPopulation::ProfileManagementStatus&
         profile_management_status,
@@ -132,7 +131,7 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     bool is_off_the_record)
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
-      sync_service_(sync_service),
+      is_history_sync_enabled_callback_(is_history_sync_enabled_callback),
       pref_service_(pref_service),
       profile_management_status_(profile_management_status),
       is_under_advanced_protection_(is_under_advanced_protection),
@@ -448,20 +447,12 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
                 : ChromeUserPopulation::SAFE_BROWSING);
 
   user_population->set_profile_management_status(profile_management_status_);
-  user_population->set_is_history_sync_enabled(IsHistorySyncEnabled());
+  user_population->set_is_history_sync_enabled(
+      is_history_sync_enabled_callback_.Run());
   user_population->set_is_under_advanced_protection(
       is_under_advanced_protection_);
   user_population->set_is_incognito(is_off_the_record_);
   return request;
-}
-
-// TODO(bdea): Refactor this method into a util class as multiple SB classes
-// have this method.
-bool RealTimeUrlLookupServiceBase::IsHistorySyncEnabled() {
-  return sync_service_ && sync_service_->IsSyncFeatureActive() &&
-         !sync_service_->IsLocalSyncEnabled() &&
-         sync_service_->GetActiveDataTypes().Has(
-             syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
 void RealTimeUrlLookupServiceBase::Shutdown() {

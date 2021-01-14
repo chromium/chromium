@@ -110,4 +110,43 @@ TEST_F(SyncUtilsTest,
       /* user_has_enabled_enhanced_protection=*/false));
 }
 
+TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
+  syncer::TestSyncService sync_service;
+
+  // By default |sync_service| syncs everything.
+  EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  // Just history being synced should also be sufficient for the method to
+  // return true.
+  sync_service.SetActiveDataTypes(
+      {syncer::ModelType::HISTORY_DELETE_DIRECTIVES});
+  EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  sync_service.SetActiveDataTypes(syncer::ModelTypeSet::All());
+
+  // The method should return false if:
+
+  // The |sync_service| is null.
+  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(nullptr));
+
+  // History is not being synced.
+  sync_service.SetActiveDataTypes({syncer::ModelType::AUTOFILL});
+  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  sync_service.SetActiveDataTypes(syncer::ModelTypeSet::All());
+
+  // Local sync is enabled.
+  sync_service.SetLocalSyncEnabled(true);
+  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  sync_service.SetLocalSyncEnabled(false);
+
+  // The sync feature is disabled.
+  sync_service.SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
+  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+
+  sync_service.SetDisableReasons({});
+}
+
 }  // namespace safe_browsing

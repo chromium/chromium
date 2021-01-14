@@ -30,13 +30,11 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
-class SyncService;
-}
-
 class PrefService;
 
 namespace safe_browsing {
+
+using IsHistorySyncEnabledCallback = base::RepeatingCallback<bool()>;
 
 using RTLookupRequestCallback =
     base::OnceCallback<void(std::unique_ptr<RTLookupRequest>, std::string)>;
@@ -53,7 +51,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   explicit RealTimeUrlLookupServiceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      syncer::SyncService* sync_service,
+      const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
       PrefService* pref_service,
       const ChromeUserPopulation::ProfileManagementStatus&
           profile_management_status,
@@ -193,8 +191,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Fills in fields in |RTLookupRequest|.
   std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
 
-  bool IsHistorySyncEnabled();
-
   // Count of consecutive failures to complete URL lookup requests. When it
   // reaches |kMaxFailuresToEnforceBackoff|, we enter the backoff mode. It gets
   // reset when we complete a lookup successfully or when the backoff reset
@@ -220,8 +216,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Unowned object used for getting and storing real time url check cache.
   VerdictCacheManager* cache_manager_;
 
-  // Unowned object used for checking sync status of the profile.
-  syncer::SyncService* sync_service_;
+  // Used for determining whether history sync is enabled in the safe browsing
+  // embedder.
+  IsHistorySyncEnabledCallback is_history_sync_enabled_callback_;
 
   // Unowned object used for getting preference settings.
   PrefService* pref_service_;

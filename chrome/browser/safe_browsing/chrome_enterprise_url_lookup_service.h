@@ -21,10 +21,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
-class SyncService;
-}
-
 class PrefService;
 
 class Profile;
@@ -41,7 +37,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
       Profile* profile,
-      syncer::SyncService* sync_service,
+      const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
       enterprise_connectors::ConnectorsService* connectors_service,
       PrefService* pref_service,
       const ChromeUserPopulation::ProfileManagementStatus&

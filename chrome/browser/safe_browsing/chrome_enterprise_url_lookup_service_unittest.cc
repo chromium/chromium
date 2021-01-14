@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 
+#include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -12,6 +13,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
@@ -56,7 +58,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     enterprise_rt_service_ = std::make_unique<
         ChromeEnterpriseRealTimeUrlLookupService>(
         test_shared_loader_factory_, cache_manager_.get(), test_profile_.get(),
-        &test_sync_service_,
+        base::BindRepeating(&safe_browsing::SyncUtils::IsHistorySyncEnabled,
+                            &test_sync_service_),
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             test_profile_.get()),
         &test_pref_service_, ChromeUserPopulation::NOT_MANAGED,

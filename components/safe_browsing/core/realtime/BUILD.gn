@@ -40,7 +40,6 @@ static_library("url_lookup_service") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
-    "//components/sync",
     "//components/variations/service:service",
     "//services/network/public/cpp:cpp",
     "//url:url",
@@ -67,7 +66,6 @@ static_library("url_lookup_service_base") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
-    "//components/sync",
     "//services/network/public/cpp:cpp",
     "//url:url",
   ]
@@ -91,7 +89,6 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common:test_support",
-    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/unified_consent",
     "//components/user_prefs",

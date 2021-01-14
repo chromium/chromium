@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"
-#include "components/sync/driver/sync_service.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -32,7 +31,7 @@ namespace safe_browsing {
 RealTimeUrlLookupService::RealTimeUrlLookupService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
-    syncer::SyncService* sync_service,
+    const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
     PrefService* pref_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
@@ -43,12 +42,11 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     variations::VariationsService* variations_service)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   sync_service,
+                                   is_history_sync_enabled_callback,
                                    pref_service,
                                    profile_management_status,
                                    is_under_advanced_protection,
                                    is_off_the_record),
-      sync_service_(sync_service),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),

@@ -28,10 +28,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
-class SyncService;
-}
-
 namespace variations {
 class VariationsService;
 }
@@ -59,7 +55,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   RealTimeUrlLookupService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      syncer::SyncService* sync_service,
+      const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
       PrefService* pref_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       const ClientConfiguredForTokenFetchesCallback&
@@ -94,9 +90,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
                         RTLookupResponseCallback response_callback,
                         base::TimeTicks get_token_start_time,
                         const std::string& access_token);
-
-  // Unowned object used for checking sync status of the profile.
-  syncer::SyncService* sync_service_;
 
   // Unowned object used for getting preference settings.
   PrefService* pref_service_;
