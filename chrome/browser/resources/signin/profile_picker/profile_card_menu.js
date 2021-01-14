@@ -93,6 +93,12 @@ Polymer({
       type: String,
       computed: 'computeRemoveWarningText_(profileState)',
     },
+
+    /** @private */
+    removeWarningTitle_: {
+      type: String,
+      computed: 'computeRemoveWarningTitle_(profileState)',
+    },
   },
 
   /** @private {ManageProfilesBrowserProxy} */
@@ -123,6 +129,16 @@ Polymer({
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
                                       'removeWarningLocalProfile');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRemoveWarningTitle_() {
+    return this.i18n(
+        this.profileState.isSyncing ? 'removeWarningSignedInProfileTitle' :
+                                      'removeWarningLocalProfileTitle');
   },
 
   /**
