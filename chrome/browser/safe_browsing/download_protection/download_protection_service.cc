@@ -23,7 +23,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
-#include "chrome/browser/safe_browsing/download_protection/check_native_file_system_write_request.h"
+#include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -275,10 +275,10 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
   insertion_result.first->second->Start();
 }
 
-void DownloadProtectionService::CheckNativeFileSystemWrite(
-    std::unique_ptr<content::NativeFileSystemWriteItem> item,
+void DownloadProtectionService::CheckFileSystemAccessWrite(
+    std::unique_ptr<content::FileSystemAccessWriteItem> item,
     CheckDownloadCallback callback) {
-  auto request = std::make_unique<CheckNativeFileSystemWriteRequest>(
+  auto request = std::make_unique<CheckFileSystemAccessWriteRequest>(
       std::move(item), std::move(callback), this, database_manager_,
       binary_feature_extractor_);
   CheckClientDownloadRequestBase* request_copy = request.get();
@@ -294,10 +294,10 @@ DownloadProtectionService::RegisterClientDownloadRequestCallback(
 }
 
 base::CallbackListSubscription
-DownloadProtectionService::RegisterNativeFileSystemWriteRequestCallback(
-    const NativeFileSystemWriteRequestCallback& callback) {
+DownloadProtectionService::RegisterFileSystemAccessWriteRequestCallback(
+    const FileSystemAccessWriteRequestCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_file_system_write_request_callbacks_.Add(callback);
+  return file_system_access_write_request_callbacks_.Add(callback);
 }
 
 base::CallbackListSubscription
@@ -476,7 +476,7 @@ DownloadProtectionService::IdentifyReferrerChain(
 
 std::unique_ptr<ReferrerChainData>
 DownloadProtectionService::IdentifyReferrerChain(
-    const content::NativeFileSystemWriteItem& item) {
+    const content::FileSystemAccessWriteItem& item) {
   // If navigation_observer_manager_ is null, return immediately. This could
   // happen in tests.
   if (!navigation_observer_manager_)

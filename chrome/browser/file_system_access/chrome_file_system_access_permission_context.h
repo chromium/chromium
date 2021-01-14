@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NATIVE_FILE_SYSTEM_CHROME_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
-#define CHROME_BROWSER_NATIVE_FILE_SYSTEM_CHROME_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_CHROME_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CHROME_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 #include <map>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_util.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class HostContentSettingsMap;
@@ -22,7 +22,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-// Chrome implementation of NativeFileSystemPermissionContext. Currently chrome
+// Chrome implementation of FileSystemAccessPermissionContext. Currently chrome
 // supports two different permissions models, each implemented in concrete
 // subclasses of this class. This class itself implements the bits that are
 // shared between the two models.
@@ -31,21 +31,21 @@ class BrowserContext;
 //
 // This class does not inherit from ChooserContextBase because the model this
 // API uses doesn't really match what ChooserContextBase has to provide. The
-// limited lifetime of native file system permission grants (scoped to the
+// limited lifetime of File System Access permission grants (scoped to the
 // lifetime of the handles that reference the grants), and the possible
 // interactions between grants for directories and grants for children of those
 // directories as well as possible interactions between read and write grants
 // make it harder to squeeze this into a shape that fits with
 // ChooserContextBase.
-class ChromeNativeFileSystemPermissionContext
-    : public content::NativeFileSystemPermissionContext,
+class ChromeFileSystemAccessPermissionContext
+    : public content::FileSystemAccessPermissionContext,
       public KeyedService {
  public:
-  explicit ChromeNativeFileSystemPermissionContext(
+  explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context);
-  ~ChromeNativeFileSystemPermissionContext() override;
+  ~ChromeFileSystemAccessPermissionContext() override;
 
-  // content::NativeFileSystemPermissionContext:
+  // content::FileSystemAccessPermissionContext:
   void ConfirmSensitiveDirectoryAccess(
       const url::Origin& origin,
       PathType path_type,
@@ -54,7 +54,7 @@ class ChromeNativeFileSystemPermissionContext
       content::GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
   void PerformAfterWriteChecks(
-      std::unique_ptr<content::NativeFileSystemWriteItem> item,
+      std::unique_ptr<content::FileSystemAccessWriteItem> item,
       content::GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   bool CanObtainReadPermission(const url::Origin& origin) override;
@@ -92,7 +92,7 @@ class ChromeNativeFileSystemPermissionContext
   virtual bool OriginHasReadAccess(const url::Origin& origin);
   virtual bool OriginHasWriteAccess(const url::Origin& origin);
 
-  // Called by NativeFileSystemTabHelper when a top-level frame was navigated
+  // Called by FileSystemAccessTabHelper when a top-level frame was navigated
   // away from |origin| to some other origin.
   virtual void NavigatedAwayFromOrigin(const url::Origin& origin) {}
 
@@ -110,12 +110,12 @@ class ChromeNativeFileSystemPermissionContext
       base::OnceCallback<void(SensitiveDirectoryResult)> callback,
       bool should_block);
 
-  virtual base::WeakPtr<ChromeNativeFileSystemPermissionContext>
+  virtual base::WeakPtr<ChromeFileSystemAccessPermissionContext>
   GetWeakPtr() = 0;
 
   scoped_refptr<HostContentSettingsMap> content_settings_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeFileSystemPermissionContext);
+  DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemAccessPermissionContext);
 };
 
-#endif  // CHROME_BROWSER_NATIVE_FILE_SYSTEM_CHROME_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_CHROME_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_

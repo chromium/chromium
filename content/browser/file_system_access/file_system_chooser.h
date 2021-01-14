@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/task_runner.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -26,7 +26,7 @@ class WebContents;
 // All of this class has to be called on the UI thread.
 class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
-  using PathType = NativeFileSystemEntryFactory::PathType;
+  using PathType = FileSystemAccessEntryFactory::PathType;
   struct ResultEntry {
     PathType type;
     base::FilePath path;

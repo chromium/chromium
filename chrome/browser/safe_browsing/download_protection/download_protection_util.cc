@@ -99,7 +99,7 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
   // these URLs distinguishable from those we use a fixed string rather than a
   // random UUID.
   return GURL("blob:" + frame_url.GetOrigin().spec() +
-              "native-file-system-write");
+              "file-system-access-write");
 }
 
 }  // namespace safe_browsing

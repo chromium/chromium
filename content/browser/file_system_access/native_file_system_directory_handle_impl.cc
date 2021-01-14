@@ -30,7 +30,7 @@ using storage::FileSystemOperationRunner;
 
 namespace content {
 
-using HandleType = NativeFileSystemPermissionContext::HandleType;
+using HandleType = FileSystemAccessPermissionContext::HandleType;
 
 NativeFileSystemDirectoryHandleImpl::NativeFileSystemDirectoryHandleImpl(
     NativeFileSystemManagerImpl* manager,

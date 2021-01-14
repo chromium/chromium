@@ -119,12 +119,12 @@ using ClientDownloadRequestCallbackList =
 using ClientDownloadRequestCallback =
     ClientDownloadRequestCallbackList::CallbackType;
 
-// Callbacks run on the main thread when a NativeFileSystemWriteRequest has been
+// Callbacks run on the main thread when a FileSystemAccessWriteRequest has been
 // formed for a write operation.
-using NativeFileSystemWriteRequestCallbackList =
+using FileSystemAccessWriteRequestCallbackList =
     base::RepeatingCallbackList<void(const ClientDownloadRequest*)>;
-using NativeFileSystemWriteRequestCallback =
-    NativeFileSystemWriteRequestCallbackList::CallbackType;
+using FileSystemAccessWriteRequestCallback =
+    FileSystemAccessWriteRequestCallbackList::CallbackType;
 
 // Callbacks run on the main thread when a PPAPI ClientDownloadRequest has been
 // formed for a download.

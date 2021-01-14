@@ -30,14 +30,14 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
       const storage::FileSystemURL& url,
       const url::Origin& origin,
       const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
-      NativeFileSystemPermissionContext::HandleType handle_type,
+      FileSystemAccessPermissionContext::HandleType handle_type,
       NativeFileSystemManagerImpl* manager,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   ~NativeFileSystemTransferTokenImpl() override;
 
   const base::UnguessableToken& token() const { return token_; }
-  NativeFileSystemPermissionContext::HandleType type() const {
+  FileSystemAccessPermissionContext::HandleType type() const {
     return handle_type_;
   }
   const storage::FileSystemURL& url() const { return url_; }
@@ -45,8 +45,8 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
 
   // Returns permission grants associated with this token. These can
   // return nullptr if this token does not have associated permission grants.
-  NativeFileSystemPermissionGrant* GetReadGrant() const;
-  NativeFileSystemPermissionGrant* GetWriteGrant() const;
+  FileSystemAccessPermissionGrant* GetReadGrant() const;
+  FileSystemAccessPermissionGrant* GetWriteGrant() const;
 
   std::unique_ptr<NativeFileSystemFileHandleImpl> CreateFileHandle(
       const NativeFileSystemManagerImpl::BindingContext& binding_context) const;
@@ -66,7 +66,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   // each clone. `manager_` must not remove this token until `receivers_` is
   // empty.
   const base::UnguessableToken token_;
-  const NativeFileSystemPermissionContext::HandleType handle_type_;
+  const FileSystemAccessPermissionContext::HandleType handle_type_;
   // Raw pointer since NativeFileSystemManagerImpl owns `this`.
   NativeFileSystemManagerImpl* const manager_;
   const storage::FileSystemURL url_;

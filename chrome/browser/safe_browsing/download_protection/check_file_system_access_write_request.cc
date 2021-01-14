@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/download_protection/check_native_file_system_write_request.h"
+#include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 
 #include <algorithm>
 #include <memory>
@@ -27,8 +27,8 @@ namespace safe_browsing {
 
 using content::BrowserThread;
 
-CheckNativeFileSystemWriteRequest::CheckNativeFileSystemWriteRequest(
-    std::unique_ptr<content::NativeFileSystemWriteItem> item,
+CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
+    std::unique_ptr<content::FileSystemAccessWriteItem> item,
     CheckDownloadCallback callback,
     DownloadProtectionService* service,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
@@ -48,10 +48,10 @@ CheckNativeFileSystemWriteRequest::CheckNativeFileSystemWriteRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-CheckNativeFileSystemWriteRequest ::~CheckNativeFileSystemWriteRequest() =
+CheckFileSystemAccessWriteRequest ::~CheckFileSystemAccessWriteRequest() =
     default;
 
-bool CheckNativeFileSystemWriteRequest::IsSupportedDownload(
+bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           item_->target_file_path)) {
@@ -61,35 +61,35 @@ bool CheckNativeFileSystemWriteRequest::IsSupportedDownload(
   return true;
 }
 
-content::BrowserContext* CheckNativeFileSystemWriteRequest::GetBrowserContext()
+content::BrowserContext* CheckFileSystemAccessWriteRequest::GetBrowserContext()
     const {
   return item_->browser_context;
 }
 
-bool CheckNativeFileSystemWriteRequest::IsCancelled() {
+bool CheckFileSystemAccessWriteRequest::IsCancelled() {
   return false;
 }
 
 base::WeakPtr<CheckClientDownloadRequestBase>
-CheckNativeFileSystemWriteRequest::GetWeakPtr() {
+CheckFileSystemAccessWriteRequest::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }
 
-void CheckNativeFileSystemWriteRequest::NotifySendRequest(
+void CheckFileSystemAccessWriteRequest::NotifySendRequest(
     const ClientDownloadRequest* request) {
-  service()->native_file_system_write_request_callbacks_.Notify(request);
+  service()->file_system_access_write_request_callbacks_.Notify(request);
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.NativeFileSystemWriteAttribution",
       request->referrer_chain().size());
 }
 
-void CheckNativeFileSystemWriteRequest::SetDownloadPingToken(
+void CheckFileSystemAccessWriteRequest::SetDownloadPingToken(
     const std::string& token) {
   // TODO(https://crbug.com/996797): Actually store token for
   // IncidentReportingService usage.
 }
 
-void CheckNativeFileSystemWriteRequest::MaybeStorePingsForDownload(
+void CheckFileSystemAccessWriteRequest::MaybeStorePingsForDownload(
     DownloadCheckResult result,
     bool upload_requested,
     const std::string& request_data,
@@ -98,28 +98,28 @@ void CheckNativeFileSystemWriteRequest::MaybeStorePingsForDownload(
 }
 
 base::Optional<enterprise_connectors::AnalysisSettings>
-CheckNativeFileSystemWriteRequest::ShouldUploadBinary(
+CheckFileSystemAccessWriteRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
   return base::nullopt;
 }
 
-void CheckNativeFileSystemWriteRequest::UploadBinary(
+void CheckFileSystemAccessWriteRequest::UploadBinary(
     DownloadCheckResultReason reason,
     enterprise_connectors::AnalysisSettings settings) {}
 
-bool CheckNativeFileSystemWriteRequest::ShouldPromptForDeepScanning(
+bool CheckFileSystemAccessWriteRequest::ShouldPromptForDeepScanning(
     DownloadCheckResultReason reason) const {
   return false;
 }
 
-void CheckNativeFileSystemWriteRequest::NotifyRequestFinished(
+void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   weakptr_factory_.InvalidateWeakPtrs();
 }
 
-bool CheckNativeFileSystemWriteRequest::IsWhitelistedByPolicy() const {
+bool CheckFileSystemAccessWriteRequest::IsWhitelistedByPolicy() const {
   Profile* profile = Profile::FromBrowserContext(item_->browser_context);
   if (!profile)
     return false;

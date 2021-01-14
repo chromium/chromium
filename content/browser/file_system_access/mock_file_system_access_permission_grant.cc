@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/mock_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 
 namespace content {
 
-MockNativeFileSystemPermissionGrant::MockNativeFileSystemPermissionGrant() =
+MockFileSystemAccessPermissionGrant::MockFileSystemAccessPermissionGrant() =
     default;
-MockNativeFileSystemPermissionGrant::~MockNativeFileSystemPermissionGrant() =
+MockFileSystemAccessPermissionGrant::~MockFileSystemAccessPermissionGrant() =
     default;
 
-void MockNativeFileSystemPermissionGrant::RequestPermission(
+void MockFileSystemAccessPermissionGrant::RequestPermission(
     GlobalFrameRoutingId frame_id,
     UserActivationState user_activation_state,
     base::OnceCallback<void(PermissionRequestOutcome)> callback) {

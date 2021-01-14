@@ -13,7 +13,7 @@
 #include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
 #include "content/browser/file_system_access/native_file_system_handle_base.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -110,7 +110,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
                          const std::string& hash,
                          int64_t size);
   void DidAfterWriteCheck(
-      NativeFileSystemPermissionContext::AfterWriteCheckResult result);
+      FileSystemAccessPermissionContext::AfterWriteCheckResult result);
   void DidSwapFileSkipQuarantine(base::File::Error result);
   void DidSwapFileDoQuarantine(
       const storage::FileSystemURL& target_url,

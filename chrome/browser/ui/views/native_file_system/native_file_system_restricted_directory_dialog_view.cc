@@ -16,7 +16,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 NativeFileSystemRestrictedDirectoryDialogView::
     ~NativeFileSystemRestrictedDirectoryDialogView() {
@@ -29,7 +29,7 @@ NativeFileSystemRestrictedDirectoryDialogView::
 views::Widget* NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
     const url::Origin& origin,
     const base::FilePath& path,
-    content::NativeFileSystemPermissionContext::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<void(SensitiveDirectoryResult)> callback,
     content::WebContents* web_contents) {
   auto delegate =
@@ -43,7 +43,7 @@ NativeFileSystemRestrictedDirectoryDialogView::
     NativeFileSystemRestrictedDirectoryDialogView(
         const url::Origin& origin,
         const base::FilePath& path,
-        content::NativeFileSystemPermissionContext::HandleType handle_type,
+        content::FileSystemAccessPermissionContext::HandleType handle_type,
         base::OnceCallback<void(SensitiveDirectoryResult)> callback)
     : handle_type_(handle_type), callback_(std::move(callback)) {
   SetTitle(handle_type_ == HandleType::kDirectory
@@ -80,12 +80,12 @@ NativeFileSystemRestrictedDirectoryDialogView::
       origin, views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
 }
 
-void ShowNativeFileSystemRestrictedDirectoryDialog(
+void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
     const base::FilePath& path,
-    content::NativeFileSystemPermissionContext::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<void(
-        content::NativeFileSystemPermissionContext::SensitiveDirectoryResult)>
+        content::FileSystemAccessPermissionContext::SensitiveDirectoryResult)>
         callback,
     content::WebContents* web_contents) {
   NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(

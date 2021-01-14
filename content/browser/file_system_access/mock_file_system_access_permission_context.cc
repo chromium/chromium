@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/mock_native_file_system_permission_context.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 
 namespace content {
 
-MockNativeFileSystemPermissionContext::MockNativeFileSystemPermissionContext() =
+MockFileSystemAccessPermissionContext::MockFileSystemAccessPermissionContext() =
     default;
-MockNativeFileSystemPermissionContext::
-    ~MockNativeFileSystemPermissionContext() = default;
+MockFileSystemAccessPermissionContext::
+    ~MockFileSystemAccessPermissionContext() = default;
 
-void MockNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
+void MockFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
     const url::Origin& origin,
     PathType path_type,
     const base::FilePath& path,
@@ -22,8 +22,8 @@ void MockNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
                                    frame_id, callback);
 }
 
-void MockNativeFileSystemPermissionContext::PerformAfterWriteChecks(
-    std::unique_ptr<NativeFileSystemWriteItem> item,
+void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(
+    std::unique_ptr<FileSystemAccessWriteItem> item,
     GlobalFrameRoutingId frame_id,
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   PerformAfterWriteChecks_(item.get(), frame_id, callback);

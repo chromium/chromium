@@ -10,8 +10,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -446,7 +446,7 @@ void NativeFileSystemUsageBubbleView::OnDialogCancelled() {
 
   content::BrowserContext* profile = web_contents()->GetBrowserContext();
   auto* context =
-      NativeFileSystemPermissionContextFactory::GetForProfileIfExists(profile);
+      FileSystemAccessPermissionContextFactory::GetForProfileIfExists(profile);
   if (!context)
     return;
 

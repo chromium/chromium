@@ -113,7 +113,7 @@ void NativeFileSystemFileHandleImpl::IsSameEntryImpl(
     return;
   }
 
-  if (other->type() != NativeFileSystemPermissionContext::HandleType::kFile) {
+  if (other->type() != FileSystemAccessPermissionContext::HandleType::kFile) {
     std::move(callback).Run(native_file_system_error::Ok(), false);
     return;
   }
@@ -295,7 +295,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
     }
 
     auto handle = manager()->CreateFileSystemURLFromPath(
-        context().origin, NativeFileSystemEntryFactory::PathType::kLocal,
+        context().origin, FileSystemAccessEntryFactory::PathType::kLocal,
         swap_path);
     swap_url = std::move(handle.url);
     swap_file_system = std::move(handle.file_system);

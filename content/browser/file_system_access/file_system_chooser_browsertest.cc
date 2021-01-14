@@ -8,9 +8,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
-#include "content/browser/file_system_access/mock_native_file_system_permission_context.h"
-#include "content/browser/file_system_access/mock_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -37,9 +37,9 @@ namespace content {
 using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
 using SensitiveDirectoryResult =
-    NativeFileSystemPermissionContext::SensitiveDirectoryResult;
-using PathInfo = NativeFileSystemPermissionContext::PathInfo;
-using PathType = NativeFileSystemPermissionContext::PathType;
+    FileSystemAccessPermissionContext::SensitiveDirectoryResult;
+using PathInfo = FileSystemAccessPermissionContext::PathInfo;
+using PathType = FileSystemAccessPermissionContext::PathType;
 
 static constexpr char kTestMountPoint[] = "testfs";
 
@@ -198,12 +198,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   EXPECT_CALL(permission_context,
@@ -316,12 +316,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   EXPECT_CALL(permission_context,
@@ -437,12 +437,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   EXPECT_CALL(permission_context,
@@ -464,17 +464,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::ASK, base::FilePath());
 
   auto origin =
@@ -497,30 +497,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserDenied));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::ASK));
@@ -541,12 +541,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto origin =
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
 
@@ -602,12 +602,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto origin =
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
 
@@ -716,17 +716,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::GRANTED, base::FilePath());
 
   auto origin =
@@ -749,30 +749,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserGranted));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
@@ -797,17 +797,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::GRANTED, base::FilePath());
 
   auto origin =
@@ -836,30 +836,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserGranted));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
@@ -884,17 +884,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::GRANTED, base::FilePath());
 
   auto origin =
@@ -918,30 +918,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserGranted));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
@@ -967,17 +967,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::GRANTED, base::FilePath());
 
   auto origin =
@@ -1007,30 +1007,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserGranted));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
@@ -1054,17 +1054,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext> permission_context;
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<NativeFileSystemManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
-          ->GetNativeFileSystemEntryFactory())
+          ->GetFileSystemAccessEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
   auto read_grant = base::MakeRefCounted<
-      testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
       PermissionStatus::GRANTED, base::FilePath());
 
   auto origin =
@@ -1094,30 +1094,30 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(read_grant));
   EXPECT_CALL(permission_context,
               GetWritePermissionGrant(
                   origin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
 
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
           frame_id,
-          NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+          FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
-      .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                        PermissionRequestOutcome::kUserGranted));
   EXPECT_CALL(*read_grant, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));

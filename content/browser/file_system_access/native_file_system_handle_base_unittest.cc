@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "content/browser/file_system_access/mock_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -20,7 +20,7 @@ using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
 using storage::FileSystemURL;
 using UserActivationState =
-    NativeFileSystemPermissionGrant::UserActivationState;
+    FileSystemAccessPermissionGrant::UserActivationState;
 
 class TestNativeFileSystemHandle : public NativeFileSystemHandleBase {
  public:
@@ -66,12 +66,12 @@ class NativeFileSystemHandleBaseTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
 
-  scoped_refptr<MockNativeFileSystemPermissionGrant> read_grant_ =
+  scoped_refptr<MockFileSystemAccessPermissionGrant> read_grant_ =
       base::MakeRefCounted<
-          testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
-  scoped_refptr<MockNativeFileSystemPermissionGrant> write_grant_ =
+          testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  scoped_refptr<MockFileSystemAccessPermissionGrant> write_grant_ =
       base::MakeRefCounted<
-          testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
+          testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
 
   scoped_refptr<NativeFileSystemManagerImpl> manager_;
 
@@ -188,7 +188,7 @@ TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission) {
                 RequestPermission_(kFrameId, UserActivationState::kRequired,
                                    testing::_))
         .WillOnce(
-            RunOnceCallback<2>(NativeFileSystemPermissionGrant::
+            RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                    PermissionRequestOutcome::kUserGranted));
     EXPECT_CALL(*write_grant_, GetStatus())
         .WillOnce(testing::Return(PermissionStatus::GRANTED));

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/native_file_system/origin_scoped_native_file_system_permission_context.h"
+#include "chrome/browser/file_system_access/origin_scoped_file_system_access_permission_context.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/native_file_system_dialogs.h"
+#include "chrome/browser/ui/file_system_access_dialogs.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -32,13 +32,13 @@ constexpr base::TimeDelta kPermissionRevocationTimeout =
 
 }  // namespace
 
-class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
-    : public content::NativeFileSystemPermissionGrant {
-  using HandleType = NativeFileSystemPermissionContext::HandleType;
+class OriginScopedFileSystemAccessPermissionContext::PermissionGrantImpl
+    : public content::FileSystemAccessPermissionGrant {
+  using HandleType = FileSystemAccessPermissionContext::HandleType;
 
  public:
   PermissionGrantImpl(
-      base::WeakPtr<OriginScopedNativeFileSystemPermissionContext> context,
+      base::WeakPtr<OriginScopedFileSystemAccessPermissionContext> context,
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
@@ -49,7 +49,7 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
         handle_type_(handle_type),
         type_(type) {}
 
-  // NativeFileSystemPermissionGrant:
+  // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return status_;
@@ -133,7 +133,7 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
     }
 
     auto* request_manager =
-        NativeFileSystemPermissionRequestManager::FromWebContents(web_contents);
+        FileSystemAccessPermissionRequestManager::FromWebContents(web_contents);
     if (!request_manager) {
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kRequestAborted);
@@ -144,10 +144,10 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
     base::ScopedClosureRunner fullscreen_block =
         web_contents->ForSecurityDropFullscreen();
 
-    NativeFileSystemPermissionRequestManager::Access access =
+    FileSystemAccessPermissionRequestManager::Access access =
         type_ == GrantType::kRead
-            ? NativeFileSystemPermissionRequestManager::Access::kRead
-            : NativeFileSystemPermissionRequestManager::Access::kWrite;
+            ? FileSystemAccessPermissionRequestManager::Access::kRead
+            : FileSystemAccessPermissionRequestManager::Access::kWrite;
 
     // If a website wants both read and write access, code in content will
     // request those as two separate requests. The |request_manager| will then
@@ -272,7 +272,7 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtr<OriginScopedNativeFileSystemPermissionContext> const context_;
+  base::WeakPtr<OriginScopedFileSystemAccessPermissionContext> const context_;
   const url::Origin origin_;
   const base::FilePath path_;
   const HandleType handle_type_;
@@ -283,7 +283,7 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
   PermissionStatus status_ = PermissionStatus::ASK;
 };
 
-struct OriginScopedNativeFileSystemPermissionContext::OriginState {
+struct OriginScopedFileSystemAccessPermissionContext::OriginState {
   // Raw pointers, owned collectively by all the handles that reference this
   // grant. When last reference goes away this state is cleared as well by
   // PermissionGrantDestroyed().
@@ -298,19 +298,19 @@ struct OriginScopedNativeFileSystemPermissionContext::OriginState {
   std::unique_ptr<base::RetainingOneShotTimer> cleanup_timer;
 };
 
-OriginScopedNativeFileSystemPermissionContext::
-    OriginScopedNativeFileSystemPermissionContext(
+OriginScopedFileSystemAccessPermissionContext::
+    OriginScopedFileSystemAccessPermissionContext(
         content::BrowserContext* context)
-    : ChromeNativeFileSystemPermissionContext(context), profile_(context) {}
+    : ChromeFileSystemAccessPermissionContext(context), profile_(context) {}
 
-OriginScopedNativeFileSystemPermissionContext::
-    ~OriginScopedNativeFileSystemPermissionContext() = default;
+OriginScopedFileSystemAccessPermissionContext::
+    ~OriginScopedFileSystemAccessPermissionContext() = default;
 
-scoped_refptr<content::NativeFileSystemPermissionGrant>
-OriginScopedNativeFileSystemPermissionContext::GetReadPermissionGrant(
+scoped_refptr<content::FileSystemAccessPermissionGrant>
+OriginScopedFileSystemAccessPermissionContext::GetReadPermissionGrant(
     const url::Origin& origin,
     const base::FilePath& path,
-    content::NativeFileSystemPermissionContext::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
     UserAction user_action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // operator[] might insert a new OriginState in |origins_|, but that
@@ -374,8 +374,8 @@ OriginScopedNativeFileSystemPermissionContext::GetReadPermissionGrant(
   return existing_grant;
 }
 
-scoped_refptr<content::NativeFileSystemPermissionGrant>
-OriginScopedNativeFileSystemPermissionContext::GetWritePermissionGrant(
+scoped_refptr<content::FileSystemAccessPermissionGrant>
+OriginScopedFileSystemAccessPermissionContext::GetWritePermissionGrant(
     const url::Origin& origin,
     const base::FilePath& path,
     HandleType handle_type,
@@ -437,8 +437,8 @@ OriginScopedNativeFileSystemPermissionContext::GetWritePermissionGrant(
   return existing_grant;
 }
 
-ChromeNativeFileSystemPermissionContext::Grants
-OriginScopedNativeFileSystemPermissionContext::GetPermissionGrants(
+ChromeFileSystemAccessPermissionContext::Grants
+OriginScopedFileSystemAccessPermissionContext::GetPermissionGrants(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
@@ -455,7 +455,7 @@ OriginScopedNativeFileSystemPermissionContext::GetPermissionGrants(
   return grants;
 }
 
-void OriginScopedNativeFileSystemPermissionContext::RevokeGrants(
+void OriginScopedFileSystemAccessPermissionContext::RevokeGrants(
     const url::Origin& origin) {
   auto origin_it = origins_.find(origin);
   if (origin_it == origins_.end())
@@ -469,7 +469,7 @@ void OriginScopedNativeFileSystemPermissionContext::RevokeGrants(
   ScheduleUsageIconUpdate();
 }
 
-bool OriginScopedNativeFileSystemPermissionContext::OriginHasReadAccess(
+bool OriginScopedFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
   auto it = origins_.find(origin);
   if (it == origins_.end())
@@ -483,7 +483,7 @@ bool OriginScopedNativeFileSystemPermissionContext::OriginHasReadAccess(
   return false;
 }
 
-bool OriginScopedNativeFileSystemPermissionContext::OriginHasWriteAccess(
+bool OriginScopedFileSystemAccessPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
   auto it = origins_.find(origin);
   if (it == origins_.end())
@@ -497,7 +497,7 @@ bool OriginScopedNativeFileSystemPermissionContext::OriginHasWriteAccess(
   return false;
 }
 
-void OriginScopedNativeFileSystemPermissionContext::NavigatedAwayFromOrigin(
+void OriginScopedFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
     const url::Origin& origin) {
   auto it = origins_.find(origin);
   // If we have no permissions for the origin, there is nothing to do.
@@ -508,14 +508,14 @@ void OriginScopedNativeFileSystemPermissionContext::NavigatedAwayFromOrigin(
   if (!it->second.cleanup_timer) {
     it->second.cleanup_timer = std::make_unique<base::RetainingOneShotTimer>(
         FROM_HERE, kPermissionRevocationTimeout,
-        base::BindRepeating(&OriginScopedNativeFileSystemPermissionContext::
+        base::BindRepeating(&OriginScopedFileSystemAccessPermissionContext::
                                 MaybeCleanupPermissions,
                             base::Unretained(this), origin));
   }
   it->second.cleanup_timer->Reset();
 }
 
-void OriginScopedNativeFileSystemPermissionContext::TriggerTimersForTesting() {
+void OriginScopedFileSystemAccessPermissionContext::TriggerTimersForTesting() {
   for (const auto& it : origins_) {
     if (it.second.cleanup_timer) {
       auto task = it.second.cleanup_timer->user_task();
@@ -525,7 +525,7 @@ void OriginScopedNativeFileSystemPermissionContext::TriggerTimersForTesting() {
   }
 }
 
-void OriginScopedNativeFileSystemPermissionContext::MaybeCleanupPermissions(
+void OriginScopedFileSystemAccessPermissionContext::MaybeCleanupPermissions(
     const url::Origin& origin) {
   auto it = origins_.find(origin);
   // If we have no permissions for the origin, there is nothing to do.
@@ -556,7 +556,7 @@ void OriginScopedNativeFileSystemPermissionContext::MaybeCleanupPermissions(
 #endif
 }
 
-void OriginScopedNativeFileSystemPermissionContext::PermissionGrantDestroyed(
+void OriginScopedFileSystemAccessPermissionContext::PermissionGrantDestroyed(
     PermissionGrantImpl* grant) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(grant->origin());
@@ -584,7 +584,7 @@ void OriginScopedNativeFileSystemPermissionContext::PermissionGrantDestroyed(
   ScheduleUsageIconUpdate();
 }
 
-void OriginScopedNativeFileSystemPermissionContext::ScheduleUsageIconUpdate() {
+void OriginScopedFileSystemAccessPermissionContext::ScheduleUsageIconUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (usage_icon_update_scheduled_)
     return;
@@ -592,11 +592,11 @@ void OriginScopedNativeFileSystemPermissionContext::ScheduleUsageIconUpdate() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &OriginScopedNativeFileSystemPermissionContext::DoUsageIconUpdate,
+          &OriginScopedFileSystemAccessPermissionContext::DoUsageIconUpdate,
           weak_factory_.GetWeakPtr()));
 }
 
-void OriginScopedNativeFileSystemPermissionContext::DoUsageIconUpdate() {
+void OriginScopedFileSystemAccessPermissionContext::DoUsageIconUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_icon_update_scheduled_ = false;
 #if !defined(OS_ANDROID)
@@ -609,7 +609,7 @@ void OriginScopedNativeFileSystemPermissionContext::DoUsageIconUpdate() {
 #endif
 }
 
-base::WeakPtr<ChromeNativeFileSystemPermissionContext>
-OriginScopedNativeFileSystemPermissionContext::GetWeakPtr() {
+base::WeakPtr<ChromeFileSystemAccessPermissionContext>
+OriginScopedFileSystemAccessPermissionContext::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

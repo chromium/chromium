@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -585,7 +585,7 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
     // Launch directories and files passed to system web apps should
     // automatically be granted write permission. Users should not get
     // permission prompts. So we auto deny them (if they show up).
-    NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+    FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
     // Wait for launchParams.

@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -41,7 +41,7 @@ void NativeFileSystemAccessIconView::UpdateImpl() {
     url::Origin origin =
         GetWebContents()->GetMainFrame()->GetLastCommittedOrigin();
     auto* context =
-        NativeFileSystemPermissionContextFactory::GetForProfileIfExists(
+        FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
             GetWebContents()->GetBrowserContext());
     has_write_access_ = context && context->OriginHasWriteAccess(origin);
     show_read_indicator = context && context->OriginHasReadAccess(origin);
@@ -72,14 +72,14 @@ void NativeFileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
   url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
 
   auto* context =
-      NativeFileSystemPermissionContextFactory::GetForProfileIfExists(
+      FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
           web_contents->GetBrowserContext());
   if (!context) {
     // If there is no context, there can't be any usage either, so just return.
     return;
   }
 
-  ChromeNativeFileSystemPermissionContext::Grants grants =
+  ChromeFileSystemAccessPermissionContext::Grants grants =
       context->GetPermissionGrants(origin);
 
   NativeFileSystemUsageBubbleView::Usage usage;

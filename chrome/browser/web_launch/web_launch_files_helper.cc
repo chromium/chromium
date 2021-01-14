@@ -76,7 +76,7 @@ namespace {
 // the correct file system backend. This method checks if this is the case, and
 // updates `entry_path` to the path that should be used by the native file
 // system implementation.
-content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
+content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
     base::FilePath* entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath virtual_path;
@@ -84,10 +84,10 @@ content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
       storage::ExternalMountPoints::GetSystemInstance();
   if (external_mount_points->GetVirtualPath(*entry_path, &virtual_path)) {
     *entry_path = std::move(virtual_path);
-    return content::NativeFileSystemEntryFactory::PathType::kExternal;
+    return content::FileSystemAccessEntryFactory::PathType::kExternal;
   }
 #endif
-  return content::NativeFileSystemEntryFactory::PathType::kLocal;
+  return content::FileSystemAccessEntryFactory::PathType::kLocal;
 }
 
 class EntriesBuilder {
@@ -100,7 +100,7 @@ class EntriesBuilder {
         entry_factory_(web_contents->GetMainFrame()
                            ->GetProcess()
                            ->GetStoragePartition()
-                           ->GetNativeFileSystemEntryFactory()),
+                           ->GetFileSystemAccessEntryFactory()),
         context_(url::Origin::Create(launch_url),
                  launch_url,
                  content::GlobalFrameRoutingId(
@@ -109,25 +109,25 @@ class EntriesBuilder {
 
   void AddFileEntry(const base::FilePath& path) {
     base::FilePath entry_path = path;
-    content::NativeFileSystemEntryFactory::PathType path_type =
+    content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_ref_->push_back(entry_factory_->CreateFileEntryFromPath(
         context_, path_type, entry_path,
-        content::NativeFileSystemEntryFactory::UserAction::kOpen));
+        content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
   void AddDirectoryEntry(const base::FilePath& path) {
     base::FilePath entry_path = path;
-    content::NativeFileSystemEntryFactory::PathType path_type =
+    content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_ref_->push_back(entry_factory_->CreateDirectoryEntryFromPath(
         context_, path_type, entry_path,
-        content::NativeFileSystemEntryFactory::UserAction::kOpen));
+        content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
 
  private:
   std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_ref_;
-  scoped_refptr<content::NativeFileSystemEntryFactory> entry_factory_;
-  content::NativeFileSystemEntryFactory::BindingContext context_;
+  scoped_refptr<content::FileSystemAccessEntryFactory> entry_factory_;
+  content::FileSystemAccessEntryFactory::BindingContext context_;
 };
 
 }  // namespace

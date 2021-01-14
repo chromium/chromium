@@ -13,7 +13,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/permission_util.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -22,8 +22,8 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace {
-using AccessType = NativeFileSystemPermissionRequestManager::Access;
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+using AccessType = FileSystemAccessPermissionRequestManager::Access;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 int GetMessageText(const NativeFileSystemPermissionView::Request& request) {
   switch (request.access) {
@@ -143,7 +143,7 @@ views::View* NativeFileSystemPermissionView::GetInitiallyFocusedView() {
   return GetCancelButton();
 }
 
-void ShowNativeFileSystemPermissionDialog(
+void ShowFileSystemAccessPermissionDialog(
     const NativeFileSystemPermissionView::Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {

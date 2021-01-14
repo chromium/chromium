@@ -580,9 +580,9 @@ class WebContents : public PageNavigator,
   // device.
   virtual bool IsConnectedToHidDevice() = 0;
 
-  // Indicates whether any frame in the WebContents has native file system
+  // Indicates whether any frame in the WebContents has File System Access
   // handles.
-  virtual bool HasNativeFileSystemHandles() = 0;
+  virtual bool HasFileSystemAccessHandles() = 0;
 
   // Indicates whether a video is in Picture-in-Picture for |this|.
   virtual bool HasPictureInPictureVideo() = 0;

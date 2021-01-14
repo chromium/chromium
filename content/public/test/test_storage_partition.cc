@@ -5,7 +5,7 @@
 #include "content/public/test/test_storage_partition.h"
 
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace content {
@@ -79,8 +79,8 @@ storage::mojom::IndexedDBControl& TestStoragePartition::GetIndexedDBControl() {
   return *indexed_db_control_;
 }
 
-NativeFileSystemEntryFactory*
-TestStoragePartition::GetNativeFileSystemEntryFactory() {
+FileSystemAccessEntryFactory*
+TestStoragePartition::GetFileSystemAccessEntryFactory() {
   return nullptr;
 }
 

@@ -17,9 +17,9 @@
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
-#include "content/public/browser/native_file_system_permission_context.h"
-#include "content/public/browser/native_file_system_permission_grant.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
+#include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/file_system_access_permission_grant.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -56,11 +56,11 @@ class StoragePartitionImpl;
 // This class is not thread safe, it must be constructed and used on the UI
 // thread only.
 class CONTENT_EXPORT NativeFileSystemManagerImpl
-    : public NativeFileSystemEntryFactory,
+    : public FileSystemAccessEntryFactory,
       public blink::mojom::FileSystemAccessManager,
       public storage::mojom::FileSystemAccessContext {
  public:
-  using BindingContext = NativeFileSystemEntryFactory::BindingContext;
+  using BindingContext = FileSystemAccessEntryFactory::BindingContext;
   using PassKey = base::PassKey<NativeFileSystemManagerImpl>;
 
   // State that is shared between handles that are derived from each other.
@@ -70,16 +70,16 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // parent.
   struct CONTENT_EXPORT SharedHandleState {
     SharedHandleState(
-        scoped_refptr<NativeFileSystemPermissionGrant> read_grant,
-        scoped_refptr<NativeFileSystemPermissionGrant> write_grant,
+        scoped_refptr<FileSystemAccessPermissionGrant> read_grant,
+        scoped_refptr<FileSystemAccessPermissionGrant> write_grant,
         storage::IsolatedContext::ScopedFSHandle file_system);
     SharedHandleState(const SharedHandleState& other);
     ~SharedHandleState();
 
     // Should never be null. These are the read and write permissions for this
     // handle.
-    const scoped_refptr<NativeFileSystemPermissionGrant> read_grant;
-    const scoped_refptr<NativeFileSystemPermissionGrant> write_grant;
+    const scoped_refptr<FileSystemAccessPermissionGrant> read_grant;
+    const scoped_refptr<FileSystemAccessPermissionGrant> write_grant;
     // Can be empty, if this handle is not backed by an isolated file system.
     const storage::IsolatedContext::ScopedFSHandle file_system;
   };
@@ -89,7 +89,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   NativeFileSystemManagerImpl(
       scoped_refptr<storage::FileSystemContext> context,
       scoped_refptr<ChromeBlobStorageContext> blob_context,
-      NativeFileSystemPermissionContext* permission_context,
+      FileSystemAccessPermissionContext* permission_context,
       bool off_the_record);
 
   void BindReceiver(
@@ -129,7 +129,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
 
-  // NativeFileSystemEntryFactory:
+  // FileSystemAccessEntryFactory:
   blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
@@ -213,14 +213,14 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   const base::SequenceBound<storage::FileSystemOperationRunner>&
   operation_runner();
 
-  NativeFileSystemPermissionContext* permission_context() {
+  FileSystemAccessPermissionContext* permission_context() {
     return permission_context_;
   }
 
   bool is_off_the_record() const { return off_the_record_; }
 
   void SetPermissionContextForTesting(
-      NativeFileSystemPermissionContext* permission_context) {
+      FileSystemAccessPermissionContext* permission_context) {
     permission_context_ = permission_context;
   }
 
@@ -245,8 +245,8 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const base::FilePath& path,
       const url::Origin& origin,
       storage::IsolatedContext::ScopedFSHandle file_system,
-      NativeFileSystemPermissionContext::HandleType handle_type,
-      NativeFileSystemPermissionContext::UserAction user_action);
+      FileSystemAccessPermissionContext::HandleType handle_type,
+      FileSystemAccessPermissionContext::UserAction user_action);
 
   // Creates a FileSystemURL which corresponds to a FilePath and Origin.
   struct FileSystemURLAndFSHandle {
@@ -287,7 +287,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const FileSystemChooser::Options& options,
       ChooseEntriesCallback callback,
       std::vector<FileSystemChooser::ResultEntry> entries,
-      NativeFileSystemPermissionContext::SensitiveDirectoryResult result);
+      FileSystemAccessPermissionContext::SensitiveDirectoryResult result);
   void DidCreateAndTruncateSaveFile(const BindingContext& binding_context,
                                     const FileSystemChooser::ResultEntry& entry,
                                     FileSystemURLAndFSHandle url,
@@ -298,13 +298,13 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const FileSystemChooser::ResultEntry& entry,
       ChooseEntriesCallback callback,
       const SharedHandleState& shared_handle_state,
-      NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome);
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome);
 
   void CreateTransferTokenImpl(
       const storage::FileSystemURL& url,
       const url::Origin& origin,
       const SharedHandleState& handle_state,
-      NativeFileSystemPermissionContext::HandleType handle_type,
+      FileSystemAccessPermissionContext::HandleType handle_type,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   void DoResolveTransferToken(
@@ -346,14 +346,14 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const base::FilePath& file_path,
       FileSystemURLAndFSHandle url,
       GetEntryFromDragDropTokenCallback token_resolved_callback,
-      NativeFileSystemPermissionContext::HandleType file_type);
+      FileSystemAccessPermissionContext::HandleType file_type);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_;
-  NativeFileSystemPermissionContext* permission_context_;
+  FileSystemAccessPermissionContext* permission_context_;
 
   // All the mojo receivers for this NativeFileSystemManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on

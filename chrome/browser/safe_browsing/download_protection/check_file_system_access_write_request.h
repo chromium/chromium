@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_NATIVE_FILE_SYSTEM_WRITE_REQUEST_H_
-#define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_NATIVE_FILE_SYSTEM_WRITE_REQUEST_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_FILE_SYSTEM_ACCESS_WRITE_REQUEST_H_
+#define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_FILE_SYSTEM_ACCESS_WRITE_REQUEST_H_
 
 #include <stdint.h>
 
@@ -18,21 +18,21 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/native_file_system_write_item.h"
+#include "content/public/browser/file_system_access_write_item.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
 
-class CheckNativeFileSystemWriteRequest
+class CheckFileSystemAccessWriteRequest
     : public CheckClientDownloadRequestBase {
  public:
-  CheckNativeFileSystemWriteRequest(
-      std::unique_ptr<content::NativeFileSystemWriteItem> item,
+  CheckFileSystemAccessWriteRequest(
+      std::unique_ptr<content::FileSystemAccessWriteItem> item,
       CheckDownloadCallback callback,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
-  ~CheckNativeFileSystemWriteRequest() override;
+  ~CheckFileSystemAccessWriteRequest() override;
 
  private:
   // CheckClientDownloadRequestBase overrides:
@@ -57,15 +57,15 @@ class CheckNativeFileSystemWriteRequest
                              DownloadCheckResultReason reason) override;
   bool IsWhitelistedByPolicy() const override;
 
-  const std::unique_ptr<content::NativeFileSystemWriteItem> item_;
+  const std::unique_ptr<content::FileSystemAccessWriteItem> item_;
   std::unique_ptr<ReferrerChainData> referrer_chain_data_;
 
-  base::WeakPtrFactory<CheckNativeFileSystemWriteRequest> weakptr_factory_{
+  base::WeakPtrFactory<CheckFileSystemAccessWriteRequest> weakptr_factory_{
       this};
 
-  DISALLOW_COPY_AND_ASSIGN(CheckNativeFileSystemWriteRequest);
+  DISALLOW_COPY_AND_ASSIGN(CheckFileSystemAccessWriteRequest);
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_NATIVE_FILE_SYSTEM_WRITE_REQUEST_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_CHECK_FILE_SYSTEM_ACCESS_WRITE_REQUEST_H_

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 
-#include "content/public/browser/native_file_system_permission_grant.h"
+#include "content/public/browser/file_system_access_permission_grant.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 
-// Mock NativeFileSystemPermissionGrant implementation.
-class MockNativeFileSystemPermissionGrant
-    : public NativeFileSystemPermissionGrant {
+// Mock FileSystemAccessPermissionGrant implementation.
+class MockFileSystemAccessPermissionGrant
+    : public FileSystemAccessPermissionGrant {
  public:
-  MockNativeFileSystemPermissionGrant();
+  MockFileSystemAccessPermissionGrant();
 
   MOCK_METHOD0(GetStatus, PermissionStatus());
   MOCK_METHOD0(GetPath, base::FilePath());
@@ -27,12 +27,12 @@ class MockNativeFileSystemPermissionGrant
                     UserActivationState user_activation_state,
                     base::OnceCallback<void(PermissionRequestOutcome)>&));
 
-  using NativeFileSystemPermissionGrant::NotifyPermissionStatusChanged;
+  using FileSystemAccessPermissionGrant::NotifyPermissionStatusChanged;
 
  protected:
-  ~MockNativeFileSystemPermissionGrant();
+  ~MockFileSystemAccessPermissionGrant();
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_

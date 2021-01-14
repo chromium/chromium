@@ -77,7 +77,7 @@ class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManagerDelegate;
-class NativeFileSystemPermissionContext;
+class FileSystemAccessPermissionContext;
 class PermissionController;
 class PermissionControllerDelegate;
 class PushMessagingService;
@@ -352,10 +352,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual download::InProgressDownloadManager*
   RetriveInProgressDownloadManager();
 
-  // Returns the NativeFileSystemPermissionContext associated with this context
+  // Returns the FileSystemAccessPermissionContext associated with this context
   // if any, nullptr otherwise.
-  virtual NativeFileSystemPermissionContext*
-  GetNativeFileSystemPermissionContext();
+  virtual FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext();
 
   // Returns the ContentIndexProvider associated with that context if any,
   // nullptr otherwise.

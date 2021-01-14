@@ -82,7 +82,7 @@ class CookieStoreContext;
 class FontAccessContext;
 class GeneratedCodeCacheContext;
 class IndexedDBContextImpl;
-class NativeFileSystemEntryFactory;
+class FileSystemAccessEntryFactory;
 class NativeFileSystemManagerImpl;
 class NativeIOContext;
 class PrefetchURLLoaderService;
@@ -150,7 +150,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   LockManager* GetLockManager();  // override; TODO: Add to interface
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
-  NativeFileSystemEntryFactory* GetNativeFileSystemEntryFactory() override;
+  FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   CacheStorageContextImpl* GetCacheStorageContext() override;
   // TODO(enne): add CacheStorageControl mojom and remove this
   CacheStorageContextImpl* GetCacheStorageContextImplForTesting() override;

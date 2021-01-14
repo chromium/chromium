@@ -103,8 +103,8 @@ class ProfileImpl : public Profile {
   std::string GetMediaDeviceIDSalt() override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
-  content::NativeFileSystemPermissionContext*
-  GetNativeFileSystemPermissionContext() override;
+  content::FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext() override;
   content::ContentIndexProvider* GetContentIndexProvider() override;
 
   // Profile implementation:

@@ -17,8 +17,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
-#include "content/browser/file_system_access/mock_native_file_system_permission_context.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -103,7 +103,7 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
   NativeFileSystemFileWriterImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
-  virtual NativeFileSystemPermissionContext* permission_context() {
+  virtual FileSystemAccessPermissionContext* permission_context() {
     return nullptr;
   }
 
@@ -344,9 +344,9 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
   mojo::ReceiverSet<quarantine::mojom::Quarantine> quarantine_receivers_;
   download::QuarantineConnectionCallback quarantine_callback_;
 
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> permission_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
@@ -583,12 +583,12 @@ TEST_F(NativeFileSystemFileWriterImplTest, WriterDestroyedAfterAbort) {
 class NativeFileSystemFileWriterAfterWriteChecksTest
     : public NativeFileSystemFileWriterImplTest {
  public:
-  NativeFileSystemPermissionContext* permission_context() override {
+  FileSystemAccessPermissionContext* permission_context() override {
     return &permission_context_;
   }
 
  protected:
-  testing::StrictMock<MockNativeFileSystemPermissionContext>
+  testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;
 };
 
@@ -607,17 +607,17 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, Allow) {
       permission_context_,
       PerformAfterWriteChecks_(
           AllOf(
-              Field(&NativeFileSystemWriteItem::target_file_path,
+              Field(&FileSystemAccessWriteItem::target_file_path,
                     Eq(test_file_url_.path())),
-              Field(&NativeFileSystemWriteItem::full_path,
+              Field(&FileSystemAccessWriteItem::full_path,
                     Eq(test_swap_url_.path())),
-              Field(&NativeFileSystemWriteItem::sha256_hash, Eq(expected_hash)),
-              Field(&NativeFileSystemWriteItem::size, Eq(3)),
-              Field(&NativeFileSystemWriteItem::frame_url, Eq(kTestURL)),
-              Field(&NativeFileSystemWriteItem::has_user_gesture, Eq(false))),
+              Field(&FileSystemAccessWriteItem::sha256_hash, Eq(expected_hash)),
+              Field(&FileSystemAccessWriteItem::size, Eq(3)),
+              Field(&FileSystemAccessWriteItem::frame_url, Eq(kTestURL)),
+              Field(&FileSystemAccessWriteItem::has_user_gesture, Eq(false))),
           kFrameId, _))
       .WillOnce(base::test::RunOnceCallback<2>(
-          NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow));
+          FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -638,7 +638,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, Block) {
 
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_(_, kFrameId, _))
       .WillOnce(base::test::RunOnceCallback<2>(
-          NativeFileSystemPermissionContext::AfterWriteCheckResult::kBlock));
+          FileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock));
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOperationAborted);
@@ -659,11 +659,11 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   EXPECT_EQ(bytes_written, 3u);
 
   using SBCallback = base::OnceCallback<void(
-      NativeFileSystemPermissionContext::AfterWriteCheckResult)>;
+      FileSystemAccessPermissionContext::AfterWriteCheckResult)>;
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](NativeFileSystemWriteItem* item,
+      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
                                     GlobalFrameRoutingId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
@@ -682,7 +682,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
       storage::AsyncFileTestHelper::kDontCheckSize));
 
   std::move(sb_callback)
-      .Run(NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow);
+      .Run(FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow);
 
   // Swap file should now be deleted, target file should be written out.
   task_environment_.RunUntilIdle();
@@ -701,11 +701,11 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   EXPECT_EQ(bytes_written, 3u);
 
   using SBCallback = base::OnceCallback<void(
-      NativeFileSystemPermissionContext::AfterWriteCheckResult)>;
+      FileSystemAccessPermissionContext::AfterWriteCheckResult)>;
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](NativeFileSystemWriteItem* item,
+      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
                                     GlobalFrameRoutingId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
@@ -724,7 +724,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
       storage::AsyncFileTestHelper::kDontCheckSize));
 
   std::move(sb_callback)
-      .Run(NativeFileSystemPermissionContext::AfterWriteCheckResult::kBlock);
+      .Run(FileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock);
 
   // Swap file should now be deleted, target file should be unmodified.
   task_environment_.RunUntilIdle();
@@ -772,11 +772,11 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   EXPECT_EQ(bytes_written, 3u);
 
   using SBCallback = base::OnceCallback<void(
-      NativeFileSystemPermissionContext::AfterWriteCheckResult)>;
+      FileSystemAccessPermissionContext::AfterWriteCheckResult)>;
   SBCallback sb_callback;
   base::RunLoop sb_loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](NativeFileSystemWriteItem* item,
+      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
                                     GlobalFrameRoutingId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
@@ -786,7 +786,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   handle_->Close(base::DoNothing());
   sb_loop.Run();
   std::move(sb_callback)
-      .Run(NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow);
+      .Run(FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow);
 
   base::RunLoop move_loop;
   test_file_system_backend_->SetOperationCreatedCallback(

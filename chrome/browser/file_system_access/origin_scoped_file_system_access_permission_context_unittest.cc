@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/native_file_system/origin_scoped_native_file_system_permission_context.h"
+#include "chrome/browser/file_system_access/origin_scoped_file_system_access_permission_context.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,33 +34,33 @@ using content::BrowserContext;
 using content::WebContents;
 using content::WebContentsTester;
 using permissions::PermissionAction;
-using UserAction = ChromeNativeFileSystemPermissionContext::UserAction;
+using UserAction = ChromeFileSystemAccessPermissionContext::UserAction;
 using PermissionStatus =
-    content::NativeFileSystemPermissionGrant::PermissionStatus;
+    content::FileSystemAccessPermissionGrant::PermissionStatus;
 using PermissionRequestOutcome =
-    content::NativeFileSystemPermissionGrant::PermissionRequestOutcome;
+    content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
 using SensitiveDirectoryResult =
-    ChromeNativeFileSystemPermissionContext::SensitiveDirectoryResult;
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+    ChromeFileSystemAccessPermissionContext::SensitiveDirectoryResult;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using UserActivationState =
-    content::NativeFileSystemPermissionGrant::UserActivationState;
+    content::FileSystemAccessPermissionGrant::UserActivationState;
 
-class OriginScopedNativeFileSystemPermissionContextTest : public testing::Test {
+class OriginScopedFileSystemAccessPermissionContextTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    NativeFileSystemPermissionRequestManager::CreateForWebContents(
+    FileSystemAccessPermissionRequestManager::CreateForWebContents(
         web_contents_.get());
     content::WebContentsTester::For(web_contents_.get())
         ->NavigateAndCommit(kTestOrigin.GetURL());
 
-    NativeFileSystemPermissionRequestManager::FromWebContents(
+    FileSystemAccessPermissionRequestManager::FromWebContents(
         web_contents_.get())
         ->set_auto_response_for_test(PermissionAction::DISMISSED);
     permission_context_ =
-        std::make_unique<OriginScopedNativeFileSystemPermissionContext>(
+        std::make_unique<OriginScopedFileSystemAccessPermissionContext>(
             browser_context());
   }
 
@@ -85,7 +85,7 @@ class OriginScopedNativeFileSystemPermissionContextTest : public testing::Test {
         origin.GetURL(), origin.GetURL(), type, value);
   }
 
-  OriginScopedNativeFileSystemPermissionContext* permission_context() {
+  OriginScopedFileSystemAccessPermissionContext* permission_context() {
     return permission_context_.get();
   }
   BrowserContext* browser_context() { return &profile_; }
@@ -112,7 +112,7 @@ class OriginScopedNativeFileSystemPermissionContextTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<OriginScopedNativeFileSystemPermissionContext>
+  std::unique_ptr<OriginScopedFileSystemAccessPermissionContext>
       permission_context_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfile profile_;
@@ -121,49 +121,49 @@ class OriginScopedNativeFileSystemPermissionContextTest : public testing::Test {
 
 #if !defined(OS_ANDROID)
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InitialState_LoadFromStorage) {
   auto grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InitialState_Open_File) {
   auto grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_InitialState_Open_Directory) {
   auto grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_LoadFromStorage) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_Open_File) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_Open_Directory) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_WritableImplicitState) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
@@ -181,7 +181,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_WriteGrantedChangesExistingGrant) {
   auto grant1 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
@@ -195,7 +195,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant1->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
@@ -209,7 +209,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_OpenAction_GlobalGuardBlocked) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -229,7 +229,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
 }
 
 TEST_F(
-    OriginScopedNativeFileSystemPermissionContextTest,
+    OriginScopedFileSystemAccessPermissionContextTest,
     GetWritePermissionGrant_InitialState_WritableImplicitState_GlobalGuardBlocked) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -249,7 +249,7 @@ TEST_F(
 }
 
 TEST_F(
-    OriginScopedNativeFileSystemPermissionContextTest,
+    OriginScopedFileSystemAccessPermissionContextTest,
     GetWritePermissionGrant_WriteGrantedChangesExistingGrant_GlobalGuardBlocked) {
   SetContentSettingValueForOrigin(kTestOrigin,
                                   ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
@@ -268,7 +268,7 @@ TEST_F(
 }
 
 TEST_F(
-    OriginScopedNativeFileSystemPermissionContextTest,
+    OriginScopedFileSystemAccessPermissionContextTest,
     GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed_GlobalGuardBlockedBeforeNewGrant) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -286,7 +286,7 @@ TEST_F(
 }
 
 TEST_F(
-    OriginScopedNativeFileSystemPermissionContextTest,
+    OriginScopedFileSystemAccessPermissionContextTest,
     GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed_GlobalGuardBlockedAfterNewGrant) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
@@ -307,9 +307,9 @@ TEST_F(
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_Dismissed) {
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents_.get())
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
       ->set_auto_response_for_test(PermissionAction::DISMISSED);
   content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
@@ -329,9 +329,9 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_Granted) {
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents_.get())
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
   content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
@@ -350,9 +350,9 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_Denied) {
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents_.get())
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
       ->set_auto_response_for_test(PermissionAction::DENIED);
   content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
@@ -371,9 +371,9 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::DENIED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_NoUserActivation) {
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents_.get())
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
   auto grant = permission_context()->GetWritePermissionGrant(
@@ -391,9 +391,9 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_NoUserActivation_UserActivationNotRequired) {
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents_.get())
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
 
   auto grant = permission_context()->GetWritePermissionGrant(
@@ -411,7 +411,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_AlreadyGranted) {
   // If the permission has already been granted, a call to RequestPermission()
   // should call the passed-in callback and return immediately without showing a
@@ -430,7 +430,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_GlobalGuardBlockedBeforeOpenGrant) {
   // If the guard content setting is blocked, a call to RequestPermission()
   // should update the PermissionStatus to DENIED, call the passed-in
@@ -483,7 +483,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant2->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        RequestPermission_GlobalGuardBlockedAfterOpenGrant) {
   // If the guard content setting is blocked, a call to RequestPermission()
   // should update the PermissionStatus to DENIED, call the passed-in
@@ -548,7 +548,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::DENIED, grant2->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_AllowlistedOrigin_InitialState) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -577,7 +577,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::DENIED, grant4->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_AllowlistedOrigin_ExistingGrant) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -609,7 +609,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::GRANTED, grant4->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetReadPermissionGrant_FileBecomesDirectory) {
   auto file_grant = permission_context()->GetReadPermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
@@ -624,7 +624,7 @@ TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
   EXPECT_EQ(PermissionStatus::DENIED, file_grant->GetStatus());
 }
 
-TEST_F(OriginScopedNativeFileSystemPermissionContextTest,
+TEST_F(OriginScopedFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_FileBecomesDirectory) {
   auto file_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);

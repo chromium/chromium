@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
-#define CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
+#ifndef CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
+#define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
@@ -22,13 +22,13 @@ namespace content {
 // children will use the same grant.
 //
 // Instances of this class can be retrieved via a
-// NativeFileSystemPermissionContext instance.
+// FileSystemAccessPermissionContext instance.
 //
-// NativeFileSystemPermissionGrant instances are not thread safe, and should
+// FileSystemAccessPermissionGrant instances are not thread safe, and should
 // only be used (and referenced) on the same sequence as the PermssionContext
 // that created them, i.e. the UI thread.
-class CONTENT_EXPORT NativeFileSystemPermissionGrant
-    : public base::RefCounted<NativeFileSystemPermissionGrant> {
+class CONTENT_EXPORT FileSystemAccessPermissionGrant
+    : public base::RefCounted<FileSystemAccessPermissionGrant> {
  public:
   using PermissionStatus = blink::mojom::PermissionStatus;
 
@@ -80,9 +80,9 @@ class CONTENT_EXPORT NativeFileSystemPermissionGrant
   void RemoveObserver(Observer* observer);
 
  protected:
-  friend class base::RefCounted<NativeFileSystemPermissionGrant>;
-  NativeFileSystemPermissionGrant();
-  virtual ~NativeFileSystemPermissionGrant();
+  friend class base::RefCounted<FileSystemAccessPermissionGrant>;
+  FileSystemAccessPermissionGrant();
+  virtual ~FileSystemAccessPermissionGrant();
 
   void NotifyPermissionStatusChanged();
 
@@ -92,4 +92,4 @@ class CONTENT_EXPORT NativeFileSystemPermissionGrant
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_GRANT_H_
+#endif  // CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_

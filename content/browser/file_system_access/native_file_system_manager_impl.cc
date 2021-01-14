@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/native_file_system.pb.h"
 #include "content/browser/file_system_access/native_file_system_directory_handle_impl.h"
 #include "content/browser/file_system_access/native_file_system_drag_drop_token_impl.h"
@@ -45,12 +45,12 @@
 namespace content {
 
 using blink::mojom::FileSystemAccessStatus;
-using PermissionStatus = NativeFileSystemPermissionGrant::PermissionStatus;
+using PermissionStatus = FileSystemAccessPermissionGrant::PermissionStatus;
 using SensitiveDirectoryResult =
-    NativeFileSystemPermissionContext::SensitiveDirectoryResult;
+    FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 using storage::FileSystemContext;
-using HandleType = NativeFileSystemPermissionContext::HandleType;
-using PathInfo = NativeFileSystemPermissionContext::PathInfo;
+using HandleType = FileSystemAccessPermissionContext::HandleType;
+using PathInfo = FileSystemAccessPermissionContext::PathInfo;
 
 namespace {
 
@@ -199,8 +199,8 @@ void GetDirectoryExistsFromUrl(
 }  // namespace
 
 NativeFileSystemManagerImpl::SharedHandleState::SharedHandleState(
-    scoped_refptr<NativeFileSystemPermissionGrant> read_grant,
-    scoped_refptr<NativeFileSystemPermissionGrant> write_grant,
+    scoped_refptr<FileSystemAccessPermissionGrant> read_grant,
+    scoped_refptr<FileSystemAccessPermissionGrant> write_grant,
     storage::IsolatedContext::ScopedFSHandle file_system)
     : read_grant(std::move(read_grant)),
       write_grant(std::move(write_grant)),
@@ -216,7 +216,7 @@ NativeFileSystemManagerImpl::SharedHandleState::~SharedHandleState() = default;
 NativeFileSystemManagerImpl::NativeFileSystemManagerImpl(
     scoped_refptr<storage::FileSystemContext> context,
     scoped_refptr<ChromeBlobStorageContext> blob_context,
-    NativeFileSystemPermissionContext* permission_context,
+    FileSystemAccessPermissionContext* permission_context,
     bool off_the_record)
     : context_(std::move(context)),
       blob_context_(std::move(blob_context)),
@@ -632,7 +632,7 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
           origin, storage::kFileSystemTypeTemporary, virtual_path);
 
       auto permission_grant =
-          base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+          base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
               PermissionStatus::GRANTED, base::FilePath());
       CreateTransferTokenImpl(
           url, origin,
@@ -674,7 +674,7 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
           root_path, origin, std::move(root.file_system),
           (is_directory || !relative_path.empty()) ? HandleType::kDirectory
                                                    : HandleType::kFile,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage);
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage);
 
       CreateTransferTokenImpl(
           child, origin, handle_state,
@@ -913,7 +913,7 @@ void NativeFileSystemManagerImpl::DidOpenSandboxedFileSystem(
   }
 
   auto permission_grant =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           PermissionStatus::GRANTED, base::FilePath());
 
   std::move(callback).Run(
@@ -1004,10 +1004,10 @@ void NativeFileSystemManagerImpl::DidVerifySensitiveDirectoryAccess(
     SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
         entries.front().path, binding_context.origin, {},
         HandleType::kDirectory,
-        NativeFileSystemPermissionContext::UserAction::kOpen);
+        FileSystemAccessPermissionContext::UserAction::kOpen);
     shared_handle_state.read_grant->RequestPermission(
         binding_context.frame_id,
-        NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
+        FileSystemAccessPermissionGrant::UserActivationState::kNotRequired,
         base::BindOnce(&NativeFileSystemManagerImpl::DidChooseDirectory, this,
                        binding_context, entries.front(), std::move(callback),
                        shared_handle_state));
@@ -1081,7 +1081,7 @@ void NativeFileSystemManagerImpl::DidChooseDirectory(
     const FileSystemChooser::ResultEntry& entry,
     ChooseEntriesCallback callback,
     const SharedHandleState& shared_handle_state,
-    NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome) {
+    FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramEnumeration(
       "NativeFileSystemAPI.ConfirmReadDirectoryResult",
@@ -1208,8 +1208,8 @@ NativeFileSystemManagerImpl::GetSharedHandleStateForPath(
     const url::Origin& origin,
     storage::IsolatedContext::ScopedFSHandle file_system,
     HandleType handle_type,
-    NativeFileSystemPermissionContext::UserAction user_action) {
-  scoped_refptr<NativeFileSystemPermissionGrant> read_grant, write_grant;
+    FileSystemAccessPermissionContext::UserAction user_action) {
+  scoped_refptr<FileSystemAccessPermissionGrant> read_grant, write_grant;
   if (permission_context_) {
     read_grant = permission_context_->GetReadPermissionGrant(
         origin, path, handle_type, user_action);
@@ -1220,19 +1220,19 @@ NativeFileSystemManagerImpl::GetSharedHandleStateForPath(
     // Experimental Web Platform features are enabled.
     // TODO(mek): Remove experimental web platform check when permission UI is
     // implemented.
-    write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+    write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableExperimentalWebPlatformFeatures)
             ? PermissionStatus::GRANTED
             : PermissionStatus::DENIED,
         path);
     if (user_action ==
-        NativeFileSystemPermissionContext::UserAction::kLoadFromStorage) {
+        FileSystemAccessPermissionContext::UserAction::kLoadFromStorage) {
       read_grant = write_grant;
     } else {
       // Grant read permission even without a permission_context_, as the picker
       // itself is enough UI to assume user intent.
-      read_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           PermissionStatus::GRANTED, path);
     }
   }

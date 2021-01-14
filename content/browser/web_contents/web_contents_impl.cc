@@ -1851,8 +1851,8 @@ bool WebContentsImpl::IsConnectedToHidDevice() {
   return hid_active_frame_count_ > 0;
 }
 
-bool WebContentsImpl::HasNativeFileSystemHandles() {
-  return native_file_system_handle_count_ > 0;
+bool WebContentsImpl::HasFileSystemAccessHandles() {
+  return file_system_access_handle_count_ > 0;
 }
 
 bool WebContentsImpl::HasPictureInPictureVideo() {
@@ -8240,9 +8240,9 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
 }
 
-void WebContentsImpl::IncrementNativeFileSystemHandleCount() {
+void WebContentsImpl::IncrementFileSystemAccessHandleCount() {
   OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::IncrementNativeFileSystemHandleCount");
+      "content", "WebContentsImpl::IncrementFileSystemAccessHandleCount");
   // Trying to invalidate the tab state while being destroyed could result in a
   // use after free.
   if (IsBeingDestroyed())
@@ -8251,16 +8251,16 @@ void WebContentsImpl::IncrementNativeFileSystemHandleCount() {
   // Notify for UI updates if the state changes. Need both TYPE_TAB and TYPE_URL
   // to update both the tab-level usage indicator and the usage indicator in the
   // omnibox.
-  native_file_system_handle_count_++;
-  if (native_file_system_handle_count_ == 1) {
+  file_system_access_handle_count_++;
+  if (file_system_access_handle_count_ == 1) {
     NotifyNavigationStateChanged(static_cast<content::InvalidateTypes>(
         INVALIDATE_TYPE_TAB | INVALIDATE_TYPE_URL));
   }
 }
 
-void WebContentsImpl::DecrementNativeFileSystemHandleCount() {
+void WebContentsImpl::DecrementFileSystemAccessHandleCount() {
   OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::DecrementNativeFileSystemHandleCount");
+      "content", "WebContentsImpl::DecrementFileSystemAccessHandleCount");
   // Trying to invalidate the tab state while being destroyed could result in a
   // use after free.
   if (IsBeingDestroyed())
@@ -8269,9 +8269,9 @@ void WebContentsImpl::DecrementNativeFileSystemHandleCount() {
   // Notify for UI updates if the state changes. Need both TYPE_TAB and TYPE_URL
   // to update both the tab-level usage indicator and the usage indicator in the
   // omnibox.
-  DCHECK_NE(0u, native_file_system_handle_count_);
-  native_file_system_handle_count_--;
-  if (native_file_system_handle_count_ == 0) {
+  DCHECK_NE(0u, file_system_access_handle_count_);
+  file_system_access_handle_count_--;
+  if (file_system_access_handle_count_ == 0) {
     NotifyNavigationStateChanged(static_cast<content::InvalidateTypes>(
         INVALIDATE_TYPE_TAB | INVALIDATE_TYPE_URL));
   }

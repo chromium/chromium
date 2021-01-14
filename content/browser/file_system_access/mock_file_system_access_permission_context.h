@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 #include "base/files/file_path.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
-// Mock NativeFileSystemPermissionContext implementation.
-class MockNativeFileSystemPermissionContext
-    : public NativeFileSystemPermissionContext {
+// Mock FileSystemAccessPermissionContext implementation.
+class MockFileSystemAccessPermissionContext
+    : public FileSystemAccessPermissionContext {
  public:
-  MockNativeFileSystemPermissionContext();
-  ~MockNativeFileSystemPermissionContext();
+  MockFileSystemAccessPermissionContext();
+  ~MockFileSystemAccessPermissionContext();
 
   MOCK_METHOD4(GetReadPermissionGrant,
-               scoped_refptr<NativeFileSystemPermissionGrant>(
+               scoped_refptr<FileSystemAccessPermissionGrant>(
                    const url::Origin& origin,
                    const base::FilePath& path,
                    HandleType handle_type,
-                   NativeFileSystemPermissionContext::UserAction user_action));
+                   FileSystemAccessPermissionContext::UserAction user_action));
 
   MOCK_METHOD4(GetWritePermissionGrant,
-               scoped_refptr<NativeFileSystemPermissionGrant>(
+               scoped_refptr<FileSystemAccessPermissionGrant>(
                    const url::Origin& origin,
                    const base::FilePath& path,
                    HandleType handle_type,
-                   NativeFileSystemPermissionContext::UserAction user_action));
+                   FileSystemAccessPermissionContext::UserAction user_action));
 
   void ConfirmSensitiveDirectoryAccess(
       const url::Origin& origin,
@@ -48,11 +48,11 @@ class MockNativeFileSystemPermissionContext
            base::OnceCallback<void(SensitiveDirectoryResult)>& callback));
 
   void PerformAfterWriteChecks(
-      std::unique_ptr<NativeFileSystemWriteItem> item,
+      std::unique_ptr<FileSystemAccessWriteItem> item,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   MOCK_METHOD3(PerformAfterWriteChecks_,
-               void(NativeFileSystemWriteItem* item,
+               void(FileSystemAccessWriteItem* item,
                     GlobalFrameRoutingId frame_id,
                     base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
@@ -71,4 +71,4 @@ class MockNativeFileSystemPermissionContext
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_

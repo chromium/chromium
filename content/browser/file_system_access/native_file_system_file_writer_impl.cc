@@ -515,7 +515,7 @@ void NativeFileSystemFileWriterImpl::CloseImpl(CloseCallback callback) {
 
   if (!RequireSecurityChecks() || !manager()->permission_context()) {
     DidAfterWriteCheck(
-        NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow);
+        FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow);
     return;
   }
 
@@ -559,7 +559,7 @@ void NativeFileSystemFileWriterImpl::DoAfterWriteCheck(
     return;
   }
 
-  auto item = std::make_unique<NativeFileSystemWriteItem>();
+  auto item = std::make_unique<FileSystemAccessWriteItem>();
   item->target_file_path = url().path();
   item->full_path = swap_url().path();
   item->sha256_hash = hash;
@@ -573,10 +573,10 @@ void NativeFileSystemFileWriterImpl::DoAfterWriteCheck(
 }
 
 void NativeFileSystemFileWriterImpl::DidAfterWriteCheck(
-    NativeFileSystemPermissionContext::AfterWriteCheckResult result) {
+    FileSystemAccessPermissionContext::AfterWriteCheckResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result !=
-      NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow) {
+      FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow) {
     // Safe browsing check failed. In this case we should try deleting the swap
     // file and call the callback to report that close failed.
     manager()->operation_runner().PostTaskWithThisObject(

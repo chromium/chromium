@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
 #include <memory>
 #include <string>
@@ -30,26 +30,26 @@
 #include "url/origin.h"
 
 using content::BrowserContext;
-using HandleType = ChromeNativeFileSystemPermissionContext::HandleType;
-using PathType = ChromeNativeFileSystemPermissionContext::PathType;
-using UserAction = ChromeNativeFileSystemPermissionContext::UserAction;
+using HandleType = ChromeFileSystemAccessPermissionContext::HandleType;
+using PathType = ChromeFileSystemAccessPermissionContext::PathType;
+using UserAction = ChromeFileSystemAccessPermissionContext::UserAction;
 using PermissionStatus =
-    content::NativeFileSystemPermissionGrant::PermissionStatus;
+    content::FileSystemAccessPermissionGrant::PermissionStatus;
 using PermissionRequestOutcome =
-    content::NativeFileSystemPermissionGrant::PermissionRequestOutcome;
+    content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
 using SensitiveDirectoryResult =
-    ChromeNativeFileSystemPermissionContext::SensitiveDirectoryResult;
+    ChromeFileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
-class TestNativeFileSystemPermissionContext
-    : public ChromeNativeFileSystemPermissionContext {
+class TestFileSystemAccessPermissionContext
+    : public ChromeFileSystemAccessPermissionContext {
  public:
-  explicit TestNativeFileSystemPermissionContext(
+  explicit TestFileSystemAccessPermissionContext(
       content::BrowserContext* context)
-      : ChromeNativeFileSystemPermissionContext(context) {}
-  ~TestNativeFileSystemPermissionContext() override = default;
+      : ChromeFileSystemAccessPermissionContext(context) {}
+  ~TestFileSystemAccessPermissionContext() override = default;
 
-  // content::NativeFileSystemPermissionContext:
-  scoped_refptr<content::NativeFileSystemPermissionGrant>
+  // content::FileSystemAccessPermissionContext:
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetReadPermissionGrant(const url::Origin& origin,
                          const base::FilePath& path,
                          HandleType handle_type,
@@ -57,7 +57,7 @@ class TestNativeFileSystemPermissionContext
     NOTREACHED();
     return nullptr;
   }
-  scoped_refptr<content::NativeFileSystemPermissionGrant>
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
                           const base::FilePath& path,
                           HandleType handle_type,
@@ -66,7 +66,7 @@ class TestNativeFileSystemPermissionContext
     return nullptr;
   }
 
-  // ChromeNativeFileSystemPermissionContext:
+  // ChromeFileSystemAccessPermissionContext:
   Grants GetPermissionGrants(const url::Origin& origin) override {
     NOTREACHED();
     return {};
@@ -74,29 +74,27 @@ class TestNativeFileSystemPermissionContext
   void RevokeGrants(const url::Origin& origin) override { NOTREACHED(); }
 
  private:
-  base::WeakPtr<ChromeNativeFileSystemPermissionContext> GetWeakPtr() override {
+  base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
 
-  base::WeakPtrFactory<TestNativeFileSystemPermissionContext> weak_factory_{
+  base::WeakPtrFactory<TestFileSystemAccessPermissionContext> weak_factory_{
       this};
 };
 
-class ChromeNativeFileSystemPermissionContextTest : public testing::Test {
+class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     permission_context_ =
-        std::make_unique<TestNativeFileSystemPermissionContext>(
+        std::make_unique<TestFileSystemAccessPermissionContext>(
             browser_context());
   }
 
-  void TearDown() override {
-    ASSERT_TRUE(temp_dir_.Delete());
-  }
+  void TearDown() override { ASSERT_TRUE(temp_dir_.Delete()); }
 
   SensitiveDirectoryResult ConfirmSensitiveDirectoryAccessSync(
-      ChromeNativeFileSystemPermissionContext* context,
+      ChromeFileSystemAccessPermissionContext* context,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type) {
@@ -129,7 +127,7 @@ class ChromeNativeFileSystemPermissionContextTest : public testing::Test {
         origin.GetURL(), origin.GetURL(), type, value);
   }
 
-  ChromeNativeFileSystemPermissionContext* permission_context() {
+  ChromeFileSystemAccessPermissionContext* permission_context() {
     return permission_context_.get();
   }
   BrowserContext* browser_context() { return &profile_; }
@@ -146,13 +144,13 @@ class ChromeNativeFileSystemPermissionContextTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ChromeNativeFileSystemPermissionContext> permission_context_;
+  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context_;
   TestingProfile profile_;
 };
 
 #if !defined(OS_ANDROID)
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_NoSpecialPath) {
   const base::FilePath kTestPath =
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
@@ -179,7 +177,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
           base::FilePath(FILE_PATH_LITERAL("foo/bar")), HandleType::kFile));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_DontBlockAllChildren) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
@@ -205,7 +203,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
                 home_dir.AppendASCII("foo"), HandleType::kDirectory));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_BlockAllChildren) {
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(chrome::DIR_APP, app_dir, true, true);
@@ -231,7 +229,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
                 app_dir.AppendASCII("foo"), HandleType::kDirectory));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_BlockChildrenNested) {
   base::FilePath user_data_dir = temp_dir_.GetPath().AppendASCII("user");
   base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
@@ -290,7 +288,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
 #endif
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_RelativePathBlock) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
@@ -307,7 +305,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
                 home_dir.AppendASCII(".ssh/id_rsa"), HandleType::kFile));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_ExplicitPathBlock) {
 // Linux is the only OS where we have some blocked directories with explicit
 // paths (as opposed to PathService provided paths).
@@ -332,28 +330,28 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
 #endif
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanObtainWritePermission_ContentSettingAsk) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_ASK);
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kTestOrigin));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanObtainWritePermission_ContentSettingsBlock) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(permission_context()->CanObtainWritePermission(kTestOrigin));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanObtainWritePermission_ContentSettingAllow) {
   // Note, chrome:// scheme is whitelisted. But we can't set default content
   // setting here because ALLOW is not an acceptable option.
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kChromeOrigin));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadGuardPermission) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadGuardPermission) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemReadGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
@@ -361,7 +359,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadGuardPermission) {
   EXPECT_FALSE(permission_context()->CanObtainReadPermission(kTestOrigin));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PolicyWriteGuardPermission) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemWriteGuardSetting,
@@ -370,7 +368,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
   EXPECT_FALSE(permission_context()->CanObtainWritePermission(kTestOrigin));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadAskForUrls) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadAskForUrls) {
   // Set the default to "block" so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemReadGuardSetting,
@@ -383,7 +381,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadAskForUrls) {
   EXPECT_FALSE(permission_context()->CanObtainReadPermission(kTestOrigin2));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadBlockedForUrls) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyReadBlockedForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedFileSystemReadBlockedForUrls,
                         base::JSONReader::ReadDeprecated(
@@ -393,7 +391,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyReadBlockedForUrls) {
   EXPECT_TRUE(permission_context()->CanObtainReadPermission(kTestOrigin2));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyWriteAskForUrls) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteAskForUrls) {
   // Set the default to "block" so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultFileSystemWriteGuardSetting,
@@ -406,7 +404,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyWriteAskForUrls) {
   EXPECT_FALSE(permission_context()->CanObtainWritePermission(kTestOrigin2));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyWriteBlockedForUrls) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteBlockedForUrls) {
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedFileSystemWriteBlockedForUrls,
                         base::JSONReader::ReadDeprecated(
@@ -416,13 +414,13 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, PolicyWriteBlockedForUrls) {
   EXPECT_TRUE(permission_context()->CanObtainWritePermission(kTestOrigin2));
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, GetLastPickedDirectory) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, GetLastPickedDirectory) {
   auto file_info = permission_context()->GetLastPickedDirectory(kTestOrigin);
   EXPECT_EQ(file_info.path, base::FilePath());
   EXPECT_EQ(file_info.type, PathType::kLocal);
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest, SetLastPickedDirectory) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest, SetLastPickedDirectory) {
   EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             base::FilePath());
 
@@ -441,7 +439,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest, SetLastPickedDirectory) {
   EXPECT_EQ(new_path_info.type, new_type);
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        SetLastPickedDirectory_NewPermissionContext) {
   EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             base::FilePath());
@@ -453,7 +451,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
   ASSERT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
             path);
 
-  TestNativeFileSystemPermissionContext new_permission_context(
+  TestFileSystemAccessPermissionContext new_permission_context(
       browser_context());
   EXPECT_EQ(new_permission_context.GetLastPickedDirectory(kTestOrigin).path,
             path);
@@ -465,7 +463,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
             new_path);
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetCommonDirectoryPath_Base_OK) {
   base::ScopedPathOverride user_desktop_override(
       base::DIR_USER_DESKTOP, temp_dir_.GetPath(), true, true);
@@ -474,7 +472,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
             temp_dir_.GetPath());
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetCommonDirectoryPath_Chrome_OK) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
@@ -483,7 +481,7 @@ TEST_F(ChromeNativeFileSystemPermissionContextTest,
             temp_dir_.GetPath());
 }
 
-TEST_F(ChromeNativeFileSystemPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetCommonDirectoryPath_Default) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);

@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "net/base/io_buffer.h"
@@ -105,9 +105,9 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
 
   FileSystemURL test_file_url_;
 
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> allow_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
   std::unique_ptr<NativeFileSystemFileHandleImpl> handle_;
 };

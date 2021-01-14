@@ -33,7 +33,7 @@ namespace {
 // the correct file system backend. This method checks if this is the case, and
 // updates `entry_path` to the path that should be used by the native file
 // system implementation.
-content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
+content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
     base::FilePath* entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath virtual_path;
@@ -41,10 +41,10 @@ content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
       storage::ExternalMountPoints::GetSystemInstance();
   if (external_mount_points->GetVirtualPath(*entry_path, &virtual_path)) {
     *entry_path = std::move(virtual_path);
-    return content::NativeFileSystemEntryFactory::PathType::kExternal;
+    return content::FileSystemAccessEntryFactory::PathType::kExternal;
   }
 #endif
-  return content::NativeFileSystemEntryFactory::PathType::kLocal;
+  return content::FileSystemAccessEntryFactory::PathType::kLocal;
 }
 
 }  // namespace

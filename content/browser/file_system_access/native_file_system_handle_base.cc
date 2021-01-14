@@ -48,7 +48,7 @@ NativeFileSystemHandleBase::NativeFileSystemHandleBase(
     BackForwardCache::DisableForRenderFrameHost(context_.frame_id,
                                                 "NativeFileSystem");
     if (web_contents())
-      web_contents()->IncrementNativeFileSystemHandleCount();
+      web_contents()->IncrementFileSystemAccessHandleCount();
   }
 }
 
@@ -56,7 +56,7 @@ NativeFileSystemHandleBase::~NativeFileSystemHandleBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (ShouldTrackUsage() && web_contents()) {
-    web_contents()->DecrementNativeFileSystemHandleCount();
+    web_contents()->DecrementFileSystemAccessHandleCount();
   }
 }
 
@@ -109,7 +109,7 @@ void NativeFileSystemHandleBase::DoRequestPermission(
   if (!writable) {
     handle_state_.read_grant->RequestPermission(
         context().frame_id,
-        NativeFileSystemPermissionGrant::UserActivationState::kRequired,
+        FileSystemAccessPermissionGrant::UserActivationState::kRequired,
         base::BindOnce(&NativeFileSystemHandleBase::DidRequestPermission,
                        AsWeakPtr(), writable, std::move(callback)));
     return;
@@ -124,13 +124,13 @@ void NativeFileSystemHandleBase::DoRequestPermission(
     // anyway.
     handle_state_.read_grant->RequestPermission(
         context().frame_id,
-        NativeFileSystemPermissionGrant::UserActivationState::kRequired,
+        FileSystemAccessPermissionGrant::UserActivationState::kRequired,
         base::DoNothing());
   }
 
   handle_state_.write_grant->RequestPermission(
       context().frame_id,
-      NativeFileSystemPermissionGrant::UserActivationState::kRequired,
+      FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(&NativeFileSystemHandleBase::DidRequestPermission,
                      AsWeakPtr(), writable, std::move(callback)));
 }
@@ -139,9 +139,9 @@ void NativeFileSystemHandleBase::DidRequestPermission(
     bool writable,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback,
-    NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome) {
+    FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  using Outcome = NativeFileSystemPermissionGrant::PermissionRequestOutcome;
+  using Outcome = FileSystemAccessPermissionGrant::PermissionRequestOutcome;
   switch (outcome) {
     case Outcome::kInvalidFrame:
     case Outcome::kThirdPartyContext:

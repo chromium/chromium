@@ -163,10 +163,10 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
   if (info.type == ContentSettingsType::NFC)
     return false;
 
-  // Display the File System write permission if the File System API is
-  // currently being used.
+  // Display the File System Access write permission if the File System Access
+  // API is currently being used.
   if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      web_contents->HasNativeFileSystemHandles()) {
+      web_contents->HasFileSystemAccessHandles()) {
     return true;
   }
 

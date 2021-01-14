@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_WRITE_ITEM_H_
-#define CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_WRITE_ITEM_H_
+#ifndef CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_WRITE_ITEM_H_
+#define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_WRITE_ITEM_H_
 
 #include <cstdint>
 #include <string>
@@ -20,11 +20,11 @@ class WebContents;
 // Represents the state of a NativeFileSystemFileWriter when it is closed,
 // containing all the data necessary to do a safe browsing download protection
 // check on the data written to disk.
-struct CONTENT_EXPORT NativeFileSystemWriteItem {
-  NativeFileSystemWriteItem();
-  ~NativeFileSystemWriteItem();
-  NativeFileSystemWriteItem(const NativeFileSystemWriteItem&) = delete;
-  NativeFileSystemWriteItem& operator=(const NativeFileSystemWriteItem&) =
+struct CONTENT_EXPORT FileSystemAccessWriteItem {
+  FileSystemAccessWriteItem();
+  ~FileSystemAccessWriteItem();
+  FileSystemAccessWriteItem(const FileSystemAccessWriteItem&) = delete;
+  FileSystemAccessWriteItem& operator=(const FileSystemAccessWriteItem&) =
       delete;
 
   // The path on disk where the data will eventually end up.
@@ -45,7 +45,7 @@ struct CONTENT_EXPORT NativeFileSystemWriteItem {
 
   // BrowserContext and WebContents the writer is associated with. These fields
   // can be nullptr when calling
-  // NativeFileSystemPermissionContext::PerformSafeBrowsingChecks(), in which
+  // FileSystemAccessPermissionContext::PerformSafeBrowsingChecks(), in which
   // case they will be filled by that method.
   WebContents* web_contents = nullptr;
   BrowserContext* browser_context = nullptr;
@@ -53,4 +53,4 @@ struct CONTENT_EXPORT NativeFileSystemWriteItem {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_WRITE_ITEM_H_
+#endif  // CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_WRITE_ITEM_H_

@@ -93,7 +93,7 @@ DownloadRequestMaker::DownloadRequestMaker(
 DownloadRequestMaker::DownloadRequestMaker(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
     DownloadProtectionService* service,
-    const content::NativeFileSystemWriteItem& item)
+    const content::FileSystemAccessWriteItem& item)
     : browser_context_(item.browser_context),
       request_(std::make_unique<ClientDownloadRequest>()),
       binary_feature_extractor_(binary_feature_extractor),

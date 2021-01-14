@@ -33,7 +33,7 @@ namespace content {
 //
 // This class is not thread safe, all methods must be called from the same
 // sequence. That sequence also has to be the same sequence on which the
-// NativeFileSystemPermissionContext expects to be interacted with, which
+// FileSystemAccessPermissionContext expects to be interacted with, which
 // is the UI thread.
 class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
  public:
@@ -187,7 +187,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
       bool writable,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback,
-      NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome);
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome);
 
   bool ShouldTrackUsage() const {
     return url_.type() != storage::kFileSystemTypeTemporary &&

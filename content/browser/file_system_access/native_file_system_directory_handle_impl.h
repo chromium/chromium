@@ -105,7 +105,7 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(
       const std::string& basename,
       const storage::FileSystemURL& url,
-      NativeFileSystemPermissionContext::HandleType handle_type);
+      FileSystemAccessPermissionContext::HandleType handle_type);
 
   base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() override;
 

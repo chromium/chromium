@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -26,7 +26,7 @@ class Widget;
 // native file system API.
 class NativeFileSystemPermissionView : public views::DialogDelegateView {
  public:
-  using Request = NativeFileSystemPermissionRequestManager::RequestData;
+  using Request = FileSystemAccessPermissionRequestManager::RequestData;
 
   ~NativeFileSystemPermissionView() override;
 

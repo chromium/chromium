@@ -15,8 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
-#include "content/browser/file_system_access/mock_native_file_system_permission_context.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/native_file_system_directory_handle_impl.h"
 #include "content/browser/file_system_access/native_file_system_drag_drop_token_impl.h"
 #include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
@@ -114,9 +114,9 @@ constexpr char kTestMountPoint[] = "testfs";
 
 using base::test::RunOnceCallback;
 using blink::mojom::PermissionStatus;
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
-using PathType = content::NativeFileSystemPermissionContext::PathType;
-using PathInfo = content::NativeFileSystemPermissionContext::PathInfo;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
+using PathType = content::FileSystemAccessPermissionContext::PathType;
+using PathInfo = content::FileSystemAccessPermissionContext::PathInfo;
 
 class NativeFileSystemManagerImplTest : public testing::Test {
  public:
@@ -175,24 +175,24 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>
   GetHandleForDirectory(const base::FilePath& path) {
-    auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-        FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED, path);
+    auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+        FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path);
 
     EXPECT_CALL(permission_context_,
                 GetReadPermissionGrant(
                     kTestOrigin, path, HandleType::kDirectory,
-                    NativeFileSystemPermissionContext::UserAction::kOpen))
+                    FileSystemAccessPermissionContext::UserAction::kOpen))
         .WillOnce(testing::Return(grant));
     EXPECT_CALL(permission_context_,
                 GetWritePermissionGrant(
                     kTestOrigin, path, HandleType::kDirectory,
-                    NativeFileSystemPermissionContext::UserAction::kOpen))
+                    FileSystemAccessPermissionContext::UserAction::kOpen))
         .WillOnce(testing::Return(grant));
 
     blink::mojom::FileSystemAccessEntryPtr entry =
         manager_->CreateDirectoryEntryFromPath(
-            kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
-            path, NativeFileSystemPermissionContext::UserAction::kOpen);
+            kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
+            path, FileSystemAccessPermissionContext::UserAction::kOpen);
     return mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>(
         std::move(entry->entry_handle->get_directory()));
   }
@@ -228,7 +228,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   void GetEntryFromDropTokenFileTest(
       const base::FilePath& file_path,
-      NativeFileSystemEntryFactory::PathType path_type,
+      FileSystemAccessEntryFactory::PathType path_type,
       const std::string& expected_file_contents) {
     // Create a token representing a dropped file at `file_path`.
     mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
@@ -242,14 +242,14 @@ class NativeFileSystemManagerImplTest : public testing::Test {
         permission_context_,
         GetReadPermissionGrant(
             kTestOrigin, file_path, HandleType::kFile,
-            NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
         .WillOnce(testing::Return(allow_grant_));
 
     EXPECT_CALL(
         permission_context_,
         GetWritePermissionGrant(
             kTestOrigin, file_path, HandleType::kFile,
-            NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
         .WillOnce(testing::Return(allow_grant_));
 
     // Attempt to resolve `token_remote` and store the resulting
@@ -279,7 +279,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   void GetEntryFromDropTokenDirectoryTest(
       const base::FilePath& dir_path,
-      NativeFileSystemEntryFactory::PathType path_type,
+      FileSystemAccessEntryFactory::PathType path_type,
       const std::string& expected_child_file_name) {
     mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
         token_remote;
@@ -292,14 +292,14 @@ class NativeFileSystemManagerImplTest : public testing::Test {
         permission_context_,
         GetReadPermissionGrant(
             kTestOrigin, dir_path, HandleType::kDirectory,
-            NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
         .WillOnce(testing::Return(allow_grant_));
 
     EXPECT_CALL(
         permission_context_,
         GetWritePermissionGrant(
             kTestOrigin, dir_path, HandleType::kDirectory,
-            NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
         .WillOnce(testing::Return(allow_grant_));
 
     // Attempt to resolve `token_remote` and store the resulting
@@ -357,22 +357,22 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   WebContents* web_contents_;
 
-  testing::StrictMock<MockNativeFileSystemPermissionContext>
+  testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;
   scoped_refptr<NativeFileSystemManagerImpl> manager_;
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> ask_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> ask_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::ASK,
           base::FilePath());
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> ask_grant2_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> ask_grant2_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::ASK,
           base::FilePath());
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> allow_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
 };
 
@@ -404,18 +404,18 @@ TEST_F(NativeFileSystemManagerImplTest, CreateFileEntryFromPath_Permissions) {
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(ask_grant_));
 
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
-          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
+          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -432,18 +432,18 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
 
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
-          kTestPath, NativeFileSystemPermissionContext::UserAction::kSave);
+          kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
+          kTestPath, FileSystemAccessPermissionContext::UserAction::kSave);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -460,18 +460,18 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(ask_grant_));
 
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateDirectoryEntryFromPath(
-          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
-          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
+          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> handle(
       std::move(entry->entry_handle->get_directory()));
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -546,7 +546,7 @@ TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
   EXPECT_CALL(permission_context_,
               PerformAfterWriteChecks_(testing::_, kFrameId, testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(
-          NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow));
+          FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
 
   // Severs the mojo pipe, but the writer should not be destroyed.
   writer_remote.reset();
@@ -622,7 +622,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_CALL(permission_context_,
               PerformAfterWriteChecks_(testing::_, kFrameId, testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(
-          NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow));
+          FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
 
   // Severs the mojo pipe. Since autoClose was specified, the Writer will not be
   // destroyed until the file is written out.
@@ -691,26 +691,26 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_SandboxedDirectory) {
 TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
   const base::FilePath kTestPath(dir_.GetPath().AppendASCII("foo"));
 
-  auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-      FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
       kTestPath);
 
   // Expect calls to get grants when creating the initial handle.
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
 
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
-          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, FileSystemAccessEntryFactory::PathType::kLocal,
+          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -722,13 +722,13 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
       permission_context_,
       GetReadPermissionGrant(
           kTestOrigin, kTestPath, HandleType::kFile,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant_));
   EXPECT_CALL(
       permission_context_,
       GetWritePermissionGrant(
           kTestOrigin, kTestPath, HandleType::kFile,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant2_));
 
   NativeFileSystemTransferTokenImpl* token =
@@ -758,13 +758,13 @@ TEST_F(NativeFileSystemManagerImplTest,
       permission_context_,
       GetReadPermissionGrant(
           kTestOrigin, kTestPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant_));
   EXPECT_CALL(
       permission_context_,
       GetWritePermissionGrant(
           kTestOrigin, kTestPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant2_));
 
   NativeFileSystemTransferTokenImpl* token =
@@ -813,13 +813,13 @@ TEST_F(NativeFileSystemManagerImplTest,
       permission_context_,
       GetReadPermissionGrant(
           kTestOrigin, kDirectoryPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant_));
   EXPECT_CALL(
       permission_context_,
       GetWritePermissionGrant(
           kTestOrigin, kDirectoryPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant2_));
 
   NativeFileSystemTransferTokenImpl* token =
@@ -869,13 +869,13 @@ TEST_F(NativeFileSystemManagerImplTest,
       permission_context_,
       GetReadPermissionGrant(
           kTestOrigin, kDirectoryPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant_));
   EXPECT_CALL(
       permission_context_,
       GetWritePermissionGrant(
           kTestOrigin, kDirectoryPath, HandleType::kDirectory,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant2_));
 
   NativeFileSystemTransferTokenImpl* token =
@@ -895,26 +895,26 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_ExternalFile) {
   const base::FilePath kTestPath =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
 
-  auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-      FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
       kTestPath);
 
   // Expect calls to get grants when creating the initial handle.
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
 
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
-          kBindingContext, NativeFileSystemEntryFactory::PathType::kExternal,
-          kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
+          kBindingContext, FileSystemAccessEntryFactory::PathType::kExternal,
+          kTestPath, FileSystemAccessPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -926,13 +926,13 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_ExternalFile) {
       permission_context_,
       GetReadPermissionGrant(
           kTestOrigin, kTestPath, HandleType::kFile,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant_));
   EXPECT_CALL(
       permission_context_,
       GetWritePermissionGrant(
           kTestOrigin, kTestPath, HandleType::kFile,
-          NativeFileSystemPermissionContext::UserAction::kLoadFromStorage))
+          FileSystemAccessPermissionContext::UserAction::kLoadFromStorage))
       .WillOnce(testing::Return(ask_grant2_));
 
   NativeFileSystemTransferTokenImpl* token =
@@ -959,7 +959,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   ASSERT_TRUE(base::WriteFile(file_path, file_contents));
 
   GetEntryFromDropTokenFileTest(
-      file_path, NativeFileSystemEntryFactory::PathType::kLocal, file_contents);
+      file_path, FileSystemAccessEntryFactory::PathType::kLocal, file_contents);
 }
 
 // NativeFileSystemManager should successfully resolve a
@@ -976,7 +976,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   ASSERT_TRUE(base::WriteFile(dir_path.AppendASCII(child_file_name), ""));
 
   GetEntryFromDropTokenDirectoryTest(
-      dir_path, NativeFileSystemEntryFactory::PathType::kLocal,
+      dir_path, FileSystemAccessEntryFactory::PathType::kLocal,
       child_file_name);
 }
 
@@ -996,7 +996,7 @@ TEST_F(NativeFileSystemManagerImplTest,
           .Append(file_path.BaseName());
 
   GetEntryFromDropTokenFileTest(
-      virtual_file_path, NativeFileSystemEntryFactory::PathType::kExternal,
+      virtual_file_path, FileSystemAccessEntryFactory::PathType::kExternal,
       file_contents);
 }
 
@@ -1018,7 +1018,7 @@ TEST_F(NativeFileSystemManagerImplTest,
           .Append(dir_path.BaseName());
 
   GetEntryFromDropTokenDirectoryTest(
-      virtual_dir_path, NativeFileSystemEntryFactory::PathType::kExternal,
+      virtual_dir_path, FileSystemAccessEntryFactory::PathType::kExternal,
       child_file_name);
 }
 
@@ -1035,7 +1035,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   // process attempting to redeem to the token.
   mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   manager_->CreateNativeFileSystemDragDropToken(
-      NativeFileSystemEntryFactory::PathType::kLocal, file_path,
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path,
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -1061,7 +1061,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   // process attempting to redeem to the token.
   mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   manager_->CreateNativeFileSystemDragDropToken(
-      NativeFileSystemEntryFactory::PathType::kLocal, kDirPath,
+      FileSystemAccessEntryFactory::PathType::kLocal, kDirPath,
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -1087,7 +1087,7 @@ TEST_F(NativeFileSystemManagerImplTest,
   mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   auto drag_drop_token_impl =
       std::make_unique<NativeFileSystemDragDropTokenImpl>(
-          manager_.get(), NativeFileSystemEntryFactory::PathType::kLocal,
+          manager_.get(), FileSystemAccessEntryFactory::PathType::kLocal,
           kDirPath, kBindingContext.process_id(),
           token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -1135,23 +1135,23 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
   EXPECT_CALL(
       permission_context_,
       ConfirmSensitiveDirectoryAccess_(
-          kTestOrigin, NativeFileSystemPermissionContext::PathType::kLocal,
-          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
+          kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
+          test_file, FileSystemAccessPermissionContext::HandleType::kFile,
           web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(NativeFileSystemPermissionContext::
+      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
 
   base::RunLoop loop;
@@ -1202,23 +1202,23 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
   EXPECT_CALL(
       permission_context_,
       ConfirmSensitiveDirectoryAccess_(
-          kTestOrigin, NativeFileSystemPermissionContext::PathType::kLocal,
-          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
+          kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
+          test_file, FileSystemAccessPermissionContext::HandleType::kFile,
           web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(NativeFileSystemPermissionContext::
+      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, test_file,
-                  NativeFileSystemPermissionContext::HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kSave))
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
 
   base::RunLoop loop;
@@ -1265,23 +1265,23 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
   EXPECT_CALL(
       permission_context_,
       ConfirmSensitiveDirectoryAccess_(
-          kTestOrigin, NativeFileSystemPermissionContext::PathType::kLocal,
-          test_dir, NativeFileSystemPermissionContext::HandleType::kDirectory,
+          kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
+          test_dir, FileSystemAccessPermissionContext::HandleType::kDirectory,
           web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(NativeFileSystemPermissionContext::
+      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, test_dir,
-                  NativeFileSystemPermissionContext::HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
 
   base::RunLoop loop;

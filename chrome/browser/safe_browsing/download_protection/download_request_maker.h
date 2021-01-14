@@ -12,7 +12,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#include "content/public/browser/native_file_system_write_item.h"
+#include "content/public/browser/file_system_access_write_item.h"
 
 namespace safe_browsing {
 
@@ -37,7 +37,7 @@ class DownloadRequestMaker {
   DownloadRequestMaker(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
       DownloadProtectionService* service,
-      const content::NativeFileSystemWriteItem& item);
+      const content::FileSystemAccessWriteItem& item);
   ~DownloadRequestMaker();
 
   // Starts filling in fields in the download ping. Will run the callback with

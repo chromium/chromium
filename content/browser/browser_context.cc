@@ -625,8 +625,8 @@ SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList() {
   return empty_list->get();
 }
 
-NativeFileSystemPermissionContext*
-BrowserContext::GetNativeFileSystemPermissionContext() {
+FileSystemAccessPermissionContext*
+BrowserContext::GetFileSystemAccessPermissionContext() {
   return nullptr;
 }
 

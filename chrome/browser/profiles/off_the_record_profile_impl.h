@@ -130,8 +130,8 @@ class OffTheRecordProfileImpl : public Profile {
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure) override;
   content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
-  content::NativeFileSystemPermissionContext*
-  GetNativeFileSystemPermissionContext() override;
+  content::FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext() override;
   void RecordMainFrameNavigation() override;
 
  protected:

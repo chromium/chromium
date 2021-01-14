@@ -12,8 +12,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/label_button.h"
 
-using AccessType = NativeFileSystemPermissionRequestManager::Access;
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+using AccessType = FileSystemAccessPermissionRequestManager::Access;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 class NativeFileSystemPermissionViewTest : public DialogBrowserTest {
  public:

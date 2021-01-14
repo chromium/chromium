@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/native_file_system_dialogs.h"
+#include "chrome/browser/ui/file_system_access_dialogs.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -14,22 +14,22 @@
 namespace {
 
 bool RequestsAreIdentical(
-    const NativeFileSystemPermissionRequestManager::RequestData& a,
-    const NativeFileSystemPermissionRequestManager::RequestData& b) {
+    const FileSystemAccessPermissionRequestManager::RequestData& a,
+    const FileSystemAccessPermissionRequestManager::RequestData& b) {
   return a.origin == b.origin && a.path == b.path &&
          a.handle_type == b.handle_type && a.access == b.access;
 }
 
 bool RequestsAreForSamePath(
-    const NativeFileSystemPermissionRequestManager::RequestData& a,
-    const NativeFileSystemPermissionRequestManager::RequestData& b) {
+    const FileSystemAccessPermissionRequestManager::RequestData& a,
+    const FileSystemAccessPermissionRequestManager::RequestData& b) {
   return a.origin == b.origin && a.path == b.path &&
          a.handle_type == b.handle_type;
 }
 
 }  // namespace
 
-struct NativeFileSystemPermissionRequestManager::Request {
+struct FileSystemAccessPermissionRequestManager::Request {
   Request(
       RequestData data,
       base::OnceCallback<void(permissions::PermissionAction result)> callback,
@@ -45,10 +45,10 @@ struct NativeFileSystemPermissionRequestManager::Request {
   std::vector<base::ScopedClosureRunner> fullscreen_blocks;
 };
 
-NativeFileSystemPermissionRequestManager::
-    ~NativeFileSystemPermissionRequestManager() = default;
+FileSystemAccessPermissionRequestManager::
+    ~FileSystemAccessPermissionRequestManager() = default;
 
-void NativeFileSystemPermissionRequestManager::AddRequest(
+void FileSystemAccessPermissionRequestManager::AddRequest(
     RequestData data,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     base::ScopedClosureRunner fullscreen_block) {
@@ -86,29 +86,29 @@ void NativeFileSystemPermissionRequestManager::AddRequest(
     ScheduleShowRequest();
 }
 
-NativeFileSystemPermissionRequestManager::
-    NativeFileSystemPermissionRequestManager(content::WebContents* web_contents)
+FileSystemAccessPermissionRequestManager::
+    FileSystemAccessPermissionRequestManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-bool NativeFileSystemPermissionRequestManager::CanShowRequest() const {
+bool FileSystemAccessPermissionRequestManager::CanShowRequest() const {
   // Deley showing requests until the main frame is fully loaded.
   // ScheduleShowRequest() will be called again when that happens.
   return main_frame_has_fully_loaded_ && !queued_requests_.empty() &&
          !current_request_;
 }
 
-void NativeFileSystemPermissionRequestManager::ScheduleShowRequest() {
+void FileSystemAccessPermissionRequestManager::ScheduleShowRequest() {
   if (!CanShowRequest())
     return;
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &NativeFileSystemPermissionRequestManager::DequeueAndShowRequest,
+          &FileSystemAccessPermissionRequestManager::DequeueAndShowRequest,
           weak_factory_.GetWeakPtr()));
 }
 
-void NativeFileSystemPermissionRequestManager::DequeueAndShowRequest() {
+void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
   if (!CanShowRequest())
     return;
 
@@ -120,15 +120,15 @@ void NativeFileSystemPermissionRequestManager::DequeueAndShowRequest() {
     return;
   }
 
-  ShowNativeFileSystemPermissionDialog(
+  ShowFileSystemAccessPermissionDialog(
       current_request_->data,
       base::BindOnce(
-          &NativeFileSystemPermissionRequestManager::OnPermissionDialogResult,
+          &FileSystemAccessPermissionRequestManager::OnPermissionDialogResult,
           weak_factory_.GetWeakPtr()),
       web_contents());
 }
 
-void NativeFileSystemPermissionRequestManager::
+void FileSystemAccessPermissionRequestManager::
     DocumentOnLoadCompletedInMainFrame() {
   main_frame_has_fully_loaded_ = true;
   // This is scheduled because while all calls to the browser have been
@@ -140,7 +140,7 @@ void NativeFileSystemPermissionRequestManager::
     ScheduleShowRequest();
 }
 
-void NativeFileSystemPermissionRequestManager::OnPermissionDialogResult(
+void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
     permissions::PermissionAction result) {
   DCHECK(current_request_);
   for (auto& callback : current_request_->callbacks)
@@ -150,4 +150,4 @@ void NativeFileSystemPermissionRequestManager::OnPermissionDialogResult(
     ScheduleShowRequest();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NativeFileSystemPermissionRequestManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager)

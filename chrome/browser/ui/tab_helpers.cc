@@ -27,6 +27,8 @@
 #include "chrome/browser/engagement/site_engagement_helper.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -37,8 +39,6 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
 #include "chrome/browser/metrics/oom/out_of_memory_reporter.h"
 #include "chrome/browser/metrics/renderer_uptime_web_contents_observer.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
-#include "chrome/browser/native_file_system/native_file_system_tab_helper.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/optimization_guide/blink/blink_optimization_guide_web_contents_observer.h"
@@ -258,6 +258,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   DataReductionProxyTabHelper::CreateForWebContents(web_contents);
   ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
+  FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
+  FileSystemAccessTabHelper::CreateForWebContents(web_contents);
   FindBarState::ConfigureWebContents(web_contents);
   download::DownloadNavigationObserver::CreateForWebContents(
       web_contents,
@@ -283,8 +285,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   metrics::RendererUptimeWebContentsObserver::CreateForWebContents(
       web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
-  NativeFileSystemPermissionRequestManager::CreateForWebContents(web_contents);
-  NativeFileSystemTabHelper::CreateForWebContents(web_contents);
   NavigationMetricsRecorder::CreateForWebContents(web_contents);
   NavigationPredictorPreconnectClient::CreateForWebContents(web_contents);
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {

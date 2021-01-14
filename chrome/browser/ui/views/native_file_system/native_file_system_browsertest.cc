@@ -10,9 +10,9 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
-#include "chrome/browser/native_file_system/origin_scoped_native_file_system_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/file_system_access/origin_scoped_file_system_access_permission_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, OpenFile) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
   EXPECT_FALSE(IsUsageIndicatorVisible());
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, FullscreenOpenFile) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SafeBrowsing) {
       &expected_hash));
   std::string expected_url =
       "blob:" + embedded_test_server()->base_url().spec() +
-      "native-file-system-write";
+      "file-system-access-write";
   GURL frame_url = embedded_test_server()->GetURL("/title1.html");
 
   ui::SelectFileDialog::SetFactory(
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SafeBrowsing) {
       g_browser_process->safe_browsing_service();
   base::CallbackListSubscription subscription =
       sb_service->download_protection_service()
-          ->RegisterNativeFileSystemWriteRequestCallback(
+          ->RegisterFileSystemAccessWriteRequestCallback(
               base::BindLambdaForTesting(
                   [&](const ClientDownloadRequest* request) {
                     invoked_safe_browsing = true;
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
       CONTENT_SETTING_ALLOW);
 
   // If a prompt shows up, deny it.
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
       CONTENT_SETTING_ALLOW);
 
   // If a prompt shows up, deny it.
-  NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
                                https_server.GetURL("b.com", "/title1.html"));
   content::WebContents* first_party_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  NativeFileSystemPermissionRequestManager::FromWebContents(
+  FileSystemAccessPermissionRequestManager::FromWebContents(
       first_party_web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
@@ -579,8 +579,8 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // Even after triggering the timer in the permission context.
-  static_cast<OriginScopedNativeFileSystemPermissionContext*>(
-      NativeFileSystemPermissionContextFactory::GetForProfile(profile))
+  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
       ->TriggerTimersForTesting();
   EXPECT_EQ("granted",
             content::EvalJs(third_party_iframe,
@@ -596,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // But after triggering the timer in the permission context ...
-  static_cast<OriginScopedNativeFileSystemPermissionContext*>(
-      NativeFileSystemPermissionContextFactory::GetForProfile(profile))
+  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
       ->TriggerTimersForTesting();
 
   // ... permission should have been revoked.
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
                                https_server.GetURL("b.com", "/title1.html"));
   content::WebContents* first_party_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  NativeFileSystemPermissionRequestManager::FromWebContents(
+  FileSystemAccessPermissionRequestManager::FromWebContents(
       first_party_web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
@@ -704,8 +704,8 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // But after triggering the timer in the permission context ...
-  static_cast<OriginScopedNativeFileSystemPermissionContext*>(
-      NativeFileSystemPermissionContextFactory::GetForProfile(profile))
+  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
       ->TriggerTimersForTesting();
 
   // ... permission should have been revoked.
@@ -773,7 +773,7 @@ class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
     // Write permissions are granted to the test WebUI with WebUIAllowlist in
     // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
     // auto-deny them if they show up.
-    NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+    FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
     // Open the dialog and choose the file.
@@ -806,7 +806,7 @@ class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
     // Write permissions are granted to the test WebUI with WebUIAllowlist in
     // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
     // auto-deny them if they show up.
-    NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+    FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
     // Open the dialog and choose the directory.

@@ -75,9 +75,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/dom_storage_context.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/font_access_context.h"
 #include "content/public/browser/login_delegate.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_process_host.h"
@@ -1205,7 +1205,7 @@ void StoragePartitionImpl::Initialize(
   native_file_system_manager_ =
       base::MakeRefCounted<NativeFileSystemManagerImpl>(
           filesystem_context_, blob_context,
-          browser_context_->GetNativeFileSystemPermissionContext(),
+          browser_context_->GetFileSystemAccessPermissionContext(),
           browser_context_->IsOffTheRecord());
 
   mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
@@ -1477,8 +1477,8 @@ IndexedDBContextImpl* StoragePartitionImpl::GetIndexedDBContextInternal() {
   return indexed_db_control_wrapper_->GetIndexedDBContextInternal();
 }
 
-NativeFileSystemEntryFactory*
-StoragePartitionImpl::GetNativeFileSystemEntryFactory() {
+FileSystemAccessEntryFactory*
+StoragePartitionImpl::GetFileSystemAccessEntryFactory() {
   DCHECK(initialized_);
   return native_file_system_manager_.get();
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
 #include <string>
 #include <utility>
@@ -17,11 +17,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
-#include "chrome/browser/native_file_system/native_file_system_permission_request_manager.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/ui/native_file_system_dialogs.h"
+#include "chrome/browser/ui/file_system_access_dialogs.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -34,25 +34,25 @@
 
 namespace {
 
-using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 // Dictionary keys for the FILE_SYSTEM_LAST_PICKED_DIRECTORY website setting.
 const char kLastPickedDirectoryKey[] = "default-path";
 const char kLastPickedDirectoryTypeKey[] = "default-path-type";
 
-void ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread(
+void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalFrameRoutingId frame_id,
     const url::Origin& origin,
     const base::FilePath& path,
     HandleType handle_type,
     base::OnceCallback<
-        void(ChromeNativeFileSystemPermissionContext::SensitiveDirectoryResult)>
+        void(ChromeFileSystemAccessPermissionContext::SensitiveDirectoryResult)>
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsCurrent()) {
     // Requested from a no longer valid render frame host.
-    std::move(callback).Run(ChromeNativeFileSystemPermissionContext::
+    std::move(callback).Run(ChromeFileSystemAccessPermissionContext::
                                 SensitiveDirectoryResult::kAbort);
     return;
   }
@@ -61,12 +61,12 @@ void ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread(
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     // Requested from a worker, or a no longer existing tab.
-    std::move(callback).Run(ChromeNativeFileSystemPermissionContext::
+    std::move(callback).Run(ChromeFileSystemAccessPermissionContext::
                                 SensitiveDirectoryResult::kAbort);
     return;
   }
 
-  ShowNativeFileSystemRestrictedDirectoryDialog(
+  ShowFileSystemAccessRestrictedDirectoryDialog(
       origin, path, handle_type, std::move(callback), web_contents);
 }
 
@@ -234,7 +234,7 @@ BindResultCallbackToCurrentSequence(
 
 void DoSafeBrowsingCheckOnUIThread(
     content::GlobalFrameRoutingId frame_id,
-    std::unique_ptr<content::NativeFileSystemWriteItem> item,
+    std::unique_ptr<content::FileSystemAccessWriteItem> item,
     safe_browsing::CheckDownloadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Download Protection Service is not supported on Android.
@@ -263,12 +263,12 @@ void DoSafeBrowsingCheckOnUIThread(
       item->web_contents = content::WebContents::FromRenderFrameHost(rfh);
   }
 
-  sb_service->download_protection_service()->CheckNativeFileSystemWrite(
+  sb_service->download_protection_service()->CheckFileSystemAccessWrite(
       std::move(item), std::move(callback));
 #endif
 }
 
-ChromeNativeFileSystemPermissionContext::AfterWriteCheckResult
+ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult
 InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
   switch (result) {
@@ -278,7 +278,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::UNKNOWN:
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
-      return ChromeNativeFileSystemPermissionContext::AfterWriteCheckResult::
+      return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kAllow;
 
     case Result::DANGEROUS:
@@ -288,44 +288,44 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::BLOCKED_PASSWORD_PROTECTED:
     case Result::BLOCKED_TOO_LARGE:
     case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
-      return ChromeNativeFileSystemPermissionContext::AfterWriteCheckResult::
+      return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kBlock;
 
-    // This shouldn't be returned for Native File System write checks.
+    // This shouldn't be returned for File System Access write checks.
     case Result::ASYNC_SCANNING:
     case Result::SENSITIVE_CONTENT_WARNING:
     case Result::SENSITIVE_CONTENT_BLOCK:
     case Result::DEEP_SCANNED_SAFE:
     case Result::PROMPT_FOR_SCANNING:
       NOTREACHED();
-      return ChromeNativeFileSystemPermissionContext::AfterWriteCheckResult::
+      return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kAllow;
   }
   NOTREACHED();
-  return ChromeNativeFileSystemPermissionContext::AfterWriteCheckResult::kBlock;
+  return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock;
 }
 
 }  // namespace
 
-ChromeNativeFileSystemPermissionContext::Grants::Grants() = default;
-ChromeNativeFileSystemPermissionContext::Grants::~Grants() = default;
-ChromeNativeFileSystemPermissionContext::Grants::Grants(Grants&&) = default;
-ChromeNativeFileSystemPermissionContext::Grants&
-ChromeNativeFileSystemPermissionContext::Grants::operator=(Grants&&) = default;
+ChromeFileSystemAccessPermissionContext::Grants::Grants() = default;
+ChromeFileSystemAccessPermissionContext::Grants::~Grants() = default;
+ChromeFileSystemAccessPermissionContext::Grants::Grants(Grants&&) = default;
+ChromeFileSystemAccessPermissionContext::Grants&
+ChromeFileSystemAccessPermissionContext::Grants::operator=(Grants&&) = default;
 
-ChromeNativeFileSystemPermissionContext::
-    ChromeNativeFileSystemPermissionContext(content::BrowserContext* context) {
+ChromeFileSystemAccessPermissionContext::
+    ChromeFileSystemAccessPermissionContext(content::BrowserContext* context) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   auto* profile = Profile::FromBrowserContext(context);
   content_settings_ = base::WrapRefCounted(
       HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
-ChromeNativeFileSystemPermissionContext::
-    ~ChromeNativeFileSystemPermissionContext() = default;
+ChromeFileSystemAccessPermissionContext::
+    ~ChromeFileSystemAccessPermissionContext() = default;
 
 ContentSetting
-ChromeNativeFileSystemPermissionContext::GetWriteGuardContentSetting(
+ChromeFileSystemAccessPermissionContext::GetWriteGuardContentSetting(
     const url::Origin& origin) {
   return content_settings()->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
@@ -333,26 +333,26 @@ ChromeNativeFileSystemPermissionContext::GetWriteGuardContentSetting(
 }
 
 ContentSetting
-ChromeNativeFileSystemPermissionContext::GetReadGuardContentSetting(
+ChromeFileSystemAccessPermissionContext::GetReadGuardContentSetting(
     const url::Origin& origin) {
   return content_settings()->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_READ_GUARD);
 }
 
-bool ChromeNativeFileSystemPermissionContext::CanObtainReadPermission(
+bool ChromeFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
   return GetReadGuardContentSetting(origin) == CONTENT_SETTING_ASK ||
          GetReadGuardContentSetting(origin) == CONTENT_SETTING_ALLOW;
 }
 
-bool ChromeNativeFileSystemPermissionContext::CanObtainWritePermission(
+bool ChromeFileSystemAccessPermissionContext::CanObtainWritePermission(
     const url::Origin& origin) {
   return GetWriteGuardContentSetting(origin) == CONTENT_SETTING_ASK ||
          GetWriteGuardContentSetting(origin) == CONTENT_SETTING_ALLOW;
 }
 
-void ChromeNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
+void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
     const url::Origin& origin,
     PathType path_type,
     const base::FilePath& path,
@@ -374,14 +374,14 @@ void ChromeNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, path, handle_type),
-      base::BindOnce(&ChromeNativeFileSystemPermissionContext::
+      base::BindOnce(&ChromeFileSystemAccessPermissionContext::
                          DidConfirmSensitiveDirectoryAccess,
                      GetWeakPtr(), origin, path, handle_type, frame_id,
                      std::move(callback)));
 }
 
-void ChromeNativeFileSystemPermissionContext::PerformAfterWriteChecks(
-    std::unique_ptr<content::NativeFileSystemWriteItem> item,
+void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
+    std::unique_ptr<content::FileSystemAccessWriteItem> item,
     content::GlobalFrameRoutingId frame_id,
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -402,7 +402,7 @@ void ChromeNativeFileSystemPermissionContext::PerformAfterWriteChecks(
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ChromeNativeFileSystemPermissionContext::
+void ChromeFileSystemAccessPermissionContext::
     DidConfirmSensitiveDirectoryAccess(
         const url::Origin& origin,
         const base::FilePath& path,
@@ -421,24 +421,24 @@ void ChromeNativeFileSystemPermissionContext::
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread,
+      base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
                      frame_id, origin, path, handle_type,
                      std::move(result_callback)));
 }
 
-bool ChromeNativeFileSystemPermissionContext::OriginHasReadAccess(
+bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
   NOTREACHED();
   return false;
 }
 
-bool ChromeNativeFileSystemPermissionContext::OriginHasWriteAccess(
+bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
   NOTREACHED();
   return false;
 }
 
-void ChromeNativeFileSystemPermissionContext::SetLastPickedDirectory(
+void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const url::Origin& origin,
     const base::FilePath& path,
     const PathType type) {
@@ -452,8 +452,8 @@ void ChromeNativeFileSystemPermissionContext::SetLastPickedDirectory(
       base::Value::ToUniquePtrValue(std::move(dict)));
 }
 
-ChromeNativeFileSystemPermissionContext::PathInfo
-ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
+ChromeFileSystemAccessPermissionContext::PathInfo
+ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin) {
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
@@ -475,7 +475,7 @@ ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
   return path_info;
 }
 
-base::FilePath ChromeNativeFileSystemPermissionContext::GetCommonDirectoryPath(
+base::FilePath ChromeFileSystemAccessPermissionContext::GetCommonDirectoryPath(
     blink::mojom::CommonDirectory directory) {
   int key = base::PATH_START;
   switch (directory) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_TAB_HELPER_H_
-#define CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TAB_HELPER_H_
+#define CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TAB_HELPER_H_
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -12,11 +12,11 @@
 // destroyed, informing the permission context when an origin is navigated away
 // from. This is then used by the permission context to revoke permissions when
 // no top level tabs remain for an origin.
-class NativeFileSystemTabHelper
+class FileSystemAccessTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<NativeFileSystemTabHelper> {
+      public content::WebContentsUserData<FileSystemAccessTabHelper> {
  public:
-  ~NativeFileSystemTabHelper() override;
+  ~FileSystemAccessTabHelper() override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -24,11 +24,11 @@ class NativeFileSystemTabHelper
   void WebContentsDestroyed() override;
 
  private:
-  explicit NativeFileSystemTabHelper(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<NativeFileSystemTabHelper>;
+  explicit FileSystemAccessTabHelper(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<FileSystemAccessTabHelper>;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemTabHelper);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessTabHelper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TAB_HELPER_H_

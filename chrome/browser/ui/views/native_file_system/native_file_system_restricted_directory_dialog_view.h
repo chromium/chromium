@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace base {
@@ -32,7 +32,7 @@ class NativeFileSystemRestrictedDirectoryDialogView
     : public views::DialogDelegateView {
  public:
   using SensitiveDirectoryResult =
-      content::NativeFileSystemPermissionContext::SensitiveDirectoryResult;
+      content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
   ~NativeFileSystemRestrictedDirectoryDialogView() override;
 
@@ -41,7 +41,7 @@ class NativeFileSystemRestrictedDirectoryDialogView
   static views::Widget* ShowDialog(
       const url::Origin& origin,
       const base::FilePath& path,
-      content::NativeFileSystemPermissionContext::HandleType handle_type,
+      content::FileSystemAccessPermissionContext::HandleType handle_type,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback,
       content::WebContents* web_contents);
 
@@ -49,10 +49,10 @@ class NativeFileSystemRestrictedDirectoryDialogView
   NativeFileSystemRestrictedDirectoryDialogView(
       const url::Origin& origin,
       const base::FilePath& path,
-      content::NativeFileSystemPermissionContext::HandleType handle_type,
+      content::FileSystemAccessPermissionContext::HandleType handle_type,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback);
 
-  const content::NativeFileSystemPermissionContext::HandleType handle_type_;
+  const content::FileSystemAccessPermissionContext::HandleType handle_type_;
   base::OnceCallback<void(SensitiveDirectoryResult)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeFileSystemRestrictedDirectoryDialogView);

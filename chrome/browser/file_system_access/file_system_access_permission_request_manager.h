@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_REQUEST_MANAGER_H_
-#define CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_REQUEST_MANAGER_H_
+#ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_REQUEST_MANAGER_H_
+#define CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_REQUEST_MANAGER_H_
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/native_file_system_permission_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -18,22 +18,22 @@ namespace permissions {
 enum class PermissionAction;
 }
 
-// This class manages native file system permission requests for a particular
+// This class manages File System Access permission requests for a particular
 // WebContents. It is very similar to the generic PermissionRequestManager
 // class, and as such deals with throttling, coallescing and/or completely
 // denying permission requests, depending on the situation and policy.
 //
-// Native File System code doesn't just use PermissionRequestManager directly
+// File System Access code doesn't just use PermissionRequestManager directly
 // because the permission requests use different UI, and as such can't easily
 // be supported by PermissionRequestManager.
 //
-// The NativeFileSystemPermissionRequestManager should be used on the UI thread.
-class NativeFileSystemPermissionRequestManager
+// The FileSystemAccessPermissionRequestManager should be used on the UI thread.
+class FileSystemAccessPermissionRequestManager
     : public content::WebContentsObserver,
       public content::WebContentsUserData<
-          NativeFileSystemPermissionRequestManager> {
+          FileSystemAccessPermissionRequestManager> {
  public:
-  ~NativeFileSystemPermissionRequestManager() override;
+  ~FileSystemAccessPermissionRequestManager() override;
 
   enum class Access {
     // Only ask for read access.
@@ -48,7 +48,7 @@ class NativeFileSystemPermissionRequestManager
     RequestData(
         const url::Origin& origin,
         const base::FilePath& path,
-        content::NativeFileSystemPermissionContext::HandleType handle_type,
+        content::FileSystemAccessPermissionContext::HandleType handle_type,
         Access access)
         : origin(origin),
           path(path),
@@ -61,7 +61,7 @@ class NativeFileSystemPermissionRequestManager
 
     url::Origin origin;
     base::FilePath path;
-    content::NativeFileSystemPermissionContext::HandleType handle_type;
+    content::FileSystemAccessPermissionContext::HandleType handle_type;
     Access access;
   };
 
@@ -82,9 +82,9 @@ class NativeFileSystemPermissionRequestManager
 
  private:
   friend class content::WebContentsUserData<
-      NativeFileSystemPermissionRequestManager>;
+      FileSystemAccessPermissionRequestManager>;
 
-  explicit NativeFileSystemPermissionRequestManager(
+  explicit FileSystemAccessPermissionRequestManager(
       content::WebContents* web_contents);
 
   bool IsShowingRequest() const { return current_request_ != nullptr; }
@@ -108,9 +108,9 @@ class NativeFileSystemPermissionRequestManager
 
   base::Optional<permissions::PermissionAction> auto_response_for_test_;
 
-  base::WeakPtrFactory<NativeFileSystemPermissionRequestManager> weak_factory_{
+  base::WeakPtrFactory<FileSystemAccessPermissionRequestManager> weak_factory_{
       this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_REQUEST_MANAGER_H_
+#endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_REQUEST_MANAGER_H_

@@ -64,7 +64,7 @@ class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
 class FontAccessContext;
 class GeneratedCodeCacheContext;
-class NativeFileSystemEntryFactory;
+class FileSystemAccessEntryFactory;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
@@ -126,7 +126,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual storage::DatabaseTracker* GetDatabaseTracker() = 0;
   virtual DOMStorageContext* GetDOMStorageContext() = 0;
   virtual storage::mojom::IndexedDBControl& GetIndexedDBControl() = 0;
-  virtual NativeFileSystemEntryFactory* GetNativeFileSystemEntryFactory() = 0;
+  virtual FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() = 0;
   virtual ServiceWorkerContext* GetServiceWorkerContext() = 0;
   virtual DedicatedWorkerService* GetDedicatedWorkerService() = 0;
   virtual SharedWorkerService* GetSharedWorkerService() = 0;

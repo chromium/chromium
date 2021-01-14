@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
-#define CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#ifndef CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 #include "base/files/file_path.h"
+#include "content/public/browser/file_system_access_permission_grant.h"
+#include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/native_file_system_permission_grant.h"
-#include "content/public/browser/native_file_system_write_item.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {
 
-// Entry point to an embedder implemented permission context for the Native File
-// System API. Instances of this class can be retrieved via a BrowserContext.
+// Entry point to an embedder implemented permission context for the File System
+// Access API. Instances of this class can be retrieved via a BrowserContext.
 // All these methods must always be called on the UI thread.
-class NativeFileSystemPermissionContext {
+class FileSystemAccessPermissionContext {
  public:
   // The type of action a user took that resulted in needing a permission grant
   // for a particular path. This is used to signal to the permission context if
@@ -43,7 +43,7 @@ class NativeFileSystemPermissionContext {
     kDragAndDrop,
   };
 
-  // This enum helps distinguish between file or directory Native File System
+  // This enum helps distinguish between file or directory File System Access
   // handles.
   enum class HandleType { kFile, kDirectory };
 
@@ -68,7 +68,7 @@ class NativeFileSystemPermissionContext {
   };
 
   // Returns the read permission grant to use for a particular path.
-  virtual scoped_refptr<NativeFileSystemPermissionGrant> GetReadPermissionGrant(
+  virtual scoped_refptr<FileSystemAccessPermissionGrant> GetReadPermissionGrant(
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
@@ -79,7 +79,7 @@ class NativeFileSystemPermissionContext {
   // user has already granted write access to a directory, this method could
   // return that existing grant when figuring the grant to use for a file in
   // that directory.
-  virtual scoped_refptr<NativeFileSystemPermissionGrant>
+  virtual scoped_refptr<FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
                           const base::FilePath& path,
                           HandleType handle_type,
@@ -110,7 +110,7 @@ class NativeFileSystemPermissionContext {
   // Runs a recently finished write operation through checks such as malware
   // or other security checks to determine if the write should be allowed.
   virtual void PerformAfterWriteChecks(
-      std::unique_ptr<NativeFileSystemWriteItem> item,
+      std::unique_ptr<FileSystemAccessWriteItem> item,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) = 0;
 
@@ -138,9 +138,9 @@ class NativeFileSystemPermissionContext {
       blink::mojom::CommonDirectory directory) = 0;
 
  protected:
-  virtual ~NativeFileSystemPermissionContext() = default;
+  virtual ~FileSystemAccessPermissionContext() = default;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
+#endif  // CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_

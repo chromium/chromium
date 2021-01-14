@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +46,7 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
         /*off_the_record=*/false);
 
     auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, NativeFileSystemEntryFactory::PathType::kLocal,
+        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal,
         dir_.GetPath());
     handle_ = std::make_unique<NativeFileSystemDirectoryHandleImpl>(
         manager_.get(),
@@ -77,13 +77,13 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<NativeFileSystemManagerImpl> manager_;
 
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> allow_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
-  scoped_refptr<FixedNativeFileSystemPermissionGrant> deny_grant_ =
-      base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::DENIED,
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> deny_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::DENIED,
           base::FilePath());
   std::unique_ptr<NativeFileSystemDirectoryHandleImpl> handle_;
   std::unique_ptr<NativeFileSystemDirectoryHandleImpl> denied_handle_;

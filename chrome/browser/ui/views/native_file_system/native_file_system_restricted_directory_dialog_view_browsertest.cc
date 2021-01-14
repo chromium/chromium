@@ -13,7 +13,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 using SensitiveDirectoryResult =
-    content::NativeFileSystemPermissionContext::SensitiveDirectoryResult;
+    content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
 class NativeFileSystemRestrictedDirectoryDialogViewTest
     : public DialogBrowserTest {
@@ -22,7 +22,7 @@ class NativeFileSystemRestrictedDirectoryDialogViewTest
   void ShowUi(const std::string& name) override {
     widget_ = NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
         kTestOrigin, base::FilePath(FILE_PATH_LITERAL("/foo/bar")),
-        content::NativeFileSystemPermissionContext::HandleType::kDirectory,
+        content::FileSystemAccessPermissionContext::HandleType::kDirectory,
         base::BindLambdaForTesting([&](SensitiveDirectoryResult result) {
           callback_called_ = true;
           callback_result_ = result;

@@ -390,7 +390,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsScanningForBluetoothDevices() override;
   bool IsConnectedToSerialPort() override;
   bool IsConnectedToHidDevice() override;
-  bool HasNativeFileSystemHandles() override;
+  bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool IsCrashed() override;
   void SetIsCrashed(base::TerminationStatus status, int error_code) override;
@@ -1121,9 +1121,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void IncrementHidActiveFrameCount();
   void DecrementHidActiveFrameCount();
 
-  // Modify the counter of native file system handles for this WebContents.
-  void IncrementNativeFileSystemHandleCount();
-  void DecrementNativeFileSystemHandleCount();
+  // Modify the counter of File System Access handles for this WebContents.
+  void IncrementFileSystemAccessHandleCount();
+  void DecrementFileSystemAccessHandleCount();
 
   // Called when the WebContents gains or loses a persistent video.
   void SetHasPersistentVideo(bool has_persistent_video);
@@ -1984,7 +1984,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   size_t serial_active_frame_count_ = 0;
   size_t hid_active_frame_count_ = 0;
 
-  size_t native_file_system_handle_count_ = 0;
+  size_t file_system_access_handle_count_ = 0;
 
   bool has_picture_in_picture_video_ = false;
 
