@@ -12,6 +12,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "extensions/common/api/shared_module.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
@@ -142,10 +143,10 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   MutateManifest(&manifest, keys::kTheme, nullptr);
 
   // Shared module.
-  MutateManifest(&manifest, keys::kExport,
+  MutateManifest(&manifest, api::shared_module::ManifestKeys::kExport,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_SHARED_MODULE);
-  MutateManifest(&manifest, keys::kExport, nullptr);
+  MutateManifest(&manifest, api::shared_module::ManifestKeys::kExport, nullptr);
 
   // Packaged app.
   MutateManifest(&manifest, keys::kApp,

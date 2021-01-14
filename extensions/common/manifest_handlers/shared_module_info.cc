@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
+#include <utility>
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
@@ -16,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/api/shared_module.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
@@ -31,6 +35,8 @@ namespace errors = manifest_errors;
 namespace {
 
 const char kSharedModule[] = "shared_module";
+
+using ManifestKeys = api::shared_module::ManifestKeys;
 
 static base::LazyInstance<SharedModuleInfo>::DestructorAtExit
     g_empty_shared_module_info = LAZY_INSTANCE_INITIALIZER;
@@ -121,110 +127,71 @@ const std::vector<SharedModuleInfo::ImportInfo>& SharedModuleInfo::GetImports(
   return GetSharedModuleInfo(extension).imports_;
 }
 
-bool SharedModuleInfo::Parse(const Extension* extension,
-                             base::string16* error) {
-  bool has_import = extension->manifest()->HasKey(keys::kImport);
-  bool has_export = extension->manifest()->HasKey(keys::kExport);
-  if (!has_import && !has_export)
-    return true;
+SharedModuleHandler::SharedModuleHandler() = default;
+SharedModuleHandler::~SharedModuleHandler() = default;
+
+bool SharedModuleHandler::Parse(Extension* extension, base::string16* error) {
+  bool has_import = extension->manifest()->HasKey(ManifestKeys::kImport);
+  bool has_export = extension->manifest()->HasKey(ManifestKeys::kExport);
+  DCHECK(has_import || has_export);
 
   if (has_import && has_export) {
     *error = base::ASCIIToUTF16(errors::kInvalidImportAndExport);
     return false;
   }
 
-  if (has_export) {
-    const base::Value* export_value = nullptr;
-    if (!extension->manifest()->GetDictionary(keys::kExport, &export_value)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidExport);
+  ManifestKeys manifest_keys;
+  if (!ManifestKeys::ParseFromDictionary(*extension->manifest()->value(),
+                                         &manifest_keys, error)) {
+    return false;
+  }
+
+  auto info = std::make_unique<SharedModuleInfo>();
+
+  if (has_export && manifest_keys.export_->allowlist) {
+    auto begin = manifest_keys.export_->allowlist->begin();
+    auto end = manifest_keys.export_->allowlist->end();
+    auto it = std::find_if_not(begin, end, [](const std::string& id) {
+      return crx_file::id_util::IdIsValid(id);
+    });
+    if (it != end) {
+      *error = ErrorUtils::FormatErrorMessageUTF16(
+          errors::kInvalidExportAllowlistString,
+          base::NumberToString(it - begin));
       return false;
     }
-
-    // TODO(https://crbug.com/842354): Remove support for the legacy allowlist
-    // key.
-    const char* allowlist_key = nullptr;
-    if (export_value->FindKey(keys::kSharedModuleAllowlist) != nullptr) {
-      allowlist_key = keys::kSharedModuleAllowlist;
-    } else if (export_value->FindKey(keys::kSharedModuleLegacyAllowlist) !=
-               nullptr) {
-      allowlist_key = keys::kSharedModuleLegacyAllowlist;
-    }
-
-    if (allowlist_key) {
-      const base::Value* allowlist_value =
-          export_value->FindKeyOfType(allowlist_key, base::Value::Type::LIST);
-      if (allowlist_value == nullptr) {
-        *error = base::ASCIIToUTF16(errors::kInvalidExportAllowlist);
-        return false;
-      }
-      base::Value::ConstListView list_view = allowlist_value->GetList();
-      for (size_t i = 0; i < list_view.size(); ++i) {
-        if (!list_view[i].is_string() ||
-            !crx_file::id_util::IdIsValid(list_view[i].GetString())) {
-          *error = ErrorUtils::FormatErrorMessageUTF16(
-              errors::kInvalidExportAllowlistString, base::NumberToString(i));
-          return false;
-        }
-        export_allowlist_.insert(list_view[i].GetString());
-      }
-    }
+    info->set_export_allowlist(std::set<std::string>(
+        std::make_move_iterator(begin), std::make_move_iterator(end)));
   }
 
   if (has_import) {
-    const base::Value* import_list = nullptr;
-    if (!extension->manifest()->GetList(keys::kImport, &import_list)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidImport);
-      return false;
-    }
-    base::Value::ConstListView list_storage = import_list->GetList();
-    for (size_t i = 0; i < list_storage.size(); ++i) {
-      const base::Value& import_entry = list_storage[i];
-      if (!import_entry.is_dict()) {
-        *error = base::ASCIIToUTF16(errors::kInvalidImport);
-        return false;
-      }
-      imports_.push_back(ImportInfo());
-      const base::Value* extension_id =
-          import_entry.FindKeyOfType(keys::kId, base::Value::Type::STRING);
-      if (extension_id == nullptr ||
-          !crx_file::id_util::IdIsValid(extension_id->GetString())) {
+    std::vector<SharedModuleInfo::ImportInfo> imports;
+    imports.reserve(manifest_keys.import->size());
+    for (size_t i = 0; i < manifest_keys.import->size(); i++) {
+      auto& import = manifest_keys.import->at(i);
+      if (!crx_file::id_util::IdIsValid(import.id)) {
         *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidImportId,
                                                      base::NumberToString(i));
         return false;
       }
-      imports_.back().extension_id = extension_id->GetString();
-      const base::Value* min_version =
-          import_entry.FindKey(keys::kMinimumVersion);
-      if (min_version != nullptr) {
-        if (!min_version->is_string()) {
-          *error = ErrorUtils::FormatErrorMessageUTF16(
-              errors::kInvalidImportVersion, base::NumberToString(i));
-          return false;
-        }
-        imports_.back().minimum_version = min_version->GetString();
-        base::Version v(min_version->GetString());
+
+      SharedModuleInfo::ImportInfo import_info;
+      import_info.extension_id = std::move(import.id);
+
+      if (import.minimum_version) {
+        base::Version v(*import.minimum_version);
         if (!v.IsValid()) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidImportVersion, base::NumberToString(i));
           return false;
         }
+        import_info.minimum_version = std::move(*import.minimum_version);
       }
+      imports.push_back(std::move(import_info));
     }
+    info->set_imports(std::move(imports));
   }
-  return true;
-}
 
-
-SharedModuleHandler::SharedModuleHandler() {
-}
-
-SharedModuleHandler::~SharedModuleHandler() {
-}
-
-bool SharedModuleHandler::Parse(Extension* extension, base::string16* error) {
-  std::unique_ptr<SharedModuleInfo> info(new SharedModuleInfo);
-  if (!info->Parse(extension, error))
-    return false;
   extension->SetManifestData(kSharedModule, std::move(info));
   return true;
 }
@@ -245,7 +212,8 @@ bool SharedModuleHandler::Validate(
 }
 
 base::span<const char* const> SharedModuleHandler::Keys() const {
-  static constexpr const char* kKeys[] = {keys::kExport, keys::kImport};
+  static constexpr const char* kKeys[] = {ManifestKeys::kImport,
+                                          ManifestKeys::kExport};
   return kKeys;
 }
 

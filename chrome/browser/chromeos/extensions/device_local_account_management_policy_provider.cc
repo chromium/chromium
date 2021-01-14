@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
+#include "extensions/common/api/shared_module.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -114,7 +115,7 @@ const char* const kSafeManifestEntries[] = {
     // emk::kEventRules,
 
     // Shared Modules configuration: Allow other extensions to access resources.
-    emk::kExport,
+    ::extensions::api::shared_module::ManifestKeys::kExport,
 
     emk::kExternallyConnectable,
 
@@ -132,7 +133,7 @@ const char* const kSafeManifestEntries[] = {
     emk::kIcons,
 
     // Shared Modules configuration: Import resources from another extension.
-    emk::kImport,
+    ::extensions::api::shared_module::ManifestKeys::kImport,
 
     ::extensions::api::incognito::ManifestKeys::kIncognito,
 

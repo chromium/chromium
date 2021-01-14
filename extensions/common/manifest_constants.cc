@@ -48,7 +48,6 @@ const char kDifferentialFingerprint[] = "differential_fingerprint";
 const char kDisplayInLauncher[] = "display_in_launcher";
 const char kDisplayInNewTabPage[] = "display_in_new_tab_page";
 const char kEventName[] = "event_name";
-const char kExport[] = "export";
 const char kExternallyConnectable[] = "externally_connectable";
 const char kEventRules[] = "event_rules";
 const char kFileAccessList[] = "file_access";
@@ -67,7 +66,6 @@ const char kHostPermissions[] = "host_permissions";
 const char kIcons[] = "icons";
 const char kId[] = "id";
 const char kImeOptionsPage[] = "options_page";
-const char kImport[] = "import";
 const char kIndicator[] = "indicator";
 const char kInputComponents[] = "input_components";
 const char kInputView[] = "input_view";
@@ -94,7 +92,6 @@ const char kLinkedAppIconSize[] = "size";
 const char kManifestVersion[] = "manifest_version";
 const char kMatches[] = "matches";
 const char kMinimumChromeVersion[] = "minimum_chrome_version";
-const char kMinimumVersion[] = "minimum_version";
 const char kMIMETypes[] = "mime_types";
 const char kMimeTypesHandler[] = "mime_types_handler";
 const char kName[] = "name";
@@ -131,8 +128,6 @@ const char kSandboxedPagesCSP[] = "sandbox.content_security_policy";
 const char kSettingsOverride[] = "chrome_settings_overrides";
 const char kSettingsOverrideAlternateUrls[] =
     "chrome_settings_overrides.search_provider.alternate_urls";
-const char kSharedModuleAllowlist[] = "allowlist";
-const char kSharedModuleLegacyAllowlist[] = "whitelist";
 const char kShortName[] = "short_name";
 const char kSockets[] = "sockets";
 const char kStorageManagedSchema[] = "storage.managed_schema";
@@ -376,11 +371,8 @@ const char kInvalidExcludeMatch[] =
     "Invalid value for 'content_scripts[*].exclude_matches[*]': *";
 const char kInvalidExcludeMatches[] =
     "Invalid value for 'content_scripts[*].exclude_matches'.";
-const char kInvalidExport[] =
-    "Invalid value for 'export'.";
 const char kInvalidExportPermissions[] =
     "Permissions are not allowed for extensions that export resources.";
-const char kInvalidExportAllowlist[] = "Invalid value for 'export.allowlist'.";
 const char kInvalidExportAllowlistString[] =
     "Invalid value for 'export.allowlist[*]'.";
 const char kInvalidFileAccessList[] =
@@ -431,8 +423,6 @@ const char kInvalidIconPath[] =
     "Invalid value for 'icons[\"*\"]'.";
 const char kInvalidIcons[] =
     "Invalid value for 'icons'.";
-const char kInvalidImport[] =
-    "Invalid value for 'import'.";
 const char kInvalidImportAndExport[] =
     "Simultaneous 'import' and 'export' are not allowed.";
 const char kInvalidImportId[] =

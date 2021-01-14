@@ -19,8 +19,6 @@ class SharedModuleInfo : public Extension::ManifestData {
   SharedModuleInfo();
   ~SharedModuleInfo() override;
 
-  bool Parse(const Extension* extension, base::string16* error);
-
   struct ImportInfo {
     std::string extension_id;
     std::string minimum_version;
@@ -45,6 +43,14 @@ class SharedModuleInfo : public Extension::ManifestData {
                                    const std::string& other_id);
   static bool ImportsModules(const Extension* extension);
   static const std::vector<ImportInfo>& GetImports(const Extension* extension);
+
+  void set_export_allowlist(std::set<std::string> allowlist) {
+    export_allowlist_ = std::move(allowlist);
+  }
+
+  void set_imports(std::vector<ImportInfo> imports) {
+    imports_ = std::move(imports);
+  }
 
  private:
   // Optional list of extensions from which importing is allowed.

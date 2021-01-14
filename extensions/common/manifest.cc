@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/api/shared_module.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -120,7 +121,7 @@ Manifest::Type Manifest::GetTypeFromManifestValue(
   Type type = TYPE_UNKNOWN;
   if (value.HasKey(keys::kTheme)) {
     type = TYPE_THEME;
-  } else if (value.HasKey(keys::kExport)) {
+  } else if (value.HasKey(api::shared_module::ManifestKeys::kExport)) {
     type = TYPE_SHARED_MODULE;
   } else if (value.HasKey(keys::kApp)) {
     if (value.Get(keys::kWebURLs, nullptr) ||
