@@ -7191,14 +7191,15 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   render_accessibility_->SetMode(ax_mode.mode());
 }
 
-void RenderFrameHostImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                                                ui::AXMode ax_mode) {
+void RenderFrameHostImpl::RequestAXTreeSnapshot(
+    AXTreeSnapshotCallback callback,
+    mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
   if (!IsRenderFrameLive())
     return;
 
   frame_->SnapshotAccessibilityTree(
-      ax_mode.mode(),
+      std::move(params),
       base::BindOnce(&RenderFrameHostImpl::RequestAXTreeSnapshotCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -2598,11 +2598,12 @@ base::Value RenderFrameImpl::GetJavaScriptExecutionResult(
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
-    uint32_t ax_mode,
+    mojom::SnapshotAccessibilityTreeParamsPtr params,
     SnapshotAccessibilityTreeCallback callback) {
   ui::AXTreeUpdate response;
-  RenderAccessibilityImpl::SnapshotAccessibilityTree(this, &response,
-                                                     ui::AXMode(ax_mode));
+  AXTreeSnapshotterImpl snapshotter(this);
+  snapshotter.Snapshot(ui::AXMode(params->ax_mode), params->exclude_offscreen,
+                       params->max_nodes, params->timeout, &response);
   std::move(callback).Run(response);
 }
 

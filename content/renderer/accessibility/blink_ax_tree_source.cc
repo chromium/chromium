@@ -437,6 +437,12 @@ void BlinkAXTreeSource::GetChildren(
         child.Role() == ax::mojom::Role::kTableHeaderContainer)
       continue;
 
+    // If an optional exclude_offscreen flag is set (only intended to be
+    // used for a one-time snapshot of the accessibility tree), prune any
+    // node that's entirely offscreen from the tree.
+    if (exclude_offscreen() && child.IsOffScreen())
+      continue;
+
     out_children->push_back(child);
   }
 }

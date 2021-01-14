@@ -77,7 +77,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter)),
-      ui::kAXModeComplete);
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter.Wait();
 
   // Dump the whole tree if one of the assertions below fails
@@ -116,7 +119,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter)),
-      ui::kAXModeComplete);
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter.Wait();
 
   // Dump the whole tree if one of the assertions below fails
@@ -180,7 +186,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter)),
-      ui::kAXModeComplete);
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter.Wait();
 
   // Dump the whole tree if one of the assertions below fails
@@ -232,7 +241,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter_complete)),
-      ui::kAXModeComplete);
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter_complete.Wait();
   const std::vector<ui::AXNodeData>& complete_nodes =
       waiter_complete.snapshot().nodes;
@@ -245,7 +257,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter_contents)),
-      ui::AXMode::kWebContents);
+      ui::AXMode::kWebContents,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter_contents.Wait();
   const std::vector<ui::AXNodeData>& contents_nodes =
       waiter_contents.snapshot().nodes;
@@ -300,7 +315,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter)),
-      ui::AXMode::kPDF);
+      ui::AXMode::kPDF,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
   waiter.Wait();
 
   // Dump the whole tree if one of the assertions below fails
@@ -368,6 +386,123 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   ASSERT_TRUE(td);
   ASSERT_EQ(ax::mojom::Role::kCell, td->data().role);
   EXPECT_EQ(2, *td->GetTableCellColSpan());
+}
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, ExcludeOffscreen) {
+  GURL url(R"HTML(data:text/html,<body>
+                  <style> p { margin: 50px; } </style>
+                  <script>
+                    for (let i = 0; i < 100; i++) {
+                      let p = document.createElement('p');
+                      p.innerHTML = i;
+                      document.body.append(p);
+                    }
+                  </script>
+                  </body>)HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ true,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  // Dump the whole tree if one of the assertions below fails
+  // to aid in debugging why it failed.
+  SCOPED_TRACE(waiter.snapshot().ToString());
+
+  // If we didn't exclude offscreen nodes, thee would be at least 200 nodes on
+  // the page (2 for every paragraph). By excluding offscreen nodes, we should
+  // get between 20 and 40 total, depending on the platform and screen
+  // size.. Allow the test to pass if there are anything fewer than 60
+  // nodes to add a bit of buffer.
+  EXPECT_LT(waiter.snapshot().nodes.size(), 60U);
+}
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, MaxNodes) {
+  GURL url(R"HTML(data:text/html,<body>
+                  <style> p { margin: 50px; } </style>
+                  <script>
+                    for (let i = 0; i < 10; i++) {
+                      let div = document.createElement('div');
+                      for (let j = 0; j < 10; j++) {
+                        let p = document.createElement('p');
+                        p.innerHTML = i;
+                        div.appendChild(p);
+                      }
+                      document.body.appendChild(div);
+                    }
+                  </script>
+                  </body>)HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 10,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  // Dump the whole tree if one of the assertions below fails
+  // to aid in debugging why it failed.
+  SCOPED_TRACE(waiter.snapshot().ToString());
+
+  // If we didn't set a maximum number of nodes, thee would be at least 200
+  // nodes on the page (2 for every paragraph, and there are 10 divs each
+  // containing 10 paragraphs). By setting the max to 10 nodes, we should
+  // get only the first div - and the rest of the divs will be empty.
+  // The end result is a little more than 20 nodes, nowhere close to 200.
+  EXPECT_LT(waiter.snapshot().nodes.size(), 35U);
+}
+
+// TODO(dmazzoni): Re-enable after fixing flakiness.  http://crbug.com/1161541
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, DISABLED_Timeout) {
+  GURL url(R"HTML(data:text/html,<body>
+                  <style> p { margin: 50px; } </style>
+                  <script>
+                    for (let i = 0; i < 100; i++) {
+                      let p = document.createElement('p');
+                      p.innerHTML = i;
+                      document.body.append(p);
+                    }
+                  </script>
+                  </body>)HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ base::TimeDelta::FromMilliseconds(1));
+  waiter.Wait();
+
+  // Dump the whole tree if one of the assertions below fails
+  // to aid in debugging why it failed.
+  SCOPED_TRACE(waiter.snapshot().ToString());
+
+  // If we didn't set a timeout, thee would be at least 200 nodes on the page (2
+  // for every paragraph). By setting the max computation time to 1 ms, we
+  // should get a very small tree.
+  EXPECT_LT(waiter.snapshot().nodes.size(), 20U);
 }
 
 }  // namespace content

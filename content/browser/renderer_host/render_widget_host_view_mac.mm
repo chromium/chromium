@@ -787,9 +787,12 @@ void CombineTextNodesAndMakeCallback(SpeechCallback callback,
 }  // namespace
 
 void RenderWidgetHostViewMac::GetPageTextForSpeech(SpeechCallback callback) {
-  // Note that the WebContents::RequestAXTreeSnapshot() call has a limit on the
-  // number of nodes returned. For large pages, this call might hit that limit.
-  // This is a reasonable thing. The "Start Speaking" call dates back to the
+  // Note that we are calling WebContents::RequestAXTreeSnapshot() with a limit
+  // of 5000 nodes returned. For large pages, this call might hit that limit
+  // (and in practice it may return slightly more than 5000 to ensure a
+  // well-formed tree).
+  //
+  // This is a reasonable limit. The "Start Speaking" call dates back to the
   // earliest days of the Mac, before accessibility. It was designed to show off
   // the speech capabilities of the Mac, which is fine, but is mostly
   // inapplicable nowadays. Is it useful to have the Mac read megabytes of text
@@ -802,7 +805,10 @@ void RenderWidgetHostViewMac::GetPageTextForSpeech(SpeechCallback callback) {
 
   GetWebContents()->RequestAXTreeSnapshot(
       base::BindOnce(CombineTextNodesAndMakeCallback, std::move(callback)),
-      ui::AXMode::kWebContents);
+      ui::AXMode::kWebContents,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 5000,
+      /* timeout= */ {});
 }
 
 void RenderWidgetHostViewMac::SpeakSelection() {
