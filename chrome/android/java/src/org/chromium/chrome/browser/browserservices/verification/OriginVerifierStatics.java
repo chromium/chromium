@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.verification;
 import org.chromium.components.embedder_support.util.Origin;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsService;
 
 /**
  * Adds a layer of indirection to calls to static methods on {@link OriginVerifier}. This allows us
@@ -15,7 +16,7 @@ import androidx.annotation.VisibleForTesting;
  *
  * This should be temporary, see https://crbug.com/1164866
  */
-class OriginVerifierStatics {
+public class OriginVerifierStatics {
     /** Calls {@link OriginVerifier#clearCachedVerificationsForTesting}. */
     @VisibleForTesting
     public static void clearCachedVerificationsForTesting() {
@@ -26,5 +27,11 @@ class OriginVerifierStatics {
     public static void addVerificationOverride(
             String packageName, Origin origin, int relationship) {
         OriginVerifier.addVerificationOverride(packageName, origin, relationship);
+    }
+
+    /** Calls {@link OriginVerifier#wasPreviouslyVerified(String, Origin, int)}. */
+    public static boolean wasPreviouslyVerified(
+            String packageName, Origin origin, @CustomTabsService.Relation int relation) {
+        return OriginVerifier.wasPreviouslyVerified(packageName, origin, relation);
     }
 }
