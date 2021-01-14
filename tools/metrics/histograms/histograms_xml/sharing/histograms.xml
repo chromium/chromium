@@ -342,7 +342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
-    expires_after="M92">
+    expires_after="M97">
   <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <summary>
@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.ScreenshotFallback.Action"
-    enum="SharingScreenshotFallbackAction" expires_after="M92">
+    enum="SharingScreenshotFallbackAction" expires_after="M97">
   <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <summary>
@@ -361,7 +361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.ScreenshotsAndroid.IsEditorDismissedOnStart"
-    enum="Boolean" expires_after="M89">
+    enum="Boolean" expires_after="M97">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
