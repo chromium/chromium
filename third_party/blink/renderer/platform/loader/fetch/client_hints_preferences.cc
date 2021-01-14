@@ -34,6 +34,18 @@ void ClientHintsPreferences::UpdateFrom(
   }
 }
 
+void ClientHintsPreferences::CombineWith(
+    const ClientHintsPreferences& preferences) {
+  for (size_t i = 0;
+       i < static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
+       ++i) {
+    network::mojom::WebClientHintsType type =
+        static_cast<network::mojom::WebClientHintsType>(i);
+    if (preferences.ShouldSend(type))
+      SetShouldSend(type);
+  }
+}
+
 bool ClientHintsPreferences::UserAgentClientHintEnabled() {
   return RuntimeEnabledFeatures::UserAgentClientHintEnabled() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
