@@ -45,7 +45,7 @@ struct CONTENT_EXPORT FileSystemAccessWriteItem {
 
   // BrowserContext and WebContents the writer is associated with. These fields
   // can be nullptr when calling
-  // FileSystemAccessPermissionContext::PerformSafeBrowsingChecks(), in which
+  // FileSystemAccessPermissionContext::PerformAfterWriteChecks(), in which
   // case they will be filled by that method.
   WebContents* web_contents = nullptr;
   BrowserContext* browser_context = nullptr;
