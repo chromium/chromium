@@ -514,6 +514,25 @@ public final class ChromePreferenceKeys {
      */
     public static final String OFFLINE_INDICATOR_V2_ENABLED = "offline_indicator_v2_enabled";
 
+    /**
+     * The measurement interval (in minutes) used to schedule the currently running
+     * OfflineMeasureBackgroundTask. This value is zero if the OfflineMeasureBackgroundTask is not
+     * currently running.
+     */
+    public static final String OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES =
+            "Chrome.OfflineMeasurements.CurrentTaskMeasurementIntervalInMinutes";
+
+    /** Time of the last OfflineMeasurementsBackgroundTask check. */
+    public static final String OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS =
+            "Chrome.OfflineMeasurements.LastCheckMillis";
+
+    /**
+     * Comma separated list of time between OfflineMeasurementsBackgroundTask checks. When possible
+     * these values will be recorded to UMA.
+     */
+    public static final String OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST =
+            "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList";
+
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
 
@@ -849,6 +868,9 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
+                OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES,
+                OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
+                OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,

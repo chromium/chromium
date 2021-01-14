@@ -92,6 +92,7 @@ extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
 extern const base::Feature kNotificationSuspender;
 extern const base::Feature kOfflineIndicatorV2;
+extern const base::Feature kOfflineMeasurementsBackgroundTask;
 extern const base::Feature kOmniboxSpareRenderer;
 extern const base::Feature kProbabilisticCryptidRenderer;
 extern const base::Feature kReachedCodeProfiler;

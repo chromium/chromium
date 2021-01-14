@@ -350,6 +350,8 @@ public abstract class ChromeFeatureList {
     public static final String OFFLINE_INDICATOR_ALWAYS_HTTP_PROBE =
             "OfflineIndicatorAlwaysHttpProbe";
     public static final String OFFLINE_INDICATOR_V2 = "OfflineIndicatorV2";
+    public static final String OFFLINE_MEASUREMENTS_BACKGROUND_TASK =
+            "OfflineMeasurementsBackgroundTask";
     public static final String OFFLINE_PAGES_DESCRIPTIVE_FAIL_STATUS =
             "OfflinePagesDescriptiveFailStatus";
     public static final String OFFLINE_PAGES_DESCRIPTIVE_PENDING_STATUS =

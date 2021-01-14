@@ -21,6 +21,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
+    expires_after="2021-04-04">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The specified interval (in minutes) which the offline measurements
+    experiment will periodically run. This value is logged when Chrome starts up
+    for users where this feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
+    expires_after="2021-04-04">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The time (in minutes) between the last check and current check for the
+    offline measurements experiment. This value is logged each time the offline
+    measurements background task runs.
+  </summary>
+</histogram>
+
 <histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
     enum="OfflineIndicatorSurfaceState" expires_after="2021-07-11">
   <owner>curranmax@chromium.org</owner>

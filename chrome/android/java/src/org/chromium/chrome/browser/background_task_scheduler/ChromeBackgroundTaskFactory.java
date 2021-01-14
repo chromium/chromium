@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.explore_sites.ExploreSitesBackgroundTask;
 import org.chromium.chrome.browser.feed.FeedV1;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
 import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
+import org.chromium.chrome.browser.offline.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.prefetch.OfflineNotificationBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchBackgroundTask;
@@ -91,6 +92,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new NotificationTriggerBackgroundTask();
             case TaskIds.PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID:
                 return new PeriodicBackgroundSyncChromeWakeUpTask();
+            case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
+                return new OfflineMeasurementsBackgroundTask();
             // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:

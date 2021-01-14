@@ -38,8 +38,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_QUERY_TILE = 23;
     public static final int BACKGROUND_TASK_FEEDV2_REFRESH = 24;
     public static final int BACKGROUND_TASK_DOWNLOAD_LATER = 25;
+    public static final int BACKGROUND_TASK_OFFLINE_MEASUREMENTS = 26;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 26;
+    public static final int BACKGROUND_TASK_COUNT = 27;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -150,6 +151,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_QUERY_TILE;
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEEDV2_REFRESH;
+            case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
+                return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
             default:
                 assert false;
         }

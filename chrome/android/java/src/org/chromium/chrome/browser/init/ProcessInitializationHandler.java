@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.metrics.PackageMetrics;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
+import org.chromium.chrome.browser.offline.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
@@ -444,6 +445,8 @@ public class ProcessInitializationHandler {
                 () -> VideoTutorialShareHelper.saveUrlsToSharedPrefs());
         deferredStartupHandler.addDeferredTask(
                 () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
+        deferredStartupHandler.addDeferredTask(
+                () -> OfflineMeasurementsBackgroundTask.maybeScheduleTaskAndReportMetrics());
     }
 
     private void initChannelsAsync() {

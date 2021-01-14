@@ -48,6 +48,7 @@ enum class TaskIds {
   PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID = 105,
   QUERY_TILE_JOB_ID = 106,
   FEEDV2_REFRESH_JOB_ID = 107,
+  OFFLINE_MEASUREMENT_JOB_ID = 108,
 };
 
 }  // namespace background_task
