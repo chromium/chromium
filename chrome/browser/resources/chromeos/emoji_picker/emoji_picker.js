@@ -9,7 +9,8 @@ import './emoji_group_button.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EmojiData, EmojiGroup, GROUP_BUTTON_EVENT} from './types.js';
+import {GROUP_BUTTON_EVENT} from './events.js';
+import {EmojiData, EmojiGroup} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
