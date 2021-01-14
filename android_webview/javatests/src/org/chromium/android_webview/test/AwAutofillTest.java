@@ -1973,6 +1973,7 @@ public class AwAutofillTest {
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
@@ -1984,6 +1985,7 @@ public class AwAutofillTest {
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
