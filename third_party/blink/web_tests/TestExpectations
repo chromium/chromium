@@ -5849,7 +5849,6 @@ crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pa
 
 # Sheriff 2021-01-14
 crbug.com/1166540 [ Mac ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Pass Failure ]
-crbug.com/1166602 external/wpt/css/css-images/image-set/image-set-parsing.html [ Pass Failure ]
 
 # CSS spelling and grammar features (issue 1163437)
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-order.html [ Failure ]
