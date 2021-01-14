@@ -55,6 +55,9 @@ class MEDIA_EXPORT Renderer {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch);
 
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated);
+
   // The following functions must be called after Initialize().
 
   // Discards any buffered data, executing |flush_cb| when completed.

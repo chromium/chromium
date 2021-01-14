@@ -229,6 +229,9 @@ class MEDIA_EXPORT Pipeline {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
+
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().
   virtual base::TimeDelta GetMediaTime() const = 0;

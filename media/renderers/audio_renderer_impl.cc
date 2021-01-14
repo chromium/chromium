@@ -795,6 +795,12 @@ void AudioRendererImpl::SetPreservesPitch(bool preserves_pitch) {
     algorithm_->SetPreservesPitch(preserves_pitch);
 }
 
+void AudioRendererImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+  base::AutoLock auto_lock(lock_);
+
+  autoplay_initiated_ = autoplay_initiated;
+}
+
 void AudioRendererImpl::OnSuspend() {
   base::AutoLock auto_lock(lock_);
   is_suspending_ = true;
@@ -959,8 +965,9 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
       first_packet_timestamp_ = buffer->timestamp();
 
 #if !defined(OS_ANDROID)
-    if (transcribe_audio_callback_ && volume_ > 0)
+    if (transcribe_audio_callback_ && !(autoplay_initiated_ && volume_ == 0)) {
       transcribe_audio_callback_.Run(buffer);
+    }
 #endif
 
     if (state_ != kUninitialized)

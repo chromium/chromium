@@ -323,7 +323,9 @@ String AutoplayPolicy::GetPlayErrorMessage() const {
 }
 
 bool AutoplayPolicy::WasAutoplayInitiated() const {
-  DCHECK(autoplay_initiated_.has_value());
+  if (!autoplay_initiated_.has_value())
+    return false;
+
   return *autoplay_initiated_;
 }
 

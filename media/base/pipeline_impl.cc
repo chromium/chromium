@@ -70,6 +70,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   void SetVolume(float volume);
   void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint);
   void SetPreservesPitch(bool preserves_pitch);
+  void SetAutoplayInitiated(bool autoplay_initiated);
   base::TimeDelta GetMediaTime() const;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const;
   bool DidLoadingProgress();
@@ -195,6 +196,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   // By default, apply pitch adjustments.
   bool preserves_pitch_ = true;
+
+  bool autoplay_initiated_ = false;
 
   // Lock used to serialize |shared_state_|.
   // TODO(crbug.com/893739): Add GUARDED_BY annotations.
@@ -494,6 +497,18 @@ void PipelineImpl::RendererWrapper::SetPreservesPitch(bool preserves_pitch) {
   preserves_pitch_ = preserves_pitch;
   if (shared_state_.renderer)
     shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
+}
+
+void PipelineImpl::RendererWrapper::SetAutoplayInitiated(
+    bool autoplay_initiated) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+
+  if (autoplay_initiated_ == autoplay_initiated)
+    return;
+
+  autoplay_initiated_ = autoplay_initiated;
+  if (shared_state_.renderer)
+    shared_state_.renderer->SetAutoplayInitiated(autoplay_initiated_);
 }
 
 base::TimeDelta PipelineImpl::RendererWrapper::GetMediaTime() const {
@@ -1383,6 +1398,15 @@ void PipelineImpl::SetPreservesPitch(bool preserves_pitch) {
       FROM_HERE, base::BindOnce(&RendererWrapper::SetPreservesPitch,
                                 base::Unretained(renderer_wrapper_.get()),
                                 preserves_pitch));
+}
+
+void PipelineImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&RendererWrapper::SetAutoplayInitiated,
+                                base::Unretained(renderer_wrapper_.get()),
+                                autoplay_initiated));
 }
 
 base::TimeDelta PipelineImpl::GetMediaTime() const {

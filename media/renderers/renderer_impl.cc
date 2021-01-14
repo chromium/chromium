@@ -197,6 +197,14 @@ void RendererImpl::SetPreservesPitch(bool preserves_pitch) {
     audio_renderer_->SetPreservesPitch(preserves_pitch);
 }
 
+void RendererImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+  DVLOG(1) << __func__;
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (audio_renderer_)
+    audio_renderer_->SetAutoplayInitiated(autoplay_initiated);
+}
+
 void RendererImpl::Flush(base::OnceClosure flush_cb) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());

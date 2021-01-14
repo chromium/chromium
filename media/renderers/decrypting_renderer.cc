@@ -115,6 +115,10 @@ void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
   renderer_->SetPreservesPitch(preserves_pitch);
 }
 
+void DecryptingRenderer::SetAutoplayInitiated(bool autoplay_initiated) {
+  renderer_->SetAutoplayInitiated(autoplay_initiated);
+}
+
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {
   renderer_->Flush(std::move(flush_cb));
 }

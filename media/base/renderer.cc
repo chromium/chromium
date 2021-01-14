@@ -34,4 +34,8 @@ void Renderer::SetPreservesPitch(bool preserves_pitch) {
   // Not supported by most renderers.
 }
 
+void Renderer::SetAutoplayInitiated(bool autoplay_initiated) {
+  // Not supported by most renderers.
+}
+
 }  // namespace media

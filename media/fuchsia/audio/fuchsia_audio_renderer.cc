@@ -255,6 +255,8 @@ void FuchsiaAudioRenderer::SetLatencyHint(
 
 void FuchsiaAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}
 
+void FuchsiaAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
+
 void FuchsiaAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

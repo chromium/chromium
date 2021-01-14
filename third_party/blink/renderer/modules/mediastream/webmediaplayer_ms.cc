@@ -807,6 +807,8 @@ void WebMediaPlayerMS::SetPreservesPitch(bool preserves_pitch) {
   // and thus there should be no pitch-shifting.
 }
 
+void WebMediaPlayerMS::SetAutoplayInitiated(bool autoplay_initiated) {}
+
 void WebMediaPlayerMS::OnRequestPictureInPicture() {
   if (!bridge_)
     ActivateSurfaceLayerForVideo();

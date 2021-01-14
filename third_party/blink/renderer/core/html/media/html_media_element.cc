@@ -1952,6 +1952,8 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
       jumped = true;
     }
 
+    web_media_player_->SetAutoplayInitiated(true);
+
     UpdateLayoutObject();
   }
 

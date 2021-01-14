@@ -69,6 +69,9 @@ class MEDIA_EXPORT AudioRenderer {
   // preservation when playing back at speeds other than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AudioRenderer);
 };
