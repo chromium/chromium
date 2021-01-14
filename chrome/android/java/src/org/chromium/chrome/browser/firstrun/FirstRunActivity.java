@@ -14,6 +14,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -96,8 +97,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private Set<FirstRunFragment> mPagesToNotifyOfNativeInit;
     private boolean mDeferredCompleteFRE;
 
-    private FirstRunViewPager mPager;
-
     private FirstRunFlowSequencer mFirstRunFlowSequencer;
 
     private Bundle mFreProperties;
@@ -117,6 +116,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private final List<FirstRunPage> mPages = new ArrayList<>();
     private final List<Integer> mFreProgressStates = new ArrayList<>();
+
+    private ViewPager2 mPager;
 
     /**
      * The pager adapter, which provides the pages to the view pager widget.
@@ -204,7 +205,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     @CallSuper
     protected View createContentView() {
-        mPager = new FirstRunViewPager(this);
+        mPager = new ViewPager2(this);
+
+        // Disable swipe gesture.
+        mPager.setUserInputEnabled(false);
+
         mPager.setId(R.id.fre_pager);
         mPager.setOffscreenPageLimit(3);
         return mPager;
@@ -245,8 +250,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                     return;
                 }
 
-                mPagerAdapter = new FirstRunPagerAdapter(getSupportFragmentManager(), mPages);
-                stopProgressionIfNotAcceptedTermsOfService();
+                mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
                 mPager.setAdapter(mPagerAdapter);
 
                 if (areNativeAndPoliciesInitialized()) {
@@ -369,7 +373,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public void onStart() {
         super.onStart();
-        stopProgressionIfNotAcceptedTermsOfService();
     }
 
     @Override
@@ -378,12 +381,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (mPagerAdapter == null) {
             abortFirstRunExperience();
             return;
-        }
-
-        Object currentItem = mPagerAdapter.instantiateItem(mPager, mPager.getCurrentItem());
-        if (currentItem instanceof FirstRunFragment) {
-            FirstRunFragment page = (FirstRunFragment) currentItem;
-            if (page.interceptBackPressed()) return;
         }
 
         if (mPager.getCurrentItem() == 0) {
@@ -522,7 +519,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         FirstRunUtils.acceptTermsOfService(allowCrashUpload);
         FirstRunStatus.setSkipWelcomePage(true);
         flushPersistentData();
-        stopProgressionIfNotAcceptedTermsOfService();
         jumpToPage(mPager.getCurrentItem() + 1);
     }
 
@@ -557,7 +553,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private boolean setCurrentItemForPager(int position) {
-        if (position >= mPagerAdapter.getCount()) {
+        if (position >= mPagerAdapter.getItemCount()) {
             completeFirstRunExperience();
             return false;
         }
@@ -565,24 +561,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mPager.setCurrentItem(position, false);
 
         // Set A11y focus if possible. See https://crbug.com/1094064 for more context.
-        // * Screen reader can lose focus when switching between pages with ViewPager;
-        // * FragmentPagerStateAdapter is trying to limit access for the real fragment that we are
-        // creating / created;
-        // * Note that despite the function name and javadoc,
-        // FragmentPagerStateAdapter#instantiateItem returns cached fragments when possible. This
-        // should always be the case here as ViewPager#setCurrentItem will trigger instantiation if
-        // needed. This function call to #instantiateItem is not creating new fragment here but
-        // rather reading the ones already created.
-        Object currentFragment = mPagerAdapter.instantiateItem(mPager, position);
-        if (currentFragment instanceof FirstRunFragment) {
-            ((FirstRunFragment) currentFragment).setInitialA11yFocus();
+        // The screen reader can lose focus when switching between pages with ViewPager2.
+        FirstRunFragment currentFragment = mPagerAdapter.getFirstRunFragment(position);
+        if (currentFragment != null) {
+            currentFragment.setInitialA11yFocus();
         }
         return true;
-    }
-
-    private void stopProgressionIfNotAcceptedTermsOfService() {
-        if (mPagerAdapter == null) return;
-        mPagerAdapter.setStopAtTheFirstPage(!didAcceptTermsOfService());
     }
 
     private void skipPagesIfNecessary() {

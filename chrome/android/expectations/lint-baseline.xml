@@ -1642,17 +1642,6 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view `FirstRunViewPager` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunViewPager.java"
-            line="21"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
         message="Custom view ``EditText`` has `setOnTouchListener` called on it but does not override `performClick`"
         errorLine1="            editText.setOnTouchListener((View v, MotionEvent event) -> {"
         errorLine2="            ^">
