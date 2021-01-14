@@ -301,28 +301,140 @@ void UkmManager::RecordEventLatencyUKM(
       }
     }
 
-    // It is possible for an event to arrive in the compositor in the middle of
-    // a frame (e.g. the browser received the event *after* renderer received a
-    // begin-impl, and the event reached the compositor before that frame
+    // Record event dispatch metrics.
+    EventMetrics::DispatchStage dispatch_stage =
+        EventMetrics::DispatchStage::kGenerated;
+    base::TimeTicks dispatch_timestamp = generated_timestamp;
+    while (dispatch_stage != EventMetrics::DispatchStage::kMaxValue) {
+      DCHECK(!dispatch_timestamp.is_null());
+      int dispatch_index = static_cast<int>(dispatch_stage);
+
+      // Find the end dispatch stage.
+      auto end_stage =
+          static_cast<EventMetrics::DispatchStage>(dispatch_index + 1);
+      base::TimeTicks end_timestamp =
+          event_metrics->GetDispatchStageTimestamp(end_stage);
+      while (end_timestamp.is_null() &&
+             end_stage != EventMetrics::DispatchStage::kMaxValue) {
+        end_stage = static_cast<EventMetrics::DispatchStage>(
+            static_cast<int>(end_stage) + 1);
+        end_timestamp = event_metrics->GetDispatchStageTimestamp(end_stage);
+      }
+      if (end_timestamp.is_null())
+        break;
+
+      const int64_t dispatch_latency =
+          (end_timestamp - dispatch_timestamp).InMicroseconds();
+      switch (dispatch_stage) {
+        case EventMetrics::DispatchStage::kGenerated:
+          DCHECK_EQ(end_stage,
+                    EventMetrics::DispatchStage::kArrivedInRendererCompositor);
+          builder.SetGenerationToRendererCompositor(dispatch_latency);
+          break;
+        case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
+          switch (end_stage) {
+            case EventMetrics::DispatchStage::kRendererCompositorStarted:
+              builder.SetRendererCompositorQueueingDelay(dispatch_latency);
+              break;
+            case EventMetrics::DispatchStage::kRendererMainStarted:
+              builder.SetRendererCompositorToMain(dispatch_latency);
+              break;
+            default:
+              NOTREACHED();
+              break;
+          }
+          break;
+        case EventMetrics::DispatchStage::kRendererCompositorStarted:
+          DCHECK_EQ(end_stage,
+                    EventMetrics::DispatchStage::kRendererCompositorFinished);
+          builder.SetRendererCompositorProcessing(dispatch_latency);
+          break;
+        case EventMetrics::DispatchStage::kRendererCompositorFinished:
+          DCHECK_EQ(end_stage,
+                    EventMetrics::DispatchStage::kRendererMainStarted);
+          builder.SetRendererCompositorToMain(dispatch_latency);
+          break;
+        case EventMetrics::DispatchStage::kRendererMainStarted:
+          DCHECK_EQ(end_stage,
+                    EventMetrics::DispatchStage::kRendererMainFinished);
+          builder.SetRendererMainProcessing(dispatch_latency);
+          break;
+        case EventMetrics::DispatchStage::kRendererMainFinished:
+          NOTREACHED();
+          break;
+      }
+
+      dispatch_stage = end_stage;
+      dispatch_timestamp = end_timestamp;
+    }
+
+    // It is possible for an event to be handled on the renderer in the middle
+    // of a frame (e.g. the browser received the event *after* renderer received
+    // a begin-impl, and the event was handled on the renderer before that frame
     // ended). To handle such cases, find the first stage that happens after the
-    // event's arrival in the browser.
+    // event's processing finished on the renderer.
     auto stage_it = std::find_if(
         stage_history.begin(), stage_history.end(),
-        [generated_timestamp](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time > generated_timestamp;
+        [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
+          return stage.start_time > dispatch_timestamp;
         });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the event time stamp, but apparently, this is not always the
-    // case (see crbug.com/1093698). For now, skip to the next event in such
-    // cases. Hopefully, the work to reduce discrepancies between the new
-    // EventLatency and the old Event.Latency metrics would fix this issue. If
-    // not, we need to reconsider investigating this issue.
+    // greater than the final event dispatch timestamp, but apparently, this is
+    // not always the case (see crbug.com/1093698). For now, skip to the next
+    // event in such cases. Hopefully, the work to reduce discrepancies between
+    // the new EventLatency and the old Event.Latency metrics would fix this
+    // issue. If not, we need to reconsider investigating this issue.
     if (stage_it == stage_history.end())
       continue;
 
-    builder.SetBrowserToRendererCompositor(
-        (stage_it->start_time - generated_timestamp).InMicroseconds());
+    switch (dispatch_stage) {
+      case EventMetrics::DispatchStage::kRendererCompositorFinished:
+        switch (stage_it->stage_type) {
+#define CASE_FOR_STAGE(stage_name, metrics_suffix)                     \
+  case StageType::k##stage_name:                                       \
+    builder.SetRendererCompositorFinishedTo##metrics_suffix(           \
+        (stage_it->start_time - dispatch_timestamp).InMicroseconds()); \
+    break;
+          CASE_FOR_STAGE(BeginImplFrameToSendBeginMainFrame, BeginImplFrame);
+          CASE_FOR_STAGE(SendBeginMainFrameToCommit, SendBeginMainFrame);
+          CASE_FOR_STAGE(Commit, Commit);
+          CASE_FOR_STAGE(EndCommitToActivation, EndCommit);
+          CASE_FOR_STAGE(Activation, Activation);
+          CASE_FOR_STAGE(EndActivateToSubmitCompositorFrame, EndActivate);
+          CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
+                         SubmitCompositorFrame);
+#undef CASE_FOR_STAGE
+          default:
+            NOTREACHED();
+            break;
+        }
+        break;
+      case EventMetrics::DispatchStage::kRendererMainFinished:
+        switch (stage_it->stage_type) {
+#define CASE_FOR_STAGE(stage_name, metrics_suffix)                     \
+  case StageType::k##stage_name:                                       \
+    builder.SetRendererMainFinishedTo##metrics_suffix(                 \
+        (stage_it->start_time - dispatch_timestamp).InMicroseconds()); \
+    break;
+          CASE_FOR_STAGE(BeginImplFrameToSendBeginMainFrame, BeginImplFrame);
+          CASE_FOR_STAGE(SendBeginMainFrameToCommit, SendBeginMainFrame);
+          CASE_FOR_STAGE(Commit, Commit);
+          CASE_FOR_STAGE(EndCommitToActivation, EndCommit);
+          CASE_FOR_STAGE(Activation, Activation);
+          CASE_FOR_STAGE(EndActivateToSubmitCompositorFrame, EndActivate);
+          CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
+                         SubmitCompositorFrame);
+#undef CASE_FOR_STAGE
+          default:
+            NOTREACHED();
+            break;
+        }
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
 
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.

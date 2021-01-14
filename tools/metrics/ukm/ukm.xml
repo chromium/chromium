@@ -4703,18 +4703,13 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="BrowserToRendererCompositor">
+    <obsolete>
+      Deprecated as of 01/2021. Replaced with event dispatch breakdown metrics.
+    </obsolete>
     <summary>
       The time from when the event is created in the browser until the first
       compositor stage after the event arrives in the renderer.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Commit">
     <summary>
@@ -4766,6 +4761,306 @@ be describing additional metrics about the same event.
         <index fields="profile.country"/>
         <statistics>
           <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="GenerationToRendererCompositor">
+    <summary>
+      The time from when the event is created until it arrives in the renderer
+      compositor.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToActivation">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the beginning of the activation. This metric is only
+      reported if the event is handled on the renderer compositor and the first
+      compositor step after that is the beginning of the activation.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToBeginImplFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the compositor frame is started. This metric is only
+      reported if the event is handled on the renderer compositor and compositor
+      frame is started after that.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToCommit">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the beginning of the commit. This metric is only reported
+      if the event is handled on the renderer compositor and the first
+      compositor step after that is the beginning of the commit.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToEndActivate">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the end of the activation. This metric is only reported
+      if the event is handled on the renderer compositor and the first
+      compositor step after that is the end of the activation.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToEndCommit">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the end of the commit. This metric is only reported if
+      the event is handled on the renderer compositor and the first compositor
+      step after that is the end of the commit.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToSendBeginMainFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until BeginMainFrame is sent. This metric is only reported if
+      the event is handled on the renderer compositor and the first compositor
+      step after that is SendBeginMainFrame.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorFinishedToSubmitCompositorFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer
+      compositor until the compositor frame is submitted. This metric is only
+      reported if the event is handled on the renderer compositor and the first
+      compositor step after that is the submission of the compositor frame.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorProcessing">
+    <summary>
+      The time spent in the renderer compositor to process the event. This
+      metric won't be reported if the renderer compositor does not have a
+      dedicated thread.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorQueueingDelay">
+    <summary>
+      The time from when the event arrives in the renderer compositor until the
+      compositor starts processing it. This metric won't be reported if the
+      renderer compositor does not have a dedicated thread.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererCompositorToMain">
+    <summary>
+      The time from when the processing of the event on the renderer compositor
+      is finished until the main thread starts processing the event. If the
+      renderer compositor does not have a dedicated thread, the processing of
+      the event on the renderer compositor is considered finished as soon as the
+      event arrives in the renderer compositor. This metric won't be reported if
+      the event is handled on the renderer compositor.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToActivation">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the beginning of the activation. This metric is only reported if the
+      event is handled on the renderer main and the first compositor step after
+      that is the beginning of the activation.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToBeginImplFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the compositor frame is started. This metric is only reported if the
+      event is handled on the renderer main and compositor frame is started
+      after that.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToCommit">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the beginning of the commit. This metric is only reported if the
+      event is handled on the renderer main and the first compositor step after
+      that is the beginning of the commit.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToEndActivate">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the end of the activation. This metric is only reported if the event
+      is handled on the renderer main and the first compositor step after that
+      is the end of the activation.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToEndCommit">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the end of the commit. This metric is only reported if the event is
+      handled on the renderer main and the first compositor step after that is
+      the end of the commit.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToSendBeginMainFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until BeginMainFrame is sent. This metric is only reported if the event is
+      handled on the renderer main and the first compositor step after that is
+      SendBeginMainFrame.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainFinishedToSubmitCompositorFrame">
+    <summary>
+      The time from when the event processing is finished on the renderer main
+      until the compositor frame is submitted. This metric is only reported if
+      the event is handled on the renderer main and the first compositor step
+      after that is the submission of the compositor frame.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="RendererMainProcessing">
+    <summary>
+      The time spent in the main thread to process the event. This metric won't
+      be reported if the renderer compositor handles the event.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
         </statistics>
       </history>
     </aggregation>

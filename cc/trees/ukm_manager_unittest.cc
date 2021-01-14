@@ -44,7 +44,14 @@ const char kScrollInputType[] = "ScrollInputType";
 
 // Names of compositor stages and substages used in compositor/event latency UKM
 // metrics.
-const char kBrowserToRendererCompositor[] = "BrowserToRendererCompositor";
+const char kGenerationToRendererCompositor[] = "GenerationToRendererCompositor";
+const char kRendererCompositorQueueingDelay[] =
+    "RendererCompositorQueueingDelay";
+const char kRendererCompositorProcessing[] = "RendererCompositorProcessing";
+const char kRendererCompositorToMain[] = "RendererCompositorToMain";
+const char kRendererMainProcessing[] = "RendererMainProcessing";
+const char kRendererMainFinishedToBeginImplFrame[] =
+    "RendererMainFinishedToBeginImplFrame";
 const char kBeginImplFrameToSendBeginMainFrame[] =
     "BeginImplFrameToSendBeginMainFrame";
 const char kSendBeginMainFrameToCommit[] = "SendBeginMainFrameToCommit";
@@ -109,21 +116,56 @@ class UkmManagerTest : public testing::Test {
       base::Optional<ui::ScrollInputType> scroll_input_type) {
     base::TimeTicks event_time = AdvanceNowByMs(10);
     AdvanceNowByMs(10);
-    return EventMetrics::CreateForTesting(type, scroll_update_type,
-                                          scroll_input_type, event_time,
-                                          &test_tick_clock_);
+    std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
+        type, scroll_update_type, scroll_input_type, event_time,
+        &test_tick_clock_);
+    if (metrics) {
+      AdvanceNowByMs(10);
+      metrics->SetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererCompositorStarted);
+      AdvanceNowByMs(10);
+      metrics->SetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererCompositorFinished);
+      AdvanceNowByMs(10);
+      metrics->SetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererMainStarted);
+      AdvanceNowByMs(10);
+      metrics->SetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererMainFinished);
+    }
+    return metrics;
   }
 
-  std::vector<base::TimeTicks> GetEventTimestamps(
+  struct DispatchTimestamps {
+    base::TimeTicks generated;
+    base::TimeTicks arrived_in_renderer;
+    base::TimeTicks renderer_compositor_started;
+    base::TimeTicks renderer_compositor_finished;
+    base::TimeTicks renderer_main_started;
+    base::TimeTicks renderer_main_finished;
+  };
+  std::vector<DispatchTimestamps> GetEventDispatchTimestamps(
       const EventMetrics::List& events_metrics) {
-    std::vector<base::TimeTicks> event_times;
+    std::vector<DispatchTimestamps> event_times;
     event_times.reserve(events_metrics.size());
-    std::transform(events_metrics.cbegin(), events_metrics.cend(),
-                   std::back_inserter(event_times),
-                   [](const auto& event_metrics) {
-                     return event_metrics->GetDispatchStageTimestamp(
-                         EventMetrics::DispatchStage::kGenerated);
-                   });
+    std::transform(
+        events_metrics.cbegin(), events_metrics.cend(),
+        std::back_inserter(event_times), [](const auto& event_metrics) {
+          return DispatchTimestamps{
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kGenerated),
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kRendererCompositorStarted),
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kRendererCompositorFinished),
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kRendererMainStarted),
+              event_metrics->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kRendererMainFinished),
+          };
+        });
     return event_times;
   }
 
@@ -378,7 +420,8 @@ TEST_F(UkmManagerTest, EventLatency) {
   EventMetrics::List events_metrics(
       std::make_move_iterator(std::begin(event_metrics_ptrs)),
       std::make_move_iterator(std::end(event_metrics_ptrs)));
-  std::vector<base::TimeTicks> event_times = GetEventTimestamps(events_metrics);
+  std::vector<DispatchTimestamps> event_dispatch_times =
+      GetEventDispatchTimestamps(events_metrics);
 
   const base::TimeTicks begin_impl_time = AdvanceNowByMs(10);
   const base::TimeTicks end_activate_time = AdvanceNowByMs(10);
@@ -439,8 +482,34 @@ TEST_F(UkmManagerTest, EventLatency) {
         static_cast<int64_t>(*event_metrics->scroll_type()));
 
     test_ukm_recorder_->ExpectEntryMetric(
-        entry, kBrowserToRendererCompositor,
-        (begin_impl_time - event_times[i]).InMicroseconds());
+        entry, kGenerationToRendererCompositor,
+        (event_dispatch_times[i].arrived_in_renderer -
+         event_dispatch_times[i].generated)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kRendererCompositorQueueingDelay,
+        (event_dispatch_times[i].renderer_compositor_started -
+         event_dispatch_times[i].arrived_in_renderer)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kRendererCompositorProcessing,
+        (event_dispatch_times[i].renderer_compositor_finished -
+         event_dispatch_times[i].renderer_compositor_started)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kRendererCompositorToMain,
+        (event_dispatch_times[i].renderer_main_started -
+         event_dispatch_times[i].renderer_compositor_finished)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kRendererMainProcessing,
+        (event_dispatch_times[i].renderer_main_finished -
+         event_dispatch_times[i].renderer_main_started)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kRendererMainFinishedToBeginImplFrame,
+        (begin_impl_time - event_dispatch_times[i].renderer_main_finished)
+            .InMicroseconds());
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kBeginImplFrameToSendBeginMainFrame,
         (end_activate_time - begin_impl_time).InMicroseconds());
@@ -458,9 +527,10 @@ TEST_F(UkmManagerTest, EventLatency) {
         (present_time - submit_time).InMicroseconds());
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kTotalLatencyToSwapBegin,
-        (swap_start_time - event_times[i]).InMicroseconds());
+        (swap_start_time - event_dispatch_times[i].generated).InMicroseconds());
     test_ukm_recorder_->ExpectEntryMetric(
-        entry, kTotalLatency, (present_time - event_times[i]).InMicroseconds());
+        entry, kTotalLatency,
+        (present_time - event_dispatch_times[i].generated).InMicroseconds());
   }
 }
 
