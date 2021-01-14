@@ -392,9 +392,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // A list of origin trial names to enable for the document being loaded.
   WebVector<WebString> force_enabled_origin_trials;
 
-  // Whether the page is origin isolated.
-  // https://github.com/WICG/origin-isolation
-  bool origin_isolated = false;
+  // Whether the page is in an origin-keyed agent cluster.
+  // https://html.spec.whatwg.org/C/#is-origin-keyed
+  bool origin_agent_cluster = false;
 
   // List of client hints enabled for top-level frame. These still need to be
   // checked against feature policy before use.

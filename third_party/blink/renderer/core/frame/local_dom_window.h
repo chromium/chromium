@@ -310,8 +310,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const Vector<String>& originPolicyIds() const;
   void SetOriginPolicyIds(const Vector<String>&);
 
-  // https://github.com/whatwg/html/pull/5545
-  bool originIsolated() const;
+  // https://html.spec.whatwg.org/C/#dom-originagentcluster
+  bool originAgentCluster() const;
 
   // Idle callback extensions
   int requestIdleCallback(V8IdleRequestCallback*, const IdleRequestOptions*);

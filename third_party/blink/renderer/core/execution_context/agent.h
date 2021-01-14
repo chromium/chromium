@@ -62,27 +62,26 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   // Only called from blink::SetIsCrossOriginIsolated.
   static void SetIsCrossOriginIsolated(bool value);
 
-  // Representing agent cluster's "origin isolated" concept.
-  // https://github.com/whatwg/html/pull/5545
-  // TODO(domenic): update to final spec URL when that pull request is merged.
+  // Representing agent cluster's "is origin-keyed" concept:
+  // https://html.spec.whatwg.org/C/#is-origin-keyed
   //
   // Note that unlike IsCrossOriginIsolated(), this is not static/process-global
   // because we do not guarantee that a given process only contains agents with
-  // the same origin-isolation status.
+  // the same origin-keying status.
   //
-  // For example, a page with no Origin-Isolation header, that uses a data: URL
-  // to create an iframe, would have an origin-isolated data: URL Agent, plus a
-  // non-origin-isolated outer page Agent, both in the same process.
-  bool IsOriginIsolated();
-  void SetIsOriginIsolated(bool value);
+  // For example, a page with no Origin-Agent-Cluster header, that uses a data:
+  // URL to create an iframe, would have an origin-keyed data: URL Agent,
+  // plus a site-keyed outer page Agent, both in the same process.
+  bool IsOriginKeyed();
+  void SetIsOriginKeyed(bool value);
 
  private:
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
-  bool is_origin_isolated_ = false;
+  bool is_origin_keyed_ = false;
 
 #if DCHECK_IS_ON()
-  bool is_origin_isolated_set_ = false;
+  bool is_origin_keyed_set_ = false;
 #endif
 };
 
