@@ -505,22 +505,44 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   auto* fetch_client_settings_object_fetcher = context_window->Fetcher();
 
   // https://wicg.github.io/import-maps/#integration-prepare-a-script
-  // If the script’s type is "importmap" and the element’s node document’s
-  // acquiring import maps is false, then queue a task to fire an event named
-  // error at the element, and return. [spec text]
+  // If the script’s type is "importmap": [spec text]
   if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
     Modulator* modulator =
         Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
-    if (!modulator->IsAcquiringImportMaps()) {
-      element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kError,
-          "An import map is added after module script load was triggered."));
-      element_document.GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                               WrapPersistent(element_.Get())));
-      return false;
+    auto aquiring_state = modulator->GetAcquiringImportMapsState();
+    switch (aquiring_state) {
+      case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
+      case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
+        // 1. If the element’s node document's acquiring import maps is false,
+        // then queue a task to fire an event named error at the element, and
+        // return. [spec text]
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            aquiring_state ==
+                    Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad
+                ? "An import map is added after module script load was "
+                  "triggered."
+                : "Multiple import maps are not yet supported. "
+                  "https://crbug.com/927119"));
+        element_document.GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(FROM_HERE,
+                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                 WrapPersistent(element_.Get())));
+        return false;
+
+      case Modulator::AcquiringImportMapsState::kAcquiring:
+        // 2. Set the element’s node document's acquiring import maps to false.
+        // [spec text]
+        modulator->SetAcquiringImportMapsState(
+            Modulator::AcquiringImportMapsState::kMultipleImportMaps);
+
+        // 3. Assert: the element’s node document's pending import map script is
+        // null. [spec text]
+        //
+        // TODO(crbug.com/922212): Currently there are no implementation for
+        // "pending import map script" as we don't support external import maps.
+        break;
     }
   }
 

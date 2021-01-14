@@ -267,14 +267,6 @@ void DynamicModuleResolver::ResolveDynamically(
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
 
-  // https://github.com/WICG/import-maps/blob/master/spec.md#when-import-maps-can-be-encountered
-  // Strictly, the flag should be cleared at
-  // #internal-module-script-graph-fetching-procedure, i.e. in ModuleTreeLinker,
-  // but due to https://crbug.com/928435 https://crbug.com/928564 we also clears
-  // the flag here, as import maps can be accessed earlier than specced below
-  // (in ResolveModuleSpecifier()) and we need to clear the flag before that.
-  modulator_->ClearIsAcquiringImportMaps();
-
   // <spec step="4.1">Let referencing script be
   // referencingScriptOrModule.[[HostDefined]].</spec>
 
@@ -301,6 +293,11 @@ void DynamicModuleResolver::ResolveDynamically(
   //
   // <specdef label="fetch-an-import()-module-script-graph"
   // href="https://html.spec.whatwg.org/C/#fetch-an-import()-module-script-graph">
+
+  // https://wicg.github.io/import-maps/#wait-for-import-maps
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
 
   // <spec label="fetch-an-import()-module-script-graph" step="1">Let url be the
   // result of resolving a module specifier given base URL and specifier.</spec>

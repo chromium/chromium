@@ -178,7 +178,9 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
 #endif
 
   // https://wicg.github.io/import-maps/#wait-for-import-maps
-  modulator_->ClearIsAcquiringImportMaps();
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
 
   AdvanceState(State::kFetchingSelf);
 
@@ -249,9 +251,11 @@ void ModuleTreeLinker::FetchRootInline(ModuleScript* module_script) {
 #endif
 
   // https://wicg.github.io/import-maps/#wait-for-import-maps
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
   //
   // TODO(hiroshige): This should be done before |module_script| is created.
-  modulator_->ClearIsAcquiringImportMaps();
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
 
   AdvanceState(State::kFetchingSelf);
 

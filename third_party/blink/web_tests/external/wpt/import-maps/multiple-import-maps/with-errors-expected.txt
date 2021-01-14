@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Second import map should be rejected after an import map with errors assert_array_equals: lengths differ, expected array ["onerror 2", "log:A"] length 2, got ["log:C"] length 1
-Harness: the test ran to completion.
-

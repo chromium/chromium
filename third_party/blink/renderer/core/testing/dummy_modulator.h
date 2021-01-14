@@ -68,8 +68,8 @@ class DummyModulator : public Modulator {
   ScriptValue CreateSyntaxError(const String& message) const override;
   void RegisterImportMap(const ImportMap*,
                          ScriptValue error_to_rethrow) override;
-  bool IsAcquiringImportMaps() const override;
-  void ClearIsAcquiringImportMaps() override;
+  AcquiringImportMapsState GetAcquiringImportMapsState() const override;
+  void SetAcquiringImportMapsState(AcquiringImportMapsState) override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   const ImportMap* GetImportMapForTest() const override;

@@ -183,11 +183,25 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   virtual ScriptValue CreateSyntaxError(const String& message) const = 0;
 
   // Import maps. https://github.com/WICG/import-maps
+
+  // https://wicg.github.io/import-maps/#register-an-import-map
   virtual void RegisterImportMap(const ImportMap*,
                                  ScriptValue error_to_rethrow) = 0;
-  virtual bool IsAcquiringImportMaps() const = 0;
-  virtual void ClearIsAcquiringImportMaps() = 0;
   virtual const ImportMap* GetImportMapForTest() const = 0;
+
+  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
+  enum class AcquiringImportMapsState {
+    // The flag is true.
+    kAcquiring,
+
+    // The flag is false, due to multiple import maps.
+    kMultipleImportMaps,
+
+    // The flag is false, because module script loading is already started.
+    kAfterModuleScriptLoad
+  };
+  virtual AcquiringImportMapsState GetAcquiringImportMapsState() const = 0;
+  virtual void SetAcquiringImportMapsState(AcquiringImportMapsState) = 0;
 
   // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(

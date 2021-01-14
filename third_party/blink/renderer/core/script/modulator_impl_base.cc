@@ -213,13 +213,10 @@ void ModulatorImplBase::RegisterImportMap(const ImportMap* import_map,
   //
   // TODO(crbug.com/927119): Implement merging. Currently only one import map is
   // allowed.
-  if (import_map_) {
-    GetExecutionContext()->AddConsoleMessage(
-        mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kError,
-        "Multiple import maps are not yet supported. https://crbug.com/927119");
-    return;
-  }
 
+  // Because the second and subsequent import maps are already rejected in
+  // ScriptLoader::PrepareScript(), this is called only once.
+  DCHECK(!import_map_);
   import_map_ = import_map;
 }
 

@@ -138,12 +138,13 @@ void DummyModulator::RegisterImportMap(const ImportMap*,
   NOTREACHED();
 }
 
-bool DummyModulator::IsAcquiringImportMaps() const {
+Modulator::AcquiringImportMapsState
+DummyModulator::GetAcquiringImportMapsState() const {
   NOTREACHED();
-  return true;
+  return AcquiringImportMapsState::kAcquiring;
 }
 
-void DummyModulator::ClearIsAcquiringImportMaps() {
+void DummyModulator::SetAcquiringImportMapsState(AcquiringImportMapsState) {
   NOTREACHED();
 }
 
