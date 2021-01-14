@@ -5,71 +5,69 @@
 import {FittingType} from './constants.js';
 
 // Handles events specific to the PDF viewer and logs the corresponding metrics.
-export class PDFMetrics {
-  /**
-   * Records when the zoom mode is changed to fit a FittingType.
-   * @param {FittingType} fittingType the new FittingType.
-   */
-  static recordFitTo(fittingType) {
-    if (fittingType === FittingType.FIT_TO_PAGE) {
-      PDFMetrics.record(UserAction.FIT_TO_PAGE);
-    } else if (fittingType === FittingType.FIT_TO_WIDTH) {
-      PDFMetrics.record(UserAction.FIT_TO_WIDTH);
-    }
-    // There is no user action to do a fit-to-height, this only happens with
-    // the open param "view=FitV".
-  }
 
-  /**
-   * Records when the two up view mode is enabled or disabled.
-   * @param {boolean} enabled True when two up view mode is enabled.
-   */
-  static recordTwoUpViewEnabled(enabled) {
-    PDFMetrics.record(
-        enabled ? UserAction.TWO_UP_VIEW_ENABLE :
-                  UserAction.TWO_UP_VIEW_DISABLE);
+/**
+ * Records when the zoom mode is changed to fit a FittingType.
+ * @param {FittingType} fittingType the new FittingType.
+ */
+export function recordFitTo(fittingType) {
+  if (fittingType === FittingType.FIT_TO_PAGE) {
+    record(UserAction.FIT_TO_PAGE);
+  } else if (fittingType === FittingType.FIT_TO_WIDTH) {
+    record(UserAction.FIT_TO_WIDTH);
   }
+  // There is no user action to do a fit-to-height, this only happens with
+  // the open param "view=FitV".
+}
 
-  /**
-   * Records zoom in and zoom out actions.
-   * @param {boolean} isZoomIn True when the action is zooming in, false when
-   *     the action is zooming out.
-   */
-  static recordZoomAction(isZoomIn) {
-    PDFMetrics.record(isZoomIn ? UserAction.ZOOM_IN : UserAction.ZOOM_OUT);
+/**
+ * Records when the two up view mode is enabled or disabled.
+ * @param {boolean} enabled True when two up view mode is enabled.
+ */
+export function recordTwoUpViewEnabled(enabled) {
+  record(
+      enabled ? UserAction.TWO_UP_VIEW_ENABLE : UserAction.TWO_UP_VIEW_DISABLE);
+}
+
+/**
+ * Records zoom in and zoom out actions.
+ * @param {boolean} isZoomIn True when the action is zooming in, false when
+ *     the action is zooming out.
+ */
+export function recordZoomAction(isZoomIn) {
+  record(isZoomIn ? UserAction.ZOOM_IN : UserAction.ZOOM_OUT);
+}
+
+/**
+ * Records the given action to chrome.metricsPrivate.
+ * @param {UserAction} action
+ */
+export function record(action) {
+  if (!chrome.metricsPrivate) {
+    return;
   }
-
-  /**
-   * Records the given action to chrome.metricsPrivate.
-   * @param {UserAction} action
-   */
-  static record(action) {
-    if (!chrome.metricsPrivate) {
-      return;
-    }
-    if (!actionsMetric) {
-      actionsMetric = {
-        'metricName': 'PDF.Actions',
-        'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-        'min': 1,
-        'max': UserAction.NUMBER_OF_ACTIONS,
-        'buckets': UserAction.NUMBER_OF_ACTIONS + 1
-      };
-    }
-    chrome.metricsPrivate.recordValue(actionsMetric, action);
-    if (firstMap.has(action)) {
-      const firstAction = firstMap.get(action);
-      if (!firstActionRecorded.has(firstAction)) {
-        chrome.metricsPrivate.recordValue(actionsMetric, firstAction);
-        firstActionRecorded.add(firstAction);
-      }
+  if (!actionsMetric) {
+    actionsMetric = {
+      'metricName': 'PDF.Actions',
+      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+      'min': 1,
+      'max': UserAction.NUMBER_OF_ACTIONS,
+      'buckets': UserAction.NUMBER_OF_ACTIONS + 1
+    };
+  }
+  chrome.metricsPrivate.recordValue(actionsMetric, action);
+  if (firstMap.has(action)) {
+    const firstAction = firstMap.get(action);
+    if (!firstActionRecorded.has(firstAction)) {
+      chrome.metricsPrivate.recordValue(actionsMetric, firstAction);
+      firstActionRecorded.add(firstAction);
     }
   }
+}
 
-  static resetForTesting() {
-    firstActionRecorded.clear();
-    actionsMetric = null;
-  }
+export function resetForTesting() {
+  firstActionRecorded.clear();
+  actionsMetric = null;
 }
 
 /** @type {?chrome.metricsPrivate.MetricType} */
@@ -82,9 +80,9 @@ const firstActionRecorded = new Set();
 // Do not change the numeric values or reuse them since these numbers are
 // persisted to logs.
 /**
- * User Actions that can be recorded by calling PDFMetrics.record.
+ * User Actions that can be recorded by calling record.
  * The *_FIRST values are recorded automaticlly,
- * eg. PDFMetrics.record(...ROTATE) will also record ROTATE_FIRST
+ * eg. record(...ROTATE) will also record ROTATE_FIRST
  * on the first instance.
  * @enum {number}
  */

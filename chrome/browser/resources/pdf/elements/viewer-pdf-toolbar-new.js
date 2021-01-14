@@ -21,7 +21,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
-import {PDFMetrics, UserAction} from '../metrics.js';
+import {record, UserAction} from '../metrics.js';
 // <if expr="chromeos">
 import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
 // </if>
@@ -142,7 +142,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   /** @private */
   onSidenavToggleClick_() {
-    PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
+    record(UserAction.TOGGLE_SIDENAV);
     this.dispatchEvent(new CustomEvent('sidenav-toggle-click'));
   }
 
@@ -206,7 +206,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   /** @private */
   toggleDisplayAnnotations_() {
-    PDFMetrics.record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
+    record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
     this.displayAnnotations_ = !this.displayAnnotations_;
     this.dispatchEvent(new CustomEvent(
         'display-annotations-changed', {detail: this.displayAnnotations_}));
@@ -222,7 +222,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   /** @private */
   onPresentClick_() {
     assert(this.presentationModeEnabled);
-    PDFMetrics.record(UserAction.PRESENT);
+    record(UserAction.PRESENT);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('present-click'));
   }
@@ -230,7 +230,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   /** @private */
   onPropertiesClick_() {
     assert(this.documentPropertiesEnabled);
-    PDFMetrics.record(UserAction.PROPERTIES);
+    record(UserAction.PROPERTIES);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('properties-click'));
   }

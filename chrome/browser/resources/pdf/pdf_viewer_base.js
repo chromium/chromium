@@ -11,7 +11,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {BrowserApi, ZoomBehavior} from './browser_api.js';
 import {FittingType, Point} from './constants.js';
 import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
-import {PDFMetrics, UserAction} from './metrics.js';
+import {record, recordFitTo, recordZoomAction, UserAction} from './metrics.js';
 import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
 import {DocumentDimensionsMessageData, MessageObject} from './pdf_viewer_utils.js';
@@ -214,7 +214,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi.getStreamInfo().originalUrl;
 
-    PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+    record(UserAction.DOCUMENT_OPENED);
 
     // Parse open pdf parameters.
     this.paramsParser = new OpenPdfParamsParser(destination => {
@@ -595,13 +595,13 @@ export class PDFViewerBaseElement extends PolymerElement {
    */
   onFitToChanged(e) {
     this.updateViewportFit(e.detail);
-    PDFMetrics.recordFitTo(e.detail);
+    recordFitTo(e.detail);
   }
 
   /** @protected */
   onZoomIn() {
     this.viewport_.zoomIn();
-    PDFMetrics.recordZoomAction(/*isZoomIn=*/ true);
+    recordZoomAction(/*isZoomIn=*/ true);
   }
 
   /**
@@ -610,13 +610,13 @@ export class PDFViewerBaseElement extends PolymerElement {
    */
   onZoomChanged(e) {
     this.viewport_.setZoom(e.detail / 100);
-    PDFMetrics.record(UserAction.ZOOM_CUSTOM);
+    record(UserAction.ZOOM_CUSTOM);
   }
 
   /** @protected */
   onZoomOut() {
     this.viewport_.zoomOut();
-    PDFMetrics.recordZoomAction(/*isZoomIn=*/ false);
+    recordZoomAction(/*isZoomIn=*/ false);
   }
 
   /**
@@ -639,14 +639,14 @@ export class PDFViewerBaseElement extends PolymerElement {
 
   /** @protected */
   rotateClockwise() {
-    PDFMetrics.record(UserAction.ROTATE);
+    record(UserAction.ROTATE);
     this.viewport_.rotateClockwise();
     this.currentController.rotateClockwise();
   }
 
   /** @protected */
   rotateCounterclockwise() {
-    PDFMetrics.record(UserAction.ROTATE);
+    record(UserAction.ROTATE);
     this.viewport_.rotateCounterclockwise();
     this.currentController.rotateCounterclockwise();
   }

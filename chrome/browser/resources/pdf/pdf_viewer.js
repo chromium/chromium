@@ -32,7 +32,7 @@ import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {PDFMetrics, UserAction} from './metrics.js';
+import {record, recordTwoUpViewEnabled, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
@@ -626,7 +626,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           return;
         }
       }
-      PDFMetrics.record(UserAction.ENTER_ANNOTATION_MODE);
+      record(UserAction.ENTER_ANNOTATION_MODE);
       this.annotationMode_ = true;
       this.hasEnteredAnnotationMode_ = true;
       // TODO(dstockwell): feed real progress data from the Ink component
@@ -637,7 +637,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.updateProgress(100);
     } else {
       // Exit annotation mode.
-      PDFMetrics.record(UserAction.EXIT_ANNOTATION_MODE);
+      record(UserAction.EXIT_ANNOTATION_MODE);
       assert(!this.pluginController_.isActive);
       assert(this.inkController_.isActive);
       assert(this.currentController === this.inkController_);
@@ -780,7 +780,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     if (!this.pdfViewerUpdateEnabled_) {
       this.toolbarManager_.forceHideTopToolbar();
     }
-    PDFMetrics.recordTwoUpViewEnabled(this.twoUpViewEnabled_);
+    recordTwoUpViewEnabled(this.twoUpViewEnabled_);
   }
 
   /**
@@ -795,7 +795,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   goToPageAndXY_(origin, page, message) {
     this.viewport.goToPageAndXY(page, message.x, message.y);
     if (origin === 'bookmark') {
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.FOLLOW_BOOKMARK);
     }
   }
 
@@ -1170,11 +1170,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   onChangePage_(e) {
     this.viewport.goToPage(e.detail.page);
     if (e.detail.origin === 'bookmark') {
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.FOLLOW_BOOKMARK);
     } else if (e.detail.origin === 'pageselector') {
-      PDFMetrics.record(UserAction.PAGE_SELECTOR_NAVIGATE);
+      record(UserAction.PAGE_SELECTOR_NAVIGATE);
     } else if (e.detail.origin === 'thumbnail') {
-      PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
+      record(UserAction.THUMBNAIL_NAVIGATE);
     }
   }
 
@@ -1194,7 +1194,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    */
   onDropdownOpened_(e) {
     if (e.detail === 'bookmarks') {
-      PDFMetrics.record(UserAction.OPEN_BOOKMARKS_PANEL);
+      record(UserAction.OPEN_BOOKMARKS_PANEL);
     }
   }
 
@@ -1292,25 +1292,25 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   recordSaveMetrics_(requestType) {
-    PDFMetrics.record(UserAction.SAVE);
+    record(UserAction.SAVE);
     switch (requestType) {
       case SaveRequestType.ANNOTATION:
-        PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
+        record(UserAction.SAVE_WITH_ANNOTATION);
         break;
       case SaveRequestType.ORIGINAL:
-        PDFMetrics.record(
+        record(
             this.hasEdits_ ? UserAction.SAVE_ORIGINAL :
                              UserAction.SAVE_ORIGINAL_ONLY);
         break;
       case SaveRequestType.EDITED:
-        PDFMetrics.record(UserAction.SAVE_EDITED);
+        record(UserAction.SAVE_EDITED);
         break;
     }
   }
 
   /** @private */
   async onPrint_() {
-    PDFMetrics.record(UserAction.PRINT);
+    record(UserAction.PRINT);
     // <if expr="chromeos">
     await this.exitAnnotationMode_();
     // </if>

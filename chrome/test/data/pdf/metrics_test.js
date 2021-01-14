@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, PDFMetrics, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, record, recordFitTo, recordTwoUpViewEnabled, recordZoomAction, resetForTesting, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 chrome.test.runTests(function() {
   'use strict';
@@ -25,11 +25,11 @@ chrome.test.runTests(function() {
 
   return [
     function testMetricsDocumentOpened() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
 
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
       chrome.test.assertEq(
           {[UserAction.DOCUMENT_OPENED]: 1},
@@ -38,12 +38,12 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsRotation() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
       for (let i = 0; i < 4; i++) {
-        PDFMetrics.record(UserAction.ROTATE);
+        record(UserAction.ROTATE);
       }
 
       chrome.test.assertEq(
@@ -57,16 +57,16 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsFitTo() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_HEIGHT);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_PAGE);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_WIDTH);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_PAGE);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_WIDTH);
-      PDFMetrics.recordFitTo(FittingType.FIT_TO_PAGE);
+      record(UserAction.DOCUMENT_OPENED);
+      recordFitTo(FittingType.FIT_TO_HEIGHT);
+      recordFitTo(FittingType.FIT_TO_PAGE);
+      recordFitTo(FittingType.FIT_TO_WIDTH);
+      recordFitTo(FittingType.FIT_TO_PAGE);
+      recordFitTo(FittingType.FIT_TO_WIDTH);
+      recordFitTo(FittingType.FIT_TO_PAGE);
 
       chrome.test.assertEq(
           {
@@ -81,15 +81,15 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsTwoUpView() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
-      PDFMetrics.recordTwoUpViewEnabled(true);
-      PDFMetrics.recordTwoUpViewEnabled(false);
-      PDFMetrics.recordTwoUpViewEnabled(true);
-      PDFMetrics.recordTwoUpViewEnabled(false);
-      PDFMetrics.recordTwoUpViewEnabled(true);
+      record(UserAction.DOCUMENT_OPENED);
+      recordTwoUpViewEnabled(true);
+      recordTwoUpViewEnabled(false);
+      recordTwoUpViewEnabled(true);
+      recordTwoUpViewEnabled(false);
+      recordTwoUpViewEnabled(true);
 
       chrome.test.assertEq(
           {
@@ -104,17 +104,17 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsZoomAction() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
-      PDFMetrics.recordZoomAction(/*isZoomIn=*/ true);
-      PDFMetrics.recordZoomAction(/*isZoomIn=*/ false);
-      PDFMetrics.recordZoomAction(/*isZoomIn=*/ true);
-      PDFMetrics.recordZoomAction(/*isZoomIn=*/ false);
-      PDFMetrics.recordZoomAction(/*isZoomIn=*/ true);
-      PDFMetrics.record(UserAction.ZOOM_CUSTOM);
-      PDFMetrics.record(UserAction.ZOOM_CUSTOM);
+      record(UserAction.DOCUMENT_OPENED);
+      recordZoomAction(/*isZoomIn=*/ true);
+      recordZoomAction(/*isZoomIn=*/ false);
+      recordZoomAction(/*isZoomIn=*/ true);
+      recordZoomAction(/*isZoomIn=*/ false);
+      recordZoomAction(/*isZoomIn=*/ true);
+      record(UserAction.ZOOM_CUSTOM);
+      record(UserAction.ZOOM_CUSTOM);
 
       chrome.test.assertEq(
           {
@@ -131,19 +131,19 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsBookmarks() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
-      PDFMetrics.record(UserAction.OPEN_BOOKMARKS_PANEL);
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.OPEN_BOOKMARKS_PANEL);
+      record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.FOLLOW_BOOKMARK);
 
-      PDFMetrics.record(UserAction.OPEN_BOOKMARKS_PANEL);
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
-      PDFMetrics.record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.OPEN_BOOKMARKS_PANEL);
+      record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.FOLLOW_BOOKMARK);
+      record(UserAction.FOLLOW_BOOKMARK);
 
       chrome.test.assertEq(
           {
@@ -158,13 +158,13 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsPageSelector() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
-      PDFMetrics.record(UserAction.PAGE_SELECTOR_NAVIGATE);
-      PDFMetrics.record(UserAction.PAGE_SELECTOR_NAVIGATE);
+      record(UserAction.PAGE_SELECTOR_NAVIGATE);
+      record(UserAction.PAGE_SELECTOR_NAVIGATE);
 
       chrome.test.assertEq(
           {
@@ -177,19 +177,19 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsSideNav() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
-      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
-      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
-      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
-      PDFMetrics.record(UserAction.SELECT_SIDENAV_OUTLINE);
-      PDFMetrics.record(UserAction.SELECT_SIDENAV_THUMBNAILS);
-      PDFMetrics.record(UserAction.SELECT_SIDENAV_THUMBNAILS);
-      PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
-      PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
+      record(UserAction.TOGGLE_SIDENAV);
+      record(UserAction.TOGGLE_SIDENAV);
+      record(UserAction.TOGGLE_SIDENAV);
+      record(UserAction.SELECT_SIDENAV_OUTLINE);
+      record(UserAction.SELECT_SIDENAV_THUMBNAILS);
+      record(UserAction.SELECT_SIDENAV_THUMBNAILS);
+      record(UserAction.THUMBNAIL_NAVIGATE);
+      record(UserAction.THUMBNAIL_NAVIGATE);
 
       chrome.test.assertEq(
           {
@@ -208,29 +208,29 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsSaving() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_ORIGINAL_ONLY);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_ORIGINAL_ONLY);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_ORIGINAL);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_EDITED);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_ORIGINAL);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_ORIGINAL);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_EDITED);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
-      PDFMetrics.record(UserAction.SAVE);
-      PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_ORIGINAL_ONLY);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_ORIGINAL_ONLY);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_ORIGINAL);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_EDITED);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_ORIGINAL);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_ORIGINAL);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_EDITED);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_WITH_ANNOTATION);
+      record(UserAction.SAVE);
+      record(UserAction.SAVE_WITH_ANNOTATION);
 
       chrome.test.assertEq(
           {
@@ -251,20 +251,20 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsOverflowMenu() {
-      PDFMetrics.resetForTesting();
+      resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
-      PDFMetrics.record(UserAction.DOCUMENT_OPENED);
+      record(UserAction.DOCUMENT_OPENED);
 
-      PDFMetrics.record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
-      PDFMetrics.record(UserAction.PRESENT);
-      PDFMetrics.record(UserAction.PROPERTIES);
-      PDFMetrics.record(UserAction.PRESENT);
-      PDFMetrics.record(UserAction.PRESENT);
-      PDFMetrics.record(UserAction.PROPERTIES);
-      PDFMetrics.record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
-      PDFMetrics.record(UserAction.PROPERTIES);
-      PDFMetrics.record(UserAction.PRESENT);
+      record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
+      record(UserAction.PRESENT);
+      record(UserAction.PROPERTIES);
+      record(UserAction.PRESENT);
+      record(UserAction.PRESENT);
+      record(UserAction.PROPERTIES);
+      record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
+      record(UserAction.PROPERTIES);
+      record(UserAction.PRESENT);
 
       chrome.test.assertEq(
           {
