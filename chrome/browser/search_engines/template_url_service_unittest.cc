@@ -581,13 +581,18 @@ TEST_F(TemplateURLServiceTest, ClearBrowsingData_Keywords) {
   AddKeywordWithDate("name4", "key4", "http://foo4", std::string(),
                      std::string(), std::string(), true, std::string(),
                      now + one_day, Time(), Time());
-  // Try the other three states.
-  AddKeywordWithDate("name5", "key5", "http://foo5", "http://suggest5",
-                     std::string(), "http://icon5", false, "UTF-8;UTF-16", now,
-                     Time(), Time());
-  AddKeywordWithDate("name6", "key6", "http://foo6", "http://suggest6",
-                     std::string(), "http://icon6", false, "UTF-8;UTF-16",
-                     month_ago, Time(), Time());
+  // Add a non-replaceable engine, to verify we don't never remove those.
+  AddKeywordWithDate("user_engine_name", "user_engine_key", "http://foo5",
+                     "http://suggest5", std::string(), "http://icon5", false,
+                     "UTF-8;UTF-16", now, Time(), Time());
+  // Also add a replaceable engine that's marked as the Default Search Engine.
+  // We also need to verify we never remove those. https://crbug.com/1166372
+  TemplateURL* replaceable_dse = AddKeywordWithDate(
+      "replaceable_dse_name", "replaceable_dse_key", "http://foo6",
+      "http://suggest6", std::string(), "http://icon6", true, "UTF-8;UTF-16",
+      month_ago, Time(), Time());
+  ASSERT_THAT(replaceable_dse, NotNull());
+  model()->SetUserSelectedDefaultSearchProvider(replaceable_dse);
 
   // We just added a few items, validate them.
   EXPECT_EQ(6U, model()->GetTemplateURLs().size());
@@ -608,13 +613,15 @@ TEST_F(TemplateURLServiceTest, ClearBrowsingData_Keywords) {
   EXPECT_EQ(0U,
             model()->GetTemplateURLs()[0]->date_created().ToInternalValue());
 
-  EXPECT_EQ(ASCIIToUTF16("key5"), model()->GetTemplateURLs()[1]->keyword());
+  EXPECT_EQ(ASCIIToUTF16("user_engine_key"),
+            model()->GetTemplateURLs()[1]->keyword());
   EXPECT_FALSE(model()->GetTemplateURLs()[1]->safe_for_autoreplace());
   EXPECT_EQ(now.ToInternalValue(),
             model()->GetTemplateURLs()[1]->date_created().ToInternalValue());
 
-  EXPECT_EQ(ASCIIToUTF16("key6"), model()->GetTemplateURLs()[2]->keyword());
-  EXPECT_FALSE(model()->GetTemplateURLs()[2]->safe_for_autoreplace());
+  EXPECT_EQ(ASCIIToUTF16("replaceable_dse_key"),
+            model()->GetTemplateURLs()[2]->keyword());
+  EXPECT_TRUE(model()->GetTemplateURLs()[2]->safe_for_autoreplace());
   EXPECT_EQ(month_ago.ToInternalValue(),
             model()->GetTemplateURLs()[2]->date_created().ToInternalValue());
 

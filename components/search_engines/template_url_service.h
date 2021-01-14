@@ -679,6 +679,12 @@ class TemplateURLService : public WebDataServiceConsumer,
   // correct handling to its caller.
   bool RemoveDuplicateReplaceableEnginesOf(TemplateURL* candidate);
 
+  // Returns true if |turl| matches the default search provider. This method
+  // does both a GUID comparison, because while the model is being loaded, the
+  // DSE may be sourced from prefs, and we still want to consider the
+  // corresponding database entry a match. https://crbug.com/1164024
+  bool MatchesDefaultSearchProvider(TemplateURL* turl) const;
+
   // ---------- Browser state related members ---------------------------------
   PrefService* prefs_ = nullptr;
 
