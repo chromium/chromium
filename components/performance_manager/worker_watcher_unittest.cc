@@ -980,6 +980,104 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
 }
 
 // Ensures that the WorkerWatcher handles the case where a frame with a service
+// worker has a double client relationship with a service worker.
+// This appears to be happening out in the real world, if quite rarely.
+// See https://crbug.com/1143281#c33.
+TEST_F(WorkerWatcherTest, ServiceWorkerTwoFrameClientRelationships) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kServiceWorkerRelationshipsInGraph);
+
+  int render_process_id = process_node_source()->CreateProcessNode();
+
+  // Create and start a service worker.
+  int64_t service_worker_version_id =
+      service_worker_context()->CreateServiceWorker();
+  service_worker_context()->StartServiceWorker(service_worker_version_id,
+                                               render_process_id);
+
+  // Add a frame tree node as a client of a service worker.
+  int frame_tree_node_id = GenerateNextId();
+  std::string first_client_uuid = service_worker_context()->AddClient(
+      service_worker_version_id,
+      content::ServiceWorkerClientInfo(frame_tree_node_id));
+
+  // Check expectations on the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       worker_node =
+           GetServiceWorkerNode(service_worker_version_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(worker_node));
+        EXPECT_EQ(worker_node->worker_type(), WorkerNode::WorkerType::kService);
+        // The frame was not yet added as a client.
+        EXPECT_TRUE(worker_node->client_frames().empty());
+      }));
+
+  // Add a second client relationship between the same two entities.
+  std::string second_client_uuid = service_worker_context()->AddClient(
+      service_worker_version_id,
+      content::ServiceWorkerClientInfo(frame_tree_node_id));
+
+  // Now simulate the navigation commit.
+  content::GlobalFrameRoutingId render_frame_host_id =
+      frame_node_source()->CreateFrameNode(
+          render_process_id,
+          process_node_source()->GetProcessNode(render_process_id));
+  service_worker_context()->OnControlleeNavigationCommitted(
+      service_worker_version_id, first_client_uuid, render_frame_host_id);
+
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       service_worker_node = GetServiceWorkerNode(service_worker_version_id),
+       client_frame_node = frame_node_source()->GetFrameNode(
+           render_frame_host_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(1u, service_worker_node->client_frames().size());
+        EXPECT_TRUE(IsWorkerClient(service_worker_node, client_frame_node));
+      }));
+
+  // Commit the second controllee navigation.
+  service_worker_context()->OnControlleeNavigationCommitted(
+      service_worker_version_id, second_client_uuid, render_frame_host_id);
+  // Verify that the graph is still the same.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       service_worker_node = GetServiceWorkerNode(service_worker_version_id),
+       client_frame_node = frame_node_source()->GetFrameNode(
+           render_frame_host_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(1u, service_worker_node->client_frames().size());
+        EXPECT_TRUE(IsWorkerClient(service_worker_node, client_frame_node));
+      }));
+
+  // Remove the first client relationship.
+  service_worker_context()->RemoveClient(service_worker_version_id,
+                                         first_client_uuid);
+  // Verify that the graph is still the same.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       service_worker_node = GetServiceWorkerNode(service_worker_version_id),
+       client_frame_node = frame_node_source()->GetFrameNode(
+           render_frame_host_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
+        EXPECT_EQ(service_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(1u, service_worker_node->client_frames().size());
+        EXPECT_TRUE(IsWorkerClient(service_worker_node, client_frame_node));
+      }));
+
+  // Teardown.
+  service_worker_context()->RemoveClient(service_worker_version_id,
+                                         second_client_uuid);
+  service_worker_context()->StopServiceWorker(service_worker_version_id);
+  service_worker_context()->DestroyServiceWorker(service_worker_version_id);
+}
+
+// Ensures that the WorkerWatcher handles the case where a frame with a service
 // worker is created but it's navigation is never committed before the
 // FrameTreeNode is destroyed.
 TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientDestroyedBeforeCommit) {
