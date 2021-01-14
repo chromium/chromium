@@ -51,6 +51,11 @@ Polymer({
       observer: 'onShowErrorChanged_',
     },
 
+    showLoadingIndicator: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * @type {!PageState}
      * @private

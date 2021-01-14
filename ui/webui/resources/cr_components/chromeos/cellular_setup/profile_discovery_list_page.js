@@ -29,6 +29,10 @@ Polymer({
       type: Object,
       notify: true,
     },
+
+    showLoadingIndicator: {
+      type: Boolean,
+    },
   },
 
   /**

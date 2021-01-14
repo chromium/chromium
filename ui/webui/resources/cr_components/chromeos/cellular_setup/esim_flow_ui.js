@@ -66,6 +66,15 @@ cr.define('cellular_setup', function() {
       },
 
       /**
+       * Whether a loading indicator should be shown for the current page.
+       * @private {boolean}
+       */
+      showPageLoadingIndicator_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Profiles fetched that have status kPending.
        * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
        * @private
@@ -169,6 +178,7 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
+      this.showPageLoadingIndicator_ = false;
       if (response.result ===
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {
@@ -313,6 +323,8 @@ cr.define('cellular_setup', function() {
 
     /** SubflowBehavior override */
     navigateForward() {
+      this.showError_ = false;
+      this.showPageLoadingIndicator_ = true;
       switch (this.state_) {
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           // Assume installing the profile doesn't require a confirmation
@@ -329,6 +341,7 @@ cr.define('cellular_setup', function() {
             this.selectedProfile_.installProfile('').then(
                 this.handleProfileInstallResponse_.bind(this));
           } else {
+            this.showPageLoadingIndicator_ = false;
             this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
           }
           break;

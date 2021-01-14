@@ -33,7 +33,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     activationCodePage.setMediaDevices(mediaDevices);
   });
 
-  test('Button states', async function() {
+  test('UI states', async function() {
     const video = activationCodePage.$$('#video');
     const startScanningContainer =
         activationCodePage.$$('#startScanningContainer');
@@ -42,6 +42,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     const switchCameraButton = activationCodePage.$$('#switchCameraButton');
     const scanSuccessContainer = activationCodePage.$$('#scanSuccessContainer');
     const scanFailureContainer = activationCodePage.$$('#scanFailureContainer');
+    const spinner = activationCodePage.$$('paper-spinner-lite');
 
     assertTrue(!!video);
     assertTrue(!!startScanningContainer);
@@ -50,12 +51,14 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(!!switchCameraButton);
     assertTrue(!!scanSuccessContainer);
     assertTrue(!!scanFailureContainer);
+    assertTrue(!!spinner);
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
+    assertTrue(spinner.hidden);
 
     // Click the start scanning button.
     startScanningButton.click();
@@ -113,6 +116,9 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanSuccessContainer.hidden);
     assertFalse(scanFailureContainer.hidden);
+
+    activationCodePage.showLoadingIndicator = true;
+    assertFalse(spinner.hidden);
   });
 
   test('Switch camera button states', async function() {

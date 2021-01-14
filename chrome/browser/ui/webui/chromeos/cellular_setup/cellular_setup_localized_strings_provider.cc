@@ -65,6 +65,7 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"scanQRCodeSuccess", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS},
     {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY},
     {"scanQrCodeInvalid", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID},
+    {"scanQrCodeLoading", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_LOADING},
     {"profileListPageMessage", IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE},
     {"eidPopupTitle", IDS_CELLULAR_SETUP_EID_POPUP_TITLE},
     {"eidPopupDescription", IDS_CELLULAR_SETUP_EID_POPUP_DESCRIPTION},
@@ -75,7 +76,9 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"confirmationCodeInput",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT},
     {"confirmationCodeError",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR}};  // namespace
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR},
+    {"confirmationCodeLoading",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING}};  // namespace
 
 struct NamedBoolean {
   const char* name;
