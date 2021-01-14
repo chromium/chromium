@@ -10,12 +10,16 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.ConnectionType;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -33,6 +37,7 @@ public class ImageDescriptionsDialog
 
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mPropertyModel;
+    private WebContentsObserver mWebContentsObserver;
 
     private RadioButtonWithDescriptionLayout mRadioGroup;
     private RadioButtonWithDescription mOptionJustOnceRadioButton;
@@ -52,7 +57,7 @@ public class ImageDescriptionsDialog
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
         mWebContents = webContents;
-        mProfile = Profile.fromWebContents(mWebContents);
+        mProfile = Profile.getLastUsedRegularProfile();
         mContext = context;
 
         // Set initial state.
@@ -86,6 +91,32 @@ public class ImageDescriptionsDialog
         if (mShouldShowDontAskAgainOption) {
             updateOptionalCheckbox(R.string.dont_ask_again, mDontAskAgainState);
         }
+
+        // Create a |WebContentsObserver| to track changes in state for which we should
+        // dismiss the dialog, such as navigation, and |mWebContents| being hidden or destroyed.
+        mWebContentsObserver = new WebContentsObserver(mWebContents) {
+            @Override
+            public void wasHidden() {
+                unregisterObserver();
+            }
+
+            @Override
+            public void navigationEntryCommitted() {
+                unregisterObserver();
+            }
+
+            @Override
+            public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {
+                // Dismiss the dialog when the associated WebContents is detached from the window.
+                if (windowAndroid == null) unregisterObserver();
+            }
+
+            @Override
+            public void destroy() {
+                super.destroy();
+                dismissEarly();
+            }
+        };
 
         // Build our dialog property model.
         mPropertyModel =
@@ -170,6 +201,14 @@ public class ImageDescriptionsDialog
     }
 
     /**
+     * Helper method to unregister |mWebContentsObserver| during changes in state to |mWebContents|.
+     * The call to #destroy() will also dismiss the dialog.
+     */
+    private void unregisterObserver() {
+        mWebContentsObserver.destroy();
+    }
+
+    /**
      * Helper method to display this dialog.
      */
     public void show() {
@@ -177,10 +216,18 @@ public class ImageDescriptionsDialog
     }
 
     /**
+     * Helper method to dismiss this dialog from changes to state of the |mWebContents|.
+     * Consider proactively dismissing the dialog to be a negative button click.
+     */
+    private void dismissEarly() {
+        dismiss(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+    }
+
+    /**
      * Helper method to dismiss this dialog.
      * @param dialogDismissableCause        DialogDismissalCause, e.g. positive or negative
      */
-    public void dismiss(int dialogDismissableCause) {
+    private void dismiss(int dialogDismissableCause) {
         mModalDialogManager.dismissDialog(mPropertyModel, dialogDismissableCause);
     }
 }
