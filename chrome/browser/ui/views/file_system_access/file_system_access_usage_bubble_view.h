@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_H_
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 #include "ui/base/models/table_model.h"
 #include "url/origin.h"
 
-class NativeFileSystemUsageBubbleView : public LocationBarBubbleDelegateView {
+class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
  public:
   struct Usage {
     Usage();
@@ -33,7 +33,7 @@ class NativeFileSystemUsageBubbleView : public LocationBarBubbleDelegateView {
   static void CloseCurrentBubble();
 
   // Returns the bubble if the bubble is showing. Returns null otherwise.
-  static NativeFileSystemUsageBubbleView* GetBubble();
+  static FileSystemAccessUsageBubbleView* GetBubble();
 
  private:
   class FilePathListModel : public ui::TableModel {
@@ -59,11 +59,11 @@ class NativeFileSystemUsageBubbleView : public LocationBarBubbleDelegateView {
     DISALLOW_COPY_AND_ASSIGN(FilePathListModel);
   };
 
-  NativeFileSystemUsageBubbleView(views::View* anchor_view,
+  FileSystemAccessUsageBubbleView(views::View* anchor_view,
                                   content::WebContents* web_contents,
                                   const url::Origin& origin,
                                   Usage usage);
-  ~NativeFileSystemUsageBubbleView() override;
+  ~FileSystemAccessUsageBubbleView() override;
 
   // LocationBarBubbleDelegateView:
   base::string16 GetAccessibleWindowTitle() const override;
@@ -78,14 +78,14 @@ class NativeFileSystemUsageBubbleView : public LocationBarBubbleDelegateView {
   // Singleton instance of the bubble. The bubble can only be shown on the
   // active browser window, so there is no case in which it will be shown
   // twice at the same time.
-  static NativeFileSystemUsageBubbleView* bubble_;
+  static FileSystemAccessUsageBubbleView* bubble_;
 
   const url::Origin origin_;
   const Usage usage_;
   FilePathListModel readable_paths_model_;
   FilePathListModel writable_paths_model_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemUsageBubbleView);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessUsageBubbleView);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_H_

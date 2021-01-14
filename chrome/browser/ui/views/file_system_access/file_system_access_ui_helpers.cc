@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_ui_helpers.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -10,7 +10,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 
-namespace native_file_system_ui_helper {
+namespace file_system_access_ui_helper {
 
 std::unique_ptr<views::View> CreateOriginLabel(int message_id,
                                                const url::Origin& origin,
@@ -79,4 +79,4 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
   return label;
 }
 
-}  // namespace native_file_system_ui_helper
+}  // namespace file_system_access_ui_helper

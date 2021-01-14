@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
   WaitForTestSystemAppInstall();
 
   // Test for sensitive directory (which are otherwise blocked by
-  // NativeFileSystem API). It is safe to use |chrome::DIR_DEFAULT_DOWNLOADS|,
+  // FileSystemAccess API). It is safe to use |chrome::DIR_DEFAULT_DOWNLOADS|,
   // because InProcBrowserTest fixture sets up different download directory for
   // each test cases.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Base class for testing File Handling and Native File System with Chrome OS
+// Base class for testing File Handling and File System Access with Chrome OS
 // File System Provider features.
 class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
     : public SystemWebAppManagerLaunchDirectoryBrowserTest {
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_P(
                          kTestPngFile)));
 }
 
-// Test that the Native File System implementation doesn't cause a crash when
+// Test that the File System Access implementation doesn't cause a crash when
 // writing to readonly files.
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(content::ExecuteScript(web_contents, "(function() {})();"));
 }
 
-// Test that the Native File System implementation doesn't cause a crash when
+// Test that the File System Access implementation doesn't cause a crash when
 // deleting readonly files.
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,

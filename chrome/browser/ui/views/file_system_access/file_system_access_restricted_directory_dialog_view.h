@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -28,13 +28,13 @@ class Widget;
 
 // A dialog that informs the user that they can't give a website access to a
 // specific folder.
-class NativeFileSystemRestrictedDirectoryDialogView
+class FileSystemAccessRestrictedDirectoryDialogView
     : public views::DialogDelegateView {
  public:
   using SensitiveDirectoryResult =
       content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
-  ~NativeFileSystemRestrictedDirectoryDialogView() override;
+  ~FileSystemAccessRestrictedDirectoryDialogView() override;
 
   // Creates and shows the dialog. The |callback| is called when the dialog is
   // dismissed.
@@ -46,7 +46,7 @@ class NativeFileSystemRestrictedDirectoryDialogView
       content::WebContents* web_contents);
 
  private:
-  NativeFileSystemRestrictedDirectoryDialogView(
+  FileSystemAccessRestrictedDirectoryDialogView(
       const url::Origin& origin,
       const base::FilePath& path,
       content::FileSystemAccessPermissionContext::HandleType handle_type,
@@ -55,7 +55,7 @@ class NativeFileSystemRestrictedDirectoryDialogView
   const content::FileSystemAccessPermissionContext::HandleType handle_type_;
   base::OnceCallback<void(SensitiveDirectoryResult)> callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemRestrictedDirectoryDialogView);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessRestrictedDirectoryDialogView);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_UI_HELPERS_H_
-#define CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_UI_HELPERS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_UI_HELPERS_H_
+#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_UI_HELPERS_H_
 
 #include <memory>
 
@@ -19,7 +19,7 @@ namespace views {
 class View;
 }
 
-namespace native_file_system_ui_helper {
+namespace file_system_access_ui_helper {
 
 // Creates and returns a label where the place holder is replaced with |origin|.
 // If |show_emphasis| is true, the origin is formatted as emphasized text.
@@ -37,6 +37,6 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
                                                    int text_context,
                                                    bool show_emphasis);
 
-}  // namespace native_file_system_ui_helper
+}  // namespace file_system_access_ui_helper
 
-#endif  // CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_UI_HELPERS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_UI_HELPERS_H_

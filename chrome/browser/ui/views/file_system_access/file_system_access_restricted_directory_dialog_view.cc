@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_restricted_directory_dialog_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/native_file_system/native_file_system_ui_helpers.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
@@ -18,29 +18,29 @@
 
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
-NativeFileSystemRestrictedDirectoryDialogView::
-    ~NativeFileSystemRestrictedDirectoryDialogView() {
+FileSystemAccessRestrictedDirectoryDialogView::
+    ~FileSystemAccessRestrictedDirectoryDialogView() {
   // Make sure the dialog ends up calling the callback no matter what.
   if (!callback_.is_null())
     Accept();
 }
 
 // static
-views::Widget* NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
+views::Widget* FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
     const url::Origin& origin,
     const base::FilePath& path,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<void(SensitiveDirectoryResult)> callback,
     content::WebContents* web_contents) {
   auto delegate =
-      base::WrapUnique(new NativeFileSystemRestrictedDirectoryDialogView(
+      base::WrapUnique(new FileSystemAccessRestrictedDirectoryDialogView(
           origin, path, handle_type, std::move(callback)));
   return constrained_window::ShowWebModalDialogViews(delegate.release(),
                                                      web_contents);
 }
 
-NativeFileSystemRestrictedDirectoryDialogView::
-    NativeFileSystemRestrictedDirectoryDialogView(
+FileSystemAccessRestrictedDirectoryDialogView::
+    FileSystemAccessRestrictedDirectoryDialogView(
         const url::Origin& origin,
         const base::FilePath& path,
         content::FileSystemAccessPermissionContext::HandleType handle_type,
@@ -55,7 +55,7 @@ NativeFileSystemRestrictedDirectoryDialogView::
                          ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_BUTTON
                          : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_BUTTON));
 
-  auto run_callback = [](NativeFileSystemRestrictedDirectoryDialogView* dialog,
+  auto run_callback = [](FileSystemAccessRestrictedDirectoryDialogView* dialog,
                          SensitiveDirectoryResult result) {
     std::move(dialog->callback_).Run(result);
   };
@@ -73,7 +73,7 @@ NativeFileSystemRestrictedDirectoryDialogView::
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  AddChildView(native_file_system_ui_helper::CreateOriginLabel(
+  AddChildView(file_system_access_ui_helper::CreateOriginLabel(
       handle_type_ == HandleType::kDirectory
           ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TEXT
           : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TEXT,
@@ -88,6 +88,6 @@ void ShowFileSystemAccessRestrictedDirectoryDialog(
         content::FileSystemAccessPermissionContext::SensitiveDirectoryResult)>
         callback,
     content::WebContents* web_contents) {
-  NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
+  FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
       origin, path, handle_type, std::move(callback), web_contents);
 }

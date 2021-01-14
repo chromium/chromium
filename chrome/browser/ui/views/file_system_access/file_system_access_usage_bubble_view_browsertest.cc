@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 
-class NativeFileSystemUsageBubbleViewTest : public DialogBrowserTest {
+class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    NativeFileSystemUsageBubbleView::Usage usage;
+    FileSystemAccessUsageBubbleView::Usage usage;
     url::Origin origin = kTestOrigin;
     if (name == "SingleWritableFile") {
       usage.writable_files.emplace_back(
@@ -94,7 +94,7 @@ class NativeFileSystemUsageBubbleViewTest : public DialogBrowserTest {
       NOTREACHED() << "Unimplemented test: " << name;
     }
 
-    NativeFileSystemUsageBubbleView::ShowBubble(
+    FileSystemAccessUsageBubbleView::ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), origin,
         std::move(usage));
   }
@@ -104,66 +104,66 @@ class NativeFileSystemUsageBubbleViewTest : public DialogBrowserTest {
       url::Origin::Create(GURL("https://example.com"));
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_SingleWritableFile) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_TwoWritableFiles) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_SingleReadableFile) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_MultipleReadableFiles) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_SingleWritableFolder) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_MultipleWritableFolders) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_WritableFilesAndFolders) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_ReadableFilesAndFolders) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_SingleReadableFolder) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_MultipleReadableFolders) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_ReadableAndWritableFolders) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemUsageBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_LongOrigin) {
   ShowAndVerifyUi();
 }

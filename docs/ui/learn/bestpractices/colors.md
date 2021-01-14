@@ -119,7 +119,7 @@ constructor since it seemed reasonable to do:
 
 **Best practice**
 
-The [current version](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.cc;l=196;drc=532834e1da3874a57dde3ed76511f53b8eb8ecdf)
+The [current version](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.cc;l=196;drc=532834e1da3874a57dde3ed76511f53b8eb8ecdf)
 moves this to `OnThemeChanged()` and thus handles theme changes correctly:
 
 |||---|||

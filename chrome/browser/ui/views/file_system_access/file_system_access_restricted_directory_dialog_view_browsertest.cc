@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_restricted_directory_dialog_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
@@ -15,12 +15,12 @@
 using SensitiveDirectoryResult =
     content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
-class NativeFileSystemRestrictedDirectoryDialogViewTest
+class FileSystemAccessRestrictedDirectoryDialogViewTest
     : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    widget_ = NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
+    widget_ = FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
         kTestOrigin, base::FilePath(FILE_PATH_LITERAL("/foo/bar")),
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
         base::BindLambdaForTesting([&](SensitiveDirectoryResult result) {
@@ -41,7 +41,7 @@ class NativeFileSystemRestrictedDirectoryDialogViewTest
       SensitiveDirectoryResult::kAllowed;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
                        AcceptRunsCallback) {
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemRestrictedDirectoryDialogViewTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
                        CancelRunsCallback) {
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemRestrictedDirectoryDialogViewTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
                        InvokeUi_default) {
   ShowAndVerifyUi();
 }

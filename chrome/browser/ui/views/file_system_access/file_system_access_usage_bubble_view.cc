@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 
 #include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/native_file_system/native_file_system_ui_helpers.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -51,7 +51,7 @@ namespace {
 // the listed paths. It is set to true iff a separate label is needed at the end
 // of the dialog to explain lifetime.
 int ComputeHeadingMessageFromUsage(
-    const NativeFileSystemUsageBubbleView::Usage& usage,
+    const FileSystemAccessUsageBubbleView::Usage& usage,
     base::FilePath* embedded_path) {
   // Only files.
   if (usage.writable_directories.empty() &&
@@ -226,13 +226,13 @@ class CollapsibleListView : public views::View {
 
 }  // namespace
 
-NativeFileSystemUsageBubbleView::Usage::Usage() = default;
-NativeFileSystemUsageBubbleView::Usage::~Usage() = default;
-NativeFileSystemUsageBubbleView::Usage::Usage(Usage&&) = default;
-NativeFileSystemUsageBubbleView::Usage& NativeFileSystemUsageBubbleView::Usage::
-operator=(Usage&&) = default;
+FileSystemAccessUsageBubbleView::Usage::Usage() = default;
+FileSystemAccessUsageBubbleView::Usage::~Usage() = default;
+FileSystemAccessUsageBubbleView::Usage::Usage(Usage&&) = default;
+FileSystemAccessUsageBubbleView::Usage&
+FileSystemAccessUsageBubbleView::Usage::operator=(Usage&&) = default;
 
-NativeFileSystemUsageBubbleView::FilePathListModel::FilePathListModel(
+FileSystemAccessUsageBubbleView::FilePathListModel::FilePathListModel(
     const views::View* owner,
     std::vector<base::FilePath> files,
     std::vector<base::FilePath> directories)
@@ -240,14 +240,14 @@ NativeFileSystemUsageBubbleView::FilePathListModel::FilePathListModel(
       files_(std::move(files)),
       directories_(std::move(directories)) {}
 
-NativeFileSystemUsageBubbleView::FilePathListModel::~FilePathListModel() =
+FileSystemAccessUsageBubbleView::FilePathListModel::~FilePathListModel() =
     default;
 
-int NativeFileSystemUsageBubbleView::FilePathListModel::RowCount() {
+int FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
   return files_.size() + directories_.size();
 }
 
-base::string16 NativeFileSystemUsageBubbleView::FilePathListModel::GetText(
+base::string16 FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     int row,
     int column_id) {
   if (size_t{row} < files_.size())
@@ -255,7 +255,7 @@ base::string16 NativeFileSystemUsageBubbleView::FilePathListModel::GetText(
   return directories_[row - files_.size()].BaseName().LossyDisplayName();
 }
 
-gfx::ImageSkia NativeFileSystemUsageBubbleView::FilePathListModel::GetIcon(
+gfx::ImageSkia FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
     int row) {
   const SkColor icon_color = owner_->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DefaultIconColor);
@@ -265,22 +265,22 @@ gfx::ImageSkia NativeFileSystemUsageBubbleView::FilePathListModel::GetIcon(
                                kIconSize, icon_color);
 }
 
-base::string16 NativeFileSystemUsageBubbleView::FilePathListModel::GetTooltip(
+base::string16 FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
     int row) {
   if (size_t{row} < files_.size())
     return files_[row].LossyDisplayName();
   return directories_[row - files_.size()].LossyDisplayName();
 }
 
-void NativeFileSystemUsageBubbleView::FilePathListModel::SetObserver(
+void FileSystemAccessUsageBubbleView::FilePathListModel::SetObserver(
     ui::TableModelObserver*) {}
 
 // static
-NativeFileSystemUsageBubbleView* NativeFileSystemUsageBubbleView::bubble_ =
+FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::bubble_ =
     nullptr;
 
 // static
-void NativeFileSystemUsageBubbleView::ShowBubble(
+void FileSystemAccessUsageBubbleView::ShowBubble(
     content::WebContents* web_contents,
     const url::Origin& origin,
     Usage usage) {
@@ -308,13 +308,12 @@ void NativeFileSystemUsageBubbleView::ShowBubble(
     return base::Contains(writable_files, path);
   });
 
-  bubble_ = new NativeFileSystemUsageBubbleView(
-      button_provider->GetAnchorView(
-          PageActionIconType::kNativeFileSystemAccess),
+  bubble_ = new FileSystemAccessUsageBubbleView(
+      button_provider->GetAnchorView(PageActionIconType::kFileSystemAccess),
       web_contents, origin, std::move(usage));
 
   bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
-      PageActionIconType::kNativeFileSystemAccess));
+      PageActionIconType::kFileSystemAccess));
   views::BubbleDialogDelegateView::CreateBubble(bubble_);
 
   bubble_->ShowForReason(DisplayReason::USER_GESTURE,
@@ -322,17 +321,17 @@ void NativeFileSystemUsageBubbleView::ShowBubble(
 }
 
 // static
-void NativeFileSystemUsageBubbleView::CloseCurrentBubble() {
+void FileSystemAccessUsageBubbleView::CloseCurrentBubble() {
   if (bubble_)
     bubble_->CloseBubble();
 }
 
 // static
-NativeFileSystemUsageBubbleView* NativeFileSystemUsageBubbleView::GetBubble() {
+FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::GetBubble() {
   return bubble_;
 }
 
-NativeFileSystemUsageBubbleView::NativeFileSystemUsageBubbleView(
+FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     const url::Origin& origin,
@@ -351,15 +350,15 @@ NativeFileSystemUsageBubbleView::NativeFileSystemUsageBubbleView(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_NATIVE_FILE_SYSTEM_USAGE_REMOVE_ACCESS));
   SetCancelCallback(
-      base::BindOnce(&NativeFileSystemUsageBubbleView::OnDialogCancelled,
+      base::BindOnce(&FileSystemAccessUsageBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
-NativeFileSystemUsageBubbleView::~NativeFileSystemUsageBubbleView() = default;
+FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() = default;
 
-base::string16 NativeFileSystemUsageBubbleView::GetAccessibleWindowTitle()
+base::string16 FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
@@ -368,15 +367,15 @@ base::string16 NativeFileSystemUsageBubbleView::GetAccessibleWindowTitle()
 
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
-      ->GetPageActionIconView(PageActionIconType::kNativeFileSystemAccess)
+      ->GetPageActionIconView(PageActionIconType::kFileSystemAccess)
       ->GetTextForTooltipAndAccessibleName();
 }
 
-bool NativeFileSystemUsageBubbleView::ShouldShowCloseButton() const {
+bool FileSystemAccessUsageBubbleView::ShouldShowCloseButton() const {
   return true;
 }
 
-void NativeFileSystemUsageBubbleView::Init() {
+void FileSystemAccessUsageBubbleView::Init() {
   // Set up the layout of the bubble.
   const views::LayoutProvider* provider = ChromeLayoutProvider::Get();
   gfx::Insets dialog_insets =
@@ -398,12 +397,12 @@ void NativeFileSystemUsageBubbleView::Init() {
       ComputeHeadingMessageFromUsage(usage_, &embedded_path);
 
   if (!embedded_path.empty()) {
-    AddChildView(native_file_system_ui_helper::CreateOriginPathLabel(
+    AddChildView(file_system_access_ui_helper::CreateOriginPathLabel(
         heading_message_id, origin_, embedded_path,
         views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
   } else {
-    AddChildView(native_file_system_ui_helper::CreateOriginLabel(
+    AddChildView(file_system_access_ui_helper::CreateOriginLabel(
         heading_message_id, origin_, views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
 
@@ -437,7 +436,7 @@ void NativeFileSystemUsageBubbleView::Init() {
   }
 }
 
-void NativeFileSystemUsageBubbleView::OnDialogCancelled() {
+void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.RevokePermissions"));
 
@@ -453,21 +452,21 @@ void NativeFileSystemUsageBubbleView::OnDialogCancelled() {
   context->RevokeGrants(origin_);
 }
 
-void NativeFileSystemUsageBubbleView::WindowClosing() {
+void FileSystemAccessUsageBubbleView::WindowClosing() {
   // |bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
   if (bubble_ == this)
     bubble_ = nullptr;
 }
 
-void NativeFileSystemUsageBubbleView::CloseBubble() {
+void FileSystemAccessUsageBubbleView::CloseBubble() {
   // Widget's Close() is async, but we don't want to use bubble_ after
   // this. Additionally web_contents() may have been destroyed.
   bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
 }
 
-void NativeFileSystemUsageBubbleView::ChildPreferredSizeChanged(
+void FileSystemAccessUsageBubbleView::ChildPreferredSizeChanged(
     views::View* child) {
   LocationBarBubbleDelegateView::ChildPreferredSizeChanged(child);
   SizeToContents();

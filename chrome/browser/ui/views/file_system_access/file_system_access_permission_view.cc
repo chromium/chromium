@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_permission_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_permission_view.h"
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/native_file_system/native_file_system_ui_helpers.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/permission_util.h"
@@ -25,7 +25,7 @@ namespace {
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
-int GetMessageText(const NativeFileSystemPermissionView::Request& request) {
+int GetMessageText(const FileSystemAccessPermissionView::Request& request) {
   switch (request.access) {
     case AccessType::kRead:
       return request.handle_type == HandleType::kDirectory
@@ -42,7 +42,7 @@ int GetMessageText(const NativeFileSystemPermissionView::Request& request) {
   NOTREACHED();
 }
 
-int GetButtonLabel(const NativeFileSystemPermissionView::Request& request) {
+int GetButtonLabel(const FileSystemAccessPermissionView::Request& request) {
   switch (request.access) {
     case AccessType::kRead:
       return request.handle_type == HandleType::kDirectory
@@ -60,14 +60,14 @@ int GetButtonLabel(const NativeFileSystemPermissionView::Request& request) {
 
 }  // namespace
 
-NativeFileSystemPermissionView::NativeFileSystemPermissionView(
+FileSystemAccessPermissionView::FileSystemAccessPermissionView(
     const Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback)
     : request_(request), callback_(std::move(callback)) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(GetButtonLabel(request_)));
 
-  auto run_callback = [](NativeFileSystemPermissionView* dialog,
+  auto run_callback = [](FileSystemAccessPermissionView* dialog,
                          permissions::PermissionAction result) {
     std::move(dialog->callback_).Run(result);
   };
@@ -89,29 +89,29 @@ NativeFileSystemPermissionView::NativeFileSystemPermissionView(
       provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  AddChildView(native_file_system_ui_helper::CreateOriginPathLabel(
+  AddChildView(file_system_access_ui_helper::CreateOriginPathLabel(
       GetMessageText(request_), request_.origin, request_.path,
       CONTEXT_DIALOG_BODY_TEXT_SMALL,
       /*show_emphasis=*/true));
 }
 
-NativeFileSystemPermissionView::~NativeFileSystemPermissionView() {
+FileSystemAccessPermissionView::~FileSystemAccessPermissionView() {
   // Make sure the dialog ends up calling the callback no matter what.
   if (!callback_.is_null())
     Close();
 }
 
-views::Widget* NativeFileSystemPermissionView::ShowDialog(
+views::Widget* FileSystemAccessPermissionView::ShowDialog(
     const Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {
   auto delegate = base::WrapUnique(
-      new NativeFileSystemPermissionView(request, std::move(callback)));
+      new FileSystemAccessPermissionView(request, std::move(callback)));
   return constrained_window::ShowWebModalDialogViews(delegate.release(),
                                                      web_contents);
 }
 
-base::string16 NativeFileSystemPermissionView::GetWindowTitle() const {
+base::string16 FileSystemAccessPermissionView::GetWindowTitle() const {
   switch (request_.access) {
     case AccessType::kRead:
       if (request_.handle_type == HandleType::kDirectory) {
@@ -139,14 +139,14 @@ base::string16 NativeFileSystemPermissionView::GetWindowTitle() const {
   NOTREACHED();
 }
 
-views::View* NativeFileSystemPermissionView::GetInitiallyFocusedView() {
+views::View* FileSystemAccessPermissionView::GetInitiallyFocusedView() {
   return GetCancelButton();
 }
 
 void ShowFileSystemAccessPermissionDialog(
-    const NativeFileSystemPermissionView::Request& request,
+    const FileSystemAccessPermissionView::Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {
-  NativeFileSystemPermissionView::ShowDialog(request, std::move(callback),
+  FileSystemAccessPermissionView::ShowDialog(request, std::move(callback),
                                              web_contents);
 }

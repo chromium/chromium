@@ -95,10 +95,10 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 
 }  // namespace
 
-// End-to-end tests for the native file system API. Among other things, these
-// test the integration between usage of the Native File System API and the
+// End-to-end tests for the File System Access API. Among other things, these
+// test the integration between usage of the File System Access API and the
 // various bits of UI and permissions checks implemented in the chrome layer.
-class NativeFileSystemBrowserTest : public InProcessBrowserTest {
+class FileSystemAccessBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -147,7 +147,7 @@ class NativeFileSystemBrowserTest : public InProcessBrowserTest {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     auto* icon_view =
         browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kNativeFileSystemAccess);
+            PageActionIconType::kFileSystemAccess);
     return icon_view && icon_view->GetVisible();
   }
 
@@ -155,7 +155,7 @@ class NativeFileSystemBrowserTest : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SaveFile) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SaveFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SaveFile) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, OpenFile) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
 
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, OpenFile) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, FullscreenOpenFile) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
   GURL frame_url = embedded_test_server()->GetURL("/title1.html");
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, FullscreenOpenFile) {
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SafeBrowsing) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
   const base::FilePath test_file = temp_dir_.GetPath().AppendASCII("test.exe");
 
   std::string expected_hash;
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest, SafeBrowsing) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                        OpenFileWithContentSettingAllow) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                        SaveFileWithContentSettingAllow) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
 
 // Tests that permissions are revoked after all top-level frames have navigated
 // away to a different origin.
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                        RevokePermissionAfterNavigation) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
 
 // Tests that permissions are revoked after all top-level frames have been
 // closed.
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                        RevokePermissionAfterClosingTab) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
@@ -719,16 +719,16 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
 
 // The helper methods in this class uses ExecuteScriptXXX, because WebUI has
 // a Content Security Policy that interferes with ExecJs and EvalJs.
-class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
+class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
  public:
-  NativeFileSystemBrowserTestForWebUI() {
+  FileSystemAccessBrowserTestForWebUI() {
     content::WebUIControllerFactory::RegisterFactory(&factory_);
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
-  ~NativeFileSystemBrowserTestForWebUI() override {
+  ~FileSystemAccessBrowserTestForWebUI() override {
     content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
   }
 
@@ -842,13 +842,13 @@ class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
   content::TestWebUIControllerFactory factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenFilePicker_NormalPath) {
   content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
   TestFilePermissionInDirectory(web_contents, temp_dir_.GetPath());
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenFilePicker_FileInSensitivePath) {
   base::ScopedPathOverride downloads_override(
       chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,
@@ -858,13 +858,13 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
   TestFilePermissionInDirectory(web_contents, temp_dir_.GetPath());
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenDirectoryPicker_NormalPath) {
   content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
   TestDirectoryPermission(web_contents, temp_dir_.GetPath());
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenDirectoryPicker_DirectoryInSensitivePath) {
   base::ScopedPathOverride downloads_override(
       chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,

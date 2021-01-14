@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/native_file_system/native_file_system_permission_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_permission_view.h"
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
@@ -15,11 +15,11 @@
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
-class NativeFileSystemPermissionViewTest : public DialogBrowserTest {
+class FileSystemAccessPermissionViewTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    NativeFileSystemPermissionView::Request request(
+    FileSystemAccessPermissionView::Request request(
         kTestOrigin, base::FilePath(), HandleType::kFile, AccessType::kWrite);
     if (name == "LongFileName") {
       request.path = base::FilePath(FILE_PATH_LITERAL(
@@ -59,7 +59,7 @@ class NativeFileSystemPermissionViewTest : public DialogBrowserTest {
     } else {
       NOTREACHED() << "Unimplemented test: " << name;
     }
-    widget_ = NativeFileSystemPermissionView::ShowDialog(
+    widget_ = FileSystemAccessPermissionView::ShowDialog(
         request,
         base::BindLambdaForTesting([&](permissions::PermissionAction result) {
           callback_called_ = true;
@@ -79,7 +79,7 @@ class NativeFileSystemPermissionViewTest : public DialogBrowserTest {
       permissions::PermissionAction::IGNORED;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        AcceptIsntDefaultFocused) {
   ShowUi("default");
   EXPECT_NE(widget_->widget_delegate()->AsDialogDelegate()->GetOkButton(),
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, AcceptRunsCallback) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, AcceptRunsCallback) {
   ShowUi("default");
   widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
   EXPECT_TRUE(callback_called_);
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, AcceptRunsCallback) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, CancelRunsCallback) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, CancelRunsCallback) {
   ShowUi("default");
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
   EXPECT_TRUE(callback_called_);
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, CancelRunsCallback) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, CancelsWhenClosed) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, CancelsWhenClosed) {
   ShowUi("default");
   widget_->Close();
   EXPECT_TRUE(callback_called_);
@@ -112,49 +112,49 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, CancelsWhenClosed) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_LongFileName) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, InvokeUi_Folder) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, InvokeUi_Folder) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_LongOrigin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_FileOrigin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_ExtensionOrigin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_FolderRead) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_FolderReadWrite) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest, InvokeUi_FileRead) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest, InvokeUi_FileRead) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemPermissionViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionViewTest,
                        InvokeUi_FileReadWrite) {
   ShowAndVerifyUi();
 }

@@ -19,7 +19,7 @@ class CookieControlsIconView;
 class FindBarIcon;
 class IntentPickerView;
 class ManagePasswordsIconViews;
-class NativeFileSystemAccessIconView;
+class FileSystemAccessIconView;
 class PageActionIconContainer;
 struct PageActionIconParams;
 class PwaInstallView;
@@ -87,7 +87,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   IntentPickerView* intent_picker_icon_ = nullptr;
   autofill::LocalCardMigrationIconView* local_card_migration_icon_ = nullptr;
   ManagePasswordsIconViews* manage_passwords_icon_ = nullptr;
-  NativeFileSystemAccessIconView* native_file_system_access_icon_ = nullptr;
+  FileSystemAccessIconView* file_system_access_icon_ = nullptr;
   PwaInstallView* pwa_install_icon_ = nullptr;
   qrcode_generator::QRCodeGeneratorIconView* qrcode_generator_icon_view_ =
       nullptr;

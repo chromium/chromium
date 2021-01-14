@@ -9,11 +9,11 @@ ContentSettingBubbleDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
 FeaturePromoDialogTest.*
+FileSystemAccessUsageBubbleViewTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
-NativeFileSystemUsageBubbleViewTest.*
 OutdatedUpgradeBubbleTest.*
 PageInfoBubbleViewBrowserTest.*
 PasswordReuseModalWarningTest.*

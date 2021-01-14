@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_VIEW_H_
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -23,12 +23,12 @@ class Widget;
 }  // namespace views
 
 // Dialog that asks for write access to the given file or directory for the
-// native file system API.
-class NativeFileSystemPermissionView : public views::DialogDelegateView {
+// File System Access API.
+class FileSystemAccessPermissionView : public views::DialogDelegateView {
  public:
   using Request = FileSystemAccessPermissionRequestManager::RequestData;
 
-  ~NativeFileSystemPermissionView() override;
+  ~FileSystemAccessPermissionView() override;
 
   // Shows a dialog asking the user if they want to give write access to the
   // file or directory identified by |path| to the given |origin|.
@@ -44,14 +44,14 @@ class NativeFileSystemPermissionView : public views::DialogDelegateView {
   views::View* GetInitiallyFocusedView() override;
 
  private:
-  NativeFileSystemPermissionView(
+  FileSystemAccessPermissionView(
       const Request& request,
       base::OnceCallback<void(permissions::PermissionAction result)> callback);
 
   const Request request_;
   base::OnceCallback<void(permissions::PermissionAction result)> callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemPermissionView);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessPermissionView);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_PERMISSION_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_VIEW_H_

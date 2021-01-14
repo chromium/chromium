@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_ACCESS_ICON_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_ACCESS_ICON_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ICON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
-// Page action icon indicating if the current page is using the native file
-// system API. Shows different icons for read access to directories and write
+// Page action icon indicating if the current page is using the File System
+// Access API. Shows different icons for read access to directories and write
 // access to files or directories.
-class NativeFileSystemAccessIconView : public PageActionIconView {
+class FileSystemAccessIconView : public PageActionIconView {
  public:
-  NativeFileSystemAccessIconView(
+  FileSystemAccessIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
 
@@ -27,7 +27,7 @@ class NativeFileSystemAccessIconView : public PageActionIconView {
  private:
   bool has_write_access_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemAccessIconView);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessIconView);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_ACCESS_ICON_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ICON_VIEW_H_

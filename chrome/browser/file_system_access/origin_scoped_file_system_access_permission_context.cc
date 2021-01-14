@@ -604,7 +604,7 @@ void OriginScopedFileSystemAccessPermissionContext::DoUsageIconUpdate() {
     if (browser->profile() != profile())
       continue;
     browser->window()->UpdatePageActionIcon(
-        PageActionIconType::kNativeFileSystemAccess);
+        PageActionIconType::kFileSystemAccess);
   }
 #endif
 }
