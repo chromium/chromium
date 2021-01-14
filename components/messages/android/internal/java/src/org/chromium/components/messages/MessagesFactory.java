@@ -17,12 +17,11 @@ public class MessagesFactory {
      *         to the MessageContainer. When messages are shown, they will be animated down the
      *         screen, starting at the negative |messageMaxTranslation| y translation to the resting
      *         position in the MessageContainer.
-     * @param windowAndroid The {@link WindowAndroid} with which the Message is associated.
      * @return The constructed ManagedMessageDispatcher.
      */
-    public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container,
-            Supplier<Integer> messageMaxTranslation, WindowAndroid windowAndroid) {
-        return new MessageDispatcherImpl(container, messageMaxTranslation, windowAndroid);
+    public static ManagedMessageDispatcher createMessageDispatcher(
+            MessageContainer container, Supplier<Integer> messageMaxTranslation) {
+        return new MessageDispatcherImpl(container, messageMaxTranslation);
     }
 
     /**

@@ -11,7 +11,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -33,17 +32,15 @@ class MessageBannerCoordinator {
      * @param resources The {@link Resources}.
      * @param messageDismissed The {@link Runnable} that will run if and when the user dismisses the
      *         message.
-     * @param windowAndroid The {@link WindowAndroid} that will be used to start the animations so
-     *         the message is not clipped as a result of some Android SurfaceView optimization.
      */
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
             Supplier<Integer> maxTranslationSupplier, Resources resources,
-            Runnable messageDismissed, WindowAndroid windowAndroid) {
+            Runnable messageDismissed) {
         mView = view;
         mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         mMediator = new MessageBannerMediator(
-                model, maxTranslationSupplier, resources, messageDismissed, windowAndroid);
+                model, maxTranslationSupplier, resources, messageDismissed);
         view.setSwipeHandler(mMediator);
         ViewCompat.replaceAccessibilityAction(
                 view, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {

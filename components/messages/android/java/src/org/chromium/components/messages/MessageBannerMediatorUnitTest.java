@@ -7,15 +7,12 @@ package org.chromium.components.messages;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
-import android.animation.Animator;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -35,7 +32,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MessageBannerMediator}. */
@@ -58,8 +54,6 @@ public class MessageBannerMediatorUnitTest {
     private Runnable mShownRunnable;
     @Mock
     private Runnable mHiddenRunnable;
-    @Mock
-    private WindowAndroid mWindowAndroid;
 
     private MessageBannerMediator mMediator;
     private PropertyModel mModel;
@@ -78,14 +72,8 @@ public class MessageBannerMediatorUnitTest {
                 .thenReturn(24);
         when(mResources.getDimensionPixelSize(R.dimen.message_max_horizontal_translation))
                 .thenReturn(120);
-        doAnswer(invocation -> {
-            ((Animator) invocation.getArguments()[0]).start();
-            return null;
-        })
-                .when(mWindowAndroid)
-                .startAnimationOverContent(any(Animator.class));
         mMediator = new MessageBannerMediator(
-                mModel, mMaxTranslationSupplier, mResources, mDismissedRunnable, mWindowAndroid);
+                mModel, mMaxTranslationSupplier, mResources, mDismissedRunnable);
         when(mMaxTranslationSupplier.get()).thenReturn(100);
     }
 
