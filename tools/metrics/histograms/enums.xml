@@ -7375,6 +7375,11 @@ Called by update_bad_message_reasons.py.-->
              reading list from the NTP"/>
 </enum>
 
+<enum name="BookmarkBarState">
+  <int value="0" label="Bookmark bar hidden"/>
+  <int value="1" label="Bookmark bar shown"/>
+</enum>
+
 <enum name="BookmarkGUIDSource">
   <summary>
     Whether a GUID came from BookmarkSpecifics, or, in case it was missing,

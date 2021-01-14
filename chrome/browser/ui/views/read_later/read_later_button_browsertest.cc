@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
@@ -28,6 +30,8 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
     DialogBrowserTest::SetUpOnMainThread();
     browser()->profile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
+    // Navigate to a url that can be added to the reading list.
+    ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
   }
 
   ReadLaterButton* GetReadLaterButton(Browser* browser) {
@@ -61,4 +65,16 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest, AddToReadingListMetrics) {
+  base::HistogramTester histogram_tester;
+  constexpr char kEveryAddHistogramName[] =
+      "ReadingList.BookmarkBarState.OnEveryAddToReadingList";
+
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 0);
+  chrome::MoveCurrentTabToReadLater(browser());
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 1);
+  chrome::MoveCurrentTabToReadLater(browser());
+  histogram_tester.ExpectTotalCount(kEveryAddHistogramName, 2);
 }

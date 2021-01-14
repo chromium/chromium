@@ -1091,6 +1091,9 @@ void MaybeShowBookmarkBarForReadLater(Browser* browser) {
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
     pref_service->SetBoolean(
         reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, true);
+    base::UmaHistogramEnumeration(
+        "ReadingList.BookmarkBarState.OnFirstAddToReadingList",
+        browser->bookmark_bar_state());
     if (browser->bookmark_bar_state() == BookmarkBar::HIDDEN)
       ToggleBookmarkBar(browser);
   }
