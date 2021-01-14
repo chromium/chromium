@@ -47,7 +47,7 @@ class ReadingListManager : public KeyedService {
   // Adds a reading list article to the unread section, and return the bookmark
   // node representation. The bookmark node is owned by this class. If there is
   // a duplicate URL, a new bookmark node will be created, and the old bookmark
-  // node pointer will be invalidated.
+  // node pointer will be invalidated. May return nullptr on error.
   virtual const bookmarks::BookmarkNode* Add(const GURL& url,
                                              const std::string& title) = 0;
 

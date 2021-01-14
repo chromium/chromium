@@ -32,6 +32,7 @@ constexpr char kTitle1[] = "boring title about dogs.";
 constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
+constexpr char kInvalidUTF8[] = "\xc3\x28";
 
 class MockObserver : public ReadingListManager::Observer {
  public:
@@ -226,6 +227,31 @@ TEST_F(ReadingListManagerImplTest, AddTwice) {
   const auto* new_node = Add(url, kTitle1);
   EXPECT_EQ(kTitle1, base::UTF16ToUTF8(new_node->GetTitle()));
   EXPECT_EQ(url, new_node->url());
+}
+
+// If Add() with an invalid title, nullptr will be returned.
+TEST_F(ReadingListManagerImplTest, AddInvalidTitle) {
+  GURL url(kURL);
+
+  // Use an invalid UTF8 string.
+  base::string16 dummy;
+  EXPECT_FALSE(
+      base::UTF8ToUTF16(kInvalidUTF8, base::size(kInvalidUTF8), &dummy));
+  const auto* new_node = Add(url, std::string(kInvalidUTF8));
+  EXPECT_EQ(nullptr, new_node)
+      << "Should return nullptr when failed to parse the title.";
+}
+
+// If Add() with an invalid URL, nullptr will be returned.
+TEST_F(ReadingListManagerImplTest, AddInvalidURL) {
+  GURL invalid_url("chrome://flags");
+  EXPECT_FALSE(reading_list_model()->IsUrlSupported(invalid_url));
+
+  // Use an invalid URL, the observer method ReadingListDidAddEntry() won't be
+  // invoked.
+  const auto* new_node = manager()->Add(invalid_url, kTitle);
+  EXPECT_EQ(nullptr, new_node)
+      << "Should return nullptr when the URL scheme is not supported.";
 }
 
 // Verifes SetReadStatus()/GetReadStatus() API.
