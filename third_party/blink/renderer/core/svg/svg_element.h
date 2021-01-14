@@ -163,7 +163,8 @@ class CORE_EXPORT SVGElement : public Element {
   void CollectStyleForAnimatedPresentationAttributes(
       MutableCSSPropertyValueSet*);
 
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) final;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
 
 #if DCHECK_IS_ON()

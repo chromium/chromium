@@ -139,7 +139,8 @@ class DateTimeEditElement final : public HTMLDivElement,
   void UpdateUIState();
 
   // Element function.
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() override;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
   bool IsDateTimeEditElement() const override;
 
   // DateTimeFieldElement::FieldOwner functions.

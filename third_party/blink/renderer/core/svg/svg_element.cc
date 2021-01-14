@@ -1006,10 +1006,8 @@ void SVGElement::CollectStyleForAnimatedPresentationAttributes(
   }
 }
 
-scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject() {
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
-
+scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element) {
     return GetDocument().GetStyleResolver().StyleForElement(

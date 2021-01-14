@@ -45,8 +45,8 @@ EditingViewPortElement::EditingViewPortElement(Document& document)
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdEditingViewPort);
 }
 
-scoped_refptr<ComputedStyle>
-EditingViewPortElement::CustomStyleForLayoutObject() {
+scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
@@ -134,7 +134,8 @@ LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
 }
 
 scoped_refptr<ComputedStyle>
-TextControlInnerEditorElement::CustomStyleForLayoutObject() {
+TextControlInnerEditorElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext&) {
   scoped_refptr<ComputedStyle> inner_editor_style = CreateInnerEditorStyle();
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.

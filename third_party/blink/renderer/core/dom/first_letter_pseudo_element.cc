@@ -311,12 +311,14 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
 }
 
 scoped_refptr<ComputedStyle>
-FirstLetterPseudoElement::CustomStyleForLayoutObject() {
+FirstLetterPseudoElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   LayoutObject* first_letter_text =
       FirstLetterPseudoElement::FirstLetterTextLayoutObject(*this);
   if (!first_letter_text)
     return nullptr;
   DCHECK(first_letter_text->Parent());
+  // TODO(crbug.com/1145970): Pass StyleRecalcContext to StyleForPseudoElement.
   return ParentOrShadowHostElement()->StyleForPseudoElement(
       PseudoElementStyleRequest(GetPseudoId()),
       first_letter_text->Parent()->FirstLineStyle());

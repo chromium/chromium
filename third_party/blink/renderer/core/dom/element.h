@@ -88,6 +88,7 @@ class SpaceSplitString;
 class StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL;
 class StylePropertyMap;
 class StylePropertyMapReadOnly;
+class StyleRecalcContext;
 
 enum class CSSPropertyID;
 enum class CSSValueID;
@@ -832,7 +833,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsSpellCheckingEnabled() const;
 
   // FIXME: public for LayoutTreeBuilder, we shouldn't expose this though.
-  scoped_refptr<ComputedStyle> StyleForLayoutObject();
+  scoped_refptr<ComputedStyle> StyleForLayoutObject(const StyleRecalcContext&);
 
   bool HasID() const;
   bool HasClass() const;
@@ -949,7 +950,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual void WillRecalcStyle(const StyleRecalcChange);
   virtual void DidRecalcStyle(const StyleRecalcChange);
-  virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject();
+  virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&);
 
   virtual NamedItemType GetNamedItemType() const {
     return NamedItemType::kNone;
@@ -980,7 +982,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   static bool AttributeValueIsJavaScriptURL(const Attribute&);
 
-  scoped_refptr<ComputedStyle> OriginalStyleForLayoutObject();
+  scoped_refptr<ComputedStyle> OriginalStyleForLayoutObject(
+      const StyleRecalcContext&);
 
   // Step 4 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   Node* InsertAdjacent(const String& where, Node* new_child, ExceptionState&);

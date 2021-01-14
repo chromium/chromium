@@ -2773,7 +2773,8 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   GetDocument().GetStyleEngine().ClearNeedsWhitespaceReattachmentFor(this);
 }
 
-scoped_refptr<ComputedStyle> Element::StyleForLayoutObject() {
+scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
 
   // FIXME: Instead of clearing updates that may have been added from calls to
@@ -2782,9 +2783,10 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject() {
   if (ElementAnimations* element_animations = GetElementAnimations())
     element_animations->CssAnimations().ClearPendingUpdate();
 
-  scoped_refptr<ComputedStyle> style = HasCustomStyleCallbacks()
-                                           ? CustomStyleForLayoutObject()
-                                           : OriginalStyleForLayoutObject();
+  scoped_refptr<ComputedStyle> style =
+      HasCustomStyleCallbacks()
+          ? CustomStyleForLayoutObject(style_recalc_context)
+          : OriginalStyleForLayoutObject(style_recalc_context);
   if (!style) {
     DCHECK(IsPseudoElement());
     return nullptr;
@@ -2803,9 +2805,8 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject() {
   return style;
 }
 
-scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject() {
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
+scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   return GetDocument().GetStyleResolver().StyleForElement(this,
                                                           style_recalc_context);
 }
@@ -2968,8 +2969,10 @@ StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
       // can simply clone the old ComputedStyle and set these directly.
       new_style = PropagateInheritedProperties();
     }
+    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+    StyleRecalcContext style_recalc_context;
     if (!new_style)
-      new_style = StyleForLayoutObject();
+      new_style = StyleForLayoutObject(style_recalc_context);
     if (new_style && !ShouldStoreComputedStyle(*new_style))
       new_style = nullptr;
   }
@@ -4729,6 +4732,9 @@ const ComputedStyle* Element::EnsureComputedStyle(
   DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       *this, true /* ignore_adjacent_style */));
 
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+
   // FIXME: Find and use the layoutObject from the pseudo element instead of the
   // actual element so that the 'length' properties, which are only known by the
   // layoutObject because it did the layout, will be correct and so that the
@@ -4763,9 +4769,9 @@ const ComputedStyle* Element::EnsureComputedStyle(
       // TODO(crbug.com/953707): Avoid setting inline style during
       // HTMLImageElement::CustomStyleForLayoutObject.
       if (HasCustomStyleCallbacks() && !IsA<HTMLImageElement>(*this))
-        new_style = CustomStyleForLayoutObject();
+        new_style = CustomStyleForLayoutObject(style_recalc_context);
       else
-        new_style = OriginalStyleForLayoutObject();
+        new_style = OriginalStyleForLayoutObject(style_recalc_context);
       element_style = new_style.get();
       new_style->SetIsEnsuredInDisplayNone();
       SetComputedStyle(std::move(new_style));
@@ -4942,11 +4948,15 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
       remaining_text_layout_object !=
       To<FirstLetterPseudoElement>(element)->RemainingTextLayoutObject();
 
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+
   if (phase == StyleUpdatePhase::kAttachLayoutTree) {
     // RemainingTextLayoutObject should have been cleared from DetachLayoutTree.
     DCHECK(!To<FirstLetterPseudoElement>(element)->RemainingTextLayoutObject());
     DCHECK(text_node_changed);
-    scoped_refptr<ComputedStyle> pseudo_style = element->StyleForLayoutObject();
+    scoped_refptr<ComputedStyle> pseudo_style =
+        element->StyleForLayoutObject(style_recalc_context);
     if (PseudoElementLayoutObjectIsNeeded(pseudo_style.get(), this))
       element->SetComputedStyle(std::move(pseudo_style));
     else
@@ -5007,8 +5017,11 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(PseudoId pseudo_id) {
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element);
   pseudo_element->InsertedInto(*this);
 
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+
   scoped_refptr<ComputedStyle> pseudo_style =
-      pseudo_element->StyleForLayoutObject();
+      pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_style.get(), this)) {
     GetElementRareData()->SetPseudoElement(pseudo_id, nullptr);
     return nullptr;
@@ -5703,9 +5716,10 @@ void Element::DidRecalcStyle(const StyleRecalcChange) {
   DCHECK(HasCustomStyleCallbacks());
 }
 
-scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject() {
+scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(HasCustomStyleCallbacks());
-  return OriginalStyleForLayoutObject();
+  return OriginalStyleForLayoutObject(style_recalc_context);
 }
 
 void Element::CloneAttributesFrom(const Element& other) {

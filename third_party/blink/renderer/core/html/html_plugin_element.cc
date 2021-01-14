@@ -799,8 +799,10 @@ void HTMLPlugInElement::UpdateServiceTypeIfEmpty() {
   }
 }
 
-scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject() {
-  scoped_refptr<ComputedStyle> style = OriginalStyleForLayoutObject();
+scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   if (IsImageType() && !GetLayoutObject() && style &&
       LayoutObjectIsNeeded(*style)) {
     if (!image_loader_)

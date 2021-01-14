@@ -844,13 +844,15 @@ void HTMLImageElement::SetLayoutDisposition(
   SetForceReattachLayoutTree();
 }
 
-scoped_refptr<ComputedStyle> HTMLImageElement::CustomStyleForLayoutObject() {
+scoped_refptr<ComputedStyle> HTMLImageElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   switch (layout_disposition_) {
     case LayoutDisposition::kPrimaryContent:  // Fall through.
     case LayoutDisposition::kCollapsed:
-      return OriginalStyleForLayoutObject();
+      return OriginalStyleForLayoutObject(style_recalc_context);
     case LayoutDisposition::kFallbackContent: {
-      scoped_refptr<ComputedStyle> style = OriginalStyleForLayoutObject();
+      scoped_refptr<ComputedStyle> style =
+          OriginalStyleForLayoutObject(style_recalc_context);
       HTMLImageFallbackHelper::CustomStyleForAltText(*this, *style);
       return style;
     }
