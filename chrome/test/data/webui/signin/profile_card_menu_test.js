@@ -4,6 +4,7 @@
 
 import {ManageProfilesBrowserProxyImpl, ProfileState} from 'chrome://profile-picker/profile_picker.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {waitBeforeNextRender} from '../test_util.m.js';
 
@@ -95,5 +96,7 @@ suite('ProfileCardMenuTest', function() {
     assertTrue(dialog.open);
     dialog.querySelector('.action-button').click();
     await browserProxy.whenCalled('removeProfile');
+    webUIListenerCallback('profile-removed', 'profilePath');
+    assertFalse(dialog.open);
   });
 });

@@ -109,7 +109,7 @@ Polymer({
     this.addWebUIListener(
         'profiles-list-changed', () => this.handleProfilesUpdated_());
     this.addWebUIListener(
-        'profile-removed', () => this.handleProfilesUpdated_());
+        'profile-removed', this.handleProfileRemoved_.bind(this));
     this.addWebUIListener(
         'profile-statistics-received',
         this.handleProfileStatsReceived_.bind(this));
@@ -219,6 +219,18 @@ Polymer({
    */
   handleProfilesUpdated_() {
     this.$.actionMenu.close();
+  },
+
+  /**
+   * Closes the remove confirmation dialog when the profile is removed.
+   * @param {string} profilePath
+   * @private
+   */
+  handleProfileRemoved_(profilePath) {
+    this.handleProfilesUpdated_();
+    if (this.profileState.profilePath === profilePath) {
+      this.$.removeConfirmationDialog.close();
+    }
   },
 
   /** @private */

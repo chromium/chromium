@@ -89,6 +89,7 @@ js_library("profile_card_menu_test") {
     "..:test_browser_proxy.m",
     "..:test_util.m",
     "//chrome/browser/resources/signin/profile_picker:profile_card_menu",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
