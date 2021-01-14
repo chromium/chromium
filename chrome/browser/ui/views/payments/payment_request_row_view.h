@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_REQUEST_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_REQUEST_ROW_VIEW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace payments {
 
@@ -17,24 +17,22 @@ class PaymentRequestRowView
     : public views::Button,
       public base::SupportsWeakPtr<PaymentRequestRowView> {
  public:
-  static constexpr char kClassName[] = "PaymentRequestRowView";
-
+  METADATA_HEADER(PaymentRequestRowView);
   // Creates a row view. If |clickable| is true, the row will be shaded on hover
   // and handle click events. |insets| are used as padding around the content.
   PaymentRequestRowView(PressedCallback callback,
                         bool clickable,
                         const gfx::Insets& insets);
+  PaymentRequestRowView(const PaymentRequestRowView&) = delete;
+  PaymentRequestRowView& operator=(const PaymentRequestRowView&) = delete;
   ~PaymentRequestRowView() override;
 
   void set_previous_row(base::WeakPtr<PaymentRequestRowView> previous_row) {
     previous_row_ = previous_row;
   }
 
-  // views::View:
-  const char* GetClassName() const override;
-
  protected:
-  bool clickable() { return clickable_; }
+  bool GetClickable() const;
 
  private:
   // Sets this row's background to the theme's hovered color to indicate that
@@ -64,8 +62,6 @@ class PaymentRequestRowView
   // A non-owned pointer to the previous row object in the UI. Used to hide the
   // bottom border of the previous row when highlighting this one. May be null.
   base::WeakPtr<PaymentRequestRowView> previous_row_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestRowView);
 };
 
 }  // namespace payments

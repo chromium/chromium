@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEWS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -17,12 +17,13 @@ class CommandUpdater;
 class ManagePasswordsIconViews : public ManagePasswordsIconView,
                                  public PageActionIconView {
  public:
-  static const char kClassName[];
-
+  METADATA_HEADER(ManagePasswordsIconViews);
   ManagePasswordsIconViews(
       CommandUpdater* updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
+  ManagePasswordsIconViews(const ManagePasswordsIconViews&) = delete;
+  ManagePasswordsIconViews& operator=(const ManagePasswordsIconViews&) = delete;
   ~ManagePasswordsIconViews() override;
 
   // ManagePasswordsIconView:
@@ -38,7 +39,6 @@ class ManagePasswordsIconViews : public ManagePasswordsIconView,
 
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  const char* GetClassName() const override;
 
  private:
   friend class ManagePasswordsIconViewTest;
@@ -47,8 +47,6 @@ class ManagePasswordsIconViews : public ManagePasswordsIconView,
   void UpdateUiForState();
 
   password_manager::ui::State state_ = password_manager::ui::INACTIVE_STATE;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsIconViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEWS_H_

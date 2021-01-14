@@ -102,7 +102,7 @@ void PaymentRequestItemList::Item::Init() {
   content->SetCanProcessEventsWithinSubtree(false);
   layout->AddView(std::move(content));
 
-  layout->AddView(CreateCheckmark(selected() && clickable()));
+  layout->AddView(CreateCheckmark(selected() && GetClickable()));
 
   if (extra_view)
     layout->AddView(std::move(extra_view));

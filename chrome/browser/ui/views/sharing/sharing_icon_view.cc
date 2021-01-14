@@ -12,6 +12,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 // Progress state when the full length of the animation text is visible.
@@ -85,7 +86,7 @@ void SharingIconView::UpdateImpl() {
 
   const bool is_bubble_showing = IsBubbleShowing();
   const bool is_visible =
-      is_bubble_showing || IsLoadingAnimationVisible() || label()->GetVisible();
+      is_bubble_showing || loading_animation_ || label()->GetVisible();
 
   SetVisible(is_visible);
   UpdateInkDrop(is_bubble_showing);
@@ -151,10 +152,6 @@ const gfx::VectorIcon& SharingIconView::GetVectorIconBadge() const {
 void SharingIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
-bool SharingIconView::IsLoadingAnimationVisible() {
-  return loading_animation_;
-}
-
 views::BubbleDialogDelegate* SharingIconView::GetBubble() const {
   auto* controller = GetController();
   return controller ? get_bubble_callback_.Run(controller->dialog()) : nullptr;
@@ -171,6 +168,5 @@ base::string16 SharingIconView::GetTextForTooltipAndAccessibleName() const {
                     : base::string16();
 }
 
-const char* SharingIconView::GetClassName() const {
-  return "SharingIconView";
-}
+BEGIN_METADATA(SharingIconView, PageActionIconView)
+END_METADATA

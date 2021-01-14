@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using dom_distiller::UMAHelper;
 using dom_distiller::url_utils::IsDistilledPage;
@@ -134,10 +135,6 @@ base::string16 ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
                                                : IDS_DISTILL_PAGE);
 }
 
-const char* ReaderModeIconView::GetClassName() const {
-  return "ReaderModeIconView";
-}
-
 // TODO(gilmanmh): Consider displaying a bubble the first time a user
 // activates the icon to explain what Reader Mode is.
 views::BubbleDialogDelegate* ReaderModeIconView::GetBubble() const {
@@ -186,3 +183,6 @@ void ReaderModeIconView::OnResult(
   UMAHelper::ReaderModePageType page_type = GetPageType(web_contents);
   UMAHelper::StartTimerIfNeeded(web_contents, page_type);
 }
+
+BEGIN_METADATA(ReaderModeIconView, PageActionIconView)
+END_METADATA

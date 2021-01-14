@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 FileSystemAccessIconView::FileSystemAccessIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -97,6 +98,5 @@ const gfx::VectorIcon& FileSystemAccessIconView::GetVectorIcon() const {
                            : vector_icons::kInsertDriveFileOutlineIcon;
 }
 
-const char* FileSystemAccessIconView::GetClassName() const {
-  return "FileSystemAccessIconView";
-}
+BEGIN_METADATA(FileSystemAccessIconView, PageActionIconView)
+END_METADATA

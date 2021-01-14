@@ -39,6 +39,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
 namespace {
@@ -112,10 +113,6 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
 }
 
 ReadLaterButton::~ReadLaterButton() = default;
-
-const char* ReadLaterButton::GetClassName() const {
-  return "ReadLaterButton";
-}
 
 void ReadLaterButton::CloseBubble() {
   if (webui_bubble_manager_->GetBubbleWidget())
@@ -215,3 +212,6 @@ void ReadLaterButton::ButtonPressed() {
     }
   }
 }
+
+BEGIN_METADATA(ReadLaterButton, views::LabelButton)
+END_METADATA

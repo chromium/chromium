@@ -20,6 +20,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
     Profile* profile,
@@ -86,6 +87,5 @@ void DiceBubbleSyncPromoView::EnableSync() {
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 
-const char* DiceBubbleSyncPromoView::GetClassName() const {
-  return "DiceBubbleSyncPromoView";
-}
+BEGIN_METADATA(DiceBubbleSyncPromoView, views::View)
+END_METADATA

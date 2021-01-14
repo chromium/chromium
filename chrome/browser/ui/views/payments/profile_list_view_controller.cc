@@ -85,12 +85,12 @@ class ProfileItem : public PaymentRequestItemList::Item {
     // In order to be selectable, a profile entry needs to be enabled, and the
     // profile valid according to the controller. If either condition is false,
     // PerformSelectionFallback() is called.
-    return clickable() && controller_->IsValidProfile(*profile_);
+    return GetClickable() && controller_->IsValidProfile(*profile_);
   }
 
   void PerformSelectionFallback() override {
     // If enabled, the editor is opened to complete the invalid profile.
-    if (clickable())
+    if (GetClickable())
       controller_->ShowEditor(profile_);
   }
 

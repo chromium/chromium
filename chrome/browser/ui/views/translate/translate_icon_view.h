@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -14,9 +14,12 @@ class CommandUpdater;
 // the page translated.
 class TranslateIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(TranslateIconView);
   TranslateIconView(CommandUpdater* command_updater,
                     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                     PageActionIconView::Delegate* page_action_icon_delegate);
+  TranslateIconView(const TranslateIconView&) = delete;
+  TranslateIconView& operator=(const TranslateIconView&) = delete;
   ~TranslateIconView() override;
 
   // PageActionIconView:
@@ -29,10 +32,6 @@ class TranslateIconView : public PageActionIconView {
   void OnPressed(bool activated) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   base::string16 GetTextForTooltipAndAccessibleName() const override;
-  const char* GetClassName() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateIconView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_

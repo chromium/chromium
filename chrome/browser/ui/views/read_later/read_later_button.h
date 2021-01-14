@@ -11,6 +11,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -24,12 +25,11 @@ class ReadLaterButton : public views::LabelButton,
                         public views::WidgetObserver,
                         public ReadingListModelObserver {
  public:
+  METADATA_HEADER(ReadLaterButton);
   explicit ReadLaterButton(Browser* browser);
   ReadLaterButton(const ReadLaterButton&) = delete;
   ReadLaterButton& operator=(const ReadLaterButton&) = delete;
   ~ReadLaterButton() override;
-
-  const char* GetClassName() const override;
 
   void CloseBubble();
 

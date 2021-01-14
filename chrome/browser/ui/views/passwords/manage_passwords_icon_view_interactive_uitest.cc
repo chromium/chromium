@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/view_utils.h"
 
 // The param indicates if the feature showing password icon in the new toolbar
 // status chip is enabled.
@@ -53,7 +54,7 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
             ->GetPageActionIconView(PageActionIconType::kManagePasswords);
-    DCHECK_EQ(view->GetClassName(), ManagePasswordsIconViews::kClassName);
+    DCHECK(views::IsViewClass<ManagePasswordsIconViews>(view));
     return static_cast<ManagePasswordsIconViews*>(view);
   }
 
