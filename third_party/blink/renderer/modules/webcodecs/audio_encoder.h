@@ -7,14 +7,16 @@
 
 #include <memory>
 
+#include "media/base/audio_codecs.h"
+#include "media/base/audio_encoder.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_output_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -23,10 +25,37 @@ class ExceptionState;
 class AudioEncoderConfig;
 class AudioEncoderInit;
 
+class MODULES_EXPORT AudioEncoderTraits {
+ public:
+  struct ParsedConfig final : public GarbageCollected<ParsedConfig> {
+    media::AudioCodec codec = media::kUnknownAudioCodec;
+    int channels = 0;
+    uint64_t bitrate = 0;
+    uint32_t sample_rate = 0;
+
+    void Trace(Visitor*) const {}
+  };
+
+  struct AudioEncoderEncodeOptions
+      : public GarbageCollected<AudioEncoderEncodeOptions> {
+    void Trace(Visitor*) const {}
+  };
+
+  using Init = AudioEncoderInit;
+  using Config = AudioEncoderConfig;
+  using InternalConfig = ParsedConfig;
+  using Frame = AudioFrame;
+  using EncodeOptions = AudioEncoderEncodeOptions;
+  using OutputChunk = EncodedAudioChunk;
+  using OutputCallback = V8EncodedAudioChunkOutputCallback;
+  using MediaEncoder = media::AudioEncoder;
+
+  // Can't be a virtual method, because it's used from base ctor.
+  static const char* GetNameForDevTools();
+};
+
 class MODULES_EXPORT AudioEncoder final
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<AudioEncoder>,
-      public ExecutionContextLifecycleObserver {
+    : public EncoderBase<AudioEncoderTraits> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -36,29 +65,30 @@ class MODULES_EXPORT AudioEncoder final
   AudioEncoder(ScriptState*, const AudioEncoderInit*, ExceptionState&);
   ~AudioEncoder() override;
 
-  // audio_encoder.idl implementation.
-  int32_t encodeQueueSize();
+  void encode(AudioFrame* frame, ExceptionState& exception_state) {
+    return Base::encode(frame, nullptr, exception_state);
+  }
 
-  void encode(AudioFrame* frame, ExceptionState&);
+ private:
+  using Base = EncoderBase<AudioEncoderTraits>;
+  using ParsedConfig = AudioEncoderTraits::ParsedConfig;
 
-  void configure(const AudioEncoderConfig*, ExceptionState&);
+  void ProcessEncode(Request* request) override;
+  void ProcessConfigure(Request* request) override;
+  void ProcessReconfigure(Request* request) override;
+  void ProcessFlush(Request* request) override;
 
-  ScriptPromise flush(ExceptionState&);
+  ParsedConfig* ParseConfig(const AudioEncoderConfig* opts,
+                            ExceptionState&) override;
+  bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
+  AudioFrame* CloneFrame(AudioFrame*, ExecutionContext*) override;
 
-  void reset(ExceptionState&);
+  bool CanReconfigure(ParsedConfig& original_config,
+                      ParsedConfig& new_config) override;
 
-  void close(ExceptionState&);
-
-  String state();
-
-  // ExecutionContextLifecycleObserver override.
-  void ContextDestroyed() override;
-
-  // ScriptWrappable override.
-  bool HasPendingActivity() const override { return false; }
-
-  // GarbageCollected override.
-  void Trace(Visitor*) const override;
+  void CallOutputCallback(ParsedConfig* active_config,
+                          uint32_t reset_count,
+                          media::EncodedAudioBuffer encoded_buffer);
 };
 
 }  // namespace blink

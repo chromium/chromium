@@ -30,6 +30,8 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   uint64_t timestamp() const;
   AudioBuffer* buffer() const;
 
+  void destroy() { close(); }
+
   // GarbageCollected override.
   void Trace(Visitor*) const override;
 

@@ -12,5 +12,7 @@ dictionary AudioEncoderConfig {
   required unsigned long sampleRate;
 
   // 1, 2, etc.
-  required unsigned long numberOfChannels;
+  required unsigned short numberOfChannels;
+
+  required unsigned long long bitrate;
 };

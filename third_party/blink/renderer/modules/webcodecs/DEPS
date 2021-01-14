@@ -8,6 +8,7 @@ include_rules = [
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/GLES2/gl2extchromium.h",
 
+    "+media/audio",
     "+media/base",
     "+media/filters",
     "+media/formats/mp4/box_definitions.h",

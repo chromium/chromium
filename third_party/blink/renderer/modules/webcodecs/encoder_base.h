@@ -43,21 +43,21 @@ class MODULES_EXPORT EncoderBase
   ~EncoderBase() override;
 
   // *_encoder.idl implementation.
-  virtual int32_t encodeQueueSize();
+  int32_t encodeQueueSize() { return requested_encodes_; }
 
-  virtual void configure(const ConfigType*, ExceptionState&);
+  void configure(const ConfigType*, ExceptionState&);
 
-  virtual void encode(FrameType* frame,
-                      const EncodeOptionsType* opts,
-                      ExceptionState& exception_state);
+  void encode(FrameType* frame,
+              const EncodeOptionsType* opts,
+              ExceptionState& exception_state);
 
-  virtual ScriptPromise flush(ExceptionState&);
+  ScriptPromise flush(ExceptionState&);
 
-  virtual void reset(ExceptionState&);
+  void reset(ExceptionState&);
 
-  virtual void close(ExceptionState&);
+  void close(ExceptionState&);
 
-  virtual String state() { return state_; }
+  String state() { return state_; }
 
   // ExecutionContextLifecycleObserver override.
   void ContextDestroyed() override;

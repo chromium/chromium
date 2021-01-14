@@ -16,10 +16,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_metadata.h"
@@ -65,11 +67,6 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
 template <typename Traits>
 EncoderBase<Traits>::~EncoderBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-template <typename Traits>
-int32_t EncoderBase<Traits>::encodeQueueSize() {
-  return requested_encodes_;
 }
 
 template <typename Traits>
@@ -292,5 +289,6 @@ void EncoderBase<Traits>::Request::Trace(Visitor* visitor) const {
 }
 
 template class EncoderBase<VideoEncoderTraits>;
+template class EncoderBase<AudioEncoderTraits>;
 
 }  // namespace blink
