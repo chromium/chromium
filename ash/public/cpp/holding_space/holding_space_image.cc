@@ -131,10 +131,10 @@ gfx::Size HoldingSpaceImage::GetMaxSizeForType(HoldingSpaceItem::Type type) {
       break;
   }
   // To avoid pixelation, ensure that the holding space image size is at least
-  // as large as the tray icon preview size. The image will be scaled down
-  // elsewhere if needed.
-  size.SetToMax(gfx::Size(kHoldingSpaceTrayIconPreviewSize,
-                          kHoldingSpaceTrayIconPreviewSize));
+  // as large as the default tray icon preview size. The image will be scaled
+  // down elsewhere if needed.
+  size.SetToMax(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize,
+                          kHoldingSpaceTrayIconDefaultPreviewSize));
   return size;
 }
 

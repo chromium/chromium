@@ -73,6 +73,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   void OnShelfAlignmentChanged(ShelfAlignment old_shelf_alignment,
                                ShelfAlignment new_shelf_alignment);
 
+  // Invoked when the `shelf_` configuration has changed.
+  void OnShelfConfigChanged();
+
   // Returns the holding space `item_` visually represented by this preview.
   const HoldingSpaceItem* item() const { return item_; }
 
@@ -135,6 +138,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   // The holding space item this preview represents.
   const HoldingSpaceItem* item_;
+
+  // Whether or not this preview is currently using small dimensions. This is
+  // done when in tablet mode and an app is in use.
+  bool use_small_previews_ = false;
 
   // A cached representation of the associated holding space `item_`'s image
   // which has been cropped, resized, and clipped to a circle to be painted at

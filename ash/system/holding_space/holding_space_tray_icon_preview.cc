@@ -47,10 +47,22 @@ constexpr base::TimeDelta kShiftAnimationDuration =
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the preview icon contents size.
-gfx::Size GetPreviewSize() {
-  return gfx::Size(kHoldingSpaceTrayIconPreviewSize,
-                   kHoldingSpaceTrayIconPreviewSize);
+// Returns true if small previews should be used given the current shelf
+// configuration, false otherwise.
+bool ShouldUseSmallPreviews() {
+  ShelfConfig* const shelf_config = ShelfConfig::Get();
+  return shelf_config->in_tablet_mode() && shelf_config->is_in_app();
+}
+
+// Returns the size for previews. If `use_small_previews` is absent it will be
+// determined from the current shelf configuration.
+gfx::Size GetPreviewSize(
+    const base::Optional<bool>& use_small_previews = base::nullopt) {
+  return use_small_previews.value_or(ShouldUseSmallPreviews())
+             ? gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize,
+                         kHoldingSpaceTrayIconSmallPreviewSize)
+             : gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize,
+                         kHoldingSpaceTrayIconDefaultPreviewSize);
 }
 
 // Returns the shadow details for painting elevation.
@@ -121,7 +133,10 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     Shelf* shelf,
     views::View* container,
     const HoldingSpaceItem* item)
-    : shelf_(shelf), container_(container), item_(item) {
+    : shelf_(shelf),
+      container_(container),
+      item_(item),
+      use_small_previews_(ShouldUseSmallPreviews()) {
   const gfx::Size size(GetPreviewSize());
   contents_image_ = gfx::ImageSkia(
       std::make_unique<ContentsImageSource>(item->image().GetImageSkia(size)),
@@ -230,8 +245,11 @@ void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
   index_ = *pending_index_;
   pending_index_.reset();
 
-  if (!layer_ && NeedsLayer())
+  bool created_layer = false;
+  if (!layer_ && NeedsLayer()) {
     CreateLayer(transform_);
+    created_layer = true;
+  }
 
   // Calculate the target preview transform for the new position in the icon.
   // Avoid adjustments based on relative index change, as the current transform
@@ -245,22 +263,37 @@ void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
   if (!layer_)
     return;
 
+  // If the `layer_` has just been created because it is shifting into the
+  // viewport, animate in its opacity.
+  if (created_layer)
+    layer_->SetOpacity(0.f);
+
   ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
+  scoped_settings.AddObserver(this);
   scoped_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  std::unique_ptr<ui::LayerAnimationSequence> sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+  auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
+  if (created_layer) {
+    opacity_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+        ui::LayerAnimationElement::OPACITY, delay));
+    opacity_sequence->AddElement(
+        ui::LayerAnimationElement::CreateOpacityElement(
+            1.f, kShiftAnimationDuration));
+  }
+
+  auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
+  transform_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
       ui::LayerAnimationElement::TRANSFORM, delay));
 
   std::unique_ptr<ui::LayerAnimationElement> shift =
       ui::LayerAnimationElement::CreateTransformElement(
           transform_, kShiftAnimationDuration);
   shift->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
-  sequence->AddElement(std::move(shift));
+  transform_sequence->AddElement(std::move(shift));
 
-  layer_->GetAnimator()->StartAnimation(sequence.release());
+  layer_->GetAnimator()->StartTogether(
+      {opacity_sequence.release(), transform_sequence.release()});
 }
 
 void HoldingSpaceTrayIconPreview::AdjustTransformForContainerSizeChange(
@@ -286,10 +319,10 @@ void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
   if (IsHorizontal(old_shelf_alignment) == IsHorizontal(new_shelf_alignment))
     return;
 
-  // Since shelf orientation has changed, the target `transform_` needs to be
+  // Because shelf orientation has changed, the target `transform_` needs to be
   // updated. First stop the current animation to immediately advance to target
   // end values.
-  const auto& weak_ptr = weak_factory_.GetWeakPtr();
+  const auto weak_ptr = weak_factory_.GetWeakPtr();
   if (layer_ && layer_->GetAnimator()->is_animating())
     layer_->GetAnimator()->StopAnimating();
 
@@ -320,6 +353,43 @@ void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
     UpdateLayerBounds();
     layer_->SetTransform(transform_);
   }
+}
+
+void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
+  // If the change in shelf configuration hasn't affected whether or not small
+  // previews should be used, no action needs to be taken.
+  const bool use_small_previews = ShouldUseSmallPreviews();
+  if (use_small_previews_ == use_small_previews)
+    return;
+
+  use_small_previews_ = use_small_previews;
+
+  // Because the size of previews is changing, the target `transform_` needs to
+  // be updated. First stop the current animation to immediately advance to
+  // target end values.
+  const auto weak_ptr = weak_factory_.GetWeakPtr();
+  if (layer_ && layer_->GetAnimator()->is_animating())
+    layer_->GetAnimator()->StopAnimating();
+
+  // This instance may have been deleted as a result of stopping the current
+  // animation if it was in the process of animating out.
+  if (!weak_ptr)
+    return;
+
+  // Adjust `translation` to account for the change in size.
+  gfx::Vector2dF translation = transform_.To2dTranslation();
+  translation.Scale(1.f / GetPreviewSize(!use_small_previews_).width());
+  translation.Scale(GetPreviewSize().width());
+  transform_.MakeIdentity();
+  transform_.Translate(translation);
+
+  if (layer_) {
+    UpdateLayerBounds();
+    layer_->SetTransform(transform_);
+  }
+
+  // Invalidate `contents_image_` so it is resized.
+  OnHoldingSpaceItemImageChanged();
 }
 
 // TODO(crbug.com/1142572): Support theming.
@@ -406,7 +476,7 @@ void HoldingSpaceTrayIconPreview::DestroyLayer() {
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
-  return index_ && *index_ <= kHoldingSpaceTrayIconMaxVisiblePreviews;
+  return index_ && *index_ < kHoldingSpaceTrayIconMaxVisiblePreviews;
 }
 
 void HoldingSpaceTrayIconPreview::InvalidateLayer() {
@@ -436,9 +506,11 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   // with a positive offset.
   const gfx::Size size = GetPreviewSize();
   gfx::Point origin;
-  if (shelf_->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    origin = container_->GetLocalBounds().top_right() -
-             gfx::Vector2d(size.width(), 0);
+  if (shelf_->IsHorizontalAlignment()) {
+    gfx::Rect container_bounds = container_->GetLocalBounds();
+    if (base::i18n::IsRTL())
+      origin = container_bounds.top_right() - gfx::Vector2d(size.width(), 0);
+    origin.Offset(0, (container_bounds.height() - size.height()) / 2);
   }
   gfx::Rect bounds(origin, size);
   if (bounds != layer_->bounds())

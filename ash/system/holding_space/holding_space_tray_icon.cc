@@ -35,6 +35,16 @@ namespace {
 constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
     base::TimeDelta::FromMilliseconds(50);
 
+// Helpers ---------------------------------------------------------------------
+
+// Returns the size of previews given the current shelf configuration.
+int GetPreviewSize() {
+  ShelfConfig* const shelf_config = ShelfConfig::Get();
+  return shelf_config->in_tablet_mode() && shelf_config->is_in_app()
+             ? kHoldingSpaceTrayIconSmallPreviewSize
+             : kHoldingSpaceTrayIconDefaultPreviewSize;
+}
+
 }  // namespace
 
 // Animation for resizing the previews icon. The animation updates the icon
@@ -110,7 +120,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
 HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
   SetID(kHoldingSpaceTrayPreviewsIconId);
   InitLayout();
-  shell_observer_.Add(Shell::Get());
+
+  shell_observer_.Observe(Shell::Get());
+  shelf_config_observer_.Observe(ShelfConfig::Get());
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
@@ -135,10 +147,11 @@ gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
   const int num_visible_previews =
       std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
                static_cast<int>(previews_by_id_.size()));
+  const int preview_size = GetPreviewSize();
 
-  int primary_axis_size = kTrayItemSize;
+  int primary_axis_size = preview_size;
   if (num_visible_previews > 1)
-    primary_axis_size += (num_visible_previews - 1) * kTrayItemSize / 2;
+    primary_axis_size += (num_visible_previews - 1) * preview_size / 2;
 
   return shelf_->PrimaryAxisValue(
       /*horizontal=*/gfx::Size(primary_axis_size, kTrayItemSize),
@@ -147,7 +160,9 @@ gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
 
 void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+
+  const int preview_size = GetPreviewSize();
+  SetPreferredSize(gfx::Size(preview_size, preview_size));
 
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetFillsBoundsOpaquely(false);
@@ -249,6 +264,20 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
   removed_previews_.clear();
   for (const auto& preview : previews_by_id_)
     preview.second->OnShelfAlignmentChanged(old_alignment, shelf_->alignment());
+
+  if (resize_animation_) {
+    resize_animation_->AdvanceToEnd();
+    resize_animation_.reset();
+  }
+
+  SetPreferredSize(CalculatePreferredSize());
+  previews_container_->SetTransform(gfx::Transform());
+}
+
+void HoldingSpaceTrayIcon::OnShelfConfigUpdated() {
+  removed_previews_.clear();
+  for (const auto& preview : previews_by_id_)
+    preview.second->OnShelfConfigChanged();
 
   if (resize_animation_) {
     resize_animation_->AdvanceToEnd();
