@@ -17,7 +17,7 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
  public:
   ScreenlockMonitorTestSource() {
     DCHECK(base::CurrentThread::Get())
-        << "ScreenlocMonitorTestSource requires a MessageLoop.";
+        << "ScreenlockMonitorTestSource requires a MessageLoop.";
   }
   ~ScreenlockMonitorTestSource() override = default;
 

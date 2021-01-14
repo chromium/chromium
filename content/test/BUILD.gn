@@ -2387,6 +2387,7 @@ test("content_unittests") {
       "../browser/renderer_host/direct_manipulation_win_unittest.cc",
       "../browser/renderer_host/dwrite_font_lookup_table_builder_win_unittest.cc",
       "../browser/renderer_host/dwrite_font_proxy_impl_win_unittest.cc",
+      "../browser/screenlock_monitor/screenlock_monitor_device_source_win_unittest.cc",
       "../child/dwrite_font_proxy/dwrite_font_proxy_win_unittest.cc",
       "../child/dwrite_font_proxy/font_fallback_win_unittest.cc",
       "../child/font_warmup_win_unittest.cc",
