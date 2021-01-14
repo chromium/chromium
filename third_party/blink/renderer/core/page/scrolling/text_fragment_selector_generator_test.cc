@@ -947,6 +947,72 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
   VerifySelector(start, end, "First,paragraph");
 }
 
+// Checks the case when selection end position is a non text node.
+TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+  <!DOCTYPE html>
+  <div id='div'>
+    <p id='start'>First paragraph</p>
+    <p id='second'>Second paragraph</p>
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(div, 2);
+  ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,-Second");
+}
+
+// Checks the case when selection end position is a non text node which doesn't
+// have text child node.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       SelectionEndsWithNonTextWithNoTextChild) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'><p id='start'>First paragraph</p><p id='second'>Second paragraph</p><img id="img">
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end =
+      Position(div, 3);  // Points to the 3rd child of the div, which is <img>
+  ASSERT_EQ("First paragraph\n\nSecond paragraph\n\n",
+            PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,Second%20paragraph");
+}
+
+// Checks the case when selection end position is a non text node which doesn't
+// have text child node.
+TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'><p id='start'>First paragraph</p><p id='second'>Second paragraph</p><div id='div_img'><img id="img"></div>
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end =
+      Position(div, 3);  // Points to the 3rd child of the div, which is div_img
+  ASSERT_EQ("First paragraph\n\nSecond paragraph\n\n",
+            PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,Second%20paragraph");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");

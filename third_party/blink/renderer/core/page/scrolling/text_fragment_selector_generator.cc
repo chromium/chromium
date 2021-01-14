@@ -28,9 +28,10 @@ namespace {
 bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
   auto range_start = Position::FirstPositionInNode(*node);
   auto range_end = Position(node, pos_offset);
-  return pos_offset == 0 || PlainText(EphemeralRange(range_start, range_end))
-                                .StripWhiteSpace()
-                                .IsEmpty();
+  return node->getNodeType() == Node::kElementNode || pos_offset == 0 ||
+         PlainText(EphemeralRange(range_start, range_end))
+             .StripWhiteSpace()
+             .IsEmpty();
 }
 
 // Returns true if text from |pos_offset| until end of |node| can be considered
@@ -38,7 +39,8 @@ bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
 bool IsLastVisiblePosition(Node* node, unsigned pos_offset) {
   auto range_start = Position(node, pos_offset);
   auto range_end = Position::LastPositionInNode(*node);
-  return pos_offset == node->textContent().length() ||
+  return node->getNodeType() == Node::kElementNode ||
+         pos_offset == node->textContent().length() ||
          PlainText(EphemeralRange(range_start, range_end))
              .StripWhiteSpace()
              .IsEmpty();
@@ -152,6 +154,19 @@ String GetWordsFromStart(String text, int word_num) {
   return text.Substring(0, pos).StripWhiteSpace();
 }
 
+// For Element-based Position returns the node that its pointing to, otherwise
+// returns the container node.
+Node* ResolvePositionToNode(const PositionInFlatTree& position) {
+  Node* node = position.ComputeContainerNode();
+  int offset = position.ComputeOffsetInContainerNode();
+
+  if (node->getNodeType() == Node::kElementNode && node->hasChildren() &&
+      node->childNodes()->item(offset)) {
+    return node->childNodes()->item(offset);
+  }
+  return node;
+}
+
 }  // namespace
 
 constexpr int kExactTextMaxChars = 300;
@@ -195,13 +210,23 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
       ephemeral_range.StartPosition().ComputeContainerNode();
   Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
 
+  Node* corrected_start =
+      ResolvePositionToNode(ephemeral_range.StartPosition());
+  int corrected_start_offset =
+      (corrected_start->isSameNode(start_container))
+          ? ephemeral_range.StartPosition().ComputeOffsetInContainerNode()
+          : 0;
+
+  Node* corrected_end = ResolvePositionToNode(ephemeral_range.EndPosition());
+  int corrected_end_offset =
+      (corrected_end->isSameNode(end_container))
+          ? ephemeral_range.EndPosition().ComputeOffsetInContainerNode()
+          : 0;
+
   // If start node has no text or given start position point to the last visible
   // text in its containiner node, use the following visible node for selection
   // start. This has to happen before generation, so that selection is correctly
   // classified as same block or not.
-  Node* corrected_start = start_container;
-  int corrected_start_offset =
-      ephemeral_range.StartPosition().ComputeOffsetInContainerNode();
   if (IsLastVisiblePosition(corrected_start, corrected_start_offset)) {
     corrected_start = FirstNonEmptyVisibleTextNode(
         FlatTreeTraversal::NextSkippingChildren(*corrected_start));
@@ -220,9 +245,6 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   // text in its containiner node, use the previous visible node for selection
   // end. This has to happen before generation, so that selection is correctly
   // classified as same block or not.
-  Node* corrected_end = end_container;
-  int corrected_end_offset =
-      ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
   if (IsFirstVisiblePosition(corrected_end, corrected_end_offset)) {
     // Here, |Previous()| already skips the children of the given node,
     // because we're doing pre-order traversal.
