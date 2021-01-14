@@ -517,7 +517,7 @@
       'Mac10.13 Tests':{
         'experiment_percentage': 10, # https://crbug.com/1042757
         'swarming': {
-          'shards': 20,
+          'shards': 40,
         },
       },
       'Mac10.13 Tests (dbg)': {
