@@ -380,6 +380,71 @@ base::string16 GetAttachmentName(FPDF_ATTACHMENT attachment) {
       /*check_expected_size=*/true);
 }
 
+void SetXYZParamsInScreenCoords(PDFiumPage* page, float* params) {
+  gfx::PointF page_coords(params[0], params[1]);
+  gfx::PointF screen_coords = page->TransformPageToScreenXY(page_coords);
+  params[0] = screen_coords.x();
+  params[1] = screen_coords.y();
+}
+
+void SetFitRParamsInScreenCoords(PDFiumPage* page, float* params) {
+  gfx::PointF point_1 =
+      page->TransformPageToScreenXY(gfx::PointF(params[0], params[1]));
+  gfx::PointF point_2 =
+      page->TransformPageToScreenXY(gfx::PointF(params[2], params[3]));
+  params[0] = point_1.x();
+  params[1] = point_1.y();
+  params[2] = point_2.x();
+  params[3] = point_2.y();
+}
+
+void SetFitVParamsInScreenCoords(PDFiumPage* page, float* params) {
+  // FitV/FitBV only has 1 parameter for x coordinate.
+  gfx::PointF screen_coords =
+      page->TransformPageToScreenXY(gfx::PointF(params[0], 0));
+  params[0] = screen_coords.x();
+}
+
+void SetFitHParamsInScreenCoords(PDFiumPage* page, float* params) {
+  // FitH/FitBH only has 1 parameter for y coordinate.
+  gfx::PointF screen_coords =
+      page->TransformPageToScreenXY(gfx::PointF(0, params[0]));
+  params[0] = screen_coords.y();
+}
+
+// A helper function that transforms the in-page coordinates in `params` to
+// in-screen coordinates depending on the view's fit type. `params` is both an
+// input and a output parameter.
+void ParamsTransformPageToScreen(unsigned long view_fit_type,
+                                 PDFiumPage* page,
+                                 float* params) {
+  switch (view_fit_type) {
+    case PDFDEST_VIEW_XYZ:
+      SetXYZParamsInScreenCoords(page, params);
+      break;
+    case PDFDEST_VIEW_FIT:
+    case PDFDEST_VIEW_FITB:
+      // No parameters for coordinates to be transformed.
+      break;
+    case PDFDEST_VIEW_FITBH:
+    case PDFDEST_VIEW_FITH:
+      SetFitHParamsInScreenCoords(page, params);
+      break;
+    case PDFDEST_VIEW_FITBV:
+    case PDFDEST_VIEW_FITV:
+      SetFitVParamsInScreenCoords(page, params);
+      break;
+    case PDFDEST_VIEW_FITR:
+      SetFitRParamsInScreenCoords(page, params);
+      break;
+    case PDFDEST_VIEW_UNKNOWN_MODE:
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
 }  // namespace
 
 void InitializeSDK(bool enable_v8) {
@@ -2437,6 +2502,13 @@ base::Optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   result.page = page;
   unsigned long view_int =
       FPDFDest_GetView(dest, &result.num_params, result.params);
+
+  // FPDFDest_GetView() gets the in-page coordinates directly from the PDF
+  // document. The in-page coordinates need to be transformed into in-screen
+  // coordinates before getting sent to the viewport.
+  PDFiumPage* page_ptr = pages_[page].get();
+  ParamsTransformPageToScreen(view_int, page_ptr, result.params);
+
   result.view = ConvertViewIntToViewString(view_int);
   return result;
 }

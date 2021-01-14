@@ -108,7 +108,10 @@ class PDFEngine {
     unsigned long num_params;
 
     // Parameters for the view. Their meaning depends on the |view| and their
-    // number is defined by |num_params| but is at most |kMaxViewParams|.
+    // number is defined by |num_params| but is at most |kMaxViewParams|. Note:
+    // If a parameter stands for the x/y coordinates, it should be transformed
+    // into the corresponding in-screen coordinates before it's sent to the
+    // viewport.
     float params[kMaxViewParams];
   };
 
