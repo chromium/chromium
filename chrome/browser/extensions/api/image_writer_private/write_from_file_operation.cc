@@ -35,7 +35,7 @@ void WriteFromFileOperation::StartImpl() {
   }
 
   PostTask(base::BindOnce(
-      &WriteFromFileOperation::Unzip, this,
+      &WriteFromFileOperation::Extract, this,
       base::Bind(
           &WriteFromFileOperation::Write, this,
           base::Bind(&WriteFromFileOperation::VerifyWrite, this,

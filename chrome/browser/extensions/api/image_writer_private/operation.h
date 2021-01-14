@@ -97,9 +97,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // operation.  It will be called from Start().
   virtual void StartImpl() = 0;
 
-  // Unzips the current file if it ends in ".zip".  The current_file will be set
-  // to the unzipped file.
-  void Unzip(const base::Closure& continuation);
+  // Extracts the current file if it's an archive.  The current_file will be set
+  // to the extracted file.
+  void Extract(const base::Closure& continuation);
 
   // Writes the current file to device_path.
   void Write(const base::Closure& continuation);
@@ -207,10 +207,10 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
                 int progress_scale,
                 const base::OnceCallback<void(const std::string&)> callback);
 
-  // Callbacks for UnzipHelper.
-  void OnUnzipOpenComplete(const base::FilePath& image_path);
-  void OnUnzipProgress(int64_t total_bytes, int64_t progress_bytes);
-  void OnUnzipFailure(const std::string& error);
+  // Callbacks for Extractor.
+  void OnExtractOpenComplete(const base::FilePath& image_path);
+  void OnExtractProgress(int64_t total_bytes, int64_t progress_bytes);
+  void OnExtractFailure(const std::string& error);
 
   // Runs all cleanup functions.
   void CleanUp();

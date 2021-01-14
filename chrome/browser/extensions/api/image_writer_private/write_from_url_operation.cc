@@ -43,7 +43,7 @@ void WriteFromUrlOperation::StartImpl() {
       base::BindOnce(
           &WriteFromUrlOperation::VerifyDownload, this,
           base::BindOnce(
-              &WriteFromUrlOperation::Unzip, this,
+              &WriteFromUrlOperation::Extract, this,
               base::Bind(&WriteFromUrlOperation::Write, this,
                          base::Bind(&WriteFromUrlOperation::VerifyWrite, this,
                                     base::Bind(&WriteFromUrlOperation::Finish,

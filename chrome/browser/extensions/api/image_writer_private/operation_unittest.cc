@@ -59,8 +59,8 @@ class OperationForTest : public Operation {
 
   // Expose internal stages for testing.
   // Also wraps Operation's methods to run on correct sequence.
-  void Unzip(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::Unzip, this, continuation));
+  void Extract(const base::Closure& continuation) {
+    PostTask(base::BindOnce(&Operation::Extract, this, continuation));
   }
 
   void Write(const base::Closure& continuation) {
@@ -132,7 +132,7 @@ class ImageWriterOperationTest : public ImageWriterUnitTestBase {
 };
 
 // Unizpping a non-zip should do nothing.
-TEST_F(ImageWriterOperationTest, UnzipNonZipFile) {
+TEST_F(ImageWriterOperationTest, ExtractNonZipFile) {
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId, _, _)).Times(0);
 
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
@@ -141,11 +141,11 @@ TEST_F(ImageWriterOperationTest, UnzipNonZipFile) {
 
   operation_->Start();
   base::RunLoop run_loop;
-  operation_->Unzip(run_loop.QuitClosure());
+  operation_->Extract(run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(ImageWriterOperationTest, UnzipZipFile) {
+TEST_F(ImageWriterOperationTest, ExtractZipFile) {
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
   EXPECT_CALL(manager_,
               OnProgress(kDummyExtensionId, image_writer_api::STAGE_UNZIP, _))
@@ -161,7 +161,7 @@ TEST_F(ImageWriterOperationTest, UnzipZipFile) {
 
   operation_->Start();
   base::RunLoop run_loop;
-  operation_->Unzip(run_loop.QuitClosure());
+  operation_->Extract(run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(base::ContentsEqual(image_path_, operation_->GetImagePath()));
