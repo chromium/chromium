@@ -189,73 +189,6 @@ WebContentSecurityPolicySourceList ConvertToPublic(
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
-WebString ConvertToPublic(
-    network::mojom::blink::CSPDirectiveName directive_name) {
-  using CSPDirectiveName = network::mojom::blink::CSPDirectiveName;
-  switch (directive_name) {
-    case CSPDirectiveName::BaseURI:
-      return "base-uri";
-    case CSPDirectiveName::ChildSrc:
-      return "child-src";
-    case CSPDirectiveName::ConnectSrc:
-      return "connect-src";
-    case CSPDirectiveName::DefaultSrc:
-      return "default-src";
-    case CSPDirectiveName::FrameAncestors:
-      return "frame-ancestors";
-    case CSPDirectiveName::FrameSrc:
-      return "frame-src";
-    case CSPDirectiveName::FontSrc:
-      return "font-src";
-    case CSPDirectiveName::FormAction:
-      return "form-action";
-    case CSPDirectiveName::ImgSrc:
-      return "img-src";
-    case CSPDirectiveName::ManifestSrc:
-      return "manifest-src";
-    case CSPDirectiveName::MediaSrc:
-      return "media-src";
-    case CSPDirectiveName::ObjectSrc:
-      return "object-src";
-    case CSPDirectiveName::PrefetchSrc:
-      return "prefetch-src";
-    case CSPDirectiveName::ReportURI:
-      return "report-uri";
-    case CSPDirectiveName::Sandbox:
-      return "sandbox";
-    case CSPDirectiveName::ScriptSrc:
-      return "script-src";
-    case CSPDirectiveName::ScriptSrcAttr:
-      return "script-src-attr";
-    case CSPDirectiveName::ScriptSrcElem:
-      return "script-src-elem";
-    case CSPDirectiveName::StyleSrc:
-      return "style-src";
-    case CSPDirectiveName::StyleSrcAttr:
-      return "style-src-attr";
-    case CSPDirectiveName::StyleSrcElem:
-      return "style-src-elem";
-    case CSPDirectiveName::UpgradeInsecureRequests:
-      return "upgrade-insecure-requests";
-    case CSPDirectiveName::TreatAsPublicAddress:
-      return "treat-as-public-address";
-    case CSPDirectiveName::WorkerSrc:
-      return "worker-src";
-    case CSPDirectiveName::ReportTo:
-      return "report-to";
-    case CSPDirectiveName::NavigateTo:
-      return "navigate-to";
-    case CSPDirectiveName::Unknown:
-      NOTREACHED();
-      return "";
-    default:
-      NOTREACHED();
-      return "";
-  };
-}
-
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
 base::Optional<WebCSPTrustedTypes> ConvertToPublic(
     network::mojom::blink::CSPTrustedTypesPtr trusted_types) {
   if (!trusted_types)
@@ -273,7 +206,7 @@ WebContentSecurityPolicy ConvertToPublic(
       policy->directives.size());
   size_t i = 0;
   for (auto& directive : policy->directives) {
-    directives[i++] = {ConvertToPublic(directive.key),
+    directives[i++] = {directive.key,
                        ConvertToPublic(std::move(directive.value))};
   }
 
@@ -281,8 +214,7 @@ WebContentSecurityPolicy ConvertToPublic(
       policy->raw_directives.size());
   i = 0;
   for (auto& directive : policy->raw_directives) {
-    raw_directives[i++] = {ConvertToPublic(directive.key),
-                           std::move(directive.value)};
+    raw_directives[i++] = {directive.key, std::move(directive.value)};
   }
 
   return {policy->header->type,

@@ -43,12 +43,11 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
   policy->use_reporting_api = policy_in.use_reporting_api;
 
   for (const auto& directive : policy_in.raw_directives) {
-    auto name = network::ToCSPDirectiveName(directive.name.Utf8());
-    policy->raw_directives[name] = directive.value.Utf8();
+    policy->raw_directives[directive.name] = directive.value.Utf8();
   }
   for (const auto& directive : policy_in.directives) {
-    auto name = network::ToCSPDirectiveName(directive.name.Utf8());
-    policy->directives[name] = BuildCSPSourceList(directive.source_list);
+    policy->directives[directive.name] =
+        BuildCSPSourceList(directive.source_list);
   }
   policy->upgrade_insecure_requests = policy_in.upgrade_insecure_requests;
   policy->block_all_mixed_content = policy_in.block_all_mixed_content;

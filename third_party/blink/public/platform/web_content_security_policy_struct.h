@@ -67,14 +67,14 @@ struct WebContentSecurityPolicySourceList {
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
 struct WebContentSecurityPolicyDirective {
-  WebString name;
+  network::mojom::CSPDirectiveName name;
   WebContentSecurityPolicySourceList source_list;
 };
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
 struct WebContentSecurityPolicyRawDirective {
-  WebString name;
+  network::mojom::CSPDirectiveName name;
   WebString value;
 };
 
