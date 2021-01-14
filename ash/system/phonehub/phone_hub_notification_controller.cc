@@ -216,43 +216,45 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
 PhoneHubNotificationController::~PhoneHubNotificationController() {
   if (manager_)
     manager_->RemoveObserver(this);
+  if (feature_status_provider_)
+    feature_status_provider_->RemoveObserver(this);
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
 }
 
 void PhoneHubNotificationController::SetManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
-  chromeos::phonehub::NotificationManager* notification_manager =
-      phone_hub_manager->GetNotificationManager();
-  chromeos::phonehub::FeatureStatusProvider* feature_status_provider =
-      phone_hub_manager->GetFeatureStatusProvider();
-  chromeos::phonehub::TetherController* tether_controller =
-      phone_hub_manager->GetTetherController();
-  phone_model_ = phone_hub_manager->GetPhoneModel();
-
-  if (manager_ == notification_manager &&
-      tether_controller_ == tether_controller &&
-      feature_status_provider_ == feature_status_provider) {
-    return;
-  }
-
   if (manager_)
     manager_->RemoveObserver(this);
-
-  manager_ = notification_manager;
-  manager_->AddObserver(this);
+  if (phone_hub_manager) {
+    manager_ = phone_hub_manager->GetNotificationManager();
+    manager_->AddObserver(this);
+  } else {
+    manager_ = nullptr;
+  }
 
   if (feature_status_provider_)
     feature_status_provider_->RemoveObserver(this);
-
-  feature_status_provider_ = feature_status_provider;
-  feature_status_provider_->AddObserver(this);
+  if (phone_hub_manager) {
+    feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
+    feature_status_provider_->AddObserver(this);
+  } else {
+    feature_status_provider_ = nullptr;
+  }
 
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
+  if (phone_hub_manager) {
+    tether_controller_ = phone_hub_manager->GetTetherController();
+    tether_controller_->AddObserver(this);
+  } else {
+    tether_controller_ = nullptr;
+  }
 
-  tether_controller_ = tether_controller;
-  tether_controller_->AddObserver(this);
+  if (phone_hub_manager)
+    phone_model_ = phone_hub_manager->GetPhoneModel();
+  else
+    phone_model_ = nullptr;
 }
 
 const base::string16 PhoneHubNotificationController::GetPhoneName() const {

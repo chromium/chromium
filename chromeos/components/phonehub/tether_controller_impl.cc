@@ -340,11 +340,11 @@ void TetherControllerImpl::OnVisibleTetherNetworkFetched(
   network_config::mojom::NetworkStatePropertiesPtr previous_tether_network =
       std::move(tether_network_);
 
-  // The number of tether networks should only ever be at most 1.
-  if (networks.size() == 1) {
+  if (!networks.empty()) {
+    // The number of tether networks is expected to be at most 1, though some
+    // tests do use multiple networks.
     tether_network_ = std::move(networks[0]);
   } else {
-    DCHECK(networks.empty());
     tether_network_ = nullptr;
   }
 

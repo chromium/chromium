@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/policy/app_install_event_log_manager_wrapper.h"
@@ -215,6 +216,9 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
+
+    // Ensure that PhoneHubManager is created for the primary profile.
+    phonehub::PhoneHubManagerFactory::GetForProfile(profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);

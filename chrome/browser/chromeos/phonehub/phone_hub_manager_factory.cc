@@ -31,6 +31,8 @@ namespace chromeos {
 namespace phonehub {
 namespace {
 
+content::BrowserContext* g_context_for_service = nullptr;
+
 bool IsProhibitedByPolicy(Profile* profile) {
   return !multidevice_setup::IsFeatureAllowed(
       multidevice_setup::mojom::Feature::kPhoneHub, profile->GetPrefs());
@@ -109,11 +111,40 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
   // the UI.
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
+  DCHECK(!g_context_for_service);
+  g_context_for_service = context;
+
   return phone_hub_manager;
 }
 
-bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+bool PhoneHubManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
+}
+
+bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // We do want the service to be created with the BrowserContext, but returning
+  // true here causes issues when opting into Chrome Sync in OOBE because it
+  // causes ProfileSyncService to be created before SyncConsentScreen. Instead,
+  // we return false here and initialize PhoneHubManager within
+  // UserSessionInitializer.
+  return false;
+}
+
+void PhoneHubManagerFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  // If the primary Profile is being deleted, notify SystemTray that
+  // PhoneHubManager is being deleted. Note that the SystemTray is normally
+  // expected to be deleted *before* the Profile, so this check is only expected
+  // to be necessary in tests.
+  if (g_context_for_service == context) {
+    ash::SystemTray* system_tray = ash::SystemTray::Get();
+    if (system_tray)
+      system_tray->SetPhoneHubManager(nullptr);
+
+    g_context_for_service = nullptr;
+  }
+
+  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
 }
 
 void PhoneHubManagerFactory::RegisterProfilePrefs(

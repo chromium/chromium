@@ -35,7 +35,9 @@ class PhoneHubManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
