@@ -28,8 +28,8 @@ struct ParsedHeaders {
   // Cross-Origin-opener-Policy-Report-Only headers.
   CrossOriginOpenerPolicy cross_origin_opener_policy;
 
-  // The parsed value of the Origin-Isolation header.
-  bool origin_isolation = false;
+  // The parsed value of the Origin-Agent-Cluster header.
+  bool origin_agent_cluster = false;
 
   // The parsed Accept-CH from response headers.
   //

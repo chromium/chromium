@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/origin_isolation_parser.h"
+#include "services/network/public/cpp/origin_agent_cluster_parser.h"
 #include "net/http/structured_headers.h"
 
 namespace network {
 
-bool ParseOriginIsolation(const std::string& header_value) {
+bool ParseOriginAgentCluster(const std::string& header_value) {
   const auto item = net::structured_headers::ParseItem(header_value);
   return item && item->item.is_boolean() && item->item.GetBoolean();
 }

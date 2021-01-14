@@ -204,7 +204,7 @@ blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
       ConvertToBlink(std::move(parsed_headers->allow_csp_from)),
       std::move(parsed_headers->cross_origin_embedder_policy),
       std::move(parsed_headers->cross_origin_opener_policy),
-      parsed_headers->origin_isolation,
+      parsed_headers->origin_agent_cluster,
       parsed_headers->accept_ch.has_value()
           ? base::make_optional(
                 ConvertToBlink(parsed_headers->accept_ch.value()))

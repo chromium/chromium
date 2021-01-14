@@ -2098,7 +2098,7 @@ bool NavigationRequest::IsOptInIsolationRequested() {
     return false;
 
   if (base::FeatureList::IsEnabled(features::kOriginIsolationHeader) &&
-      response_head_->parsed_headers->origin_isolation) {
+      response_head_->parsed_headers->origin_agent_cluster) {
     return true;
   }
 
