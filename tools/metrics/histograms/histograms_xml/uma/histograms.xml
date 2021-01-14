@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
-    expires_after="M77">
+    expires_after="2021-12-06">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -295,12 +295,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.MetricsIDsReset" enum="BooleanHit"
-    expires_after="2020-12-06">
+    expires_after="2021-12-06">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    A count of the number of times the metrics ids (client id and low entropy
-    source) have been reset due to a cloned install being detected.
+    Records when the metrics IDs (client id and low entry source) are reset due
+    to a cloned install detection. This is done during startup when
+    MetricsStateManager is created.
+
+    A cloned install is detected when the current machine ID (24-bit hash of
+    machine characteristics) is different than the one stored in local state. A
+    pref is then written to local state to indicate a clone. The metrics IDs are
+    reset on the next startup assuming the cloned install pref is still set.
   </summary>
 </histogram>
 
