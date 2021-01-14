@@ -721,7 +721,11 @@ AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
                                 base::DoNothing(),
                                 nullptr) {}
 
-AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() = default;
+AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!picture_params_);
+  DCHECK(slice_params_.empty());
+}
 
 scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
     bool apply_grain) {
@@ -777,28 +781,55 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
     return false;
   }
 
-  // TODO(hiroh): Batch VABuffer submissions like Vp9VaapiVideoDecoderDelegate.
-  // Submit the picture parameters.
-  if (!vaapi_wrapper_->SubmitBuffer(VAPictureParameterBufferType, &pic_param))
-    return false;
-
-  // Submit the entire buffer and the per-tile information.
+  if (!picture_params_) {
+    picture_params_ = vaapi_wrapper_->CreateVABuffer(
+        VAPictureParameterBufferType, sizeof(pic_param));
+    if (!picture_params_)
+      return false;
+  }
+  if (slice_params_.size() != slice_params.size()) {
+    while (slice_params_.size() < slice_params.size()) {
+      slice_params_.push_back(vaapi_wrapper_->CreateVABuffer(
+          VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
+      if (!slice_params_.back()) {
+        slice_params_.clear();
+        return false;
+      }
+    }
+    slice_params_.resize(slice_params.size());
+    slice_params_.shrink_to_fit();
+  }
   // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
   // only pass the data starting from the tile list OBU to reduce the size of
   // the VA buffer.
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceDataBufferType, data.size(),
-                                    data.data())) {
+  // Always re-create |encoded_data| because reusing the buffer causes horrific
+  // artifacts in decoded buffers. TODO(b/177028692): This seems to be a driver
+  // bug, fix it and reuse the buffer.
+  auto encoded_data =
+      vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType, data.size_bytes());
+  if (!encoded_data)
     return false;
-  }
-  for (const VASliceParameterBufferAV1& tile_param : slice_params) {
-    if (!vaapi_wrapper_->SubmitBuffer(VASliceParameterBufferType,
-                                      &tile_param)) {
-      return false;
-    }
+
+  std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
+      {{picture_params_->id(),
+        {picture_params_->type(), picture_params_->size(), &pic_param}},
+       {encoded_data->id(),
+        {encoded_data->type(), encoded_data->size(), data.data()}}};
+  for (size_t i = 0; i < slice_params.size(); ++i) {
+    buffers.push_back({slice_params_[i]->id(),
+                       {slice_params_[i]->type(), slice_params_[i]->size(),
+                        &slice_params[i]}});
   }
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
-  return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->reconstruct_va_surface()->id());
+  return vaapi_wrapper_->MapAndCopyAndExecute(
+      vaapi_pic->reconstruct_va_surface()->id(), buffers);
+}
+
+void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
+  // Destroy the member ScopedVABuffers below since they refer to a VAContextID
+  // that will be destroyed soon.
+  picture_params_.reset();
+  slice_params_.clear();
 }
 }  // namespace media

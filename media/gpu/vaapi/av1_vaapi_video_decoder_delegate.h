@@ -5,10 +5,15 @@
 #ifndef MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_DECODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_DECODER_DELEGATE_H_
 
+#include <memory>
+#include <vector>
+
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
 
 namespace media {
+class ScopedVABuffer;
+
 class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
@@ -27,6 +32,13 @@ class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
                     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
                     base::span<const uint8_t> data) override;
   bool OutputPicture(const AV1Picture& pic) override;
+
+  // VaapiVideoDecoderDelegate implementation.
+  void OnVAContextDestructionSoon() override;
+
+ private:
+  std::unique_ptr<ScopedVABuffer> picture_params_;
+  std::vector<std::unique_ptr<ScopedVABuffer>> slice_params_;
 };
 }  // namespace media
 #endif  // MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_DECODER_DELEGATE_H_
