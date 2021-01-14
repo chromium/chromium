@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -29,6 +30,7 @@ public class SingleActionMessage implements MessageStateHandler {
     private final Callback<PropertyModel> mDismissHandler;
     private MessageAutoDismissTimer mAutoDismissTimer;
     private final Supplier<Integer> mMaxTranslationSupplier;
+    private final WindowAndroid mWindowAndroid;
 
     /**
      * @param container The container holding messages.
@@ -38,14 +40,19 @@ public class SingleActionMessage implements MessageStateHandler {
      *         property model.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
      *         value the message banner can have as a result of the animations or the gestures.
+     * @param windowAndroid The {@link WindowAndroid} that will be used by the message banner to
+     *         start the animations so the message is not clipped as a result of some Android
+     *         SurfaceView optimization.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
-            Callback<PropertyModel> dismissHandler, Supplier<Integer> maxTranslationSupplier) {
+            Callback<PropertyModel> dismissHandler, Supplier<Integer> maxTranslationSupplier,
+            WindowAndroid windowAndroid) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
         mAutoDismissTimer = new MessageAutoDismissTimer(getAutoDismissDuration());
         mMaxTranslationSupplier = maxTranslationSupplier;
+        mWindowAndroid = windowAndroid;
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
@@ -61,7 +68,7 @@ public class SingleActionMessage implements MessageStateHandler {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
             mMessageBanner = new MessageBannerCoordinator(mView, mModel, mMaxTranslationSupplier,
-                    mContainer.getResources(), mDismissHandler.bind(mModel));
+                    mContainer.getResources(), mDismissHandler.bind(mModel), mWindowAndroid);
         }
         mContainer.addMessage(mView);
 

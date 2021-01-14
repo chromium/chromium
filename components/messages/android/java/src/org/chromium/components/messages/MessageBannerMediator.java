@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
@@ -69,6 +70,7 @@ class MessageBannerMediator implements SwipeHandler {
     private final float mHorizontalHideThresholdPx;
     private final Supplier<Float> mMaxHorizontalTranslationPx;
     private final Runnable mMessageDismissed;
+    private final WindowAndroid mWindowAndroid;
 
     private Animator mAnimation;
     @State
@@ -82,7 +84,7 @@ class MessageBannerMediator implements SwipeHandler {
      * Constructs the message banner mediator.
      */
     MessageBannerMediator(PropertyModel model, Supplier<Integer> maxTranslationSupplier,
-            Resources resources, Runnable messageDismissed) {
+            Resources resources, Runnable messageDismissed, WindowAndroid windowAndroid) {
         mModel = model;
         mMaxTranslationYSupplier = maxTranslationSupplier;
         mVerticalHideThresholdPx =
@@ -96,6 +98,7 @@ class MessageBannerMediator implements SwipeHandler {
                     screenWidth / 2);
         };
         mMessageDismissed = messageDismissed;
+        mWindowAndroid = windowAndroid;
     }
 
     /**
@@ -107,8 +110,7 @@ class MessageBannerMediator implements SwipeHandler {
             mModel.set(TRANSLATION_Y, -mMaxTranslationYSupplier.get());
         }
         cancelAnyAnimations();
-        mAnimation = createAnimation(true, 0, false, messageShown);
-        mAnimation.start();
+        startAnimation(true, 0, false, messageShown);
     }
 
     /**
@@ -122,8 +124,7 @@ class MessageBannerMediator implements SwipeHandler {
         }
 
         cancelAnyAnimations();
-        mAnimation = createAnimation(true, -mMaxTranslationYSupplier.get(), false, messageHidden);
-        mAnimation.start();
+        startAnimation(true, -mMaxTranslationYSupplier.get(), false, messageHidden);
     }
 
     void setOnTouchRunnable(Runnable runnable) {
@@ -189,9 +190,8 @@ class MessageBannerMediator implements SwipeHandler {
                     ? 0
                     : MathUtils.flipSignIf(mMaxHorizontalTranslationPx.get(), translationX < 0);
         }
-        mAnimation = createAnimation(
+        startAnimation(
                 isVertical, translateTo, false, translateTo != 0 ? mMessageDismissed : () -> {});
-        mAnimation.start();
     }
 
     @Override
@@ -222,9 +222,8 @@ class MessageBannerMediator implements SwipeHandler {
 
         // TODO(crbug.com/1157213): See if we can use velocity to change the animation
         // speed/duration.
-        mAnimation = createAnimation(isVertical(mSwipeDirection), translateTo, velocity != 0,
+        startAnimation(isVertical(mSwipeDirection), translateTo, velocity != 0,
                 translateTo != 0 ? mMessageDismissed : () -> {});
-        mAnimation.start();
     }
 
     @Override
@@ -236,14 +235,13 @@ class MessageBannerMediator implements SwipeHandler {
     // endregion
 
     /**
-     * Create an animation.
+     * Create and start an animation.
      * @param vertical Whether the message is being animated vertically.
      * @param translateTo Target translation value for the animation.
      * @param didFling Whether the animation is the result of a fling gesture.
      * @param onEndCallback Callback that will be called after the animation.
-     * @return The {@link Animator}
      */
-    private Animator createAnimation(
+    private void startAnimation(
             boolean vertical, float translateTo, boolean didFling, Runnable onEndCallback) {
         final long duration = translateTo == 0 ? ENTER_DURATION_MS : EXIT_DURATION_MS;
 
@@ -286,7 +284,8 @@ class MessageBannerMediator implements SwipeHandler {
             }
         });
 
-        return animatorSet;
+        mAnimation = animatorSet;
+        mWindowAndroid.startAnimationOverContent(mAnimation);
     }
 
     private void cancelAnyAnimations() {

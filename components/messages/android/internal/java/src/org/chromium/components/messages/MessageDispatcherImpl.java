@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -15,23 +16,27 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final MessageQueueManager mMessageQueueManager = new MessageQueueManager();
     private final MessageContainer mMessageContainer;
     private final Supplier<Integer> mMessageMaxTranslationSupplier;
+    private final WindowAndroid mWindowAndroid;
 
     /**
      * Build a new message dispatcher
      * @param messageContainer A container view for displaying message banners.
-     * @param messageMaxTranslationSupplier A {@link Supplier} that supplies the maximum translation
-     *         Y value the message banner can have as a result of the animations or the gestures.
+     * @param messageMaxTranslation A {@link Supplier} that supplies the maximum translation Y value
+     *         the message banner can have as a result of the animations or the gestures.
+     * @param windowAndroid The {@link WindowAndroid} with which the Message is associated.
      */
-    public MessageDispatcherImpl(
-            MessageContainer messageContainer, Supplier<Integer> messageMaxTranslation) {
+    public MessageDispatcherImpl(MessageContainer messageContainer,
+            Supplier<Integer> messageMaxTranslation, WindowAndroid windowAndroid) {
         mMessageContainer = messageContainer;
         mMessageMaxTranslationSupplier = messageMaxTranslation;
+        mWindowAndroid = windowAndroid;
     }
 
     @Override
     public void enqueueMessage(PropertyModel messageProperties) {
-        MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
-                messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier);
+        MessageStateHandler messageStateHandler =
+                new SingleActionMessage(mMessageContainer, messageProperties, this::dismissMessage,
+                        mMessageMaxTranslationSupplier, mWindowAndroid);
         mMessageQueueManager.enqueueMessage(messageStateHandler, messageProperties);
     }
 
