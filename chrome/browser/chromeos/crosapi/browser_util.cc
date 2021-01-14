@@ -164,7 +164,7 @@ bool IsLacrosEnabled(Channel channel) {
     return true;
 
   if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
-    LOG(WARNING) << "Lacros-chrome is not supported";
+    // Don't log here. It's too spammy.
     return false;
   }
 
