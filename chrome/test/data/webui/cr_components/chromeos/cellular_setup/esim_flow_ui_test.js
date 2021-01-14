@@ -59,6 +59,20 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertEquals(ironPages.selected, page.id);
   }
 
+  function enterConfirmationCode() {
+    const confirmationCodeInput = confirmationCodePage.$$('#confirmationCode');
+    confirmationCodeInput.value = 'CONFIRMATION_CODE';
+    assertFalse(confirmationCodeInput.invalid);
+
+    // Next button should now be enabled.
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+
+    eSimPage.navigateForward();
+    return confirmationCodeInput;
+  }
+
   suite('No eSIM profiles flow', function() {
     let euicc;
 
@@ -126,19 +140,37 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       euicc.setProfileInstallResultForTest(
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess);
-      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
-
-      // Next button should now be enabled.
-      assertTrue(
-          eSimPage.buttonState.next ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-
-      eSimPage.navigateForward();
+      enterConfirmationCode();
 
       await flushAsync();
 
       // Should go to final page.
       assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+    });
+
+    test('Invalid confirmation code', async function() {
+      euicc.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode);
+
+      eSimPage.navigateForward();
+
+      await flushAsync();
+
+      // Confirmation code page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+
+      euicc.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+      const confirmationCodeInput = enterConfirmationCode();
+
+      await flushAsync();
+
+      // Should still be at confirmation code page with input showing error.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+      assertTrue(confirmationCodeInput.invalid);
     });
   });
 
@@ -197,19 +229,39 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       profile.setProfileInstallResultForTest(
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess);
-      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
-
-      // Next button should now be enabled.
-      assertTrue(
-          eSimPage.buttonState.next ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-
-      eSimPage.navigateForward();
+      enterConfirmationCode();
 
       await flushAsync();
 
       // Should go to final page.
       assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+    });
+
+    test('Invalid confirmation code', async function() {
+      profile.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode);
+
+      // Loading page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
+
+      await flushAsync();
+
+      // Confirmation code page should be showing.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+
+      profile.setProfileInstallResultForTest(
+          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+      const confirmationCodeInput = enterConfirmationCode();
+
+      await flushAsync();
+
+      // Should still be at confirmation code page with input showing error.
+      assertSelectedPage(
+          cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+      assertTrue(confirmationCodeInput.invalid);
     });
   });
 

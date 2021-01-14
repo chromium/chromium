@@ -73,7 +73,9 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"confirmationCodeMessage",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_MESSAGE},
     {"confirmationCodeInput",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT}};  // namespace
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT},
+    {"confirmationCodeError",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR}};  // namespace
 
 struct NamedBoolean {
   const char* name;

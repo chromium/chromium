@@ -26,6 +26,10 @@ Polymer({
       notify: true,
     },
 
+    showError: {
+      type: Boolean,
+    },
+
     /**
      * @type {?chromeos.cellularSetup.mojom.ESimProfileProperties}
      * @private
@@ -48,15 +52,11 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @return {boolean}
    * @private
    */
-  getMessage_() {
-    const profileName = this.getProfileName_();
-    if (!profileName) {
-      return '';
-    }
-    return this.i18n('confirmationCodeMessage', profileName);
+  shouldShowProfileDetails_() {
+    return !!this.profile;
   },
 
   /**

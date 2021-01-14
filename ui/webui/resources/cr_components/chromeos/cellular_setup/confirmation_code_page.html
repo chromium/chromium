@@ -1,13 +1,21 @@
 <link rel="import" href="../../../html/polymer.html">
 
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="base_page.html">
 
 <dom-module id="confirmation-code-page">
   <template>
-    <style include="iron-flex">
+    <style include="iron-flex iron-positioning">
       [slot='page-body'] {
         margin-top: -20px;
+      }
+
+      #outerDiv {
+        height: 236px;
+      }
+      .container {
+        width: 472px;
       }
 
       #details {
@@ -15,7 +23,6 @@
         color: var(--cr-primary-text-color);
         display: flex;
         margin-bottom: 40px;
-        margin-top: 60px;
       }
 
       #profileImage {
@@ -28,21 +35,25 @@
     </style>
     <base-page>
       <div slot="page-body">
-        <!-- TODO(crbug.com/1093185): Handle activation code case where
-             we don't have profileProperties_. -->
-        <div id="description">[[getMessage_(profileProperties_)]]</div>
-        <div id="details">
-          <!-- TODO(crbug.com/1093185): Update with real profile image. -->
-          <img id="profileImage" src="default_esim_profile.svg">
-          <div>
-            [[getProfileName_(profileProperties_)]]
+        <div id="description">[[i18n('confirmationCodeMessage')]]</div>
+        <div id="outerDiv" class="layout horizontal center">
+          <div class="container">
+            <div id="details" hidden$="[[!shouldShowProfileDetails_(profile)]]">
+              <!-- TODO(crbug.com/1093185): Update with real profile image. -->
+              <img id="profileImage" src="default_esim_profile.svg">
+              <div>
+                [[getProfileName_(profileProperties_)]]
+              </div>
+            </div>
+            <cr-input id="confirmationCode"
+              label="[[i18n('confirmationCodeInput')]]"
+              value="{{confirmationCode}}"
+              aria-describedby="description"
+              error-message="[[i18n('confirmationCodeError')]]"
+              invalid="[[showError]]">
+            </cr-input>
           </div>
         </div>
-        <cr-input id="confirmationCode"
-          label="[[i18n('confirmationCodeInput')]]"
-          value="{{confirmationCode}}"
-          aria-describedby="description">
-        </cr-input>
       </div>
     </base-page>
   </template>

@@ -169,19 +169,24 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
-      // TODO(crbug.com/1093185) Handle error during confirmation code page.
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode) {
+        this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
+        return;
+      }
       this.showError_ = response.result !==
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
+      if (response.result ===
+              chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure &&
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY) {
+        return;
+      }
       if (response.result ===
               chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess ||
           response.result ===
               chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure) {
         this.state_ = ESimUiState.SETUP_FINISH;
-      } else if (
-          response.result ===
-          chromeos.cellularSetup.mojom.ProfileInstallResult
-              .kErrorNeedsConfirmationCode) {
-        this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
       }
     },
 
