@@ -1007,16 +1007,21 @@ void SVGElement::CollectStyleForAnimatedPresentationAttributes(
 }
 
 scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject() {
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+
   SVGElement* corresponding_element = CorrespondingElement();
-  if (!corresponding_element)
-    return GetDocument().GetStyleResolver().StyleForElement(this);
+  if (!corresponding_element) {
+    return GetDocument().GetStyleResolver().StyleForElement(
+        this, style_recalc_context);
+  }
 
   const ComputedStyle* style = nullptr;
   if (Element* parent = ParentOrShadowHostElement())
     style = parent->GetComputedStyle();
 
-  return GetDocument().GetStyleResolver().StyleForElement(corresponding_element,
-                                                          style, style);
+  return GetDocument().GetStyleResolver().StyleForElement(
+      corresponding_element, style_recalc_context, style, style);
 }
 
 bool SVGElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {

@@ -2804,7 +2804,10 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject() {
 }
 
 scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject() {
-  return GetDocument().GetStyleResolver().StyleForElement(this);
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+  return GetDocument().GetStyleResolver().StyleForElement(this,
+                                                          style_recalc_context);
 }
 
 void Element::RecalcStyleForTraversalRootAncestor() {
@@ -5134,8 +5137,10 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
           PseudoElementStyleRequest(To<PseudoElement>(this)->GetPseudoId()),
           parent_style, parent_style);
     } else {
+      // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+      StyleRecalcContext style_recalc_context;
       result = GetDocument().GetStyleResolver().StyleForElement(
-          this, parent_style, parent_style);
+          this, style_recalc_context, parent_style, parent_style);
     }
     if (result)
       result->SetStyleType(kPseudoIdFirstLineInherited);

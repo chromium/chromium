@@ -33,7 +33,8 @@ class StyleResolverTest : public PageTestBase {
  public:
   scoped_refptr<ComputedStyle> StyleForId(AtomicString id) {
     Element* element = GetDocument().getElementById(id);
-    auto style = GetStyleEngine().GetStyleResolver().StyleForElement(element);
+    auto style = GetStyleEngine().GetStyleResolver().StyleForElement(
+        element, StyleRecalcContext());
     DCHECK(style);
     return style;
   }
@@ -82,8 +83,9 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   animations.SetAnimationStyleChange(true);
 
   StyleResolver& resolver = GetStyleEngine().GetStyleResolver();
-  ASSERT_TRUE(resolver.StyleForElement(div));
-  EXPECT_EQ(20, resolver.StyleForElement(div)->FontSize());
+  ASSERT_TRUE(resolver.StyleForElement(div, StyleRecalcContext()));
+  EXPECT_EQ(20,
+            resolver.StyleForElement(div, StyleRecalcContext())->FontSize());
   ASSERT_TRUE(animations.BaseComputedStyle());
   EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
 
@@ -91,12 +93,14 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   // animation base computed style.
   const ComputedStyle* parent_style =
       GetDocument().documentElement()->GetComputedStyle();
-  EXPECT_EQ(
-      10,
-      resolver.StyleForElement(div, parent_style, parent_style)->FontSize());
+  EXPECT_EQ(10, resolver
+                    .StyleForElement(div, StyleRecalcContext(), parent_style,
+                                     parent_style)
+                    ->FontSize());
   ASSERT_TRUE(animations.BaseComputedStyle());
   EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
-  EXPECT_EQ(20, resolver.StyleForElement(div)->FontSize());
+  EXPECT_EQ(20,
+            resolver.StyleForElement(div, StyleRecalcContext())->FontSize());
 }
 
 TEST_F(StyleResolverTest, HasEmUnits) {
@@ -349,7 +353,8 @@ TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
   // Perform a non-cacheable style resolution, and ensure that the base computed
   // style is not updated.
   GetStyleEngine().GetStyleResolver().StyleForElement(
-      target, nullptr, nullptr, kMatchAllRulesExcludingSMIL);
+      target, StyleRecalcContext(), nullptr, nullptr,
+      kMatchAllRulesExcludingSMIL);
   EXPECT_FALSE(element_animations->BaseComputedStyle());
 
   // Computing the style with default args updates the base computed style.

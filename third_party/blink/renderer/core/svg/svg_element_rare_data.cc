@@ -32,12 +32,16 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     const ComputedStyle* parent_style) {
   DCHECK(element);
   if (!override_computed_style_ || needs_override_computed_style_update_) {
+    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+    StyleRecalcContext style_recalc_context;
+
     // The style computed here contains no CSS Animations/Transitions or SMIL
     // induced rules - this is needed to compute the "base value" for the SMIL
     // animation sandwhich model.
     override_computed_style_ =
         element->GetDocument().GetStyleResolver().StyleForElement(
-            element, parent_style, parent_style, kMatchAllRulesExcludingSMIL);
+            element, style_recalc_context, parent_style, parent_style,
+            kMatchAllRulesExcludingSMIL);
     needs_override_computed_style_update_ = false;
   }
   DCHECK(override_computed_style_);

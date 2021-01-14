@@ -685,6 +685,7 @@ static void UpdateAnimationBaseComputedStyle(StyleResolverState& state,
 
 scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
     Element* element,
+    const StyleRecalcContext& style_recalc_context,
     const ComputedStyle* default_parent,
     const ComputedStyle* default_layout_parent,
     RuleMatchingBehavior matching_behavior) {
@@ -710,8 +711,9 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  ApplyBaseStyle(element, state, cascade, cascade.MutableMatchResult(),
-                 matching_behavior, can_cache_animation_base_computed_style);
+  ApplyBaseStyle(element, style_recalc_context, state, cascade,
+                 cascade.MutableMatchResult(), matching_behavior,
+                 can_cache_animation_base_computed_style);
 
   if (ApplyAnimatedStyle(state, cascade)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
@@ -825,6 +827,7 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
 
 void StyleResolver::ApplyBaseStyle(
     Element* element,
+    const StyleRecalcContext& style_recalc_context,
     StyleResolverState& state,
     StyleCascade& cascade,
     MatchResult& match_result,
@@ -851,8 +854,6 @@ void StyleResolver::ApplyBaseStyle(
           DocumentElementUserAgentDeclarations());
     }
 
-    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-    StyleRecalcContext style_recalc_context;
     ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                    selector_filter_, match_result,
                                    state.Style(), state.Style()->InsideLink());
@@ -1527,8 +1528,10 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
   StyleResolverState state(GetDocument(), element);
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  ApplyBaseStyle(&element, state, cascade, cascade.MutableMatchResult(),
-                 kMatchAllRules, true);
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleRecalcContext style_recalc_context;
+  ApplyBaseStyle(&element, style_recalc_context, state, cascade,
+                 cascade.MutableMatchResult(), kMatchAllRules, true);
   ApplyInterpolations(state, cascade, interpolations);
 
   return state.TakeStyle();

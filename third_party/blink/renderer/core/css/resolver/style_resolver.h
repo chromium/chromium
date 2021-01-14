@@ -50,6 +50,7 @@ class MatchResult;
 class PropertyHandle;
 class RuleSet;
 class StyleCascade;
+class StyleRecalcContext;
 class StyleRuleUsageTracker;
 
 enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
@@ -67,6 +68,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   scoped_refptr<ComputedStyle> StyleForElement(
       Element*,
+      const StyleRecalcContext&,
       const ComputedStyle* parent_style = nullptr,
       const ComputedStyle* layout_parent_style = nullptr,
       RuleMatchingBehavior = kMatchAllRules);
@@ -164,6 +166,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void InitStyleAndApplyInheritance(Element& element,
                                     StyleResolverState& state);
   void ApplyBaseStyle(Element* element,
+                      const StyleRecalcContext&,
                       StyleResolverState& state,
                       StyleCascade& cascade,
                       MatchResult& match_result,
