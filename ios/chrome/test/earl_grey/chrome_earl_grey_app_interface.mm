@@ -672,6 +672,17 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return base::SysUTF8ToNSString(chrome_test_util::GetSyncCacheGuid());
 }
 
++ (NSError*)waitForSyncInvalidationFields {
+  const bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return chrome_test_util::VerifySyncInvalidationFieldsPopulated();
+  });
+  if (!success) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"The local DeviceInfo doesn't have invalidation fields");
+  }
+  return nil;
+}
+
 + (BOOL)isFakeSyncServerSetUp {
   return chrome_test_util::IsFakeSyncServerSetUp();
 }

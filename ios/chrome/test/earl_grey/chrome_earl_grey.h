@@ -241,6 +241,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
           expectPresent:(BOOL)expectPresent
                 timeout:(NSTimeInterval)timeout;
 
+// Waits for sync invalidation field presence in the DeviceInfo data type on the
+// server.
+- (void)waitForSyncInvalidationFields;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Opens a new tab and waits for the new tab animation to complete within a

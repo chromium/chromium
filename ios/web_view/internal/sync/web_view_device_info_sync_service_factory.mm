@@ -11,6 +11,7 @@
 #include "base/time/default_clock.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_client.h"
@@ -18,6 +19,7 @@
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 #include "components/version_info/version_info.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
+#include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,7 +30,11 @@ namespace {
 
 class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
  public:
-  explicit DeviceInfoSyncClient(PrefService* prefs) : prefs_(prefs) {}
+  DeviceInfoSyncClient(
+      PrefService* prefs,
+      syncer::SyncInvalidationsService* sync_invalidations_service)
+      : prefs_(prefs),
+        sync_invalidations_service_(sync_invalidations_service) {}
   ~DeviceInfoSyncClient() override = default;
 
   // syncer::DeviceInfoSyncClient:
@@ -47,16 +53,29 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   base::Optional<std::string> GetFCMRegistrationToken() const override {
+    if (sync_invalidations_service_) {
+      return sync_invalidations_service_->GetFCMRegistrationToken();
+    }
+    // If the service is not enabled, then the registration token must be empty,
+    // not unknown (base::nullopt). This is needed to reset previous token if
+    // the invalidations have been turned off.
     return std::string();
   }
 
   // syncer::DeviceInfoSyncClient:
   base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+    if (sync_invalidations_service_) {
+      return sync_invalidations_service_->GetInterestedDataTypes();
+    }
+    // If the service is not enabled, then the list of types must be empty, not
+    // unknown (base::nullopt). This is needed to reset previous types if the
+    // invalidations have been turned off.
     return syncer::ModelTypeSet();
   }
 
  private:
   PrefService* const prefs_;
+  syncer::SyncInvalidationsService* const sync_invalidations_service_;
 };
 
 }  // namespace
@@ -82,6 +101,7 @@ WebViewDeviceInfoSyncServiceFactory::WebViewDeviceInfoSyncServiceFactory()
           "DeviceInfoSyncService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
 WebViewDeviceInfoSyncServiceFactory::~WebViewDeviceInfoSyncServiceFactory() {}
@@ -92,8 +112,10 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
 
-  auto device_info_sync_client =
-      std::make_unique<DeviceInfoSyncClient>(browser_state->GetPrefs());
+  syncer::SyncInvalidationsService* const sync_invalidations_service =
+      WebViewSyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
+  auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
+      browser_state->GetPrefs(), sync_invalidations_service);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           version_info::Channel::STABLE, version_info::GetVersionNumber(),
@@ -105,8 +127,7 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client),
-      /*sync_invalidations_service=*/nullptr);
+      std::move(device_info_sync_client), sync_invalidations_service);
 }
 
 }  // namespace ios_web_view

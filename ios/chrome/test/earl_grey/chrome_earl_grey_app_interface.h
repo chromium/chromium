@@ -304,6 +304,10 @@
 // calling this.
 + (NSString*)syncCacheGUID;
 
+// Waits for sync invalidation field presence in the DeviceInfo data type on the
+// server.
++ (NSError*)waitForSyncInvalidationFields;
+
 // Whether or not the fake sync server has been setup.
 + (BOOL)isFakeSyncServerSetUp;
 

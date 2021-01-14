@@ -720,6 +720,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE(success, kTypedURLError);
 }
 
+- (void)waitForSyncInvalidationFields {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [ChromeEarlGreyAppInterface waitForSyncInvalidationFields]);
+}
+
 - (void)triggerSyncCycleForType:(syncer::ModelType)type {
   [ChromeEarlGreyAppInterface triggerSyncCycleForType:type];
 }

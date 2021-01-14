@@ -4,6 +4,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/sync/invalidations/switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -11,6 +12,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -61,6 +63,15 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::TYPED_URLS], 0,
       @"No bookmarks should exist before sync tests start.");
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testSyncInvalidationsEnabled)]) {
+    config.features_enabled.push_back(switches::kSyncSendInterestedDataTypes);
+    config.features_enabled.push_back(switches::kUseSyncInvalidations);
+  }
+  return config;
 }
 
 // Tests that a bookmark added on the client (before Sync is enabled) is
@@ -468,6 +479,17 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1 expectedCount:1];
   [BookmarkEarlGrey verifyBookmarksWithTitle:title2 expectedCount:1];
+}
+
+- (void)testSyncInvalidationsEnabled {
+  // Sign in to sync.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  AssertNumberOfEntities(1, syncer::DEVICE_INFO);
+  [ChromeEarlGrey waitForSyncInvalidationFields];
 }
 
 @end
