@@ -36,6 +36,8 @@ class AppCacheRequest;
 class AppCacheRequestHandlerTest;
 class AppCacheHost;
 
+CONTENT_EXPORT extern const base::Feature kAppCacheAlwaysFallbackToNetwork;
+
 // An instance is created for each net::URLRequest. The instance survives all
 // http transactions involved in the processing of its net::URLRequest, and is
 // given the opportunity to hijack the request along the way. Callers

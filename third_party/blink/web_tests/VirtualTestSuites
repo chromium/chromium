@@ -594,7 +594,8 @@
   {
     "prefix": "appcache-origin-trial",
     "bases": ["http/tests/appcache"],
-    "args": ["--enable-features=AppCacheRequireOriginTrial"]
+    "args": ["--enable-features=AppCacheRequireOriginTrial",
+             "--disable-features=AppCacheAlwaysFallbackToNetwork"]
   },
   {
     "prefix": "async-script-scheduling-finished-parsing",
