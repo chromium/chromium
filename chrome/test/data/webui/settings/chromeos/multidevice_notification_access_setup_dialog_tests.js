@@ -76,7 +76,7 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(NotificationAccessSetupOperationStatus.
         SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
-    assertFalse(isSetupInstructionsShownSeparately());
+    assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));

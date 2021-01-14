@@ -1140,7 +1140,7 @@ This file contains the strings for ash.
         Turn on Phone Hub
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
-        Extend your phone’s internet connection, control Do Not Disturb and locate your device. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+        Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON" desc="Dimiss button on the onboarding dialog for user to opt out this feature.">
         Dismiss
@@ -1152,7 +1152,7 @@ This file contains the strings for ash.
         Set up Phone Hub later
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2.">
-        Extend your phone’s internet connection, control Do Not Disturb and locate your phone. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+        Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1.">
         You can always set up later from Settings.
@@ -1173,7 +1173,7 @@ This file contains the strings for ash.
         Can't find your phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone. This message reminds users that Bluetooth must be enabled on the phone in order to use the feature.">
-        Looks like Bluetooth is turned off on your phone. Please turn on Bluetooth on your phone to use Phone Hub.
+        Check that Bluetooth is enabled on your phone to use Phone Hub
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON" desc="Refresh button on the disconnected dialog to retry the connection attempt to the phone.">
         Refresh

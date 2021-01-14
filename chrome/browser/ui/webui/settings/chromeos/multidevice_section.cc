@@ -314,14 +314,10 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL},
       {"multideviceWifiSyncLearnMoreLabel",
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL},
-      {"multideviceNotificationAccessSetupAckTitle",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE},
       {"multideviceNotificationAccessSetupConnectingTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
-      {"multideviceNotificationAccessSetupAwaitingResponseSummary",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY},
       {"multideviceNotificationAccessSetupInstructions",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS},
       {"multideviceNotificationAccessSetupCompletedTitle",
@@ -420,9 +416,16 @@ void MultiDeviceSection::AddLoadTimeData(
                                  ui::GetChromeOSDeviceName()));
   html_source->AddString(
       "multidevicePhoneHubNotificationsItemSummary",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY,
-          ui::GetChromeOSDeviceName()));
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupAckTitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupAwaitingResponseSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY));
   html_source->AddString(
       "multideviceNotificationAccessSetupAccessProhibitedSummary",
       l10n_util::GetStringFUTF16(

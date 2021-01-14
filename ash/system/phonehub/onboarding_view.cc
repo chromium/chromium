@@ -75,9 +75,8 @@ class OnboardingMainView : public PhoneHubInterstitialView {
     SetImage(*image);
     SetTitle(
         l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_TITLE));
-    SetDescription(l10n_util::GetStringFUTF16(
-        IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION,
-        ui::GetChromeOSDeviceName()));
+    SetDescription(l10n_util::GetStringUTF16(
+        IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION));
 
     // Add "Dismiss" and "Get started" buttons.
     auto dismiss = std::make_unique<InterstitialViewButton>(
@@ -135,9 +134,8 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     // Adds title and description.
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE));
-    base::string16 part1 = l10n_util::GetStringFUTF16(
-        IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1,
-        ui::GetChromeOSDeviceName());
+    base::string16 part1 = l10n_util::GetStringUTF16(
+        IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1);
     base::string16 part2 = l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2);
     // Uses "\n" to create a newline separator between two text paragraphs.

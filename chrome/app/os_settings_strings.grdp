@@ -2501,7 +2501,7 @@ Press an assigned switch to remove assignment.
     Recent Chrome tabs
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
-    Extend the best of your Android phone to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
     View notifications from your chat apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
@@ -2516,21 +2516,21 @@ Press an assigned switch to remove assignment.
     Turn on Chrome Sync to view recent Chrome tabs from your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
-    Turn on notifications on your phone
+    View notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
-    Receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user needs to follow the setup flow instructions on their phone in order to start mirroring notifications from their phone to their Chromebook.">
     Complete setup on your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow shown when the user needs to follow the setup flow instructions on their phone in order to start mirroring notifications from their phone to their Chromebook.">
-    Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on. Follow steps on your phone to complete setup.
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown after the user has started the flow. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
     Connecting to your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the Phone Hub 'Notifications' toggle is switched on, and when the user has confirmed to turn on the feature.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
