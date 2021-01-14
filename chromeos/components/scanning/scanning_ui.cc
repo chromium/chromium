@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
+#include "chromeos/components/scanning/scanning_metrics_handler.h"
 #include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/grit/chromeos_scanning_app_resources.h"
@@ -151,6 +152,7 @@ ScanningUI::ScanningUI(
   AddScanningAppPluralStrings(handler.get());
 
   web_ui->AddMessageHandler(std::move(handler));
+  web_ui->AddMessageHandler(std::make_unique<ScanningMetricsHandler>());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

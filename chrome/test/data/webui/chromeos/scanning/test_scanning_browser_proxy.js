@@ -18,6 +18,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'requestScanToLocation',
       'showFileInLocation',
       'getPluralString',
+      'recordScanJobSettings',
     ]);
 
     /** @private {?SelectedPath} */
@@ -60,6 +61,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
             'Your files have been successfully scanned and saved to ' +
                 '<a id="folderLink">$1</a>.');
   }
+
+  /** @override */
+  recordScanJobSettings() {}
 
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {

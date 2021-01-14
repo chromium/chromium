@@ -26,8 +26,22 @@ enum class ScanJobFailureReason {
   kMaxValue = kSaveToDiskFailed,
 };
 
+enum class ScanJobSettingsResolution {
+  kUnexpectedDpi = 0,
+  k75Dpi = 1,
+  k100Dpi = 2,
+  k150Dpi = 3,
+  k200Dpi = 4,
+  k300Dpi = 5,
+  k600Dpi = 6,
+  kMaxValue = k600Dpi,
+};
+
 // Records ScanAppEntryPoint histogram value.
 void RecordScanAppEntryPoint(ScanAppEntryPoint entry_point);
+
+// Converts resolution integer value to a ScanJobSettingsResolution enum value.
+ScanJobSettingsResolution GetResolutionEnumValue(const int resolution);
 
 }  // namespace scanning
 }  // namespace chromeos

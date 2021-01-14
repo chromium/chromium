@@ -66694,6 +66694,42 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Save to disk failed"/>
 </enum>
 
+<enum name="ScanJobSettingsColorMode">
+  <int value="0" label="Black and white"/>
+  <int value="1" label="Grayscale"/>
+  <int value="2" label="Color"/>
+</enum>
+
+<enum name="ScanJobSettingsFileType">
+  <int value="0" label="JPG"/>
+  <int value="1" label="PDF"/>
+  <int value="2" label="PNG"/>
+</enum>
+
+<enum name="ScanJobSettingsPageSize">
+  <int value="0" label="A4"/>
+  <int value="1" label="Letter"/>
+  <int value="2" label="Max"/>
+</enum>
+
+<enum name="ScanJobSettingsResolution">
+  <int value="0" label="Unexpected dpi"/>
+  <int value="1" label="75 dpi"/>
+  <int value="2" label="100 dpi"/>
+  <int value="3" label="150 dpi"/>
+  <int value="4" label="200 dpi"/>
+  <int value="5" label="300 dpi"/>
+  <int value="6" label="600 dpi"/>
+</enum>
+
+<enum name="ScanJobSettingsSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Flatbed"/>
+  <int value="2" label="ADF Simplex"/>
+  <int value="3" label="ADF Duplex"/>
+  <int value="4" label="Default"/>
+</enum>
+
 <enum name="ScheduledNavigationType">
   <obsolete>
     Deprecated August 2018

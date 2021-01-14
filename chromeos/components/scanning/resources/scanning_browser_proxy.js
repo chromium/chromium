@@ -18,6 +18,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  */
 export let SelectedPath;
 
+/**
+ * @typedef {{
+ *   sourceType: chromeos.scanning.mojom.SourceType,
+ *   fileType: chromeos.scanning.mojom.FileType,
+ *   colorMode: chromeos.scanning.mojom.ColorMode,
+ *   pageSize: chromeos.scanning.mojom.PageSize,
+ *   resolution: number,
+ * }}
+ */
+let ScanJobSettingsForMetrics;
+
 /** @interface */
 export class ScanningBrowserProxy {
   /** Initialize ScanningHandler. */
@@ -43,6 +54,12 @@ export class ScanningBrowserProxy {
    * @return {!Promise<string>}
    */
   getPluralString(name, count) {}
+
+  /**
+   * Records the settings for a scan job.
+   * @param {!ScanJobSettingsForMetrics} scanJobSettings
+   */
+  recordScanJobSettings(scanJobSettings) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -65,6 +82,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   getPluralString(name, count) {
     return sendWithPromise('getPluralString', name, count);
+  }
+
+  /** @override */
+  recordScanJobSettings(scanJobSettings) {
+    chrome.send('recordScanJobSettings', [scanJobSettings]);
   }
 }
 

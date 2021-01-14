@@ -10,6 +10,8 @@ static_library("scanning") {
   sources = [
     "scanning_handler.cc",
     "scanning_handler.h",
+    "scanning_metrics_handler.cc",
+    "scanning_metrics_handler.h",
     "scanning_paths_provider.h",
     "scanning_ui.cc",
     "scanning_ui.h",

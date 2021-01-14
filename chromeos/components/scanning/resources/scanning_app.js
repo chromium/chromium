@@ -33,7 +33,7 @@ import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/po
 import {getScanService} from './mojo_interface_provider.js';
 import {AppState, ScannerArr} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
-import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
  * The default save directory for completed scans.
@@ -63,6 +63,9 @@ Polymer({
 
   /** @private {!Map<string, !mojoBase.mojom.UnguessableToken>} */
   scannerIds_: new Map(),
+
+  /** @private {?ScanningBrowserProxy}*/
+  browserProxy_: null,
 
   properties: {
     /** @private {!ScannerArr} */
@@ -103,6 +106,18 @@ Polymer({
      * @type {string}
      */
     selectedFolder: String,
+
+    /**
+     * Map of a ScanSource's name to its corresponding SourceType. Used for
+     * fetching the SourceType setting for scan job metrics.
+     * @private {!Map<string, !chromeos.scanning.mojom.SourceType>}
+     */
+    sourceTypeMap_: {
+      type: Object,
+      value() {
+        return new Map();
+      },
+    },
 
     /**
      * Used to determine when certain parts of the app should be shown or hidden
@@ -230,7 +245,8 @@ Polymer({
     this.scanService_ = getScanService();
     this.selectedFilePath = DEFAULT_SAVE_DIRECTORY;
 
-    ScanningBrowserProxyImpl.getInstance().initialize();
+    this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+    this.browserProxy_.initialize();
   },
 
   /** @override */
@@ -335,6 +351,8 @@ Polymer({
    */
   onCapabilitiesReceived_(response) {
     this.capabilities_ = response.capabilities;
+    this.capabilities_.sources.forEach(
+        (source) => this.sourceTypeMap_.set(source.name, source.type));
     this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
     this.setAppState_(AppState.READY);
   },
@@ -383,13 +401,18 @@ Polymer({
       return;
     }
 
+    const fileType = fileTypeFromString(this.selectedFileType);
+    const colorMode = colorModeFromString(this.selectedColorMode);
+    const pageSize = pageSizeFromString(this.selectedPageSize);
+    const resolution = Number(this.selectedResolution)
+
     const settings = {
-      'sourceName': this.selectedSource,
-      'scanToPath': {'path': this.selectedFilePath},
-      'fileType': fileTypeFromString(this.selectedFileType),
-      'colorMode': colorModeFromString(this.selectedColorMode),
-      'pageSize': pageSizeFromString(this.selectedPageSize),
-      'resolutionDpi': Number(this.selectedResolution),
+      sourceName: this.selectedSource,
+      scanToPath: {path: this.selectedFilePath},
+      fileType: fileType,
+      colorMode: colorMode,
+      pageSize: pageSize,
+      resolutionDpi: resolution,
     };
 
     if (!this.scanJobObserverReceiver_) {
@@ -409,6 +432,15 @@ Polymer({
             /*@type {!{success: boolean}}*/ (response) => {
               this.onStartScanResponse_(response);
             });
+
+    const scanJobSettingsForMetrics = {
+      sourceType: this.sourceTypeMap_.get(this.selectedSource),
+      fileType: fileType,
+      colorMode: colorMode,
+      pageSize: pageSize,
+      resolution: resolution,
+    };
+    this.browserProxy_.recordScanJobSettings(scanJobSettingsForMetrics);
   },
 
   /** @private */

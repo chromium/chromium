@@ -8,6 +8,10 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Updates should be reflected in the
+// ScanJobSettings histogram enumeration.
+
 // The color modes that can be used to perform a scan.
 enum ColorMode {
   kBlackAndWhite,

@@ -71,6 +71,56 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the reason a scan job failed.</summary>
 </histogram>
 
+<histogram name="Scanning.ScanJobSettings.ColorMode"
+    enum="ScanJobSettingsColorMode" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Color Mode setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.FileType"
+    enum="ScanJobSettingsFileType" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected File Type setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.PageSize"
+    enum="ScanJobSettingsPageSize" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Page Size setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Resolution"
+    enum="ScanJobSettingsResolution" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Resolution setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Source setting for a submitted scan job.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
