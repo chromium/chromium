@@ -1316,6 +1316,12 @@ void ChromePasswordManagerClient::OnPaste() {
 
   base::string16 text;
   bool used_crosapi_workaround = false;
+
+  // Note: The call to `clipboard->ReadText()` below runs a nested message loop,
+  // potentially returning control back to this method after the client has been
+  // destroyed. Check `self` prior to dereferencing members.
+  base::WeakPtr<ChromePasswordManagerClient> self =
+      weak_ptr_factory_.GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, the ozone/wayland clipboard implementation is asynchronous by
   // default and runs a nested message loop to fake synchroncity. This in turn
@@ -1347,8 +1353,10 @@ void ChromePasswordManagerClient::OnPaste() {
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
   }
 
-  was_on_paste_called_ = true;
-  password_reuse_detection_manager_.OnPaste(std::move(text));
+  if (self) {
+    was_on_paste_called_ = true;
+    password_reuse_detection_manager_.OnPaste(std::move(text));
+  }
 }
 #endif
 
