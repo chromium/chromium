@@ -829,8 +829,14 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
     large_blob_array->emplace_back(std::move(new_large_blob_data));
   }
 
-  WriteLargeBlobArray(std::move(pin_uv_auth_token),
-                      LargeBlobArrayWriter(*large_blob_array),
+  LargeBlobArrayWriter writer(*large_blob_array);
+  if (writer.size() >
+      *device_->device_info()->max_serialized_large_blob_array) {
+    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrRequestTooLarge);
+    return;
+  }
+
+  WriteLargeBlobArray(std::move(pin_uv_auth_token), std::move(writer),
                       std::move(callback));
 }
 

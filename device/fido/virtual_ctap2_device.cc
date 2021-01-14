@@ -582,6 +582,8 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
            "uv-enabled authenticators";
     options_updated = true;
     options.supports_large_blobs = true;
+    device_info_->max_serialized_large_blob_array =
+        config.available_large_blob_storage;
   }
 
   if (config.always_uv) {

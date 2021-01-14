@@ -550,6 +550,16 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     }
   }
 
+  it = response_map.find(CBOR(0x0b));
+  if (it != response_map.end()) {
+    if (!it->second.is_unsigned()) {
+      return base::nullopt;
+    }
+
+    response.max_serialized_large_blob_array =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+  }
+
   it = response_map.find(CBOR(0x0c));
   if (it != response_map.end()) {
     if (!it->second.is_bool()) {
