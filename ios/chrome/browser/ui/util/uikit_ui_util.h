@@ -207,4 +207,12 @@ void RegisterEditMenuItem(UIMenuItem* item);
 // the first (recursive) superview with no superview.
 UIView* ViewHierarchyRootForView(UIView* view);
 
+// Creates and inits a medium-sized UIActivityIndicatorView, regardless of iOS
+// version.
+UIActivityIndicatorView* GetMediumUIActivityIndicatorView();
+
+// Creates and inits a large-sized UIActivityIndicatorView, regardless of iOS
+// version.
+UIActivityIndicatorView* GetLargeUIActivityIndicatorView();
+
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_UIKIT_UI_UTIL_H_

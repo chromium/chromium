@@ -482,8 +482,7 @@ class OpenInControllerBridge
                                            UIViewAutoresizingFlexibleHeight)];
   [_overlayedView addSubview:grayBackgroundView];
 
-  UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+  UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
   [spinner setFrame:[_overlayedView frame]];
   [spinner setHidesWhenStopped:YES];
   [spinner setUserInteractionEnabled:NO];

@@ -98,8 +98,7 @@
     } else {
       // For iOS 12 and lower the color should be always gray otherwise
       // indicator is not visible.
-      _activityIndicator = [[UIActivityIndicatorView alloc]
-          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+      _activityIndicator = GetMediumUIActivityIndicatorView();
     }
     _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
     _activityIndicator.hidden = YES;

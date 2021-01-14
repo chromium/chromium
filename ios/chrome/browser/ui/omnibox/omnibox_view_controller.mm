@@ -496,12 +496,22 @@ const CGFloat kClearButtonSize = 28.0f;
 
   // Cancel original menu opening.
   UIMenuController* menuController = [UIMenuController sharedMenuController];
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
   [menuController setMenuVisible:NO animated:NO];
 
   // Reset where it should open below text field and reopen it.
   menuController.arrowDirection = UIMenuControllerArrowUp;
+
   [menuController setTargetRect:self.textField.frame inView:self.textField];
   [menuController setMenuVisible:YES animated:YES];
+#else
+  [menuController hideMenu];
+
+  // Reset where it should open below text field and reopen it.
+  menuController.arrowDirection = UIMenuControllerArrowUp;
+
+  [menuController showMenuFromView:self.textField rect:self.textField.frame];
+#endif
 
   self.showingEditMenu = NO;
 }

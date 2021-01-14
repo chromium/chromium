@@ -419,8 +419,7 @@ const CGFloat kSpinnerButtonPadding = 18;
                                       kSpinnerButtonCustomViewSize);
   UIView* customView = [[UIView alloc] initWithFrame:customViewFrame];
 
-  UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
 
   CGRect spinnerFrame = [spinner bounds];
   spinnerFrame.origin.x = kSpinnerButtonPadding;

@@ -334,11 +334,11 @@
     }
   }
   // Dismiss the edit menu.
-  if (@available(iOS 13, *)) {
-    [[UIMenuController sharedMenuController] hideMenu];
-  } else {
-    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-  }
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+#else
+  [[UIMenuController sharedMenuController] hideMenu];
+#endif
 
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.

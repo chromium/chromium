@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/bar_button_activity_indicator.h"
 
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,8 +18,7 @@
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _activityIndicator = [[UIActivityIndicatorView alloc]
-        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicator = GetMediumUIActivityIndicatorView();
     [_activityIndicator setBackgroundColor:[UIColor clearColor]];
     [_activityIndicator setHidesWhenStopped:YES];
     [_activityIndicator startAnimating];

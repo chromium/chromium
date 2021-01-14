@@ -769,11 +769,19 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
                  switch (self.overscrollState) {
                    case OverscrollState::NO_PULL_STARTED: {
                      [self.overscrollActionView removeFromSuperview];
-                     SetViewFrameHeight(self.overscrollActionView,
-                                        self.initialContentInset +
-                                            [UIApplication sharedApplication]
-                                                .statusBarFrame.size.height,
-                                        0);
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+                     CGRect statusBarFrame =
+                         [UIApplication sharedApplication].statusBarFrame;
+#else
+                     CGRect statusBarFrame =
+                         [self scrollView]
+                             .window.windowScene.statusBarManager
+                             .statusBarFrame;
+#endif
+                     SetViewFrameHeight(
+                         self.overscrollActionView,
+                         self.initialContentInset + statusBarFrame.size.height,
+                         0);
                      self.panPointScreenOrigin = CGPointZero;
                      [[NSNotificationCenter defaultCenter]
                          postNotificationName:kOverscrollActionsDidEnd

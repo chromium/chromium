@@ -362,14 +362,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   if (![menu isMenuVisible]) {
     menu.menuItems = [self menuItemsForItemType:itemType];
 
-    if (@available(iOS 13, *)) {
-      [menu showMenuFromView:tableView
-                        rect:[tableView rectForRowAtIndexPath:indexPath]];
-    } else {
-      [menu setTargetRect:[tableView rectForRowAtIndexPath:indexPath]
-                   inView:tableView];
-      [menu setMenuVisible:YES animated:YES];
-    }
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+    [menu setTargetRect:[tableView rectForRowAtIndexPath:indexPath]
+                 inView:tableView];
+    [menu setMenuVisible:YES animated:YES];
+#else
+    [menu showMenuFromView:tableView
+                      rect:[tableView rectForRowAtIndexPath:indexPath]];
+#endif
   }
 }
 
