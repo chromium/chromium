@@ -40,10 +40,7 @@ class ModernLinker extends Linker {
         long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
 
         if (loadNoRelro) {
-            // Cannot use System.loadLibrary(), as the library name is transformed (adding the "lib"
-            // prefix and ".so" suffix), making the name incorrect.
-            boolean ok = nativeLoadLibraryNoRelros(libFilePath);
-            if (!ok) resetAndThrow("Cannot load without relro sharing");
+            // System.loadLibrary() below implements the fallback.
             mState = State.DONE;
         } else if (provideRelro) {
             // Create the shared RELRO, and store it.
@@ -54,7 +51,7 @@ class ModernLinker extends Linker {
                         libInfo.mLoadAddress, libInfo.mLoadSize);
             } else {
                 Log.e(TAG, "Unable to load with ModernLinker, using the system linker instead");
-                nativeLoadLibraryNoRelros(libFilePath);
+                // System.loadLibrary() below implements the fallback.
                 libInfo.mRelroFd = -1;
             }
             mLibInfo = libInfo;
@@ -94,8 +91,8 @@ class ModernLinker extends Linker {
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
-            throw new UnsatisfiedLinkError(
-                    "Unable to load the library a second time with the system linker");
+            if (loadNoRelro || provideRelro) resetAndThrow("Cannot load without relro sharing");
+            resetAndThrow("Unable to load the library a second time with the system linker");
         }
     }
 
@@ -125,7 +122,6 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
-    private static native boolean nativeLoadLibraryNoRelros(String dlopenExtPath);
     private static native boolean nativeLoadLibrary(
             String dlopenExtPath, long loadAddress, LibInfo libInfo, boolean spawnRelroRegion);
     private static native boolean nativeUseRelros(LibInfo libInfo);

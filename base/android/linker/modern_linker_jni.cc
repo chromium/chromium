@@ -235,19 +235,6 @@ bool CallJniOnLoad(void* handle) {
   return true;
 }
 
-bool LoadNoSharedRelocations(const String& path) {
-  void* handle = dlopen(path.c_str(), RTLD_NOW);
-  if (!handle) {
-    LOG_ERROR("dlopen: %s", dlerror());
-    return false;
-  }
-
-  if (!CallJniOnLoad(handle))
-    return false;
-
-  return true;
-}
-
 }  // namespace
 
 void NativeLibInfo::ExportLoadInfoToJava() const {
@@ -632,15 +619,6 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
     return false;
   }
   return true;
-}
-
-JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibraryNoRelros(
-    JNIEnv* env,
-    jclass clazz,
-    jstring jdlopen_ext_path) {
-  String library_path(env, jdlopen_ext_path);
-  return LoadNoSharedRelocations(library_path);
 }
 
 JNI_GENERATOR_EXPORT jint
