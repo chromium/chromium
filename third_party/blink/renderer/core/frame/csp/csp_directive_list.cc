@@ -155,8 +155,7 @@ using network::mojom::ContentSecurityPolicyType;
 
 CSPDirectiveList::CSPDirectiveList(ContentSecurityPolicy* policy)
     : policy_(policy),
-      has_sandbox_policy_(false),
-      strict_mixed_content_checking_enforced_(false),
+      block_all_mixed_content_(false),
       upgrade_insecure_requests_(false),
       use_reporting_api_(false) {}
 
@@ -173,25 +172,67 @@ CSPDirectiveList* CSPDirectiveList::Create(ContentSecurityPolicy* policy,
 
   directives->Parse(begin, end, should_parse_wasm_eval);
 
-  CSPOperativeDirective directive =
-      directives->OperativeDirective(CSPDirectiveName::ScriptSrc);
+  directives->ApplyParsedDirectives();
 
-  if (!directives->CheckEval(directive.source_list)) {
+  return directives;
+}
+
+void CSPDirectiveList::ApplyParsedDirectives() {
+  if (block_all_mixed_content_ && !IsReportOnly())
+    policy_->EnforceStrictMixedContentChecking();
+
+  if (RequiresTrustedTypes())
+    policy_->RequireTrustedTypes();
+
+  policy_->EnforceSandboxFlags(sandbox_flags_);
+
+  if (upgrade_insecure_requests_)
+    policy_->UpgradeInsecureRequests();
+
+  for (const auto& directive : directives_) {
+    switch (directive.key) {
+      case CSPDirectiveName::DefaultSrc:
+        // TODO(mkwst) It seems unlikely that developers would use different
+        // algorithms for scripts and styles. We may want to combine the
+        // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
+        policy_->UsesScriptHashAlgorithms(
+            HashAlgorithmsUsed(directive.value.get()));
+        policy_->UsesStyleHashAlgorithms(
+            HashAlgorithmsUsed(directive.value.get()));
+        break;
+      case CSPDirectiveName::ScriptSrc:
+      case CSPDirectiveName::ScriptSrcAttr:
+      case CSPDirectiveName::ScriptSrcElem:
+        policy_->UsesScriptHashAlgorithms(
+            HashAlgorithmsUsed(directive.value.get()));
+        break;
+      case CSPDirectiveName::StyleSrc:
+      case CSPDirectiveName::StyleSrcAttr:
+      case CSPDirectiveName::StyleSrcElem:
+        policy_->UsesStyleHashAlgorithms(
+            HashAlgorithmsUsed(directive.value.get()));
+        break;
+      default:
+        break;
+    }
+  }
+
+  CSPOperativeDirective directive =
+      OperativeDirective(CSPDirectiveName::ScriptSrc);
+
+  if (!CheckEval(directive.source_list)) {
     String message =
         "Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
         "not an allowed source of script in the following Content Security "
         "Policy directive: \"" +
-        GetRawDirectiveForMessage(directives->raw_directives_, directive.type) +
-        "\".\n";
-    directives->SetEvalDisabledErrorMessage(message);
-  } else if (directives->RequiresTrustedTypes()) {
+        GetRawDirectiveForMessage(raw_directives_, directive.type) + "\".\n";
+    SetEvalDisabledErrorMessage(message);
+  } else if (RequiresTrustedTypes()) {
     String message =
         "Refused to evaluate a string as JavaScript because this document "
         "requires 'Trusted Type' assignment.";
-    directives->SetEvalDisabledErrorMessage(message);
+    SetEvalDisabledErrorMessage(message);
   }
-
-  return directives;
 }
 
 void CSPDirectiveList::ReportViolation(
@@ -967,6 +1008,9 @@ bool CSPDirectiveList::ParseDirective(const UChar* begin,
 }
 
 void CSPDirectiveList::ParseReportTo(const String& name, const String& value) {
+  if (!base::FeatureList::IsEnabled(network::features::kReporting))
+    return;
+
   if (!use_reporting_api_) {
     use_reporting_api_ = true;
     report_endpoints_.clear();
@@ -1081,7 +1125,7 @@ void CSPDirectiveList::ParseAndAppendReportEndpoints(const String& value) {
                      : WebFeature::kReportUriSingleEndpoint);
 }
 
-void CSPDirectiveList::ApplySandboxPolicy(const String& name,
+void CSPDirectiveList::ParseSandboxPolicy(const String& name,
                                           const String& sandbox_policy) {
   // Remove sandbox directives in meta policies, per
   // https://www.w3.org/TR/CSP2/#delivery-html-meta-element.
@@ -1093,10 +1137,6 @@ void CSPDirectiveList::ApplySandboxPolicy(const String& name,
     policy_->ReportInvalidInReportOnly(name);
     return;
   }
-  if (has_sandbox_policy_) {
-    policy_->ReportDuplicateDirective(name);
-    return;
-  }
 
   using network::mojom::blink::WebSandboxFlags;
   WebSandboxFlags ignored_flags =
@@ -1104,17 +1144,16 @@ void CSPDirectiveList::ApplySandboxPolicy(const String& name,
           ? WebSandboxFlags::kStorageAccessByUserActivation
           : WebSandboxFlags::kNone;
 
-  has_sandbox_policy_ = true;
   network::WebSandboxFlagsParsingResult parsed =
       network::ParseWebSandboxPolicy(sandbox_policy.Utf8(), ignored_flags);
-  policy_->EnforceSandboxFlags(parsed.flags);
+  sandbox_flags_ = parsed.flags;
   if (!parsed.error_message.empty()) {
     policy_->ReportInvalidSandboxFlags(
         WebString::FromUTF8(parsed.error_message));
   }
 }
 
-void CSPDirectiveList::ApplyTreatAsPublicAddress() {
+void CSPDirectiveList::ParseTreatAsPublicAddress() {
   // Remove treat-as-public-address directives in meta policies, per
   // https://wicg.github.io/cors-rfc1918/#csp
   if (header_->source == ContentSecurityPolicySource::kMeta) {
@@ -1133,34 +1172,22 @@ void CSPDirectiveList::ApplyTreatAsPublicAddress() {
   // browser process.
 }
 
-void CSPDirectiveList::EnforceStrictMixedContentChecking(const String& name,
-                                                         const String& value) {
-  if (strict_mixed_content_checking_enforced_) {
-    policy_->ReportDuplicateDirective(name);
-    return;
-  }
+void CSPDirectiveList::ParseBlockAllMixedContent(const String& name,
+                                                 const String& value) {
   if (!value.IsEmpty())
     policy_->ReportValueForEmptyDirective(name, value);
 
-  strict_mixed_content_checking_enforced_ = true;
-
-  if (!IsReportOnly())
-    policy_->EnforceStrictMixedContentChecking();
+  block_all_mixed_content_ = true;
 }
 
-void CSPDirectiveList::EnableInsecureRequestsUpgrade(const String& name,
-                                                     const String& value) {
+void CSPDirectiveList::ParseUpgradeInsecureRequests(const String& name,
+                                                    const String& value) {
   if (IsReportOnly()) {
     policy_->ReportInvalidInReportOnly(name);
     return;
   }
-  if (upgrade_insecure_requests_) {
-    policy_->ReportDuplicateDirective(name);
-    return;
-  }
   upgrade_insecure_requests_ = true;
 
-  policy_->UpgradeInsecureRequests();
   if (!value.IsEmpty())
     policy_->ReportValueForEmptyDirective(name, value);
 }
@@ -1184,26 +1211,24 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
 
   switch (type) {
     case CSPDirectiveName::BaseURI:
-      directives_.insert(type, CSPSourceListParse(name, value, policy_));
-      return;
-    case CSPDirectiveName::BlockAllMixedContent:
-      EnforceStrictMixedContentChecking(name, value);
-      return;
     case CSPDirectiveName::ChildSrc:
     case CSPDirectiveName::ConnectSrc:
-      directives_.insert(type, CSPSourceListParse(name, value, policy_));
-      return;
     case CSPDirectiveName::DefaultSrc:
-      source_list = CSPSourceListParse(name, value, policy_);
-      // TODO(mkwst) It seems unlikely that developers would use different
-      // algorithms for scripts and styles. We may want to combine the
-      // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
-      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
-      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
-      directives_.insert(type, std::move(source_list));
-      return;
     case CSPDirectiveName::FontSrc:
     case CSPDirectiveName::FormAction:
+    case CSPDirectiveName::FrameSrc:
+    case CSPDirectiveName::ImgSrc:
+    case CSPDirectiveName::ManifestSrc:
+    case CSPDirectiveName::MediaSrc:
+    case CSPDirectiveName::NavigateTo:
+    case CSPDirectiveName::ObjectSrc:
+    case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcAttr:
+    case CSPDirectiveName::ScriptSrcElem:
+    case CSPDirectiveName::StyleSrc:
+    case CSPDirectiveName::StyleSrcAttr:
+    case CSPDirectiveName::StyleSrcElem:
+    case CSPDirectiveName::WorkerSrc:
       directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
     case CSPDirectiveName::FrameAncestors:
@@ -1215,26 +1240,20 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
         directives_.insert(type, CSPSourceListParse(name, value, policy_));
       }
       return;
-    case CSPDirectiveName::FrameSrc:
-    case CSPDirectiveName::ImgSrc:
-    case CSPDirectiveName::ManifestSrc:
-    case CSPDirectiveName::MediaSrc:
-    case CSPDirectiveName::NavigateTo:
-    case CSPDirectiveName::ObjectSrc:
-      directives_.insert(type, CSPSourceListParse(name, value, policy_));
-      return;
-    case CSPDirectiveName::PluginTypes:
-      plugin_types_ = CSPPluginTypesParse(value, policy_);
-      return;
     case CSPDirectiveName::PrefetchSrc:
       if (!policy_->ExperimentalFeaturesEnabled())
         policy_->ReportUnsupportedDirective(name);
       else
         directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
+    case CSPDirectiveName::BlockAllMixedContent:
+      ParseBlockAllMixedContent(name, value);
+      return;
+    case CSPDirectiveName::PluginTypes:
+      plugin_types_ = CSPPluginTypesParse(value, policy_);
+      return;
     case CSPDirectiveName::ReportTo:
-      if (base::FeatureList::IsEnabled(network::features::kReporting))
-        ParseReportTo(name, value);
+      ParseReportTo(name, value);
       return;
     case CSPDirectiveName::ReportURI:
       ParseReportURI(name, value);
@@ -1242,40 +1261,21 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
     case CSPDirectiveName::RequireTrustedTypesFor:
       require_trusted_types_for_ =
           CSPRequireTrustedTypesForParse(value, policy_);
-      if (RequiresTrustedTypes())
-        policy_->RequireTrustedTypes();
       return;
     case CSPDirectiveName::Sandbox:
-      ApplySandboxPolicy(name, value);
-      return;
-    case CSPDirectiveName::ScriptSrc:
-    case CSPDirectiveName::ScriptSrcAttr:
-    case CSPDirectiveName::ScriptSrcElem:
-      source_list = CSPSourceListParse(name, value, policy_);
-      policy_->UsesScriptHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
-      directives_.insert(type, std::move(source_list));
-      return;
-    case CSPDirectiveName::StyleSrc:
-    case CSPDirectiveName::StyleSrcAttr:
-    case CSPDirectiveName::StyleSrcElem:
-      source_list = CSPSourceListParse(name, value, policy_);
-      policy_->UsesStyleHashAlgorithms(HashAlgorithmsUsed(source_list.get()));
-      directives_.insert(type, std::move(source_list));
+      ParseSandboxPolicy(name, value);
       return;
     case CSPDirectiveName::TreatAsPublicAddress:
-      ApplyTreatAsPublicAddress();
+      ParseTreatAsPublicAddress();
       return;
     case CSPDirectiveName::TrustedTypes:
       trusted_types_ = CSPTrustedTypesParse(value, policy_);
       return;
     case CSPDirectiveName::UpgradeInsecureRequests:
-      EnableInsecureRequestsUpgrade(name, value);
+      ParseUpgradeInsecureRequests(name, value);
       return;
     case CSPDirectiveName::Unknown:
       NOTREACHED();
-      return;
-    case CSPDirectiveName::WorkerSrc:
-      directives_.insert(type, CSPSourceListParse(name, value, policy_));
       return;
   }
 }

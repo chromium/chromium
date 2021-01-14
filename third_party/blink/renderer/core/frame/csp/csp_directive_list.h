@@ -100,9 +100,7 @@ class CORE_EXPORT CSPDirectiveList final
                                          const String& sample,
                                          const String& sample_prefix) const;
 
-  bool StrictMixedContentChecking() const {
-    return strict_mixed_content_checking_enforced_;
-  }
+  bool StrictMixedContentChecking() const { return block_all_mixed_content_; }
   void ReportMixedContent(const KURL& blocked_url,
                           ResourceRequest::RedirectStatus) const;
 
@@ -166,6 +164,7 @@ class CORE_EXPORT CSPDirectiveList final
   FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, IsMatchingNoncePresent);
   FRIEND_TEST_ALL_PREFIXES(CSPDirectiveListTest, OperativeDirectiveGivenType);
 
+  void ApplyParsedDirectives();
   bool ParseDirective(const UChar* begin,
                       const UChar* end,
                       String* name,
@@ -175,11 +174,10 @@ class CORE_EXPORT CSPDirectiveList final
   void ParseAndAppendReportEndpoints(const String& value);
   void ParsePluginTypes(const String& name, const String& value);
   void AddDirective(const String& name, const String& value);
-  void ApplySandboxPolicy(const String& name, const String& sandbox_policy);
-  void ApplyTreatAsPublicAddress();
-  void EnforceStrictMixedContentChecking(const String& name,
-                                         const String& value);
-  void EnableInsecureRequestsUpgrade(const String& name, const String& value);
+  void ParseSandboxPolicy(const String& name, const String& sandbox_policy);
+  void ParseTreatAsPublicAddress();
+  void ParseBlockAllMixedContent(const String& name, const String& value);
+  void ParseUpgradeInsecureRequests(const String& name, const String& value);
 
   CSPDirectiveName FallbackDirective(CSPDirectiveName current_directive,
                                      CSPDirectiveName original_directive) const;
@@ -279,9 +277,9 @@ class CORE_EXPORT CSPDirectiveList final
 
   HashMap<CSPDirectiveName, String> raw_directives_;
 
-  bool has_sandbox_policy_;
+  network::mojom::blink::WebSandboxFlags sandbox_flags_;
 
-  bool strict_mixed_content_checking_enforced_;
+  bool block_all_mixed_content_;
 
   bool upgrade_insecure_requests_;
 
