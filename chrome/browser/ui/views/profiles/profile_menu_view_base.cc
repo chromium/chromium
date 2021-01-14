@@ -415,7 +415,7 @@ void BuildProfileBackgroundContainer(
           std::make_unique<views::View>());
   heading_and_image_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(1));
   heading_and_image_container
@@ -628,6 +628,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     heading_label = std::make_unique<views::Label>(profile_name, font);
     heading_label->SetElideBehavior(gfx::ELIDE_TAIL);
     heading_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    heading_label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
     if (background_color) {
       heading_label->SetAutoColorReadabilityEnabled(false);
       heading_label->SetEnabledColor(
