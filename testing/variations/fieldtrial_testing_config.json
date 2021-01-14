@@ -1321,12 +1321,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Stage2",
+                    "name": "Enabled_Butter_IndicationForAllUsers_Stage2",
                     "enable_features": [
                         "AutofillEnableAccountWalletStorage",
+                        "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
+                        "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
                         "AutofillEnableSaveCardInfoBarAccountIndicationFooter"
                     ],
                     "disable_features": [
+                        "AutofillEnablePasswordInfoBarAccountIndicationFooter",
                         "WalletRequiresFirstSyncSetupComplete"
                     ]
                 }
