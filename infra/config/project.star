@@ -34,19 +34,7 @@ def _project_settings(
         ref = ref,
     )
 
-settings = _project_settings(
-    # Set this to the name of the milestone's project
-    project = "chromium",
-    # Set this to how the project should be referred to in a title context (e.g.
-    # for project chromium-mXX, the project title would be Chromium MXX)
-    project_title = "Chromium",
-    # Set this to False for branches
-    is_master = True,
-    # Set this to True for LTC/LTS branches
-    is_lts_branch = False,
-    # Set this to the branch ref for branches
-    ref = "refs/heads/master",
-)
+settings = _project_settings(**json.decode(io.read_file("./settings.json")))
 
 def _generate_project_pyl(ctx):
     ctx.output["project.pyl"] = "\n".join([
