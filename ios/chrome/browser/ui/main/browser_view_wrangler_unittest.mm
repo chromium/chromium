@@ -10,11 +10,14 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser_list_observer.h"
+#include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -27,18 +30,29 @@ namespace {
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
   BrowserViewWranglerTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {
+      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+        test_session_service_([[TestSessionService alloc] init]) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
+
+    session_service_block_ = ^SessionServiceIOS*(id self) {
+      return test_session_service_;
+    };
+    session_service_swizzler_.reset(new ScopedBlockSwizzler(
+        [SessionServiceIOS class], @selector(sharedService),
+        session_service_block_));
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   SceneState* scene_state_;
+  TestSessionService* test_session_service_;
+  id session_service_block_;
+  std::unique_ptr<ScopedBlockSwizzler> session_service_swizzler_;
 };
 
 TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
