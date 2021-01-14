@@ -17043,7 +17043,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
-    expires_after="M90">
+    expires_after="M97">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -17055,7 +17055,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -17069,11 +17069,12 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="M95">
+    expires_after="M97">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     The viewport meta tag type seen on each page load. Only recorded on Android.
+    Recorded when the page finishes loading.
   </summary>
 </histogram>
 
