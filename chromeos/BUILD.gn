@@ -155,6 +155,7 @@ test("chromeos_unittests") {
     "//build:chromeos_buildflags",
     "//chromeos/attestation:unit_tests",
     "//chromeos/audio:unit_tests",
+    "//chromeos/crosapi/cpp:unit_tests",
     "//chromeos/cryptohome:unit_tests",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus:unit_tests",

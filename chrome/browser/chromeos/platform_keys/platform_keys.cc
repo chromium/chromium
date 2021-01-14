@@ -9,13 +9,34 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 
 namespace {
+
+const char kErrorAlgorithmNotPermittedByCertificate[] =
+    "The requested Algorithm is not permitted by the certificate.";
+const char kErrorInvalidX509Cert[] =
+    "Certificate is not a valid X.509 certificate.";
+
+using crosapi::keystore_service_util::kWebCryptoEcdsa;
+using crosapi::keystore_service_util::kWebCryptoNamedCurveP256;
+using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+
+void BuildWebCryptoEcdsaAlgorithmDictionary(
+    const chromeos::platform_keys::PublicKeyInfo& key_info,
+    base::DictionaryValue* algorithm) {
+  CHECK_EQ(net::X509Certificate::kPublicKeyTypeECDSA, key_info.key_type);
+  algorithm->SetStringKey("name", kWebCryptoEcdsa);
+
+  // Only P-256 named curve is supported.
+  algorithm->SetStringKey("namedCurve", kWebCryptoNamedCurveP256);
+}
 
 void IntersectOnWorkerThread(const net::CertificateList& certs1,
                              const net::CertificateList& certs2,
@@ -100,6 +121,96 @@ void IntersectCertificates(
       base::BindOnce(&IntersectOnWorkerThread, certs1, certs2,
                      intersection_ptr),
       base::BindOnce(callback, base::Passed(&intersection)));
+}
+
+GetPublicKeyAndAlgorithmOutput::GetPublicKeyAndAlgorithmOutput() = default;
+GetPublicKeyAndAlgorithmOutput::GetPublicKeyAndAlgorithmOutput(
+    GetPublicKeyAndAlgorithmOutput&&) = default;
+GetPublicKeyAndAlgorithmOutput::~GetPublicKeyAndAlgorithmOutput() = default;
+
+GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
+    const std::vector<uint8_t>& possibly_invalid_cert_der,
+    const std::string& algorithm_name) {
+  GetPublicKeyAndAlgorithmOutput output;
+
+  if (possibly_invalid_cert_der.empty()) {
+    output.error = kErrorInvalidX509Cert;
+    return output;
+  }
+
+  // Allow UTF-8 inside PrintableStrings in client certificates. See
+  // crbug.com/770323 and crbug.com/788655.
+  net::X509Certificate::UnsafeCreateOptions options;
+  options.printable_string_is_utf8 = true;
+  scoped_refptr<net::X509Certificate> cert_x509 =
+      net::X509Certificate::CreateFromBytesUnsafeOptions(
+          reinterpret_cast<const char*>(possibly_invalid_cert_der.data()),
+          possibly_invalid_cert_der.size(), options);
+  if (!cert_x509) {
+    output.error = kErrorInvalidX509Cert;
+    return output;
+  }
+
+  PublicKeyInfo key_info;
+  key_info.public_key_spki_der =
+      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert_x509);
+  if (!chromeos::platform_keys::GetPublicKey(cert_x509, &key_info.key_type,
+                                             &key_info.key_size_bits) ||
+      (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA &&
+       key_info.key_type != net::X509Certificate::kPublicKeyTypeECDSA)) {
+    output.error = StatusToString(Status::kErrorAlgorithmNotSupported);
+    return output;
+  }
+
+  // Currently, the only supported combinations are:
+  // 1- A certificate declaring rsaEncryption in the SubjectPublicKeyInfo used
+  // with the RSASSA-PKCS1-v1.5 algorithm.
+  // 2- A certificate declaring id-ecPublicKey in the SubjectPublicKeyInfo used
+  // with the ECDSA algorithm.
+  if (algorithm_name == kWebCryptoRsassaPkcs1v15) {
+    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
+      output.error = kErrorAlgorithmNotPermittedByCertificate;
+      return output;
+    }
+
+    BuildWebCryptoRSAAlgorithmDictionary(key_info, &output.algorithm);
+    output.public_key =
+        std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
+                             key_info.public_key_spki_der.end());
+    return output;
+  }
+
+  if (algorithm_name == kWebCryptoEcdsa) {
+    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeECDSA) {
+      output.error = kErrorAlgorithmNotPermittedByCertificate;
+      return output;
+    }
+
+    BuildWebCryptoEcdsaAlgorithmDictionary(key_info, &output.algorithm);
+    output.public_key =
+        std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
+                             key_info.public_key_spki_der.end());
+    return output;
+  }
+
+  output.error = kErrorAlgorithmNotPermittedByCertificate;
+  return output;
+}
+
+PublicKeyInfo::PublicKeyInfo() = default;
+PublicKeyInfo::~PublicKeyInfo() = default;
+
+void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
+                                          base::DictionaryValue* algorithm) {
+  CHECK_EQ(net::X509Certificate::kPublicKeyTypeRSA, key_info.key_type);
+  algorithm->SetStringKey("name", kWebCryptoRsassaPkcs1v15);
+  algorithm->SetKey("modulusLength",
+                    base::Value(static_cast<int>(key_info.key_size_bits)));
+
+  // Equals 65537.
+  static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
+  algorithm->SetKey("publicExponent",
+                    base::Value(base::make_span(kDefaultPublicExponent)));
 }
 
 ClientCertificateRequest::ClientCertificateRequest() = default;

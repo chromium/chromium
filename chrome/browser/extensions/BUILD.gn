@@ -944,7 +944,10 @@ static_library("extensions") {
       "api/enterprise_platform_keys/enterprise_platform_keys_api.h",
       "api/platform_keys/platform_keys_api.h",
     ]
-    deps += [ "//chromeos/crosapi/mojom" ]
+    deps += [
+      "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/mojom",
+    ]
     if (is_chromeos_lacros) {
       sources += [
         "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.cc",

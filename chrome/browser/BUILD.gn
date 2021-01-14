@@ -4518,6 +4518,7 @@ static_library("browser") {
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",
+      "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus",
       "//chromeos/geolocation",
@@ -4637,6 +4638,7 @@ static_library("browser") {
       "platform_util_lacros.cc",
     ]
     deps += [
+      "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
