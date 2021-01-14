@@ -50,15 +50,6 @@ export class InfiniteList extends PolymerElement {
         value: 10,
       },
 
-      /**
-       * Controls the number of scrolled items in the currently fetched item
-       * chunk after which a new chunk of items should be added on demand.
-       */
-      chunkItemThreshold: {
-        type: Number,
-        value: 5,
-      },
-
       /** @type {?Array<!Object>} */
       items: {
         type: Array,
@@ -153,7 +144,7 @@ export class InfiniteList extends PolymerElement {
 
       // Ensure we have sufficient items to fill the current scroll position and
       // a full view following our current position.
-      if (aboveScrollTopItemCount + this.chunkItemThreshold >
+      if (aboveScrollTopItemCount + this.chunkItemCount >
           this.domRepeat_.items.length) {
         this.ensureDomItemsAvailableStartingAt_(aboveScrollTopItemCount);
         this.updateScrollerSize_();
