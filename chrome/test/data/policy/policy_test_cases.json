@@ -536,15 +536,20 @@
   },
 
   "CloudPrintWarningsSuppressed": {
+    "note": "This policy is deprecated."
+  },
+
+  "EnableDeprecatedPrivetPrinting": {
     "os": ["win", "linux", "mac", "chromeos"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": {"CloudPrintWarningsSuppressed": true},
-        "prefs": { "cloud_print.deprecation_warnings_suppressed": {} }
+        "policies": {"EnableDeprecatedPrivetPrinting": true},
+        "prefs": { "printing.force_enable_privet_printing": {} }
       }
     ]
   },
+
 
   "ExternalPrintServers": {
     "os": ["chromeos"],

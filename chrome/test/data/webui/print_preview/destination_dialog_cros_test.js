@@ -228,8 +228,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
         cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
         // Override so that privet printers will also be fetched, since we are
         // simulating the case where the enterprise override is enabled.
-        loadTimeData.overrideValues(
-            {'cloudPrintDeprecationWarningsSuppressed': true});
+        loadTimeData.overrideValues({'forceEnablePrivetPrinting': true});
         let userSelect = null;
 
         await finishSetup();

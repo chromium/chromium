@@ -23625,7 +23625,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['file://printing/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:86-90', 'chrome_os:86-90'],
+      'supported_on': ['chrome.*:86-87', 'chrome_os:86-87'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -23648,6 +23649,35 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'desc': '''This policy controls whether <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings are shown to users in the print preview dialog or settings pages.
       Setting this policy to True will hide the deprecation warnings.
       Setting this policy to False or leaving it unset will show the deprecation warnings.''',
+    },
+    {
+      'name': 'EnableDeprecatedPrivetPrinting',
+      'owners': ['file://printing/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:89-93', 'chrome_os:89-93'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable deprecated privet printing',
+        },
+        {
+          'value': False,
+          'caption': 'Disable deprecated privet printing',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 815,
+      'caption': '''Enable deprecated privet printing''',
+      'tags': [],
+      'desc': '''This policy controls whether any available privet printers are shown to users in the print preview dialog.
+      Setting this policy to Enabled will show available privet printers.
+      Setting this policy to Disabled or leaving it unset will result in privet printers not appearing in print preview, as this printing method is deprecated.''',
     },
     {
       'name': 'DataLeakPreventionRulesList',
@@ -25154,6 +25184,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 814,
+  'highest_id_currently_used': 815,
   'highest_atomic_group_id_currently_used': 40
 }

@@ -214,8 +214,7 @@ export class DestinationStore extends EventTarget {
 
     // TODO (rbpotter): Remove the code below once this flag and policy are no
     // longer supported. Remove the privet flag in M90.
-    if (loadTimeData.getBoolean('forceEnablePrivetPrinting') ||
-        loadTimeData.getBoolean('cloudPrintDeprecationWarningsSuppressed')) {
+    if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
       this.destinationSearchStatus_.set(
           PrinterType.PRIVET_PRINTER,
           DestinationStorePrinterSearchStatus.START);
@@ -930,8 +929,7 @@ export class DestinationStore extends EventTarget {
 
     // TODO (rbpotter): Remove the code below once this flag and policy are no
     // longer supported. Remove the privet flag in M90.
-    if (loadTimeData.getBoolean('forceEnablePrivetPrinting') ||
-        loadTimeData.getBoolean('cloudPrintDeprecationWarningsSuppressed')) {
+    if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
       types.push(PrinterType.PRIVET_PRINTER);
     }
 

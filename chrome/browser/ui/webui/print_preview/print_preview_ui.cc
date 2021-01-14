@@ -387,7 +387,7 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   source->AddBoolean(
       "forceEnablePrivetPrinting",
-      cloud_print_deprecation_warnings_suppressed ||
+      profile->GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting) ||
           base::FeatureList::IsEnabled(features::kForceEnablePrivetPrinting));
 #endif
 
