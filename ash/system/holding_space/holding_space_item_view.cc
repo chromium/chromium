@@ -177,9 +177,7 @@ void HoldingSpaceItemView::Layout() {
 }
 
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // Inset `bounds` to account for stroke.
   gfx::Rect bounds = GetLocalBounds();
-  bounds.Inset(-gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2));
 
   // Selection ring.
   selected_layer_owner_->layer()->SetBounds(bounds);
@@ -313,25 +311,16 @@ void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
   if (!selected_)
     return;
 
-  const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
-
-  const SkColor overlay_color =
-      SkColorSetA(color, kHoldingSpaceSelectedOverlayOpacity * 0xFF);
+  const SkColor color =
+      SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
+                      AshColorProvider::ControlsLayerType::kFocusRingColor),
+                  kHoldingSpaceSelectedOverlayOpacity * 0xFF);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(overlay_color);
-
-  gfx::Rect bounds = gfx::Rect(size);
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
-
   flags.setColor(color);
-  flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
 
-  bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+  canvas->DrawRoundRect(gfx::Rect(size), kHoldingSpaceCornerRadius, flags);
 }
 
 void HoldingSpaceItemView::OnPinPressed() {
