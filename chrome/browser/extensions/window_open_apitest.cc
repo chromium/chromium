@@ -85,7 +85,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
         browser->tab_strip_model()->count() == num_tabs)
       break;
 
-    content::RunAllPendingInMessageLoop();
+    content::RunAllTasksUntilIdle();
   }
 
   EXPECT_EQ(num_browsers, chrome::GetBrowserCount(browser->profile()));
