@@ -606,6 +606,11 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif
   );
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "PartitionAllocGigaCageSynthetic",
+      base::features::IsPartitionAllocGigaCageEnabled() ? "Enabled"
+                                                        : "Disabled");
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
