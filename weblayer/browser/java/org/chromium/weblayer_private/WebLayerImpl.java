@@ -47,7 +47,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.NativeLibraryPreloader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -328,17 +327,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         performDexFixIfNecessary(packageInfo);
 
         TraceEvent.end("WebLayer init");
-    }
-
-    public static void setLibraryPreloader(String packageName, ClassLoader classLoader) {
-        if (!LibraryLoader.getInstance().isLoadedByZygote()) {
-            LibraryLoader.getInstance().setNativeLibraryPreloader(new NativeLibraryPreloader() {
-                @Override
-                public int loadLibrary(ApplicationInfo info) {
-                    return loadNativeLibrary(packageName, classLoader);
-                }
-            });
-        }
     }
 
     @Override
@@ -765,26 +753,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             return TextUtils.join(",", packageNames);
         } catch (ReflectiveOperationException e) {
             return "unknown";
-        }
-    }
-
-    private static int loadNativeLibrary(String packageName, ClassLoader cl) {
-        // Loading the library triggers disk access.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return WebViewFactory.loadWebViewNativeLibraryFromPackage(packageName, cl);
-            } else {
-                try {
-                    Method loadNativeLibrary =
-                            WebViewFactory.class.getDeclaredMethod("loadNativeLibrary");
-                    loadNativeLibrary.setAccessible(true);
-                    loadNativeLibrary.invoke(null);
-                    return 0; // LIBLOAD_SUCCESS
-                } catch (ReflectiveOperationException e) {
-                    Log.e(TAG, "Failed to load native library.", e);
-                    return 6; // LIBLOAD_FAILED_TO_LOAD_LIBRARY
-                }
-            }
         }
     }
 

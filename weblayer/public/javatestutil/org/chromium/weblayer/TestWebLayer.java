@@ -36,9 +36,8 @@ public final class TestWebLayer {
 
     private TestWebLayer(@NonNull Context appContext) {
         try {
-            ClassLoader remoteClassLoader = WebLayer.getOrCreateRemoteClassLoader(appContext);
-            Class TestWebLayerClass = remoteClassLoader.loadClass(
-                    "org.chromium.weblayer_private.test.TestWebLayerImpl");
+            Class TestWebLayerClass = WebLayer.loadRemoteClass(
+                    appContext, "org.chromium.weblayer_private.test.TestWebLayerImpl");
             mITestWebLayer = ITestWebLayer.Stub.asInterface(
                     (IBinder) TestWebLayerClass.getMethod("create").invoke(null));
         } catch (PackageManager.NameNotFoundException | ReflectiveOperationException e) {

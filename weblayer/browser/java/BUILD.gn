@@ -95,10 +95,21 @@ java_cpp_enum("generated_enums") {
 }
 
 android_library("base_module_java") {
-  sources =
-      [ "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java" ]
-  deps = [ "//base:base_java" ]
+  sources = [
+    "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
+    "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
+  ]
+  deps = [
+    ":base_module_interfaces_java",
+    "//base:base_java",
+    "//components/embedder_support/android:application_java",
+    "//content/public/android:content_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  # Needed for android.webkit.WebViewFactory
+  alternative_android_sdk_dep =
+      "//third_party/android_sdk:public_framework_system_java"
 }
 
 android_library("java") {
@@ -111,7 +122,6 @@ android_library("java") {
     "org/chromium/weblayer_private/BrowserList.java",
     "org/chromium/weblayer_private/BrowserListObserver.java",
     "org/chromium/weblayer_private/BrowserViewController.java",
-    "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
     "org/chromium/weblayer_private/ContactsPickerAdapter.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
     "org/chromium/weblayer_private/ContentViewWithAutofill.java",
@@ -175,6 +185,7 @@ android_library("java") {
   resources_package = "org.chromium.weblayer_private"
 
   deps = [
+    ":base_module_interfaces_java",
     ":base_module_java",
     ":gms_bridge_java",
     ":interfaces_java",
@@ -301,6 +312,7 @@ android_library("test_java") {
   ]
   resources_package = "org.chromium.weblayer_private.test"
   deps = [
+    ":base_module_interfaces_java",
     ":interfaces_java",
     ":java",
     ":weblayer_test_resources",
@@ -378,6 +390,15 @@ generate_jni("jni") {
   ]
 }
 
+android_library("base_module_interfaces_java") {
+  sources = [
+    "org/chromium/weblayer_private/interfaces/ObjectWrapper.java",
+    "org/chromium/weblayer_private/interfaces/StrictModeWorkaround.java",
+  ]
+
+  srcjar_deps = [ ":base_module_aidl" ]
+}
+
 android_library("interfaces_java") {
   sources = [
     "org/chromium/weblayer_private/interfaces/APICallException.java",
@@ -392,18 +413,19 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/NavigateParams.java",
     "org/chromium/weblayer_private/interfaces/NavigationState.java",
     "org/chromium/weblayer_private/interfaces/NewTabType.java",
-    "org/chromium/weblayer_private/interfaces/ObjectWrapper.java",
     "org/chromium/weblayer_private/interfaces/RemoteMediaServiceConstants.java",
     "org/chromium/weblayer_private/interfaces/ScrollNotificationType.java",
     "org/chromium/weblayer_private/interfaces/SettingType.java",
     "org/chromium/weblayer_private/interfaces/SettingsFragmentArgs.java",
     "org/chromium/weblayer_private/interfaces/SettingsIntentHelper.java",
-    "org/chromium/weblayer_private/interfaces/StrictModeWorkaround.java",
     "org/chromium/weblayer_private/interfaces/UrlBarOptionsKeys.java",
     "org/chromium/weblayer_private/interfaces/WebLayerVersionConstants.java",
   ]
 
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [
+    ":base_module_interfaces_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
 
   srcjar_deps = [ ":aidl" ]
 }
@@ -433,13 +455,20 @@ android_library("gms_bridge_upstream_impl_java") {
   deps = [ ":gms_bridge_java" ]
 }
 
+android_aidl("base_module_aidl") {
+  import_include = [ "." ]
+  sources = [
+    "org/chromium/weblayer_private/interfaces/IChildProcessService.aidl",
+    "org/chromium/weblayer_private/interfaces/IObjectWrapper.aidl",
+  ]
+}
+
 android_aidl("aidl") {
   import_include = [ "." ]
   sources = [
     "org/chromium/weblayer_private/interfaces/IBrowser.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserClient.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserFragment.aidl",
-    "org/chromium/weblayer_private/interfaces/IChildProcessService.aidl",
     "org/chromium/weblayer_private/interfaces/IClientDownload.aidl",
     "org/chromium/weblayer_private/interfaces/IClientNavigation.aidl",
     "org/chromium/weblayer_private/interfaces/IContextMenuParams.aidl",
@@ -461,7 +490,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/INavigation.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationController.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationControllerClient.aidl",
-    "org/chromium/weblayer_private/interfaces/IObjectWrapper.aidl",
     "org/chromium/weblayer_private/interfaces/IPrerenderController.aidl",
     "org/chromium/weblayer_private/interfaces/IProfile.aidl",
     "org/chromium/weblayer_private/interfaces/IProfileClient.aidl",

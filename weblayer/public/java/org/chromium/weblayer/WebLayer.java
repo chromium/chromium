@@ -261,10 +261,9 @@ public class WebLayer {
                         mContext, ApiHelperForR.getAttributionTag(context));
             }
             try {
-                ClassLoader classLoader = getOrCreateRemoteClassLoader(mContext);
+                Class factoryClass = loadRemoteClass(
+                        mContext, "org.chromium.weblayer_private.WebLayerFactoryImpl");
                 long start = SystemClock.elapsedRealtime();
-                Class factoryClass =
-                        classLoader.loadClass("org.chromium.weblayer_private.WebLayerFactoryImpl");
                 mFactory = IWebLayerFactory.Stub.asInterface(
                         (IBinder) factoryClass
                                 .getMethod("create", String.class, int.class, int.class)
@@ -633,10 +632,10 @@ public class WebLayer {
     /**
      * Creates a ClassLoader for the remote (weblayer implementation) side.
      */
-    static ClassLoader getOrCreateRemoteClassLoader(Context appContext)
+    static Class<?> loadRemoteClass(Context appContext, String className)
             throws PackageManager.NameNotFoundException, ReflectiveOperationException {
         if (sRemoteClassLoader != null) {
-            return sRemoteClassLoader;
+            return sRemoteClassLoader.loadClass(className);
         }
 
         long start = SystemClock.elapsedRealtime();
@@ -647,12 +646,18 @@ public class WebLayer {
             // Android versions before O do not support isolated splits, so WebLayer will be loaded
             // as a normal split which is already available from the base class loader.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Attempt to find the class in the base ClassLoader, if it doesn't exist then load
+                // the weblayer ClassLoader.
                 try {
-                    // If the implementation APK does not support isolated splits, this will just
-                    // return the original context.
-                    context = ApiHelperForO.createContextForSplit(context, "weblayer");
-                } catch (PackageManager.NameNotFoundException e) {
-                    // WebLayer not in split, proceed with the base context.
+                    Class.forName(className, false, context.getClassLoader());
+                } catch (ClassNotFoundException e) {
+                    try {
+                        // If the implementation APK does not support isolated splits, this will
+                        // just return the original context.
+                        context = ApiHelperForO.createContextForSplit(context, "weblayer");
+                    } catch (PackageManager.NameNotFoundException e2) {
+                        // WebLayer not in split, proceed with the base context.
+                    }
                 }
             }
             sRemoteClassLoader = context.getClassLoader();
@@ -660,7 +665,7 @@ public class WebLayer {
             sRemoteClassLoader = WebViewCompatibilityHelper.initialize(appContext);
         }
         sClassLoaderCreationTime = SystemClock.elapsedRealtime() - start;
-        return sRemoteClassLoader;
+        return sRemoteClassLoader.loadClass(className);
     }
 
     /**
