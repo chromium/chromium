@@ -29,7 +29,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace cups_proxy {
 namespace {
@@ -193,7 +193,7 @@ void SocketManagerImpl::Write() {
   int result = socket_->Write(
       in_flight_->io_buffer.get(), in_flight_->io_buffer->BytesRemaining(),
       base::BindOnce(&SocketManagerImpl::OnWrite, weak_factory_.GetWeakPtr()),
-      TRAFFIC_ANNOTATION_FOR_TESTS /* Unused NetworkAnnotation */);
+      net::DefineNetworkTrafficAnnotation("unused", ""));
 
   if (result != net::ERR_IO_PENDING) {
     return OnWrite(result);

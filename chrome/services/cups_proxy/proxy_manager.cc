@@ -23,7 +23,7 @@
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
 #include "chrome/services/cups_proxy/socket_manager.h"
-#include "chrome/services/ipp_parser/ipp_parser_service.h"
+#include "chrome/services/ipp_parser/public/cpp/browser/ipp_parser_launcher.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

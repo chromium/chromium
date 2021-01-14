@@ -18,7 +18,10 @@ source_set("cpp") {
     "type_conversions.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos",
+  ]
 
   public_deps = [
     "//chrome/services/ipp_parser/public/cpp",
@@ -34,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base",
+    "//chromeos",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/ipp_parser/ipp_parser_service.h"
+#include "chrome/services/ipp_parser/public/cpp/browser/ipp_parser_launcher.h"
 
 #include "base/no_destructor.h"
 #include "chrome/grit/generated_resources.h"
