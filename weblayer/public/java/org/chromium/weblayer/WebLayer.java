@@ -7,6 +7,7 @@ package org.chromium.weblayer;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -802,9 +803,10 @@ public class WebLayer {
         }
     }
 
+    /** Utility class to use new APIs that were added in O (API level 26). */
     @VerifiesOnO
     @TargetApi(Build.VERSION_CODES.O)
-    private static final class ApiHelperForO {
+    /* package */ static final class ApiHelperForO {
         /** See {@link Context.createContextForSplit(String) }. */
         public static Context createContextForSplit(Context context, String name)
                 throws PackageManager.NameNotFoundException {
@@ -814,6 +816,11 @@ public class WebLayer {
             } finally {
                 StrictMode.setThreadPolicy(oldPolicy);
             }
+        }
+
+        /** See {@link ApplicationInfo#splitNames}. */
+        public static String[] getSplitNames(ApplicationInfo info) {
+            return info.splitNames;
         }
     }
 
