@@ -4,7 +4,7 @@
 
 #include "components/subresource_redirect/subresource_redirect_test_util.h"
 
-#include "components/data_reduction_proxy/proto/robots_rules.pb.h"
+#include "components/subresource_redirect/proto/robots_rules.pb.h"
 
 namespace subresource_redirect {
 
