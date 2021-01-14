@@ -171,7 +171,7 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 // If enabled, will use the CDM in the Chrome OS daemon rather than loading the
 // CDM using the library CDM interface.
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, send the LTE attach APN configuration to the modem.
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
