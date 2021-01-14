@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/read_later/read_later_button.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -84,7 +85,11 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
           IDS_READ_LATER_TITLE,
           this,
           browser->profile(),
-          GURL(chrome::kChromeUIReadLaterURL))) {
+          GURL(chrome::kChromeUIReadLaterURL))),
+      widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
+        base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
+                                      time_elapsed);
+      })) {
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
@@ -143,6 +148,13 @@ void ReadLaterButton::OnThemeChanged() {
   LabelButton::OnThemeChanged();
 }
 
+void ReadLaterButton::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK_EQ(webui_bubble_manager_->GetBubbleWidget(), widget);
+  DCHECK(bubble_widget_observation_.IsObservingSource(
+      webui_bubble_manager_->GetBubbleWidget()));
+  bubble_widget_observation_.Reset();
+}
+
 void ReadLaterButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
@@ -171,6 +183,12 @@ void ReadLaterButton::ButtonPressed() {
           base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
       RecordBookmarkBarState(browser_);
       webui_bubble_manager_->ShowBubble();
+      // There should only ever be a single bubble widget active for the
+      // ReadLaterButton.
+      DCHECK(!bubble_widget_observation_.IsObserving());
+      bubble_widget_observation_.Observe(
+          webui_bubble_manager_->GetBubbleWidget());
+      widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
     }
   }
 }

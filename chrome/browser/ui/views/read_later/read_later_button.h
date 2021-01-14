@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/widget/widget_observer.h"
+#include "ui/views/widget/widget_utils.h"
 
 class Browser;
 class WebUIBubbleDialogView;
@@ -15,7 +17,8 @@ class WebUIBubbleDialogView;
 // Button in the bookmarks bar that provides access to the corresponding
 // read later menu.
 // TODO(corising): Handle the the async presentation of the UI bubble.
-class ReadLaterButton : public views::LabelButton {
+class ReadLaterButton : public views::LabelButton,
+                        public views::WidgetObserver {
  public:
   explicit ReadLaterButton(Browser* browser);
   ReadLaterButton(const ReadLaterButton&) = delete;
@@ -34,6 +37,9 @@ class ReadLaterButton : public views::LabelButton {
   SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   void ButtonPressed();
 
   Browser* const browser_;
@@ -42,6 +48,11 @@ class ReadLaterButton : public views::LabelButton {
   WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
 
   std::unique_ptr<WebUIBubbleManager<ReadLaterUI>> webui_bubble_manager_;
+
+  views::WidgetOpenTimer widget_open_timer_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
