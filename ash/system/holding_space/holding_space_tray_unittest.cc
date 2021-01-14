@@ -1669,6 +1669,46 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN, 0);
 }
 
+// Clicking on tote buble background should deselect any selected items.
+TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
+  StartSession();
+
+  // Add two items.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble.
+  test_api()->Show();
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  HoldingSpaceItemView* holding_space_item =
+      HoldingSpaceItemView::Cast(download_chips[0]);
+
+  // Click an item chip. The view should be selected.
+  Click(download_chips[0], 0);
+  ASSERT_TRUE(holding_space_item->selected());
+  // Clicking on the parent view should deselect item.
+  Click(download_chips[0]->parent(), 0);
+  ASSERT_FALSE(holding_space_item->selected());
+
+  test_api()->Show();
+
+  download_chips = test_api()->GetDownloadChips();
+  holding_space_item = HoldingSpaceItemView::Cast(download_chips[0]);
+  HoldingSpaceItemView* holding_space_item_2 =
+      HoldingSpaceItemView::Cast(download_chips[1]);
+
+  // Click on both items to select them both.
+  Click(download_chips[0], ui::EF_SHIFT_DOWN);
+  Click(download_chips[1], ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(holding_space_item->selected());
+  ASSERT_TRUE(holding_space_item_2->selected());
+  // Clicking on the parent view should deselect both items.
+  Click(download_chips[0]->parent(), 0);
+  ASSERT_FALSE(holding_space_item->selected());
+  ASSERT_FALSE(holding_space_item_2->selected());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
 
 }  // namespace ash

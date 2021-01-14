@@ -53,6 +53,8 @@ class HoldingSpaceItemViewsSection : public views::View {
   void ChildVisibilityChanged(views::View* child) override;
   void PreferredSizeChanged() override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
   // `HoldingSpaceModelObserver` events forwarded from the parent
   // `HoldingSpaceTrayChildBubble`. Note that events may be withheld from this

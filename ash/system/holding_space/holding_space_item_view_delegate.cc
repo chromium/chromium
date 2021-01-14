@@ -239,6 +239,19 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayKeyPressed(
   return false;
 }
 
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewsSectionMousePressed(
+    const ui::MouseEvent& event) {
+  SetSelection({});
+}
+
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewsSectionGestureEvent(
+    const ui::GestureEvent& event) {
+  if (event.type() != ui::ET_GESTURE_TAP)
+    return;
+
+  SetSelection({});
+}
+
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
