@@ -712,6 +712,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     DCHECK_EQ(views.size(), bounds.size());
     for (size_t i = 0; i < views.size(); ++i)
       views[i]->SetBoundsRect(bounds[i]);
+
+    // Ensure that the tab strip and its parent views are correctly re-laid out
+    // after repositioning dragged tabs. This avoids visual/layout issues such
+    // as https://crbug.com/1151092.
+    tab_strip_->PreferredSizeChanged();
+
     // Reset the layout size as we've effectively laid out a different size.
     // This ensures a layout happens after the drag is done.
     tab_strip_->last_layout_size_ = gfx::Size();

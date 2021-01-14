@@ -40,6 +40,7 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -1366,6 +1367,49 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   EXPECT_EQ(1, tab_strip_->GetTabCount());
   EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(1, tab_strip_->GetModelCount());
+}
+
+namespace {
+
+struct SizeChangeObserver : public views::ViewObserver {
+  explicit SizeChangeObserver(views::View* observed_view)
+      : view(observed_view) {
+    view->AddObserver(this);
+  }
+  ~SizeChangeObserver() override { view->RemoveObserver(this); }
+
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    size_change_count++;
+  }
+
+  views::View* const view;
+  int size_change_count = 0;
+};
+
+}  // namespace
+
+// When dragged tabs' bounds are modified through TabDragContext, both tab strip
+// and its parent view must get re-laid out http://crbug.com/1151092.
+TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
+  SetMaxTabStripWidth(400);
+
+  // Creates a single tab.
+  controller_->CreateNewTab();
+  CompleteAnimationAndLayout();
+
+  int dragged_tab_index = controller_->GetActiveIndex();
+  Tab* dragged_tab = tab_strip_->tab_at(dragged_tab_index);
+  ASSERT_TRUE(dragged_tab);
+
+  // Mark the active tab as being dragged.
+  dragged_tab->set_dragging(true);
+
+  constexpr int kXOffset = 20;
+  std::vector<TabSlotView*> tabs{dragged_tab};
+  std::vector<gfx::Rect> bounds{gfx::Rect({kXOffset, 0}, dragged_tab->size())};
+  SizeChangeObserver view_observer(tab_strip_);
+  tab_strip_->GetDragContext()->SetBoundsForDrag(tabs, bounds);
+  EXPECT_EQ(1, view_observer.size_change_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));
