@@ -1153,7 +1153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.PredictionNegative"
-    units="pixels" expires_after="M90">
+    units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1179,7 +1179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.PredictionPositive"
-    units="pixels" expires_after="M90">
+    units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
