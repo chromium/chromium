@@ -225,8 +225,7 @@ export class SelectToSpeak {
     this.intervalId_;
 
     /** @private {Audio} */
-    this.null_selection_tone_ =
-        new Audio('select_to_speak/earcons/null_selection.ogg');
+    this.null_selection_tone_ = new Audio('earcons/null_selection.ogg');
 
     /** @private {PrefsManager} */
     this.prefsManager_ = new PrefsManager();
