@@ -1048,15 +1048,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         &success));
     success = false;
 
-    ShellAddedObserver new_shell_observer;
+    TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
     EXPECT_TRUE(ExecuteScriptAndExtractBool(
         shell(),
         "window.domAutomationController.send(clickCrossSiteNewWindowLink());",
         &success));
     EXPECT_TRUE(success);
 
-    TestNavigationObserver observer(
-        new_shell_observer.GetShell()->web_contents());
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -1090,7 +1089,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         &success));
     success = false;
 
-    ShellAddedObserver new_shell_observer;
+    TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
     EXPECT_TRUE(
         ExecuteScriptAndExtractBool(shell(),
                                     "window.domAutomationController.send("
@@ -1098,8 +1098,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                                     &success));
     EXPECT_TRUE(success);
 
-    TestNavigationObserver observer(
-        new_shell_observer.GetShell()->web_contents());
     observer.Wait();
 
     EXPECT_EQ(url, observer.last_navigation_url());
@@ -1139,15 +1137,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         &success));
     success = false;
 
-    ShellAddedObserver new_shell_observer;
+    TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
     EXPECT_TRUE(ExecuteScriptAndExtractBool(
         subframe_rfh,
         "window.domAutomationController.send(clickCrossSiteNewWindowLink());",
         &success));
     EXPECT_TRUE(success);
 
-    TestNavigationObserver observer(
-        new_shell_observer.GetShell()->web_contents());
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -1222,14 +1219,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         &success));
     success = false;
 
-    ShellAddedObserver new_shell_observer;
+    TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
     EXPECT_EQ(true, EvalJs(shell(), R"(
       target = document.getElementById('cross_site_link');
       var evt = new MouseEvent("click", {"button": 1 /* middle_button */});
       target.dispatchEvent(evt);)"));
 
-    TestNavigationObserver observer(
-        new_shell_observer.GetShell()->web_contents());
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
