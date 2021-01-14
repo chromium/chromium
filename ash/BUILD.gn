@@ -6,6 +6,7 @@ import("//build/config/features.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chromeos/assistant/ambient.gni")
+import("//chromeos/components/sensors/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
@@ -132,12 +133,8 @@ component("ash") {
     "accelerometer/accelerometer_constants.h",
     "accelerometer/accelerometer_file_reader.cc",
     "accelerometer/accelerometer_file_reader.h",
-    "accelerometer/accelerometer_provider_mojo.cc",
-    "accelerometer/accelerometer_provider_mojo.h",
     "accelerometer/accelerometer_reader.cc",
     "accelerometer/accelerometer_reader.h",
-    "accelerometer/accelerometer_samples_observer.cc",
-    "accelerometer/accelerometer_samples_observer.h",
     "accelerometer/accelerometer_types.cc",
     "accelerometer/accelerometer_types.h",
     "accessibility/accessibility_controller_impl.cc",
@@ -1795,8 +1792,7 @@ component("ash") {
     # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
     "//chromeos/audio",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/components/sensors:sensors",
-    "//chromeos/components/sensors/mojom",
+    "//chromeos/components/sensors:buildflags",
     "//chromeos/constants",
     "//chromeos/dbus",
 
@@ -1924,6 +1920,23 @@ component("ash") {
       "//chromeos/assistant/internal/proto/google3",
     ]
   }
+
+  if (use_iioservice) {
+    sources -= [
+      "accelerometer/accelerometer_file_reader.cc",
+      "accelerometer/accelerometer_file_reader.h",
+    ]
+    sources += [
+      "accelerometer/accelerometer_provider_mojo.cc",
+      "accelerometer/accelerometer_provider_mojo.h",
+      "accelerometer/accelerometer_samples_observer.cc",
+      "accelerometer/accelerometer_samples_observer.h",
+    ]
+    deps += [
+      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors/mojom",
+    ]
+  }
 }
 
 # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
@@ -1954,8 +1967,6 @@ test("ash_unittests") {
     "accelerators/accelerator_unittest.cc",
     "accelerators/magnifier_key_scroller_unittest.cc",
     "accelerators/spoken_feedback_toggler_unittest.cc",
-    "accelerometer/accelerometer_provider_mojo_unittest.cc",
-    "accelerometer/accelerometer_samples_observer_unittest.cc",
     "accessibility/accessibility_controller_unittest.cc",
     "accessibility/accessibility_focus_ring_controller_unittest.cc",
     "accessibility/accessibility_focus_ring_group_unittest.cc",
@@ -2405,9 +2416,6 @@ test("ash_unittests") {
     "//chromeos/audio",
     "//chromeos/components/phonehub:test_support",
     "//chromeos/components/quick_answers:quick_answers",
-    "//chromeos/components/sensors:sensors",
-    "//chromeos/components/sensors:test_support",
-    "//chromeos/components/sensors/mojom",
     "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
@@ -2513,6 +2521,18 @@ test("ash_unittests") {
     "//content/public/browser",
     "//content/public/common",
   ]
+
+  if (use_iioservice) {
+    sources += [
+      "accelerometer/accelerometer_provider_mojo_unittest.cc",
+      "accelerometer/accelerometer_samples_observer_unittest.cc",
+    ]
+    deps += [
+      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors:test_support",
+      "//chromeos/components/sensors/mojom",
+    ]
+  }
 }
 
 # TODO(oshima): Remove or migrate to new ash_ui_perftests

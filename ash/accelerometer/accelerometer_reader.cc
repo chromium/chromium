@@ -4,26 +4,20 @@
 
 #include "ash/accelerometer/accelerometer_reader.h"
 
-#include <grp.h>
-
-#include "ash/accelerometer/accelerometer_file_reader.h"
-#include "ash/accelerometer/accelerometer_provider_mojo.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/no_destructor.h"
-#include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/current_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/components/sensors/buildflags.h"
+#if BUILDFLAG(USE_IIOSERVICE)
+#include "ash/accelerometer/accelerometer_provider_mojo.h"
+#else  // !BUILDFLAG(USE_IIOSERVICE)
+#include "ash/accelerometer/accelerometer_file_reader.h"
+#endif  // BUILDFLAG(USE_IIOSERVICE)
 
 namespace ash {
-
-namespace {
-
-// Group name of IIO Service, used to check if IIO Service exists.
-constexpr char kIioServiceGroupName[] = "iioservice";
-
-}  // namespace
 
 // static
 AccelerometerReader* AccelerometerReader::GetInstance() {
@@ -62,17 +56,11 @@ void AccelerometerReader::SetECLidAngleDriverStatusForTesting(
 }
 
 AccelerometerReader::AccelerometerReader() {
-  char buf[1024];
-  struct group result;
-  struct group* resultp;
-
-  if (HANDLE_EINTR(getgrnam_r(kIioServiceGroupName, &result, buf, sizeof(buf),
-                              &resultp)) < 0 ||
-      !resultp) {
-    accelerometer_provider_ = new AccelerometerFileReader();
-  } else {
-    accelerometer_provider_ = new AccelerometerProviderMojo();
-  }
+#if BUILDFLAG(USE_IIOSERVICE)
+  accelerometer_provider_ = new AccelerometerProviderMojo();
+#else   // !BUILDFLAG(USE_IIOSERVICE)
+  accelerometer_provider_ = new AccelerometerFileReader();
+#endif  // BUILDFLAG(USE_IIOSERVICE)
 }
 
 AccelerometerReader::~AccelerometerReader() = default;

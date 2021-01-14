@@ -94,8 +94,13 @@ AccelerometerProviderMojo::~AccelerometerProviderMojo() = default;
 void AccelerometerProviderMojo::RegisterSensorClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
-      sensor_hal_client_.BindNewPipeAndPassRemote());
+  auto* dispatcher = chromeos::sensors::SensorHalDispatcher::GetInstance();
+  if (!dispatcher) {
+    // In unit tests, SensorHalDispatcher is not initialized.
+    return;
+  }
+
+  dispatcher->RegisterClient(sensor_hal_client_.BindNewPipeAndPassRemote());
 
   sensor_hal_client_.set_disconnect_handler(base::BindOnce(
       &AccelerometerProviderMojo::OnSensorHalClientFailure, this));
