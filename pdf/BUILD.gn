@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//pdf/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
 import("//v8/gni/v8.gni")
@@ -376,6 +377,15 @@ if (enable_pdf) {
     if (v8_use_external_startup_data) {
       data += [ "$root_out_dir/snapshot_blob.bin" ]
     }
+  }
+
+  fuzzer_test("pdf_dates_fuzzer") {
+    sources = [ "pdf_utils/dates_fuzzer.cc" ]
+
+    deps = [
+      ":internal",
+      "//base",
+    ]
   }
 } else {
   # Dummy groups when PDF support is disabled so targets can unconditionally
