@@ -27,10 +27,10 @@ using version_info::Channel;
 
 namespace crosapi {
 
-class LacrosUtilTest : public testing::Test {
+class BrowserUtilTest : public testing::Test {
  public:
-  LacrosUtilTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
-  ~LacrosUtilTest() override = default;
+  BrowserUtilTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  ~BrowserUtilTest() override = default;
 
   void SetUp() override {
     fake_user_manager_ = new chromeos::FakeChromeUserManager;
@@ -58,7 +58,7 @@ class LacrosUtilTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 };
 
-TEST_F(LacrosUtilTest, LacrosEnabledByFlag) {
+TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
   AddRegularUser("user@test.com");
 
   // Lacros is disabled because the feature isn't enabled by default.
@@ -70,7 +70,7 @@ TEST_F(LacrosUtilTest, LacrosEnabledByFlag) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
-TEST_F(LacrosUtilTest, ChannelTest) {
+TEST_F(BrowserUtilTest, ChannelTest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AddRegularUser("user@test.com");
@@ -82,7 +82,7 @@ TEST_F(LacrosUtilTest, ChannelTest) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::STABLE));
 }
 
-TEST_F(LacrosUtilTest, ManagedAccountLacrosEnabled) {
+TEST_F(BrowserUtilTest, ManagedAccountLacrosEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AddRegularUser("user@managedchrome.com");
@@ -93,7 +93,7 @@ TEST_F(LacrosUtilTest, ManagedAccountLacrosEnabled) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
 }
 
-TEST_F(LacrosUtilTest, ManagedAccountLacrosDisabled) {
+TEST_F(BrowserUtilTest, ManagedAccountLacrosDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AddRegularUser("user@managedchrome.com");
@@ -104,7 +104,7 @@ TEST_F(LacrosUtilTest, ManagedAccountLacrosDisabled) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
 }
 
-TEST_F(LacrosUtilTest, BlockedForChildUser) {
+TEST_F(BrowserUtilTest, BlockedForChildUser) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AccountId account_id = AccountId::FromUserEmail("user@test.com");
@@ -115,7 +115,7 @@ TEST_F(LacrosUtilTest, BlockedForChildUser) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
 }
 
-TEST_F(LacrosUtilTest, GetInterfaceVersions) {
+TEST_F(BrowserUtilTest, GetInterfaceVersions) {
   base::flat_map<base::Token, uint32_t> versions =
       browser_util::GetInterfaceVersions();
 
