@@ -307,6 +307,7 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
                                         NavigationEntryImpl* entry,
                                         const FrameNavigationEntry& frame_entry,
                                         bool has_pending_cross_document_commit,
+                                        bool is_currently_error_page,
                                         bool is_same_document_history_load) {
   // Reload navigations
   switch (reload_type) {
@@ -325,10 +326,15 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
                                    : mojom::NavigationType::RESTORE;
   }
 
-  // A pending cross-document commit means this navigation will not occur in
-  // the current document, as that document would end up being replaced in the
-  // meantime.
-  const bool can_be_same_document = !has_pending_cross_document_commit;
+  const bool can_be_same_document =
+      // A pending cross-document commit means this navigation will not occur in
+      // the current document, as that document would end up being replaced in
+      // the meantime.
+      !has_pending_cross_document_commit &&
+      // If the current document is an error page, we should always treat it as
+      // a different-document navigation so that we'll attempt to load the
+      // document we're navigating to (and not stay in the current error page).
+      !is_currently_error_page;
 
   // History navigations.
   if (frame_entry.page_state().IsValid()) {
@@ -2953,14 +2959,11 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
 
   if (new_item->item_sequence_number() != old_item->item_sequence_number()) {
     // Same document loads happen if the previous item has the same document
-    // sequence number but different item sequence number. If the current
-    // document is an error page, though, we should always treat it as a
-    // different-document navigation so that we'll attempt to load the document
-    // for |new_item| (and not stay in the current error page).
-    if (!frame->current_frame_host()->is_error_page() &&
-        new_item->document_sequence_number() ==
-            old_item->document_sequence_number())
+    // sequence number but different item sequence number.
+    if (new_item->document_sequence_number() ==
+        old_item->document_sequence_number()) {
       return HistoryNavigationAction::kSameDocument;
+    }
 
     // Otherwise, if both item and document sequence numbers differ, this
     // should be a different document load.
@@ -3403,12 +3406,13 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   // current URL by the time this navigation commits.
   bool has_pending_cross_document_commit =
       node->render_manager()->HasPendingCommitForCrossDocumentNavigation();
+  bool is_currently_error_page = node->current_frame_host()->is_error_page();
 
-  mojom::NavigationType navigation_type =
-      GetNavigationType(/*old_url=*/node->current_url(),
-                        /*new_url=*/url_to_load, reload_type, entry,
-                        *frame_entry, has_pending_cross_document_commit,
-                        /*is_same_document_history_load=*/false);
+  mojom::NavigationType navigation_type = GetNavigationType(
+      /*old_url=*/node->current_url(),
+      /*new_url=*/url_to_load, reload_type, entry, *frame_entry,
+      has_pending_cross_document_commit, is_currently_error_page,
+      /*is_same_document_history_load=*/false);
 
   // Create the NavigationParams based on |params|.
 
@@ -3573,11 +3577,14 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   bool has_pending_cross_document_commit =
       frame_tree_node->render_manager()
           ->HasPendingCommitForCrossDocumentNavigation();
+  bool is_currently_error_page =
+      frame_tree_node->current_frame_host()->is_error_page();
 
   mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/frame_tree_node->current_url(),
       /*new_url=*/dest_url, reload_type, entry, *frame_entry,
-      has_pending_cross_document_commit, is_same_document_history_load);
+      has_pending_cross_document_commit, is_currently_error_page,
+      is_same_document_history_load);
 
   // A form submission may happen here if the navigation is a
   // back/forward/reload navigation that does a form resubmission.

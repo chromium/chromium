@@ -1124,6 +1124,8 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     if (!url.HasFragmentIdentifier() ||
         !EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url) ||
         frame_->GetDocument()->IsFrameSet()) {
+      // TODO(danakj): Convert to a CHECK() and stop doing RestartCrossDocument.
+      NOTREACHED();
       return mojom::CommitResult::RestartCrossDocument;
     }
   }
