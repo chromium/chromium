@@ -3802,21 +3802,6 @@
             ]
         }
     ],
-    "InspectionResultsCache": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InspectionResultsCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "InstantApps": [
         {
             "platforms": [
