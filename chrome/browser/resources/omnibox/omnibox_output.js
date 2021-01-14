@@ -1122,7 +1122,7 @@ const COLUMNS = [
       'pedalId', false, 'Pedal ID\nThe ID of attached Pedal, or zero if none.',
       ['pedalId'], OutputTextProperty),
   new Column(
-      ['Additional Info'], '', 'additionalInfo', false,
+      ['Additional Info'], '', 'additionalInfo', true,
       'Additional Info\nProvider-specific information about the result.',
       ['additionalInfo'], OutputAdditionalInfoProperty)
 ];
