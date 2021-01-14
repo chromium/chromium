@@ -92,4 +92,34 @@ IN_PROC_BROWSER_TEST_F(FullscreenBrowserTest, NoExitForBackgroundTab) {
   tab->SetFullscreenDelegate(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(FullscreenBrowserTest, DelegateNotCalledMoreThanOnce) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  // The tab needs to be made active as fullscreen requests for inactive tabs
+  // are ignored.
+  TabImpl* tab = static_cast<TabImpl*>(shell()->tab());
+  tab->GetBrowser()->SetActiveTab(tab);
+
+  FullscreenDelegateImpl fullscreen_delegate;
+  tab->SetFullscreenDelegate(&fullscreen_delegate);
+  static_cast<content::WebContentsDelegate*>(tab)->EnterFullscreenModeForTab(
+      nullptr, blink::mojom::FullscreenOptions());
+  EXPECT_TRUE(static_cast<content::WebContentsDelegate*>(tab)
+                  ->IsFullscreenForTabOrPending(nullptr));
+  EXPECT_TRUE(fullscreen_delegate.got_enter());
+  EXPECT_FALSE(fullscreen_delegate.got_exit());
+  fullscreen_delegate.ResetState();
+
+  // Simulate another enter. As the tab is already fullscreen the delegate
+  // should not be notified again.
+  static_cast<content::WebContentsDelegate*>(tab)->EnterFullscreenModeForTab(
+      nullptr, blink::mojom::FullscreenOptions());
+  EXPECT_TRUE(static_cast<content::WebContentsDelegate*>(tab)
+                  ->IsFullscreenForTabOrPending(nullptr));
+  EXPECT_FALSE(fullscreen_delegate.got_enter());
+  EXPECT_FALSE(fullscreen_delegate.got_exit());
+
+  tab->SetFullscreenDelegate(nullptr);
+}
+
 }  // namespace weblayer
