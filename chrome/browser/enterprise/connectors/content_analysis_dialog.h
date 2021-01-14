@@ -27,6 +27,7 @@ class ImageSkia;
 namespace views {
 class ImageView;
 class Label;
+class Link;
 class Throbber;
 class Widget;
 }  // namespace views
@@ -123,7 +124,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
-  void ShowResult(ContentAnalysisDelegate::FinalResult result);
+  void ShowResult(ContentAnalysisDelegate::FinalResult result,
+                  const std::string& custom_message,
+                  const GURL& learn_more_url);
 
   // Accessors to simplify |dialog_status_| checking.
   inline bool is_success() const {
@@ -142,6 +145,13 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   inline bool is_pending() const {
     return dialog_status_ == DeepScanningDialogStatus::PENDING;
+  }
+
+  bool has_custom_message() const { return !final_custom_message_.empty(); }
+
+  bool has_learn_more_url() const {
+    return !final_learn_more_url_.is_empty() &&
+           final_learn_more_url_.is_valid();
   }
 
   // Returns the side image's logo color depending on |dialog_status_|.
@@ -202,11 +212,14 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Returns the appropriate success message depending on |files_count_|.
   base::string16 GetSuccessMessage() const;
 
+  base::string16 GetCustomMessage() const;
+
   // Show the dialog. Sets |shown_| to true.
   void Show();
 
   void AcceptButtonCallback();
   void CancelButtonCallback();
+  void LearnMoreLinkClickedCallback(const ui::Event& event);
 
   // This callback used by DialogDelegate::SetCancelCallback and is used to
   // ensure the auto-closing success dialog handles focus correctly.
@@ -222,6 +235,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   DeepScanningSideIconImageView* side_icon_image_ = nullptr;
   DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
   DeepScanningMessageView* message_ = nullptr;
+  views::Link* learn_more_link_ = nullptr;
 
   bool shown_ = false;
 
@@ -233,6 +247,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Used to show the appropriate message.
   ContentAnalysisDelegate::FinalResult final_result_ =
       ContentAnalysisDelegate::FinalResult::SUCCESS;
+  std::string final_custom_message_;
+  GURL final_learn_more_url_;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
