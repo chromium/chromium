@@ -89,6 +89,11 @@ base::Optional<Gamepad> GetXrStandardGamepad(
   if (thumbrest_button)
     builder.AddOptionalButtonData(thumbrest_button.value());
 
+  base::Optional<GamepadButton> grasp_button =
+      controller.GetButton(OpenXrButtonType::kGrasp);
+  if (grasp_button)
+    builder.AddOptionalButtonData(grasp_button.value());
+
   return builder.GetGamepad();
 }
 

@@ -110,6 +110,7 @@ XrResult OpenXrController::InitializeControllerActions() {
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kThumbrest));
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kButton1));
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kButton2));
+  RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kGrasp));
 
   const std::string type_string = GetStringFromType(type_);
   const std::string name_prefix = type_string + "_controller_";
@@ -414,6 +415,9 @@ XrResult OpenXrController::CreateActionsForButton(
       break;
     case OpenXrButtonType::kButton2:
       name_prefix += "lower_button_";
+      break;
+    case OpenXrButtonType::kGrasp:
+      name_prefix += "grasp_";
       break;
   }
 

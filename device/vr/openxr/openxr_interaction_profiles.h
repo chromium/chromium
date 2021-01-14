@@ -40,7 +40,8 @@ enum class OpenXrButtonType {
   kThumbrest = 4,
   kButton1 = 5,
   kButton2 = 6,
-  kMaxValue = 6,
+  kGrasp = 7,
+  kMaxValue = 7,
 };
 
 enum class OpenXrAxisType {
@@ -284,7 +285,7 @@ constexpr OpenXrButtonPathMap kGenericHandSelectGraspButtonPathMaps[] = {
      {{OpenXrButtonActionType::kPress, "/input/select/value"},
       {OpenXrButtonActionType::kValue, "/input/select/value"}},
      2},
-    {OpenXrButtonType::kTrigger,
+    {OpenXrButtonType::kGrasp,
      {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
       {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
      2},
@@ -416,7 +417,7 @@ constexpr OpenXrControllerInteractionProfile
         OpenXrInteractionProfileType::kHandSelectGrasp,
         "/interaction_profiles/microsoft/hand_interaction",
         kMSFTHandInteractionExtensionName,
-        GamepadMapping::kNone,
+        GamepadMapping::kXrStandard,
         kGenericHandSelectGraspInputProfile,
         base::size(kGenericHandSelectGraspInputProfile),
         kGenericHandSelectGraspButtonPathMaps,
