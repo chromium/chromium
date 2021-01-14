@@ -272,7 +272,7 @@ void BrowserImpl::SetActiveTab(Tab* tab) {
   for (BrowserObserver& obs : browser_observers_)
     obs.OnActiveTabChanged(active_tab_);
   if (active_tab_)
-    active_tab_->web_contents()->GetController().LoadIfNecessary();
+    active_tab_->OnGainedActive();
 }
 
 Tab* BrowserImpl::GetActiveTab() {

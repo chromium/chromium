@@ -28,6 +28,8 @@ public final class FullscreenCallbackProxy {
     private TabImpl mTab;
     private FullscreenToast mToast;
     private boolean mIsNotifyingClientOfEnter;
+    // Used so that only the most recent callback supplied to the client is acted on.
+    private int mNextFullscreenId;
 
     FullscreenCallbackProxy(TabImpl tab, long nativeTab, IFullscreenCallbackClient client) {
         assert client != null;
@@ -63,10 +65,15 @@ public final class FullscreenCallbackProxy {
 
     @CalledByNative
     private void enterFullscreen() throws RemoteException {
+        final int id = ++mNextFullscreenId;
         ValueCallback<Void> exitFullscreenCallback = new ValueCallback<Void>() {
             @Override
             public void onReceiveValue(Void result) {
                 ThreadUtils.assertOnUiThread();
+                if (id != mNextFullscreenId) {
+                    // This is an old fullscreen request. Ignore it.
+                    return;
+                }
                 if (mNativeFullscreenCallbackProxy == 0) {
                     throw new IllegalStateException("Called after destroy()");
                 }

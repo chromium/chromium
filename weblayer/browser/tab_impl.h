@@ -127,7 +127,8 @@ class TabImpl : public Tab,
   bool has_new_tab_delegate() const { return new_tab_delegate_ != nullptr; }
   NewTabDelegate* new_tab_delegate() const { return new_tab_delegate_; }
 
-  // Called from Browser when this Tab is losing active status.
+  // Called from Browser when this Tab is gaining/losing active status.
+  void OnGainedActive();
   void OnLosingActive();
 
   bool IsActive();
@@ -363,6 +364,8 @@ class TabImpl : public Tab,
 
   bool SetDataInternal(const std::map<std::string, std::string>& data);
 
+  void EnterFullscreenImpl();
+
   BrowserImpl* browser_ = nullptr;
   ErrorPageDelegate* error_page_delegate_ = nullptr;
   FullscreenDelegate* fullscreen_delegate_ = nullptr;
@@ -399,6 +402,9 @@ class TabImpl : public Tab,
   // Set to true doing EnterFullscreenModeForTab().
   bool processing_enter_fullscreen_ = false;
 
+  // If true, the fullscreen delegate is called when the tab gains active.
+  bool enter_fullscreen_on_gained_active_ = false;
+
   std::unique_ptr<autofill::AutofillProvider> autofill_provider_;
 
   const std::string guid_;
@@ -410,7 +416,7 @@ class TabImpl : public Tab,
 
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
-  base::WeakPtrFactory<TabImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabImpl);
 };

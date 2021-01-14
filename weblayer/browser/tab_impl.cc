@@ -555,6 +555,12 @@ void TabImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
   browser_->SetWebPreferences(prefs);
 }
 
+void TabImpl::OnGainedActive() {
+  web_contents()->GetController().LoadIfNecessary();
+  if (enter_fullscreen_on_gained_active_)
+    EnterFullscreenImpl();
+}
+
 void TabImpl::OnLosingActive() {
   if (is_fullscreen_)
     web_contents_->ExitFullscreen(/* will_cause_resize */ false);
@@ -1087,20 +1093,21 @@ void TabImpl::EnterFullscreenModeForTab(
     const blink::mojom::FullscreenOptions& options) {
   // TODO: support |options|.
   is_fullscreen_ = true;
-  auto exit_fullscreen_closure = base::BindOnce(&TabImpl::OnExitFullscreen,
-                                                weak_ptr_factory_.GetWeakPtr());
-  base::AutoReset<bool> reset(&processing_enter_fullscreen_, true);
-  fullscreen_delegate_->EnterFullscreen(std::move(exit_fullscreen_closure));
-#if defined(OS_ANDROID)
-  // Make sure browser controls cannot show when the tab is fullscreen.
-  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               cc::BrowserControlsState::kHidden);
-#endif
+  if (!IsActive()) {
+    // Process the request the tab is made active.
+    enter_fullscreen_on_gained_active_ = true;
+    return;
+  }
+  EnterFullscreenImpl();
 }
 
 void TabImpl::ExitFullscreenModeForTab(content::WebContents* web_contents) {
+  weak_ptr_factory_for_fullscreen_exit_.InvalidateWeakPtrs();
   is_fullscreen_ = false;
-  fullscreen_delegate_->ExitFullscreen();
+  if (enter_fullscreen_on_gained_active_)
+    enter_fullscreen_on_gained_active_ = false;
+  else
+    fullscreen_delegate_->ExitFullscreen();
 #if defined(OS_ANDROID)
   // Attempt to show browser controls when exiting fullscreen.
   SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
@@ -1367,6 +1374,22 @@ bool TabImpl::SetDataInternal(const std::map<std::string, std::string>& data) {
   for (auto& observer : data_observers_)
     observer.OnDataChanged(this, data_);
   return true;
+}
+
+void TabImpl::EnterFullscreenImpl() {
+  // This ensures the existing callback is ignored.
+  weak_ptr_factory_for_fullscreen_exit_.InvalidateWeakPtrs();
+
+  auto exit_fullscreen_closure =
+      base::BindOnce(&TabImpl::OnExitFullscreen,
+                     weak_ptr_factory_for_fullscreen_exit_.GetWeakPtr());
+  base::AutoReset<bool> reset(&processing_enter_fullscreen_, true);
+  fullscreen_delegate_->EnterFullscreen(std::move(exit_fullscreen_closure));
+#if defined(OS_ANDROID)
+  // Make sure browser controls cannot show when the tab is fullscreen.
+  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
+                               cc::BrowserControlsState::kHidden);
+#endif
 }
 
 }  // namespace weblayer
