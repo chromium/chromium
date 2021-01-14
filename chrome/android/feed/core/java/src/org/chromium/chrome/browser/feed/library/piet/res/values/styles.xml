@@ -4,6 +4,7 @@ Copyright 2019 The Chromium Authors. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+<!-- Comment out to avoid Android lint failure.
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
   <style name="gm_font_weight_regular">
     <item name="android:fontFamily">sans-serif</item>
@@ -20,3 +21,4 @@ found in the LICENSE file.
     <item name="android:textAlignment">viewStart</item>
   </style>
 </resources>
+-->

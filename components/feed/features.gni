@@ -11,7 +11,8 @@ import("//chrome/android/channel.gni")
 # the NTP.
 declare_args() {
   # Whether version 1 of the NTP feed is enabled in the build.
-  enable_feed_v1 = is_android
+  # TODO(crbug.com/1165828): Remove feed v1 code when we're ready.
+  enable_feed_v1 = false
 
   # Whether version 2 of the NTP feed is enabled in the build.
   enable_feed_v2 = is_android

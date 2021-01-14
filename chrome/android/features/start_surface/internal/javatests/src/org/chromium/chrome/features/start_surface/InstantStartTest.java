@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feed.FeedV1;
+import org.chromium.chrome.browser.feed.FeedV2;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -123,7 +124,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -161,13 +162,16 @@ public class InstantStartTest {
      * Parameter set controlling whether Feed v2 is enabled.
      */
     public static class FeedParams implements ParameterProvider {
-        private static List<ParameterSet> sFeedParams =
-                Arrays.asList(new ParameterSet().value(false).name("FeedV1"),
-                        new ParameterSet().value(true).name("FeedV2"));
-
         @Override
         public List<ParameterSet> getParameters() {
-            return sFeedParams;
+            List<ParameterSet> feedParams = new ArrayList<ParameterSet>();
+            if (FeedV1.IS_AVAILABLE) {
+                feedParams.add(new ParameterSet().value(false).name("FeedV1"));
+            }
+            if (FeedV2.IS_AVAILABLE) {
+                feedParams.add(new ParameterSet().value(true).name("FeedV2"));
+            }
+            return feedParams;
         }
     }
 
