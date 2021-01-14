@@ -805,8 +805,16 @@ class SplitCacheComputeHttpCacheSize {
 // is_subframe_document_resource by checking that the size of the http cache
 // resources accessed after the resource is loaded from the blink cache is the
 // same as before that.
+// TODO(crbug.com/1166650): Test is flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_NotifyExternalCacheHitCheckSubframeBit \
+  DISABLED_NotifyExternalCacheHitCheckSubframeBit
+#else
+#define MAYBE_NotifyExternalCacheHitCheckSubframeBit \
+  NotifyExternalCacheHitCheckSubframeBit
+#endif
 IN_PROC_BROWSER_TEST_F(SplitCacheWithFrameOriginContentBrowserTest,
-                       NotifyExternalCacheHitCheckSubframeBit) {
+                       MAYBE_NotifyExternalCacheHitCheckSubframeBit) {
   ResourceLoadObserver observer(shell());
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
   std::unique_ptr<SplitCacheComputeHttpCacheSize> http_cache_size =
