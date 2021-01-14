@@ -237,6 +237,11 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           DVLOG(1) << "Film grain streams are not supported";
           return kDecodeError;
         }
+        if (new_bit_depth != 8u) {
+          // TODO(b/174722425): Decode 10 bits streams once it is fixed.
+          DVLOG(1) << "10 and 12 bits streams are not supported";
+          return kDecodeError;
+        }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
         const gfx::Size new_frame_size(

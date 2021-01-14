@@ -362,12 +362,19 @@ TEST_F(AV1DecoderTest, DecodeShowExistingPictureStream) {
 }
 
 TEST_F(AV1DecoderTest, Decode10bitStream) {
-  constexpr gfx::Size kFrameSize(320, 180);
-  constexpr gfx::Size kRenderSize(320, 180);
-  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
   const std::string k10bitStream("bear-av1-320x180-10bit.webm");
   std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadWebm(k10bitStream);
   ASSERT_FALSE(buffers.empty());
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(buffers[0]), expected);
+  // Once AV1Decoder gets into an error state, Decode() returns kDecodeError
+  // until Reset().
+  EXPECT_EQ(Decode(buffers[0]), expected);
+#else
+  constexpr gfx::Size kFrameSize(320, 180);
+  constexpr gfx::Size kRenderSize(320, 180);
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
   std::vector<DecodeResult> expected = {DecodeResult::kConfigChange};
   std::vector<DecodeResult> results;
   for (auto buffer : buffers) {
@@ -394,6 +401,7 @@ TEST_F(AV1DecoderTest, Decode10bitStream) {
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
   EXPECT_EQ(results, expected);
+#endif
 }
 
 TEST_F(AV1DecoderTest, DecodeSVCStream) {
