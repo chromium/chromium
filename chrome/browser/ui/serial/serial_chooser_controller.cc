@@ -49,6 +49,10 @@ SerialChooserController::~SerialChooserController() {
     RunCallback(/*port=*/nullptr);
 }
 
+bool SerialChooserController::ShouldShowHelpButton() const {
+  return false;
+}
+
 base::string16 SerialChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }

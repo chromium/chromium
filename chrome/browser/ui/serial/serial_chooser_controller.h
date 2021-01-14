@@ -35,6 +35,7 @@ class SerialChooserController final
   ~SerialChooserController() override;
 
   // ChooserController:
+  bool ShouldShowHelpButton() const override;
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
   std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
