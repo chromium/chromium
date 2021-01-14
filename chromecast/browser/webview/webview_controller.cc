@@ -17,6 +17,7 @@
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -186,11 +187,20 @@ void WebviewController::HandleUpdateSettings(
   CastWebContents::FromWebContents(contents)->SetEnabledForRemoteDebugging(
       request.debugging_enabled() || enabled_for_dev_);
 
-  if (request.has_user_agent() &&
-      request.user_agent().type_case() == webview::UserAgent::kValue) {
+  const bool user_agent_overridden =
+      request.has_user_agent() &&
+      request.user_agent().type_case() == webview::UserAgent::kValue;
+
+  if (user_agent_overridden) {
     contents->SetUserAgentOverride(
         blink::UserAgentOverride::UserAgentOnly(request.user_agent().value()),
         true);
+  }
+
+  content::NavigationController& controller = contents->GetController();
+  for (int i = 0; i < controller.GetEntryCount(); ++i) {
+    controller.GetEntryAtIndex(i)->SetIsOverridingUserAgent(
+        user_agent_overridden);
   }
 }
 
