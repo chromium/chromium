@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 from telemetry import story
-from page_sets.tab_search import tab_search_story
+from page_sets.desktop_ui import tab_search_story
 
 
-class TabSearchStorySet(story.StorySet):
-  STORIES = [
+class DesktopUIStorySet(story.StorySet):
+  TAB_SEARCH_STORIES = [
       tab_search_story.TabSearchStoryTop10,
       tab_search_story.TabSearchStoryTop50,
       tab_search_story.TabSearchStoryTop100,
@@ -23,10 +23,10 @@ class TabSearchStorySet(story.StorySet):
   ]
 
   def __init__(self):
-    super(TabSearchStorySet,
-          self).__init__(archive_data_file=('../data/tab_search_desktop.json'),
+    super(DesktopUIStorySet,
+          self).__init__(archive_data_file=('../data/desktop_ui.json'),
                          cloud_storage_bucket=story.PARTNER_BUCKET)
-    for cls in self.STORIES:
+    for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
           cls(self,
               ['--enable-features=TabSearch', '--top-chrome-touch-ui=disabled'

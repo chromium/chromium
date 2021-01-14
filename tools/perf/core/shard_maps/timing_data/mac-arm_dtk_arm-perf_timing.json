@@ -3984,38 +3984,6 @@
         "name": "system_health.memory_desktop/play:media:soundcloud:2018"
     },
     {
-        "duration": "46.0",
-        "name": "tab_search/tab_search:close_and_open:2020"
-    },
-    {
-        "duration": "120.0",
-        "name": "tab_search/tab_search:scroll_up_and_down:2020"
-    },
-    {
-        "duration": "118.0",
-        "name": "tab_search/tab_search:top100:2020"
-    },
-    {
-        "duration": "104.0",
-        "name": "tab_search/tab_search:top100:loading:2020"
-    },
-    {
-        "duration": "78.0",
-        "name": "tab_search/tab_search:top10:2020"
-    },
-    {
-        "duration": "40.0",
-        "name": "tab_search/tab_search:top10:loading:2020"
-    },
-    {
-        "duration": "79.0",
-        "name": "tab_search/tab_search:top50:2020"
-    },
-    {
-        "duration": "67.0",
-        "name": "tab_search/tab_search:top50:loading:2020"
-    },
-    {
         "duration": "0.0",
         "name": "tab_switching.typical_25/multitab:misc:typical24"
     },

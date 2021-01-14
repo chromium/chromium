@@ -1,8 +1,8 @@
-# Tab Search Benchmark
+# Desktop UI Benchmark
 
 ## Overview
 
-Tab Search Benchmark is used to measure and monitor Tab Search Web UI performance.
+Desktop UI Benchmark is used to measure and monitor Desktop UI performance.
 It captures important metrics such as
 
 * Initial load time
@@ -11,7 +11,7 @@ It captures important metrics such as
 * Search user input time
 * Frame time when scrolling
 
-in different stories representing different scenarios
+in different stories representing different scenarios such as
 * tab_search:top10:2020 - Test CUJs with 10 open tabs, after all tabs are loaded
 * tab_search:top50:2020 - Test CUJs with 50 open tabs, after all tabs are loaded
 * tab_search:top100:2020 - Test CUJs with 100 open tabs, after all tabs are loaded
@@ -34,7 +34,7 @@ In most cases, you only need to run the benchmark on [pinpoint](https://pinpoint
 In some cases, if trybots cannot meet your requirement or you need to debug on your own machine, use the following command to run the benchmark locally. You need an @google account to be able to do that.
 
 ```
-tools/perf/run_benchmark run tab_search --browser-executable=out/Default/chrome --story-filter=tab_search:top10:2020 --pageset-repeat=3
+tools/perf/run_benchmark run desktop_ui --browser-executable=out/Default/chrome --story-filter=tab_search:top10:2020 --pageset-repeat=3
 ```
 
 
@@ -42,8 +42,8 @@ tools/perf/run_benchmark run tab_search --browser-executable=out/Default/chrome 
 
 There are 3 ways to add metrics to the benchmarking code
 
-1. Add UMA metrics to your code and include them in the [benchmark definition](../../../../tools/perf/benchmarks/tab_search.py). The listed UMA metrics will show up on the result page automatically.
-2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the benchmark definition. For example:
+1. Add UMA metrics to your code and include them in the [story definition](../../../../tools/perf/page_sets/tab_search_story.py). The listed UMA metrics will show up on the result page automatically.
+2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the story definition. For example:
    ```c++
    void Foo::DoWork() {
      TRACE_EVENT0("browser", "webui_metric:Foo:DoWork");
@@ -70,14 +70,14 @@ There are 3 ways to add metrics to the benchmarking code
 
 ## Record new stories
 
-Add new stories to [here](../../../../tools/perf/page_sets/tab_search/tab_search_stories.py).
-Generally we want to put most of the user journeys in the main story so we only need to run 1 story to verify a CL in most cases. However, if the user journey may affect metrics of other user journeys (e.g. close and reopen Tab Search UI), you should make it a separate story.
+Add new stories to [here](../../../../tools/perf/page_sets/desktop_ui/desktop_ui_stories.py).
+Generally we want to put most of the user journeys in the main story so we only need to run 1 story to verify a CL in most cases. However, if the user journey may affect metrics of other user journeys, you should make it a separate story.
 
 Use the following command to record a story
 ```
-tools/perf/record_wpr --browser-executable=out/Default/chrome tab_search --story-filter=<YOUR_STORY_NAME>
+tools/perf/record_wpr --browser-executable=out/Default/chrome desktop_ui --story-filter=<YOUR_STORY_NAME>
 ```
 and the following command to upload to the cloud.
 ```
-upload_to_google_storage.py --bucket chrome-partner-telemetry tools/perf/page_sets/data/tab_search_desktop_<YOUR_RECORDED_HASH>.wprgo
+upload_to_google_storage.py --bucket chrome-partner-telemetry tools/perf/page_sets/data/desktop_ui_<YOUR_RECORDED_HASH>.wprgo
 ```

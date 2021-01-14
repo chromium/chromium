@@ -270,7 +270,7 @@
     },
     "20": {
         "benchmarks": {
-            "tab_search": {
+            "desktop_ui": {
                 "abridged": false
             },
             "tab_switching.typical_25": {

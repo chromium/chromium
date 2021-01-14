@@ -317,7 +317,7 @@
                 "begin": 76,
                 "abridged": false
             },
-            "tab_search": {
+            "desktop_ui": {
                 "end": 6,
                 "abridged": false
             }
@@ -325,7 +325,7 @@
     },
     "23": {
         "benchmarks": {
-            "tab_search": {
+            "desktop_ui": {
                 "begin": 6,
                 "abridged": false
             },

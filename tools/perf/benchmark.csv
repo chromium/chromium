@@ -25,6 +25,7 @@ blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-p
 blink_perf.webaudio,"hongchan@chromium.org, rtoy@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
 components_perftests,csharrison@chromium.org,,,
 dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
+desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/desktop_ui.md,
 dromaeo,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,,
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
@@ -66,7 +67,6 @@ system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://b
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.weblayer_startup,"cduvall@chromium.org, weblayer-team@chromium.org",Internals>WebLayer,https://bit.ly/36XBtpn,2016
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwan@chromium.org",Mobile>WebView>Perf,,2016
-tab_search,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser>TabSearch,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/tab_search.md,
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,
 tracing_perftests,"eseckler@chromium.org, oysteine@chromium.org",Speed>Tracing,,

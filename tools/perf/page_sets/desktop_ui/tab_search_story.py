@@ -60,6 +60,23 @@ TOP_URL = [
     'whatsapp.com',
 ]
 
+TAB_SEARCH_BENCHMARK_UMA = [
+    'Tabs.TabSearch.CloseAction',
+    'Tabs.TabSearch.NumTabsClosedPerInstance',
+    'Tabs.TabSearch.NumTabsOnOpen',
+    'Tabs.TabSearch.NumWindowsOnOpen',
+    'Tabs.TabSearch.OpenAction',
+    'Tabs.TabSearch.PageHandlerConstructionDelay',
+    'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
+    'Tabs.TabSearch.WebUI.LoadCompletedTime',
+    'Tabs.TabSearch.WebUI.LoadDocumentTime',
+    'Tabs.TabSearch.WebUI.TabListDataReceived',
+    'Tabs.TabSearch.WebUI.TabSwitchAction',
+    'Tabs.TabSearch.WindowDisplayedDuration2',
+    'Tabs.TabSearch.WindowTimeToShowCachedWebView',
+    'Tabs.TabSearch.WindowTimeToShowUncachedWebView',
+]
+
 TAB_SEARCH_URL = 'chrome://tab-search/'
 
 
@@ -182,6 +199,14 @@ class TabSearchStory(page.Page):
   def StopMeasuringFrameTime(self, action_runner):
     action_runner.ExecuteJavaScript(STOP_MEASURING_FRAME_TIME)
 
+  def WillStartTracing(self, chrome_trace_config):
+    chrome_trace_config.EnableUMAHistograms(*TAB_SEARCH_BENCHMARK_UMA)
+    chrome_trace_config.category_filter.AddIncludedCategory('browser')
+    chrome_trace_config.category_filter.AddIncludedCategory('blink.user_timing')
+
+  def GetExtraTracingMetrics(self):
+    return ['webuiMetric']
+
 
 class TabSearchStoryTop10(TabSearchStory):
   NAME = 'tab_search:top10:2020'
@@ -272,6 +297,8 @@ class TabSearchStoryMeasureMemory(TabSearchStory):
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
   def WillStartTracing(self, chrome_trace_config):
+    super(TabSearchStoryMeasureMemory,
+          self).WillStartTracing(chrome_trace_config)
     chrome_trace_config.category_filter.AddExcludedCategory('*')
     chrome_trace_config.category_filter.AddIncludedCategory('blink.console')
     chrome_trace_config.category_filter.AddDisabledByDefault(

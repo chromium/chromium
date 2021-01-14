@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from core import perf_benchmark
+from core import platforms
+
+from telemetry import benchmark
+from telemetry import story
+from telemetry.timeline import chrome_trace_category_filter
+from telemetry.web_perf import timeline_based_measurement
+import page_sets
+
+
+@benchmark.Info(
+    emails=[
+        'yuhengh@chromium.org', 'tluk@chromium.org', 'romanarora@chromium.org'
+    ],
+    component='UI>Browser',
+    documentation_url=
+    'https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/desktop_ui.md'
+)
+class DesktopUI(perf_benchmark.PerfBenchmark):
+  """Desktop UI Benchmark."""
+  PLATFORM = 'desktop'
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
+
+  def CreateStorySet(self, options):
+    return page_sets.DesktopUIStorySet()
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string='uma')
+    options = timeline_based_measurement.Options(category_filter)
+    # Add more buffer since we are opening a lot of tabs.
+    options.config.chrome_trace_config.SetTraceBufferSizeInKb(600 * 1024)
+    options.SetTimelineBasedMetrics(['umaMetric'])
+    return options
+
+  @classmethod
+  def Name(cls):
+    return 'desktop_ui'
