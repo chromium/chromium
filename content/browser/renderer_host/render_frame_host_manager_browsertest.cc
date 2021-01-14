@@ -7749,7 +7749,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
 // Quite flaky: https://crbug.com/1156218
 #define MAYBE_StorageModificationAfterPagehideHistogram \
   DISABLED_StorageModificationAfterPagehideHistogram
@@ -7759,7 +7759,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 #endif
 
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       StorageModificationAfterPagehideHistogram) {
+                       MAYBE_StorageModificationAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
