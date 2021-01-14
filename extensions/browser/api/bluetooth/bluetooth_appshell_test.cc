@@ -7,12 +7,6 @@
 
 using BluetoothShellApiTest = extensions::ShellApiTest;
 
-// TODO(crbug.com/1165955): this test flakes on Mac ASAN
-#if defined(OS_MAC)
-#define MAYBE_ApiSanityCheck DISABLED_ApiSanityCheck
-#else
-#define MAYBE_ApiSanityCheck ApiSanityCheck
-#endif
-IN_PROC_BROWSER_TEST_F(BluetoothShellApiTest, MAYBE_ApiSanityCheck) {
+IN_PROC_BROWSER_TEST_F(BluetoothShellApiTest, ApiSanityCheck) {
   ASSERT_TRUE(RunAppTest("api_test/bluetooth"));
 }

@@ -18,22 +18,19 @@ function bluetoothSanityCheck() {
       'AB:CD:EF:01:23:45', chrome.test.callbackFail('Invalid device'));
   chrome.bluetooth.getDevices(chrome.test.callback());
 
-  // TODO(michaelpg): Re-enable on Chrome OS after crbug.com/711484 is fixed.
-  if (!/CrOS/.test(navigator.userAgent)) {
-    var startDiscoveryCallback = chrome.test.callbackAdded();
-    chrome.bluetooth.startDiscovery(function() {
-      // Ignore errors.
-      chrome.runtime.lastError;
-      startDiscoveryCallback();
-    });
+  var startDiscoveryCallback = chrome.test.callbackAdded();
+  chrome.bluetooth.startDiscovery(function() {
+    // Ignore errors.
+    chrome.runtime.lastError;
+    startDiscoveryCallback();
+  });
 
-    var stopDiscoveryCallback = chrome.test.callbackAdded();
-    chrome.bluetooth.stopDiscovery(function() {
-      // Ignore errors.
-      chrome.runtime.lastError;
-      stopDiscoveryCallback();
-    });
-  }
+  var stopDiscoveryCallback = chrome.test.callbackAdded();
+  chrome.bluetooth.stopDiscovery(function() {
+    // Ignore errors.
+    chrome.runtime.lastError;
+    stopDiscoveryCallback();
+  });
 }
 
 chrome.app.runtime.onLaunched.addListener(function() {
