@@ -539,6 +539,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.SubresourceLoading.CookiesQueryTime"
     units="ms" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -550,6 +553,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin"
     units="days" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -561,6 +567,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin"
     enum="BooleanPreviouslyVisited" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -574,6 +583,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.SubresourceLoading.HistoryQueryTime"
     units="ms" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -585,6 +597,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached"
     units="count of subresources" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -596,6 +611,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached"
     units="count of subresources" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -607,6 +625,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.SubresourceLoading.MainFrameHadCookies"
     enum="Boolean" expires_after="M90">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

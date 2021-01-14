@@ -95,13 +95,6 @@ class PrefetchProxyPageLoadMetricsObserver
   size_t loaded_css_js_from_cache_before_fcp_ = 0;
   size_t loaded_css_js_from_network_before_fcp_ = 0;
 
-  // These vectors hold the durations that queries to the cookie manager and
-  // history service took, respectively. Since we only want to record these when
-  // we also record the query results, the query times are stashed here until
-  // |RecordMetrics()| is called.
-  std::vector<base::TimeDelta> cookie_query_times_;
-  std::vector<base::TimeDelta> history_query_times_;
-
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.

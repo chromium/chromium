@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
@@ -165,8 +165,6 @@ void PrefetchProxyPageLoadMetricsObserver::GetPrefetchMetrics() {
 void PrefetchProxyPageLoadMetricsObserver::OnOriginLastVisitResult(
     base::Time query_start_time,
     history::HistoryLastVisitToHostResult result) {
-  history_query_times_.push_back(base::Time::Now() - query_start_time);
-
   if (!result.success)
     return;
 
@@ -202,7 +200,6 @@ void PrefetchProxyPageLoadMetricsObserver::OnCookieResult(
     base::Time query_start_time,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  cookie_query_times_.push_back(base::Time::Now() - query_start_time);
   mainframe_had_cookies_ =
       mainframe_had_cookies_.value_or(false) || !cookies.empty();
 }
@@ -238,19 +235,8 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
 
   task_tracker_.TryCancelAll();
 
-  for (base::TimeDelta cookie_query_time : cookie_query_times_) {
-    UMA_HISTOGRAM_TIMES("PageLoad.Clients.SubresourceLoading.CookiesQueryTime",
-                        cookie_query_time);
-  }
-  cookie_query_times_.clear();
-  for (base::TimeDelta history_query_time : history_query_times_) {
-    UMA_HISTOGRAM_TIMES("PageLoad.Clients.SubresourceLoading.HistoryQueryTime",
-                        history_query_time);
-  }
-  history_query_times_.clear();
-
   if (mainframe_had_cookies_.has_value()) {
-    UMA_HISTOGRAM_BOOLEAN(
+    LOCAL_HISTOGRAM_BOOLEAN(
         "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies",
         mainframe_had_cookies_.value());
   }
@@ -258,21 +244,21 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
   if (min_days_since_last_visit_to_origin_.has_value()) {
     int days_since_last_visit = min_days_since_last_visit_to_origin_.value();
 
-    UMA_HISTOGRAM_BOOLEAN(
+    LOCAL_HISTOGRAM_BOOLEAN(
         "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin",
         days_since_last_visit != -1);
 
     if (days_since_last_visit >= 0) {
-      UMA_HISTOGRAM_COUNTS_100(
+      LOCAL_HISTOGRAM_COUNTS_100(
           "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin",
           days_since_last_visit);
     }
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
+  LOCAL_HISTOGRAM_COUNTS_100(
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached",
       loaded_css_js_from_cache_before_fcp_);
-  UMA_HISTOGRAM_COUNTS_100(
+  LOCAL_HISTOGRAM_COUNTS_100(
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached",
       loaded_css_js_from_network_before_fcp_);
 
