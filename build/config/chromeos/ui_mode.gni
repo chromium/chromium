@@ -34,9 +34,3 @@ is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
 # TODO(crbug.com/1052397): Remove is_linux once lacros-chrome switches
 # to target_os=chromeos
 is_chromeos_lacros = (is_chromeos || is_linux) && chromeos_is_browser_only
-
-# TODO(crbug.com/1052397):
-# Remove is_ash|lacros once all are replaced by is_chromeos_*.
-# is_ash|lacros is deprecated. Use is_chromeos_ash|lacros instead.
-is_ash = is_chromeos_ash
-is_lacros = is_chromeos_lacros
