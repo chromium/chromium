@@ -80,13 +80,6 @@ class IdentityManager : public KeyedService,
     virtual void OnPrimaryAccountChanged(
         const PrimaryAccountChangeEvent& event_details) {}
 
-    // Called when the user moves from having a primary account to no longer
-    // having a primary account (note that the user may still have an
-    // *unconsented* primary account after this event; see./README.md).
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnPrimaryAccountCleared(
-        const CoreAccountInfo& previous_primary_account_info) {}
-
     // TODO(crbug.com/1046746): Move to |SigninClient|.
     // Called After notifying all the observers of |OnPrimaryAccountChanged|
     // if the sync primary account was cleared.
@@ -653,12 +646,6 @@ class IdentityManager : public KeyedService,
   // AccountTrackerService callbacks:
   void OnAccountUpdated(const AccountInfo& info);
   void OnAccountRemoved(const AccountInfo& info);
-
-  // Fire the deprecated observer methods for settings and clearing the primary
-  // account.
-  void FirePrimaryAccountSet(const PrimaryAccountChangeEvent& event_details);
-  void FirePrimaryAccountCleared(
-      const PrimaryAccountChangeEvent& event_details);
 
   // Backing signin classes.
   std::unique_ptr<AccountTrackerService> account_tracker_service_;

@@ -67,8 +67,13 @@ class ClearPrimaryAccountTestObserver
   }
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override {
-    on_primary_account_cleared_.Run(account_info);
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+        signin::PrimaryAccountChangeEvent::Type::kCleared) {
+      return;
+    }
+    on_primary_account_cleared_.Run(event.GetPreviousState().primary_account);
   }
 
   void OnRefreshTokenRemovedForAccount(

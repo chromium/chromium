@@ -478,18 +478,6 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
 
 void IdentityManager::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event_details) {
-  // TODO(crbug.com/1158855): Remove this switch statement once all observers
-  // are converted to OnPrimaryAccountChanged().
-  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-      break;
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      FirePrimaryAccountCleared(event_details);
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-
   for (auto& observer : observer_list_)
     observer.OnPrimaryAccountChanged(event_details);
 
@@ -507,17 +495,6 @@ void IdentityManager::OnPrimaryAccountChanged(
     for (auto& observer : observer_list_) {
       observer.AfterSyncPrimaryAccountCleared();
     }
-  }
-}
-
-void IdentityManager::FirePrimaryAccountCleared(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetPreviousState().primary_account;
-  DCHECK(!HasPrimaryAccount());
-  DCHECK(!account_info.IsEmpty());
-  for (auto& observer : observer_list_) {
-    observer.OnPrimaryAccountCleared(account_info);
   }
 }
 
