@@ -27,6 +27,10 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
+  ~IncognitoBlockerSceneAgentTest() override {
+    scene_state_.incognitoContentVisible = NO;
+  }
+
  protected:
   // The scene state that the agent works with.
   SceneState* scene_state_;
