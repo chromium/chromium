@@ -82,17 +82,9 @@ Polymer({
       return;
     }
 
-    if (step == ProfileCreationSteps.LOAD_SIGNIN) {
-      assert(
-          route == Routes.NEW_PROFILE,
-          'LOAD_SIGNIN step must be a part of NEW_PROFILE route');
-      assert(
-          this.currentRoute_ == Routes.NEW_PROFILE,
-          'NEW_PROFILE route must have been already initialized');
-      this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
-          this.newProfileThemeInfo.color);
-      return;
-    }
+    assert(
+        step !== ProfileCreationSteps.LOAD_SIGNIN,
+        'LOAD_SIGNIN should not appear in navigation (only used for metrics)');
 
     const setStep = () => {
       this.$.viewManager.switchView(step, 'fade-in', 'no-animation');

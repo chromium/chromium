@@ -80,13 +80,15 @@ if (!history.state || !history.state.route || !history.state.step) {
           {route: Routes.MAIN, step: computeStep(Routes.MAIN), isFirst: true},
           '', '/');
   }
-  recordNavigation();
+  recordPageVisited(history.state.step);
 }
 
-
-function recordNavigation() {
+/**
+ * @param {string} step
+ */
+export function recordPageVisited(step) {
   let page = /** @type {!Pages} */ (Pages.MAIN_VIEW);
-  switch (history.state.step) {
+  switch (step) {
     case 'mainView':
       page = Pages.MAIN_VIEW;
       break;
@@ -116,6 +118,7 @@ const routeObservers = new Set();
 function notifyObservers() {
   const route = /** @type {!Routes} */ (history.state.route);
   const step = history.state.step;
+  recordPageVisited(step);
   routeObservers.forEach(observer => {
     (/** @type {{onRouteChange: Function}} */ (observer))
         .onRouteChange(route, step);
