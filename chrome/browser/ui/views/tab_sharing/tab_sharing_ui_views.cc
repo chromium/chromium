@@ -135,8 +135,10 @@ TabSharingUIViews::TabSharingUIViews(const content::DesktopMediaID& media_id,
 }
 
 TabSharingUIViews::~TabSharingUIViews() {
-  if (!infobars_.empty())
-    StopSharing();
+  // Unconditionally call StopSharing(), to ensure all clean-up has been
+  // performed if tasks race (e.g., OnStarted() is called after
+  // OnInfoBarRemoved()). See: https://crbug.com/1155426
+  StopSharing();
 }
 
 gfx::NativeViewId TabSharingUIViews::OnStarted(
@@ -148,6 +150,10 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   SetContentsBorderVisible(shared_tab_, true);
   CreateTabCaptureIndicator();
   return 0;
+}
+
+void TabSharingUIViews::SetStopCallback(base::OnceClosure stop_callback) {
+  stop_callback_ = std::move(stop_callback);
 }
 
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {

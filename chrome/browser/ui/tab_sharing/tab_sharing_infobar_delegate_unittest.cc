@@ -32,6 +32,8 @@ class MockTabSharingUIViews : public TabSharingUI {
       content::MediaStreamUI::SourceCallback source_callback) override {
     return 0;
   }
+
+  void SetStopCallback(base::OnceClosure stop_callback) override {}
 };
 
 }  // namespace

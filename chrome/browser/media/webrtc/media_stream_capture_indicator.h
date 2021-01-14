@@ -41,6 +41,9 @@ class MediaStreamUI {
   virtual gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback) = 0;
+
+  // Replaces the stop callback set in OnStarted(), if any.
+  virtual void SetStopCallback(base::OnceClosure stop) = 0;
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display
