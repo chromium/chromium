@@ -93,16 +93,6 @@ void RunSoon(base::OnceClosure callback) {
   }
 }
 
-template <typename CallbackArray, typename Arg>
-void RunCallbacks(ServiceWorkerVersion* version,
-                  CallbackArray* callbacks_ptr,
-                  const Arg& arg) {
-  CallbackArray callbacks;
-  callbacks.swap(*callbacks_ptr);
-  for (auto& callback : callbacks)
-    std::move(callback).Run(arg);
-}
-
 // An adapter to run a |callback| after StartWorker.
 void RunCallbackAfterStartWorker(base::WeakPtr<ServiceWorkerVersion> version,
                                  ServiceWorkerVersion::StatusCallback callback,
@@ -2285,7 +2275,10 @@ void ServiceWorkerVersion::OnStoppedInternal(EmbeddedWorkerStatus old_status) {
 
 void ServiceWorkerVersion::FinishStartWorker(
     blink::ServiceWorkerStatusCode status) {
-  RunCallbacks(this, &start_callbacks_, status);
+  std::vector<StatusCallback> callbacks;
+  callbacks.swap(start_callbacks_);
+  for (auto& callback : callbacks)
+    std::move(callback).Run(status);
 }
 
 void ServiceWorkerVersion::CleanUpExternalRequest(
