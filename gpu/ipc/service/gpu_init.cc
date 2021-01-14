@@ -847,8 +847,9 @@ bool GpuInit::InitializeVulkan() {
 
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompabilities(
-          vulkan_implementation_->GetVulkanInstance()->vulkan_info(),
-          gpu_info_)) {
+          vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
+          base::GetFieldTrialParamValueByFeature(features::kVulkan,
+                                                 "enable_by_device_name"))) {
     vulkan_implementation_.reset();
     return false;
   }

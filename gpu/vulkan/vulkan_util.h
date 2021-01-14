@@ -87,7 +87,8 @@ COMPONENT_EXPORT(VULKAN) void ReportUMAPerSwapBuffers();
 
 COMPONENT_EXPORT(VULKAN)
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info);
+                              const GPUInfo& gpu_info,
+                              std::string enable_by_device_name);
 
 }  // namespace gpu
 

@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -129,7 +130,8 @@ void ReportUMAPerSwapBuffers() {
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info) {
+                              const GPUInfo& gpu_info,
+                              std::string enable_by_device_name) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !defined(OS_ANDROID)
@@ -160,6 +162,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   const auto& device_info = vulkan_info.physical_devices.front();
 
+  auto enable_patterns = base::SplitString(
+      enable_by_device_name, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& enable_pattern : enable_patterns) {
+    if (base::MatchPattern(device_info.properties.deviceName, enable_pattern))
+      return true;
+  }
+
   constexpr uint32_t kVendorARM = 0x13b5;
   if (device_info.properties.vendorID == kVendorARM) {
     // https://crbug.com/1096222: Display problem with Huawei and Honor devices
@@ -188,22 +197,10 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     }
   }
 
+  // https:://crbug.com/1165783: Performance is not yet as good as GL.
   constexpr uint32_t kVendorQualcomm = 0x5143;
   if (device_info.properties.vendorID == kVendorQualcomm) {
-    // Remove "Adreno (TM) " prefix.
-    base::StringPiece device_name(device_info.properties.deviceName);
-    if (!base::StartsWith(device_name, "Adreno (TM) ")) {
-      LOG(ERROR) << "Unexpected device_name " << device_name;
-      return false;
-    }
-    device_name.remove_prefix(12);
-
-    // Older Adreno GPUs are not performant with Vulkan.
-    std::vector<const char*> slow_gpus = {"4??", "50?", "51?"};
-    for (base::StringPiece slow_gpu : slow_gpus) {
-      if (base::MatchPattern(device_name, slow_gpu))
-        return false;
-    }
+    return false;
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
