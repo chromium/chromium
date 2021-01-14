@@ -648,6 +648,12 @@ static Position MostBackwardOrForwardCaretPosition(
   const SelectionInDOMTree& shadow_adjusted_selection =
       SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
           selection);
+  const Position& adjusted_candidate = shadow_adjusted_selection.Extent();
+
+  // The adjusted candidate should be between the candidate and the original
+  // position. Otherwise, return the original position.
+  if (position.CompareTo(candidate) == candidate.CompareTo(adjusted_candidate))
+    return position;
 
   // If we have to adjust the position, the editability may change, so avoid
   // crossing editing boundaries if it's not allowed.
@@ -658,7 +664,7 @@ static Position MostBackwardOrForwardCaretPosition(
             shadow_adjusted_selection);
     return editing_adjusted_selection.Extent();
   }
-  return shadow_adjusted_selection.Extent();
+  return adjusted_candidate;
 }
 
 template <typename Strategy>

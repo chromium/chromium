@@ -1503,13 +1503,19 @@ void CompositeEditCommand::MoveParagraphs(
       NextPositionOf(end_of_paragraph_to_move, kCannotCrossEditingBoundary)
           .DeepEquivalent());
 
+  const Position& start_candidate = start_of_paragraph_to_move.DeepEquivalent();
+  const Position& end_candidate = end_of_paragraph_to_move.DeepEquivalent();
+  DCHECK_LE(start_candidate, end_candidate);
+
   // We upstream() the end and downstream() the start so that we don't include
   // collapsed whitespace in the move. When we paste a fragment, spaces after
   // the end and before the start are treated as though they were rendered.
+  bool equal = start_candidate == end_candidate;
   Position start =
-      MostForwardCaretPosition(start_of_paragraph_to_move.DeepEquivalent());
+      equal ? start_candidate : MostForwardCaretPosition(start_candidate);
   Position end =
-      MostBackwardCaretPosition(end_of_paragraph_to_move.DeepEquivalent());
+      equal ? end_candidate : MostBackwardCaretPosition(end_candidate);
+  DCHECK_LE(start, end);
 
   // FIXME: This is an inefficient way to preserve style on nodes in the
   // paragraph to move. It shouldn't matter though, since moved paragraphs will
