@@ -41,7 +41,11 @@ enum class ProfileKeepAliveOrigin {
   // "launches" Chrome again.
   kAppControllerMac = 5,
 
-  kMaxValue = kAppControllerMac,
+  // In the middle of clearing browsing data during browsing exit, for the
+  // ClearBrowsingDataOnExistList policy.
+  kClearingBrowsingData = 6,
+
+  kMaxValue = kClearingBrowsingData,
 };
 
 std::ostream& operator<<(std::ostream& out,

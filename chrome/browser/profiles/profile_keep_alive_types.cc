@@ -21,6 +21,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kDownloadInProgress";
     case ProfileKeepAliveOrigin::kAppControllerMac:
       return out << "kAppControllerMac";
+    case ProfileKeepAliveOrigin::kClearingBrowsingData:
+      return out << "kClearingBrowsingData";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
