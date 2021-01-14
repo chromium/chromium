@@ -895,42 +895,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, DontProceed) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, VisitWhitePaper) {
-  SetupWarningAndNavigate(browser());
-
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  WebContents* interstitial_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(interstitial_tab);
-
-  EXPECT_EQ(VISIBLE, GetVisibility("whitepaper-link"));
-  content::TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(Click("whitepaper-link"));
-
-  nav_observer.Wait();
-
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-
-  // Assert the interstitial is not present in the foreground tab.
-  AssertNoInterstitial(false);
-
-  // Foreground tab displays the help center.
-  WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(new_tab);
-  EXPECT_EQ(GetWhitePaperUrl(), new_tab->GetURL());
-
-  // Interstitial should still display in the background tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-  EXPECT_EQ(interstitial_tab,
-            browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(IsShowingInterstitial(
-      browser()->tab_strip_model()->GetActiveWebContents()));
-}
-
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, Proceed) {
   GURL url = SetupWarningAndNavigate(browser());
 
@@ -978,6 +942,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeProceed) {
 #endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        MAYBE_IframeOptInAndReportThreatDetails) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
@@ -994,8 +959,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 
   ThreatDetails* threat_details = details_factory_.get_details();
   EXPECT_EQ(expect_threat_details, threat_details != nullptr);
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
-  EXPECT_TRUE(Click("opt-in-checkbox"));
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
   AssertNoInterstitial(true);  // Assert the interstitial is gone
 
@@ -1065,6 +1028,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        MainFrameBlockedShouldHaveNoDOMDetailsWhenDontProceed) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(
           testing::get<0>(GetParam()));
@@ -1092,8 +1056,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_EQ(expect_threat_details, threat_details != nullptr);
 
   // Go back.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
-  EXPECT_TRUE(Click("opt-in-checkbox"));
   EXPECT_TRUE(ClickAndWaitForDetach("primary-button"));
   AssertNoInterstitial(true);  // Assert the interstitial is gone
 
@@ -1118,6 +1080,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageBrowserTest,
     MainFrameBlockedShouldHaveNoDOMDetailsWhenProceeding) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(
           testing::get<0>(GetParam()));
@@ -1143,8 +1106,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(expect_threat_details, threat_details != nullptr);
 
   // Proceed through the warning.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
-  EXPECT_TRUE(Click("opt-in-checkbox"));
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
   AssertNoInterstitial(true);  // Assert the interstitial is gone
 
@@ -1227,16 +1188,19 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       embedded_test_server()->GetURL(kEmptyPage));
 }
 
-// Verifies that the reporting checkbox is still shown if the page is reloaded
-// while the interstitial is showing.
+// Verifies that the enhanced protection message is still shown if the page is
+// reloaded while the interstitial is showing.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        ReloadWhileInterstitialShowing) {
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   // Start navigation to bad page (kEmptyPage), which will be blocked before it
   // is committed.
   const GURL url = SetupWarningAndNavigate(browser());
 
   // Checkbox should be showing.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
+  EXPECT_EQ(VISIBLE, GetVisibility("enhanced-protection-message"));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -1252,7 +1216,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   SetupWarningAndNavigate(browser());
 
   // Checkbox should be showing.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
+  EXPECT_EQ(VISIBLE, GetVisibility("enhanced-protection-message"));
 
   // Security indicator should be showing.
   ExpectSecurityIndicatorDowngrade(tab, 0u);
@@ -1338,10 +1302,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 1);
   histograms.ExpectBucketCount(decision_histogram,
                                security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectTotalCount(interaction_histogram, 1);
+  histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
 
   // Decision should be recorded.
   EXPECT_TRUE(ClickAndWaitForDetach("primary-button"));
@@ -1350,10 +1317,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
       1);
-  histograms.ExpectTotalCount(interaction_histogram, 1);
+  histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1382,10 +1352,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 1);
   histograms.ExpectBucketCount(decision_histogram,
                                security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectTotalCount(interaction_histogram, 1);
+  histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
 
   // Decision should be recorded.
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
@@ -1393,10 +1366,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 2);
   histograms.ExpectBucketCount(
       decision_histogram, security_interstitials::MetricsHelper::PROCEED, 1);
-  histograms.ExpectTotalCount(interaction_histogram, 1);
+  histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, WhitelistRevisit) {
@@ -1492,11 +1468,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   incognito_browser->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, true);     // set up SBER
   GURL url = SetupWarningAndNavigate(incognito_browser);    // incognito
-  // Check SBER opt in is not shown.
+  // Check enhanced protection message is not shown.
   EXPECT_EQ(HIDDEN, ::safe_browsing::GetVisibility(
-                        incognito_browser, "extended-reporting-opt-in"));
-  EXPECT_EQ(HIDDEN, ::safe_browsing::GetVisibility(incognito_browser,
-                                                   "opt-in-checkbox"));
+                        incognito_browser, "enhanced-protection-message"));
 
   EXPECT_FALSE(hit_report_sent());
 }
@@ -1821,57 +1795,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   WaitForReady(browser());
   AssertNoInterstitial(true);
   EXPECT_EQ(bad_url, contents->GetURL());
-}
-
-// Toggle the SBER opt in checkbox and check it enables reporting.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, ToggleSBEROn) {
-  // The extended reporting opt-in is presented in the interstitial for malware,
-  // phishing, and UwS threats.
-  const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
-  if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
-
-  // Initially disable SBER.
-  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), false);
-  ASSERT_FALSE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
-  // Navigate to a site that triggers a warning.
-  const GURL url = SetupWarningAndNavigate(browser());
-  // Click the checkbox and click through the warning.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
-  EXPECT_TRUE(Click("opt-in-checkbox"));
-  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
-  AssertNoInterstitial(true);
-  // Check preference is now enabled.
-  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
-  // If a report should be sent for this type of page, check we got one.
-  if (expect_threat_details) {
-    threat_report_sent_runner->Run();
-    std::string serialized = GetReportSent();
-    ClientSafeBrowsingReportRequest report;
-    ASSERT_TRUE(report.ParseFromString(serialized));
-    EXPECT_TRUE(report.complete());
-    EXPECT_EQ(url.spec(), report.page_url());
-  }
-}
-
-// Toggle the SBER opt in checkbox and check it disables reporting.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, ToggleSBEROff) {
-  // Initially enable SBER.
-  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
-  ASSERT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
-  // Navigate to a site that triggers a warning.
-  const GURL url = SetupWarningAndNavigate(browser());
-  // Click the checkbox and click through the warning.
-  EXPECT_EQ(VISIBLE, GetVisibility("extended-reporting-opt-in"));
-  EXPECT_TRUE(Click("opt-in-checkbox"));
-  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
-  AssertNoInterstitial(true);
-  // Check preference is now disabled.
-  EXPECT_FALSE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
 }
 
 class SafeBrowsingBlockingPageDelayedWarningBrowserTest

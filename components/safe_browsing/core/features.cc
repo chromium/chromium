@@ -60,7 +60,7 @@ const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
 
 const base::Feature kEnhancedProtectionMessageInInterstitials{
     "SafeBrowsingEnhancedProtectionMessageInInterstitials",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

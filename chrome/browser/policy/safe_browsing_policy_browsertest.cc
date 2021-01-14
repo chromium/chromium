@@ -15,6 +15,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -25,25 +26,36 @@ using testing::Return;
 
 namespace policy {
 
-// Test that when extended reporting is managed by policy, the opt-in checkbox
-// does not appear on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingExtendedReportingPolicyManaged) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+int PolicyTest::IsEnhancedProtectionMessageVisibleOnInterstitial() {
+  const std::string command = base::StringPrintf(
+      "var node = document.getElementById('enhanced-protection-message');"
+      "if (node) {"
+      "  window.domAutomationController.send(node.offsetWidth > 0 || "
+      "      node.offsetHeight > 0 ? %d : %d);"
+      "} else {"
+      // The node should be present but not visible, so trigger an error
+      // by sending false if it's not present.
+      "  window.domAutomationController.send(%d);"
+      "}",
+      security_interstitials::CMD_TEXT_FOUND,
+      security_interstitials::CMD_TEXT_NOT_FOUND,
+      security_interstitials::CMD_ERROR);
 
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  WaitForInterstitial(tab);
+  int result = 0;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(), command,
+                                                  &result));
+  return result;
+}
+
+// Test extended reporting is managed by policy.
+IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingExtendedReportingPolicyManaged) {
   // Set the extended reporting pref to True and ensure the enterprise policy
   // can overwrite it.
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
-
-  // First, navigate to an SSL error page and make sure the checkbox appears by
-  // default.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
-  EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
-            IsExtendedReportingCheckboxVisibleOnInterstitial());
 
   // Set the enterprise policy to disable extended reporting.
   EXPECT_TRUE(
@@ -66,11 +78,46 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingExtendedReportingPolicyManaged) {
   // deprecated, then SBER's policy management will imply whether the checkbox
   // is visible.
   EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
+}
 
-  // Navigate to an SSL error page, the checkbox should not appear.
+// Test that when Safe Browsing state is managed by policy, the enhanced
+// protection message does not appear on SSL blocking pages.
+IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
+  net::EmbeddedTestServer https_server_expired(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_expired.Start());
+
+  // Set the Safe Browsing state to standard protection.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  safe_browsing::SetSafeBrowsingState(
+      prefs, safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  // First, navigate to an SSL error page and make sure the enhanced protection
+  // message appears by default.
+  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
+            IsEnhancedProtectionMessageVisibleOnInterstitial());
+
+  // Set the enterprise policy to force standard protection.
+  PolicyMap policies;
+  policies.Set(policy::key::kSafeBrowsingProtectionLevel,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(/* standard protection */ 1), nullptr);
+  UpdateProviderPolicy(policies);
+  // Policy should have overwritten the pref, and it should be managed.
+  EXPECT_EQ(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+            safe_browsing::GetSafeBrowsingState(*prefs));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnabled));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnhanced));
+
+  // Navigate to an SSL error page, the enhanced protection message should not
+  // appear.
   ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
-            IsExtendedReportingCheckboxVisibleOnInterstitial());
+            IsEnhancedProtectionMessageVisibleOnInterstitial());
 }
 
 // Test that when safe browsing whitelist domains are set by policy, safe

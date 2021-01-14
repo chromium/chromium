@@ -105,7 +105,7 @@ class PolicyTest : public InProcessBrowserTest {
 
   void WaitForInterstitial(content::WebContents* tab);
 
-  int IsExtendedReportingCheckboxVisibleOnInterstitial();
+  int IsEnhancedProtectionMessageVisibleOnInterstitial();
 
   void SendInterstitialCommand(
       content::WebContents* tab,
