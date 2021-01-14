@@ -2558,8 +2558,6 @@ static_library("browser") {
       "android/chrome_backup_agent.h",
       "android/chrome_backup_watcher.cc",
       "android/chrome_backup_watcher.h",
-      "android/chrome_session_state.cc",
-      "android/chrome_session_state.h",
       "android/chrome_startup_flags.cc",
       "android/chrome_startup_flags.h",
       "android/component_updater/background_task_update_scheduler.cc",

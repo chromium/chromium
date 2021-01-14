@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/android/chrome_jni_headers/NotificationSystemStatusUtil_jni.h"
-#include "chrome/browser/android/chrome_session_state.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
 
 namespace {
 

@@ -1,5 +1,0 @@
-monorail {
-  component: "UI>Browser>Mobile"
-}
-team_email: "clank-modularization@chromium.org"
-os: ANDROID
