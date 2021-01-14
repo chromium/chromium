@@ -22,7 +22,8 @@ namespace content {
 namespace {
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
-const char kDefaultConversionOrigin[] = "https://conversion.test/";
+const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
+const char kDefaultConversionDestination[] = "https://conversion.test/";
 const char kDefaultReportOrigin[] = "https://report.test/";
 
 // Default expiry time for impressions for testing.
@@ -80,6 +81,8 @@ void TestConversionManager::HandleImpression(
 void TestConversionManager::HandleConversion(
     const StorableConversion& conversion) {
   num_conversions_++;
+
+  last_conversion_destination_ = conversion.conversion_destination();
 }
 
 void TestConversionManager::GetActiveImpressionsForWebUI(
@@ -178,8 +181,8 @@ StorableImpression ImpressionBuilder::Build() const {
 StorableConversion DefaultConversion() {
   StorableConversion conversion(
       "111" /* conversion_data */,
-      url::Origin::Create(
-          GURL(kDefaultConversionOrigin)) /* conversion_origin */,
+      net::SchemefulSite(
+          GURL(kDefaultConversionDestination)) /* conversion_destination */,
       url::Origin::Create(GURL(kDefaultReportOrigin)) /* reporting_origin */);
   return conversion;
 }

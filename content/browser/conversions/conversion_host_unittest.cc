@@ -18,6 +18,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
@@ -181,6 +182,23 @@ TEST_F(ConversionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
 
   EXPECT_EQ(0u, test_manager_.num_impressions());
   SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(ConversionHostTest, Conversion_AssociatedWithConversionSite) {
+  // Create a page with a secure origin.
+  contents()->NavigateAndCommit(GURL("https://sub.conversion.com"));
+  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+
+  blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+  conversion->reporting_origin =
+      url::Origin::Create(GURL("https://secure.com"));
+  conversion_host()->RegisterConversion(std::move(conversion));
+  EXPECT_EQ(1u, test_manager_.num_conversions());
+
+  // Verify that we use the domain of the page where the conversion occurred
+  // instead of the origin.
+  EXPECT_EQ(net::SchemefulSite(GURL("https://conversion.com")),
+            test_manager_.last_conversion_destination());
 }
 
 TEST_F(ConversionHostTest, PerPageConversionMetrics) {

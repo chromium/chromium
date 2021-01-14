@@ -43,6 +43,8 @@ class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            ConversionWithInsecureReportingOrigin_BadMessage);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidConversion_NoBadMessage);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
+                           Conversion_AssociatedWithConversionSite);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, PerPageConversionMetrics);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            NoManager_NoPerPageConversionMetrics);

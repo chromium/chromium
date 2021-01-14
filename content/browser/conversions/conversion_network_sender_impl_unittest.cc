@@ -155,7 +155,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
       ImpressionBuilder(base::Time())
           .SetData("1")
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.com")))
+          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .Build();
   ConversionReport report(impression,
                           /*conversion_data=*/"1",
@@ -175,6 +175,8 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             pending_request->credentials_mode);
   EXPECT_EQ("POST", pending_request->method);
+
+  // Make sure the domain is used as the referrer.
   EXPECT_EQ(GURL("https://b.com"), pending_request->referrer);
 }
 

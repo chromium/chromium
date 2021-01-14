@@ -165,6 +165,18 @@ TEST_F(ConversionStorageTest, MultipleImpressionsForConversion_AllConvert) {
       2, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 }
 
+TEST_F(ConversionStorageTest,
+       CrossOriginSameDomainConversion_ImpressionConverted) {
+  auto impression =
+      ImpressionBuilder(clock()->Now())
+          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.a.test")))
+          .Build();
+  storage()->StoreImpression(impression);
+  StorableConversion conversion("1", net::SchemefulSite(GURL("https://a.test")),
+                                impression.reporting_origin());
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+}
+
 TEST_F(ConversionStorageTest, ImpressionExpired_NoConversionsStored) {
   storage()->StoreImpression(
       ImpressionBuilder(clock()->Now())
@@ -618,22 +630,7 @@ TEST_F(ConversionStorageTest, ClearDataOutsideRange_NoDelete) {
 
 TEST_F(ConversionStorageTest, ClearDataImpression) {
   base::Time now = clock()->Now();
-  {
-    auto impression = ImpressionBuilder(now).Build();
-    storage()->StoreImpression(impression);
-    storage()->ClearData(now, now + base::TimeDelta::FromMinutes(20),
-                         GetMatcher(impression.impression_origin()));
-    EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(
-                     DefaultConversion()));
-  }
-  {
-    auto impression = ImpressionBuilder(now).Build();
-    storage()->StoreImpression(impression);
-    storage()->ClearData(now, now + base::TimeDelta::FromMinutes(20),
-                         GetMatcher(impression.reporting_origin()));
-    EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(
-                     DefaultConversion()));
-  }
+
   {
     auto impression = ImpressionBuilder(now).Build();
     storage()->StoreImpression(impression);
@@ -679,14 +676,14 @@ TEST_F(ConversionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", origin, origin);
+    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
     EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
   }
   clock()->Advance(base::TimeDelta::FromDays(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", origin, origin);
+    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
     EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
   }
 

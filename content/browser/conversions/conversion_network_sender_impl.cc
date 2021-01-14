@@ -102,7 +102,8 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetReportUrl(*report);
-  resource_request->referrer = report->impression.conversion_origin().GetURL();
+  resource_request->referrer =
+      GURL(report->impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =

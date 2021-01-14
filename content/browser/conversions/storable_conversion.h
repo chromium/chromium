@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
 namespace content {
@@ -19,18 +20,20 @@ class CONTENT_EXPORT StorableConversion {
  public:
   // Should only be created with values that the browser process has already
   // validated. At creation time, |conversion_data_| should already be stripped
-  // to a lower entropy. |conversion_origin| should be filled by a navigation
-  // origin known by the browser process.
-  StorableConversion(const std::string& conversion_data,
-                     const url::Origin& conversion_origin,
-                     const url::Origin& reporting_origin);
+  // to a lower entropy. |conversion_destination| should be filled by a
+  // navigation origin known by the browser process.
+  StorableConversion(std::string conversion_data,
+                     net::SchemefulSite conversion_destination,
+                     url::Origin reporting_origin);
   StorableConversion(const StorableConversion& other);
   StorableConversion& operator=(const StorableConversion& other) = delete;
   ~StorableConversion();
 
   const std::string& conversion_data() const { return conversion_data_; }
 
-  const url::Origin& conversion_origin() const { return conversion_origin_; }
+  const net::SchemefulSite& conversion_destination() const {
+    return conversion_destination_;
+  }
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
@@ -39,8 +42,8 @@ class CONTENT_EXPORT StorableConversion {
   // representing a valid hexadecimal number.
   std::string conversion_data_;
 
-  // Origin this conversion event occurred on.
-  url::Origin conversion_origin_;
+  // Schemeful site that this conversion event occurred on.
+  net::SchemefulSite conversion_destination_;
 
   // Origin of the conversion redirect url, and the origin that will receive any
   // reports.

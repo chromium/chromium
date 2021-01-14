@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -66,6 +67,8 @@ class ConversionStorageSqlTest : public testing::Test {
 
 TEST_F(ConversionStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
+  base::HistogramTester histograms;
+
   OpenDatabase();
   CloseDatabase();
 
@@ -80,22 +83,30 @@ TEST_F(ConversionStorageSqlTest,
 
   EXPECT_FALSE(base::PathExists(db_path()));
 
+  // DB init UMA should not be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 0);
+
   // Storing an impression should create and initialize the database.
   OpenDatabase();
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   CloseDatabase();
 
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 1);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 0);
+
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [impressions] and [conversions].
-    EXPECT_EQ(2u, sql::test::CountSQLTables(&raw_db));
+    // [impressions], [conversions], [meta].
+    EXPECT_EQ(3u, sql::test::CountSQLTables(&raw_db));
 
-    // [conversion_origin_idx], [impression_expiry_idx],
+    // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [conversion_report_time_idx],
-    // [conversion_impression_id_idx].
-    EXPECT_EQ(5u, sql::test::CountSQLIndices(&raw_db));
+    // [conversion_impression_id_idx], and the meta table index.
+    EXPECT_EQ(6u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 

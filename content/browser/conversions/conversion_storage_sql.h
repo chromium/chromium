@@ -16,6 +16,7 @@
 #include "content/browser/conversions/conversion_storage.h"
 #include "content/common/content_export.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 
 namespace base {
 class Clock;
@@ -42,6 +43,8 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   }
 
  private:
+  friend class ConversionStorageSqlMigrations;
+
   enum class DbStatus {
     // The database has never been created, i.e. there is no database file at
     // all.
@@ -82,11 +85,24 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool HasCapacityForStoringImpression(const std::string& serialized_origin);
   bool HasCapacityForStoringConversion(const std::string& serialized_origin);
 
+  enum class ImpressionFilter { kAll, kOnlyActive };
+
+  // Returns rows of the impressions table. |filter| indicates whether to
+  // only retrieve active impressions. |min_expiry_time| controls the minimum
+  // impression expiry time to filter by. |start_impression_id| is the smallest
+  // impression id that can be returned. |num_impressions| limits the number
+  // of rows returned.
+  std::vector<StorableImpression> GetImpressions(ImpressionFilter filter,
+                                                 base::Time min_expiry_time,
+                                                 int64_t start_impression_id,
+                                                 int num_impressions);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.
   bool LazyInit(DbCreationPolicy creation_policy);
-  bool InitializeSchema();
+  bool InitializeSchema(bool db_empty);
+  bool CreateSchema();
 
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
@@ -107,6 +123,8 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   //  - could not be opened
   //  - table/index initialization failed
   std::unique_ptr<sql::Database> db_;
+
+  sql::MetaTable meta_table_;
 
   // Must outlive |this|.
   const base::Clock* clock_;

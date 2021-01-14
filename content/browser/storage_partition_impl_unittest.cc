@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -1819,7 +1820,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
             .SetExpiry(base::TimeDelta::FromDays(2))
             .Build());
     conversion_manager->HandleConversion(
-        StorableConversion("123", conv, reporter));
+        StorableConversion("123", net::SchemefulSite(conv), reporter));
   }
 
   EXPECT_EQ(5u, GetConversionsToReportForTesting(conversion_manager,

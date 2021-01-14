@@ -1795,6 +1795,7 @@ test("content_unittests") {
     "../browser/conversions/conversion_policy_unittest.cc",
     "../browser/conversions/conversion_reporter_impl_unittest.cc",
     "../browser/conversions/conversion_storage_delegate_impl_unittest.cc",
+    "../browser/conversions/conversion_storage_sql_migrations_unittest.cc",
     "../browser/conversions/conversion_storage_sql_unittest.cc",
     "../browser/conversions/conversion_storage_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
@@ -2162,6 +2163,7 @@ test("content_unittests") {
       "$root_out_dir/content_shell.pak",
       "data/",
       "//media/test/data/",
+      "//content/test/data/conversions/databases/",
     ]
   }
 

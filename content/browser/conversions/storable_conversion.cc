@@ -4,18 +4,21 @@
 
 #include "content/browser/conversions/storable_conversion.h"
 
+#include <utility>
+
 #include "base/check.h"
 
 namespace content {
 
-StorableConversion::StorableConversion(const std::string& conversion_data,
-                                       const url::Origin& conversion_origin,
-                                       const url::Origin& reporting_origin)
-    : conversion_data_(conversion_data),
-      conversion_origin_(conversion_origin),
-      reporting_origin_(reporting_origin) {
+StorableConversion::StorableConversion(
+    std::string conversion_data,
+    net::SchemefulSite conversion_destination,
+    url::Origin reporting_origin)
+    : conversion_data_(std::move(conversion_data)),
+      conversion_destination_(std::move(conversion_destination)),
+      reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!reporting_origin_.opaque());
-  DCHECK(!conversion_origin_.opaque());
+  DCHECK(!conversion_destination_.opaque());
 }
 
 StorableConversion::StorableConversion(const StorableConversion& other) =

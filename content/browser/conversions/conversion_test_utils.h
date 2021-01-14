@@ -19,6 +19,7 @@
 #include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/test/test_content_browser_client.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
@@ -126,8 +127,13 @@ class TestConversionManager : public ConversionManager {
   size_t num_impressions() const { return num_impressions_; }
   size_t num_conversions() const { return num_conversions_; }
 
+  const net::SchemefulSite& last_conversion_destination() {
+    return last_conversion_destination_;
+  }
+
  private:
   ConversionPolicy policy_;
+  net::SchemefulSite last_conversion_destination_;
   size_t num_impressions_ = 0;
   size_t num_conversions_ = 0;
 
@@ -149,7 +155,7 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetImpressionOrigin(const url::Origin& origin);
 
-  ImpressionBuilder& SetConversionOrigin(const url::Origin& origin);
+  ImpressionBuilder& SetConversionOrigin(const url::Origin& domain);
 
   ImpressionBuilder& SetReportingOrigin(const url::Origin& origin);
 

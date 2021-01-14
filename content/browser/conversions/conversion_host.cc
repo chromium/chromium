@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/origin.h"
@@ -153,8 +154,9 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   // If the impression's conversion destination does not match the final top
   // frame origin of this new navigation ignore it.
-  if (impression.conversion_destination !=
-      navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin()) {
+  if (net::SchemefulSite(impression.conversion_destination) !=
+      net::SchemefulSite(
+          navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin())) {
     return;
   }
 
@@ -180,6 +182,7 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   base::Time impression_time = base::Time::Now();
+
   const ConversionPolicy& policy = conversion_manager->GetConversionPolicy();
   StorableImpression storable_impression(
       policy.GetSanitizedImpressionData(impression.impression_data),
@@ -226,11 +229,13 @@ void ConversionHost::RegisterConversion(
     return;
   }
 
+  net::SchemefulSite conversion_destination(
+      render_frame_host->GetLastCommittedOrigin());
+
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
           conversion->conversion_data),
-      render_frame_host->GetLastCommittedOrigin(),
-      conversion->reporting_origin);
+      conversion_destination, conversion->reporting_origin);
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(storable_conversion);
