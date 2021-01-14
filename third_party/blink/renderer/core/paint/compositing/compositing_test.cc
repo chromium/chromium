@@ -1773,4 +1773,30 @@ TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
   EXPECT_FALSE(iframe_transform_node->visible_frame_element_id);
 }
 
+TEST_P(CompositingSimTest, DecompositedTransformWithChange) {
+  InitializeWithHTML(R"HTML(
+    <style>
+      svg { overflow: hidden; }
+      .initial { transform: rotate3d(0,0,1,10deg); }
+      .changed { transform: rotate3d(0,0,1,0deg); }
+    </style>
+    <div style='will-change: transform;'>
+      <svg id='svg' xmlns='http://www.w3.org/2000/svg' class='initial'>
+        <line x1='50%' x2='50%' y1='0' y2='100%' stroke='blue'/>
+        <line y1='50%' y2='50%' x1='0' x2='100%' stroke='blue'/>
+      </svg>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* svg_element_layer = CcLayerByDOMElementId("svg");
+  EXPECT_FALSE(svg_element_layer->subtree_property_changed());
+
+  auto* svg_element = GetElementById("svg");
+  svg_element->setAttribute(html_names::kClassAttr, "changed");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(svg_element_layer->subtree_property_changed());
+}
+
 }  // namespace blink

@@ -316,13 +316,17 @@ bool PaintArtifactCompositor::HasComposited(
       element_id);
 }
 
-bool PaintArtifactCompositor::PropertyTreeStateChanged(
-    const PropertyTreeState& state) const {
-  const auto& root = PropertyTreeState::Root();
+bool PaintArtifactCompositor::PendingLayer::PropertyTreeStateChanged() const {
   auto change = PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  return state.Transform().Changed(change, root.Transform()) ||
-         state.Clip().Changed(change, root, &state.Transform()) ||
-         state.Effect().Changed(change, root, &state.Transform());
+  if (change_of_decomposited_transforms >= change)
+    return true;
+
+  const auto& root = PropertyTreeState::Root();
+  return property_tree_state.Transform().Changed(change, root.Transform()) ||
+         property_tree_state.Clip().Changed(change, root,
+                                            &property_tree_state.Transform()) ||
+         property_tree_state.Effect().Changed(change, root,
+                                              &property_tree_state.Transform());
 }
 
 PaintArtifactCompositor::PendingLayer::PendingLayer(
@@ -438,6 +442,9 @@ bool PaintArtifactCompositor::PendingLayer::Merge(const PendingLayer& guest) {
       UniteRectsKnownToBeOpaque(MapRectKnownToBeOpaque(new_state),
                                 guest.MapRectKnownToBeOpaque(new_state));
   property_tree_state = new_state;
+  change_of_decomposited_transforms =
+      std::max(change_of_decomposited_transforms,
+               guest.change_of_decomposited_transforms);
   return true;
 }
 
@@ -1089,6 +1096,9 @@ void PaintArtifactCompositor::DecompositeTransforms() {
     while (!transform->IsRoot() && can_be_decomposited.at(transform)) {
       pending_layer.offset_of_decomposited_transforms +=
           transform->Translation2D();
+      pending_layer.change_of_decomposited_transforms =
+          std::max(pending_layer.change_of_decomposited_transforms,
+                   transform->NodeChanged());
       transform = &transform->Parent()->Unalias();
     }
     pending_layer.property_tree_state.SetTransform(*transform);
@@ -1233,7 +1243,7 @@ void PaintArtifactCompositor::Update(
     // nodes|^2) and could be optimized by caching the lookup of nodes known
     // to be changed/unchanged.
     if (layer->subtree_property_changed() ||
-        PropertyTreeStateChanged(property_state)) {
+        pending_layer.PropertyTreeStateChanged()) {
       layer->SetSubtreePropertyChanged();
       root_layer_->SetNeedsCommit();
     }

@@ -272,12 +272,16 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       return compositing_type != kOverlap && compositing_type != kOther;
     }
 
+    bool PropertyTreeStateChanged() const;
+
     // The rects are in the space of property_tree_state.
     FloatRect bounds;
     FloatRect rect_known_to_be_opaque;
     PaintChunkSubset chunks;
     PropertyTreeState property_tree_state;
     FloatPoint offset_of_decomposited_transforms;
+    PaintPropertyChangeType change_of_decomposited_transforms =
+        PaintPropertyChangeType::kUnchanged;
     const GraphicsLayer* graphics_layer = nullptr;
     CompositingType compositing_type;
   };
@@ -326,8 +330,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
           new_content_layer_clients,
       Vector<scoped_refptr<cc::Layer>>& new_scroll_hit_test_layers,
       Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers);
-
-  bool PropertyTreeStateChanged(const PropertyTreeState&) const;
 
   const TransformPaintPropertyNode& NearestScrollTranslationForLayer(
       const PendingLayer&);
