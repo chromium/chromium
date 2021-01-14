@@ -306,26 +306,33 @@ var availableTests = [
     var guid;
 
     var numCalls = 0;
-    var handler = function(creditCardList) {
+    var getCardsHandler = function(creditCardList) {
+      numCalls++;
+      chrome.test.assertEq(1, numCalls);
+    }
+
+    var personalDataChangedHandler = function(addressList, creditCardList) {
       numCalls++;
 
-      if (numCalls == 1) {
-        chrome.test.assertEq(creditCardList.length, 0);
-      } else if (numCalls == 2) {
+      if (numCalls == 2) {
         chrome.test.assertEq(creditCardList.length, 1);
         var creditCard = creditCardList[0];
         chrome.test.assertEq(creditCard.name, NAME);
 
         guid = creditCard.guid;
         chrome.autofillPrivate.removeEntry(guid);
-      } else {
+      } else if (numCalls == 3) {
         chrome.test.assertEq(creditCardList.length, 0);
         chrome.test.succeed();
+      } else {
+        // We should never receive such a call.
+        chrome.test.fail();
       }
     }
 
-    chrome.autofillPrivate.onPersonalDataChanged.addListener(handler);
-    chrome.autofillPrivate.getCreditCardList(handler);
+    chrome.autofillPrivate.onPersonalDataChanged.addListener(
+        personalDataChangedHandler);
+    chrome.autofillPrivate.getCreditCardList(getCardsHandler);
     chrome.autofillPrivate.saveCreditCard({name: NAME});
   },
 

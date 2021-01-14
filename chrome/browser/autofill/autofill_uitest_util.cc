@@ -114,4 +114,11 @@ void WaitForPersonalDataChange(Profile* base_profile) {
   observer.Wait();
 }
 
+void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
+  PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForProfile(base_profile);
+  while (!pdm->IsDataLoaded())
+    WaitForPersonalDataChange(base_profile);
+}
+
 }  // namespace autofill
