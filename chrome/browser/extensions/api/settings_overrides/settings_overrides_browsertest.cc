@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideHomePageSettings) {
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, true);
 
   const extensions::Extension* extension = LoadExtensionWithInstallParam(
-      test_data_dir_.AppendASCII("settings_override"), kFlagNone, "10");
+      test_data_dir_.AppendASCII("settings_override"), kFlagEnableFileAccess,
+      "10");
   ASSERT_TRUE(extension);
   EXPECT_EQ("http://www.homepage.de/?param=10",
             prefs->GetString(prefs::kHomePage));
@@ -101,7 +102,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideStartupPagesSettings) {
   SessionStartupPref::SetStartupPref(prefs, startup_pref);
 
   const extensions::Extension* extension = LoadExtensionWithInstallParam(
-      test_data_dir_.AppendASCII("settings_override"), kFlagNone, "10");
+      test_data_dir_.AppendASCII("settings_override"), kFlagEnableFileAccess,
+      "10");
   ASSERT_TRUE(extension);
   startup_pref = SessionStartupPref::GetStartupPref(prefs);
   EXPECT_EQ(SessionStartupPref::URLS, startup_pref.type);
@@ -126,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideDSE) {
   EXPECT_EQ(TemplateURL::NORMAL, default_provider->type());
 
   const extensions::Extension* extension = LoadExtensionWithInstallParam(
-      test_data_dir_.AppendASCII("settings_override"), kFlagNone, "10");
+      test_data_dir_.AppendASCII("settings_override"), kFlagEnableFileAccess,
+      "10");
   ASSERT_TRUE(extension);
   const TemplateURL* current_dse = url_service->GetDefaultSearchProvider();
   EXPECT_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, current_dse->type());
@@ -157,7 +160,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PRE_OverridenDSEPersists) {
 
   // Install extension that overrides DSE.
   const extensions::Extension* extension = LoadExtensionWithInstallParam(
-      test_data_dir_.AppendASCII("settings_override"), kFlagNone, "10");
+      test_data_dir_.AppendASCII("settings_override"), kFlagEnableFileAccess,
+      "10");
   ASSERT_TRUE(extension);
 }
 
@@ -212,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BeforeTemplateUrlServiceLoad) {
 
   EXPECT_FALSE(url_service->IsExtensionControlledDefaultSearch());
   const extensions::Extension* extension = LoadExtensionWithInstallParam(
-      test_data_dir_.AppendASCII("settings_override"), kFlagNone, "10");
+      test_data_dir_.AppendASCII("settings_override"), kFlagEnableFileAccess,
+      "10");
   ASSERT_TRUE(extension);
   const TemplateURL* current_dse = url_service->GetDefaultSearchProvider();
   EXPECT_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, current_dse->type());

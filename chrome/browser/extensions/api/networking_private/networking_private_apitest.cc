@@ -360,7 +360,7 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
  protected:
   bool RunNetworkingSubtest(const std::string& subtest) {
     return RunExtensionSubtest("networking_private", "main.html?" + subtest,
-                               kFlagNone, kFlagLoadAsComponent);
+                               kFlagEnableFileAccess, kFlagLoadAsComponent);
   }
 
  private:

@@ -333,8 +333,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  const Extension* InstallExtensionWithPermissionToAllUrls(
-      bool enable_file_access = false) {
+  const Extension* InstallExtensionWithPermissionToAllUrls() {
     const char kManifestTemplate[] = R"(
         {
           "name": "CrossOriginReadBlockingTest - Extension/AllUrls",
@@ -345,8 +344,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         } )";
     dir_.WriteManifest(kManifestTemplate);
     dir_.WriteFile(FILE_PATH_LITERAL("background_script.js"), "");
-    int flags = enable_file_access ? kFlagEnableFileAccess : kFlagNone;
-    extension_ = LoadExtensionWithFlags(dir_.UnpackedPath(), flags);
+    extension_ = LoadExtension(dir_.UnpackedPath());
     DCHECK(extension_);
 
     return extension_;
@@ -876,8 +874,7 @@ IN_PROC_BROWSER_TEST_F(
   // (<all_urls> permission is not sufficient - the extension has to be
   // additionally granted file access by passing kFlagEnableFileAccess in
   // ExtensionBrowserTest::LoadExtension).
-  const Extension* extension =
-      InstallExtensionWithPermissionToAllUrls(/*enable_file_access=*/true);
+  const Extension* extension = InstallExtensionWithPermissionToAllUrls();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(util::AllowFileAccess(
       extension->id(), active_web_contents()->GetBrowserContext()));

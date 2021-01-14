@@ -538,9 +538,9 @@ class ExtensionWebRequestApiAuthRequiredTest
   int GetBrowserTestFlags() {
     switch (GetParam()) {
       case ProfileMode::kUserProfile:
-        return kFlagNone;
+        return kFlagEnableFileAccess;
       case ProfileMode::kIncognito:
-        return kFlagEnableIncognito;
+        return kFlagEnableIncognito | kFlagEnableFileAccess;
     }
   }
 

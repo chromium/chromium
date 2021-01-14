@@ -35,7 +35,7 @@ class AlarmsApiTest : public ExtensionApiTest,
   }
 
   const Extension* LoadAlarmsExtensionIncognito(const char* path) {
-    int flags = kFlagEnableIncognito;
+    int flags = kFlagEnableFileAccess | kFlagEnableIncognito;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= kFlagRunAsServiceWorkerBasedExtension;
 

@@ -87,8 +87,8 @@ void ExtensionApiTest::TearDownOnMainThread() {
 }
 
 bool ExtensionApiTest::RunExtensionTest(const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
-                              kFlagNone);
+  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
+                              kFlagEnableFileAccess, kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionTestWithFlags(
@@ -103,7 +103,7 @@ bool ExtensionApiTest::RunExtensionTestWithArg(
     const std::string& extension_name,
     const char* custom_arg) {
   return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              kFlagNone, kFlagNone);
+                              kFlagEnableFileAccess, kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionTestWithFlagsAndArg(
@@ -118,7 +118,8 @@ bool ExtensionApiTest::RunExtensionTestWithFlagsAndArg(
 bool ExtensionApiTest::RunExtensionTestIncognito(
     const std::string& extension_name) {
   return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableIncognito, kFlagNone);
+                              kFlagEnableIncognito | kFlagEnableFileAccess,
+                              kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionTestIgnoreManifestWarnings(
@@ -129,40 +130,40 @@ bool ExtensionApiTest::RunExtensionTestIgnoreManifestWarnings(
 
 bool ExtensionApiTest::RunExtensionTestAllowOldManifestVersion(
     const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagAllowOldManifestVersions, kFlagNone);
+  return RunExtensionTestImpl(
+      extension_name, std::string(), nullptr,
+      kFlagEnableFileAccess | kFlagAllowOldManifestVersions, kFlagNone);
 }
 
 bool ExtensionApiTest::RunComponentExtensionTest(
     const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
-                              kFlagLoadAsComponent);
+  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
+                              kFlagEnableFileAccess, kFlagLoadAsComponent);
 }
 
 bool ExtensionApiTest::RunComponentExtensionTestWithArg(
     const std::string& extension_name,
     const char* custom_arg) {
   return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              kFlagNone, kFlagLoadAsComponent);
+                              kFlagEnableFileAccess, kFlagLoadAsComponent);
 }
 
-bool ExtensionApiTest::RunExtensionTestWithFileAccess(
+bool ExtensionApiTest::RunExtensionTestNoFileAccess(
     const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableFileAccess, kFlagNone);
-}
-
-bool ExtensionApiTest::RunExtensionTestIncognitoWithFileAccess(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableFileAccess | kFlagEnableIncognito,
+  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
                               kFlagNone);
+}
+
+bool ExtensionApiTest::RunExtensionTestIncognitoNoFileAccess(
+    const std::string& extension_name) {
+  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
+                              kFlagEnableIncognito, kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
                                            const std::string& page_url) {
   return RunExtensionSubtestWithArgAndFlags(extension_name, page_url, nullptr,
-                                            kFlagNone, kFlagNone);
+                                            kFlagEnableFileAccess, kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
@@ -177,8 +178,8 @@ bool ExtensionApiTest::RunExtensionSubtestWithArg(
     const std::string& extension_name,
     const std::string& page_url,
     const char* custom_arg) {
-  return RunExtensionSubtestWithArgAndFlags(extension_name, page_url,
-                                            custom_arg, kFlagNone, kFlagNone);
+  return RunExtensionSubtestWithArgAndFlags(
+      extension_name, page_url, custom_arg, kFlagEnableFileAccess, kFlagNone);
 }
 
 bool ExtensionApiTest::RunExtensionSubtestWithArgAndFlags(

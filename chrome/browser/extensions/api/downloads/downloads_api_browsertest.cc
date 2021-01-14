@@ -335,16 +335,11 @@ class DownloadExtensionTest : public ExtensionApiTest {
     download::DownloadDangerType danger_type;
   };
 
-  void LoadExtension(const char* name, bool enable_file_access = false) {
+  void LoadExtension(const char* name) {
     // Store the created Extension object so that we can attach it to
     // ExtensionFunctions.  Also load the extension in incognito profiles for
     // testing incognito.
-    int flags = kFlagEnableIncognito;
-    if (enable_file_access)
-      flags |= kFlagEnableFileAccess;
-
-    extension_ =
-        LoadExtensionWithFlags(test_data_dir_.AppendASCII(name), flags);
+    extension_ = LoadExtensionIncognito(test_data_dir_.AppendASCII(name));
     CHECK(extension_);
     content::WebContents* tab = chrome::AddSelectedTabWithURL(
         current_browser(),
@@ -2247,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        MAYBE_DownloadExtensionTest_Download_File) {
   GoOnTheRecord();
-  LoadExtension("downloads_split", /*enable_file_access=*/true);
+  LoadExtension("downloads_split");
   std::string download_url = "file:///";
 #if defined(OS_WIN)
   download_url += "C:/";

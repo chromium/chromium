@@ -37,7 +37,7 @@ class RuntimeApiTest : public ExtensionApiTest,
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
 
   const Extension* LoadExtensionWithParamFlag(const base::FilePath& path) {
-    int flags = kFlagNone;
+    int flags = kFlagEnableFileAccess;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
 
@@ -45,7 +45,7 @@ class RuntimeApiTest : public ExtensionApiTest,
   }
 
   bool RunTestWithParamFlag(const std::string& extension_name) {
-    int flags = kFlagNone;
+    int flags = kFlagEnableFileAccess;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
 

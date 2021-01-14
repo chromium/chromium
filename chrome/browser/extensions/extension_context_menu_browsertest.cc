@@ -279,7 +279,7 @@ class ExtensionContextMenuLazyTest
   const extensions::Extension* LoadContextMenuExtension(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagNone);
+    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableFileAccess);
   }
 
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
@@ -288,13 +288,14 @@ class ExtensionContextMenuLazyTest
       base::StringPiece subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagNone);
+    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableFileAccess);
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableIncognito);
+    return LoadExtensionWithParamFlags(
+        extension_dir, kFlagEnableFileAccess | kFlagEnableIncognito);
   }
 
   base::FilePath GetDirForContext(base::StringPiece subdirectory) {
