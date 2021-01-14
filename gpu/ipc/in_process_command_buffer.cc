@@ -260,7 +260,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessActivityFlags* activity_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  TRACE_EVENT0("gpu", "InProcessCommandBuffer::Initialize")
+  TRACE_EVENT0("gpu", "InProcessCommandBuffer::Initialize");
 
   is_offscreen_ = is_offscreen;
   gpu_memory_buffer_manager_ = gpu_memory_buffer_manager;
@@ -328,7 +328,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
 gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     const InitializeOnGpuThreadParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  TRACE_EVENT0("gpu", "InProcessCommandBuffer::InitializeOnGpuThread")
+  TRACE_EVENT0("gpu", "InProcessCommandBuffer::InitializeOnGpuThread");
   UpdateActiveUrl();
 
   if (params.gpu_dependency) {
