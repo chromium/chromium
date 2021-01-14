@@ -126,8 +126,8 @@ class ExtensionPlatformKeysService : public KeyedService {
 
   // If signing was successful, |signature| will contain the signature. If it
   // failed, |signature| will be empty.
-  using SignCallback = base::Callback<void(const std::string& signature,
-                                           platform_keys::Status status)>;
+  using SignCallback = base::OnceCallback<void(const std::string& signature,
+                                               platform_keys::Status status)>;
 
   // Digests |data|, applies PKCS1 padding if specified by |hash_algorithm| and
   // chooses the signature algorithm according to |key_type| and signs the data
@@ -147,7 +147,7 @@ class ExtensionPlatformKeysService : public KeyedService {
                   platform_keys::KeyType key_type,
                   platform_keys::HashAlgorithm hash_algorithm,
                   const std::string& extension_id,
-                  const SignCallback& callback);
+                  SignCallback callback);
 
   // Applies PKCS1 padding and afterwards signs the data with the private key
   // matching |public_key_spki_der|. |data| is not digested. If a |token_id|
@@ -165,7 +165,7 @@ class ExtensionPlatformKeysService : public KeyedService {
                        const std::string& data,
                        const std::string& public_key_spki_der,
                        const std::string& extension_id,
-                       const SignCallback& callback);
+                       SignCallback callback);
 
   // If the certificate request could be processed successfully, |matches| will
   // contain the list of matching certificates (maybe empty). If an error
