@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "url/gurl.h"
@@ -99,6 +100,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
 
   bool new_app_open_as_window_ = false;
   std::vector<AppId> apps_to_uninstall_;
+  std::unique_ptr<ScopedKeepAlive> migration_keep_alive_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observer_{this};

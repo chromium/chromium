@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 
@@ -117,12 +118,16 @@ void WebAppMover::Start() {
 void WebAppMover::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   sync_observer_.Reset();
+  migration_keep_alive_.reset();
 }
 
 void WebAppMover::OnSyncCycleCompleted(syncer::SyncService* sync_service) {
   DCHECK_EQ(sync_service_, sync_service);
   if (sync_ready_callback_)
     std::move(sync_ready_callback_).Run();
+  // Only the first cycle cycle matters, as this triggers the WebAppMover logic,
+  // and |sync_ready_callback_| is never set again. Thus we can stop observing.
+  sync_observer_.Reset();
 }
 
 void WebAppMover::OnSyncShutdown(syncer::SyncService* sync_service) {
@@ -193,6 +198,10 @@ void WebAppMover::OnInstallManifestFetched(
   }
   DCHECK(!apps_to_uninstall_.empty());
 
+  migration_keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_START_URL_MIGRATION,
+      KeepAliveRestartOption::DISABLED);
+
   scoped_refptr<base::RefCountedData<bool>> success_accumulator =
       base::MakeRefCounted<base::RefCountedData<bool>>(true);
 
@@ -261,6 +270,7 @@ void WebAppMover::OnInstallCompleted(
   } else {
     LOG(WARNING) << "Installation in app move operation failed: " << code;
   }
+  migration_keep_alive_.reset();
 }
 
 }  // namespace web_app

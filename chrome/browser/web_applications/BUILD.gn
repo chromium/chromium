@@ -85,6 +85,7 @@ source_set("web_applications") {
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/device_event_log",
+    "//components/keep_alive_registry:keep_alive_registry",
     "//components/keyed_service/content",
     "//components/performance_manager",
     "//components/pref_registry",
