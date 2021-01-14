@@ -60,7 +60,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
  private:
   // WaylandWindow overrides:
-  void HandleSurfaceConfigure(int32_t widht,
+  void HandleSurfaceConfigure(int32_t width,
                               int32_t height,
                               bool is_maximized,
                               bool is_fullscreen,
