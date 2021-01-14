@@ -8613,6 +8613,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Reloaded"/>
 </enum>
 
+<enum name="BooleanRelroAvailableImmediately">
+  <int value="0" label="Available Later"/>
+  <int value="1" label="Available Immediately"/>
+</enum>
+
 <enum name="BooleanRemoved">
   <int value="0" label="Not removed"/>
   <int value="1" label="Removed"/>

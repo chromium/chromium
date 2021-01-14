@@ -101,6 +101,9 @@ abstract class Linker {
     @GuardedBy("mLock")
     protected long mBaseLoadAddress = -1;
 
+    @GuardedBy("mLock")
+    private boolean mLinkerWasWaitingSynchronously;
+
     /**
      * The state machine of library loading.
      *
@@ -112,10 +115,11 @@ abstract class Linker {
      *
      * - RELRO is not shared.
      *
-     * - ModernLinker: RELRO is shared: the producer process loads the library, other
-     *   processes wait for RELRO regions to load the library
+     * - ModernLinker: RELRO is shared: the producer process loads the library, consumers load the
+     *   native library without waiting, they use the RELRO bundle later when it arrives, or
+     *   immediately if it arrived before load
      *
-     * - LegacyLinker: load then wait
+     * - LegacyLinker: loads the native library then waits synchronously for RELRO bundle
      *
      * Once the library has been loaded, in the producer process the state is DONE_PROVIDE_RELRO,
      * and in consumer processes it is DONE.
@@ -242,7 +246,16 @@ abstract class Linker {
         if (DEBUG) Log.i(TAG, "loadLibrary: %s", library);
         assert !library.equals(LINKER_JNI_LIBRARY);
         synchronized (mLock) {
-            loadLibraryImplLocked(library, isFixedAddressPermitted);
+            ensureInitializedLocked();
+            try {
+                loadLibraryImplLocked(library, isFixedAddressPermitted);
+                if (!mLinkerWasWaitingSynchronously && mLibInfo != null && mState == State.DONE) {
+                    atomicReplaceRelroLocked(true /* relroAvailableImmediately */);
+                }
+            } finally {
+                // Reset the state to serve the retry with |isFixedAddressPermitted=false|.
+                mLinkerWasWaitingSynchronously = false;
+            }
         }
     }
 
@@ -274,23 +287,32 @@ abstract class Linker {
         Bundle relros = bundle.getBundle(SHARED_RELROS);
         if (relros != null) {
             synchronized (mLock) {
-                assert mState != State.DONE && mState != State.DONE_PROVIDE_RELRO;
-                // This can be called before initAsRelroConsumer().
+                assert mLibInfo == null;
                 mLibInfo = LibInfo.fromBundle(relros);
-                // Wake up blocked callers of {@link #waitForSharedRelrosLocked()}.
-                mLock.notifyAll();
+                if (mState == State.DONE) {
+                    atomicReplaceRelroLocked(false /* relroAvailableImmediately */);
+                } else {
+                    assert mState != State.DONE_PROVIDE_RELRO;
+                    // Wake up blocked callers of waitForSharedRelrosLocked().
+                    mLock.notifyAll();
+                }
             }
         }
     }
 
     /**
-     * Implements loading the native shared library with the Chromium linker.
+     * Loads the native library.
      *
-     * Load a native shared library with a Chromium linker. If the library is within a zip file
-     * it must be uncompressed and page aligned.
+     * If the library is within a zip file, it must be uncompressed and page aligned in this file.
      *
-     * If asked to wait for shared RELROs, this function may block until the shared RELRO bundle
-     * is received by provideSharedRelros().
+     * This method may block by calling {@link #waitForSharedRelrosLocked()}. This would
+     * synchronously wait until {@link #takeSharedRelrosFromBundle(Bundle)} is called on another
+     * thread.
+     *
+     * If blocking is avoided in a subclass (for performance reasons) then
+     * {@link #atomicReplaceRelroLocked(boolean)} must be implemented to *atomically* replace the
+     * RELRO region. Atomicity is required because the library code can be running concurrently on
+     *    another thread.
      *
      * @param libFilePath The path of the library (possibly in the zip file).
      * @param isFixedAddressPermitted If true, uses a fixed load address if one was
@@ -298,7 +320,19 @@ abstract class Linker {
      */
     abstract void loadLibraryImplLocked(String libFilePath, boolean isFixedAddressPermitted);
 
-    /** Load the Linker JNI library. Throws UnsatisfiedLinkError on error. */
+    /**
+     * Atomically replaces the RELRO with the shared memory region described in the |mLibInfo|.
+     *
+     * By *not* calling {@link #waitForSharedRelrosLocked()} when loading the library subclasses opt
+     * into supporting the atomic replacement of RELRO and override this method.
+     * @param relroAvailableImmediately Whether the RELRO bundle arrived before
+     * {@link #loadLibraryImplLocked(String, boolean)} was called.
+     */
+    protected void atomicReplaceRelroLocked(boolean relroAvailableImmediately) {
+        assert false;
+    }
+
+    /** Loads the Linker JNI library. Throws UnsatisfiedLinkError on error. */
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
     @GuardedBy("mLock")
     private void loadLinkerJniLibraryLocked() {
@@ -333,6 +367,7 @@ abstract class Linker {
     @GuardedBy("mLock")
     protected final void waitForSharedRelrosLocked() {
         if (DEBUG) Log.i(TAG, "waitForSharedRelros() called");
+        mLinkerWasWaitingSynchronously = true;
 
         // Wait until notified by provideSharedRelros() that shared RELROs have arrived.
         //
@@ -461,7 +496,7 @@ abstract class Linker {
     }
 
     /**
-     * Return a random address that should be free to be mapped with the given size.
+     * Returns a random address that should be free to be mapped with the given size.
      * Maps an area large enough for the largest library we might attempt to load,
      * and if successful then unmaps it and returns the address of the area allocated
      * by the system (with ASLR). The idea is that this area should remain free of

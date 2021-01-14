@@ -34,7 +34,6 @@ class LegacyLinker extends Linker {
     @Override
     @GuardedBy("mLock")
     void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
-        ensureInitializedLocked();
         assert mState == State.INITIALIZED; // Only one successful call.
 
         boolean produceRelro = mRelroProducer;
