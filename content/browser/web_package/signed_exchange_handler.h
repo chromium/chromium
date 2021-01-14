@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
@@ -97,6 +98,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
       const net::NetworkIsolationKey& network_isolation_key,
       int load_flags,
+      const net::IPEndPoint& remote_endpoint,
       std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
       std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
       SignedExchangeReporter* reporter,
@@ -169,7 +171,8 @@ class CONTENT_EXPORT SignedExchangeHandler {
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
   const net::NetworkIsolationKey network_isolation_key_;
-  const int load_flags_;
+  const int load_flags_ = 0;
+  const net::IPEndPoint remote_endpoint_;
 
   std::unique_ptr<SignedExchangeCertificateChain> unverified_cert_chain_;
 

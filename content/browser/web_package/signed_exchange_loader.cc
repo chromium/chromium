@@ -180,7 +180,7 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
       base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                      weak_factory_.GetWeakPtr()),
       std::move(cert_fetcher_factory), network_isolation_key_,
-      outer_request_.load_flags,
+      outer_request_.load_flags, outer_response_head_->remote_endpoint,
       std::make_unique<blink::WebPackageRequestMatcher>(outer_request_.headers,
                                                         accept_langs_),
       std::move(devtools_proxy_), reporter_.get(), frame_tree_node_id_);
