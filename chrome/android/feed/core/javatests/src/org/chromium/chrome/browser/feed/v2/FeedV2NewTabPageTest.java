@@ -159,6 +159,7 @@ public class FeedV2NewTabPageTest {
     public void setUp() throws Exception {
         SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
         mActivityTestRule.startMainActivityWithURL("about:blank");
+        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.

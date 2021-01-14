@@ -97,10 +97,13 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     static final String FEEDBACK_CONTEXT = "mobile_browser";
     @VisibleForTesting
     static final String XSURFACE_CARD_URL = "Card URL";
+    // For testing some functionality in the public APK.
+    @VisibleForTesting
+    public static boolean sRequestContentWithoutRendererForTesting;
 
     private final long mNativeFeedStreamSurface;
     private final FeedListContentManager mContentManager;
-    private final SurfaceScope mSurfaceScope;
+    private final SurfaceScope mSurfaceScope;  
     @VisibleForTesting
     RecyclerView mRootView;
     private final HybridListRenderer mHybridListRenderer;
@@ -925,7 +928,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         assert (mContentManager.getItemCount() == mHeaderCount);
 
         mOpened = true;
-        FeedStreamSurfaceJni.get().surfaceOpened(mNativeFeedStreamSurface, FeedStreamSurface.this);
+        // Don't ask native to load content if there's no way to render it.
+        if (mSurfaceScope != null || sRequestContentWithoutRendererForTesting) {
+            FeedStreamSurfaceJni.get().surfaceOpened(
+                    mNativeFeedStreamSurface, FeedStreamSurface.this);
+        }
         mHybridListRenderer.onSurfaceOpened();
     }
 
@@ -949,8 +956,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
         mScrollReporter.onUnbind();
         mSliceViewTracker.clear();
-
-        FeedStreamSurfaceJni.get().surfaceClosed(mNativeFeedStreamSurface, FeedStreamSurface.this);
+        if (mSurfaceScope != null || sRequestContentWithoutRendererForTesting) {
+            FeedStreamSurfaceJni.get().surfaceClosed(
+                    mNativeFeedStreamSurface, FeedStreamSurface.this);
+        }
         mOpened = false;
     }
 

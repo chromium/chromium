@@ -143,6 +143,7 @@ public class FeedStreamSurfaceTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mParent = new LinearLayout(mActivity);
         mocker.mock(FeedStreamSurfaceJni.TEST_HOOKS, mFeedStreamSurfaceJniMock);
