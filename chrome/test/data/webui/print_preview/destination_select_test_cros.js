@@ -551,12 +551,6 @@ suite(destination_select_test_cros.suiteName, function() {
   }
 
   test(assert(destination_select_test_cros.TestNames.UpdateStatus), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 
@@ -566,12 +560,6 @@ suite(destination_select_test_cros.suiteName, function() {
   });
 
   test(assert(destination_select_test_cros.TestNames.ChangeIcon), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 

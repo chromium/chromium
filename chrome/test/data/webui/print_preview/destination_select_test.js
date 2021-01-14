@@ -205,23 +205,11 @@ suite(destination_select_test.suiteName, function() {
   }
 
   test(assert(destination_select_test.TestNames.UpdateStatus), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     return testUpdateStatus();
   });
 
   test(assert(destination_select_test.TestNames.ChangeIcon), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 
