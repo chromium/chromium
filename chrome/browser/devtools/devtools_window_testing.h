@@ -81,7 +81,7 @@ class DevToolsWindowCreationObserver {
 
   void DevToolsWindowCreated(DevToolsWindow* devtools_window);
 
-  base::Callback<void(DevToolsWindow*)> creation_callback_;
+  base::RepeatingCallback<void(DevToolsWindow*)> creation_callback_;
   DevToolsWindows devtools_windows_;
   scoped_refptr<content::MessageLoopRunner> runner_;
 

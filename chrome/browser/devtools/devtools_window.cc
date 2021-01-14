@@ -88,7 +88,8 @@ typedef std::vector<DevToolsWindow*> DevToolsWindows;
 base::LazyInstance<DevToolsWindows>::Leaky g_devtools_window_instances =
     LAZY_INSTANCE_INITIALIZER;
 
-base::LazyInstance<std::vector<base::Callback<void(DevToolsWindow*)>>>::Leaky
+base::LazyInstance<
+    std::vector<base::RepeatingCallback<void(DevToolsWindow*)>>>::Leaky
     g_creation_callbacks = LAZY_INSTANCE_INITIALIZER;
 
 static const char kKeyUpEventName[] = "keyup";
@@ -1032,7 +1033,7 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
   // so that it shows up in the task manager.
   task_manager::WebContentsTags::CreateForDevToolsContents(main_web_contents_);
 
-  std::vector<base::Callback<void(DevToolsWindow*)>> copy(
+  std::vector<base::RepeatingCallback<void(DevToolsWindow*)>> copy(
       g_creation_callbacks.Get());
   for (const auto& callback : copy)
     callback.Run(this);
