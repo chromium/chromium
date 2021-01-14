@@ -482,7 +482,6 @@ void IdentityManager::OnPrimaryAccountChanged(
   // are converted to OnPrimaryAccountChanged().
   switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
     case PrimaryAccountChangeEvent::Type::kSet:
-      FirePrimaryAccountSet(event_details);
       break;
     case PrimaryAccountChangeEvent::Type::kCleared:
       FirePrimaryAccountCleared(event_details);
@@ -508,15 +507,6 @@ void IdentityManager::OnPrimaryAccountChanged(
     for (auto& observer : observer_list_) {
       observer.AfterSyncPrimaryAccountCleared();
     }
-  }
-}
-
-void IdentityManager::FirePrimaryAccountSet(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetCurrentState().primary_account;
-  for (auto& observer : observer_list_) {
-    observer.OnPrimaryAccountSet(account_info);
   }
 }
 

@@ -80,26 +80,29 @@ void AccountTracker::OnRefreshTokenRemovedForAccount(
   UpdateSignInState(account_id, /*is_signed_in=*/false);
 }
 
-void AccountTracker::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
-
-  std::vector<CoreAccountInfo> accounts =
-      identity_manager_->GetAccountsWithRefreshTokens();
-
-  DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";
-
-  for (const CoreAccountInfo& account_info : accounts) {
-    StartTrackingAccount(account_info);
-    UpdateSignInState(account_info.account_id, /*is_signed_in=*/true);
+void AccountTracker::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
+      std::vector<CoreAccountInfo> accounts =
+          identity_manager_->GetAccountsWithRefreshTokens();
+      DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";
+      for (const CoreAccountInfo& account_info : accounts) {
+        StartTrackingAccount(account_info);
+        UpdateSignInState(account_info.account_id, /*is_signed_in=*/true);
+      }
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountCleared");
+      DVLOG(1) << "LOGOUT";
+      StopTrackingAllAccounts();
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
-}
-
-void AccountTracker::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountCleared");
-  DVLOG(1) << "LOGOUT";
-  StopTrackingAllAccounts();
 }
 
 void AccountTracker::UpdateSignInState(const CoreAccountId& account_id,

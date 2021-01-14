@@ -80,12 +80,6 @@ class IdentityManager : public KeyedService,
     virtual void OnPrimaryAccountChanged(
         const PrimaryAccountChangeEvent& event_details) {}
 
-    // Called when an account becomes the user's primary account.
-    // This method is not called during a reauth.
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnPrimaryAccountSet(
-        const CoreAccountInfo& primary_account_info) {}
-
     // Called when the user moves from having a primary account to no longer
     // having a primary account (note that the user may still have an
     // *unconsented* primary account after this event; see./README.md).

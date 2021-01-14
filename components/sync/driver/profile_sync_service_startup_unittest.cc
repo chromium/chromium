@@ -140,8 +140,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
   std::unique_ptr<ProfileSyncService> sync_service_;
 };
 
-// ChromeOS does not support sign-in after startup (in particular,
-// IdentityManager::Observer::OnPrimaryAccountSet never gets called).
+// ChromeOS does not support sign-in after startup
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
   // We've never completed startup.
@@ -566,8 +565,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {
             sync_service()->GetTransportState());
 }
 
-// ChromeOS does not support sign-in after startup (in particular,
-// IdentityManager::Observer::OnPrimaryAccountSet never gets called).
+// ChromeOS does not support sign-in after startup
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.

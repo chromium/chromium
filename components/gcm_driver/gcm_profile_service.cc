@@ -45,12 +45,11 @@ class GCMProfileService::IdentityObserver
   ~IdentityObserver() override;
 
   // signin::IdentityManager::Observer:
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
+  void OnSyncPrimaryAccountSet(const CoreAccountInfo& primary_account_info);
   void StartAccountTracker(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -75,7 +74,7 @@ GCMProfileService::IdentityObserver::IdentityObserver(
     : driver_(driver), identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 
-  OnPrimaryAccountSet(identity_manager_->GetPrimaryAccountInfo());
+  OnSyncPrimaryAccountSet(identity_manager_->GetPrimaryAccountInfo());
   StartAccountTracker(std::move(url_loader_factory));
 }
 
@@ -85,7 +84,24 @@ GCMProfileService::IdentityObserver::~IdentityObserver() {
   identity_manager_->RemoveObserver(this);
 }
 
-void GCMProfileService::IdentityObserver::OnPrimaryAccountSet(
+void GCMProfileService::IdentityObserver::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      OnSyncPrimaryAccountSet(event.GetCurrentState().primary_account);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      account_id_ = CoreAccountId();
+
+      // Still need to notify GCMDriver for UMA purpose.
+      driver_->OnSignedOut();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+}
+
+void GCMProfileService::IdentityObserver::OnSyncPrimaryAccountSet(
     const CoreAccountInfo& primary_account_info) {
   // This might be called multiple times when the password changes.
   if (primary_account_info.account_id == account_id_)
@@ -94,14 +110,6 @@ void GCMProfileService::IdentityObserver::OnPrimaryAccountSet(
 
   // Still need to notify GCMDriver for UMA purpose.
   driver_->OnSignedIn();
-}
-
-void GCMProfileService::IdentityObserver::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  account_id_ = CoreAccountId();
-
-  // Still need to notify GCMDriver for UMA purpose.
-  driver_->OnSignedOut();
 }
 
 void GCMProfileService::IdentityObserver::StartAccountTracker(
