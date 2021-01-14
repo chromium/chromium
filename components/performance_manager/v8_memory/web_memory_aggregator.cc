@@ -32,8 +32,16 @@ bool ShouldFollowOpenerLink(const PageNode* page_node) {
 }
 
 // Returns |frame_node|'s origin based on its current url.
+// An about:blank iframe inherits the origin of its parent. See:
+// https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
 url::Origin GetOrigin(const FrameNode* frame_node) {
-  return url::Origin::Create(frame_node->GetURL());
+  if (frame_node->GetParentFrameNode()) {
+    return url::Origin::Resolve(
+        frame_node->GetURL(),
+        url::Origin::Create(frame_node->GetParentFrameNode()->GetURL()));
+  } else {
+    return url::Origin::Create(frame_node->GetURL());
+  }
 }
 
 #if DCHECK_IS_ON()
@@ -152,8 +160,10 @@ WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
     return NodeAggregationType::kInvisible;
   }
 
-  if (requesting_origin_.IsSameOriginWith(GetOrigin(parent_node)))
+  auto parent_origin = GetOrigin(parent_node);
+  if (requesting_origin_.IsSameOriginWith(parent_origin)) {
     return NodeAggregationType::kCrossOriginAggregationPoint;
+  }
 
   // Otherwise |frame_node|'s memory should be aggregated into the last
   // aggregation point.

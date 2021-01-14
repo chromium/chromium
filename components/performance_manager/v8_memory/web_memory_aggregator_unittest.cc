@@ -397,6 +397,39 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
 }
 
+TEST_F(WebMemoryAggregatorTest, AggregateSameOriginAboutBlank) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+  AddFrameNode("about:blank", Bytes{20}, main_frame);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(20, AttributionScope::kWindow, "about:blank"),
+  });
+  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  WebMemoryAggregator aggregator(main_frame);
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+}
+
+TEST_F(WebMemoryAggregatorTest, SkipCrossOriginAboutBlank) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+  FrameNodeImpl* cross_site_child =
+      AddFrameNode("https://foo.com/", Bytes{20}, main_frame);
+  AddFrameNode("about:blank", Bytes{30}, cross_site_child);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(50, AttributionScope::kCrossOriginAggregated,
+                              base::nullopt),
+  });
+  EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
+  WebMemoryAggregator aggregator(main_frame);
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+}
+
 TEST_F(WebMemoryAggregatorTest, FindAggregationStartNode) {
   FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
   FrameNodeImpl* cross_site_child = AddFrameNode(
