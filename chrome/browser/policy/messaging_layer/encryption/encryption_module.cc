@@ -72,7 +72,7 @@ void EncryptionModule::EncryptRecord(
     encrypted_record.mutable_encrypted_wrapped_record()->assign(record.begin(),
                                                                 record.end());
     // encryption_info is not set.
-    std::move(cb).Run(encrypted_record);
+    std::move(cb).Run(std::move(encrypted_record));
     return;
   }
 

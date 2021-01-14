@@ -269,7 +269,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         .set_single_file_size(GetParam());
   }
 
-  void CreateStorageQueueOrDie(const QueueOptions& options) {
+  void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
@@ -283,6 +283,11 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
                                     << storage_queue_result.status();
     storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+  }
+
+  void ResetTestStorageQueue() {
+    task_environment_.RunUntilIdle();
+    storage_queue_.reset();
   }
 
   void InjectFailures(std::initializer_list<uint64_t> seq_numbers) {
@@ -351,50 +356,50 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-constexpr std::array<const char*, 3> data = {"Rec1111", "Rec222", "Rec33"};
-constexpr std::array<const char*, 3> more_data = {"More1111", "More222",
+constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
+constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
 
   // Trigger upload.
@@ -402,10 +407,10 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Inject simulated failures.
   InjectFailures({1});
@@ -414,9 +419,9 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
+            .Required(0, kData[0])
             .RequiredGap(1, 1)
-            .Possible(2, data[2]);  // Depending on records binpacking
+            .Possible(2, kData[2]);  // Depending on records binpacking
       }));
 
   // Trigger upload.
@@ -424,28 +429,28 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
 
   // Trigger upload.
@@ -454,15 +459,15 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
 
 TEST_P(StorageQueueTest,
        WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Save copy of options.
   const QueueOptions options = storage_queue_->options();
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
   // Delete all metadata files.
   base::FileEnumerator dir_enum(
@@ -475,18 +480,18 @@ TEST_P(StorageQueueTest,
   }
 
   // Reopen, starting a new generation.
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations. Previous data is all lost.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, more_data[0])
-            .Required(1, more_data[1])
-            .Required(2, more_data[2]);
+            .Required(0, kMoreData[0])
+            .Required(1, kMoreData[1])
+            .Required(2, kMoreData[2]);
       }));
 
   // Trigger upload.
@@ -495,18 +500,18 @@ TEST_P(StorageQueueTest,
 
 TEST_P(StorageQueueTest,
        WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Save copy of options.
   const QueueOptions options = storage_queue_->options();
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
   // Reopen with the same generation and sequencing information.
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   // Delete the first data file.
   base::FilePath full_name = options.directory().Append(
@@ -514,9 +519,9 @@ TEST_P(StorageQueueTest,
   base::DeleteFile(full_name);
 
   // Write more data.
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations. Previous data is all lost.
   // The expected results depend on the test configuration.
@@ -526,11 +531,11 @@ TEST_P(StorageQueueTest,
           .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(mock_upload_client)
                 .PossibleGap(0, 1)
-                .Required(1, data[1])
-                .Required(2, data[2])
-                .Required(3, more_data[0])
-                .Required(4, more_data[1])
-                .Required(5, more_data[2]);
+                .Required(1, kData[1])
+                .Required(2, kData[2])
+                .Required(3, kMoreData[0])
+                .Required(4, kMoreData[1])
+                .Required(5, kMoreData[2]);
           }));
       break;
     case 256:  // two records in file - deletion killed the first two records.
@@ -540,9 +545,9 @@ TEST_P(StorageQueueTest,
                 .PossibleGap(0, 2)
                 .Failure(
                     2, Status(error::DATA_LOSS, "Last record digest mismatch"))
-                .Required(3, more_data[0])
-                .Required(4, more_data[1])
-                .Required(5, more_data[2]);
+                .Required(3, kMoreData[0])
+                .Required(4, kMoreData[1])
+                .Required(5, kMoreData[2]);
           }));
       break;
     default:  // UNlimited file size - deletion above killed all the data.
@@ -557,18 +562,18 @@ TEST_P(StorageQueueTest,
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
 
   // Flush manually.
@@ -576,28 +581,28 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
-  storage_queue_.reset();
+  ResetTestStorageQueue();
 
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
 
   // Flush manually.
@@ -609,7 +614,7 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
   for (size_t i = 16; i < 16 + 16; ++i) {
     data.emplace_back(i, 'R');
   }
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   for (const auto& record : data) {
     WriteStringOrDie(record);
   }
@@ -628,19 +633,19 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
 }
 
 TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
 
   // Forward time to trigger upload
@@ -652,8 +657,8 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -663,24 +668,24 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client).Required(2, data[2]);
+        MockUploadClient::SetUp(mock_upload_client).Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Add more data and verify that #2 and new data are returned.
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
@@ -691,27 +696,27 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
 
   // Forward time to trigger upload
@@ -723,8 +728,8 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -734,29 +739,29 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client).Required(2, data[2]);
+        MockUploadClient::SetUp(mock_upload_client).Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  storage_queue_.reset();
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  ResetTestStorageQueue();
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   // Add more data and verify that #2 and new data are returned.
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, data[0])
-            .Possible(1, data[1])
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Possible(0, kData[0])
+            .Possible(1, kData[1])
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
@@ -767,28 +772,28 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 TEST_P(StorageQueueTest,
        WriteAndRepeatedlyUploadWithConfirmationsAndReopenWithFailures) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
-  WriteStringOrDie(data[0]);
-  WriteStringOrDie(data[1]);
-  WriteStringOrDie(data[2]);
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
 
   // Forward time to trigger upload
@@ -800,8 +805,8 @@ TEST_P(StorageQueueTest,
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -811,18 +816,18 @@ TEST_P(StorageQueueTest,
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client).Required(2, data[2]);
+        MockUploadClient::SetUp(mock_upload_client).Required(2, kData[2]);
       }));
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  storage_queue_.reset();
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  ResetTestStorageQueue();
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   // Add more data and verify that #2 and new data are returned.
-  WriteStringOrDie(more_data[0]);
-  WriteStringOrDie(more_data[1]);
-  WriteStringOrDie(more_data[2]);
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
 
   // Inject simulated failures.
   InjectFailures({4, 5});
@@ -831,10 +836,10 @@ TEST_P(StorageQueueTest,
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, data[0])
-            .Possible(1, data[1])
-            .Required(2, data[2])
-            .Required(3, more_data[0])
+            .Possible(0, kData[0])
+            .Possible(1, kData[1])
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
             // Gap may be 2 records at once or 2 gaps 1 record each.
             .PossibleGap(4, 2)
             .PossibleGap(4, 1)
@@ -852,15 +857,15 @@ TEST_P(StorageQueueTest,
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of that we set expectations for the
@@ -868,31 +873,31 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Possible(1, data[1])
-            .Possible(2, data[2]);
+            .Required(0, kData[0])
+            .Possible(1, kData[1])
+            .Possible(2, kData[2]);
       }));
-  WriteStringOrDie(data[0]);
+  WriteStringOrDie(kData[0]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Possible(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Possible(2, kData[2]);
       }));
-  WriteStringOrDie(data[1]);
+  WriteStringOrDie(kData[1]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, data[0])
-            .Required(1, data[1])
-            .Required(2, data[2]);
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
       }));
-  WriteStringOrDie(data[2]);
+  WriteStringOrDie(kData[2]);
 }
 
 TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of the Confirmation below, we set
@@ -901,27 +906,27 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, data[0])
-            .Possible(1, data[1])
-            .Possible(2, data[2]);
+            .Possible(0, kData[0])
+            .Possible(1, kData[1])
+            .Possible(2, kData[2]);
       }));
-  WriteStringOrDie(data[0]);
+  WriteStringOrDie(kData[0]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, data[0])
-            .Possible(1, data[1])
-            .Possible(2, data[2]);
+            .Possible(0, kData[0])
+            .Possible(1, kData[1])
+            .Possible(2, kData[2]);
       }));
-  WriteStringOrDie(data[1]);
+  WriteStringOrDie(kData[1]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, data[0])
-            .Possible(1, data[1])
-            .Required(2, data[2]);  // Not confirmed - hence |Required|
+            .Possible(0, kData[0])
+            .Possible(1, kData[1])
+            .Required(2, kData[2]);  // Not confirmed - hence |Required|
       }));
-  WriteStringOrDie(data[2]);
+  WriteStringOrDie(kData[2]);
 
   // Confirm #1, removing data #0 and #1
   ConfirmOrDie(/*seq_number=*/1);
@@ -933,34 +938,34 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Possible(4, more_data[1])
-            .Possible(5, more_data[2]);
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Possible(4, kMoreData[1])
+            .Possible(5, kMoreData[2]);
       }));
-  WriteStringOrDie(more_data[0]);
+  WriteStringOrDie(kMoreData[0]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Possible(5, more_data[2]);
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Possible(5, kMoreData[2]);
       }));
-  WriteStringOrDie(more_data[1]);
+  WriteStringOrDie(kMoreData[1]);
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, data[2])
-            .Required(3, more_data[0])
-            .Required(4, more_data[1])
-            .Required(5, more_data[2]);
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2]);
       }));
-  WriteStringOrDie(more_data[2]);
+  WriteStringOrDie(kMoreData[2]);
 }
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
-  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   DCHECK(test_encryption_module_);
   EXPECT_CALL(*test_encryption_module_, EncryptRecord(_, _))
       .WillOnce(WithArg<1>(

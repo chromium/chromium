@@ -366,8 +366,8 @@ Status StorageQueue::ScanLastFile() {
         read_result.ValueOrDie().data(), header.record_size);
     if (header.record_hash != actual_record_hash) {
       LOG(ERROR) << "Hash mismatch, seq=" << header.record_sequencing_id
-                 << " expected_hash=" << std::hex << actual_record_hash
-                 << " actual_hash=" << std::hex << header.record_hash;
+                 << " actual_hash=" << std::hex << actual_record_hash
+                 << " expected_hash=" << std::hex << header.record_hash;
       break;
     }
     // Everything looks all right. Advance the sequencing id.
@@ -1410,8 +1410,10 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
     data_start_ = 0;
   }
   size_t actual_size = data_end_ - data_start_;
+  pos += actual_size;
   while (actual_size < size) {
     // Read as much as possible.
+    DCHECK_LT(data_end_, buffer_size_);
     const int32_t result =
         handle_->Read(pos, reinterpret_cast<char*>(buffer_.get() + data_end_),
                       buffer_size_ - data_end_);
