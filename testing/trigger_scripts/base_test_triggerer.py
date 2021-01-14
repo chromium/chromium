@@ -323,7 +323,13 @@ class BaseTestTriggerer(object):
           # However, reset the "tasks" entry to an empty dictionary,
           # which will be handled specially.
           merged_json['tasks'] = {}
-        for k, v in result_json['tasks'].items():
+        tasks = result_json['tasks']
+        if args.use_swarming_go:
+          # TODO(crbug.com/1127205): remove this
+          tasks = {
+            task['request']['task_id']: task['request'] for task in tasks
+          }
+        for k, v in tasks.items():
           v['shard_index'] = shard_index
           merged_json['tasks'][k + ':%d:%d' % (shard_index, args.shards)] = v
       finally:
@@ -360,4 +366,3 @@ class BaseTestTriggerer(object):
         default=False,
         action='store_true',
         help='Uses swarming Go CLI to trigger tasks.')
-

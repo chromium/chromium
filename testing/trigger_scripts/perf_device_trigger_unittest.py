@@ -86,14 +86,14 @@ class UnitTest(unittest.TestCase):
 
     triggerer = FakeTriggerer(args, swarming_args,
         self.get_files(args.shards, previous_task_assignment_map,
-                       alive_bots, dead_bots))
+                       alive_bots, dead_bots, use_swarming_go=use_swarming_go))
     triggerer.trigger_tasks(
       args,
       swarming_args)
     return triggerer
 
   def get_files(self, num_shards, previous_task_assignment_map,
-                alive_bots, dead_bots):
+                alive_bots, dead_bots, use_swarming_go):
     files = {}
     file_index = 0
     files['base_trigger_dimensions%d.json' % file_index] = (
@@ -113,20 +113,29 @@ class UnitTest(unittest.TestCase):
           self.generate_last_task_to_shard_query_response(i, bot_id))
       file_index = file_index + 1
     for i in xrange(num_shards):
-      task = {
-        'base_task_name': 'webgl_conformance_tests',
-        'request': {
-          'expiration_secs': 3600,
-          'properties': {
-            'execution_timeout_secs': 3600,
+      if use_swarming_go:
+        task = {
+          'tasks': [{
+            'request': {
+              'task_id': 'f%d' % i,
+            },
+          }],
+        }
+      else:
+        task = {
+          'base_task_name': 'webgl_conformance_tests',
+          'request': {
+            'expiration_secs': 3600,
+            'properties': {
+              'execution_timeout_secs': 3600,
+            },
           },
-        },
-        'tasks': {
-          'webgl_conformance_tests on NVIDIA GPU on Windows': {
-            'task_id': 'f%d' % i,
+          'tasks': {
+            'webgl_conformance_tests on NVIDIA GPU on Windows': {
+              'task_id': 'f%d' % i,
+            },
           },
-        },
-      }
+        }
       files['base_trigger_dimensions%d.json' % file_index] = task
       file_index = file_index + 1
     return files
