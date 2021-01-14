@@ -370,7 +370,6 @@
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
-<translation id="2360873523816792727">어느 기기에서나 카드를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2367567093518048410">수준</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">엔터프라이즈 기본값</translation>
@@ -1418,7 +1417,6 @@
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
-<translation id="6596892391065203054">관리자가 이 콘텐츠의 인쇄를 차단했습니다.</translation>
 <translation id="6604181099783169992">모션 또는 조도 센서</translation>
 <translation id="6609880536175561541">Prc7(봉투)</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>

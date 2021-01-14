@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{스캔한 파일이 저장되었습니다.}other{스캔한 파일이 저장되었습니다.}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">상태</translation>
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
-<translation id="7928373994957558460">파일 위치 표시</translation>
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7960831585769876809">온도</translation>
 <translation id="8041089156583427627">의견 보내기</translation>

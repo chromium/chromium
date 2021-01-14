@@ -198,7 +198,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Naskenovaný súbor bol uložený}few{Naskenované súbory boli uložené}many{Naskenované súbory boli uložené}other{Naskenované súbory boli uložené}}</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
@@ -244,7 +243,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7819857487979277519">PSK (WPA alebo RSN)</translation>
 <translation id="7882358943899516840">Typ poskytovateľa</translation>
-<translation id="7928373994957558460">Zobraziť umiestnenie súboru</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>

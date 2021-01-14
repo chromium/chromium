@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">باتری</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{فایل اسکن‌شده ذخیره شد}one{فایل اسکن‌شده ذخیره شد}other{فایل‌های اسکن‌شده ذخیره شد}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
 <translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
-<translation id="7928373994957558460">نمایش مکان فایل</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7960831585769876809">دما</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>

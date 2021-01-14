@@ -18,7 +18,6 @@
 <translation id="137466361146087520">Google Chrome (бэта-версія)</translation>
 <translation id="1399397803214730675">На гэтым камп'ютары ўжо ўсталявана навейшая версія Google Chrome. Калі праграма не працуе, выдаліце Google Chrome і паўтарыце спробу.</translation>
 <translation id="1434626383986940139">Праграмы Chrome Canary</translation>
-<translation id="1513277449617685876">Каб аддзяліць сваю працу ў інтэрнэце як прыватнай асобы ад працы пад імем карыстальніка <ph name="NEW_USER" />, стварыце новы профіль Chrome</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небяспечны, таму Chrome заблакіраваў яго.</translation>
@@ -26,7 +25,6 @@
 <translation id="1619887657840448962">У мэтах бяспекі Chrome мы адключылі наступнае пашырэнне, якое не значыцца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і магло быць дададзена без вашага ведама.</translation>
 <translation id="162629503687514352">Сістэме Chrome OS не ўдалося сінхранізаваць паролі.</translation>
 <translation id="1628000112320670027">Даведка Chrome</translation>
-<translation id="1662639173275167396">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />, як і <ph name="BEGIN_LINK_LINUX_OSS" />Linux (бэта-версія)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="1666409074978194368">Амаль гатова! Каб завяршыць абнаўленне, перазапусціце Google Chrome. Вокны ў рэжыме інкогніта не будуць адкрыты паўторна.</translation>
 <translation id="1674870198290878346">Адкрыць спасылку ў акне інко&amp;гніта ў Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не можа чытаць з каталога даных і запісваць у яго:
@@ -273,7 +271,6 @@
 <translation id="8679801911857917785">Таксама вызначае, якая старонка паказваецца пры запуску Chrome.</translation>
 <translation id="870251953148363156">Абнавіць &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не можа вызначыць або задаць стандартны браўзер</translation>
-<translation id="8748242232968346981">Стварыць ваш уласны профіль у Chrome?</translation>
 <translation id="8823341990149967727">Ваша версія Chrome састарэла</translation>
 <translation id="8834965163890861871">Google Chrome спрабуе змяніць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="884296878221830158">Таксама вызначае, якая старонка паказваецца пры запуску браўзера Chrome або націсканні кнопкі галоўнай старонкі.</translation>

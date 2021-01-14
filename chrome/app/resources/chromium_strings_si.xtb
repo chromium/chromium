@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">ඔබේ තේරීම් කියවිය නොහැක.
 
 ඇතැම් විශේෂාංගයන් නොපැවතිය හැකි අතර තේරීම් වල සිදුකරන වෙනස්ක්ම් නොසුරැකෙනු ඇත.</translation>
-<translation id="107513968719897256">පුද්ගලික සහ <ph name="NEW_USER" /> බ්‍රවුස් කිරීම වෙන් කිරීමට, Chromium තුළ නව පැතිකඩක් තනන්න</translation>
 <translation id="1098170124587656448">Chromium දත්ත කඩ කිරීම්, නරක දිගු, සහ තවත් ඒවාවලින් ඔබව ආරක්‍ෂිතව තබා ගැනීමට උදවු කළ හැක</translation>
 <translation id="1104942323762546749">Chromium හට ඔබගේ මුරපද නිර්යාත කිරීමට අවශ්‍යය. මේ සඳහා අවසර දීමට ඔබගේ Windows මුරපදය ටයිප් කරන්න.</translation>
 <translation id="113122355610423240">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය වේ</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
 <translation id="4987820182225656817">අමුත්තන්ට කිසිවක් තබා යෑමෙන් තොරව Chromium භාවිත කළ හැක.</translation>
 <translation id="4994636714258228724">ඔබව Chromium වෙත එක් කරන්න</translation>
-<translation id="5080135079858647714">Chromium තුළ ඔබේම පැතිකඩ තනන්නද?</translation>
 <translation id="5224391634244552924">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද පරීක්‍ෂා කරන විට Chromium හට ඒවා පරීක්‍ෂා කළ හැක.</translation>
 <translation id="5277894862589591112">ඔබේ වෙනස්කම් යෙදීමට, Chromium නැවත දියත් කරන්න</translation>
 <translation id="5358375970380395591">ඔබ කළමනාකරණය කළ ගිණුමක් සමගින් පුරමින් සිටින අතර ඔබේ Chromium පැතිකඩට වැඩියෙන් එහි පරිපාලක පාලනය ලබා දෙමින් සිටී. යෙදුම්, පිටු සලකුණු, ඉතිහාසය, රහස්වචන, සහ අනෙකුත් සැකසුම් වැනි ඔබේ Chromium දත්ත ස්ථිරවම <ph name="USER_NAME" /> වෙත බැඳෙනු ඇත. Google ගිණුම් පසුරු පුවරුව හරහා මෙම දත්ත මැකීමට ඔබට හැකි වනු ඇත, නමුත් ඔබට මෙම දත්ත වෙනත් ගිණුමක් සමඟ සම්බන්ධ කළ නොහැකි වනු ඇත. <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ජාල පුරනය</translation>
 <translation id="5987687638152509985">සමමුහුර්ත කිරීම ආරම්භ කිරීමට Chromium යාවත්කාලීන කරන්න</translation>
-<translation id="6013050204643758987">Chromium OS එක <ph name="BEGIN_LINK_LINUX_OSS" />ලිනක්ස් (බීටා)<ph name="END_LINK_LINUX_OSS" /> වැනි වෙනත් <ph name="BEGIN_LINK_CROS_OSS" />විවෘත කේත මෘදුකාංග<ph name="END_LINK_CROS_OSS" />වලින් යතාර්ථයක් බවට පත් කරනු ලැබේ.</translation>
 <translation id="6039377483953237732">Chromium OS අනුවාදය</translation>
 <translation id="6055895534982063517">Chromium හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
 <translation id="6063093106622310249">&amp;Chromium තුළ විවෘත කරන්න</translation>

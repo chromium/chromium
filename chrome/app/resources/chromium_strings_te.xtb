@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1065672644894730302">మీ ప్రాధాన్యతలు చదవబడలేవు. కొన్ని లక్షణాలు అందుబాటులో ఉండకపోవచ్చు మరియు ప్రాధాన్యతలకు మార్పులు సేవ్ చేయబడకపోవచ్చు.</translation>
-<translation id="107513968719897256">వ్యక్తిగత బ్రౌజింగ్‍ను అలాగే <ph name="NEW_USER" /> బ్రౌజింగ్‍ను వేరు చేయడానికి, Chromiumలో కొత్త ప్రొఫైల్‍ను క్రియేట్ చేయండి</translation>
 <translation id="1098170124587656448">డేటా ఉల్లంఘనలు, చెడు ఎక్స్‌టెన్షన్‌లు మొదలైన వాటి నుండి మిమ్మల్ని సురక్షితంగా ఉంచడంలో Chromium సహాయపడగలదు</translation>
 <translation id="1104942323762546749">Chromium మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయాలనుకుంటోంది. దీనిని అనుమతించడం కోసం మీ Windows పాస్‌వర్డ్‌ని టైప్ చేయండి.</translation>
 <translation id="113122355610423240">మీ డిఫాల్ట్ బ్రౌజర్ Chromium</translation>
@@ -113,7 +112,6 @@
 <translation id="4943838377383847465">Chromium నేపథ్య మోడ్‌లో ఉంది.</translation>
 <translation id="4987820182225656817">అతిథులు ఎటువంటి చరిత్రను వదలకుండానే Chromiumను ఉపయోగించవచ్చు.</translation>
 <translation id="4994636714258228724">Chromiumకు మిమ్మల్ని జోడించుకోండి</translation>
-<translation id="5080135079858647714">Chromiumలో మీ సొంత ప్రొఫైల్‍ను క్రియేట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
 <translation id="5277894862589591112">మీ మార్పులను వర్తింపజేయడానికి, Chromiumని పునఃప్రారంభించండి</translation>
 <translation id="5358375970380395591">మీరు నిర్వహించబడే ఖాతాతో సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకునికి మీ Chromium ప్రొఫైల్‌పై నియంత్రణను అందిస్తున్నారు. మీ యాప్‌లు, బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల వంటి మీ Chromium డేటా శాశ్వతంగా <ph name="USER_NAME" />కు అనుబంధించబడుతుంది. మీరు Google ఖాతాల డాష్‌బోర్డ్ ద్వారా ఈ డేటాను తొలగించవచ్చు. కానీ ఈ డేటాను మరో ఖాతాతో అనుబంధించలేరు. <ph name="LEARN_MORE" /></translation>
@@ -138,7 +136,6 @@
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్</translation>
 <translation id="5987687638152509985">సింక్‌ను ప్రారంభించడానికి Chromiumను అప్‌డేట్ చేయండి</translation>
-<translation id="6013050204643758987"><ph name="BEGIN_LINK_LINUX_OSS" />Linux (బీటా) <ph name="END_LINK_LINUX_OSS" /> లాగానే, Chromium OS కూడా అదనపు <ph name="BEGIN_LINK_CROS_OSS" /> ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్‌ <ph name="END_LINK_CROS_OSS" /> మూలంగానే సాధ్యమైంది.</translation>
 <translation id="6039377483953237732">Chromium OS వెర్షన్</translation>
 <translation id="6055895534982063517">కొత్త Chromium వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>
 <translation id="6063093106622310249">&amp;Chromiumలో తెరవండి</translation>

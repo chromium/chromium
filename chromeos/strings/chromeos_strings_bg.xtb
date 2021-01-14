@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Сканираният файл е запазен}other{Сканираните файлове са запазени}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
-<translation id="7928373994957558460">Показване на местоположението на файла</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>

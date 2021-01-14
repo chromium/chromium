@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">Вашите претпочитани вредности не може да се прочитаат.
 
 Некои функции може да се недостапни и промените на претпочитаните вредности нема да се зачуваат.</translation>
-<translation id="107513968719897256">За да ги одвоите личното и прелистувањето на <ph name="NEW_USER" />, создајте нов профил во Chromium</translation>
 <translation id="1098170124587656448">Chromium може да ве штити од упад во податоците, злонамерни екстензии и друго</translation>
 <translation id="1104942323762546749">Chromium сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="113122355610423240">Chromium е вашиот стандарден прелистувач</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium е во заднински режим.</translation>
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
-<translation id="5080135079858647714">Сакате ли да создадете сопствен профил во Chromium?</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5277894862589591112">За да се применат измените, рестартирајте го Chromium</translation>
 <translation id="5358375970380395591">Се пријавувате со управувана сметка и му давате контрола на администраторот над вашиот профил на Chromium. Вашите податоци на Chromium, како на пример ваши апликации, обележувачи, историја, лозинки и други поставки ќе бидат трајно поврзани со <ph name="USER_NAME" />. Може да ги бришете овие податоци преку информациската табла со сметки на Google, но нема да може да ги поврзувате овие податоци со друга сметка. <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
 <translation id="5987687638152509985">Ажурирајте го Chromium за да започнете со синхронизирање</translation>
-<translation id="6013050204643758987">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како и <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бета)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="6039377483953237732">Верзија на Chromium OS</translation>
 <translation id="6055895534982063517">Достапна е нова верзија на Chromium и побрза е од кога било.</translation>
 <translation id="6063093106622310249">&amp;Отвори во Chromium</translation>

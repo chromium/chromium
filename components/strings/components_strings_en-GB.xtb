@@ -373,7 +373,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2360873523816792727">To use your cards on all devices, turn on sync.</translation>
 <translation id="2367567093518048410">Level</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">Enterprise default</translation>
@@ -1428,7 +1427,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6587923378399804057">Link that you copied</translation>
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>
 <translation id="6596325263575161958">Encryption options</translation>
-<translation id="6596892391065203054">Printing of this content is blocked by your administrator.</translation>
 <translation id="6604181099783169992">Motion or light sensors</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Protected content</translation>

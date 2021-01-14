@@ -370,7 +370,6 @@
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2360873523816792727">如要在所有裝置上使用付款卡，請開啟同步處理功能。</translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">企業預設</translation>
@@ -1417,7 +1416,6 @@
 <translation id="6587923378399804057">您複製的連結</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
 <translation id="6596325263575161958">加密選項</translation>
-<translation id="6596892391065203054">管理員已禁止列印此內容。</translation>
 <translation id="6604181099783169992">動態或光線感應器</translation>
 <translation id="6609880536175561541">Prc7 (信封)</translation>
 <translation id="6612358246767739896">受保護內容</translation>

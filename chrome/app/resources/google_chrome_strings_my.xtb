@@ -18,7 +18,6 @@
 <translation id="137466361146087520">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ</translation>
 <translation id="1399397803214730675">ဒီကွန်ပျူတာ ထဲမှာ ပိုပြီး နောက်ကျသော Google Chrome  ဗားရှင်း ရှိနေပါပြီ။ ဆော့ဝဲ အလုပ်မလုပ်လျှင်၊ ကျေးဇူးပြုပြီး Google Chrome ကို ဖြုတ်လိုက်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1434626383986940139">Chrome ၏ Canary စမ်းသပ်အက်ပ်များ</translation>
-<translation id="1513277449617685876">ကိုယ်ရေးကိုယ်တာနှင့် <ph name="NEW_USER" /> ဖွင့်ကြည့်မှုကို ခွဲခြားရန်အတွက် Chrome တွင် ပရိုဖိုင်သစ်တစ်ခုပြုလုပ်ပါ</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိသောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
@@ -26,7 +25,6 @@
 <translation id="1619887657840448962">Chrome ပိုမိုလုံခြုံမှုရှိစေရန်၊ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> တွင် စာရင်းဝင်ထားခြင်း မရှိသည့်အပြင် သင့်အား အသိမပေးဘဲ ထည့်ထားပုံရသည့် အောက်ပါ တိုးချဲ့လိုင်းအား ပိတ်ထားခဲ့၏။</translation>
 <translation id="162629503687514352">Chrome OS က သင့်စကားဝှက်များကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="1628000112320670027">Chrome အကူအညီရယူရန်</translation>
-<translation id="1662639173275167396">Chrome OS ကို နောက်ထပ် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" />၊ ရှိရင်းစွဲ <ph name="BEGIN_LINK_LINUX_OSS" />Linux (စမ်းသပ်ဆော့ဖ်ဝဲ)<ph name="END_LINK_LINUX_OSS" /> တို့က ပံ့ပိုးထားခြင်းဖြစ်သည်။</translation>
 <translation id="1666409074978194368">အပ်ဒိတ်လုပ်ပြီးပါတော့မည်။ အပ်ဒိတ်လုပ်ခြင်း အပြီးသတ်ရန် Google Chrome ကို ပြန်ဖွင့်ပါ။ ရုပ်ဖျက် ဝင်ဒိုးများကို ပြန်ဖွင့်မည် မဟုတ်ပါ။</translation>
 <translation id="1674870198290878346">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ခြင်း</translation>
 <translation id="1682634494516646069">Google Chrome သည် ၎င်း၏ဒေတာဒါရိုက်ထရီသို့ မဖတ်နိုင် မရေးနိုင်ပါ:
@@ -273,7 +271,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8679801911857917785">သင်က Chrome ကို စတင်စဉ် ဘယ်စာမျက်နှာ ပြကြောင်းကိုပါ ၎င်းက ထိန်းချုပ်ပါသည်။</translation>
 <translation id="870251953148363156">&amp;Google Chrome ကို အဆင့်မြှင့်ရန်</translation>
 <translation id="873133009373065397">Google Chrome သည် မူရင်းဘရောင်ဇာကို ဆုံးဖြတ်ပေးခြင်းသော်လည်းကောင်း သတ်မှတ်ခြင်းသော်လည်းကောင်း လုပ်၍မရပါ</translation>
-<translation id="8748242232968346981">Chrome တွင် သင့်ကိုယ်ပိုင်ပရိုဖိုင် ပြုလုပ်မလား။</translation>
 <translation id="8823341990149967727">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="8834965163890861871">Google Chrome သည် စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="884296878221830158">သင် Chrome ကိုအစပြုချိန် သို့မဟုတ် ပင်မခလုတ် နှိပ်လိုက်လျှင် မည်သည့် စာမျက်နှာပြမည်ကိုပါ ထိန်းချုပ်ပါသည်။</translation>

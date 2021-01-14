@@ -58,7 +58,6 @@
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1419738280318246476">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը</translation>
 <translation id="1420408895951708260">Միացնել/անջատել գիշերային ռեժիմը: <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Սքրինշոթը պահված է սեղմատախտակում</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="144853431011121127">Ստացեք ծանուցումներ ձեր հեռախոսից <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="1455242230282523554">Ցուցադրել լեզվի կարգավորումները</translation>
@@ -304,6 +303,7 @@
 <translation id="370665806235115550">Բեռնում…</translation>
 <translation id="3712407551474845318">Հատվածի լուսանկարում</translation>
 <translation id="371370241367527062">Առջևի խոսափող</translation>
+<translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
 <translation id="3771549900096082774">Բարձր կոնտրաստով ռեժիմ</translation>
 <translation id="3773700760453577392">Ադմինիստրատորն արգելել է բազմակի մուտքը <ph name="USER_EMAIL" />-ի հաշվի համար: Շարունակելու համար բոլոր օգտատերերը պետք է դուրս գրվեն:</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@
 <translation id="4072264167173457037">Միջին ուժգնության ազդանշան</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
 <translation id="4114315158543974537">Միացրեք Phone Hub-ը</translation>
-<translation id="4121728057981832179">Վիրտուալ մեքենան օգտագործում է ձեր խոսափողը</translation>
 <translation id="4129129681837227511">Ծանուցումները կողպէկրանին տեսնելու համար ապակողպեք սարքը և փոխեք կարգավորումները:</translation>
 <translation id="4146833061457621061">Միացնել երաժշտություն</translation>
-<translation id="415719264485676252">Սքրինշոթների ստեղծումն արգելափակված է</translation>
 <translation id="4157822100366708405">Մուգ թեմայի կարգավորումներ</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
 <translation id="4195877955194704651">Ավտոմատ սեղմում</translation>
@@ -361,7 +359,6 @@
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="425364040945105958">SIM քարտ չկա</translation>
 <translation id="4261870227682513959">Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատած են:</translation>
-<translation id="4267383818855338811">Վիրտուալ մեքենան օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="4269883910223712419">Այս սարքի ադմինիստրատորը կարող է՝</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
@@ -494,7 +491,6 @@
 <translation id="54609108002486618">Կառավարվող</translation>
 <translation id="5465662442746197494">Օգնությո՞ւն է պետք:</translation>
 <translation id="5496819745535887422">Ձեր ադմինիստրատորը վերակայում է ձեր սարքը: Երբ սարքը վերագործարկվի, բոլոր տվյալները կջնջվեն:</translation>
-<translation id="5516420770350073386">Ձեր ադմինիստրատորը դադարեցրել է էկրանի տեսագրումը՝ էկրանին ցուցադրվող անպատշաճ բովանդակության պատճառով։</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">«<ph name="FEATURE_NAME" />» գործառույթը միանում է։</translation>
 <translation id="5532994612895037630">Լիաէկրան ռեժիմում լուսանկարելու համար հպեք էկրանի ցանկացած կետի</translation>
@@ -504,7 +500,6 @@
 <translation id="556042886152191864">Կոճակ</translation>
 <translation id="5571066253365925590">Bluetooth-ը միացված է</translation>
 <translation id="557563299383177668">Հաջորդ պարբերությունը</translation>
-<translation id="55808498489107691">Ձեր ադմինիստրատորն արգելափակել է էկրանի տեսագրումը՝ էկրանին ցուցադրվող անպատշաճ բովանդակության պատճառով։</translation>
 <translation id="558849140439112033">Քաշեք՝ լուսանկարի հատվածն ընտրելու համար</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Սեղմեք Ctrl+Alt+Z՝ ձայնային ուղեկցումն անջատելու համար:</translation>
@@ -857,7 +852,6 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, տեղադրված հավելված, արգելափակված է</translation>
 <translation id="8785070478575117577">Միացում «<ph name="NETWORK_NAME" />» ցանցին</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />։ <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ներածման մեթոդների կարգավորումներ</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>

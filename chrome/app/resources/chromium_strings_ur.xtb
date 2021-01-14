@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">آپ کی ترجیحات کو نہیں پڑھا جا سکتا ہے۔
 
 کچھ خصوصیات غیر دستیاب ہو سکتی ہیں اور ترجیحات میں تبدیلیاں محفوظ نہیں ہونگی۔</translation>
-<translation id="107513968719897256">‏ذاتی اور <ph name="NEW_USER" /> کی براؤزنگ کو الگ کرنے کے لیے، Chromium میں نئی پروفائل تخلیق کریں</translation>
 <translation id="1098170124587656448">‏Chromium آپ کو ڈیٹا کی خلاف ورزیوں، غلط ایکسٹینشنز اور بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="1104942323762546749">‏Chromium آپ کے پاس ورڈز برآمد کرنا چاہتا ہے۔ اس کی اجازت دینے کیلئے، اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="113122355610423240">‏Chromium آپ کا ڈیفالٹ براؤزر ہے</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">‏Chromium پس منظر وضع میں ہے۔</translation>
 <translation id="4987820182225656817">‏مہمان کسی چیز کو پیچھے چھوڑے بغیر Chromium کو استعمال کر سکتے ہیں۔</translation>
 <translation id="4994636714258228724">‏خود کو Chromium میں شامل کریں</translation>
-<translation id="5080135079858647714">‏Chromium میں اپنی خود کی پروفائل بنائیں؟</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5277894862589591112">‏اپنی تبدیلیوں کو لاگو کرنے کیلئے، Chromium کو دوبارہ شروع کریں</translation>
 <translation id="5358375970380395591">‏آپ زیر انتظام اکاؤنٹ سے سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chromium پروفائل پر کنٹرول دے رہے ہیں. آپ کا Chromium کا ڈیٹا، جیسے آپ کی ایپس، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات <ph name="USER_NAME" /> سے مستقل طور پر مربوط ہو جائیں گی۔ آپ Google اکاؤنٹس ڈیش بورڈ کے ذریعہ یا ڈیٹا حذف کر سکیں گے لیکن آپ اس ڈیٹا کو دوسرے اکاؤنٹ کے ساتھ وابستہ نہیں کر سکیں گے۔ <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان</translation>
 <translation id="5987687638152509985">‏مطابقت پذیری شروع کرنے کیلئے Chromium کو اپ ڈیٹ کریں</translation>
-<translation id="6013050204643758987">‏Chromium OS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا جاتا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux (بی ٹا)<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="6039377483953237732">‏‫Chromium OS ورژن</translation>
 <translation id="6055895534982063517">‏Chromium کا ایک نیا ورژن دستیاب ہے اور وہ پہلے سے کہیں زیادہ تیز ہے۔</translation>
 <translation id="6063093106622310249">‏Chromium میں &amp;کھولیں</translation>

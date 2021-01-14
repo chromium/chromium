@@ -373,7 +373,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2357481397660644965">Qurilma <ph name="DEVICE_MANAGER" /> domenida va hisobingiz <ph name="ACCOUNT_MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="2359629602545592467">Bir nechta</translation>
 <translation id="2359808026110333948">Davom etish</translation>
-<translation id="2360873523816792727">Kartalaringizni barcha qurilmalarda ishlatish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="2367567093518048410">Daraja</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">Korporativ (birlamchi)</translation>
@@ -1423,7 +1422,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6587923378399804057">Nusxalangan havola</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
 <translation id="6596325263575161958">Shifrlash parametrlari</translation>
-<translation id="6596892391065203054">Bu kontentni chop etish administrator tomonidan taqiqlangan.</translation>
 <translation id="6604181099783169992">Harakat va yorug‘lik sensorlari</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Himoyalangan kontent</translation>

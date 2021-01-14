@@ -58,7 +58,6 @@
 <translation id="1407069428457324124">ダークテーマ</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">スクリーンショットを撮影し、クリップボードに保存しました</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="144853431011121127">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で確認できます</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
@@ -304,6 +303,7 @@
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3712407551474845318">一部分をキャプチャ</translation>
 <translation id="371370241367527062">前方のマイク</translation>
+<translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@
 <translation id="4072264167173457037">電波: 中程度</translation>
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
-<translation id="4121728057981832179">仮想マシンがマイクを使用しています</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
-<translation id="415719264485676252">画面キャプチャはブロックされています</translation>
 <translation id="4157822100366708405">ダークテーマの設定</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
@@ -361,7 +359,6 @@
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="425364040945105958">SIM がありません</translation>
 <translation id="4261870227682513959">通知設定を表示します。通知はオフです</translation>
-<translation id="4267383818855338811">仮想マシンがカメラを使用しています</translation>
 <translation id="4269883910223712419">このデバイスの管理者は以下を行うことができます。</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4285498937028063278">固定を解除</translation>
@@ -494,7 +491,6 @@
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5465662442746197494">不明点がある場合</translation>
 <translation id="5496819745535887422">管理者がお使いのデバイスをロールバックしています。デバイスの再起動時にデータはすべて削除されます。</translation>
-<translation id="5516420770350073386">画面上のコンテンツに問題があるため、管理者によって画面の録画が停止されました。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> を接続しています。</translation>
 <translation id="5532994612895037630">全画面を録画するには任意の場所をタップしてください</translation>
@@ -504,7 +500,6 @@
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="557563299383177668">次の段落</translation>
-<translation id="55808498489107691">画面上のコンテンツに問題があるため、管理者によってスクリーン キャプチャがブロックされました。</translation>
 <translation id="558849140439112033">キャプチャする領域をドラッグして選択してください</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
@@ -858,7 +853,6 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />、インストール済みアプリ、ブロック中</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> に接続</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">既定</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">入力方法の設定</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>

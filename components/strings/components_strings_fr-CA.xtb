@@ -370,7 +370,6 @@
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte est géré par <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
-<translation id="2360873523816792727">Pour utiliser vos cartes sur tous vos appareils, activez la synchronisation.</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="2380886658946992094">Légal</translation>
 <translation id="2384307209577226199">Politique d'entreprise par défaut</translation>
@@ -1418,7 +1417,6 @@
 <translation id="6587923378399804057">Le lien que vous avez copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
-<translation id="6596892391065203054">Votre administrateur a bloqué l'impression de ce contenu.</translation>
 <translation id="6604181099783169992">Capteurs de mouvement ou de luminosité</translation>
 <translation id="6609880536175561541">Enveloppe Prc7</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>

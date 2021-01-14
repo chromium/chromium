@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">Не ўдалося прачытаць вашы параметры.
 
 Некаторыя функцыі могуць быць недаступныя, і змены ў параметрах не захаваюцца.</translation>
-<translation id="107513968719897256">Каб аддзяліць сваю працу ў інтэрнэце як прыватнай асобы ад працы пад імем карыстальніка <ph name="NEW_USER" />, стварыце новы профіль Chromium</translation>
 <translation id="1098170124587656448">Chromium дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, выкарыстаннем няправільных пашырэнняў і г. д.</translation>
 <translation id="1104942323762546749">Chromium запытвае дазвол на экспартаванне вашых пароляў. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="113122355610423240">Chromium з'яўляецца стандартным браўзерам</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium працуе ў фонавым рэжыме.</translation>
 <translation id="4987820182225656817">Госці могуць выкарыстоўваць Chromium, не пакідаючы нічога пасля сябе.</translation>
 <translation id="4994636714258228724">Дадаць мяне ў Chromium</translation>
-<translation id="5080135079858647714">Стварыць ваш уласны профіль у Chromium?</translation>
 <translation id="5224391634244552924">Няма захаваных пароляў. Chromium можа правяраць толькі захаваныя паролі.</translation>
 <translation id="5277894862589591112">Каб прымяніць змяненні, перазапусціце Chromium</translation>
 <translation id="5358375970380395591">Вы ўваходзіце праз уліковы запіс пад кіраваннем, што дае адміністратару кантроль над вашым профілем у браўзеры Chromium. Даныя Chromium (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Уваход у сетку</translation>
 <translation id="5987687638152509985">Абнавіце Chromium, каб пачаць сінхранізацыю</translation>
-<translation id="6013050204643758987">Chromium OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />, як і <ph name="BEGIN_LINK_LINUX_OSS" />Linux (бэта-версія)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="6039377483953237732">Версія Chromium OS</translation>
 <translation id="6055895534982063517">Даступная новая версія Chromium. Яшчэ хутчэйшая.</translation>
 <translation id="6063093106622310249">&amp;Адкрыць у Chromium</translation>

@@ -22,7 +22,6 @@
 <translation id="1017280919048282932">&amp;Дадаць у слоўнік</translation>
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1022489261739821355">Паказаны паролі, захаваныя ва <ph name="BEGIN_LINK" />Уліковым запісе Google<ph name="END_LINK" /></translation>
-<translation id="1023873740278604399">Злёгку паварушыце пальцам, каб дадаць яшчэ некаторыя часткі пальца ў адбітак.</translation>
 <translation id="1026655690966755180">Дадаць порт</translation>
 <translation id="1026822031284433028">Загрузіць відарыс</translation>
 <translation id="1029317248976101138">Маштаб</translation>
@@ -273,7 +272,6 @@
 <translation id="1297175357211070620">Аб'ект прызначэння</translation>
 <translation id="1300806585489372370">Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />уключыце ідэнтыфікатары<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">Сайт <ph name="ORIGIN" /> можа змяняць наступныя файлы</translation>
-<translation id="1302139669997477151">Здымка экрана заблакіравана</translation>
 <translation id="1302227299132585524">Дазволіць JavaScript з падзей Apple</translation>
 <translation id="1303101771013849280">HTML-файл закладак</translation>
 <translation id="1303178898338186101">Не ўдалося атрымаць доступ да Google Play. Код памылкі: <ph name="ERROR_CODE" />.</translation>
@@ -346,7 +344,6 @@
 <translation id="1383861834909034572">Адкрыццё пры завяршэнні</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1386791642444521222">Актываваць фізічную SIM-карту</translation>
-<translation id="1387519831959169718">Каб аддзяліць сваю працу ў інтэрнэце ад працы карыстальніка <ph name="NEW_USER" />, вы можаце стварыць для яго новы профіль</translation>
 <translation id="138784436342154190">Аднавіць стандартную пачатковую старонку?</translation>
 <translation id="1388253969141979417">Дазволена выкарыстоўваць мікрафон</translation>
 <translation id="1388728792929436380">Пасля завяршэння абнаўлення прылада "<ph name="DEVICE_TYPE" />" перазапусціцца.</translation>
@@ -571,6 +568,7 @@
 <translation id="1618268899808219593">Да&amp;ведачны цэнтр</translation>
 <translation id="1620307519959413822">Няправільны пароль. Паўтарыце спробу або націсніце на словы "Забылі пароль?", каб скінуць яго.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1621485112342885423">Вашы кошыкі</translation>
 <translation id="1621729191093924223">Функцыі, якім патрэбны мікрафон, не будуць працаваць</translation>
 <translation id="1621831347985899379">Даныя на прыладзе "<ph name="DEVICE_TYPE" />" будуць выдалены</translation>
 <translation id="1622054403950683339">Скасаваць сувязь з сеткай Wi-Fi</translation>
@@ -1112,7 +1110,6 @@
 <translation id="222447520299472966">Неабходна выбраць у мастацкай галерэі як мінімум адзін альбом</translation>
 <translation id="2224551243087462610">Змена назвы папкі</translation>
 <translation id="2225864335125757863">Каб вашаму ўліковаму запісу нічога не пагражала, неадкладна змяніце наступныя паролі:</translation>
-<translation id="2226204716217107988">Пераключыцца на іншы профіль?</translation>
 <translation id="2226449515541314767">Для гэтага сайта заблакіравана магчымасць мець поўны кантроль над прыладамі MIDI.</translation>
 <translation id="2226907662744526012">Аўтаматычна здымаць блакіроўку пры ўвядзенні PIN-кода</translation>
 <translation id="222704500187107962">Гэта выключэнне будзе аўтаматычна выдалена пасля выхаду з бягучага сеанса інкогніта</translation>
@@ -1570,6 +1567,7 @@
 <translation id="2739191690716947896">Адладзіць</translation>
 <translation id="2739240477418971307">Змяніць налады спецыяльных магчымасцей</translation>
 <translation id="274029851662193272">Уціснуты</translation>
+<translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Адкрыць тэрмінал аднаўлення</translation>
 <translation id="2741912629735277980">Паказваць карыстальніцкі інтэрфейс на экране ўваходу</translation>
 <translation id="274290345632688601">Аднаўленне файлаў і праграм Linux</translation>
@@ -1661,7 +1659,6 @@
 <translation id="2836635946302913370">Уваход пад гэтым іменем карыстальніка выключаны адміністратарам.</translation>
 <translation id="283669119850230892">Каб выкарыстоўваць сетку <ph name="NETWORK_ID" />, спачатку завяршыце падключэнне да інтэрнэту (гл. ніжэй).</translation>
 <translation id="2838379631617906747">Ідзе ўсталяванне</translation>
-<translation id="2838835911926931318">Каб закладкі, паролі, гісторыя і іншыя даныя сінхранізаваліся на ўсіх вашых прыладах, увайдзіце ў сістэму</translation>
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
 <translation id="2841013758207633010">Час</translation>
 <translation id="2841837950101800123">Пастаўшчык</translation>
@@ -2011,7 +2008,6 @@
 <translation id="3264544094376351444">Шрыфт без засечак</translation>
 <translation id="3264582393905923483">Кантэкст</translation>
 <translation id="3265459715026181080">Закрыць акно</translation>
-<translation id="3266022278425892773">Асяроддзе распрацоўкі Linux</translation>
 <translation id="3266179261140759675">Забараніць сайтам, якія былі закрыты, адпраўляць і атрымліваць даныя</translation>
 <translation id="3266274118485960573">Праверка бяспекі выконваецца.</translation>
 <translation id="3267726687589094446">І далей дазваляць аўтаматычнае спампоўванне некалькіх файлаў</translation>
@@ -2933,7 +2929,6 @@
 <translation id="4301671483919369635">Гэта старонка мае дазвол на змяненне файлаў</translation>
 <translation id="4303079906735388947">Наладзьце новы PIN-код для ключа бяспекі</translation>
 <translation id="4305402730127028764">Скапіраваць на прыладу "<ph name="DEVICE_NAME" />"</translation>
-<translation id="4305817255990598646">Пераключыцца</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="4307992518367153382">Асноўнае</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ актыўна)</translation>
@@ -2994,7 +2989,6 @@
 <translation id="4384312707950789900">Дадаць у прыярытэтныя</translation>
 <translation id="4384652540891215547">Актываваць пашырэнне</translation>
 <translation id="438503109373656455">Саратога</translation>
-<translation id="4385040356362222432">Каб аддзяліць сваю працу ў інтэрнэце пад імем карыстальніка <ph name="NEW_USER" /> ад працы пад імем <ph name="EXISTING_USER" />, стварыце новы профіль</translation>
 <translation id="4387004326333427325">Сертыфікат аўтэнтыфікацыі адхілены аддалена</translation>
 <translation id="4387890294700445764">Раскрытыя паролі</translation>
 <translation id="4389091756366370506">Карыстальнік <ph name="VALUE" /></translation>
@@ -3113,7 +3107,6 @@
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4522600456902129422">Працягваць дазваляць гэтаму сайту праглядаць буфер абмену</translation>
 <translation id="4524832533047962394">Указаны рэжым рэгістрацыі не падтрымліваецца ў гэтай версіі аперацыйнай сістэмы. Праверце, ці актуальная версія ў вас.</translation>
-<translation id="4527186207340858212">Стварыць новы профіль для працы?</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4527929807707405172">Уключыць адваротную прагортку. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Прапанова перакладу</translation>
@@ -3416,7 +3409,6 @@
 <translation id="4881685975363383806">У наступны раз не напамінаць</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4882312758060467256">Мае доступ да гэтага сайта</translation>
-<translation id="4882670371033027418">Наладзьце выкарыстанне адбітка пальца для хуткай разблакіроўкі прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="4882831918239250449">Кіраванне тым, як гісторыя прагляду сайтаў выкарыстоўваецца для персаналізацыі пошуку, рэкламы і інш.</translation>
 <translation id="4882919381756638075">Сайты звычайна выкарыстоўваюць мікрафон для функцый сувязі (напрыклад, для відэачата)</translation>
 <translation id="4883436287898674711">Усе сайты <ph name="WEBSITE_1" /></translation>
@@ -4178,7 +4170,6 @@
 <translation id="5781092003150880845">Сінхранізаваць як <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Адправіць каманды ў пашырэнне <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
-<translation id="5783602409389152506">падчас пошуку прылад...</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5785583009707899920">Файлавыя ўтыліты Chrome</translation>
 <translation id="5787146423283493983">Узгадненне ключоў</translation>
@@ -4636,7 +4627,6 @@
 <translation id="6300177430812514606">Не дазволена завяршаць адпраўку або атрыманне даных</translation>
 <translation id="630065524203833229">В&amp;ыйсці</translation>
 <translation id="6300718114348072351">Не ўдалося аўтаматычна наладзіць <ph name="PRINTER_NAME" />. Укажыце пашыраныя звесткі пра прынтар. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Каб аддзяліць сваю працу ў інтэрнэце як прыватнай асобы ад працы пад імем карыстальніка <ph name="EXISTING_USER" />, стварыце новы профіль для карыстальніка <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Прапановы асабістых даных</translation>
 <translation id="6305607932814307878">Глабальная палітыка:</translation>
 <translation id="6307990684951724544">Сістэма занятая</translation>
@@ -5702,7 +5692,6 @@
 <translation id="7556033326131260574">Функцыі Smart Lock не ўдалося спраўдзіць ваш уліковы запіс. Каб увайсці, увядзіце пароль.</translation>
 <translation id="7556242789364317684">На жаль, аднавіць налады ў браўзеры <ph name="SHORT_PRODUCT_NAME" /> не ўдалося. Каб выправіць памылку, браўзеру <ph name="SHORT_PRODUCT_NAME" /> трэба скінуць налады прылады з дапамогай Powerwash.</translation>
 <translation id="7557194624273628371">Пераадрасацыя партоў у Linux</translation>
-<translation id="7559269329306630685">Адбіткі пальцаў надзейна захоўваюцца на вашай прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="7559719679815339381">Пачакайце: праграма-кіёск абнаўляецца. Не вымайце USB-сховішча.</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="756445078718366910">Адкрыць акно браўзера</translation>
@@ -5979,7 +5968,6 @@
 <translation id="7839192898639727867">Ідэнтыфікатар ключа суб'екта сертыфіката</translation>
 <translation id="7842692330619197998">Каб стварыць новы ўліковы запіс, перайдзіце на старонку g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Выдаліць Linux</translation>
-<translation id="7844553762889824470">Вылучыце тое, што трэба агучыць, і націсніце "Пошук + S". Можна таксама націснуць і ўтрымліваць клавішу пошуку, або націснуць на значок "Чытаць уголас" побач з відарысам профілю, каб вылучыць патрэбнае.</translation>
 <translation id="7844992432319478437">Абнаўленне розніцы</translation>
 <translation id="7846634333498149051">Клавіятура</translation>
 <translation id="7847212883280406910">Націсніце Ctrl + Alt + S, каб пераключыцца на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
@@ -6184,7 +6172,6 @@
 <translation id="8074127646604999664">Дазволіць нядаўна закрытым сайтам завяршаць перадачу і прыём даных</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8076835018653442223">Доступ да лакальных файлаў на прыладзе адключаны адміністратарам</translation>
-<translation id="8079153653197012234">Увядзіце код пацвярджэння для профілю "<ph name="PROFILE_NAME" />".</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
 <translation id="8082106343289440791">Спалучыць з прыладай "<ph name="DEVICE_NAME" />"?</translation>
@@ -7059,9 +7046,7 @@
 <translation id="9064275926664971810">Уключыць аўтазапаўненне для ўводу даных у формы адным націскам</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>
-<translation id="9066773882585798925">Слухаць чытанне тэксту ўслых</translation>
 <translation id="9066782832737749352">Сінтэз маўлення</translation>
-<translation id="9068849894565669697">Выбар колеру</translation>
 <translation id="9068878141610261315">Тып файла не падтрымліваецца</translation>
 <translation id="9070342919388027491">Укладка перамешчана ўлева</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 адраса}one{# адраса}few{# адрасоў}many{# адрасоў}other{# адраса}}</translation>
@@ -7082,7 +7067,6 @@
 <translation id="9088917181875854783">Пацвердзіце, што гэты ключ доступу паказаны на прыладзе "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Метады ўводу</translation>
 <translation id="9090044809052745245">Назва прылады, якую бачаць іншыя карыстальнікі</translation>
-<translation id="909108997331068008">Профіль карыстальніка <ph name="EXISTING_USER" /> выкарыстаны пры ўваходзе ва ўліковы запіс <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Абнавіць пароль</translation>
 <translation id="9094038138851891550">Імя карыстальніка няправільнае</translation>
 <translation id="9094859731829297286">Сапраўды зарэзерваваць дыск фіксаванага памеру для Linux?</translation>
@@ -7211,7 +7195,6 @@
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="941070664607309480">Націсніце, каб ваша прылада стала бачнай і змагла атрымаць іх</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> абагульвае гук і ўкладку Chrome.</translation>
-<translation id="942603342650325556">Магчымасць рабіць здымкі змесціва экрана заблакіравана адміністратарам.</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947329552760389097">&amp;Праверыць элементы</translation>
 <translation id="951991426597076286">Адхіліць</translation>

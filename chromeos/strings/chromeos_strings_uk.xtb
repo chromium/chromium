@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Відсканований файл збережено}one{Відскановані файли збережено}few{Відскановані файли збережено}many{Відскановані файли збережено}other{Відскановані файли збережено}}</translation>
 <translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
-<translation id="7928373994957558460">Показати, де збережено файл</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>

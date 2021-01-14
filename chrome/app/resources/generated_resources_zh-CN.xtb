@@ -22,7 +22,6 @@
 <translation id="1017280919048282932">添加到字典中(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">目前显示的是您 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中存储的密码</translation>
-<translation id="1023873740278604399">请稍微移动一下您的手指，以便系统添加您指纹的各个部分。</translation>
 <translation id="1026655690966755180">添加端口</translation>
 <translation id="1026822031284433028">加载图片</translation>
 <translation id="1029317248976101138">缩放</translation>
@@ -270,7 +269,6 @@
 <translation id="1297175357211070620">目标打印机</translation>
 <translation id="1300806585489372370">要更改此设置，请先<ph name="BEGIN_LINK" />启用标识符<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可修改以下文件</translation>
-<translation id="1302139669997477151">屏幕截图功能已被禁用</translation>
 <translation id="1302227299132585524">允许 Apple 事件中的 JavaScript</translation>
 <translation id="1303101771013849280">以前导出的书签（HTML 文件）</translation>
 <translation id="1303178898338186101">无法连接到 Google Play。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -343,7 +341,6 @@
 <translation id="1383861834909034572">完成时打开</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1386791642444521222">激活实体 SIM 卡</translation>
-<translation id="1387519831959169718">若要将您的浏览数据与 <ph name="NEW_USER" /> 的浏览数据分隔开来，您可为该用户创建一份新的个人资料</translation>
 <translation id="138784436342154190">要恢复默认启动页吗？</translation>
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
@@ -565,6 +562,7 @@
 <translation id="1618268899808219593">帮助中心(&amp;E)</translation>
 <translation id="1620307519959413822">密码错误。请重试，或点击“忘记了密码？”以重置密码。</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1621485112342885423">您的购物车</translation>
 <translation id="1621729191093924223">所有需要使用麦克风的功能都将无法正常运行</translation>
 <translation id="1621831347985899379">系统将会删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="1622054403950683339">移除 WLAN 网络</translation>
@@ -1106,7 +1104,6 @@
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
 <translation id="2225864335125757863">为确保您的帐号安全无虞，请立即更改这些密码：</translation>
-<translation id="2226204716217107988">切换到另一份个人资料？</translation>
 <translation id="2226449515541314767">已禁止该网站完全控制 MIDI 设备。</translation>
 <translation id="2226907662744526012">一旦用户输入 PIN 码便自动解锁</translation>
 <translation id="222704500187107962">待您退出当前的无痕式会话后，此例外情况将被自动移除</translation>
@@ -1563,6 +1560,7 @@
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
 <translation id="274029851662193272">凹陷</translation>
+<translation id="2740531572673183784">确定</translation>
 <translation id="2741713322780029189">打开恢复终端</translation>
 <translation id="2741912629735277980">登录屏幕上的显示界面</translation>
 <translation id="274290345632688601">正在恢复 Linux 应用和文件</translation>
@@ -1654,7 +1652,6 @@
 <translation id="2836635946302913370">管理员已禁止使用此用户名登录。</translation>
 <translation id="283669119850230892">要使用网络“<ph name="NETWORK_ID" />”，请先在下方连接互联网。</translation>
 <translation id="2838379631617906747">正在安装</translation>
-<translation id="2838835911926931318">登录即可同步您所有设备上的书签、密码、历史记录等信息</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2841013758207633010">时间</translation>
 <translation id="2841837950101800123">提供方</translation>
@@ -2004,7 +2001,6 @@
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
-<translation id="3266022278425892773">Linux 开发环境</translation>
 <translation id="3266179261140759675">禁止已关闭的网站收发数据</translation>
 <translation id="3266274118485960573">正在运行安全检查。</translation>
 <translation id="3267726687589094446">继续允许自动下载多个文件</translation>
@@ -2925,7 +2921,6 @@
 <translation id="4301671483919369635">此页面可修改文件</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
-<translation id="4305817255990598646">切换</translation>
 <translation id="4306119971288449206">应用必须以“<ph name="CONTENT_TYPE" />”这种内容类型提供</translation>
 <translation id="4307992518367153382">基本</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（实际大小为 <ph name="NUM_KILOBYTES_LIVE" /> K）</translation>
@@ -2986,7 +2981,6 @@
 <translation id="4384312707950789900">添加到首选网络列表</translation>
 <translation id="4384652540891215547">激活该扩展程序</translation>
 <translation id="438503109373656455">小马</translation>
-<translation id="4385040356362222432">若要将 <ph name="NEW_USER" /> 的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来，请创建一份新的个人资料</translation>
 <translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4387890294700445764">已泄露的密码</translation>
 <translation id="4389091756366370506">用户 <ph name="VALUE" /></translation>
@@ -3105,7 +3099,6 @@
 <translation id="4522570452068850558">详细信息</translation>
 <translation id="4522600456902129422">继续允许此网站查看剪贴板</translation>
 <translation id="4524832533047962394">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本。</translation>
-<translation id="4527186207340858212">创建一份新的工作资料？</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527929807707405172">启用反向滚动。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">建议翻译</translation>
@@ -3408,7 +3401,6 @@
 <translation id="4881685975363383806">下次不再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4882312758060467256">可以访问此网站</translation>
-<translation id="4882670371033027418">设置指纹以便更快速地解锁您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="4882831918239250449">控制 Google 如何利用您的浏览记录为您提供个性化的搜索、广告和其他服务</translation>
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
@@ -3662,6 +3654,7 @@
 <translation id="5195083053116174857">选择要移动的密码</translation>
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5198430103906431024">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
+<translation id="5199729219167945352">实验</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{点击即可查看该扩展程序}other{点击即可查看这些扩展程序}}</translation>
 <translation id="5204673965307125349">请对此设备执行 Powerwash，然后重试。</translation>
 <translation id="5204967432542742771">输入密码</translation>
@@ -4170,7 +4163,6 @@
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781865261247219930">向“<ph name="EXTENSION_NAME" />”发送命令</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
-<translation id="5783602409389152506">正在搜寻设备…</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5785583009707899920">Chrome 文件实用程序</translation>
 <translation id="5787146423283493983">密钥协议</translation>
@@ -4628,7 +4620,6 @@
 <translation id="6300177430812514606">不允许完成数据收发操作</translation>
 <translation id="630065524203833229">退出(&amp;X)</translation>
 <translation id="6300718114348072351">无法自动配置<ph name="PRINTER_NAME" />。请指定高级打印机详细信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">若要将个人的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来，请为 <ph name="NEW_USER" /> 创建一份新的个人资料</translation>
 <translation id="630292539633944562">个人信息建议</translation>
 <translation id="6305607932814307878">全局政策：</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
@@ -5694,7 +5685,6 @@
 <translation id="7556033326131260574">Smart Lock 无法验证您的帐号，您需要输入密码才能进入。</translation>
 <translation id="7556242789364317684">抱歉，“<ph name="SHORT_PRODUCT_NAME" />”无法恢复您的设置。要更正此错误，“<ph name="SHORT_PRODUCT_NAME" />”必须使用 Powerwash 重置您的设备。</translation>
 <translation id="7557194624273628371">Linux 端口转发</translation>
-<translation id="7559269329306630685">您的指纹数据会安全存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7559719679815339381">请稍候…自助服务终端应用正在更新。请不要拔下 U 盘。</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
@@ -5971,7 +5961,6 @@
 <translation id="7839192898639727867">证书主题背景密钥 ID</translation>
 <translation id="7842692330619197998">如果您需要创建新帐号，请访问 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="784273751836026224">卸载 Linux</translation>
-<translation id="7844553762889824470">突出显示您想听到的内容，然后按“搜索键 + S”组合键。您也可先按住搜索键，或点按您的个人资料图片附近的“随选朗读”图标，然后选择要朗读的区域。</translation>
 <translation id="7844992432319478437">正在更新diff</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
@@ -6177,7 +6166,6 @@
 <translation id="8074127646604999664">允许最近关闭的网站完成数据收发操作</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8076835018653442223">您的管理员已禁止访问您设备上的本地文件</translation>
-<translation id="8079153653197012234">请输入您的确认码以启用“<ph name="PROFILE_NAME" />”。</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
 <translation id="8082106343289440791">与“<ph name="DEVICE_NAME" />”配对？</translation>
@@ -7048,9 +7036,7 @@
 <translation id="9064275926664971810">启用自动填充功能后，只需点击一次即可填写多个表单</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
-<translation id="9066773882585798925">让系统大声朗读文字</translation>
 <translation id="9066782832737749352">文字转语音</translation>
-<translation id="9068849894565669697">选择颜色</translation>
 <translation id="9068878141610261315">不支持此文件类型</translation>
 <translation id="9070342919388027491">此标签页已移至左侧</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
@@ -7071,7 +7057,6 @@
 <translation id="9088917181875854783">请确认“<ph name="DEVICE_NAME" />”上显示有此密钥：</translation>
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9090044809052745245">您的设备向他人显示的名称</translation>
-<translation id="909108997331068008"><ph name="EXISTING_USER" />的个人资料已登录 <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9094038138851891550">用户名无效</translation>
 <translation id="9094859731829297286">确定要为 Linux 预留固定大小的磁盘空间吗？</translation>
@@ -7200,7 +7185,6 @@
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="941070664607309480">点击一下即可显示您的设备，以便接收分享的数据</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
-<translation id="942603342650325556">您的管理员已禁止截取屏幕上的内容。</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
 <translation id="951991426597076286">拒绝</translation>

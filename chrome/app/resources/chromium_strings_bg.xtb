@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1065672644894730302">Предпочитанията ви не могат да бъдат прочетени. Възможно е да няма достъп до някои функции и промените в предпочитанията няма да бъдат запазени.</translation>
-<translation id="107513968719897256">За да бъде личното ви сърфиране отделно от това на <ph name="NEW_USER" />, създайте нов потребителски профил в Chromium</translation>
 <translation id="1098170124587656448">Chromium може да ви защити от нарушения на сигурността на данните, злонамерени разширения и др.</translation>
 <translation id="1104942323762546749">Chromium иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="113122355610423240">Chromium е браузърът ви по подразбиране</translation>
@@ -113,7 +112,6 @@
 <translation id="4943838377383847465">Chromium работи на заден план.</translation>
 <translation id="4987820182225656817">Гостите могат да използват Chromium, без да оставят следи.</translation>
 <translation id="4994636714258228724">Добавяне на вас към Chromium</translation>
-<translation id="5080135079858647714">Ще си създадете ли потребителски профил в Chromium?</translation>
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="5277894862589591112">За да приложите промените си, рестартирайте Chromium</translation>
 <translation id="5358375970380395591">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Chromium. Данните ви там, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. <ph name="LEARN_MORE" /></translation>
@@ -138,7 +136,6 @@
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5987687638152509985">Актуализирайте Chromium, за да стартира синхронизирането</translation>
-<translation id="6013050204643758987">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />Linux (бета)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="6039377483953237732">Версия на Chromium OS</translation>
 <translation id="6055895534982063517">Налице е нова версия на Chromium, която е по-бърза от всякога.</translation>
 <translation id="6063093106622310249">&amp;Отваряне в Chromium</translation>

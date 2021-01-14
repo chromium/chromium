@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">ባትሪ</translation>
 <translation id="6325525973963619867">አልተሳካም</translation>
 <translation id="636850387210749493">የድርጅት ምዝገባ</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{የተቃኘ ፋይል ተቀምጧል}one{የተቃኙ ፋይሎች ተቀምጠዋል}other{የተቃኙ ፋይሎች ተቀምጠዋል}}</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="649050271426829538">ቆሟል - የወረቀት መታጨቅ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7819857487979277519">PSK (WPA ወይም RSN)</translation>
 <translation id="7882358943899516840">የአቅራቢ አይነት</translation>
-<translation id="7928373994957558460">የፋይል ቦታን አሳይ</translation>
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7960831585769876809">የሙቀት መጠን</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>

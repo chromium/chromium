@@ -374,7 +374,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ylläpitää laitettasi ja <ph name="ACCOUNT_MANAGER" /> tiliäsi.</translation>
 <translation id="2359629602545592467">Useita</translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2360873523816792727">Jos haluat käyttää kortteja kaikilla laitteillasi, ota synkronointi käyttöön.</translation>
 <translation id="2367567093518048410">Taso</translation>
 <translation id="2380886658946992094">Lakiasiat</translation>
 <translation id="2384307209577226199">Yrityksen oletus</translation>
@@ -1430,7 +1429,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6587923378399804057">Kopioimasi linkki</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ei ole ylläpidetty</translation>
 <translation id="6596325263575161958">Salausasetukset</translation>
-<translation id="6596892391065203054">Järjestelmänvalvoja on estänyt tämän sisällön tulostamisen.</translation>
 <translation id="6604181099783169992">Liike- tai valotunnistimet</translation>
 <translation id="6609880536175561541">Prc7 (kirjekuori)</translation>
 <translation id="6612358246767739896">Suojattu sisältö</translation>

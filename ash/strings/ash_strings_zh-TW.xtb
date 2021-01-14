@@ -58,7 +58,6 @@
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行通知動作</translation>
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">已擷取螢幕畫面並儲存至剪貼簿</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="144853431011121127">在 <ph name="DEVICE_TYPE" /> 上接收手機的通知</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
@@ -304,6 +303,7 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3712407551474845318">擷取部分畫面</translation>
 <translation id="371370241367527062">前置麥克風</translation>
+<translation id="3742055079367172538">已拍攝螢幕截圖</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
 <translation id="3783640748446814672">Alt</translation>
@@ -344,10 +344,8 @@
 <translation id="4072264167173457037">訊號中等</translation>
 <translation id="4112140312785995938">倒轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
-<translation id="4121728057981832179">有虛擬機器正在使用麥克風</translation>
 <translation id="4129129681837227511">如要在鎖定畫面上查看通知，請將裝置解鎖並修改相關設定</translation>
 <translation id="4146833061457621061">播放音樂</translation>
-<translation id="415719264485676252">擷取螢幕畫面的功能已遭到封鎖</translation>
 <translation id="4157822100366708405">深色主題設定</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
@@ -361,7 +359,6 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。已關閉所有通知</translation>
-<translation id="4267383818855338811">有虛擬機器正在使用攝影機</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -494,7 +491,6 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">你的管理員正在復原你的裝置。重新啟動後，裝置上的資料將全數刪除。</translation>
-<translation id="5516420770350073386">系統管理員因為螢幕上的內容，已停止錄製螢幕畫面。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5532994612895037630">輕觸任一處即可錄製全螢幕畫面</translation>
@@ -504,7 +500,6 @@
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="557563299383177668">下一段</translation>
-<translation id="55808498489107691">系統管理員因為螢幕上的內容，已禁止擷取螢幕畫面。</translation>
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
@@ -857,7 +852,6 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安裝的應用程式，已封鎖</translation>
 <translation id="8785070478575117577">連線至「<ph name="NETWORK_NAME" />」</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">預設</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">輸入法設定</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>

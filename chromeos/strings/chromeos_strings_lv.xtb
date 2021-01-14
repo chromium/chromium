@@ -198,7 +198,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6232017090690406397">Akumulators</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Skenētais fails ir saglabāts}zero{Skenētie faili ir saglabāti}one{Skenētie faili ir saglabāti}other{Skenētie faili ir saglabāti}}</translation>
 <translation id="6472207088655375767">VRP</translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
 <translation id="6517239166834772319">Izpēte</translation>
@@ -244,7 +243,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7819857487979277519">PSK (WPA vai RSN)</translation>
 <translation id="7882358943899516840">Pakalpojumu sniedzēja veids</translation>
-<translation id="7928373994957558460">Parādīt faila atrašanās vietu</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>

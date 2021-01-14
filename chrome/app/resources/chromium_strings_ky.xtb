@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">Жеке жөндөлөөрүңүз окулбай жатат.
 
 Айрым мүмкүнчүлүктөр иштебегендиктен, жеке жөндөөлөрдөгү өзгөрүүлөр сакталбайт.</translation>
-<translation id="107513968719897256">Жеке жана <ph name="NEW_USER" /> аркылуу серептөөнү ажыратуу үчүн, Chromium'да жаңы профиль түзүңүз</translation>
 <translation id="1098170124587656448">Chromium сырсөздөрүңүздү коопсуз сактоого, кооптуу кеңейтүүлөрдөн жана башкалардан коргоого жардам берет</translation>
 <translation id="1104942323762546749">Chromium сырсөздөрүңүздү экспорттогону жатат. Ага уруксат берүү үчүн Windows аккаунтуңуздун сырсөзүн териңиз.</translation>
 <translation id="113122355610423240">Chromium демейки серепчи катары колдонулат</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium фондук режимде.</translation>
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
-<translation id="5080135079858647714">Chromium'да өзүңүздүн профилиңизди түзөсүзбү?</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
 <translation id="5277894862589591112">Өзгөртүүлөрдү киргизүү үчүн Chromium'ду кайра иштетиңиз</translation>
 <translation id="5358375970380395591">Башкарылган аккаунт менен кирип, анын администраторуна Chromiun профилиңизди көзөмөлдөө мүмкүнчүлүгүн берип жатасыз. Колдонмолоруңуз, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр сыяктуу Chromium дайын-даректериңиз эми биротоло <ph name="USER_NAME" /> менен байланып калат. Бул дайындарды Google Каттоо эсептеринин Жеке кеңсеси аркылуу жок кылсаңыз болот, бирок башка аккаунтка байланыштыра албайсыз.<ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Тармакка кирүү</translation>
 <translation id="5987687638152509985">Шайкештирип баштоо үчүн Chromium'ду жаңыртыңыз</translation>
-<translation id="6013050204643758987">Chromium OS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux (бета-версиясы)<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="6039377483953237732">Chromium OS версиясы</translation>
 <translation id="6055895534982063517">Chromium'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>
 <translation id="6063093106622310249">&amp;Chromiumда ачуу</translation>

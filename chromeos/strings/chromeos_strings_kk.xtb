@@ -197,7 +197,6 @@
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Сканерленген файл сақталды.}other{Сканерленген файлдар сақталды.}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
@@ -243,7 +242,6 @@
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7819857487979277519">PSK (WPA немесе RSN)</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
-<translation id="7928373994957558460">Файл орнын көрсету</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>

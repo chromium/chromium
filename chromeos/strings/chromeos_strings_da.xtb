@@ -197,7 +197,6 @@
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Den scannede fil er gemt}one{Den scannede fil er gemt}other{De scannede filer er gemt}}</translation>
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
 <translation id="6517239166834772319">Udforsk</translation>
@@ -243,7 +242,6 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7882358943899516840">Udbydertype</translation>
-<translation id="7928373994957558460">Se filplacering</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="8041089156583427627">Send feedback</translation>

@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">ບໍ່ສາມາດອ່ານຄວາມມັກຂອງທ່ານໄດ້.
 
 ບາງຄຸນສົມບັດ​ອາດຈະບໍ່ມີໃຫ້ ແລະການປ່ຽນແປງຕໍ່ຄວາມມັກຈະບໍ່ຖືກບັນທຶກ.</translation>
-<translation id="107513968719897256">ເພື່ອແຍກການທ່ອງເວັບສ່ວນຕົວ ແລະ <ph name="NEW_USER" />, ກະລຸນາສ້າງໂປຣໄຟລ໌ໃໝ່ໃນ Chromium</translation>
 <translation id="1098170124587656448">Chromium ສາມາດຊ່ວຍຮັກສາໃຫ້ທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ສ່ວນຂະຫຍາຍທີ່ບໍ່ດີ ແລະ ອື່ນໆອີກໄດ້</translation>
 <translation id="1104942323762546749">Chromium ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="113122355610423240">Chromium ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
 <translation id="4987820182225656817">ແຂກສາມາດໃຊ້ Chromium ໂດຍ​ບໍ່​ມີ​ການປະອັນໃດໄວ້ເບື້ອງຫຼັງ.</translation>
 <translation id="4994636714258228724">ເພີ່ມທ່ານເອງໃສ່ Chromium</translation>
-<translation id="5080135079858647714">ສ້າງໂປຣໄຟລ໌ສ່ວນຕົວຂອງທ່ານໃນ Chromium ບໍ?</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5277894862589591112">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chromium ຄືນໃໝ່</translation>
 <translation id="5358375970380395591">ທ່ານກໍາລັງລົງຊື່ເຂົ້າ​ໃຊ້ດ້ວຍບັນຊີຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Chromium ຂອງທ່ານ. ຂໍ້ມູນ Chromium ຂອງທ່ານ, ເຊັ່ນ: ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດ​ກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5987687638152509985">ອັບເດດ Chromium ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
-<translation id="6013050204643758987">Chromium OS ເກີດຂຶ້ນໄດ້ຈາກ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພັນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ ນັ້ນກໍຄື <ph name="BEGIN_LINK_LINUX_OSS" />Linux (ເບຕ້າ)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="6039377483953237732">ເວີຊັນ Chromium OS</translation>
 <translation id="6055895534982063517">ມີ Chromium ລຸ້ນໃໝ່ຢູ່, ແລະມັນປອດໄພກ່ວາຜ່ານມາ.</translation>
 <translation id="6063093106622310249">&amp;ເປີດໃນ Chromium</translation>

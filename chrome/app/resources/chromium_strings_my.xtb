@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">သင့်စိတ်ကြိုက်များ ဖတ်၍မရပါ။
 
 အချို့အင်္ဂရပ်များ မရရှိနိုင်ပါ၊ စိတ်ကြိုက်များသို့ ပြောင်းလဲခြင်းများ သိမ်းမည်မဟုတ်ပါ။</translation>
-<translation id="107513968719897256">ကိုယ်ရေးကိုယ်တာနှင့် <ph name="NEW_USER" /> ဖွင့်ကြည့်မှုကို ခွဲခြားရန် Chromium တွင် ပရိုဖိုင်အသစ်ပြုလုပ်ပါ</translation>
 <translation id="1098170124587656448">ဒေတာပေါက်ကြားမှု၊ ဘေးကင်းမှုမရှိသော နောက်ဆက်တွဲနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုလုံခြုံအောင် Chromium က ကူညီပေးနိုင်သည်</translation>
 <translation id="1104942323762546749">Chromium သည် သင်၏ စကားဝှက်များကို တင်ပို့လိုသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="113122355610423240">Chromium သည် သင်၏ မူရင်းဘရောင်ဇာဖြစ်သည်</translation>
@@ -118,7 +117,6 @@
 <translation id="4943838377383847465">Chromium သည် နောက်ခံ မုဒ်ထဲမှာ ရှိနေသည်။</translation>
 <translation id="4987820182225656817">ဧည့်သည်များသည် Chromium ကို သုံးနိုင်ကြကာ နောက်မှာ ဘာမှ ကျန်ရစ်မည် မဟုတ်ပါ။</translation>
 <translation id="4994636714258228724">Chromium သို့သင့်ကိုယ်သင် ပေါင်းထည့်ရန်</translation>
-<translation id="5080135079858647714">Chromium တွင် သင်၏ ကိုယ်ပိုင်ပရိုဖိုင် ပြုလုပ်မလား။</translation>
 <translation id="5224391634244552924">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chromium က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="5277894862589591112">သင့်အပြောင်းအလဲများ ထည့်သွင်းရန် Chromium ကို ပြန်စတင်ပါ</translation>
 <translation id="5358375970380395591">သင်သည်  စီမံကွပ်ကဲထားသည့် အကောင့် ထဲသို့ လက်မှတ် ထိုးဝင်နေကာ စီမံအုပ်ချုပ်သူအား
@@ -144,7 +142,6 @@
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="5987687638152509985">စင့်ခ်လုပ်ခြင်းစတင်ရန် Chromium ကို အပ်ဒိတ်လုပ်ပါ</translation>
-<translation id="6013050204643758987">Chromium OS ကို နောက်ဆက်တွဲ <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> အဖြစ် <ph name="BEGIN_LINK_LINUX_OSS" />Linux (စမ်းသပ်ဆော့ဖ်ဝဲ)<ph name="END_LINK_LINUX_OSS" /> ကဲ့သို့ ပြုလုပ်ထားခြင်းဖြစ်သည်။</translation>
 <translation id="6039377483953237732">Chromium OS ဗားရှင်း</translation>
 <translation id="6055895534982063517">Chromium ဗားရှင်း အသစ် ရရှိနိုင်ရာ မကြုံစဖူး မြန်လှပါသည်။</translation>
 <translation id="6063093106622310249">&amp;Chromium တွင် ဖွင့်ရန်</translation>

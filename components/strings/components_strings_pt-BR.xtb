@@ -370,7 +370,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2360873523816792727">Para usar seus cartões em todos os dispositivos, ative a sincronização.</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">Padrão da empresa</translation>
@@ -1418,7 +1417,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
 <translation id="6596325263575161958">Opções de criptografia</translation>
-<translation id="6596892391065203054">Seu administrador bloqueou a opção de imprimir este conteúdo.</translation>
 <translation id="6604181099783169992">Sensores de luz ou movimento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>

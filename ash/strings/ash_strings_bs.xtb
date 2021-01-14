@@ -58,7 +58,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1419738280318246476">Otključajte uređaj da izvršite radnju obavještenja</translation>
 <translation id="1420408895951708260">Uključite ili isključite Noćno svjetlo. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Ekran je snimljen i snimak je sačuvan u međumemoriju</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="144853431011121127">Primajte obavještenja s telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Prikaži postavke za jezik</translation>
@@ -304,6 +303,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3712407551474845318">Snimi područje</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
+<translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3771549900096082774">Način rada visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator nije dozvolio višestruku prijavu za korisnika <ph name="USER_EMAIL" />. Svi korisnici se moraju odjaviti kako bi se nastavilo.</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
 <translation id="4112140312785995938">Pomakni unazad</translation>
 <translation id="4114315158543974537">Uključite hub telefona</translation>
-<translation id="4121728057981832179">Virtuelna mašina koristi vaš mikrofon</translation>
 <translation id="4129129681837227511">Za prikaz obavještenja na zaključanom ekranu, otključajte ga da izmijenite postavke</translation>
 <translation id="4146833061457621061">Pokreni muziku</translation>
-<translation id="415719264485676252">Snimanje ekrana je blokirano</translation>
 <translation id="4157822100366708405">Postavke Tamne teme</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4195877955194704651">Automatski klikovi na dugme</translation>
@@ -361,7 +359,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="425364040945105958">Nema SIM kartice</translation>
 <translation id="4261870227682513959">Prikaz postavki obavještenja. Obavještenja su isključena</translation>
-<translation id="4267383818855338811">Virtuelna mašina koristi vašu kameru</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4285498937028063278">Otkači</translation>
@@ -494,7 +491,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5465662442746197494">Trebate pomoć?</translation>
 <translation id="5496819745535887422">Vaš administrator vraća uređaj na prethodnu verziju sustava. Svi će se podaci izbrisati kada se uređaj ponovo pokrene.</translation>
-<translation id="5516420770350073386">Administrator je zaustavio snimanje ekrana zbog sadržaja na vašem ekranu.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">Povezivanje funkcije <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Dodirnite bilo gdje da snimate cijeli ekran</translation>
@@ -504,7 +500,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5571066253365925590">Bluetooth je omogućen</translation>
 <translation id="557563299383177668">Sljedeći pasus</translation>
-<translation id="55808498489107691">Administrator je blokirao snimanje ekrana zbog sadržaja na vašem ekranu.</translation>
 <translation id="558849140439112033">Prevucite da odaberete oblast za snimanje</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da onemogućite izgovaranje povratnih informacija.</translation>
@@ -857,7 +852,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="878215960996152260">Aplikacija <ph name="APP_NAME" /> je instalirana i blokirana</translation>
 <translation id="8785070478575117577">Povezivanje na mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Zadano</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Postavke načina unosa</translation>
 <translation id="8825863694328519386">Prevucite prstom slijeva nadesno da se vratite</translation>

@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">البطارية</translation>
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{تم حفظ الملف بعد مسحه ضوئيًا.}zero{تم حفظ الملفات بعد مسحها ضوئيًا.}two{تم حفظ الملفَّين بعد مسحهما ضوئيًا.}few{تم حفظ الملفات بعد مسحها ضوئيًا.}many{تم حفظ الملفات بعد مسحها ضوئيًا.}other{تم حفظ الملفات بعد مسحها ضوئيًا.}}</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6517239166834772319">استكشاف</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7819857487979277519">‏PSK (WPA أو RSN)</translation>
 <translation id="7882358943899516840">نوع مقدم الخدمة</translation>
-<translation id="7928373994957558460">عرض مكان الملف</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>

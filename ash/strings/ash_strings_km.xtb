@@ -58,7 +58,6 @@
 <translation id="1407069428457324124">​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="1419738280318246476">ដោះសោ​ឧបករណ៍ ដើម្បី​ធ្វើសកម្មភាពជូន​ដំណឹង</translation>
 <translation id="1420408895951708260">បិទ/បើក​ពន្លឺពេលយប់។ <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">បានថតអេក្រង់ និងរក្សាទុកទៅក្នុងឃ្លីបបត</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="144853431011121127">ទទួលបានការជូនដំណឹង​ពីទូរសព្ទរបស់អ្នកនៅលើ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">បង្ហាញ​ការកំណត់ភាសា</translation>
@@ -304,6 +303,7 @@
 <translation id="370665806235115550">កំពុងដំណើរការ...</translation>
 <translation id="3712407551474845318">ថតផ្នែក</translation>
 <translation id="371370241367527062">មីក្រូហ្វូន​ខាងមុខ</translation>
+<translation id="3742055079367172538">រូបថតអេក្រង់ត្រូវបានថតយក</translation>
 <translation id="3771549900096082774">មុខងារភាពដិតកម្រិតខ្ពស់</translation>
 <translation id="3773700760453577392">អ្នកគ្រប់គ្រង​បានដក​ការអនុញ្ញាត​មិនឱ្យមាន​ការចូលគណនី​ច្រើនសម្រាប់ <ph name="USER_EMAIL" /> ទេ។ អ្នកប្រើ​ប្រាស់ទាំងអស់​ត្រូវចាកចេញ​ដើម្បីបន្ត។</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@
 <translation id="4072264167173457037">សេវាមធ្យម</translation>
 <translation id="4112140312785995938">សា​ថយក្រោយ</translation>
 <translation id="4114315158543974537">បើក Phone Hub</translation>
-<translation id="4121728057981832179">ម៉ាស៊ីននិម្មិតកំពុងប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="4129129681837227511">ដើម្បីមើលការជូនដំណឹង​នៅលើអេក្រង់ចាក់​សោរបស់អ្នក សូមដោះសោ ដើម្បីប្ដូរការកំណត់</translation>
 <translation id="4146833061457621061">ចាក់​តន្ត្រី</translation>
-<translation id="415719264485676252">ការថតអេក្រង់ត្រូវបានទប់ស្កាត់</translation>
 <translation id="4157822100366708405">ការកំណត់​រចនាប័ទ្មងងឹត</translation>
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4195877955194704651">ប៊ូតុងចុច​ស្វ័យប្រវត្តិ</translation>
@@ -361,7 +359,6 @@
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="425364040945105958">មិនមានស៊ីមទេ</translation>
 <translation id="4261870227682513959">បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ</translation>
-<translation id="4267383818855338811">ម៉ាស៊ីននិម្មិតកំពុងប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="4269883910223712419">អ្នកគ្រប់គ្រ​ងឧបករណ៍​នេះ​មានលទ្ធភាព​៖</translation>
 <translation id="4279490309300973883">កំពុងឆ្លុះ</translation>
 <translation id="4285498937028063278">ដកការដៅ</translation>
@@ -494,7 +491,6 @@
 <translation id="54609108002486618">បាន​គ្រប់គ្រង</translation>
 <translation id="5465662442746197494">ត្រូវការជំនួយ?</translation>
 <translation id="5496819745535887422">អ្នកគ្រប់គ្រង​របស់អ្នកកំពុងស្ដារ​ឧបករណ៍​របស់អ្នក។ ទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប នៅពេល​ឧបករណ៍​ចាប់ផ្ដើម​ឡើងវិញ។</translation>
-<translation id="5516420770350073386">ការថត​វីដេអូអេក្រង់​ត្រូវបានបញ្ឈប់​ដោយអ្នកគ្រប់គ្រង​របស់អ្នក ដោយសារ​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក។</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> កំពុងភ្ជាប់។</translation>
 <translation id="5532994612895037630">ចុចកន្លែង​ណាមួយ ដើម្បីថតវីដេអូ​អេក្រង់ពេញ</translation>
@@ -504,7 +500,6 @@
 <translation id="556042886152191864">ប៊ូតុង</translation>
 <translation id="5571066253365925590">ប៊្លូធូសបានបើកដំណើរការ</translation>
 <translation id="557563299383177668">កថាខណ្ឌបន្ទាប់</translation>
-<translation id="55808498489107691">ការថត​អេក្រង់​ត្រូវបានទប់ស្កាត់​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក ដោយសារ​ខ្លឹមសារ​នៅលើ​អេក្រង់​របស់អ្នក។</translation>
 <translation id="558849140439112033">អូសដើម្បីជ្រើសរើសផ្នែកណាមួយ ដើម្បីថត</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">ចុច Ctrl + Alt + Z ដើម្បីបិទការអានអេក្រង់។</translation>
@@ -857,7 +852,6 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, កម្មវិធី​ដែលបាន​ដំឡើង ហើយ​បានទប់ស្កាត់</translation>
 <translation id="8785070478575117577">ភ្ជាប់​ទៅ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">លំនាំដើម</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ការកំណត់​វិធីសាស្ត្របញ្ចូល</translation>
 <translation id="8825863694328519386">អូសពីឆ្វេងដើម្បីថយក្រោយ</translation>

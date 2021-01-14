@@ -58,7 +58,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Captura de tela salva na área de transferência</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="144853431011121127">Receba notificações do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
@@ -304,6 +303,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3712407551474845318">Capturar região</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
+<translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Ativar o Phone Hub</translation>
-<translation id="4121728057981832179">Uma máquina virtual está usando o microfone</translation>
 <translation id="4129129681837227511">Para ver as notificações na sua tela de bloqueio, desbloqueie a tela e altere a configuração</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
-<translation id="415719264485676252">A captura de tela está bloqueada</translation>
 <translation id="4157822100366708405">Configurações do tema escuro</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
@@ -361,7 +359,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="425364040945105958">Sem chip</translation>
 <translation id="4261870227682513959">Mostrar configurações de notificação. As notificações estão desativadas</translation>
-<translation id="4267383818855338811">Uma máquina virtual está usando a câmera</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4285498937028063278">Soltar</translation>
@@ -494,7 +491,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
 <translation id="5496819745535887422">O administrador está revertendo seu dispositivo. Todos os dados serão excluídos quando o dispositivo for reiniciado.</translation>
-<translation id="5516420770350073386">A gravação da tela foi interrompida pelo administrador devido ao conteúdo exibido.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">O recurso <ph name="FEATURE_NAME" /> está se conectando.</translation>
 <translation id="5532994612895037630">Toque em qualquer lugar para gravar em tela cheia</translation>
@@ -504,7 +500,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5571066253365925590">Bluetooth ativado</translation>
 <translation id="557563299383177668">Próximo parágrafo</translation>
-<translation id="55808498489107691">A captura de tela foi bloqueada pelo administrador devido ao conteúdo exibido.</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área para a captura</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar o feedback falado.</translation>
@@ -858,7 +853,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalado, bloqueado</translation>
 <translation id="8785070478575117577">Conectar-se a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Padrão</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configurações de métodos de entrada</translation>
 <translation id="8825863694328519386">Deslize da esquerda para voltar</translation>

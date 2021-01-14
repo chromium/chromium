@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1065672644894730302">আপনার অভিরুচিগুলি পড়া যাবে না৷ কিছু বৈশিষ্ট্য অনুপলব্ধ থাকতে পারে ও অভিরুচিগুলিতে করা পরিবর্তনগুলি সংরক্ষিত হবে না৷</translation>
-<translation id="107513968719897256">ব্যক্তিগত ব্রাউজিং থেকে <ph name="NEW_USER" /> হিসেবে ব্রাউজিংকে আলাদা রাখতে Chromium-এ নতুন প্রোফাইল তৈরি করুন</translation>
 <translation id="1098170124587656448">ডেটার নিরাপত্তা লঙ্ঘন, এক্সটেনশন এবং আরও অনেক কিছুর থেকে Chrome আপনাকে সুরক্ষিত রাখতে সাহায্য করে</translation>
 <translation id="1104942323762546749">Chromium আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="113122355610423240">Chromium আপনার ডিফল্ট ব্রাউজার</translation>
@@ -115,7 +114,6 @@
 <translation id="4943838377383847465">Chromium পটভূমিতে চলছে৷</translation>
 <translation id="4987820182225656817">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chromium ব্যবহার করতে পারবেন৷</translation>
 <translation id="4994636714258228724">Chromium এর সাথে নিজেকে যোগ করুন</translation>
-<translation id="5080135079858647714">Chromium-এ নিজের প্রোফাইল তৈরি করতে চান?</translation>
 <translation id="5224391634244552924">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chromium সেটি চেক করতে পারবে।</translation>
 <translation id="5277894862589591112">আপনার পরিবর্তনগুলি প্রয়োগ করতে, Chromium রিলঞ্চ করুন</translation>
 <translation id="5358375970380395591">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন  করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Chromium প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chromium ডেটা, যেমন অ্যাপ, বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টগুলির ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে চালু হবেন, কিন্তু অন্য অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ <ph name="LEARN_MORE" /></translation>
@@ -140,7 +138,6 @@
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন</translation>
 <translation id="5987687638152509985">সিঙ্ক শুরু করতে Chromium আপডেট করুন</translation>
-<translation id="6013050204643758987"><ph name="BEGIN_LINK_LINUX_OSS" />Linux (বিটা)<ph name="END_LINK_LINUX_OSS" />-এর মতো অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> ব্যবহার করে Chromium OS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="6039377483953237732">Chromium OS ভার্সন</translation>
 <translation id="6055895534982063517">Chromium-এর একটি নতুন ভার্সন উপলভ্য আছে৷ এবং এটি আগের তুলনায় আরও দ্রুত৷</translation>
 <translation id="6063093106622310249">Chromium এ খুলুন</translation>

@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6325525973963619867">Збой</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Файл адсканіраванага відарыса захаваны}one{Файлы адсканіраваных відарысаў захаваны}few{Файлы адсканіраваных відарысаў захаваны}many{Файлы адсканіраваных відарысаў захаваны}other{Файлы адсканіраваных відарысаў захаваны}}</translation>
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7882358943899516840">Тып пастаўшчыка</translation>
-<translation id="7928373994957558460">Паказаць месцазнаходжанне файла</translation>
 <translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="7960831585769876809">Тэмпература</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>

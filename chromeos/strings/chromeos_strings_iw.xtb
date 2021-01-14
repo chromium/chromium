@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{הקובץ שנסרק נשמר}two{הקבצים שנסרקו נשמרו}many{הקבצים שנסרקו נשמרו}other{הקבצים שנסרקו נשמרו}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
-<translation id="7928373994957558460">הצגת מיקום הקובץ</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>

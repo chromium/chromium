@@ -58,7 +58,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1419738280318246476">Desbloquea el dispositivo para llevar a cabo una acción con las notificaciones</translation>
 <translation id="1420408895951708260">Activar o desactivar la Luz nocturna. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Se tomó una captura de pantalla y se guardó en el portapapeles</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="144853431011121127">Recibe las notificaciones del teléfono en tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Mostrar la configuración de idioma</translation>
@@ -304,6 +303,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3712407551474845318">Captura parcial de pantalla</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
+<translation id="3742055079367172538">Captura de pantalla tomada</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
 Todos los usuarios deben salir de sus cuentas para continuar.</translation>
@@ -345,10 +345,8 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4072264167173457037">Señal media</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
-<translation id="4121728057981832179">Una máquina virtual está usando el micrófono</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
-<translation id="415719264485676252">Se bloqueó la captura de pantalla</translation>
 <translation id="4157822100366708405">Configuración del Tema oscuro</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botón de clic automáticos</translation>
@@ -362,7 +360,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">No hay ninguna tarjeta SIM</translation>
 <translation id="4261870227682513959">Mostrar la configuración de las notificaciones: Están desactivadas</translation>
-<translation id="4267383818855338811">Una máquina virtual está usando la cámara</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
@@ -495,7 +492,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="54609108002486618">Gestionado</translation>
 <translation id="5465662442746197494">¿Necesitas ayuda?</translation>
 <translation id="5496819745535887422">El administrador está restableciendo tu dispositivo. Cuando se reinicie, se borrarán todos los datos.</translation>
-<translation id="5516420770350073386">El administrador detuvo la grabación de la pantalla debido al contenido que se muestra en ella.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">Se está conectando <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Presiona en cualquier lugar para grabar la pantalla completa</translation>
@@ -505,7 +501,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Párrafo siguiente</translation>
-<translation id="55808498489107691">El administrador bloqueó la captura de pantalla debido al contenido que se muestra en ella.</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -858,7 +853,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
 <translation id="8825863694328519386">Para volver, desliza el dedo desde la izquierda</translation>

@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Запишување компанија</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Скенираната датотека е зачувана}one{Скенираните датотеки се зачувани}other{Скенираните датотеки се зачувани}}</translation>
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="649050271426829538">Запрено - заглавена хартија</translation>
 <translation id="6517239166834772319">Explore</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7882358943899516840">Тип оператор</translation>
-<translation id="7928373994957558460">Прикажи ја локацијата на датотеката</translation>
 <translation id="7936303884198020182">Не се најдени сервери за име</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>

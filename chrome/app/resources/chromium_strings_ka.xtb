@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">თქვენი პარამეტრების წაკითხვა შეუძლებელია.
 
 ზოგიერთი ფუნქცია შეიძლება მიუწვდომელი იყოს და პარამეტრების ცვლილებები არ იქნება შენახული.</translation>
-<translation id="107513968719897256">პირადი და <ph name="NEW_USER" />-ის დათვალიერების მონაცემები რომ განაცალკევოთ, შექმენით ახალი პროფილი Chromium-ში</translation>
 <translation id="1098170124587656448">Chromium დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არასათანადო გაფართოებებისა და სხვა უსიამოვნებისგან</translation>
 <translation id="1104942323762546749">Chromium ითხოვს თქვენი პაროლების ექსპორტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="113122355610423240">Chromium თქვენი ნაგულისხმევი ბრაუზერია</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium ფონურ რეჟიმშია.</translation>
 <translation id="4987820182225656817">სტუმრებს შეუძლიათ Chromium-ის გამოყენება და მისი ყველა ფუნქციით სარგებლობა.</translation>
 <translation id="4994636714258228724">საკუთარი თავის დამატება Chromium-ში</translation>
-<translation id="5080135079858647714">გსურთ, შექმნათ საკუთარი პროფილი Chromium-ში?</translation>
 <translation id="5224391634244552924">შენახული პაროლები არ არის. პაროლების შემოწმებას Chromium შეძლებს მათი შენახვის შემდეგ.</translation>
 <translation id="5277894862589591112">ცვლილებების მისასადაგებლად ხელახლა გაუშვით Chromium</translation>
 <translation id="5358375970380395591">მართული ანგარიშით შედიხართ სისტემაში და ადმინისტრატორს თქვენს Chromium-ის პროფილზე კონტროლს აძლევთ. თქვენი Chromium ის მონაცემები როგორიცაა თქვენი აპლიკაციები, სანიშნები, ისტორიები, პაროლები, და სხვა პარამეტრები მუდმივად მიბმული გახდება <ph name="USER_NAME" />-თან. ამ მონაცემების წაშლას Google ანგარიშის საინფორმაციო დაფის გზით შეძლებთ, მაგრამ შეუძლებელი იქნება ამ მონაცემების სხვა ანგარიშთან გაერთიანება. <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — ქსელში შესვლა</translation>
 <translation id="5987687638152509985">სინქრონიზაციის დასაწყებად, განაახლეთ Chromium</translation>
-<translation id="6013050204643758987">Chromium OS-ს უზრუნველყოფს ისეთი დამატებითი <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფა<ph name="END_LINK_CROS_OSS" />, როგორიცაა <ph name="BEGIN_LINK_LINUX_OSS" />Linux (ბეტა)<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="6039377483953237732">Chromium OS-ის ვერსია</translation>
 <translation id="6055895534982063517">ხელმისაწვდომია Chromium-ის ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>
 <translation id="6063093106622310249">Chromium-ში &amp;გახსნა</translation>

@@ -198,7 +198,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Den skannede filen er lagret}other{De skannede filene er lagret}}</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
 <translation id="6517239166834772319">Utforsk</translation>
@@ -244,7 +243,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
-<translation id="7928373994957558460">Vis filplassering</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>

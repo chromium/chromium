@@ -22,7 +22,6 @@
 <translation id="1017280919048282932">शब्दकोशमा &amp;थप्नुहोस</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
 <translation id="1022489261739821355">तपाईंको <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" />मा सुरक्षित गरिएका पासवर्डहरू देखाउँदै</translation>
-<translation id="1023873740278604399">आफ्नो फिंगरप्रिन्टका फरक फरक भागहरू थप्न आफ्नो औँला थोरै सार्नुहोस्।</translation>
 <translation id="1026655690966755180">पोर्ट थप्नुहोस्</translation>
 <translation id="1026822031284433028">छवि लोड गर्नुहोस्</translation>
 <translation id="1029317248976101138">जुम आउट गर्नुहोस्</translation>
@@ -268,7 +267,6 @@
 <translation id="1297175357211070620">गन्तव्य</translation>
 <translation id="1300806585489372370">यो सेटिङ बदल्न सर्वप्रथम <ph name="BEGIN_LINK" />पहिचानकर्ताहरू सक्रिय गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ले निम्न फाइलहरू सम्पादन गर्न सक्छ</translation>
-<translation id="1302139669997477151">स्क्रिनसट खिच्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="1302227299132585524">Apple Events मार्फत JavaScript लाई अनुमति दिनुहोस्</translation>
 <translation id="1303101771013849280">HTML फाइललाई बुकमार्क गर्छ</translation>
 <translation id="1303178898338186101">Google Play मा कनेक्ट गर्न सकिएन। त्रुटिसम्बन्धी कोड: <ph name="ERROR_CODE" />।</translation>
@@ -341,7 +339,6 @@
 <translation id="1383861834909034572">पूरा भएपछि खुल्ने</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1386791642444521222">SIM कार्ड सक्रिय पार्नुहोस्</translation>
-<translation id="1387519831959169718">आफूले व्यक्तिगत रूपमा गर्ने ब्राउजिङ अलग गर्न तपाईं <ph name="NEW_USER" /> का लागि एउटा नयाँ प्रोफाइल बनाउन सक्नुहुन्छ</translation>
 <translation id="138784436342154190">पूर्वनिर्धारित सुरुवात पृष्ठलाई पुनर्स्थापना गर्ने हो?</translation>
 <translation id="1388253969141979417">तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="1388728792929436380">अपडेट पूरा भएपछि <ph name="DEVICE_TYPE" /> रिस्टार्ट हुने छ।</translation>
@@ -564,6 +561,7 @@
 <translation id="1618268899808219593">मद्द&amp;त केन्द्र</translation>
 <translation id="1620307519959413822">गलत पासवर्ड। फेरि प्रयास गर्नुहोस् वा यसलाई रिसेट गर्न पासवर्ड बिर्सें नामक लिंकमा क्लिक गर्नुहोस्।</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1621485112342885423">तपाईंका कार्ट</translation>
 <translation id="1621729191093924223">माइक्रोफोन प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> मा भएको डेटा मेटाइने छ</translation>
 <translation id="1622054403950683339">Wi-Fi नेटवर्क हटाउनुहोस्</translation>
@@ -1105,7 +1103,6 @@
 <translation id="222447520299472966">आर्ट ग्यालेरीमा रहेको कम्तीमा एउटा एल्बम चयन गर्नु पर्ने हुन्छ</translation>
 <translation id="2224551243087462610">फोल्डर नाम सम्पादन गर्नुहोस्</translation>
 <translation id="2225864335125757863">आफ्नो खाता सुरक्षित राख्न यी पासवर्डहरू तुरुन्तै बदल्नुहोस्:</translation>
-<translation id="2226204716217107988">अर्को प्रोफाइल प्रयोग गर्न थाल्ने हो?</translation>
 <translation id="2226449515541314767">MIDI यन्त्रहरूको पूरा नियन्त्रणको लागि यो साइट ब्लक गरिएको छ।</translation>
 <translation id="2226907662744526012">एक पटक PIN प्रविष्टि गरेपछि स्वतः अनलक हुने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="222704500187107962">तपाईं हालको इन्कग्निटो सत्रबाट बाहिरिएपछि यो अपवाद स्वतः हटाइने छ</translation>
@@ -1563,6 +1560,7 @@
 <translation id="2739191690716947896">डिबग गर्नुहोस्</translation>
 <translation id="2739240477418971307">आफ्नो पहुँच क्षमता सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="274029851662193272">दबेको</translation>
+<translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2741713322780029189">रिकभरी टर्मिनल खोल्नुहोस्</translation>
 <translation id="2741912629735277980">लग इन गर्ने स्क्रिनको डिस्प्ले UI</translation>
 <translation id="274290345632688601">Linux का एप तथा फाइलहरू पुनर्स्थापना गरिँदै</translation>
@@ -1654,7 +1652,6 @@
 <translation id="2836635946302913370">यो प्रयोगकर्ता नामद्वारा साइन इन तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> सञ्जाल प्रयोग गर्नको लागि, पहिले तल इन्टरनेटमा तपाइँको जडान पूर्ण गर्नुहोस्।</translation>
 <translation id="2838379631617906747">स्थापना गर्दै...</translation>
-<translation id="2838835911926931318">तपाईंका सबै यन्त्रहरूमा आफ्ना बुकमार्क, पासवर्ड, इतिहास र अन्य कुरा सिंक गर्न साइन इन गर्नुहोस्</translation>
 <translation id="2839032553903800133">सूचनाहरूलाई रोक लगाइयो</translation>
 <translation id="2841013758207633010">समय</translation>
 <translation id="2841837950101800123">प्रदायक</translation>
@@ -2005,7 +2002,6 @@
 <translation id="3264544094376351444">सान्स-सेरिफ फन्ट</translation>
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3265459715026181080">सन्झ्याल बन्द गर्नुहोस्</translation>
-<translation id="3266022278425892773">Linux डेभलपमेन्ट इनभारमेन्ट</translation>
 <translation id="3266179261140759675">बन्द गरिएका साइटहरूलाई डेटा पठाउन वा प्राप्त गर्न नदिनुहोस्</translation>
 <translation id="3266274118485960573">सुरक्षा जाँच हुँदै छ।</translation>
 <translation id="3267726687589094446">धेरै फाइलहरूको स्वत: डाउनलोडलाई अनुमति दिन जारी राख्नुहोस्</translation>
@@ -2926,7 +2922,6 @@
 <translation id="4301671483919369635">यस पृष्ठलाई फाइलहरू सम्पादन गर्ने अनुमति छ</translation>
 <translation id="4303079906735388947">आफ्नो सुरक्षा साँचो प्रयोग गर्नका लागि नयाँ PIN सेटअप गर्नुहोस्</translation>
 <translation id="4305402730127028764">प्रतिलिपि गरेर <ph name="DEVICE_NAME" /> मा टाँस्नुहोस्</translation>
-<translation id="4305817255990598646">स्विच</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K प्रत्यक्ष)</translation>
@@ -2987,7 +2982,6 @@
 <translation id="4384312707950789900">रुचाइएकोमा थप्नुहोस्</translation>
 <translation id="4384652540891215547">विस्तार सक्रिय गर्नुहोस्</translation>
 <translation id="438503109373656455">साराटोगा</translation>
-<translation id="4385040356362222432">आफूले <ph name="EXISTING_USER" /> बाट गरेको ब्राउजिङ <ph name="NEW_USER" /> बाट गरेको ब्राउजिङबाट अलग गर्न एउटा नयाँ प्रोफाइल बनाउनुहोस्</translation>
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्रलाई सीधै अस्वीकार गर्‍यो</translation>
 <translation id="4387890294700445764">अरूले देखेका पासवर्डहरू</translation>
 <translation id="4389091756366370506">प्रयोगकर्ता <ph name="VALUE" /></translation>
@@ -3106,7 +3100,6 @@
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4522600456902129422">यो साइटलाई क्लिपबोर्ड हेर्न दिने अनुमति जारी राख्नुहोस्</translation>
 <translation id="4524832533047962394">अपरेटिङ सिस्टमको यो संस्करणले उपलब्ध गराइएको दर्ता मोड समर्थन गर्दैन। कृपया आफूले सबैभन्दा नवीनतम संस्करण चलाइरहेको कुरा सुनिश्चित गर्नुहोस्।</translation>
-<translation id="4527186207340858212">नयाँ कार्य प्रोफाइल बनाउने हो?</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4527929807707405172">रिभर्स स्क्रोलिङ सक्षम पार्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">अनुवादसम्बन्धी सुझाव</translation>
@@ -3409,7 +3402,6 @@
 <translation id="4881685975363383806">मलाई फेरि स्मरण नगराइयोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4882312758060467256">यो साइटमाथि पहुँच राख्न सक्छ</translation>
-<translation id="4882670371033027418"><ph name="DEVICE_TYPE" /> अझ छिटो अनलक गर्न आफ्नो फिंगरप्रिन्ट सेटअप गर्नुहोस्</translation>
 <translation id="4882831918239250449">खोज, विज्ञापन र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="4882919381756638075">साइटहरूले भिडियो च्याट जस्ता सञ्चार सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको माइक्रोफोन प्रयोग गर्छन्</translation>
 <translation id="4883436287898674711">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
@@ -3663,6 +3655,7 @@
 <translation id="5195083053116174857">तपाईंले आफ्नो Google खातामा सार्न चाहेका पासवर्डहरू चयन गर्नुहोस्</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5198430103906431024">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, यन्त्र र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाइरहेको छ। यसले प्रणाली तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंको खातामा अतिरिक्त वेब तथा एपसम्बन्धी गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ।</translation>
+<translation id="5199729219167945352">प्रयोगहरू</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सन हेर्न क्लिक गर्नुहोस्}other{यी एक्स्टेन्सनहरू हेर्न क्लिक गर्नुहोस्}}</translation>
 <translation id="5204673965307125349">कृपया यन्त्रलाई पावरवास गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5204967432542742771">पासवर्ड प्रविष्टि गर्नुहोस्</translation>
@@ -4170,7 +4163,6 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> का रूपमा सिंक गर्नुहोस्</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> लाई आदेशहरू पठाउनुहोस्‌</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
-<translation id="5783602409389152506">यन्त्रहरू स्क्यान गर्दा...</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5785583009707899920">Chrome को फाइलका उपयोगिताहरू</translation>
 <translation id="5787146423283493983">प्रमुख सम्झौता</translation>
@@ -4627,7 +4619,6 @@
 <translation id="6300177430812514606">डेटा पठाउने वा प्राप्त गर्ने कार्य पूरा गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="630065524203833229">बा&amp;हिर निस्कनुहोस्</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> स्वतः कन्फिगर गर्न सकिएन। कृपया प्रिन्टरका उन्नत विवरणहरू तोक्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">व्यक्तिगत रूपमा गरिने ब्राउजिङ र <ph name="EXISTING_USER" /> बाट गरिने ब्राउजिङ अलग गर्न <ph name="NEW_USER" /> का लागि एउटा नयाँ प्रोफाइल बनाउनुहोस्</translation>
 <translation id="630292539633944562">व्यक्तिगत जानकारीसम्बन्धी सिफारिसहरू</translation>
 <translation id="6305607932814307878">विश्वव्यापी नीति:</translation>
 <translation id="6307990684951724544">प्रणाली व्यस्त</translation>
@@ -5693,7 +5684,6 @@
 <translation id="7556033326131260574">Smart Lock ले तपाईँको खाता प्रमाणीकरण गर्न सकेन। प्रविष्ट गर्न आफ्नो पासवर्ड टाइप गर्नुहोस्।</translation>
 <translation id="7556242789364317684">दुर्भाग्यवश, <ph name="SHORT_PRODUCT_NAME" /> ले तपाईंका सेटिङहरू पुन: प्राप्त गर्न सकेन। त्रुटि सच्याउनका लागि, <ph name="SHORT_PRODUCT_NAME" /> ले तपाईंको यन्त्रलाई पावरवाश मार्फत रिसेट गर्नुपर्छ।</translation>
 <translation id="7557194624273628371">Linux मा पोर्ट फर्वार्ड गर्ने सुविधा</translation>
-<translation id="7559269329306630685">तपाईंको फिंगरप्रिन्टसम्बन्धी डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="7559719679815339381">कृपया प्रतीक्षा गर्नुहोस्....Kiosk एप अद्यावधिक हुने प्रक्रियामा छ। USB स्टिक नहटाउनुहोस्।</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="756445078718366910">खुल्ला ब्राउजर सन्झ्याल</translation>
@@ -5970,7 +5960,6 @@
 <translation id="7839192898639727867">प्रमाणपत्र विषय कुञ्जी आइडी</translation>
 <translation id="7842692330619197998">तपाईंले नयाँ खाता सिर्जना गर्नु परेका खण्डमा g.co/ChromeEnterpriseAccount मा जानुहोस्।</translation>
 <translation id="784273751836026224">Linux अनइन्स्टल गर्नुहोस्</translation>
-<translation id="7844553762889824470">आफूले सुन्न चाहेको कुरालाई हाइलाइट गरी Search + S थिच्नुहोस्‌। चयन गर्न तपाईं खोज कुञ्जी थिचिराख्नुहोस् वा आफ्नो प्रोफाइल तस्बिरको नजिकै रहेको चयन गरेर बोल्ने आइकनमा ट्याप गर्नुहोस्।</translation>
 <translation id="7844992432319478437">अपडेट भिन्नता</translation>
 <translation id="7846634333498149051">किबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> मा स्विच गर्नको लागि Ctrl + Alt + S थिच्नुहोस्</translation>
@@ -6175,7 +6164,6 @@
 <translation id="8074127646604999664">हालसालै बन्द गरिएका साइटहरूलाई डेटा पठाउने र प्राप्त गर्ने कार्य सम्पन्न गर्न अनुमति दिनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8076835018653442223">तपाईंको प्रशासकले तपाईंको यन्त्रमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
-<translation id="8079153653197012234"><ph name="PROFILE_NAME" /> मा साइन इन गर्न कृपया आफूले प्राप्त गरेको पुष्टि कोड हाल्नुहोस्।</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">ADB डिबग प्रक्रिया असक्षम पार्ने हो?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउने हो?</translation>
@@ -7047,9 +7035,7 @@
 <translation id="9064275926664971810">एकै क्लिकमा वेबका फारामहरू भर्न स्वत: भरणलाई सक्रिय गर्नुहोस्</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
-<translation id="9066773882585798925">पाठलाई ठुलो स्वरमा पढेको सुन्नुहोस्</translation>
 <translation id="9066782832737749352">पाठवाचक</translation>
-<translation id="9068849894565669697">रङ्ग चयन गर्नुहोस्</translation>
 <translation id="9068878141610261315">यस प्रकारको फाइल सेयर गर्न सकिँदैन</translation>
 <translation id="9070342919388027491">यो ट्याब बायाँतिर सारियो</translation>
 <translation id="9072851933240542161">{COUNT,plural, =1{एउटा ठेगाना}other{# वटा ठेगाना}}</translation>
@@ -7070,7 +7056,6 @@
 <translation id="9088917181875854783">कृपया यो पासकुञ्जी "<ph name="DEVICE_NAME" />" मा देखाइएको छ भनेर पुष्टि गर्नुहोस्:</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9090044809052745245">अन्य यन्त्रमा देखिने तपाईंको यन्त्रको नाम</translation>
-<translation id="909108997331068008"><ph name="EXISTING_USER" /> को प्रोफाइल <ph name="NEW_USER" /> मा साइन इन गरिसकिएको छ</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9094038138851891550">युजरनेम अमान्य छ</translation>
 <translation id="9094859731829297286">तपाईंले Linux का हकमा डिस्कको निश्चित आकार रिजर्भ गर्न खोज्नुभएकै हो?</translation>
@@ -7199,7 +7184,6 @@
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="941070664607309480">तपाईंको यन्त्रसँग डेटा सेयर गर्न सकियोस् भन्नाका खातिर आफ्नो यन्त्र अरूले देख्न सक्ने बनाउन क्लिक गर्नुहोस्</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome को एउटा ट्याब र अडियोलाई साझेदारी गर्दैछ।</translation>
-<translation id="942603342650325556">तपाईंका एड्मिनले तपाईंको स्क्रिनमा रहेका सामग्रीको स्क्रिनसट खिच्ने सुविधा ब्लक गर्नुभएको छ।</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947329552760389097">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>

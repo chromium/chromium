@@ -198,7 +198,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Zeskanowany plik został zapisany}few{Zeskanowane pliki zostały zapisane}many{Zeskanowane pliki zostały zapisane}other{Zeskanowane pliki zostały zapisane}}</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
@@ -244,7 +243,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
-<translation id="7928373994957558460">Pokaż lokalizację pliku</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>

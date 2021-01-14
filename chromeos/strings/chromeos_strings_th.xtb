@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">แบตเตอรี่</translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{บันทึกไฟล์สแกนเรียบร้อยแล้ว}other{บันทึกไฟล์สแกนเรียบร้อยแล้ว}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">หยุดพิมพ์ - กระดาษติด</translation>
 <translation id="6517239166834772319">สำรวจ</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
-<translation id="7928373994957558460">แสดงตำแหน่งของไฟล์</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>

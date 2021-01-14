@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">আপোনাৰ অগ্ৰাধিকাৰসমূহ পঢ়িব নোৱাৰি।
 
 কিছুমান সুবিধা উপলব্ধ নহ'ব পাৰে আৰু অগ্ৰাধিকাৰসমূহত কৰা সলনি কার্য ছেভ নহ'ব পাৰে।</translation>
-<translation id="107513968719897256">ব্যক্তিগত আৰু <ph name="NEW_USER" /> ব্ৰাউজিং পৃথক কৰিবলৈ, Chromiumত এটা নতুন প্ৰ'ফাইল সৃষ্টি কৰক</translation>
 <translation id="1098170124587656448">Chromiumএ আপোনাক ডেটা উলংঘন, ক্ষতিকাৰক এক্সটেনশ্বন তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="1104942323762546749">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ ৰপ্তানি কৰিব খোজে। ইয়াৰ অনুমতি আপোনাৰ দিবলৈ Windows পাছৱৰ্ড টাইপ কৰক।</translation>
 <translation id="113122355610423240">Chromium হৈছে আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
@@ -117,7 +116,6 @@
 <translation id="4943838377383847465">Chromium নেপথ্য ম’ডত আছে।</translation>
 <translation id="4987820182225656817">অতিথিসকলে কোনো সুবিধা বাদ নিদিয়াকৈ Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4994636714258228724">নিজকে Chromiumত যোগ কৰক</translation>
-<translation id="5080135079858647714">Chromiumত আপোনাৰ নিজৰ প্ৰ'ফাইল সৃষ্টি কৰিবনে?</translation>
 <translation id="5224391634244552924">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="5277894862589591112">আপুনি কৰা সলনি কার্যসমূহ প্ৰযোজ্য কৰিবলৈ Chromium পুনৰ লঞ্চ কৰক</translation>
 <translation id="5358375970380395591">আপুনি এটা পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰি আছে আৰু আপোনাৰ Chromium প্ৰ’ফাইলৰ জৰিয়তে ইয়াৰ প্ৰশাসনিক নিয়ন্ত্ৰণ দি আছে। আপোনাৰ এপ্, বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহৰ দৰে নিজৰ Chromium ডেটা স্থায়ীভাৱে <ph name="USER_NAME" />ৰ সৈতে সংযুক্ত হ’ব। আপুনি Google একাউণ্ট ডেশ্বব’ৰ্ডৰ জৰিয়তে এই ডেটা মচিব পাৰিব কিন্তু আপুনি এই ডেটা অন্য একাউণ্টৰ সৈতে সংলগ্ন কৰিব নোৱাৰিব। <ph name="LEARN_MORE" /></translation>
@@ -142,7 +140,6 @@
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - নেটৱর্কত ছাইন ইন</translation>
 <translation id="5987687638152509985">ছিংক আৰম্ভ কৰিবলৈ Chromium আপডে’ট কৰক</translation>
-<translation id="6013050204643758987">Chromium OS ক <ph name="BEGIN_LINK_CROS_OSS" />Linux (বিটা)<ph name="END_LINK_CROS_OSS" />ৰ দৰেই অতিৰিক্ত <ph name="BEGIN_LINK_LINUX_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_LINUX_OSS" />ৰ জৰিয়তে সম্ভৱ কৰি তোলা হৈছে৷</translation>
 <translation id="6039377483953237732">Chromium OSৰ সংস্কৰণ</translation>
 <translation id="6055895534982063517">Chromiumৰ এটা নতুন সংস্কৰণ উপলব্ধ যিটো সকলোতকৈ দ্ৰুত।</translation>
 <translation id="6063093106622310249">&amp;Chromiumত খোলক</translation>

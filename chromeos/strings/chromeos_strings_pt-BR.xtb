@@ -198,7 +198,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Falha</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Arquivo digitalizado salvo}one{Arquivo digitalizado salvo}other{Arquivos digitalizados salvos}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
@@ -244,7 +243,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">Pre-shared key (PSK): WPA ou RSN</translation>
 <translation id="7882358943899516840">Tipo de provedor</translation>
-<translation id="7928373994957558460">Mostrar localização do arquivo</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>

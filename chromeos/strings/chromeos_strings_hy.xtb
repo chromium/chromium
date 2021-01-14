@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Մարտկոց</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Սկանավորված ֆայլը պահված է}one{Սկանավորված ֆայլերը պահված են}other{Սկանավորված ֆայլերը պահված են}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
 <translation id="7882358943899516840">Մատակարարի տեսակը</translation>
-<translation id="7928373994957558460">Ցուցադրել ֆայլի հասցեն</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>

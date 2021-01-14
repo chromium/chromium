@@ -58,7 +58,6 @@
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1419738280318246476">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ ডিভাইচ আনলক কৰক</translation>
 <translation id="1420408895951708260">ৰাতিৰ লাইট ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">স্ক্ৰীনশ্বট লৈ ক্লিপব'ৰ্ডত ছেভ কৰা হ'ল</translation>
 <translation id="1426410128494586442">হয়</translation>
 <translation id="144853431011121127">আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ ফ’নৰ পৰা জাননী পাওক</translation>
 <translation id="1455242230282523554">ভাষাৰ ছেটিংসমূহ দেখুৱাওক</translation>
@@ -304,6 +303,7 @@
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3712407551474845318">স্ক্ৰীণৰ আংশিক স্ক্রীণশ্বট লওক</translation>
 <translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
+<translation id="3742055079367172538">স্ক্ৰীণশ্বট লোৱা হ’ল</translation>
 <translation id="3771549900096082774">হাই কনট্ৰাষ্ট ম’ড</translation>
 <translation id="3773700760453577392">কোনো প্ৰশাসকে <ph name="USER_EMAIL" />ৰ বাবে একাধিক ছাইন ইনৰ সুবিধাটোৰ অনুমতি বাতিল কৰিছে। অব্যাহত ৰাখিবলৈ সকলো ব্যৱহাৰকাৰীয়ে ছাইন আউট কৰিবই লাগিব।</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -343,10 +343,8 @@
 <translation id="4072264167173457037">মধ্যম ছিগনেল</translation>
 <translation id="4112140312785995938">পিছলৈ যাওক</translation>
 <translation id="4114315158543974537">ফ’ন হাব অন কৰক</translation>
-<translation id="4121728057981832179">এটা ভাৰ্ছুৱেল মেচিনে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="4129129681837227511">আপোনাৰ লক স্ক্রীণত জাননীসমূহ চাবলৈ ছেটিংটো সলনি কৰিবলৈ আনলক কৰক</translation>
 <translation id="4146833061457621061">সংগীত প্লে’ কৰক</translation>
-<translation id="415719264485676252">স্ক্ৰীন কেপচাৰ কৰাৰ সুবিধাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="4157822100366708405">গাঢ় ৰঙৰ থীমৰ ছেটিংসমূহ</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4195877955194704651">স্বয়ংক্ৰিয়ভাৱে ক্লিকৰ বুটাম</translation>
@@ -360,7 +358,6 @@
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="425364040945105958">ছিম নাই</translation>
 <translation id="4261870227682513959">জাননীৰ ছেটিং দেখুৱাওক। জাননী অফ আছে</translation>
-<translation id="4267383818855338811">এটা ভাৰ্ছুৱেল মেচিনে আপোনাৰ কেমেৰাটো ব্যৱহাৰ কৰি আছে</translation>
 <translation id="4269883910223712419">এই ডিভাইচটোৰ প্ৰশাসকে এইকেইটা কাৰ্য কৰিব পাৰে:</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
@@ -493,7 +490,6 @@
 <translation id="54609108002486618">পৰিচালিত</translation>
 <translation id="5465662442746197494">সহায় লাগিবনে?</translation>
 <translation id="5496819745535887422">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচ ৰ’ল বেক কৰিছে। আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিলে সকলো ডেটা মচা হ’ব।</translation>
-<translation id="5516420770350073386">আপোনাৰ স্ক্ৰীনত থকা সমলৰ কাৰণে আপোনাৰ প্ৰশাসকে স্ক্ৰীন ৰেকৰ্ডিং বন্ধ কৰিছে।</translation>
 <translation id="5519195206574732858">এলটিই</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />এ সংযোগ কৰি আছে।</translation>
 <translation id="5532994612895037630">পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰিবলৈ যিকোনো ঠাইত টিপক</translation>
@@ -503,7 +499,6 @@
 <translation id="556042886152191864">বুটাম</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষম কৰা হ'ল</translation>
 <translation id="557563299383177668">পৰৱৰ্তী দফা</translation>
-<translation id="55808498489107691">আপোনাৰ স্ক্ৰীনত থকা সমলৰ কাৰণে আপোনাৰ প্ৰশাসকে স্ক্ৰীন কেপচাৰ কৰাটো অৱৰোধ কৰিছে।</translation>
 <translation id="558849140439112033">কেপচাৰ কৰিবৰ বাবে এটা অংশ বাছনি কৰিবলৈ টানি আনি এৰক</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ Ctrl + Alt + Z দবাওক।</translation>
@@ -853,7 +848,6 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্, অৱৰোধিত</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />ত সংযোগ কৰক</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">ডিফ’ল্ট</translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="881757059229893486">ইনপুট পদ্ধতিৰ ছেটিং</translation>
 <translation id="8825863694328519386">উভতি যাবলৈ বাওঁফালৰ পৰা ছোৱাইপ কৰক</translation>

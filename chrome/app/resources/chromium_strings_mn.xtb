@@ -4,7 +4,6 @@
 <translation id="1065672644894730302">Таны хүсэлтийг уншиж чадахгүй байна. 
 
 Зарим үйлдлүүд нь боломжгүй байж магадгүй бөгөөд сонголтонд хийсэн өөрчлөлтүүд хадгалагдахгүй.</translation>
-<translation id="107513968719897256">Хувийн болон <ph name="NEW_USER" />-н хөтчийг тусгаарлахын тулд Chromium дээр шинэ профайл үүсгэнэ үү</translation>
 <translation id="1098170124587656448">Chromium нь таныг өгөгдлийн зөрчил, муу өргөтгөл болон бусад асуудлаас хамгаалахад туслах боломжтой</translation>
 <translation id="1104942323762546749">Chromium таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="113122355610423240">Chromium таны өгөгдмөл хөтөч</translation>
@@ -115,7 +114,6 @@
 <translation id="4943838377383847465">Chromium нь суурь горимд байна.</translation>
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
-<translation id="5080135079858647714">Chromium дээр өөрийн профайлыг үүсгэх үү?</translation>
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5277894862589591112">Өөрчлөлтөө хэрэгжүүлэхийн тулд Chromium-г дахин ажиллуулна уу</translation>
 <translation id="5358375970380395591">Та удирдан ажиллаж буй хаягт нэвтэрч байгаагаас гадна таны Chromium профайлыг хянах эрхийг системийн ажилтанд шилжүүлж байна. Таны апп, хавчуурга, түүх, нууц үг болон бусад тохиргоо гэх мэт таны Chromium өгөгдлийг <ph name="USER_NAME" />-тэй холбох болно. Та энэхүү өгөгдлийг Google Accounts Dashboard-р дамжуулан устгах боломжтой боловч та энэхүү өгөгдлийн өөр хаягтай холбох боломжгүй байна. <ph name="LEARN_MORE" /></translation>
@@ -140,7 +138,6 @@
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5987687638152509985">Синкийг эхлүүлэхийн тулд Chromium-г шинэчлэх</translation>
-<translation id="6013050204643758987">Chromium OS нь <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эхийн нэмэлт программ хангамж<ph name="END_LINK_CROS_OSS" /> болох <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бэта)<ph name="END_LINK_LINUX_OSS" />-н тусламжтайгаар боломжтой болсон.</translation>
 <translation id="6039377483953237732">Chromium үйлдлийн системийн хувилбар</translation>
 <translation id="6055895534982063517">Chromium-ийн шинэ хувилбар боломжтой байна. Хэзээ хэзээнээс ч хурдан.</translation>
 <translation id="6063093106622310249">&amp;Chromium-д нээх</translation>

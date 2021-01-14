@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">电池</translation>
 <translation id="6325525973963619867">失败</translation>
 <translation id="636850387210749493">企业注册</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{扫描版文件已保存}other{扫描版文件已保存}}</translation>
 <translation id="6472207088655375767">一次性密码</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
 <translation id="6517239166834772319">探索</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>
 <translation id="7882358943899516840">提供商类型</translation>
-<translation id="7928373994957558460">显示文件位置</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7960831585769876809">温度</translation>
 <translation id="8041089156583427627">发送反馈</translation>

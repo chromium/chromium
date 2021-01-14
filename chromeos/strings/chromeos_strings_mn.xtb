@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Баттерей</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Скан хийсэн файлыг хадгалсан}other{Скан хийсэн файлуудыг хадгалсан}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Зогссон - Цаас гацсан</translation>
 <translation id="6517239166834772319">Судлах</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
-<translation id="7928373994957558460">Файлын байршлыг харуулах</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7960831585769876809">Температур</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>

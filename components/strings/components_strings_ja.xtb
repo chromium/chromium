@@ -370,7 +370,6 @@
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
-<translation id="2360873523816792727">お使いのどのデバイスでも同じカードを使用するには、同期を有効にします。</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">企業のデフォルト</translation>
@@ -1418,7 +1417,6 @@
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
-<translation id="6596892391065203054">このコンテンツの印刷は管理者によってブロックされています。</translation>
 <translation id="6604181099783169992">モーション センサーまたは光センサー</translation>
 <translation id="6609880536175561541">Prc7（封筒）</translation>
 <translation id="6612358246767739896">保護されたコンテンツ</translation>

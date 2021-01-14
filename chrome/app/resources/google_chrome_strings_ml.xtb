@@ -18,7 +18,6 @@
 <translation id="137466361146087520">Google Chrome ബീറ്റ</translation>
 <translation id="1399397803214730675">ഈ കമ്പ്യൂട്ടറിൽ ഇപ്പോൾ തന്നെ Google Chrome-ന്റെ ഏറ്റവും പുതിയ പതിപ്പുണ്ട്. സോഫ്റ്റ്‍‍വെയർ പ്രവര്‍ത്തിക്കുന്നില്ലെങ്കില്‍, ദയവായി Google Chrome അണ്‍‌ഇന്‍സ്റ്റാള്‍ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1434626383986940139">Chrome കാനറി അപ്ലിക്കേഷനുകൾ</translation>
-<translation id="1513277449617685876">വ്യക്തിപര അക്കൗണ്ടിലെയും <ph name="NEW_USER" /> എന്ന അക്കൗണ്ടിലെയും ബ്രൗസിംഗ് വേർതിരിക്കാൻ, Chrome-ൽ പുതിയൊരു പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
 <translation id="1587223624401073077">Google Chrome നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> അപകടകരമായതിനാൽ, Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
@@ -26,7 +25,6 @@
 <translation id="1619887657840448962">Chrome സുരക്ഷിതമാക്കാൻ, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റ് ചെയ്യാത്ത ചില വിപുലീകരണങ്ങൾ ഞങ്ങൾ പ്രവർത്തനരഹിതമാക്കി, അവ നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
 <translation id="162629503687514352">Chrome OS-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="1628000112320670027">Chrome ഉപയോഗിക്കുന്നതിനുള്ള സഹായം തേടുക</translation>
-<translation id="1662639173275167396"><ph name="BEGIN_LINK_LINUX_OSS" />Linux (ബീറ്റ)<ph name="END_LINK_LINUX_OSS" /> പോലെ അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്‌റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ് Chrome OS സാധ്യമാക്കിയിട്ടുള്ളത്.</translation>
 <translation id="1666409074978194368">എകദേശം അപ് റ്റു ഡേറ്റാണ്! അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയാക്കാൻ Google Chrome വീണ്ടും ആരംഭിക്കുക. അദൃശ്യ വിൻഡോകൾ വീണ്ടും തുറക്കില്ല.</translation>
 <translation id="1674870198290878346">Chrome അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="1682634494516646069">Google Chrome-ന് ഇതിന്റെ ഡാറ്റാ ഡയറക്റ്ററി വായിക്കാനോ അതിൽ എഴുതാനോ കഴിയില്ല:
@@ -273,7 +271,6 @@
 <translation id="8679801911857917785">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോൾ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
 <translation id="870251953148363156">&amp;Google Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="873133009373065397">Google Chrome-ന് ഡിഫോൾട്ട് ബ്രൗസർ നിർണ്ണയിക്കാനോ സജ്ജമാക്കാനോ കഴിയില്ല</translation>
-<translation id="8748242232968346981">Chrome-ൽ നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈൽ സൃഷ്‌ടിക്കണോ?</translation>
 <translation id="8823341990149967727">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="8834965163890861871">പാസ്‌വേഡുകൾ എഡിറ്റ് ചെയ്യാൻ Google Chrome ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക.</translation>
 <translation id="884296878221830158">നിങ്ങൾ Chrome ആരംഭിക്കുമ്പോഴോ ഹോം ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോഴോ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>

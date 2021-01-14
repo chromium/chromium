@@ -198,7 +198,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Fichier numérisé enregistré}one{Fichier numérisé enregistré}other{Fichiers numérisés enregistrés}}</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
@@ -244,7 +243,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
-<translation id="7928373994957558460">Afficher le lieu du fichier</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7960831585769876809">Température</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>

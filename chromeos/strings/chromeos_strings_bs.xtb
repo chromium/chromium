@@ -198,7 +198,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Nije uspjelo</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Skenirani fajl je sačuvan}one{Skenirani fajlovi su sačuvani}few{Skenirani fajlovi su sačuvani}other{Skenirani fajlovi su sačuvani}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
@@ -244,7 +243,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
 <translation id="7882358943899516840">Vrsta davatelja usluge</translation>
-<translation id="7928373994957558460">Prikaži lokaciju fajla</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server naziva</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>

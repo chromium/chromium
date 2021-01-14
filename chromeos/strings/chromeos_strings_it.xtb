@@ -198,7 +198,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6232017090690406397">Batteria</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{File scansionato salvato}other{File scansionati salvati}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
 <translation id="6517239166834772319">Esplora</translation>
@@ -244,7 +243,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
-<translation id="7928373994957558460">Mostra la posizione del file</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Invia feedback</translation>

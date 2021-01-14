@@ -58,7 +58,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
 <translation id="1419738280318246476">Fungua kifaa ili utekeleza kitendo cha arifa</translation>
 <translation id="1420408895951708260">Swichi ya Mwanga wa Usiku. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Picha ya skrini imepigwa na ikahifadhiwa kwenye ubao wa kunakili</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
 <translation id="144853431011121127">Pata arifa kutoka kwenye simu yako kupitia <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
@@ -304,6 +303,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="370665806235115550">Inapakia...</translation>
 <translation id="3712407551474845318">Piga eneo picha</translation>
 <translation id="371370241367527062">Maikrofoni ya mbele</translation>
+<translation id="3742055079367172538">Picha ya skrini imepigwa</translation>
 <translation id="3771549900096082774">Hali ya Juu ya Utofautishaji</translation>
 <translation id="3773700760453577392">Msimamizi ameondoa uwezo wa <ph name="USER_EMAIL" /> wa kuingia katika akaunti nyingi kwa wakati mmoja. Watumiaji wote lazima waondoke katika akaunti ili waendelee.</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -344,10 +344,8 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4072264167173457037">Mtandao ni thabiti kiasi</translation>
 <translation id="4112140312785995938">Sogeza Nyuma</translation>
 <translation id="4114315158543974537">Washa Phone Hub</translation>
-<translation id="4121728057981832179">Mashine pepe inatumia maikrofoni yako</translation>
 <translation id="4129129681837227511">Ili uone arifa kwenye skrini iliyofungwa, ifungue ili ubadilishe mipangilio hii</translation>
 <translation id="4146833061457621061">Cheza muziki</translation>
-<translation id="415719264485676252">Kipengele cha kupiga picha ya skrini kimezuiwa</translation>
 <translation id="4157822100366708405">Mipangilio ya Mandhari Meusi</translation>
 <translation id="4181841719683918333">Lugha</translation>
 <translation id="4195877955194704651">Kitufe cha mibofyo ya kiotomatiki</translation>
@@ -361,7 +359,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="425364040945105958">Hakuna SIM</translation>
 <translation id="4261870227682513959">Onyesha mipangilio ya arifa. Umezima arifa</translation>
-<translation id="4267383818855338811">Mashine pepe inatumia kamera yako</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
 <translation id="4279490309300973883">Kuakisi</translation>
 <translation id="4285498937028063278">Banua</translation>
@@ -494,7 +491,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="54609108002486618">Imedhibitiwa</translation>
 <translation id="5465662442746197494">Je, unahitaji usaidizi?</translation>
 <translation id="5496819745535887422">Msimamizi wako anarejesha mipangilio ya awali ya kifaa chako. Data yote itafutwa kifaa kitakapozimwa kisha kiwashwe.</translation>
-<translation id="5516420770350073386">Kipengele cha kurekodi skrini kimekomeshwa na msimamizi wako kwa sababu ya maudhui yaliyo kwenye skrini yako.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> inaunganishwa.</translation>
 <translation id="5532994612895037630">Gusa popote ili urekodi skrini nzima</translation>
@@ -504,7 +500,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="556042886152191864">Kitufe</translation>
 <translation id="5571066253365925590">Bluetooth imewezeshwa</translation>
 <translation id="557563299383177668">Aya inayofuata</translation>
-<translation id="55808498489107691">Kipengele cha kurekodi skrini kimezuiwa na msimamizi wako kwa sababu ya maudhui yaliyo kwenye skrini yako.</translation>
 <translation id="558849140439112033">Buruta ili uchague sehemu ya kunasa</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Bonyeza Ctrl + Alt + Z ili uzime kipengele cha maelezo yanayotamkwa.</translation>
@@ -858,7 +853,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="878215960996152260"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imezuiwa</translation>
 <translation id="8785070478575117577">Unganisha kwenye <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Mipangilio ya Mbinu za Kuingiza Data</translation>
 <translation id="8825863694328519386">Telezesha kidole kutoka kushoto ili urudi nyuma</translation>

@@ -197,7 +197,6 @@
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{स्क्यान गरिएको फाइल सुरक्षित गरियो}other{स्क्यान गरिएका फाइलहरू सुरक्षित गरिए}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">रोकियो - प्रिन्टरमा कागज अड्कियो</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
@@ -243,7 +242,6 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
-<translation id="7928373994957558460">फाइल भएको स्थान देखाइयोस्</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>

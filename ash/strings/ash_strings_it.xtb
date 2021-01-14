@@ -58,7 +58,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1419738280318246476">Sblocca il dispositivo per eseguire l'azione di notifica</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Screenshot acquisito e salvato negli appunti</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="144853431011121127">Ricevi le notifiche del telefono sul tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
@@ -304,6 +303,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="3712407551474845318">Acquisisci area</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
+<translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
  Per continuare, devono disconnettersi tutti gli utenti.</translation>
@@ -345,10 +345,8 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4072264167173457037">Segnale medio</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
 <translation id="4114315158543974537">Attiva Phone Hub</translation>
-<translation id="4121728057981832179">Una macchina virtuale sta utilizzando il microfono</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
-<translation id="415719264485676252">L'acquisizione della schermata è bloccata</translation>
 <translation id="4157822100366708405">Impostazioni Tema scuro</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
@@ -362,7 +360,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Nessuna SIM rilevata</translation>
 <translation id="4261870227682513959">Mostra impostazioni di notifica. Le notifiche sono disattivate</translation>
-<translation id="4267383818855338811">Una macchina virtuale sta utilizzando la videocamera</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Sblocca</translation>
@@ -495,7 +492,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="54609108002486618">Gestito</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="5496819745535887422">L'amministratore sta eseguendo il rollback del tuo dispositivo. Tutti i dati verranno eliminati al momento del riavvio.</translation>
-<translation id="5516420770350073386">La funzionalità Registrazione dello schermo è stata interrotta dall'amministratore a causa dei contenuti visualizzati.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
@@ -505,7 +501,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="557563299383177668">Paragrafo successivo</translation>
-<translation id="55808498489107691">L'acquisizione della schermata è stata bloccata dall'amministratore a causa dei contenuti visualizzati.</translation>
 <translation id="558849140439112033">Trascina per selezionare l'area da acquisire</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
@@ -858,7 +853,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8798099450830957504">Predefinito</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>

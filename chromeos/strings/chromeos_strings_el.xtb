@@ -198,7 +198,6 @@
 <translation id="6232017090690406397">Μπαταρία</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Το σαρωμένο αρχείο αποθηκεύτηκε}other{Τα σαρωμένα αρχεία αποθηκεύτηκαν}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
@@ -244,7 +243,6 @@
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
-<translation id="7928373994957558460">Εμφάνιση τοποθεσίας αρχείου</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
