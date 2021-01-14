@@ -17,7 +17,7 @@
 namespace blink {
 
 const base::Feature kSmallTextRatio{"SmallTextRatio",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
