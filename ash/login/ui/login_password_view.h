@@ -9,6 +9,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/login/ui/login_palette.h"
+#include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -206,6 +207,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   LoginTextfield* textfield_ = nullptr;
   ArrowButtonView* submit_button_ = nullptr;
   DisplayPasswordButton* display_password_button_ = nullptr;
+  NonAccessibleView* password_end_space_ = nullptr;
   // Could show either the caps lock icon or the easy unlock icon.
   AlternateIconsView* left_icon_ = nullptr;
   views::ImageView* capslock_icon_ = nullptr;

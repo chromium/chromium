@@ -686,6 +686,10 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
                           view->InvertPasswordDisplayingState();
                         },
                         this)));
+  password_end_space_ =
+      password_row_->AddChildView(std::make_unique<NonAccessibleView>());
+  password_end_space_->SetPreferredSize(gfx::Size(kIconSizeDp, kIconSizeDp));
+  password_end_space_->SetVisible(false);
 
   submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
@@ -763,6 +767,7 @@ void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
 
 void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
   display_password_button_->SetVisible(visible);
+  password_end_space_->SetVisible(!visible);
   // Only start the timer if the display password button is enabled.
   if (visible) {
     clear_password_timer_->Start(
@@ -933,20 +938,20 @@ bool LoginPasswordView::IsPasswordSubmittable() {
 void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
   views::View* handled_view = easy_unlock_icon_;
   views::View* other_view = capslock_icon_;
-  bool handled_should_show = should_show_easy_unlock_;
-  bool other_should_show = should_show_capslock_;
+  bool should_show_handled_view = should_show_easy_unlock_;
+  bool should_show_other_view = should_show_capslock_;
   if (handling_capslock) {
     std::swap(handled_view, other_view);
-    std::swap(handled_should_show, other_should_show);
+    std::swap(should_show_handled_view, should_show_other_view);
   }
 
-  if (handled_should_show) {
+  if (should_show_handled_view) {
     // If the view that is currently handled should be shown, we immediately
     // show it; if the other view should be shown as well, we make it invisible
     // for the moment and start a cyclic animation that will show these two
     // views alternatively.
     handled_view->SetVisible(true);
-    if (other_should_show) {
+    if (should_show_other_view) {
       other_view->SetVisible(false);
       left_icon_->ScheduleAnimation(handled_view, other_view);
     }
@@ -956,7 +961,7 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
     // We also make the other view visible if needed, as its current state
     // may depend on how long the animation has been running.
     left_icon_->AbortAnimationIfAny();
-    other_view->SetVisible(other_should_show);
+    other_view->SetVisible(should_show_other_view);
     handled_view->SetVisible(false);
   }
   password_row_->Layout();
