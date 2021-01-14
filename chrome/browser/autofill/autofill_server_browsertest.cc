@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -109,7 +110,6 @@ class WindowedNetworkObserver {
         (resource_request.method == "GET")
             ? GetLookupContent(resource_request.url.path())
             : network::GetUploadData(resource_request);
-    EXPECT_EQ(data, expected_upload_data_);
 
     if (data == expected_upload_data_)
       message_loop_runner_->Quit();
@@ -144,6 +144,12 @@ class AutofillServerTest : public InProcessBrowserTest {
     // SetUp(); otherwise, the feature state doesn't propagate to the test
     // browser instance.
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    // Wait for Personal Data Manager to be fully loaded as the events about
+    // being loaded may throw off the tests and cause flakiness.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
