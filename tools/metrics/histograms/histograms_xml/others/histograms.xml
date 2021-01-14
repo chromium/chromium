@@ -18518,8 +18518,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebView.ApiCall" enum="WebViewApiCall"
-    expires_after="2021-07-24">
-  <owner>changwan@chromium.org</owner>
+    expires_after="2022-01-31">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records calls to WebView APIs in WebViewChromium.</summary>
