@@ -1631,7 +1631,11 @@ class _PrintCertsCommand(_Command):
           '--verbose', self.apk_helper.path
       ]
       logging.warning('Running: %s', ' '.join(cmd))
-      stdout = subprocess.check_output(cmd)
+      env = os.environ.copy()
+      env['PATH'] = os.path.pathsep.join(
+          [os.path.join(_JAVA_HOME, 'bin'),
+           env.get('PATH')])
+      stdout = subprocess.check_output(cmd, env=env)
       print(stdout)
       if self.args.full_cert:
         if 'v1 scheme (JAR signing): true' not in stdout:
