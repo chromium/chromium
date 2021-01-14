@@ -6702,12 +6702,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-    {"enable-avif", flag_descriptions::kEnableAVIFName,
-     flag_descriptions::kEnableAVIFDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAVIF)},
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
-
 #if !defined(OS_ANDROID)
     {"passwords-weakness-check", flag_descriptions::kPasswordsWeaknessCheckName,
      flag_descriptions::kPasswordsWeaknessCheckDescription, kOsDesktop,

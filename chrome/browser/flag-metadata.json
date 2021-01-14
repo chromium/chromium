@@ -1311,11 +1311,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-avif",
-    "owners": [ "wtc", "dalecurtis" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-background-blur",
     "owners": [ "newcomer" ],
     "expiry_milestone": 86

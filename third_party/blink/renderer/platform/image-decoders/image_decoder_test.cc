@@ -34,7 +34,6 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -361,35 +360,33 @@ TEST(ImageDecoderTest, decodedSizeLimitIsIgnored) {
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
-  if (base::FeatureList::IsEnabled(features::kAVIF)) {
-    // The first 36 bytes of the Netflix AVIF test image
-    // Chimera-AV1-10bit-1280x720-2380kbps-100.avif. Since the major_brand is
-    // not "avif" or "avis", we must parse the compatible_brands to determine if
-    // this is an AVIF image.
-    constexpr char kData[] = {
-        // A File Type Box.
-        0x00, 0x00, 0x00, 0x1c,  // unsigned int(32) size; 0x1c = 28
-        'f', 't', 'y', 'p',      // unsigned int(32) type = boxtype;
-        'm', 'i', 'f', '1',      // unsigned int(32) major_brand;
-        0x00, 0x00, 0x00, 0x00,  // unsigned int(32) minor_version;
-        'm', 'i', 'f', '1',      // unsigned int(32) compatible_brands[];
-        'a', 'v', 'i', 'f',      //
-        'm', 'i', 'a', 'f',      //
-        // The beginning of a Media Data Box.
-        0x00, 0x00, 0xa4, 0x3a,  // unsigned int(32) size;
-        'm', 'd', 'a', 't'       // unsigned int(32) type = boxtype;
-    };
+  // The first 36 bytes of the Netflix AVIF test image
+  // Chimera-AV1-10bit-1280x720-2380kbps-100.avif. Since the major_brand is
+  // not "avif" or "avis", we must parse the compatible_brands to determine if
+  // this is an AVIF image.
+  constexpr char kData[] = {
+      // A File Type Box.
+      0x00, 0x00, 0x00, 0x1c,  // unsigned int(32) size; 0x1c = 28
+      'f', 't', 'y', 'p',      // unsigned int(32) type = boxtype;
+      'm', 'i', 'f', '1',      // unsigned int(32) major_brand;
+      0x00, 0x00, 0x00, 0x00,  // unsigned int(32) minor_version;
+      'm', 'i', 'f', '1',      // unsigned int(32) compatible_brands[];
+      'a', 'v', 'i', 'f',      //
+      'm', 'i', 'a', 'f',      //
+      // The beginning of a Media Data Box.
+      0x00, 0x00, 0xa4, 0x3a,  // unsigned int(32) size;
+      'm', 'd', 'a', 't'       // unsigned int(32) type = boxtype;
+  };
 
-    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(kData, 8);
-    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
-    EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
-    buffer->Append<size_t>(kData + 8, 8);
-    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
-    EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
-    buffer->Append<size_t>(kData + 16, sizeof(kData) - 16);
-    EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
-    EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), "image/avif");
-  }
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(kData, 8);
+  EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
+  buffer->Append<size_t>(kData + 8, 8);
+  EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
+  buffer->Append<size_t>(kData + 16, sizeof(kData) - 16);
+  EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), "image/avif");
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 

@@ -2834,11 +2834,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-extern const char kEnableAVIFName[];
-extern const char kEnableAVIFDescription[];
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
-
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
 extern const char kClickToCallUIName[];
 extern const char kClickToCallUIDescription[];

@@ -215,8 +215,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT extern const base::Feature kAppCache;
 BLINK_COMMON_EXPORT extern const base::Feature kAppCacheRequireOriginTrial;
 
-BLINK_COMMON_EXPORT extern const base::Feature kAVIF;
-
 BLINK_COMMON_EXPORT extern const base::Feature
     kAlignFontDisplayAutoTimeoutWithLCPGoal;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

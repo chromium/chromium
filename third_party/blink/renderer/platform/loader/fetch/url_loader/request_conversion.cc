@@ -19,7 +19,6 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -36,19 +35,13 @@
 
 namespace blink {
 
-const char* ImageAcceptHeader() {
-  static constexpr char kImageAcceptHeaderWithAvif[] =
-      "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  static constexpr size_t kOffset = sizeof("image/avif,") - 1;
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  static const char* header = base::FeatureList::IsEnabled(features::kAVIF)
-                                  ? kImageAcceptHeaderWithAvif
-                                  : kImageAcceptHeaderWithAvif + kOffset;
+constexpr char kImageAcceptHeader[] =
+    "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #else
-  static const char* header = kImageAcceptHeaderWithAvif + kOffset;
+constexpr char kImageAcceptHeader[] =
+    "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #endif
-  return header;
-}
 
 namespace {
 
@@ -389,7 +382,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   } else if (resource_type == mojom::ResourceType::kImage ||
              resource_type == mojom::ResourceType::kFavicon) {
     dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
-                                     ImageAcceptHeader());
+                                     kImageAcceptHeader);
   } else {
     // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
     // manually set an accept header on an XHR.

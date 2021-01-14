@@ -4834,12 +4834,6 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-const char kEnableAVIFName[] = "Enable AVIF image format";
-const char kEnableAVIFDescription[] =
-    "Adds image decoding support for the AVIF image format.";
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
-
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
 const char kClickToCallUIName[] =
     "Enable click to call feature signals to be handled on desktop";

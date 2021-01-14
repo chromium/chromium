@@ -4,6 +4,8 @@
 
 #include "content/common/content_constants_internal.h"
 
+#include "media/media_buildflags.h"
+
 namespace content {
 
 // 20MiB
@@ -18,6 +20,16 @@ const int kTraceEventGpuProcessSortIndex = -1;
 const int kTraceEventRendererMainThreadSortIndex = -1;
 
 const char kDoNotTrackHeader[] = "DNT";
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+const char kFrameAcceptHeaderValue[] =
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
+    "image/webp,image/apng,*/*;q=0.8";
+#else
+const char kFrameAcceptHeaderValue[] =
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
+    "image/apng,*/*;q=0.8";
+#endif
 
 const int kChildProcessReceiverAttachmentName = 0;
 const int kChildProcessHostRemoteAttachmentName = 1;

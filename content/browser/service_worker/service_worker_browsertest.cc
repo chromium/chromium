@@ -48,6 +48,7 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
+#include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -78,7 +79,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_handle.h"
@@ -2725,16 +2725,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   ASSERT_TRUE(dict);
 
   // Default headers are present.
-  const char* frame_accept_c_str = network::kFrameAcceptHeaderValue;
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  if (base::FeatureList::IsEnabled(blink::features::kAVIF)) {
-    frame_accept_c_str =
-        "text/html,application/xhtml+xml,application/xml;q=0.9,"
-        "image/avif,image/webp,image/apng,*/*;q=0.8";
-  }
-#endif
   EXPECT_TRUE(CheckHeader(*dict, "accept",
-                          std::string(frame_accept_c_str) +
+                          std::string(kFrameAcceptHeaderValue) +
                               std::string(kAcceptHeaderSignedExchangeSuffix)));
 
   // Injected headers are present.

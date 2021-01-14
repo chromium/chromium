@@ -454,7 +454,7 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
     const HashSet<String>* disabled_image_types) {
-  String header(ImageAcceptHeader());
+  String header(kImageAcceptHeader);
   for (String type : *disabled_image_types) {
     // The header string is expected to be like
     // `image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8` and is

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
-#include "third_party/blink/public/common/features.h"
 
 #if !defined(OS_IOS)
 // iOS doesn't use and must not depend on //media
@@ -25,18 +24,23 @@ namespace {
 
 // From WebKit's WebCore/platform/MIMETypeRegistry.cpp:
 
-const char* const kSupportedImageTypes[] = {"image/jpeg",
-                                            "image/pjpeg",
-                                            "image/jpg",
-                                            "image/webp",
-                                            "image/png",
-                                            "image/apng",
-                                            "image/gif",
-                                            "image/bmp",
-                                            "image/vnd.microsoft.icon",  // ico
-                                            "image/x-icon",              // ico
-                                            "image/x-xbitmap",           // xbm
-                                            "image/x-png"};
+const char* const kSupportedImageTypes[] = {
+    "image/jpeg",
+    "image/pjpeg",
+    "image/jpg",
+    "image/webp",
+    "image/png",
+    "image/apng",
+    "image/gif",
+    "image/bmp",
+    "image/vnd.microsoft.icon",  // ico
+    "image/x-icon",              // ico
+    "image/x-xbitmap",           // xbm
+    "image/x-png",
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+    "image/avif",
+#endif
+};
 
 //  Support every script type mentioned in the spec, as it notes that "User
 //  agents must recognize all JavaScript MIME types." See
@@ -136,12 +140,6 @@ MimeUtil::MimeUtil() {
     non_image_types_.insert(type);
   for (const char* type : kSupportedImageTypes)
     image_types_.insert(type);
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  // TODO(wtc): Add "image/avif" to the kSupportedImageTypes array when the AVIF
-  // feature is shipped.
-  if (base::FeatureList::IsEnabled(features::kAVIF))
-    image_types_.insert("image/avif");
-#endif
   for (const char* type : kUnsupportedTextTypes)
     unsupported_text_types_.insert(type);
   for (const char* type : kSupportedJavascriptTypes) {
