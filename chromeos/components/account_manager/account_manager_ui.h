@@ -10,8 +10,8 @@
 
 namespace chromeos {
 
-// This interface is used by `AccountManagerFacadeAsh` to show system UI (system
-// dialogs, OS Settings etc.)
+// This interface is used by `AccountManagerFacadeImpl` to show system UI
+// (system dialogs, OS Settings etc.)
 class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerUI {
  public:
   AccountManagerUI();

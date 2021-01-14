@@ -12,20 +12,20 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/components/account_manager/account_manager_facade_ash.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 
 namespace {
 
-// TODO(sinhak): Move ownership of AccountManager and remove this method.
-chromeos::AccountManager* GetAccountManager(const std::string& profile_path) {
-  chromeos::AccountManager* account_manager =
+crosapi::AccountManagerAsh* GetAccountManagerAsh(
+    const std::string& profile_path) {
+  crosapi::AccountManagerAsh* account_manager_ash =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManager(profile_path);
-  DCHECK(account_manager);
+          ->GetAccountManagerAsh(profile_path);
+  DCHECK(account_manager_ash);
 
-  return account_manager;
+  return account_manager_ash;
 }
 
 }  // namespace
@@ -34,15 +34,17 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
   // Map from |profile_path| to AccountManagerFacade.
   static base::NoDestructor<
-      std::map<std::string, std::unique_ptr<chromeos::AccountManagerFacadeAsh>>>
+      std::map<std::string, std::unique_ptr<AccountManagerFacadeImpl>>>
       account_manager_facade_map;
 
   auto it = account_manager_facade_map->find(profile_path);
   if (it == account_manager_facade_map->end()) {
+    mojo::Remote<crosapi::mojom::AccountManager> remote;
+    GetAccountManagerAsh(profile_path)
+        ->BindReceiver(remote.BindNewPipeAndPassReceiver());
     it = account_manager_facade_map
-             ->emplace(profile_path,
-                       std::make_unique<chromeos::AccountManagerFacadeAsh>(
-                           GetAccountManager(profile_path)))
+             ->emplace(profile_path, std::make_unique<AccountManagerFacadeImpl>(
+                                         std::move(remote)))
              .first;
   }
 
