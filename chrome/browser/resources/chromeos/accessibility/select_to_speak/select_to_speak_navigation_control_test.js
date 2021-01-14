@@ -684,3 +684,35 @@ TEST_F('SelectToSpeakNavigationControlTest', 'ResizeWhilePlaying', function() {
         resizeButton.doDefault();
       });
 });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest',
+    'RemainsActiveAfterCompletingUtterance', function() {
+      const bodyHtml = '<p id="p1">Paragraph 1</p>';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            // Simulate starting and completing TTS.
+            this.triggerReadSelectedText();
+            this.mockTts.finishPendingUtterance();
+
+            // Should remain in speaking state.
+            assertEquals(selectToSpeak.state_, SelectToSpeakState.SPEAKING);
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest',
+    'AutoDismissesIfNavigationControlsDisabled', function() {
+      // Disable navigation controls via settings.
+      chrome.storage.sync.set({'navigationControls': false});
+      const bodyHtml = '<p id="p1">Paragraph 1</p>';
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            // Simulate starting and completing TTS.
+            this.triggerReadSelectedText();
+            this.mockTts.finishPendingUtterance();
+
+            // Should auto-dismiss.
+            assertEquals(selectToSpeak.state_, SelectToSpeakState.INACTIVE);
+          });
+    });

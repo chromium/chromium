@@ -1322,16 +1322,16 @@ export class SelectToSpeak {
   startSpeech_(text) {
     this.prepareForSpeech_(true /* clearFocusRing */);
     const options = this.prefsManager_.speechOptions();
+    // Without nodes to anchor on, navigate is not supported.
+    this.supportsNavigationPanel_ = false;
     options.onEvent = (event) => {
       if (event.type === 'start') {
         this.onStateChanged_(SelectToSpeakState.SPEAKING);
         this.testCurrentNode_();
       } else if (
-          (event.type === 'end' || event.type === 'interrupted' ||
-           event.type === 'cancelled') &&
-          !this.shouldShowNavigationControls_()) {
-        // Automatically dismiss when we're at the end, unless navigation
-        // controled is enabled, in which case we persist STS.
+          event.type === 'end' || event.type === 'interrupted' ||
+          event.type === 'cancelled') {
+        // Automatically dismiss when we're at the end.
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       }
     };
@@ -1569,10 +1569,11 @@ export class SelectToSpeak {
     if (isLastNodeGroup) {
       if (!this.shouldShowNavigationControls_()) {
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
+      } else {
+        // If navigation features are enabled, we should turn the pause status
+        // to true so that the user can hit resume to continue.
+        this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
       }
-      // If navigation features are enabled, we should turn the pause status to
-      // true so that the user can hit resume to continue.
-      this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
       return;
     }
 
