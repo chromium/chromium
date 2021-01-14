@@ -481,9 +481,6 @@
   <message name="IDS_KSV_DESCRIPTION_IDC_CONTENT_CONTEXT_SELECTALL" desc="Description of the command in keyboard shortcut viewer.">
     Select everything on the page
   </message>
-  <message name="IDS_KSV_DESCRIPTION_CLIPBOARD_HISTORY" desc="Description of the command in keyboard shortcut viewer.">
-    Show the last few things copied onto the clipboard
-  </message>
   <message name="IDS_KSV_DESCRIPTION_COPY" desc="Description of the command in keyboard shortcut viewer.">
     Copy selected content to the clipboard
   </message>

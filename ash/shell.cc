@@ -1032,6 +1032,7 @@ void Shell::Init(
   if (chromeos::features::IsClipboardHistoryEnabled()) {
     clipboard_history_controller_ =
         std::make_unique<ClipboardHistoryControllerImpl>();
+    clipboard_history_controller_->Init();
   }
 
   // `HoldingSpaceController` must be instantiated before the shelf.

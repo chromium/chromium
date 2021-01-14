@@ -782,46 +782,41 @@ var defaultTests = [
   function acceleratorTest() {
     // Ash level accelerator.
     var newBrowser = newAccelerator('n', false /* shift */, true /* control */);
-    chrome.autotestPrivate.activateAccelerator(newBrowser, function() {
-      newBrowser.pressed = false;
-      chrome.autotestPrivate.activateAccelerator(newBrowser, function() {
-        chrome.autotestPrivate.getAppWindowList(function(list) {
-          chrome.test.assertEq(2, list.length);
-          var closeWindow =
-              newAccelerator('w', false /* shift */, true /* control */);
-          chrome.autotestPrivate.activateAccelerator(
-              closeWindow, function(success) {
-                chrome.test.assertTrue(success);
-                closeWindow.pressed = false;
-                chrome.autotestPrivate.activateAccelerator(
-                    closeWindow, async function(success) {
-                      chrome.test.assertNoLastError();
-                      // Actual window close might happen sometime later after
-                      // the accelerator. So keep trying until window count
-                      // drops to 1.
-                      await new Promise(resolve => {
-                        function check() {
-                          chrome.autotestPrivate.getAppWindowList(function(
-                              list) {
-                            chrome.test.assertNoLastError();
+    chrome.autotestPrivate.activateAccelerator(
+        newBrowser,
+        function() {
+          chrome.autotestPrivate.getAppWindowList(function(list) {
+            chrome.test.assertEq(2, list.length);
+            var closeWindow =
+                newAccelerator('w', false /* shift */, true /* control */);
+            chrome.autotestPrivate.activateAccelerator(
+                closeWindow,
+                async function(success) {
+                  chrome.test.assertTrue(success);
 
-                            if (list.length == 1) {
-                              resolve();
-                              return;
-                            }
+                  // Actual window close might happen sometime later after the
+                  // accelerator. So keep trying until window count drops to 1.
+                  await new Promise(resolve => {
+                    function check() {
+                      chrome.autotestPrivate.getAppWindowList(function(list) {
+                        chrome.test.assertNoLastError();
 
-                            window.setTimeout(check, 100);
-                          });
-                        };
+                        if (list.length == 1) {
+                          resolve();
+                          return;
+                        }
 
-                        check();
+                        window.setTimeout(check, 100);
                       });
-                      chrome.test.succeed();
-                    });
-              });
+                    };
+
+                    check();
+                  });
+
+                  chrome.test.succeed();
+                });
+          });
         });
-      });
-    });
   },
   // This test verifies that api to activate accelrator with number works as
   // expected.
@@ -829,12 +824,12 @@ var defaultTests = [
     // An ash accelerator with number to reset UI scale.
     var accelerator = newAccelerator('0', true /* shift */, true /* control */);
     chrome.autotestPrivate.activateAccelerator(
-        accelerator, chrome.test.callbackPass((success) => {
+        accelerator,
+        function(success) {
+          chrome.test.assertNoLastError();
           chrome.test.assertTrue(success);
-          accelerator.pressed = false;
-          chrome.autotestPrivate.activateAccelerator(
-              accelerator, chrome.test.callbackPass());
-        }));
+          chrome.test.succeed();
+        });
   },
   function setMetricsEnabled() {
     chrome.autotestPrivate.setMetricsEnabled(true, chrome.test.callbackPass());

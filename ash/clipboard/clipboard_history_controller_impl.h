@@ -55,11 +55,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void AddObserver(Observer* observer) const;
   void RemoveObserver(Observer* observer) const;
 
+  void Init();
+
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
-
-  // Shows the clipboard history menu through the keyboard accelerator.
-  void ShowMenuByAccelerator();
 
   // Returns bounds for the contextual menu in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
@@ -94,6 +93,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // ClipboardHistory::Observer:
   void OnClipboardHistoryCleared() override;
+
+  // Shows the clipboard history menu through the keyboard accelerator.
+  void ShowMenuByAccelerator();
 
   void ExecuteSelectedMenuItem(int event_flags);
 

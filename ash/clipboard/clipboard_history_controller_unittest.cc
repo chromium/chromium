@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_controller_impl.h"
-#include "ash/clipboard/clipboard_history.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -241,59 +239,6 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
           Shell::Get()->clipboard_history_controller()->IsMenuShowing());
     }
   }
-}
-
-// Tests that pressing and holding VKEY_V, then the search key (EF_COMMAND_DOWN)
-// does not show the AppList.
-TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
-  GetEventGenerator()->PressKey(ui::VKEY_V, /*event_flags=*/0);
-  GetEventGenerator()->PressKey(ui::VKEY_LWIN, /*event_flags=*/0);
-
-  // Release VKEY_V, which could trigger a key released accelerator.
-  GetEventGenerator()->ReleaseKey(ui::VKEY_V, /*event_flags=*/0);
-
-  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/base::nullopt));
-
-  // Release VKEY_LWIN(search/launcher), which could trigger the app list.
-  GetEventGenerator()->ReleaseKey(ui::VKEY_LWIN, /*event_flags=*/0);
-
-  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/base::nullopt));
-}
-
-// Tests that clearing the clipboard clears ClipboardHistory
-TEST_F(ClipboardHistoryControllerTest, ClearClipboardClearsHistory) {
-  // Write a single item to ClipboardHistory.
-  WriteToClipboard("test");
-
-  // Clear the clipboard.
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  FlushMessageLoop();
-
-  // History should also be cleared.
-  const std::list<ClipboardHistoryItem>& items =
-      Shell::Get()->clipboard_history_controller()->history()->GetItems();
-  EXPECT_EQ(0u, items.size());
-
-  ShowMenu();
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-}
-
-// Tests that clearing the clipboard closes the ClipboardHistory menu.
-TEST_F(ClipboardHistoryControllerTest,
-       ClearingClipboardClosesClipboardHistory) {
-  // Write a single item to ClipboardHistory.
-  WriteToClipboard("test");
-
-  ShowMenu();
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  FlushMessageLoop();
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
 }  // namespace ash

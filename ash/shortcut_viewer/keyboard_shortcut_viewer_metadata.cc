@@ -700,14 +700,6 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {{ui::VKEY_OEM_6, ui::EF_ALT_DOWN}}},
       {// |categories|
        {ShortcutCategory::kPopular, ShortcutCategory::kTextEditing},
-       IDS_KSV_DESCRIPTION_CLIPBOARD_HISTORY,
-       {},
-       // |accelerator_ids|
-       {},
-       // |shortcut_key_codes|
-       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_V}},
-      {// |categories|
-       {ShortcutCategory::kPopular, ShortcutCategory::kTextEditing},
        IDS_KSV_DESCRIPTION_COPY,
        {},
        // |accelerator_ids|
