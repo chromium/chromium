@@ -8,7 +8,7 @@
 // #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../../common/js/metrics.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {AutocompleteList} from './autocomplete_list.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

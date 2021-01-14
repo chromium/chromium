@@ -16,7 +16,7 @@
 // #import {CWSWidgetContainer} from '../../../cws_widget/cws_widget_container.m.js';
 // #import {webStoreUtils} from '../web_store_utils.m.js';
 // #import {str, util} from '../../../common/js/util.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../../common/js/metrics.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
