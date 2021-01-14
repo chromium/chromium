@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/extensions/sync_helper.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "extensions/browser/app_sorting.h"
@@ -43,6 +43,8 @@
 
 using extensions::AppSorting;
 using extensions::Extension;
+using extensions::ExtensionManagement;
+using extensions::ExtensionManagementFactory;
 using extensions::ExtensionPrefs;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionSet;
@@ -61,9 +63,10 @@ bool IsCorrectSyncType(const Extension& extension, syncer::ModelType type) {
 // Predicate for PendingExtensionManager.
 // TODO(crbug.com/862665): The !is_theme check should be unnecessary after all
 // the bad data from crbug.com/558299 has been cleaned up.
-bool ShouldAllowInstall(const Extension* extension) {
+bool ShouldAllowInstall(const Extension* extension,
+                        content::BrowserContext* context) {
   return !extension->is_theme() &&
-         extensions::sync_helper::IsSyncable(extension);
+         extensions::util::ShouldSync(extension, context);
 }
 
 std::map<std::string, syncer::SyncData> ToSyncerSyncDataMap(
@@ -256,15 +259,21 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
       id, extensions::disable_reason::DISABLE_REMOTE_INSTALL);
   AppSorting* app_sorting = system_->app_sorting();
 
+  ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+
+  const GURL update_url =
+      extension_management->GetEffectiveUpdateURL(extension);
   ExtensionSyncData result =
       extension.is_app()
           ? ExtensionSyncData(
                 extension, enabled, disable_reasons, incognito_enabled,
-                remote_install, app_sorting->GetAppLaunchOrdinal(id),
+                remote_install, update_url,
+                app_sorting->GetAppLaunchOrdinal(id),
                 app_sorting->GetPageOrdinal(id),
                 extensions::GetLaunchTypePrefValue(extension_prefs, id))
           : ExtensionSyncData(extension, enabled, disable_reasons,
-                              incognito_enabled, remote_install);
+                              incognito_enabled, remote_install, update_url);
 
   // If there's a pending update, send the new version to sync instead of the
   // installed one.

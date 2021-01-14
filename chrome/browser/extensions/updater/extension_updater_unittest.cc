@@ -391,16 +391,18 @@ class MockService : public TestExtensionService {
   DISALLOW_COPY_AND_ASSIGN(MockService);
 };
 
-
-bool ShouldInstallExtensionsOnly(const Extension* extension) {
+bool ShouldInstallExtensionsOnly(const Extension* extension,
+                                 content::BrowserContext* context) {
   return extension->GetType() == Manifest::TYPE_EXTENSION;
 }
 
-bool ShouldInstallThemesOnly(const Extension* extension) {
+bool ShouldInstallThemesOnly(const Extension* extension,
+                             content::BrowserContext* context) {
   return extension->is_theme();
 }
 
-bool ShouldAlwaysInstall(const Extension* extension) {
+bool ShouldAlwaysInstall(const Extension* extension,
+                         content::BrowserContext* context) {
   return true;
 }
 

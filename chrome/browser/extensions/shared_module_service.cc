@@ -24,6 +24,11 @@ namespace {
 typedef std::vector<SharedModuleInfo::ImportInfo> ImportInfoVector;
 typedef std::list<SharedModuleInfo::ImportInfo> ImportInfoList;
 
+bool IsSharedModule(const Extension* extension,
+                    content::BrowserContext* context) {
+  return SharedModuleInfo::IsSharedModule(extension);
+}
+
 }  // namespace
 
 SharedModuleService::SharedModuleService(content::BrowserContext* context)
@@ -96,9 +101,8 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
          iter != missing_modules.end();
          ++iter) {
       pending_extension_manager->AddFromExtensionImport(
-          iter->extension_id,
-          extension_urls::GetWebstoreUpdateUrl(),
-          SharedModuleInfo::IsSharedModule);
+          iter->extension_id, extension_urls::GetWebstoreUpdateUrl(),
+          IsSharedModule);
     }
     service->CheckForUpdatesSoon();
   }

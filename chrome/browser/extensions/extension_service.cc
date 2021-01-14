@@ -1555,7 +1555,7 @@ void ExtensionService::OnExtensionInstalled(
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager()->GetById(id);
   if (pending_extension_info) {
-    if (!pending_extension_info->ShouldAllowInstall(extension)) {
+    if (!pending_extension_info->ShouldAllowInstall(extension, profile())) {
       // Hack for crbug.com/558299, see comment on DeleteThemeDoNotUse.
       if (extension->is_theme() && pending_extension_info->is_from_sync())
         ExtensionSyncService::Get(profile_)->DeleteThemeDoNotUse(*extension);

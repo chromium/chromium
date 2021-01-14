@@ -6,12 +6,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
 #include "chrome/common/extensions/command.h"
-#include "chrome/common/extensions/sync_helper.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -100,7 +100,7 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
   show_how_to_manage_ = !command.has_value() || anchor_to_omnibox_;
   show_key_binding_ = command.has_value();
 
-  show_sign_in_promo_ = extensions::sync_helper::IsSyncable(extension) &&
+  show_sign_in_promo_ = extensions::util::ShouldSync(extension, profile) &&
                         SyncPromoUI::ShouldShowSyncPromo(profile);
 
   if (show_how_to_use_)

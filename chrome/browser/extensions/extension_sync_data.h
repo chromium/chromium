@@ -48,13 +48,15 @@ class ExtensionSyncData {
                     bool enabled,
                     int disable_reasons,
                     bool incognito_enabled,
-                    bool remote_install);
+                    bool remote_install,
+                    const GURL& update_url);
   // App constructor.
   ExtensionSyncData(const Extension& extension,
                     bool enabled,
                     int disable_reasons,
                     bool incognito_enabled,
                     bool remote_install,
+                    const GURL& update_url,
                     const syncer::StringOrdinal& app_launch_ordinal,
                     const syncer::StringOrdinal& page_ordinal,
                     extensions::LaunchType launch_type);

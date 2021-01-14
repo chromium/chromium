@@ -29,7 +29,8 @@ using std::string;
 
 namespace {
 
-bool IsTheme(const extensions::Extension* extension) {
+bool IsTheme(const extensions::Extension* extension,
+             content::BrowserContext* context) {
   return extension->is_theme();
 }
 

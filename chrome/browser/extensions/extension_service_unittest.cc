@@ -3055,7 +3055,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
 namespace {
 
-bool IsExtension(const Extension* extension) {
+bool IsExtension(const Extension* extension, content::BrowserContext* context) {
   return extension->GetType() == Manifest::TYPE_EXTENSION;
 }
 
@@ -3170,7 +3170,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionWrongVersion) {
 
 namespace {
 
-bool IsTheme(const Extension* extension) {
+bool IsTheme(const Extension* extension, content::BrowserContext* context) {
   return extension->is_theme();
 }
 
