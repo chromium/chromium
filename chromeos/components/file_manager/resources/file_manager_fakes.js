@@ -77,73 +77,30 @@ window.chrome.storage = {
 window.BackgroundWindowSWA = class {
   constructor() {
     /**
-     * @type {!FileBrowserBackground|!FileBrowserBackgroundFull}
+     * @type {!FileBrowserBackgroundFull}
      */
     this.background = new FileBrowserBackgroundFull();
-
-    /**
-     * @type {!Object}
-     */
-    this.launcher = {
-      /** @param {Object=} appState App state. */
-      launchFileManager(appState) {
-        window.fileManagerLaunchNewWindow(appState);
-      },
-    };
-
-    /**
-     * @type {!DriveSyncHandler}
-     */
-    this.driveSyncHandler = new DriveSyncHandler();
   }
-
-  /**
-   * @param {Window} window
-   */
-  registerDialog(window) {}
 }
 
-window.FileBrowserBackground = class {
+window.FileBrowserBackgroundFull = class {
   constructor() {
     /**
      * Dialogs
      * @type {!Object<!Window>}
      */
-    this.dialogs;
+    this.dialogs = {};
 
     /**
-     * String assets. Notable difference here: files app extern defines
-     * this string object on FileBrowserBackgroundFull.
+     * String assets (translation strings and flag states).
      * @type {Object<string>}
      */
-    this.stringData;
-  }
-
-  /**
-   * @param {function()} callback Ready callback.
-   */
-  ready(callback) {
-    const script = document.createElement('script');
-
-    script.onload = () => {
-      this.stringData = window.loadTimeData.data_;
-      window.loadTimeData.data_ = null;
-      callback();
-    };
-
-    document.head.append(script);
-    script.src = 'strings.js';
-  }
-}
-
-window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
-  constructor() {
-    super();
+    this.stringData = {};
 
     /**
      * @type {!DriveSyncHandler}
      */
-    this.driveSyncHandler;
+    this.driveSyncHandler = new DriveSyncHandler();
 
     /**
      * @type {!ProgressCenter}
@@ -182,6 +139,29 @@ window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
   }
 
   /**
+   * @param {!Window} window
+   */
+  registerDialog(window) {
+    console.error('registerDialog() not implemented for SWA yet');
+  }
+
+  /**
+   * @param {function()} callback Ready callback.
+   */
+  ready(callback) {
+    const script = document.createElement('script');
+
+    script.onload = () => {
+      this.stringData = window.loadTimeData.data_;
+      window.loadTimeData.data_ = null;
+      callback();
+    };
+
+    document.head.append(script);
+    script.src = 'strings.js';
+  }
+
+  /**
    * Returns VolumeManager instance.
    * @public
    * @return {!VolumeManager}
@@ -192,6 +172,17 @@ window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
     }
 
     return this.volumeManagerInstance_;
+  }
+
+  /**
+   * Launches a new File Manager window.
+   *
+   * @param {Object=} opt_appState App state.
+   * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
+   *     App ID.
+   */
+  async launchFileManager(opt_appState) {
+    console.error('launchFileManager() not implemented for SWA yet');
   }
 }
 
