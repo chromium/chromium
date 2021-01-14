@@ -135,6 +135,16 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // Change the state and check the state transition is valid.
   void SetState(State new_state);
 
+  // Pages with multiple V4L2VideoDecoder instances might run out of memory
+  // (e.g. b/170870476) or crash (e.g. crbug.com/1109312). To avoid that and
+  // while the investigation goes on, limit the maximum number of simultaneous
+  // decoder instances for now. |num_instances_| tracks the number of
+  // simultaneous decoders. |can_use_decoder_| is true iff we haven't reached
+  // the maximum number of instances at the time this decoder is created.
+  static constexpr int kMaxNumOfInstances = 10;
+  static base::AtomicRefCount num_instances_;
+  const bool can_use_decoder_;
+
   // The V4L2 backend, i.e. the part of the decoder that sends
   // decoding jobs to the kernel.
   std::unique_ptr<V4L2VideoDecoderBackend> backend_;

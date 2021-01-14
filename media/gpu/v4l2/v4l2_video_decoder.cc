@@ -47,6 +47,9 @@ constexpr size_t kDpbOutputBufferExtraCount = limits::kMaxVideoFrames + 1;
 }  // namespace
 
 // static
+base::AtomicRefCount V4L2VideoDecoder::num_instances_(0);
+
+// static
 std::unique_ptr<DecoderInterface> V4L2VideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<DecoderInterface::Client> client) {
@@ -80,6 +83,7 @@ V4L2VideoDecoder::V4L2VideoDecoder(
     base::WeakPtr<DecoderInterface::Client> client,
     scoped_refptr<V4L2Device> device)
     : DecoderInterface(std::move(decoder_task_runner), std::move(client)),
+      can_use_decoder_(num_instances_.Increment() < kMaxNumOfInstances),
       device_(std::move(device)),
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
@@ -110,6 +114,7 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
   }
 
   weak_this_factory_.InvalidateWeakPtrs();
+  num_instances_.Decrement();
 }
 
 void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -120,6 +125,13 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(config.IsValidConfig());
   DCHECK(state_ == State::kUninitialized || state_ == State::kDecoding);
   DVLOGF(3);
+
+  if (!can_use_decoder_) {
+    VLOGF(1) << "Reached maximum number of decoder instances ("
+             << kMaxNumOfInstances << ")";
+    std::move(init_cb).Run(StatusCode::kDecoderCreationFailed);
+    return;
+  }
 
   if (cdm_context || config.is_encrypted()) {
     VLOGF(1) << "V4L2 decoder does not support encrypted stream";
