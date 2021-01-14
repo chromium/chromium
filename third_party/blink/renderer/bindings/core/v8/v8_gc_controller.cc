@@ -92,6 +92,10 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
       IsNestedInV8GC(ThreadState::Current(), type)
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
+
+  auto* per_isolate_data = V8PerIsolateData::From(isolate);
+  per_isolate_data->EnterGC();
+
   ScriptForbiddenScope::Enter();
 
   // Attribute garbage collection to the all frames instead of a specific
@@ -105,14 +109,12 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
     case v8::kGCTypeIncrementalMarking:
       // Recomputing ASWs is opportunistic during incremental marking as they
       // only need to be recomputing during the atomic pause for corectness.
-      V8PerIsolateData::From(isolate)
-          ->GetActiveScriptWrappableManager()
+      per_isolate_data->GetActiveScriptWrappableManager()
           ->RecomputeActiveScriptWrappables(
               ActiveScriptWrappableManager::RecomputeMode::kOpportunistic);
       break;
     case v8::kGCTypeMarkSweepCompact:
-      V8PerIsolateData::From(isolate)
-          ->GetActiveScriptWrappableManager()
+      per_isolate_data->GetActiveScriptWrappableManager()
           ->RecomputeActiveScriptWrappables(
               ActiveScriptWrappableManager::RecomputeMode::kRequired);
       break;
@@ -129,6 +131,9 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
       IsNestedInV8GC(ThreadState::Current(), type)
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
+
+  V8PerIsolateData::From(isolate)->LeaveGC();
+
   ScriptForbiddenScope::Exit();
 
   if (BlameContext* blame_context =

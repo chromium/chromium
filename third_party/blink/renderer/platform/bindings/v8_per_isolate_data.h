@@ -207,6 +207,10 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                       v8::Isolate::GCCallback prologue_callback,
                       v8::Isolate::GCCallback epilogue_callback);
 
+  void EnterGC() { gc_callback_depth_++; }
+
+  void LeaveGC() { gc_callback_depth_--; }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode);
@@ -268,6 +272,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   v8::Isolate::GCCallback prologue_callback_;
   v8::Isolate::GCCallback epilogue_callback_;
+  size_t gc_callback_depth_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(V8PerIsolateData);
 };
