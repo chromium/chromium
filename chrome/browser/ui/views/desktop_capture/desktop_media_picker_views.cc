@@ -37,6 +37,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -310,10 +311,6 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
-const char* DesktopMediaPickerDialogView::GetClassName() const {
-  return "DesktopMediaPickerDialogView";
-}
-
 ui::ModalType DesktopMediaPickerDialogView::GetModalType() const {
   return modality_;
 }
@@ -448,6 +445,9 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   // When not using the web-modal dialog, center the dialog with its new size.
   GetWidget()->CenterWindow(new_size);
 }
+
+BEGIN_METADATA(DesktopMediaPickerDialogView, views::DialogDelegateView)
+END_METADATA
 
 constexpr bool DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform;
 

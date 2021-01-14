@@ -15,6 +15,8 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_utils.h"
 
 using content::DesktopMediaID;
 
@@ -43,7 +45,6 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaSourceViewStyle style)
     : parent_(parent),
       source_id_(source_id),
-      style_(style),
       selected_(false) {
   AddChildView(icon_view_);
   AddChildView(image_view_);
@@ -51,14 +52,11 @@ DesktopMediaSourceView::DesktopMediaSourceView(
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetStyle(style_);
+  SetStyle(style);
   views::FocusRing::Install(this);
 }
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
-
-const char DesktopMediaSourceView::kDesktopMediaSourceViewClassName[] =
-    "DesktopMediaPicker_DesktopMediaSourceView";
 
 void DesktopMediaSourceView::SetName(const base::string16& name) {
   label_->SetText(name);
@@ -83,8 +81,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     parent()->GetViewsInGroup(GetGroup(), &neighbours);
     for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
       if (*i != this) {
-        DCHECK_EQ((*i)->GetClassName(),
-                  DesktopMediaSourceView::kDesktopMediaSourceViewClassName);
+        DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
         DesktopMediaSourceView* source_view =
             static_cast<DesktopMediaSourceView*>(*i);
         source_view->SetSelected(false);
@@ -103,20 +100,19 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
                                                    gfx::Font::Weight::NORMAL));
   }
 
-  SchedulePaint();
-}
-
-const char* DesktopMediaSourceView::GetClassName() const {
-  return DesktopMediaSourceView::kDesktopMediaSourceViewClassName;
+  OnPropertyChanged(&selected_, views::kPropertyEffectsPaint);
 }
 
 void DesktopMediaSourceView::SetStyle(DesktopMediaSourceViewStyle style) {
-  style_ = style;
-  image_view_->SetBoundsRect(style_.image_rect);
-  icon_view_->SetBoundsRect(style_.icon_rect);
-  icon_view_->SetImageSize(style_.icon_rect.size());
-  label_->SetBoundsRect(style_.label_rect);
-  label_->SetHorizontalAlignment(style_.text_alignment);
+  image_view_->SetBoundsRect(style.image_rect);
+  icon_view_->SetBoundsRect(style.icon_rect);
+  icon_view_->SetImageSize(style.icon_rect.size());
+  label_->SetBoundsRect(style.label_rect);
+  label_->SetHorizontalAlignment(style.text_alignment);
+}
+
+bool DesktopMediaSourceView::GetSelected() const {
+  return selected_;
 }
 
 views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
@@ -126,8 +122,7 @@ views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
     return nullptr;
 
   for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
-    DCHECK_EQ((*i)->GetClassName(),
-              DesktopMediaSourceView::kDesktopMediaSourceViewClassName);
+    DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
     DesktopMediaSourceView* source_view =
         static_cast<DesktopMediaSourceView*>(*i);
     if (source_view->selected_)
@@ -164,3 +159,7 @@ void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(label_->GetText());
 }
+
+BEGIN_METADATA(DesktopMediaSourceView, views::View)
+ADD_PROPERTY_METADATA(bool, Selected)
+END_METADATA

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class TableView;
@@ -37,12 +38,14 @@ class TabListViewObserver;
 //         TableView
 class DesktopMediaTabList : public DesktopMediaListController::ListView {
  public:
+  METADATA_HEADER(DesktopMediaTabList);
   DesktopMediaTabList(DesktopMediaListController* controller,
                       const base::string16& accessible_name);
+  DesktopMediaTabList(const DesktopMediaTabList&) = delete;
+  DesktopMediaTabList& operator=(const DesktopMediaTabList&) = delete;
   ~DesktopMediaTabList() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
 
@@ -53,9 +56,6 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
 
  private:
   friend class DesktopMediaPickerViewsTestApi;
-
-  DesktopMediaTabList(const DesktopMediaTabList&) = delete;
-  DesktopMediaTabList operator=(const DesktopMediaTabList&) = delete;
 
   DesktopMediaListController* controller_;
   std::unique_ptr<TabListModel> model_;

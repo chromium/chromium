@@ -10,6 +10,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -53,9 +54,12 @@ struct DesktopMediaSourceViewStyle {
 // source as a thumbnail with the title under it.
 class DesktopMediaSourceView : public views::View {
  public:
+  METADATA_HEADER(DesktopMediaSourceView);
   DesktopMediaSourceView(DesktopMediaListView* parent,
                          content::DesktopMediaID source_id,
                          DesktopMediaSourceViewStyle style);
+  DesktopMediaSourceView(const DesktopMediaSourceView&) = delete;
+  DesktopMediaSourceView& operator=(const DesktopMediaSourceView&) = delete;
   ~DesktopMediaSourceView() override;
 
   // Used to update the style when the number of available items changes.
@@ -70,10 +74,9 @@ class DesktopMediaSourceView : public views::View {
   const content::DesktopMediaID& source_id() const { return source_id_; }
 
   // Returns true if the source is selected.
-  bool is_selected() const { return selected_; }
+  bool GetSelected() const;
 
   // views::View interface.
-  const char* GetClassName() const override;
   views::View* GetSelectedViewForGroup(int group) override;
   bool IsGroupFocusTraversable() const override;
   void OnFocus() override;
@@ -81,28 +84,20 @@ class DesktopMediaSourceView : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  static const char kDesktopMediaSourceViewClassName[];
-
  private:
   // Updates selection state of the element. If |selected| is true then also
   // calls SetSelected(false) for the source view that was selected before that
   // (if any).
   void SetSelected(bool selected);
 
-  // Updates hover state of the element, and the appearance.
-  void SetHovered(bool hovered);
-
   DesktopMediaListView* parent_;
   content::DesktopMediaID source_id_;
 
-  DesktopMediaSourceViewStyle style_;
   views::ImageView* icon_view_ = new views::ImageView;
   views::ImageView* image_view_ = new views::ImageView;
   views::Label* label_ = new views::Label;
 
   bool selected_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaSourceView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_
