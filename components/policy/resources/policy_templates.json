@@ -14423,15 +14423,21 @@
         },
         'extension2': {
           'allowCorporateKeyUsage': False
+        },
+        'com.example.app': {
+          'allowCorporateKeyUsage': True
+        },
+        'com.example.app2': {
+          'allowCorporateKeyUsage': False
         }
       },
       'id': 302,
       'caption': 'Key Permissions',
       'tags': [],
-      'desc': '''Setting the policy grants access to corporate keys to extensions. Keys are designated for corporate usage only if they're generated using the chrome.enterprise.platformKeys API on a managed account. Users can't grant or withdraw access to corporate keys to or from extensions.
+      'desc': '''Setting the policy grants access to corporate keys to extensions or Android applications. Keys are designated for corporate usage only if they're generated using the chrome.enterprise.platformKeys API on a managed account. Users can't grant or withdraw access to corporate keys to or from extensions or Android applications.
 
-      By default, an extension can't use a key designated for corporate usage, which is equivalent to setting allowCorporateKeyUsage to False for that extension. Only if allowCorporateKeyUsage is set to True for an extension can it use any platform key marked for corporate usage to sign arbitrary data. Only grant this permission if the extension is trusted to secure access to the key against attackers.''',
-      'arc_support': 'Android apps cannot get access to corporate keys. This policy has no effect on them.',
+      By default, an extension or an Android applications can't use a key designated for corporate usage, which is equivalent to setting allowCorporateKeyUsage to False for it. Only if allowCorporateKeyUsage is set to True for an extension or an Android application can it use any platform key marked for corporate usage to sign arbitrary data. Only grant this permission if the extension or the Android application is trusted to secure access to the key against attackers.''',
+      'arc_support': 'Corporate keys can be used by Android applications that are installed and listed in this policy.',
     },
     {
       'name': 'WelcomePageOnOSUpgradeEnabled',
