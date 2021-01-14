@@ -162,7 +162,7 @@ void DeviceToDeviceInitiatorHelper::OnInnerMessageCreatedForInitiatorAuth(
     DeviceToDeviceInitiatorHelper::MessageCallback callback,
     const std::string& inner_message) {
   if (inner_message.empty()) {
-    PA_LOG(VERBOSE) << "Failed to create inner message for [Initiator Auth].";
+    PA_LOG(ERROR) << "Failed to create inner message for [Initiator Auth].";
     std::move(callback).Run(std::string());
     return;
   }
@@ -218,8 +218,8 @@ void DeviceToDeviceInitiatorHelper::BeginResponderAuthValidation(
   if (!responder_hello.ParseFromString(header.decryption_key_id()) ||
       !responder_hello.public_dh_key().SerializeToString(
           &context.responder_session_public_key)) {
-    PA_LOG(VERBOSE) << "Failed to extract responder session public key in "
-                    << "[Responder Auth] header.";
+    PA_LOG(ERROR) << "Failed to extract responder session public key in "
+                  << "[Responder Auth] header.";
     std::move(callback).Run(false, SessionKeys());
     return;
   }
@@ -258,7 +258,7 @@ void DeviceToDeviceInitiatorHelper::OnOuterMessageUnwrappedForResponderAuth(
     const std::string& payload,
     const securemessage::Header& header) {
   if (!verified) {
-    PA_LOG(VERBOSE) << "Failed to unwrap outer [Responder Auth] message.";
+    PA_LOG(ERROR) << "Failed to unwrap outer [Responder Auth] message.";
     std::move(callback).Run(false, SessionKeys());
     return;
   }
@@ -267,7 +267,7 @@ void DeviceToDeviceInitiatorHelper::OnOuterMessageUnwrappedForResponderAuth(
   securegcm::DeviceToDeviceMessage device_to_device_message;
   if (!device_to_device_message.ParseFromString(payload) ||
       device_to_device_message.sequence_number() != 1) {
-    PA_LOG(VERBOSE) << "Failed to validate DeviceToDeviceMessage payload.";
+    PA_LOG(ERROR) << "Failed to validate DeviceToDeviceMessage payload.";
     std::move(callback).Run(false, SessionKeys());
     return;
   }
@@ -294,7 +294,7 @@ void DeviceToDeviceInitiatorHelper::OnMiddleMessageUnwrappedForResponderAuth(
     const std::string& payload,
     const securemessage::Header& header) {
   if (!verified) {
-    PA_LOG(VERBOSE) << "Failed to unwrap middle [Responder Auth] message.";
+    PA_LOG(ERROR) << "Failed to unwrap middle [Responder Auth] message.";
     std::move(callback).Run(false, SessionKeys());
     return;
   }
@@ -321,7 +321,7 @@ void DeviceToDeviceInitiatorHelper::OnInnerMessageUnwrappedForResponderAuth(
     const std::string& payload,
     const securemessage::Header& header) {
   if (!verified)
-    PA_LOG(VERBOSE) << "Failed to unwrap inner [Responder Auth] message.";
+    PA_LOG(ERROR) << "Failed to unwrap inner [Responder Auth] message.";
 
   // Note: The GMS Core implementation does not properly set the metadata
   // version, so we only check that the type is UNLOCK_KEY_SIGNED_CHALLENGE.
