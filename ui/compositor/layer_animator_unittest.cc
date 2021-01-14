@@ -2476,13 +2476,13 @@ TEST(LayerAnimatorTest, ObserverReleasedBeforeAnimationSequenceEnds) {
   animator->StartAnimation(sequence);
 
   // |observer| should be attached to |sequence|.
-  EXPECT_TRUE(sequence->observers_.might_have_observers());
+  EXPECT_TRUE(!sequence->observers_.empty());
 
   // Now, release |observer|
   observer.reset();
 
   // And |sequence| should no longer be attached to |observer|.
-  EXPECT_FALSE(sequence->observers_.might_have_observers());
+  EXPECT_FALSE(!sequence->observers_.empty());
 }
 
 TEST(LayerAnimatorTest, ObserverAttachedAfterAnimationStarted) {

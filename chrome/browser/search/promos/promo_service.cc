@@ -259,7 +259,7 @@ void PromoService::Shutdown() {
     observer.OnPromoServiceShuttingDown();
   }
 
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 // static

@@ -90,8 +90,8 @@ BorealisWindowManager::~BorealisWindowManager() {
   for (auto& observer : lifetime_observers_) {
     observer.OnWindowManagerDeleted(this);
   }
-  DCHECK(!anon_observers_.might_have_observers());
-  DCHECK(!lifetime_observers_.might_have_observers());
+  DCHECK(anon_observers_.empty());
+  DCHECK(lifetime_observers_.empty());
 }
 
 void BorealisWindowManager::AddObserver(AnonymousAppObserver* observer) {

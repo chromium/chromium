@@ -101,7 +101,7 @@ void SupervisedUserPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool SupervisedUserPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool SupervisedUserPrefStore::IsInitializationComplete() const {

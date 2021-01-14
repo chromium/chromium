@@ -172,7 +172,7 @@ void AccessContextAuditService::RemoveAllRecordsForOriginKeyedStorage(
 }
 
 void AccessContextAuditService::Shutdown() {
-  DCHECK(!cookie_access_helpers_.might_have_observers());
+  DCHECK(cookie_access_helpers_.empty());
   ClearSessionOnlyRecords();
 }
 

@@ -30,7 +30,7 @@ CameraPresenceNotifier* CameraPresenceNotifier::GetInstance() {
 
 void CameraPresenceNotifier::AddObserver(
     CameraPresenceNotifier::Observer* observer) {
-  bool had_no_observers = !observers_.might_have_observers();
+  bool had_no_observers = observers_.empty();
   observers_.AddObserver(observer);
   observer->OnCameraPresenceCheckDone(camera_present_on_last_check_);
   if (had_no_observers) {
@@ -46,7 +46,7 @@ void CameraPresenceNotifier::AddObserver(
 void CameraPresenceNotifier::RemoveObserver(
     CameraPresenceNotifier::Observer* observer) {
   observers_.RemoveObserver(observer);
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     camera_check_timer_.Stop();
     camera_present_on_last_check_ = false;
   }

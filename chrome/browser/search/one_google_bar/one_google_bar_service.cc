@@ -53,7 +53,7 @@ void OneGoogleBarService::Shutdown() {
   }
 
   signin_observer_.reset();
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 void OneGoogleBarService::Refresh() {

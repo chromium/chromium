@@ -1030,7 +1030,7 @@ TEST_F(NearbySharingServiceImplTest, AddsNearbyProcessObserver) {
 TEST_F(NearbySharingServiceImplTest, RemovesNearbyProcessObserver) {
   service_->Shutdown();
   service_.reset();
-  EXPECT_FALSE(mock_nearby_process_manager().observers_.might_have_observers());
+  EXPECT_FALSE(!mock_nearby_process_manager().observers_.empty());
 }
 
 TEST_F(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {

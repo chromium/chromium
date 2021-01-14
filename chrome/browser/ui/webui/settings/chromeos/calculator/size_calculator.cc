@@ -239,7 +239,7 @@ void AppsSizeCalculator::OnConnectionClosed() {
 void AppsSizeCalculator::AddObserver(SizeCalculator::Observer* observer) {
   // Start observing arc mojo connection when the first observer is added, to
   // allow the calculation of android apps.
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
         ->storage_manager()
@@ -251,7 +251,7 @@ void AppsSizeCalculator::AddObserver(SizeCalculator::Observer* observer) {
 void AppsSizeCalculator::RemoveObserver(SizeCalculator::Observer* observer) {
   observers_.RemoveObserver(observer);
   // Stop observing arc connection if all observers have been removed.
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
         ->storage_manager()

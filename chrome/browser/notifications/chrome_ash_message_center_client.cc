@@ -169,7 +169,7 @@ void ChromeAshMessageCenterClient::SetReadyCallback(
 }
 
 void ChromeAshMessageCenterClient::GetNotifiers() {
-  if (!notifier_observers_.might_have_observers())
+  if (notifier_observers_.empty())
     return;
 
   Profile* profile = GetProfileForNotifiers();

@@ -495,7 +495,7 @@ bool MediaRouterMojoImpl::MediaSinksQuery::HasObserver(
 }
 
 bool MediaRouterMojoImpl::MediaSinksQuery::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 void MediaRouterMojoImpl::MediaRoutesQuery::SetRoutesForProvider(
@@ -567,7 +567,7 @@ bool MediaRouterMojoImpl::MediaRoutesQuery::HasObserver(
 }
 
 bool MediaRouterMojoImpl::MediaRoutesQuery::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 MediaRouterMojoImpl::ProviderSinkAvailability::ProviderSinkAvailability() =
@@ -763,7 +763,7 @@ void MediaRouterMojoImpl::RegisterRouteMessageObserver(
     DCHECK(!observer_list->HasObserver(observer));
   }
 
-  bool should_listen = !observer_list->might_have_observers();
+  bool should_listen = observer_list->empty();
   observer_list->AddObserver(observer);
   if (should_listen) {
     base::Optional<MediaRouteProviderId> provider_id =
@@ -786,7 +786,7 @@ void MediaRouterMojoImpl::UnregisterRouteMessageObserver(
     return;
 
   it->second->RemoveObserver(observer);
-  if (!it->second->might_have_observers()) {
+  if (it->second->empty()) {
     message_observers_.erase(route_id);
     base::Optional<MediaRouteProviderId> provider_id =
         GetProviderIdForRoute(route_id);

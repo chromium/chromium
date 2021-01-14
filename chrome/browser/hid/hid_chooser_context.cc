@@ -72,7 +72,7 @@ HidChooserContext::~HidChooserContext() {
     observer.OnHidChooserContextShutdown();
     DCHECK(!device_observer_list_.HasObserver(&observer));
   }
-  DCHECK(!permission_observer_list_.might_have_observers());
+  DCHECK(permission_observer_list_.empty());
 }
 
 // static

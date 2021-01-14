@@ -193,7 +193,7 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
   observer_bridge_->RemoveObserver(observer);
 
   // Tear down the bridge if there are no observers left.
-  if (!observer_bridge_->might_have_observers())
+  if (!observer_bridge_->has_observers())
     observer_bridge_.reset();
 }
 

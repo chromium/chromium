@@ -445,8 +445,7 @@ NearbySharingServiceImpl::UnregisterSendSurface(
     return StatusCodes::kError;
   }
 
-  if (foreground_send_transfer_callbacks_.might_have_observers() &&
-      last_outgoing_metadata_ &&
+  if (!foreground_send_transfer_callbacks_.empty() && last_outgoing_metadata_ &&
       last_outgoing_metadata_->second.is_final_status()) {
     // We already saw the final status in the foreground
     // Nullify it so the next time the user opens sharing, it starts the UI from
@@ -467,8 +466,7 @@ NearbySharingServiceImpl::UnregisterSendSurface(
 
   // Displays the most recent payload status processed by foreground surfaces on
   // background surfaces.
-  if (!foreground_send_transfer_callbacks_.might_have_observers() &&
-      last_outgoing_metadata_) {
+  if (foreground_send_transfer_callbacks_.empty() && last_outgoing_metadata_) {
     for (TransferUpdateCallback& background_transfer_callback :
          background_send_transfer_callbacks_) {
       background_transfer_callback.OnTransferUpdate(
@@ -555,8 +553,7 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
     return StatusCodes::kOk;
   }
 
-  if (foreground_receive_callbacks_.might_have_observers() &&
-      last_incoming_metadata_ &&
+  if (!foreground_receive_callbacks_.empty() && last_incoming_metadata_ &&
       last_incoming_metadata_->second.is_final_status()) {
     // We already saw the final status in the foreground.
     // Nullify it so the next time the user opens sharing, it starts the UI from
@@ -572,8 +569,7 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
 
   // Displays the most recent payload status processed by foreground surfaces on
   // background surface.
-  if (!foreground_receive_callbacks_.might_have_observers() &&
-      last_incoming_metadata_) {
+  if (foreground_receive_callbacks_.empty() && last_incoming_metadata_) {
     for (TransferUpdateCallback& background_callback :
          background_receive_callbacks_) {
       background_callback.OnTransferUpdate(last_incoming_metadata_->first,
@@ -616,8 +612,8 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
   }
 
   // |is_scanning_| means at least one send transfer callback.
-  DCHECK(foreground_send_transfer_callbacks_.might_have_observers() ||
-         background_send_transfer_callbacks_.might_have_observers());
+  DCHECK(!foreground_send_transfer_callbacks_.empty() ||
+         !background_send_transfer_callbacks_.empty());
   // |is_scanning_| and |is_transferring_| are mutually exclusive.
   DCHECK(!is_transferring_);
 
@@ -1423,7 +1419,7 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
     return;
   }
 
-  if (!foreground_send_transfer_callbacks_.might_have_observers()) {
+  if (foreground_send_transfer_callbacks_.empty()) {
     StopScanning();
     NS_LOG(VERBOSE)
         << __func__
@@ -1485,7 +1481,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
     return;
   }
 
-  if (!foreground_send_transfer_callbacks_.might_have_observers()) {
+  if (foreground_send_transfer_callbacks_.empty()) {
     StopFastInitiationAdvertising();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping fast init advertising because no send "
@@ -1573,8 +1569,8 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
     return;
   }
 
-  if (!foreground_receive_callbacks_.might_have_observers() &&
-      !background_receive_callbacks_.might_have_observers()) {
+  if (foreground_receive_callbacks_.empty() &&
+      background_receive_callbacks_.empty()) {
     StopAdvertising();
     NS_LOG(VERBOSE)
         << __func__
@@ -1583,7 +1579,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   }
 
   if (!IsVisibleInBackground(settings_.GetVisibility()) &&
-      !foreground_receive_callbacks_.might_have_observers()) {
+      foreground_receive_callbacks_.empty()) {
     StopAdvertising();
     NS_LOG(VERBOSE)
         << __func__
@@ -1595,7 +1591,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   process_shutdown_pending_timer_.Stop();
 
   PowerLevel power_level;
-  if (foreground_receive_callbacks_.might_have_observers()) {
+  if (!foreground_receive_callbacks_.empty()) {
     power_level = PowerLevel::kHighPower;
     // TODO(crbug/1100367) handle fast init
     // } else if (isFastInitDeviceNearby) {
@@ -1623,7 +1619,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   }
 
   base::Optional<std::string> device_name;
-  if (foreground_receive_callbacks_.might_have_observers())
+  if (!foreground_receive_callbacks_.empty())
     device_name = local_device_data_manager_->GetDeviceName();
 
   // Starts advertising through Nearby Connections. Caller is expected to ensure
@@ -1699,7 +1695,7 @@ void NearbySharingServiceImpl::StartScanning() {
   DCHECK(settings_.GetEnabled());
   DCHECK(!is_screen_locked_);
   DCHECK(HasAvailableConnectionMediums());
-  DCHECK(foreground_send_transfer_callbacks_.might_have_observers());
+  DCHECK(!foreground_send_transfer_callbacks_.empty());
 
   if (is_scanning_) {
     NS_LOG(VERBOSE) << __func__
@@ -1767,7 +1763,7 @@ void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {
 }
 
 void NearbySharingServiceImpl::OnRotateBackgroundAdvertisementTimerFired() {
-  if (foreground_receive_callbacks_.might_have_observers()) {
+  if (!foreground_receive_callbacks_.empty()) {
     ScheduleRotateBackgroundAdvertisementTimer();
   } else {
     StopAdvertising();
@@ -2099,8 +2095,8 @@ void NearbySharingServiceImpl::SendIntroduction(
     return;
   }
 
-  if (!foreground_send_transfer_callbacks_.might_have_observers() &&
-      !background_send_transfer_callbacks_.might_have_observers()) {
+  if (foreground_send_transfer_callbacks_.empty() &&
+      background_send_transfer_callbacks_.empty()) {
     connection->Close();
     NS_LOG(WARNING) << __func__ << ": No transfer callbacks, disconnecting.";
     return;
@@ -2452,9 +2448,8 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
   }
 
   base::ObserverList<TransferUpdateCallback>& transfer_callbacks =
-      foreground_receive_callbacks_.might_have_observers()
-          ? foreground_receive_callbacks_
-          : background_receive_callbacks_;
+      foreground_receive_callbacks_.empty() ? background_receive_callbacks_
+                                            : foreground_receive_callbacks_;
 
   for (TransferUpdateCallback& callback : transfer_callbacks) {
     callback.OnTransferUpdate(share_target, metadata);
@@ -2486,7 +2481,7 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
   }
 
   bool has_foreground_send_surface =
-      foreground_send_transfer_callbacks_.might_have_observers();
+      !foreground_send_transfer_callbacks_.empty();
   base::ObserverList<TransferUpdateCallback>& transfer_callbacks =
       has_foreground_send_surface ? foreground_send_transfer_callbacks_
                                   : background_send_transfer_callbacks_;
