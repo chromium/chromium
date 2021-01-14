@@ -27,6 +27,8 @@ extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 extern const base::Feature kAutofillAllowNonHttpActivation;
 extern const base::Feature kAutofillCacheQueryResponses;
 extern const base::Feature kAutofillCreateDataForTest;
+extern const base::Feature kAutofillDisableFilling;
+extern const base::Feature kAutofillDisableImport;
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;
 extern const base::Feature kAutofillEnableDependentLocalityParsing;

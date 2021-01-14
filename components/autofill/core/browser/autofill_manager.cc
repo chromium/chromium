@@ -754,6 +754,10 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kAutofillDisableImport)) {
+    return;
+  }
+
   // Update Personal Data with the form's submitted data.
   // Also triggers offering local/upload credit card save, if applicable.
   client_->GetFormDataImporter()->ImportFormData(*submitted_form,
@@ -944,6 +948,10 @@ void AutofillManager::OnQueryFormFieldAutofillImpl(
     const FormFieldData& field,
     const gfx::RectF& transformed_box,
     bool autoselect_first_suggestion) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
+    return;
+  }
+
   SetDataList(field.datalist_values, field.datalist_labels);
   external_delegate_->OnQuery(query_id, form, field, transformed_box);
 
