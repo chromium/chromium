@@ -37,6 +37,7 @@
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -211,10 +212,6 @@ void BookmarkEditorView::ShowContextMenuForViewImpl(
                                   nullptr, gfx::Rect(point, gfx::Size()),
                                   views::MenuAnchorPosition::kTopRight,
                                   source_type);
-}
-
-const char* BookmarkEditorView::GetClassName() const {
-  return "BookmarkEditorView";
 }
 
 void BookmarkEditorView::BookmarkNodeMoved(BookmarkModel* model,
@@ -594,3 +591,7 @@ void BookmarkEditorView::EditorTreeModel::SetTitle(
   if (!title.empty())
     ui::TreeNodeModel<EditorNode>::SetTitle(node, title);
 }
+
+BEGIN_METADATA(BookmarkEditorView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(GURL, InputURL)
+END_METADATA

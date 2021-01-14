@@ -108,6 +108,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_constants.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -150,6 +152,7 @@ std::unique_ptr<LabelButtonBorder> CreateBookmarkButtonBorder() {
 
 class BookmarkButtonBase : public views::LabelButton {
  public:
+  METADATA_HEADER(BookmarkButtonBase);
   BookmarkButtonBase(PressedCallback callback, const base::string16& title)
       : LabelButton(std::move(callback), title) {
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -171,6 +174,8 @@ class BookmarkButtonBase : public views::LabelButton {
       show_animation_->Show();
     }
   }
+  BookmarkButtonBase(const BookmarkButtonBase&) = delete;
+  BookmarkButtonBase& operator=(const BookmarkButtonBase&) = delete;
 
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
     return HitTestPoint(point) && GetCanProcessEventsWithinSubtree() ? this
@@ -210,9 +215,10 @@ class BookmarkButtonBase : public views::LabelButton {
 
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkButtonBase);
 };
+
+BEGIN_METADATA(BookmarkButtonBase, views::LabelButton)
+END_METADATA
 
 // BookmarkButton -------------------------------------------------------------
 
@@ -220,13 +226,13 @@ class BookmarkButtonBase : public views::LabelButton {
 
 class BookmarkButton : public BookmarkButtonBase {
  public:
-  // The internal view class name.
-  static const char kViewClassName[];
-
+  METADATA_HEADER(BookmarkButton);
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
                  const base::string16& title)
       : BookmarkButtonBase(std::move(callback), title), url_(url) {}
+  BookmarkButton(const BookmarkButton&) = delete;
+  BookmarkButton& operator=(const BookmarkButton&) = delete;
 
   // views::View:
   base::string16 GetTooltipText(const gfx::Point& p) const override {
@@ -250,20 +256,16 @@ class BookmarkButton : public BookmarkButtonBase {
     tooltip_text_.clear();
   }
 
-  const char* GetClassName() const override { return kViewClassName; }
-
  private:
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.
   mutable int max_tooltip_width_ = 0;
   mutable base::string16 tooltip_text_;
   const GURL& url_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkButton);
 };
 
-// static
-const char BookmarkButton::kViewClassName[] = "BookmarkButton";
+BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
+END_METADATA
 
 // ShortcutButton -------------------------------------------------------------
 
@@ -271,26 +273,22 @@ const char BookmarkButton::kViewClassName[] = "BookmarkButton";
 
 class ShortcutButton : public BookmarkButtonBase {
  public:
-  // The internal view class name.
-  static const char kViewClassName[];
-
+  METADATA_HEADER(ShortcutButton);
   ShortcutButton(PressedCallback callback, const base::string16& title)
       : BookmarkButtonBase(std::move(callback), title) {}
-
-  const char* GetClassName() const override { return kViewClassName; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShortcutButton);
+  ShortcutButton(const ShortcutButton&) = delete;
+  ShortcutButton& operator=(const ShortcutButton&) = delete;
 };
 
-// static
-const char ShortcutButton::kViewClassName[] = "ShortcutButton";
+BEGIN_METADATA(ShortcutButton, BookmarkButtonBase)
+END_METADATA
 
 // BookmarkMenuButtonBase -----------------------------------------------------
 
 // Base class for menu hosting buttons used on the bookmark bar.
 class BookmarkMenuButtonBase : public MenuButton {
  public:
+  METADATA_HEADER(BookmarkMenuButtonBase);
   explicit BookmarkMenuButtonBase(
       PressedCallback callback,
       const base::string16& title = base::string16())
@@ -301,6 +299,8 @@ class BookmarkMenuButtonBase : public MenuButton {
     SetInkDropMode(InkDropMode::ON);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
+  BookmarkMenuButtonBase(const BookmarkMenuButtonBase&) = delete;
+  BookmarkMenuButtonBase& operator=(const BookmarkMenuButtonBase&) = delete;
 
   // MenuButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
@@ -319,10 +319,10 @@ class BookmarkMenuButtonBase : public MenuButton {
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override {
     return CreateBookmarkButtonBorder();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuButtonBase);
 };
+
+BEGIN_METADATA(BookmarkMenuButtonBase, MenuButton)
+END_METADATA
 
 // BookmarkFolderButton -------------------------------------------------------
 
@@ -330,6 +330,7 @@ class BookmarkMenuButtonBase : public MenuButton {
 // button.
 class BookmarkFolderButton : public BookmarkMenuButtonBase {
  public:
+  METADATA_HEADER(BookmarkFolderButton);
   explicit BookmarkFolderButton(PressedCallback callback,
                                 const base::string16& title = base::string16())
       : BookmarkMenuButtonBase(std::move(callback), title) {
@@ -346,6 +347,8 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
   }
+  BookmarkFolderButton(const BookmarkFolderButton&) = delete;
+  BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
   base::string16 GetTooltipText(const gfx::Point& p) const override {
     return label()->GetPreferredSize().width() > label()->size().width()
@@ -373,16 +376,20 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkFolderButton);
 };
+
+BEGIN_METADATA(BookmarkFolderButton, BookmarkMenuButtonBase)
+END_METADATA
 
 // OverflowButton (chevron) --------------------------------------------------
 
 class OverflowButton : public BookmarkMenuButtonBase {
  public:
+  METADATA_HEADER(OverflowButton);
   OverflowButton(PressedCallback callback, BookmarkBarView* owner)
       : BookmarkMenuButtonBase(std::move(callback)), owner_(owner) {}
+  OverflowButton(const OverflowButton&) = delete;
+  OverflowButton& operator=(const OverflowButton&) = delete;
 
   bool OnMousePressed(const ui::MouseEvent& e) override {
     owner_->StopThrobbing(true);
@@ -391,8 +398,6 @@ class OverflowButton : public BookmarkMenuButtonBase {
 
  private:
   BookmarkBarView* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverflowButton);
 };
 
 void RecordAppLaunch(Profile* profile, const GURL& url) {
@@ -406,6 +411,9 @@ void RecordAppLaunch(Profile* profile, const GURL& url) {
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_BOOKMARK_BAR,
                                   extension->GetType());
 }
+
+BEGIN_METADATA(OverflowButton, BookmarkMenuButtonBase)
+END_METADATA
 
 }  // namespace
 
@@ -457,6 +465,7 @@ struct BookmarkBarView::DropInfo {
 
 class BookmarkBarView::ButtonSeparatorView : public views::Separator {
  public:
+  METADATA_HEADER(ButtonSeparatorView);
   ButtonSeparatorView() {
     // Total width of the separator and surrounding padding.
     constexpr int kSeparatorWidth = 9;
@@ -467,7 +476,8 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
                                        kPaddingWidth - kLeadingPadding));
     SetPreferredHeight(gfx::kFaviconSize);
   }
-
+  ButtonSeparatorView(const ButtonSeparatorView&) = delete;
+  ButtonSeparatorView& operator=(const ButtonSeparatorView&) = delete;
   ~ButtonSeparatorView() override = default;
 
   void OnThemeChanged() override {
@@ -481,11 +491,12 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
     node_data->role = ax::mojom::Role::kSplitter;
   }
 };
+using ButtonSeparatorView = BookmarkBarView::ButtonSeparatorView;
+
+BEGIN_METADATA(ButtonSeparatorView, views::Separator)
+END_METADATA
 
 // BookmarkBarView ------------------------------------------------------------
-
-// static
-const char BookmarkBarView::kViewClassName[] = "BookmarkBarView";
 
 BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
     : AnimationDelegateViews(this),
@@ -552,8 +563,12 @@ void BookmarkBarView::SetPageNavigator(content::PageNavigator* navigator) {
 void BookmarkBarView::SetInfoBarVisible(bool infobar_visible) {
   if (infobar_visible == infobar_visible_)
     return;
-  InvalidateLayout();
   infobar_visible_ = infobar_visible;
+  OnPropertyChanged(&infobar_visible_, views::kPropertyEffectsLayout);
+}
+
+bool BookmarkBarView::GetInfoBarVisible() const {
+  return infobar_visible_;
 }
 
 void BookmarkBarView::SetBookmarkBarState(
@@ -1096,10 +1111,6 @@ void BookmarkBarView::OnThemeChanged() {
   UpdateAppearanceForTheme();
 }
 
-const char* BookmarkBarView::GetClassName() const {
-  return kViewClassName;
-}
-
 void BookmarkBarView::VisibilityChanged(View* starting_from, bool is_visible) {
   AccessiblePaneView::VisibilityChanged(starting_from, is_visible);
 
@@ -1464,7 +1475,7 @@ void BookmarkBarView::Init() {
   }
 }
 
-size_t BookmarkBarView::GetFirstHiddenNodeIndex() {
+size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
   const auto i =
       std::find_if(bookmark_buttons_.cbegin(), bookmark_buttons_.cend(),
                    [](const auto* button) { return !button->GetVisible(); });
@@ -2026,3 +2037,8 @@ size_t BookmarkBarView::GetIndexForButton(views::View* button) {
 
   return size_t{it - bookmark_buttons_.cbegin()};
 }
+
+BEGIN_METADATA(BookmarkBarView, views::AccessiblePaneView)
+ADD_PROPERTY_METADATA(bool, InfoBarVisible)
+ADD_READONLY_PROPERTY_METADATA(size_t, FirstHiddenNodeIndex)
+END_METADATA

@@ -487,6 +487,7 @@ component("views") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/paint",
+    "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//skia",
     "//third_party/icu",

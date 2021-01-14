@@ -4,6 +4,8 @@
 
 #include "ui/views/metadata/type_conversion.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -11,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/url_formatter/url_fixer.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
@@ -113,6 +116,10 @@ base::string16 TypeConverter<gfx::Insets>::ToString(
   return base::ASCIIToUTF16(base::StringPrintf(
       "{%d, %d, %d, %d}", source_value.top(), source_value.left(),
       source_value.bottom(), source_value.right()));
+}
+
+base::string16 TypeConverter<GURL>::ToString(const GURL& source_value) {
+  return base::ASCIIToUTF16(source_value.possibly_invalid_spec());
 }
 
 base::string16 TypeConverter<url::Component>::ToString(
@@ -295,6 +302,13 @@ base::Optional<gfx::Insets> TypeConverter<gfx::Insets>::FromString(
     return gfx::Insets(top, left, bottom, right);
   }
   return base::nullopt;
+}
+
+base::Optional<GURL> TypeConverter<GURL>::FromString(
+    const base::string16& source_value) {
+  const GURL url =
+      url_formatter::FixupURL(base::UTF16ToUTF8(source_value), std::string());
+  return url.is_valid() ? base::make_optional(url) : base::nullopt;
 }
 
 base::Optional<url::Component> TypeConverter<url::Component>::FromString(
