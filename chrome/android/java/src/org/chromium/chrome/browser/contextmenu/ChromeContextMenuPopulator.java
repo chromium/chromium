@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.Pe
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
@@ -398,7 +399,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
                     if (!mParams.isImage()
-                            && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+                            && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
+                            && ReadingListUtils.isReadingListSupported(
+                                    mParams.getLinkUrl().getValidSpecOrEmpty())) {
                         linkGroup.add(
                                 createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
                     }
@@ -583,7 +586,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 && tracker.shouldTriggerHelpUI(FeatureConstants.EPHEMERAL_TAB_FEATURE);
     }
 
-    private boolean shouldTriggerReadLaterHelpUi() {
+    @VisibleForTesting
+    boolean shouldTriggerReadLaterHelpUi() {
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         return tracker.isInitialized()
                 && tracker.shouldTriggerHelpUI(FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE);

@@ -108,6 +108,7 @@ public class ChromeContextMenuPopulatorTest {
                 mNativeDelegate));
         doReturn(mTemplateUrlService).when(mPopulator).getTemplateUrlService();
         doReturn(false).when(mPopulator).shouldTriggerEphemeralTabHelpUi();
+        doReturn(false).when(mPopulator).shouldTriggerReadLaterHelpUi();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
     }
 
@@ -443,5 +444,52 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected4Tab2 = {R.id.contextmenu_copy_image, R.id.contextmenu_save_image,
                 R.id.contextmenu_share_image, R.id.contextmenu_open_in_chrome};
         checkMenuOptions(expected4Tab1, expected4Tab2);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testReadLater() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+
+        HashMap<String, Boolean> features = new HashMap<String, Boolean>();
+        features.put(ChromeFeatureList.EPHEMERAL_TAB_USING_BOTTOM_SHEET, false);
+        features.put(ChromeFeatureList.READ_LATER, true);
+        ChromeFeatureList.setTestFeatures(features);
+
+        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
+                new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+
+        // HTTP scheme should include read later context menu item.
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        int[] expected = {R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
+                R.id.contextmenu_open_in_other_window, R.id.contextmenu_copy_link_address,
+                R.id.contextmenu_copy_link_text, R.id.contextmenu_save_link_as,
+                R.id.contextmenu_read_later, R.id.contextmenu_share_link};
+        checkMenuOptions(expected);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
+        int[] expected2 = {R.id.contextmenu_open_in_browser_id, R.id.contextmenu_copy_link_address,
+                R.id.contextmenu_copy_link_text, R.id.contextmenu_save_link_as,
+                R.id.contextmenu_read_later, R.id.contextmenu_share_link};
+        checkMenuOptions(expected2);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
+        int[] expected3 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text,
+                R.id.contextmenu_save_link_as, R.id.contextmenu_read_later,
+                R.id.contextmenu_share_link, R.id.contextmenu_open_in_chrome};
+        checkMenuOptions(expected3);
+
+        // Non-http scheme should not include read later context menu item.
+        params = new ContextMenuParams(0, 0, new GURL("chrome://flags"), new GURL(LINK_URL),
+                LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0,
+                MenuSourceType.MENU_SOURCE_TOUCH);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        int[] expected4 = {R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
+                R.id.contextmenu_open_in_other_window, R.id.contextmenu_copy_link_address,
+                R.id.contextmenu_copy_link_text, R.id.contextmenu_save_link_as,
+                R.id.contextmenu_share_link};
+        checkMenuOptions(expected);
     }
 }
