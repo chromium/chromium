@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/logging.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
@@ -296,9 +297,9 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
   }
 
   // Wrap the pixel buffer in a sample buffer.
-  CMFormatDescriptionRef format_description;
+  base::ScopedCFTypeRef<CMFormatDescriptionRef> format_description;
   OSStatus status = CMVideoFormatDescriptionCreateForImageBuffer(
-      nil, pixel_buffer, &format_description);
+      nil, pixel_buffer, format_description.InitializeInto());
   DCHECK(status == noErr);
 
   // Dummy information to make CMSampleBufferCreateForImageBuffer() happy.
@@ -321,16 +322,24 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateMjpegSampleBuffer(
     size_t mjpeg_data_size,
     size_t width,
     size_t height) {
-  CMBlockBufferRef data_buffer;
+  CMBlockBufferCustomBlockSource source = {0};
+  source.FreeBlock = [](void* refcon, void* doomedMemoryBlock,
+                        size_t sizeInBytes) {
+    // Do nothing. The data to be released is not dynamically allocated in this
+    // test code.
+  };
+
+  base::ScopedCFTypeRef<CMBlockBufferRef> data_buffer;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
       nil, const_cast<void*>(static_cast<const void*>(mjpeg_data)),
-      mjpeg_data_size, nil, nil, 0, mjpeg_data_size, 0, &data_buffer);
+      mjpeg_data_size, nil, &source, 0, mjpeg_data_size, 0,
+      data_buffer.InitializeInto());
   DCHECK(status == noErr);
 
-  CMFormatDescriptionRef format_description;
-  status =
-      CMVideoFormatDescriptionCreate(nil, kCMVideoCodecType_JPEG_OpenDML, width,
-                                     height, nil, &format_description);
+  base::ScopedCFTypeRef<CMFormatDescriptionRef> format_description;
+  status = CMVideoFormatDescriptionCreate(nil, kCMVideoCodecType_JPEG_OpenDML,
+                                          width, height, nil,
+                                          format_description.InitializeInto());
   DCHECK(status == noErr);
 
   // Dummy information to make CMSampleBufferCreateReady() happy.
