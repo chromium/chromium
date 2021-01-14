@@ -1518,6 +1518,7 @@ export class SelectToSpeak {
       } else if (event.type === 'interrupted' || event.type === 'cancelled') {
         if (!this.shouldShowNavigationControls_()) {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
+          return;
         }
         if (this.state_ === SelectToSpeakState.SELECTING) {
           // Do not go into inactive state if navigation controls are enabled
@@ -1525,14 +1526,10 @@ export class SelectToSpeak {
           // to select new nodes while STS is active without first exiting.
           return;
         }
-        if (!this.pauseCompleteCallback_) {
-          // Auto dismiss when navigation control is not enabled. In addition,
-          // if the interrupted or cancelled events are not triggered by
-          // |this.pause_| (e.g., from stopAll_), we should leave STS as
-          // INACTIVE. Currently, we check |this.pauseCompleteCallback_| as a
+        if (this.pauseCompleteCallback_) {
+          // Set to paused state if interruption/cancelled event triggered from
+          // a pause. Currently, we check |this.pauseCompleteCallback_| as a
           // proxy to see if the interrupted events are from |this.pause_|.
-          this.onStateChanged_(SelectToSpeakState.INACTIVE);
-        } else {
           this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
         }
       } else if (event.type === 'end') {

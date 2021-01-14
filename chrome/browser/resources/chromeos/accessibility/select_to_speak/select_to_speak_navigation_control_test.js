@@ -717,3 +717,33 @@ TEST_F(
             assertEquals(selectToSpeak.state_, SelectToSpeakState.INACTIVE);
           });
     });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'NavigatesToNextParagraphQuickly',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Paragraph 1</p>
+        <p id="p2">Paragraph 2</p>'
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            // Have mock TTS engine wait to send events so we can simulate a
+            // delayed 'start' event.
+            this.mockTts.setWaitToSendEvents(true);
+            this.triggerReadSelectedText();
+            const speakOptions = this.mockTts.getOptions();
+
+            // Navigate to next paragraph before speech begins.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .NEXT_PARAGRAPH);
+
+            this.waitOneEventLoop(() => {
+              // Manually triggered delayed events.
+              this.mockTts.sendPendingEvents();
+
+              // Should remain in speaking state.
+              assertEquals(selectToSpeak.state_, SelectToSpeakState.SPEAKING);
+            });
+          });
+    });
