@@ -10,6 +10,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("../tools/optimize_webui.gni")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -23,14 +24,10 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "bookmark_type.js",
-    "browser_api.js",
     "constants.js",
     "controller.js",
     "gesture_detector.js",
-    "index.css",
-    "index.html",
     "local_storage_proxy.js",
-    "main.js",
     "metrics.js",
     "navigator.js",
     "open_pdf_params_parser.js",
@@ -45,11 +42,7 @@ preprocess_if_expr("preprocess") {
   ]
 
   if (is_chromeos) {
-    in_files += [
-      "ink_controller.js",
-      "ink/index.html",
-      "ink/ink_api.js",
-    ]
+    in_files += [ "ink_controller.js" ]
   }
 }
 
@@ -91,15 +84,58 @@ preprocess_if_expr("preprocess_generated") {
   }
 }
 
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
+  optimize_webui("build") {
+    host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    js_out_files = [ "pdf_viewer_wrapper.rollup.js" ]
+    js_module_in_files = [ "pdf_viewer_wrapper.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
+
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+      "../../../../ui/webui/resources:preprocess",
+    ]
+    excludes = [
+      "browser_api.js",
+      "chrome://resources/js/cr.m.js",
+    ]
+  }
+}
+
 generate_grd("build_grd") {
-  deps = [
-    ":preprocess",
-    ":preprocess_generated",
+  input_files = [
+    "browser_api.js",
+    "index.css",
+    "index.html",
+    "main.js",
   ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
+  if (is_chromeos) {
+    input_files += [
+      "ink/index.html",
+      "ink/ink_api.js",
+    ]
+  }
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    resource_path_rewrites =
+        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
+    ]
+  }
   grd_prefix = "pdf"
   out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "pdf"

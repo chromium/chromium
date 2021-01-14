@@ -266,8 +266,7 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &resources_dir));
 
   const base::FilePath extension_path = resources_dir.AppendASCII("pdf");
-  const base::FilePath resource_path(
-      FILE_PATH_LITERAL("elements/shared-vars.js"));
+  const base::FilePath resource_path(FILE_PATH_LITERAL("main.js"));
 
   auto user_script = std::make_unique<UserScript>();
   user_script->js_scripts().push_back(std::make_unique<UserScript::File>(
