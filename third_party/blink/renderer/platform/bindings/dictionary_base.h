@@ -11,8 +11,6 @@
 
 namespace blink {
 
-class Visitor;
-
 namespace bindings {
 
 // This class is the base class for all IDL dictionary implementations.  This is

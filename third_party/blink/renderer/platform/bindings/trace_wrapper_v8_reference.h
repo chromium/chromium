@@ -10,18 +10,17 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
-namespace cppgc {
-
-template <typename T>
-struct TraceTrait;
-
-}  // namespace cppgc
+#if BUILDFLAG(USE_V8_OILPAN)
+#include "v8/include/cppgc/trace-trait.h"
+#endif  // USE_V8_OILPAN
 
 namespace blink {
 
