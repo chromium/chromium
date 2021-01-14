@@ -102,7 +102,7 @@
   {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-langauge@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 91
   },
   {
     "name": "android-managed-by-menu-item",
