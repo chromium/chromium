@@ -3891,27 +3891,6 @@
             ]
         }
     ],
-    "KeepaliveRequestPriority": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20191107",
-                    "enable_features": [
-                        "SetLowPriorityForBeacon"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardAccessoryPasswordIPH": [
         {
             "platforms": [
