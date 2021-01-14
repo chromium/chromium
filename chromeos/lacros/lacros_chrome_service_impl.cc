@@ -493,41 +493,41 @@ void LacrosChromeServiceImpl::DisableCrosapiForTests() {
   g_disable_all_crosapi_for_tests = true;
 }
 
-bool LacrosChromeServiceImpl::IsMessageCenterAvailable() {
+bool LacrosChromeServiceImpl::IsMessageCenterAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindMessageCenterMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsSelectFileAvailable() {
+bool LacrosChromeServiceImpl::IsSelectFileAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindSelectFileMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() {
+bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >= AshChromeService::MethodMinVersions::
                                            kBindKeystoreServiceMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsHidManagerAvailable() {
+bool LacrosChromeServiceImpl::IsHidManagerAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindHidManagerMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsFeedbackAvailable() {
+bool LacrosChromeServiceImpl::IsFeedbackAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindFeedbackMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsAccountManagerAvailable() {
+bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
@@ -544,14 +544,14 @@ void LacrosChromeServiceImpl::BindAccountManagerReceiver(
           weak_sequenced_state_, std::move(pending_receiver)));
 }
 
-bool LacrosChromeServiceImpl::IsFileManagerAvailable() {
+bool LacrosChromeServiceImpl::IsFileManagerAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindFileManagerMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsTestControllerAvailable() {
+bool LacrosChromeServiceImpl::IsTestControllerAvailable() const {
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only
   // run on Linux.
@@ -564,21 +564,21 @@ bool LacrosChromeServiceImpl::IsTestControllerAvailable() {
 #endif
 }
 
-bool LacrosChromeServiceImpl::IsClipboardAvailable() {
+bool LacrosChromeServiceImpl::IsClipboardAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindClipboardMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
+bool LacrosChromeServiceImpl::IsScreenManagerAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindScreenManagerMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusAvailable() {
+bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >=
                         AshChromeService::MethodMinVersions::
@@ -596,7 +596,7 @@ void LacrosChromeServiceImpl::BindAudioFocusManager(
                                 weak_sequenced_state_, std::move(remote)));
 }
 
-bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusDebugAvailable() {
+bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusDebugAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >=
                         AshChromeService::MethodMinVersions::
@@ -615,7 +615,7 @@ void LacrosChromeServiceImpl::BindAudioFocusManagerDebug(
                                 weak_sequenced_state_, std::move(remote)));
 }
 
-bool LacrosChromeServiceImpl::IsMediaSessionControllerAvailable() {
+bool LacrosChromeServiceImpl::IsMediaSessionControllerAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >=
                         AshChromeService::MethodMinVersions::
@@ -634,7 +634,7 @@ void LacrosChromeServiceImpl::BindMediaControllerManager(
                                 weak_sequenced_state_, std::move(remote)));
 }
 
-bool LacrosChromeServiceImpl::IsMetricsReportingAvailable() {
+bool LacrosChromeServiceImpl::IsMetricsReportingAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >= AshChromeService::MethodMinVersions::
                                            kBindMetricsReportingMinVersion;
@@ -650,27 +650,27 @@ void LacrosChromeServiceImpl::BindMetricsReporting(
           weak_sequenced_state_, std::move(receiver)));
 }
 
-bool LacrosChromeServiceImpl::IsCertDbAvailable() {
+bool LacrosChromeServiceImpl::IsCertDbAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindCertDatabaseMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsDeviceAttributesAvailable() {
+bool LacrosChromeServiceImpl::IsDeviceAttributesAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version && version.value() >= AshChromeService::MethodMinVersions::
                                            kBindDeviceAttributesMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsPrefsAvailable() {
+bool LacrosChromeServiceImpl::IsPrefsAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindPrefsMinVersion;
 }
 
-bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {
+bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() const {
   base::Optional<uint32_t> version = AshChromeServiceVersion();
   return version &&
          version.value() >=
@@ -729,7 +729,8 @@ void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
   delegate_->GetActiveTabUrl(std::move(callback));
 }
 
-base::Optional<uint32_t> LacrosChromeServiceImpl::AshChromeServiceVersion() {
+base::Optional<uint32_t> LacrosChromeServiceImpl::AshChromeServiceVersion()
+    const {
   if (g_disable_all_crosapi_for_tests)
     return base::nullopt;
   DCHECK(did_bind_receiver_);
