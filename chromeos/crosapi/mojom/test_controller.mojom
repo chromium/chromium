@@ -7,8 +7,8 @@ module crosapi.mojom;
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 2
-// Next method id: 4
+// Next version: 3
+// Next method id: 6
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Queries whether a window with the given |window_id| exists. |window_id|
@@ -28,4 +28,15 @@ interface TestController {
   EnterOverviewMode@2() => ();
   [MinVersion=1]
   ExitOverviewMode@3() => ();
+
+  // Causes ash to enter tablet mode. The callback is invoked after animations
+  // are finished. Note that tablet mode cannot be activated if mouse devices
+  // are connected; the callback will run, but ash will not be in tablet mode.
+  [MinVersion=2]
+  EnterTabletMode@4() => ();
+
+  // Causes ash to exit tablet mode. The callback is invoked after animations
+  // are finished.
+  [MinVersion=2]
+  ExitTabletMode@5() => ();
 };

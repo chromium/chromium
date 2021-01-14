@@ -28,6 +28,8 @@ class TestControllerAsh : public mojom::TestController {
   void ClickWindow(const std::string& window_id) override;
   void EnterOverviewMode(EnterOverviewModeCallback callback) override;
   void ExitOverviewMode(ExitOverviewModeCallback callback) override;
+  void EnterTabletMode(EnterTabletModeCallback callback) override;
+  void ExitTabletMode(ExitTabletModeCallback callback) override;
 
  private:
   class OverviewWaiter;

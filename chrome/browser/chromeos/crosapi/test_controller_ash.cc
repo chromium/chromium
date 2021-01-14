@@ -4,9 +4,11 @@
 
 #include "chrome/browser/chromeos/crosapi/test_controller_ash.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/crosapi/window_util.h"
@@ -31,6 +33,15 @@ bool DispatchMouseEvent(aura::Window* window, ui::EventType type) {
       window->GetHost()->GetEventSource()->SendEventToSink(&press);
   return dispatch_details.dispatcher_destroyed ||
          dispatch_details.target_destroyed;
+}
+
+// Enables or disables tablet mode and waits for the transition to finish.
+void SetTabletModeEnabled(bool enabled) {
+  // This does not use ShellTestApi or TabletModeControllerTestApi because those
+  // are implemented in test-only files.
+  ash::TabletMode::Waiter waiter(enabled);
+  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
+  waiter.Wait();
 }
 
 }  // namespace
@@ -75,6 +86,16 @@ void TestControllerAsh::ExitOverviewMode(ExitOverviewModeCallback callback) {
   overview_waiters_.push_back(std::make_unique<OverviewWaiter>(
       /*wait_for_enter=*/false, std::move(callback), this));
   ash::Shell::Get()->overview_controller()->EndOverview();
+}
+
+void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {
+  SetTabletModeEnabled(true);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::ExitTabletMode(ExitTabletModeCallback callback) {
+  SetTabletModeEnabled(false);
+  std::move(callback).Run();
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
