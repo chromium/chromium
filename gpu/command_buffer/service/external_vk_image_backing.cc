@@ -70,6 +70,7 @@ static const struct {
     {GL_RED, GL_HALF_FLOAT_OES, 2},                // LUMINANCE_F16
     {GL_RGBA, GL_HALF_FLOAT_OES, 8},               // RGBA_F16
     {GL_RED, GL_UNSIGNED_SHORT, 2},                // R16_EXT
+    {GL_RG, GL_UNSIGNED_SHORT, 4},                 // RG16_EXT
     {GL_RGBA, GL_UNSIGNED_BYTE, 4},                // RGBX_8888
     {GL_BGRA, GL_UNSIGNED_BYTE, 4},                // BGRX_8888
     {GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, 4},  // RGBA_1010102

@@ -38,6 +38,7 @@ bool IsSupportedPlaybackToMemoryFormat(viz::ResourceFormat format) {
     case viz::RED_8:
     case viz::LUMINANCE_F16:
     case viz::R16_EXT:
+    case viz::RG16_EXT:
     case viz::BGR_565:
     case viz::RG_88:
     case viz::RGBX_8888:
@@ -137,6 +138,7 @@ void RasterBufferProvider::PlaybackToMemory(
     case viz::RED_8:
     case viz::LUMINANCE_F16:
     case viz::R16_EXT:
+    case viz::RG16_EXT:
     case viz::BGR_565:
     case viz::RG_88:
     case viz::RGBX_8888:
