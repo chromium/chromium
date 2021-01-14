@@ -289,14 +289,24 @@ Polymer({
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
-   * @param {?string} selectedVisibility
    * @return {boolean} returns true when checkboxes should be shown for
    *     contacts.
    * @private
    */
-  showContactCheckBoxes_(selectedVisibility) {
+  showContactCheckBoxes_() {
     return this.selectedVisibility === 'some' ||
         this.selectedVisibility === 'none';
+  },
+
+  /**
+   * When the contact check boxes are visible, the contact name and description
+   * can be aria-hidden since they are used as labels for the checkbox.
+   * @return {string} Whether the contact name and description should be
+   *     aria-hidden. Boolean converted to string, "true" or "false".
+   * @private
+   */
+  getContactAriaHidden_() {
+    return this.showContactCheckBoxes_().toString();
   },
 
   /**

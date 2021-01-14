@@ -381,9 +381,18 @@
                       class="padded-icon grey-icon contact-icon">
                   </iron-icon>
                   <div class="contact-row">
-                    <div>
-                      <div class="cr-title-text elide">[[item.name]]</div>
-                      <div class="cr-secondary-text elide">
+                    <div aria-hidden$="[[getContactAriaHidden_(
+                                        selectedVisibility)]]"
+                        aria-labelledby$="contact-name-[[itemsIndex]]"
+                        aria-describedby$="contact-description-[[itemsIndex]]">
+                      <div id="contact-name-[[itemsIndex]]"
+                          class="cr-title-text elide"
+                          aria-hidden="true">
+                        [[item.name]]
+                      </div>
+                      <div id="contact-description-[[itemsIndex]]"
+                          class="cr-secondary-text elide"
+                          aria-hidden="true">
                         [[item.description]]
                       </div>
                     </div>
@@ -391,8 +400,10 @@
                         if="[[showContactCheckBoxes_(selectedVisibility)]]">
                       <cr-toggle class="contact-toggle"
                           checked="{{item.checked}}"
+                          aria-labelledby$="contact-name-[[itemsIndex]]"
+                          aria-describedby$="contact-description-[[itemsIndex]]"
                           disabled="[[!isVisibility_(
-                            selectedVisibility,'some')]]">
+                                    selectedVisibility,'some')]]">
                       </cr-toggle>
                     </template>
                   </div>
