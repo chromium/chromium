@@ -252,6 +252,8 @@ class WebAppIntegrationBrowserTest
       UninstallFromMenu();
     } else if (action_string == "uninstall_internal") {
       UninstallInternal();
+    } else if (action_string == "assert_app_in_list_not_windowed") {
+      AssertAppInListNotWindowed();
     } else if (action_string == "assert_app_not_in_list") {
       AssertAppNotInList();
     } else if (action_string == "assert_installable") {
@@ -467,6 +469,14 @@ class WebAppIntegrationBrowserTest
   }
 
   // Assert Actions
+  void AssertAppInListNotWindowed() {
+    EXPECT_TRUE(base::Contains(app_ids_, app_id_));
+    WebAppProviderBase* const provider =
+        WebAppProviderBase::GetProviderBase(browser()->profile());
+    AppRegistrar& app_registrar = provider->registrar();
+    DisplayMode display_mode = app_registrar.GetAppUserDisplayMode(app_id_);
+    EXPECT_FALSE(display_mode == blink::mojom::DisplayMode::kStandalone);
+  }
   void AssertAppNotInList() { EXPECT_FALSE(base::Contains(app_ids_, app_id_)); }
   void AssertInstallable() { EXPECT_TRUE(last_navigation_result_.installable); }
 
