@@ -63,6 +63,13 @@ const base::Feature kDecoupleSyncFromAndroidMasterSync{
 const base::Feature kFollowTrustedVaultKeyRotation{
     "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows device registration within trusted vault server without having trusted
+// vault key. Effectively disabled if kFollowTrustedVaultKeyRotation is
+// disabled.
+const base::Feature kAllowSilentTrustedVaultDeviceRegistration{
+    "AllowSilentTrustedVaultDeviceRegistration",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Specifies how long requests to vault service shouldn't be retried after
 // encountering transient error.
 const base::FeatureParam<base::TimeDelta>

@@ -592,6 +592,74 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_FALSE(download_keys_callback.is_null());
 }
 
+// Tests silent device registration (when no vault keys available yet). After
+// successful registration, the client should be able to download keys.
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldSilentlyRegisterDeviceAndDownloadKeys) {
+  CoreAccountInfo account_info;
+  account_info.gaia = "user";
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          account_info,
+          /*last_trusted_vault_key_and_version=*/Eq(base::nullopt), _, _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const base::Optional<TrustedVaultKeyAndVersion>&,
+                    const SecureBoxPublicKey& device_public_key,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info);
+  ASSERT_FALSE(device_registration_callback.is_null());
+
+  // Pretend that the registration completed successfully.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRequestStatus::kSuccess);
+
+  // Now the device should be registered.
+  sync_pb::LocalDeviceRegistrationInfo registration_info =
+      backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+  EXPECT_TRUE(registration_info.device_registered());
+  EXPECT_TRUE(registration_info.has_private_key_material());
+
+  TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
+  ON_CALL(*connection(),
+          DownloadKeys(account_info,
+                       /*last_trusted_vault_key_and_version=*/Eq(base::nullopt),
+                       _, _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              const base::Optional<TrustedVaultKeyAndVersion>&,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  // FetchKeys() should trigger keys downloading. Note: unlike tests with
+  // following regular key rotation, in this case MarkKeysAsStale() isn't
+  // called intentionally.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Mimic successful key downloading, it should make fetch keys attempt
+  // completed.
+  const std::vector<std::vector<uint8_t>> kNewVaultKeys = {{1, 2, 3}};
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
+  std::move(download_keys_callback)
+      .Run(TrustedVaultRequestStatus::kSuccess, kNewVaultKeys,
+           /*last_key_version=*/40);
+}
+
 }  // namespace
 
 }  // namespace syncer

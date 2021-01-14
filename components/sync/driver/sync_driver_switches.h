@@ -31,6 +31,7 @@ extern const base::Feature kSyncAutofillWalletOfferData;
 extern const base::Feature kSyncWifiConfigurations;
 extern const base::Feature kDecoupleSyncFromAndroidMasterSync;
 extern const base::Feature kFollowTrustedVaultKeyRotation;
+extern const base::Feature kAllowSilentTrustedVaultDeviceRegistration;
 extern const base::FeatureParam<base::TimeDelta>
     kTrustedVaultServiceThrottlingDuration;
 
