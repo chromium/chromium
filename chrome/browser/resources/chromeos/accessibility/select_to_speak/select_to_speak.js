@@ -274,8 +274,8 @@ export class SelectToSpeak {
       this.systemSpeechRate_ = /** @type {number} */ (pref.value);
     });
 
-    /** @private {?number} Speech rate that overrides system rate. */
-    this.overrideSpeechRate_ = null;
+    /** @private {number} Speech rate multiplier. */
+    this.speechRateMultiplier_ = 1.0;
   }
 
   /**
@@ -780,7 +780,7 @@ export class SelectToSpeak {
       chrome.accessibilityPrivate.updateSelectToSpeakPanel(
           /* show= */ true, /* anchor= */ this.currentFocusRing_[0],
           /* isPaused= */ this.isPaused_(),
-          /* speed= */ this.getSpeechRate_());
+          /* speed= */ this.speechRateMultiplier_);
     } else {
       // Dismiss the panel if either the feature is disabled or the focus ring
       // is not valid.
@@ -1298,12 +1298,12 @@ export class SelectToSpeak {
   }
 
   /**
-   * Updates current reading speed (speech rate).
-   * @param {number} rate
+   * Updates current reading speed given a multiplier.
+   * @param {number} rateMultiplier
    * @private
    */
-  async changeSpeed_(rate) {
-    this.overrideSpeechRate_ = rate === this.systemSpeechRate_ ? null : rate;
+  async changeSpeed_(rateMultiplier) {
+    this.speechRateMultiplier_ = rateMultiplier;
 
     // If currently playing, stop TTS, then resume from current spot.
     if (!this.isPaused_()) {
@@ -2020,7 +2020,10 @@ export class SelectToSpeak {
    * @private
    */
   getSpeechRate_() {
-    return this.overrideSpeechRate_ || this.systemSpeechRate_;
+    // Multiply default system rate with user-selected multiplier.
+    const rate = this.systemSpeechRate_ * this.speechRateMultiplier_;
+    // Then round to the nearest tenth (ex. 1.799999 becomes 1.8).
+    return Math.round(rate * 10) / 10;
   }
 
   /**

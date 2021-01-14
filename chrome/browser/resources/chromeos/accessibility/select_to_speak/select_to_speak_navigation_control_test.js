@@ -512,9 +512,10 @@ TEST_F(
             // asserting that TTS resumed with the proper rate.
             setTimeout(
                 this.newCallback(() => {
-                  // Should resume TTS at the sentence boundary.
+                  // Should resume TTS at the sentence boundary with adjusted
+                  // rate.
                   assertTrue(this.mockTts.currentlySpeaking());
-                  assertEquals(this.mockTts.getOptions().rate, 1.5);
+                  assertEquals(this.mockTts.getOptions().rate, 1.8);
                   assertEquals(this.mockTts.pendingUtterances().length, 1);
                   this.assertEqualsCollapseWhitespace(
                       this.mockTts.pendingUtterances()[0], 'Paragraph 1');
@@ -524,7 +525,7 @@ TEST_F(
     });
 
 TEST_F('SelectToSpeakNavigationControlTest', 'RetainsSpeedChange', function() {
-  chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
+  chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.0);
   const bodyHtml = `
     <p id="p1">Paragraph 1</p>'
   `;

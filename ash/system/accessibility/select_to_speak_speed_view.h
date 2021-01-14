@@ -53,7 +53,6 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   Delegate* delegate_ = nullptr;
-  double default_speech_rate_ = 0.0;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
