@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.util.Pair;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -34,11 +35,13 @@ public interface TabWindowManager {
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
      * @param index The index of the requested {@link TabModelSelector}. Not guaranteed to be the
      *              index of the {@link TabModelSelector} returned.
-     * @return A {@link TabModelSelector} index, or {@code null} if there are too many
+     * @return {@link Pair} of the index and the {@link TabModelSelector} assigned to that index, or
+     *         {@code null} if there are too many
      *         {@link TabModelSelector}s already built.
      */
-    TabModelSelector requestSelector(Activity activity, TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier, int index);
+    Pair<Integer, TabModelSelector> requestSelector(Activity activity,
+            TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
+            int index);
 
     /**
      * An index that represents the invalid state (i.e. when the window wasn't found in the list).
