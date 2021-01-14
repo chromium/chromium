@@ -14,6 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -25,12 +27,18 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
@@ -68,6 +76,17 @@ scoped_refptr<const Extension> CreateTabGroupsExtension() {
   return ExtensionBuilder("Extension with tabGroups permission")
       .AddPermission("tabGroups")
       .Build();
+}
+
+std::unique_ptr<KeyedService> BuildTabGroupsEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<TabGroupsEventRouter>(context);
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<extensions::EventRouter>(
+      context, ExtensionPrefs::Get(context));
 }
 
 }  // namespace
@@ -125,6 +144,16 @@ void TabGroupsApiUnitTest::SetUp() {
     browser_->tab_strip_model()->AppendWebContents(std::move(contents),
                                                    /* foreground */ true);
   }
+
+  TabGroupsEventRouterFactory::GetInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&BuildTabGroupsEventRouter));
+
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&BuildEventRouter));
+
+  // We need to call TabGroupsEventRouterFactory::Get() in order to instantiate
+  // the keyed service, since it's not created by default in unit tests.
+  TabGroupsEventRouterFactory::Get(browser_context());
 }
 
 void TabGroupsApiUnitTest::TearDown() {
@@ -411,7 +440,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
   EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(3).value());
 
   // Clean up.
-  browser2->tab_strip_model()->CloseAllTabs();
+  tab_strip_model2->CloseAllTabs();
 }
 
 // Test that a group is cannot be moved into the pinned tabs region.
@@ -460,6 +489,60 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveToOtherGroupError) {
       function.get(), args, browser(), api_test_utils::NONE);
   EXPECT_EQ(tab_groups_constants::kCannotMoveGroupIntoMiddleOfOtherGroupError,
             error);
+}
+
+TEST_F(TabGroupsApiUnitTest, TabGroupsOnCreated) {
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+
+  EXPECT_EQ(2u, event_observer.events().size());
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnCreated::kEventName));
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnUpdated::kEventName));
+}
+
+TEST_F(TabGroupsApiUnitTest, TabGroupsOnUpdated) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  tab_groups::TabGroupVisualData visual_data(base::ASCIIToUTF16("Title"),
+                                             tab_groups::TabGroupColorId::kRed);
+  tab_strip_model->group_model()->GetTabGroup(group)->SetVisualData(
+      visual_data);
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnUpdated::kEventName));
+}
+
+TEST_F(TabGroupsApiUnitTest, TabGroupsOnRemoved) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  tab_strip_model->RemoveFromGroup({1, 2, 3});
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnRemoved::kEventName));
+}
+
+TEST_F(TabGroupsApiUnitTest, TabGroupsOnMoved) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  tab_strip_model->MoveGroupTo(group, 0);
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnMoved::kEventName));
 }
 
 }  // namespace extensions

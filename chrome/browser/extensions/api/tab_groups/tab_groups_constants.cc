@@ -7,10 +7,6 @@
 namespace extensions {
 namespace tab_groups_constants {
 
-const char kCollapsedKey[] = "collapsed";
-const char kColorKey[] = "color";
-const char kTitleKey[] = "title";
-
 const char kCannotMoveGroupIntoMiddleOfOtherGroupError[] =
     "Cannot move the group to an index that is in the middle of another group.";
 const char kCannotMoveGroupIntoMiddleOfPinnedTabsError[] =

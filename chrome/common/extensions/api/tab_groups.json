@@ -188,6 +188,56 @@
           }
         ]
       }
+    ],
+    "events": [
+      {
+        "name": "onCreated",
+        "type": "function",
+        "description": "Fired when a group is created.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was created."
+          }
+        ]
+      },
+      {
+        "name": "onUpdated",
+        "type": "function",
+        "description": "Fired when a group is updated.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was updated."
+          }
+        ]
+      },
+      {
+        "name": "onMoved",
+        "type": "function",
+        "description": "Fired when a group is moved within a window. Move events are still fired for the individual tabs within the group, as well as for the group itself. This event is not fired when a group is moved between windows; instead, it will be removed from one window and created in another.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was moved."
+          }
+        ]
+      },
+      {
+        "name": "onRemoved",
+        "type": "function",
+        "description": "Fired when a group is closed, either directly by the user or automatically because it contained zero tabs.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was removed."
+          }
+        ]
+      }
     ]
   }
 ]

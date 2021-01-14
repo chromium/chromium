@@ -95,3 +95,35 @@ chrome.tabGroups.update = function(groupId, updateProperties, callback) {};
  * @see https://developer.chrome.com/extensions/tabGroups#method-move
  */
 chrome.tabGroups.move = function(groupId, moveProperties, callback) {};
+
+/**
+ * Fired when a group is created.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/tabGroups#event-onCreated
+ */
+chrome.tabGroups.onCreated;
+
+/**
+ * Fired when a group is updated.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/tabGroups#event-onUpdated
+ */
+chrome.tabGroups.onUpdated;
+
+/**
+ * Fired when a group is moved within a window. Move events are still fired for
+ * the individual tabs within the group, as well as for the group itself. This
+ * event is not fired when a group is moved between windows; instead, it will be
+ * removed from one window and created in another.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/tabGroups#event-onMoved
+ */
+chrome.tabGroups.onMoved;
+
+/**
+ * Fired when a group is closed, either directly by the user or automatically
+ * because it contained zero tabs.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/tabGroups#event-onRemoved
+ */
+chrome.tabGroups.onRemoved;

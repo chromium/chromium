@@ -24381,6 +24381,10 @@ Called by update_extension_histograms.py.-->
   <int value="469"
       label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED"/>
   <int value="470" label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_ITEM_UPDATED"/>
+  <int value="471" label="TAB_GROUPS_ON_CREATED"/>
+  <int value="472" label="TAB_GROUPS_ON_MOVED"/>
+  <int value="473" label="TAB_GROUPS_ON_REMOVED"/>
+  <int value="474" label="TAB_GROUPS_ON_UPDATED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
