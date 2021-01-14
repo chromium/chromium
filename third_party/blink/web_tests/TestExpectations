@@ -336,6 +336,10 @@ crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/filters-
 
 crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
 
+# Could be addressed with fuzzy diff.
+crbug.com/910537 external/wpt/svg/painting/marker-006.svg [ Failure ]
+crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
+
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
@@ -2783,8 +2787,6 @@ crbug.com/626703 external/wpt/html/webappapis/animation-frames/cancel-handle-man
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-collapse-preserve-breaks-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
-crbug.com/626703 external/wpt/svg/painting/marker-006.svg [ Failure ]
-crbug.com/626703 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-033.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout ]
