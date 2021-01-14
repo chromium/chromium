@@ -592,7 +592,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   aura::Window* window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
-  // NOTE: this may be null.
+  // NOTE: this may be null during destruction.
   std::unique_ptr<DelegatedFrameHost> delegated_frame_host_;
 
   std::unique_ptr<WindowObserver> window_observer_;
