@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
@@ -94,6 +95,10 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
 }
 
 WebAppMetrics::~WebAppMetrics() {
+  // Foreground web contents should already be nullptr by this point, or we have
+  // somehow missed being notified of its destruction.
+  if (foreground_web_contents_ != nullptr)
+    base::debug::DumpWithoutCrashing();
   UpdateForegroundWebContents(nullptr);
   BrowserList::RemoveObserver(this);
   base::PowerMonitor::RemoveObserver(this);
@@ -188,6 +193,13 @@ void WebAppMetrics::OnTabStripModelChanged(
 
   UpdateForegroundWebContents(selection.new_contents);
 
+  // Contents being replaced should never be the new selection.
+  if (change.type() == TabStripModelChange::kReplaced &&
+      change.GetReplace()->old_contents == foreground_web_contents_) {
+    base::debug::DumpWithoutCrashing();
+    UpdateForegroundWebContents(nullptr);
+  }
+
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const TabStripModelChange::ContentsWithIndexAndWillBeDeleted&
              contents : change.GetRemove()->contents) {
@@ -196,13 +208,16 @@ void WebAppMetrics::OnTabStripModelChanged(
             WebAppTabHelperBase::FromWebContents(contents.contents);
         if (tab_helper && !tab_helper->GetAppId().empty())
           app_last_interacted_time_.erase(tab_helper->GetAppId());
-        // Foreground contents should not be going away.
-        DCHECK_NE(contents.contents, foreground_web_contents_);
+        // Newly-selected foreground contents should not be going away.
+        if (contents.contents == foreground_web_contents_) {
+          base::debug::DumpWithoutCrashing();
+          UpdateForegroundWebContents(nullptr);
+        }
       }
     }
   }
 
-  UpdateUkmData(selection.new_contents, TabSwitching::kTo);
+  UpdateUkmData(foreground_web_contents_, TabSwitching::kTo);
 }
 
 void WebAppMetrics::OnSuspend() {
@@ -261,6 +276,13 @@ void WebAppMetrics::OnInstallableWebAppStatusUpdated() {
   }
 
   UpdateUkmData(foreground_web_contents_, TabSwitching::kTo);
+}
+
+void WebAppMetrics::WebContentsDestroyed() {
+  // TODO (crbug.com/1162123): Remove this method in M91 or later.
+  // Should have stopped observing this WebContents before this point.
+  base::debug::DumpWithoutCrashing();
+  UpdateForegroundWebContents(nullptr);
 }
 
 void WebAppMetrics::RemoveBrowserListObserverForTesting() {
@@ -359,6 +381,7 @@ void WebAppMetrics::UpdateForegroundWebContents(WebContents* web_contents) {
     return;
   app_banner_manager_observer_.RemoveAll();
   foreground_web_contents_ = web_contents;
+  WebContentsObserver::Observe(web_contents);
   if (web_contents) {
     auto* app_banner_manager =
         webapps::AppBannerManager::FromWebContents(web_contents);

@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 class Browser;
@@ -32,6 +33,7 @@ class WebAppMetrics : public KeyedService,
                       public BrowserListObserver,
                       public TabStripModelObserver,
                       public webapps::AppBannerManager::Observer,
+                      public content::WebContentsObserver,
                       public base::PowerObserver {
  public:
   static WebAppMetrics* Get(Profile* profile);
@@ -68,6 +70,9 @@ class WebAppMetrics : public KeyedService,
 
   // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated() override;
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   // Browser activation causes flaky tests. Call observer methods directly.
   void RemoveBrowserListObserverForTesting();
