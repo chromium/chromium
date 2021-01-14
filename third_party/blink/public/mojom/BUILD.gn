@@ -42,7 +42,7 @@ mojom("mojom_platform") {
     "clipboard/raw_clipboard.mojom",
     "commit_result/commit_result.mojom",
     "content_index/content_index.mojom",
-    "context_menu/context_menu_data.mojom",
+    "context_menu/context_menu.mojom",
     "conversions/conversions.mojom",
     "cookie_store/cookie_store.mojom",
     "crash/crash_memory_metrics_reporter.mojom",

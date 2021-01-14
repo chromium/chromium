@@ -23,7 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 #if defined(OS_MAC)
 #include "chrome/test/base/launchservices_utils_mac.h"

@@ -51,7 +51,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using content::WebContents;
 

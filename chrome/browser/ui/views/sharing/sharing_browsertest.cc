@@ -33,7 +33,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 void FakeWebPushSender::SendMessage(const std::string& fcm_token,
                                     crypto::ECPrivateKey* vapid_key,
