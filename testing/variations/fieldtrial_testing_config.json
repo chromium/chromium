@@ -3410,24 +3410,6 @@
             ]
         }
     ],
-    "HideAutofillSuggestions": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableHideSuggestionsUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "HostResolverDispatch": [
         {
             "platforms": [
