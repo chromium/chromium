@@ -2417,7 +2417,7 @@ void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
 void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
     const cc::RenderFrameMetadata& metadata) {
   TRACE_EVENT_WITH_FLOW1(
-      "renderer_host,disabled-by-default-viz.surface_id_flow",
+      "renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "RenderWidgetHostImpl::OnLocalSurfaceIdChanged",
       metadata.local_surface_id && metadata.local_surface_id->is_valid()
           ? metadata.local_surface_id->submission_trace_id() +
