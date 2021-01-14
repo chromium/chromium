@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
+#include "chromeos/components/account_manager/account_manager_ash.h"
 
 #include <utility>
 
 #include "base/callback.h"
 #include "base/notreached.h"
+#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

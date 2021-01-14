@@ -13,7 +13,6 @@
 
 namespace crosapi {
 
-class AccountManagerAsh;
 class CertDatabaseAsh;
 class ClipboardAsh;
 class DeviceAttributesAsh;
@@ -75,7 +74,6 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;
 
-  std::unique_ptr<AccountManagerAsh> account_manager_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;

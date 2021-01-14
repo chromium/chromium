@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_ACCOUNT_MANAGER_ASH_H_
-#define CHROME_BROWSER_CHROMEOS_CROSAPI_ACCOUNT_MANAGER_ASH_H_
+#ifndef CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#define CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
 
 #include "base/optional.h"
 #include "chromeos/components/account_manager/account_manager.h"
@@ -18,8 +18,9 @@ namespace crosapi {
 // Implements the |crosapi::mojom::AccountManager| interface in ash-chrome.
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
-class AccountManagerAsh : public mojom::AccountManager,
-                          public chromeos::AccountManager::Observer {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
+    : public mojom::AccountManager,
+      public chromeos::AccountManager::Observer {
  public:
   explicit AccountManagerAsh(chromeos::AccountManager* account_manager);
   AccountManagerAsh(const AccountManagerAsh&) = delete;
@@ -49,4 +50,4 @@ class AccountManagerAsh : public mojom::AccountManager,
 
 }  // namespace crosapi
 
-#endif  // CHROME_BROWSER_CHROMEOS_CROSAPI_ACCOUNT_MANAGER_ASH_H_
+#endif  // CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_

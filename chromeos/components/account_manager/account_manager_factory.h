@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/account_manager/account_manager.h"
+#include "chromeos/components/account_manager/account_manager_ash.h"
 
 namespace chromeos {
 
@@ -34,11 +35,29 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFactory {
   // Returns the |AccountManager| corresponding to the given |profile_path|.
   AccountManager* GetAccountManager(const std::string& profile_path);
 
+  // Returns the |AccountManagerAsh| corresponding to the given |profile_path|.
+  crosapi::AccountManagerAsh* GetAccountManagerAsh(
+      const std::string& profile_path);
+
  private:
-  // A mapping from Profile path to an |AccountManager|. Acts a cache of
-  // Account Managers.
-  std::unordered_map<std::string, std::unique_ptr<AccountManager>>
-      account_managers_;
+  struct AccountManagerHolder {
+    AccountManagerHolder(
+        std::unique_ptr<AccountManager> account_manager,
+        std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash);
+    AccountManagerHolder(const AccountManagerHolder&) = delete;
+    AccountManagerHolder& operator=(const AccountManagerHolder&) = delete;
+    ~AccountManagerHolder();
+
+    const std::unique_ptr<AccountManager> account_manager;
+    const std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash;
+  };
+
+  const AccountManagerHolder& GetAccountManagerHolder(
+      const std::string& profile_path);
+
+  // A mapping from Profile path to an |AccountManagerHolder|. Acts a cache of
+  // Account Managers and AccountManagerAsh objects.
+  std::unordered_map<std::string, AccountManagerHolder> account_managers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

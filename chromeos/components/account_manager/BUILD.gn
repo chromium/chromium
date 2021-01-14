@@ -10,6 +10,8 @@ component("account_manager") {
   sources = [
     "account_manager.cc",
     "account_manager.h",
+    "account_manager_ash.cc",
+    "account_manager_ash.h",
     "account_manager_facade_ash.cc",
     "account_manager_facade_ash.h",
     "account_manager_factory.cc",
@@ -26,6 +28,7 @@ component("account_manager") {
   deps = [
     "//base",
     "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
     "//components/prefs:prefs",
     "//google_apis",
     "//net",
@@ -37,12 +40,16 @@ component("account_manager") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "account_manager_unittest.cc" ]
+  sources = [
+    "account_manager_ash_unittest.cc",
+    "account_manager_unittest.cc",
+  ]
 
   deps = [
     ":account_manager",
     "//base",
     "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
     "//components/prefs:test_support",
     "//net",
     "//services/network:test_support",
