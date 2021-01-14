@@ -13,6 +13,18 @@ PolicyContainer::PolicyContainer(
       policy_container_host_remote_(std::move(remote)) {}
 
 // static
+std::unique_ptr<PolicyContainer> PolicyContainer::CreateEmpty() {
+  // Create a dummy PolicyContainerHost remote. All the messages will be
+  // ignored.
+  mojo::AssociatedRemote<mojom::blink::PolicyContainerHost> dummy_host;
+  ignore_result(dummy_host.BindNewEndpointAndPassDedicatedReceiver());
+
+  return std::make_unique<PolicyContainer>(
+      dummy_host.Unbind(),
+      mojom::blink::PolicyContainerDocumentPolicies::New());
+}
+
+// static
 std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
     std::unique_ptr<WebPolicyContainer> container) {
   if (!container)

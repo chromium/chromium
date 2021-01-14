@@ -1835,12 +1835,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   frame_->DomWindow()->SetAddressSpace(ip_address_space_);
 
   if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-    // SVG image documents go throught this but don't have a PolicyContainer, so
-    // ignore them.
-    if (frame_->GetPolicyContainer()) {
-      frame_->DomWindow()->SetReferrerPolicy(
-          frame_->GetPolicyContainer()->GetReferrerPolicy());
-    }
+    frame_->DomWindow()->SetReferrerPolicy(
+        frame_->GetPolicyContainer()->GetReferrerPolicy());
   }
   String referrer_policy_header =
       response_.HttpHeaderField(http_names::kReferrerPolicy);

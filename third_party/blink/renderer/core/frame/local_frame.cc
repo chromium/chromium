@@ -1481,7 +1481,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
       is_save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()),
       lifecycle_state_(mojom::FrameLifecycleState::kRunning),
-      policy_container_(std::move(policy_container)) {
+      policy_container_(policy_container ? std::move(policy_container)
+                                         : PolicyContainer::CreateEmpty()) {
   auto frame_tracking_result = GetLocalFramesMap().insert(
       base::UnguessableTokenHash()(frame_token), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";

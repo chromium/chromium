@@ -599,11 +599,7 @@ void HTMLMetaElement::ProcessContent() {
       // has no PolicyContainer, so we ignore the next step. This function will
       // run again anyway, should this document or this element be attached to a
       // frame.
-      //
-      // SVG images (loaded via the img tag) create a fake LocalFrame which has
-      // no PolicyContainer. Ignore policy updates from meta tags inside SVG
-      // images.
-      if (frame && frame->GetPolicyContainer()) {
+      if (frame) {
         frame->GetPolicyContainer()->UpdateReferrerPolicy(
             GetExecutionContext()->GetReferrerPolicy());
       }

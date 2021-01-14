@@ -84,11 +84,6 @@ DummyPageHolder::DummyPageHolder(
   if (!local_frame_client_)
     local_frame_client_ = MakeGarbageCollected<DummyLocalFrameClient>();
 
-  mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
-      stub_policy_container_remote;
-  ignore_result(
-      stub_policy_container_remote.InitWithNewEndpointAndPassReceiver());
-
   // Create new WindowAgentFactory as this page will be isolated from others.
   frame_ = MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), *page_,
@@ -96,11 +91,7 @@ DummyPageHolder::DummyPageHolder(
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
       /* WindowAgentFactory* */ nullptr,
-      /* InterfaceRegistry* */ nullptr,
-      std::make_unique<PolicyContainer>(
-          std::move(stub_policy_container_remote),
-          mojom::blink::PolicyContainerDocumentPolicies::New()),
-      clock);
+      /* InterfaceRegistry* */ nullptr, /* policy_container */ nullptr, clock);
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);

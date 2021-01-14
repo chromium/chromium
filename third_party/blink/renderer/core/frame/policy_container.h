@@ -32,6 +32,7 @@ class CORE_EXPORT PolicyContainer {
   PolicyContainer& operator=(const PolicyContainer&) = delete;
   ~PolicyContainer() = default;
 
+  static std::unique_ptr<PolicyContainer> CreateEmpty();
   static std::unique_ptr<PolicyContainer> CreateFromWebPolicyContainer(
       std::unique_ptr<WebPolicyContainer> container);
 
