@@ -636,7 +636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DirectAction.Perform" enum="DirectActionId"
-    expires_after="M90">
+    expires_after="M93">
   <owner>szermatt@chromium.org</owner>
   <owner>autofill_assistant@google.com</owner>
   <summary>
