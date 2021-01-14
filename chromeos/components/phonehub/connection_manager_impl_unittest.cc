@@ -240,7 +240,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
   EXPECT_EQ(3u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 
-  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Duration",
+  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connection.Duration",
                                           kFakeConnectionDurationTime, 1);
 }
 

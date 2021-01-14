@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -52,7 +53,7 @@ void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
 
     case ConnectionManager::Status::kDisconnected:
       if (prev_status == ConnectionManager::Status::kConnected) {
-        UMA_HISTOGRAM_TIMES("PhoneHub.Connectivity.Duration", delta);
+        base::UmaHistogramLongTimes100("PhoneHub.Connection.Duration", delta);
       } else if (prev_status == ConnectionManager::Status::kConnecting) {
         RecordConnectionSuccessMetric(false);
       }
