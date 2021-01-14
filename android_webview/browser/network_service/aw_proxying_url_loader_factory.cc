@@ -698,6 +698,12 @@ void InterceptedRequest::SendErrorCallback(int error_code,
   if (sent_error_callback_)
     return;
 
+  // We can't get a |AwContentsClientBridge| based on the |render_frame_id| of
+  // the |request_| initiated by the service worker, so interrupt it as soon as
+  // possible.
+  if (request_.originated_from_service_worker)
+    return;
+
   sent_error_callback_ = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
