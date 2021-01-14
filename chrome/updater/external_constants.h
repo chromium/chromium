@@ -27,11 +27,8 @@ class ExternalConstants {
   // True if client update protocol signing of update checks is enabled.
   virtual bool UseCUP() const = 0;
 
-  // Returns a random value in seconds used to delay the start of the automated
-  // background tasks such as update checks. This distributes the update server
-  // load more uniformly and avoids the problem of a large number of clients
-  // creating load spikes on servers when checking for updates and their system
-  // time is synchronized by a time server.
+  // Number of seconds to delay the start of the automated background tasks
+  // such as update checks.
   virtual int InitialDelay() const = 0;
 
  protected:
