@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "content/common/frame_messages.h"
+#include "content/public/renderer/render_thread.h"
 #include "content/renderer/pepper/pepper_in_process_router.h"
 #include "content/renderer/render_frame_impl.h"
 #include "ipc/ipc_message_macros.h"
@@ -42,15 +43,10 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
     int render_frame_id,
     const GURL& document_url,
     const GURL& plugin_url) {
-  // We don't need to know if it's a privileged context for in-process plugins.
-  // In process plugins are deprecated and the only in-process plugin that
-  // exists is the "NaCl plugin" which will never need to know this.
-  bool is_privileged_context = false;
-  Send(new FrameHostMsg_DidCreateInProcessInstance(
-      instance,
-      // Browser provides the render process id.
-      PepperRendererInstanceData(0, render_frame_id, document_url, plugin_url,
-                                 is_privileged_context)));
+  if (auto* io_host = GetIOHost()) {
+    io_host->DidCreateInProcessInstance(instance, render_frame_id, document_url,
+                                        plugin_url);
+  }
 }
 
 void PepperBrowserConnection::DidDeleteInProcessInstance(PP_Instance instance) {
@@ -97,6 +93,18 @@ int32_t PepperBrowserConnection::GetNextSequence() {
 
 void PepperBrowserConnection::OnDestruct() {
   delete this;
+}
+
+mojom::PepperIOHost* PepperBrowserConnection::GetIOHost() {
+  if (!io_host_) {
+    // There may be no channel when MockRenderThread is used.
+    IPC::SyncChannel* sync_channel = RenderThread::Get()->GetChannel();
+    if (sync_channel)
+      sync_channel->GetRemoteAssociatedInterface(&io_host_);
+    else
+      return nullptr;
+  }
+  return io_host_.get();
 }
 
 }  // namespace content

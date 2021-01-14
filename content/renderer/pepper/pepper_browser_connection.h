@@ -14,8 +14,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "content/common/pepper_plugin.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -68,6 +70,9 @@ class PepperBrowserConnection
       int32_t sequence_number,
       const std::vector<int>& pending_resource_host_ids);
 
+  // Return a bound PepperIOHost. This may return null in unittests.
+  mojom::PepperIOHost* GetIOHost();
+
   // Return the next sequence number.
   int32_t GetNextSequence();
 
@@ -76,6 +81,9 @@ class PepperBrowserConnection
 
   // Maps a sequence number to the callback to be run.
   std::map<int32_t, PendingResourceIDCallback> pending_create_map_;
+
+  mojo::AssociatedRemote<mojom::PepperIOHost> io_host_;
+
   DISALLOW_COPY_AND_ASSIGN(PepperBrowserConnection);
 };
 

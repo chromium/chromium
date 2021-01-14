@@ -6,6 +6,7 @@ module content.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
+import "url/mojom/url.mojom";
 
 // Generic Pepper messages. Implemented by the browser.
 interface PepperHost {
@@ -21,6 +22,15 @@ interface PepperHost {
              mojo_base.mojom.FilePath plugin_path);
 };
 
+// Generic Pepper messages that run on the IO thread in the browser process.
+interface PepperIOHost {
+  // Notification an in-process instance has been created.
+  DidCreateInProcessInstance(int32 instance_id,
+                             int32 frame_routing_id,
+                             url.mojom.Url document_url,
+                             url.mojom.Url plugin_url);
+};
+
 // This interface is used on the renderer IO thread and is received on the
 // browser UI thread for determining an out of process pepper plugin container
 // has not responded to the renderer for too long.
@@ -32,7 +42,9 @@ interface PepperHungDetectorHost {
   PluginHung(bool is_hung);
 };
 
-// Plugin instance specific messages. Implemented by the browser.
+// Plugin instance specific host messages that are sent from the renderer
+// main thread and dispatched on the UI thread of the browser. Implemented by
+// the browser.
 interface PepperPluginInstanceHost {
   // Notification a plugin instance has started playback.
   StartsPlayback();

@@ -284,12 +284,6 @@ IPC_SYNC_MESSAGE_CONTROL3_3(FrameHostMsg_OpenChannelToPepperPlugin,
                             int /* plugin_child_id */)
 
 // Message from the renderer to the browser indicating the in-process instance
-// has been created.
-IPC_MESSAGE_CONTROL2(FrameHostMsg_DidCreateInProcessInstance,
-                     int32_t /* instance */,
-                     content::PepperRendererInstanceData /* instance_data */)
-
-// Message from the renderer to the browser indicating the in-process instance
 // has been destroyed.
 IPC_MESSAGE_CONTROL1(FrameHostMsg_DidDeleteInProcessInstance,
                      int32_t /* instance */)

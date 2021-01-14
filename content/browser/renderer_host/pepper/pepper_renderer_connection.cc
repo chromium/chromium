@@ -97,6 +97,7 @@ PendingHostCreator::~PendingHostCreator() {
 PepperRendererConnection::PepperRendererConnection(int render_process_id)
     : BrowserMessageFilter(kPepperFilteredMessageClasses,
                            base::size(kPepperFilteredMessageClasses)),
+      BrowserAssociatedInterface<mojom::PepperIOHost>(this, this),
       render_process_id_(render_process_id) {
   // Only give the renderer permission for stable APIs.
   in_process_host_.reset(new BrowserPpapiHostImpl(this,
@@ -148,8 +149,6 @@ bool PepperRendererConnection::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(PepperRendererConnection, msg)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_CreateResourceHostsFromHost,
                         OnMsgCreateResourceHostsFromHost)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_DidCreateInProcessInstance,
-                        OnMsgDidCreateInProcessInstance)
     IPC_MESSAGE_HANDLER(FrameHostMsg_DidDeleteInProcessInstance,
                         OnMsgDidDeleteInProcessInstance)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -227,15 +226,20 @@ void PepperRendererConnection::OnMsgCreateResourceHostsFromHost(
   // requests to create resource hosts), once all of them complete.
 }
 
-void PepperRendererConnection::OnMsgDidCreateInProcessInstance(
-    PP_Instance instance,
-    const PepperRendererInstanceData& instance_data) {
-  PepperRendererInstanceData data = instance_data;
-  // It's important that we supply the render process ID ourselves since the
-  // message may be coming from a compromised renderer.
-  data.render_process_id = render_process_id_;
+void PepperRendererConnection::DidCreateInProcessInstance(
+    int32_t instance,
+    int32_t render_frame_id,
+    const GURL& document_url,
+    const GURL& plugin_url) {
+  // We don't need to know if it's a privileged context for in-process plugins.
+  // In process plugins are deprecated and the only in-process plugin that
+  // exists is the "NaCl plugin" which will never need to know this.
+  PepperRendererInstanceData instance_data{render_process_id_, render_frame_id,
+                                           document_url, plugin_url,
+                                           /*secure=*/false};
+
   // 'instance' is possibly invalid. The host must be careful not to trust it.
-  in_process_host_->AddInstance(instance, data);
+  in_process_host_->AddInstance(instance, instance_data);
 }
 
 void PepperRendererConnection::OnMsgDidDeleteInProcessInstance(

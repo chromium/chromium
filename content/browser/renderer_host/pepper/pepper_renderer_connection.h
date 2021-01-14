@@ -10,6 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "content/common/pepper_plugin.mojom.h"
+#include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -23,13 +25,15 @@ class ResourceMessageCallParams;
 namespace content {
 
 class BrowserPpapiHostImpl;
-struct PepperRendererInstanceData;
 
 // This class represents a connection from the browser to the renderer for
 // sending/receiving pepper ResourceHost related messages. When the browser
 // and renderer communicate about ResourceHosts, they should pass the plugin
 // process ID to identify which plugin they are talking about.
-class PepperRendererConnection : public BrowserMessageFilter {
+class PepperRendererConnection
+    : public BrowserMessageFilter,
+      public BrowserAssociatedInterface<mojom::PepperIOHost>,
+      public mojom::PepperIOHost {
  public:
   explicit PepperRendererConnection(int render_process_id);
 
@@ -51,10 +55,13 @@ class PepperRendererConnection : public BrowserMessageFilter {
       PP_Instance instance,
       const std::vector<IPC::Message>& nested_msgs);
 
-  void OnMsgDidCreateInProcessInstance(
-      PP_Instance instance,
-      const PepperRendererInstanceData& instance_data);
   void OnMsgDidDeleteInProcessInstance(PP_Instance instance);
+
+  // mojom::PepperPluginInstanceIOHost overrides;
+  void DidCreateInProcessInstance(int32_t instance,
+                                  int32_t render_frame_id,
+                                  const GURL& document_url,
+                                  const GURL& plugin_url) override;
 
   int render_process_id_;
 
