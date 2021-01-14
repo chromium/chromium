@@ -14,6 +14,22 @@
 
 namespace federated_learning {
 
+namespace {
+
+history::HistoryService* GetHistoryService(content::WebContents* web_contents) {
+  DCHECK(web_contents);
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (profile->IsOffTheRecord())
+    return nullptr;
+
+  return HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+}  // namespace
+
 FlocEligibilityObserver::~FlocEligibilityObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -48,30 +64,28 @@ FlocEligibilityObserver::OnCommit(
 }
 
 void FlocEligibilityObserver::OnAdResource() {
-  MaybeSetFlocAllowedInHistory();
+  OnOptInSignalObserved();
 }
 
 void FlocEligibilityObserver::OnInterestCohortApiUsed() {
-  MaybeSetFlocAllowedInHistory();
+  OnOptInSignalObserved();
 }
 
 FlocEligibilityObserver::FlocEligibilityObserver(content::RenderFrameHost* rfh)
     : web_contents_(content::WebContents::FromRenderFrameHost(rfh)) {}
 
-void FlocEligibilityObserver::MaybeSetFlocAllowedInHistory() {
-  if (!eligible_commit_ || did_set_floc_allowed_)
+void FlocEligibilityObserver::OnOptInSignalObserved() {
+  if (!eligible_commit_ || observed_opt_in_signal_)
     return;
 
-  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      ServiceAccessType::IMPLICIT_ACCESS);
+  if (history::HistoryService* hs = GetHistoryService(web_contents_)) {
+    hs->SetFlocAllowed(
+        history::ContextIDForWebContents(web_contents_),
+        web_contents_->GetController().GetLastCommittedEntry()->GetUniqueID(),
+        web_contents_->GetLastCommittedURL());
+  }
 
-  hs->SetFlocAllowed(
-      history::ContextIDForWebContents(web_contents_),
-      web_contents_->GetController().GetLastCommittedEntry()->GetUniqueID(),
-      web_contents_->GetLastCommittedURL());
-
-  did_set_floc_allowed_ = true;
+  observed_opt_in_signal_ = true;
 }
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FlocEligibilityObserver)

@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 
 namespace federated_learning {
 
@@ -26,12 +27,19 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     ASSERT_TRUE(profile()->CreateHistoryService());
 
+    InitWebContents();
+
     tester_ =
         std::make_unique<page_load_metrics::PageLoadMetricsObserverTester>(
-            web_contents(), this,
+            GetWebContents(), this,
             base::BindRepeating(&FlocEligibilityUnitTest::RegisterObservers,
                                 base::Unretained(this)));
   }
+
+  // Can be overridden in child class to initialize an incognito web_contents.
+  virtual void InitWebContents() {}
+
+  virtual content::WebContents* GetWebContents() { return web_contents(); }
 
   history::HistoryService* history_service() {
     return HistoryServiceFactory::GetForProfile(
@@ -71,14 +79,14 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
     resources.push_back(std::move(resource));
 
     tester_->SimulateResourceDataUseUpdate(resources,
-                                           web_contents()->GetMainFrame());
+                                           GetWebContents()->GetMainFrame());
   }
 
   void NavigateToPage(const GURL& url,
                       bool publicly_routable,
                       bool floc_feature_policy_enabled) {
     auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-        url, web_contents());
+        url, GetWebContents());
     simulator->SetTransition(ui::PageTransition::PAGE_TRANSITION_TYPED);
 
     if (!publicly_routable) {
@@ -98,8 +106,11 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
 
     history_service()->AddPage(
         url, base::Time::Now(),
-        history::ContextIDForWebContents(web_contents()),
-        web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID(),
+        history::ContextIDForWebContents(GetWebContents()),
+        GetWebContents()
+            ->GetController()
+            .GetLastCommittedEntry()
+            ->GetUniqueID(),
         /*referrer=*/GURL(),
         /*redirects=*/{}, ui::PageTransition::PAGE_TRANSITION_TYPED,
         history::VisitSource::SOURCE_BROWSED,
@@ -109,7 +120,7 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
 
   FlocEligibilityObserver* GetFlocEligibilityObserver() {
     return FlocEligibilityObserver::GetOrCreateForCurrentDocument(
-        web_contents()->GetMainFrame());
+        GetWebContents()->GetMainFrame());
   }
 
  private:
@@ -181,6 +192,41 @@ TEST_F(FlocEligibilityUnitTest, StopObservingFlocFeaturePolicyDisabled) {
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
   GetFlocEligibilityObserver()->OnInterestCohortApiUsed();
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+}
+
+class FlocEligibilityIncognitoUnitTest : public FlocEligibilityUnitTest {
+ public:
+  FlocEligibilityIncognitoUnitTest() = default;
+  ~FlocEligibilityIncognitoUnitTest() override = default;
+
+  void InitWebContents() override {
+    TestingProfile::Builder().BuildIncognito(profile());
+    incognito_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile()->GetPrimaryOTRProfile(),
+        content::SiteInstance::Create(profile()->GetPrimaryOTRProfile()));
+  }
+
+  content::WebContents* GetWebContents() override {
+    return incognito_web_contents_.get();
+  }
+
+  void TearDown() override {
+    incognito_web_contents_.reset();
+    FlocEligibilityUnitTest::TearDown();
+  }
+
+ private:
+  std::unique_ptr<content::WebContents> incognito_web_contents_;
+};
+
+TEST_F(FlocEligibilityIncognitoUnitTest, SkipSettingFlocAllowedInIncognito) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
+
+  SimulateResourceDataUseUpdate(/*is_ad_resource=*/true);
+
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 }
 

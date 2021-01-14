@@ -49,18 +49,18 @@ class FlocEligibilityObserver
 
   friend class content::RenderDocumentHostUserData<FlocEligibilityObserver>;
 
-  void MaybeSetFlocAllowedInHistory();
+  void OnOptInSignalObserved();
 
   content::WebContents* web_contents_;
 
   // |eligible_commit_| means all the commit time prerequisites are met
-  // (i.e. IP was publicly routable). It can only be set to true at commit time.
-  // When it's set, it also implies that the add-page-to-history decision has
-  // been made, i.e. either the page has been added to history, or has been
-  // skipped.
+  // (i.e. IP was publicly routable AND permissions policy is "allow"). It can
+  // only be set to true at commit time. When it's set, it also implies that the
+  // add-page-to-history decision has been made, i.e. either the page has been
+  // added to history, or has been skipped.
   bool eligible_commit_ = false;
 
-  bool did_set_floc_allowed_ = false;
+  bool observed_opt_in_signal_ = false;
 
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
