@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace qrcode_generator {
 
@@ -88,10 +89,6 @@ const gfx::VectorIcon& QRCodeGeneratorIconView::GetVectorIcon() const {
   return kQrcodeGeneratorIcon;
 }
 
-const char* QRCodeGeneratorIconView::GetClassName() const {
-  return "QRCodeGeneratorIconView";
-}
-
 base::string16 QRCodeGeneratorIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP);
@@ -100,5 +97,8 @@ base::string16 QRCodeGeneratorIconView::GetTextForTooltipAndAccessibleName()
 bool QRCodeGeneratorIconView::ShouldShowLabel() const {
   return false;
 }
+
+BEGIN_METADATA(QRCodeGeneratorIconView, PageActionIconView)
+END_METADATA
 
 }  // namespace qrcode_generator

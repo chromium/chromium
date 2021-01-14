@@ -43,6 +43,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -197,10 +198,6 @@ void QRCodeGeneratorBubble::WindowClosing() {
     controller_->OnBubbleClosed();
     controller_ = nullptr;
   }
-}
-
-const char* QRCodeGeneratorBubble::GetClassName() const {
-  return "QRCodeGeneratorBubble";
 }
 
 void QRCodeGeneratorBubble::Init() {
@@ -439,5 +436,8 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   download_manager->DownloadUrl(std::move(params));
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DownloadQRCode"));
 }
+
+BEGIN_METADATA(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
+END_METADATA
 
 }  // namespace qrcode_generator

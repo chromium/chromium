@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_QRCODE_GENERATOR_QRCODE_GENERATOR_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_QRCODE_GENERATOR_QRCODE_GENERATOR_ICON_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -16,10 +16,13 @@ namespace qrcode_generator {
 // can generate a QR code for the current page or a selected image.
 class QRCodeGeneratorIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(QRCodeGeneratorIconView);
   QRCodeGeneratorIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
+  QRCodeGeneratorIconView(const QRCodeGeneratorIconView&) = delete;
+  QRCodeGeneratorIconView& operator=(const QRCodeGeneratorIconView&) = delete;
   ~QRCodeGeneratorIconView() override;
 
   // PageActionIconView:
@@ -32,14 +35,11 @@ class QRCodeGeneratorIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  const char* GetClassName() const override;
 
  private:
   // Flag set when OnExecuting() is called and cleared after bubble is created.
   // Avoids losing ink drop on, or flickering, the PageActionIconView.
   bool bubble_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorIconView);
 };
 
 }  // namespace qrcode_generator
