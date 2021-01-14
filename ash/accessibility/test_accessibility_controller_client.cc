@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/test_accessibility_controller_client.h"
 
+#include <utility>
+
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -30,7 +32,7 @@ void TestAccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
   last_alert_message_ = message;
 }
 
-void TestAccessibilityControllerClient::PlayEarcon(int32_t sound_key) {
+void TestAccessibilityControllerClient::PlayEarcon(chromeos::Sound sound_key) {
   sound_key_ = sound_key;
 }
 
@@ -82,10 +84,9 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
   last_select_to_speak_panel_action_value_ = value;
 }
 
-int32_t TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  int32_t tmp = sound_key_;
-  sound_key_ = -1;
-  return tmp;
+base::Optional<chromeos::Sound>
+TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
+  return std::exchange(sound_key_, base::nullopt);
 }
 
 }  // namespace ash

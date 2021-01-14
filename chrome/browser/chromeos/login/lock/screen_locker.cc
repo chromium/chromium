@@ -177,9 +177,9 @@ ScreenLocker::ScreenLocker(const user_manager::UserList& users)
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   audio::SoundsManager* manager = audio::SoundsManager::Get();
-  manager->Initialize(SOUND_LOCK,
+  manager->Initialize(static_cast<int>(Sound::kLock),
                       bundle.GetRawDataResource(IDR_SOUND_LOCK_WAV));
-  manager->Initialize(SOUND_UNLOCK,
+  manager->Initialize(static_cast<int>(Sound::kUnlock),
                       bundle.GetRawDataResource(IDR_SOUND_UNLOCK_WAV));
   content::GetDeviceService().BindFingerprint(
       fp_service_.BindNewPipeAndPassReceiver());
@@ -516,7 +516,7 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
   delegate_->OnAshLockAnimationFinished();
 
   AccessibilityManager::Get()->PlayEarcon(
-      SOUND_LOCK, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+      Sound::kLock, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
 }
 
 void ScreenLocker::ClearErrors() {
@@ -658,7 +658,7 @@ void ScreenLocker::ScheduleDeletion() {
   VLOG(1) << "Deleting ScreenLocker " << screen_locker_;
 
   AccessibilityManager::Get()->PlayEarcon(
-      SOUND_UNLOCK, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+      Sound::kUnlock, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
 
   delete screen_locker_;
   screen_locker_ = nullptr;

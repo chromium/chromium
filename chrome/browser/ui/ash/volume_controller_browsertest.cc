@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
-#include <vector>
 
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -23,10 +23,7 @@ namespace {
 
 class SoundsManagerTestImpl : public audio::SoundsManager {
  public:
-  SoundsManagerTestImpl()
-      : is_sound_initialized_(chromeos::SOUND_COUNT),
-        num_play_requests_(chromeos::SOUND_COUNT) {}
-
+  SoundsManagerTestImpl() = default;
   ~SoundsManagerTestImpl() override {}
 
   bool Initialize(SoundKey key, const base::StringPiece& /* data */) override {
@@ -45,15 +42,13 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
     return base::TimeDelta();
   }
 
-  bool is_sound_initialized(SoundKey key) const {
-    return is_sound_initialized_[key];
-  }
+  bool is_sound_initialized(SoundKey key) { return is_sound_initialized_[key]; }
 
-  int num_play_requests(SoundKey key) const { return num_play_requests_[key]; }
+  int num_play_requests(SoundKey key) { return num_play_requests_[key]; }
 
  private:
-  std::vector<bool> is_sound_initialized_;
-  std::vector<int> num_play_requests_;
+  std::map<SoundKey, bool> is_sound_initialized_;
+  std::map<SoundKey, int> num_play_requests_;
 
   DISALLOW_COPY_AND_ASSIGN(SoundsManagerTestImpl);
 };
@@ -168,11 +163,13 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   }
 
   bool is_sound_initialized() const {
-    return sounds_manager_->is_sound_initialized(chromeos::SOUND_VOLUME_ADJUST);
+    return sounds_manager_->is_sound_initialized(
+        static_cast<int>(chromeos::Sound::kVolumeAdjust));
   }
 
   int num_play_requests() const {
-    return sounds_manager_->num_play_requests(chromeos::SOUND_VOLUME_ADJUST);
+    return sounds_manager_->num_play_requests(
+        static_cast<int>(chromeos::Sound::kVolumeAdjust));
   }
 
  private:

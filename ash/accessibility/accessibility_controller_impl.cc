@@ -47,6 +47,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1181,7 +1182,7 @@ void AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage(
     client_->TriggerAccessibilityAlertWithMessage(message);
 }
 
-void AccessibilityControllerImpl::PlayEarcon(int32_t sound_key) {
+void AccessibilityControllerImpl::PlayEarcon(chromeos::Sound sound_key) {
   if (client_)
     client_->PlayEarcon(sound_key);
 }

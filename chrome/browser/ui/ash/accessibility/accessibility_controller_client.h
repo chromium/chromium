@@ -19,7 +19,7 @@ class AccessibilityControllerClient
   void TriggerAccessibilityAlert(ash::AccessibilityAlert alert) override;
   void TriggerAccessibilityAlertWithMessage(
       const std::string& message) override;
-  void PlayEarcon(int sound_key) override;
+  void PlayEarcon(chromeos::Sound sound_key) override;
   base::TimeDelta PlayShutdownSound() override;
   void HandleAccessibilityGesture(ax::mojom::Gesture gesture,
                                   gfx::PointF location) override;

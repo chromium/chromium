@@ -8,27 +8,25 @@
 // This file declares sound resources keys for ChromeOS.
 namespace chromeos {
 
-enum {
-  SOUND_START = 0,
-  SOUND_STARTUP = SOUND_START,
-  SOUND_LOCK,
-  SOUND_OBJECT_DELETE,
-  SOUND_CAMERA_SNAP,
-  SOUND_UNLOCK,
-  SOUND_SHUTDOWN,
-  SOUND_SPOKEN_FEEDBACK_ENABLED,
-  SOUND_SPOKEN_FEEDBACK_DISABLED,
-  SOUND_VOLUME_ADJUST,
-  SOUND_PASSTHROUGH,
-  SOUND_EXIT_SCREEN,
-  SOUND_ENTER_SCREEN,
-  SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH,
-  SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW,
-  SOUND_TOUCH_TYPE,
-  SOUND_COUNT,
-  SOUND_DICTATION_END,
-  SOUND_DICTATION_START,
-  SOUND_DICTATION_CANCEL,
+enum class Sound {
+  kStartup,
+  kLock,
+  kObjectDelete,
+  kCameraSnap,
+  kUnlock,
+  kShutdown,
+  kSpokenFeedbackEnabled,
+  kSpokenFeedbackDisabled,
+  kVolumeAdjust,
+  kPassthrough,
+  kExitScreen,
+  kEnterScreen,
+  kSpokenFeedbackToggleCountdownHigh,
+  kSpokenFeedbackToggleCountdownLow,
+  kTouchType,
+  kDictationEnd,
+  kDictationStart,
+  kDictationCancel,
 };
 
 }  // namespace chromeos
