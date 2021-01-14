@@ -11,7 +11,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.appmenu.AppMenuIconRowFooter;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -59,13 +58,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     @Override
-    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
-        if (view instanceof AppMenuIconRowFooter) {
-            ((AppMenuIconRowFooter) view)
-                    .initialize(appMenuHandler, mBookmarkBridge, mActivityTabProvider.get(),
-                            mAppMenuDelegate);
-        }
-    }
+    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {}
 
     @Override
     public int getHeaderResourceId() {
