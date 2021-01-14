@@ -15,6 +15,7 @@
 #include "base/values.h"
 #import "ios/net/protocol_handler_util.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -185,8 +186,7 @@ TEST_F(WebStateTest, Snapshot) {
       LoadHtml("<html><div style='background-color:#FF0000; width:50%; "
                "height:100%;'></div></html>"));
   __block bool snapshot_complete = false;
-  [[[UIApplication sharedApplication] keyWindow]
-      addSubview:web_state()->GetView()];
+  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
   // The subview is added but not immediately painted, so a small delay is
   // necessary.
   CGRect rect = [web_state()->GetView() bounds];
@@ -217,8 +217,7 @@ TEST_F(WebStateTest, Snapshot) {
 
 // Tests that the create PDF method retuns an PDF of a rendered html page.
 TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
-  [[[UIApplication sharedApplication] keyWindow]
-      addSubview:web_state()->GetView()];
+  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
 
   // Load a URL and some HTML in the WebState.
   GURL url("https://www.chromium.org");
@@ -254,8 +253,7 @@ TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
   CGSize pdf_size =
       CGPDFPageGetBoxRect(CGPDFDocumentGetPage(pdf, 1), kCGPDFMediaBox).size;
 
-  CGFloat kSaveAreaTopInset =
-      UIApplication.sharedApplication.keyWindow.safeAreaInsets.top;
+  CGFloat kSaveAreaTopInset = GetAnyKeyWindow().safeAreaInsets.top;
   EXPECT_GE(pdf_size.height,
             UIScreen.mainScreen.bounds.size.height - kSaveAreaTopInset);
   EXPECT_GE(pdf_size.width, [[UIScreen mainScreen] bounds].size.width);

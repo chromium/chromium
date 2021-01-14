@@ -20,6 +20,7 @@
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #include "ios/web/navigation/block_universal_links_buildflags.h"
@@ -167,10 +168,14 @@ class CRWWebControllerTest : public WebTestWithWebController {
 
   // The value for web view OCMock objects to expect for |-setFrame:|.
   CGRect GetExpectedWebViewFrame() const {
-    CGSize container_view_size =
-        UIApplication.sharedApplication.keyWindow.bounds.size;
+    CGSize container_view_size = GetAnyKeyWindow().bounds.size;
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
     container_view_size.height -=
         CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+#else
+    container_view_size.height -= CGRectGetHeight(
+        GetAnyKeyWindow().windowScene.statusBarManager.statusBarFrame);
+#endif
     return {CGPointZero, container_view_size};
   }
 
@@ -339,7 +344,7 @@ TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
 TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
   // Make sure that the WebController view has a window to avoid stashing the
   // WebView once created.
-  [UIApplication.sharedApplication.keyWindow addSubview:web_controller().view];
+  [GetAnyKeyWindow() addSubview:web_controller().view];
 
   // Get the web view.
   [web_controller() removeWebView];

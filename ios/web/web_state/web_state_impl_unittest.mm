@@ -18,6 +18,7 @@
 #include "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
@@ -1189,7 +1190,7 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
 
   // Add the WebState to the view hierarchy so the visibilitychange event is
   // fired.
-  UIWindow* window = [UIApplication sharedApplication].keyWindow;
+  UIWindow* window = GetAnyKeyWindow();
   [window addSubview:web_state_->GetView()];
 
   // Load the HTML content.

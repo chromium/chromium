@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
@@ -83,7 +84,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     incognito_browser_ = std::make_unique<TestBrowser>();
     AddAgentsToBrowser(incognito_browser_.get(), scene_state_);
 
-    UIWindow* window = [UIApplication sharedApplication].keyWindow;
+    UIWindow* window = GetAnyKeyWindow();
     coordinator_ = [[TabGridCoordinator alloc]
                      initWithWindow:window
          applicationCommandEndpoint:OCMProtocolMock(
@@ -95,8 +96,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     coordinator_.animationsDisabledForTesting = YES;
     // TabGirdCoordinator will make its view controller the root, so stash the
     // original root view controller before starting |coordinator_|.
-    original_root_view_controller_ =
-        [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
 
     [coordinator_ start];
 
@@ -114,8 +114,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
   void TearDown() override {
     if (original_root_view_controller_) {
-      [[UIApplication sharedApplication] keyWindow].rootViewController =
-          original_root_view_controller_;
+      GetAnyKeyWindow().rootViewController = original_root_view_controller_;
       original_root_view_controller_ = nil;
     }
     [coordinator_ stop];

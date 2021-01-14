@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -128,7 +129,7 @@ void FakeWebClient::PrepareErrorPage(
 }
 
 UIView* FakeWebClient::GetWindowedContainer() {
-  return UIApplication.sharedApplication.keyWindow.rootViewController.view;
+  return GetAnyKeyWindow().rootViewController.view;
 }
 
 UserAgentType FakeWebClient::GetDefaultUserAgent(

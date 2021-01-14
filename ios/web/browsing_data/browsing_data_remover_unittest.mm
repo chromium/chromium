@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
+#import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "testing/platform_test.h"
 
@@ -110,11 +111,10 @@ class BrowsingDataRemoverTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    original_root_view_controller_ =
-        UIApplication.sharedApplication.keyWindow.rootViewController;
+    original_root_view_controller_ = GetAnyKeyWindow().rootViewController;
 
     UIViewController* controller = [[UIViewController alloc] init];
-    UIApplication.sharedApplication.keyWindow.rootViewController = controller;
+    GetAnyKeyWindow().rootViewController = controller;
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     WKWebView* web_view = [[WKWebView alloc] initWithFrame:CGRectZero
                                              configuration:config];
@@ -138,8 +138,7 @@ class BrowsingDataRemoverTest : public PlatformTest {
 
   void TearDown() override {
     if (original_root_view_controller_) {
-      UIApplication.sharedApplication.keyWindow.rootViewController =
-          original_root_view_controller_;
+      GetAnyKeyWindow().rootViewController = original_root_view_controller_;
       original_root_view_controller_ = nil;
     }
     PlatformTest::TearDown();

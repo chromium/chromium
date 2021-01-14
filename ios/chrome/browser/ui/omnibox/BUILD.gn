@@ -264,6 +264,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/ui/util",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -129,7 +130,7 @@ Browser* GetMainBrowser() {
 }
 
 UIViewController* GetActiveViewController() {
-  UIWindow* main_window = [[UIApplication sharedApplication] keyWindow];
+  UIWindow* main_window = GetAnyKeyWindow();
   DCHECK([main_window isKindOfClass:[ChromeOverlayWindow class]]);
   UIViewController* main_view_controller = main_window.rootViewController;
 

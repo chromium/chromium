@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,7 +35,7 @@ ScopedKeyWindow::ScopedKeyWindow() {
   if (!current_key_window_) {
     current_key_window_ =
         [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    original_key_window_ = [UIApplication sharedApplication].keyWindow;
+    original_key_window_ = GetAnyKeyWindow();
   }
   [current_key_window_ makeKeyAndVisible];
 }

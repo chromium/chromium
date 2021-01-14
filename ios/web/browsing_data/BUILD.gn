@@ -33,6 +33,7 @@ source_set("browsing_data_unittests") {
     "//ios/net",
     "//ios/net:test_support",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/net/cookies",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

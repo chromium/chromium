@@ -4,6 +4,8 @@
 
 #import "ios/chrome/test/root_view_controller_test.h"
 
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -12,16 +14,13 @@
 // the original VC to allow restoring it at the end of the test.
 void RootViewControllerTest::SetRootViewController(
     UIViewController* new_root_view_controller) {
-  original_root_view_controller_ =
-      [[[UIApplication sharedApplication] keyWindow] rootViewController];
-  [[UIApplication sharedApplication] keyWindow].rootViewController =
-      new_root_view_controller;
+  original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
+  GetAnyKeyWindow().rootViewController = new_root_view_controller;
 }
 
 void RootViewControllerTest::TearDown() {
   if (original_root_view_controller_) {
-    [[UIApplication sharedApplication] keyWindow].rootViewController =
-        original_root_view_controller_;
+    GetAnyKeyWindow().rootViewController = original_root_view_controller_;
     original_root_view_controller_ = nil;
   }
   PlatformTest::TearDown();

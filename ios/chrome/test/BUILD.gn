@@ -57,6 +57,7 @@ source_set("test_support") {
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/safe_browsing:test_support",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",

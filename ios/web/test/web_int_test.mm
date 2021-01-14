@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observer.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/web_state_observer.h"
@@ -65,8 +66,7 @@ void WebIntTest::SetUp() {
   web_state_ = web::WebState::Create(web_state_create_params);
 
   // Resize the webview so that pages can be properly rendered.
-  web_state()->GetView().frame =
-      [UIApplication sharedApplication].keyWindow.bounds;
+  web_state()->GetView().frame = GetAnyKeyWindow().bounds;
 
   web_state()->SetDelegate(&web_state_delegate_);
   web_state()->SetKeepRenderProcessAlive(true);

@@ -9,6 +9,7 @@ source_set("fakes") {
   deps = [
     "//base",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/js_messaging",
     "//ios/web/navigation:core",
     "//ios/web/public/deprecated",

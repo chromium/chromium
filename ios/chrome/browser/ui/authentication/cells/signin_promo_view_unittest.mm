@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialOverlayWindow.h>
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -17,7 +18,7 @@
 using SigninPromoViewTest = PlatformTest;
 
 TEST_F(SigninPromoViewTest, ChromiumLogoImage) {
-  UIWindow* currentWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow* currentWindow = GetAnyKeyWindow();
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   view.mode = IdentityPromoViewModeNoAccounts;
@@ -36,7 +37,7 @@ TEST_F(SigninPromoViewTest, ChromiumLogoImage) {
 }
 
 TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
-  UIWindow* currentWindow = [[UIApplication sharedApplication] keyWindow];
+  UIWindow* currentWindow = GetAnyKeyWindow();
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   view.mode = IdentityPromoViewModeNoAccounts;
