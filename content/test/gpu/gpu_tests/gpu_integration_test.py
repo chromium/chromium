@@ -602,11 +602,13 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-420',  # android-nexus-6
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
-        'vmware',  # VMs
+        'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs
         # Fuchsia VMs
         ('google-angle-(vulkan-1.1.0(swiftshader-device-('
          'llvm-7.0.1)-(0x0000c0de)))'),
+        ('google-angle-(vulkan-1.1.0(swiftshader-device-('
+         'llvm-10.0.0)-(0x0000c0de)))'),
         # These browsers are analogous to a particular OS, and specifying the
         # OS name is clearer.
         'cros-chrome',  # ChromeOS
