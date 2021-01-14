@@ -117,6 +117,10 @@ class AutofillTest : public InProcessBrowserTest {
     // Don't want Keychain coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -188,7 +192,10 @@ class AutofillTest : public InProcessBrowserTest {
     base::FilePath data_file =
         ui_test_utils::GetTestFilePath(base::FilePath().AppendASCII("autofill"),
                                        base::FilePath().AppendASCII(filename));
-    CHECK(base::ReadFileToString(data_file, &data));
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(base::ReadFileToString(data_file, &data));
+    }
     std::vector<std::string> lines = base::SplitString(
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     int parsed_profiles = 0;
@@ -231,8 +238,7 @@ class AutofillTest : public InProcessBrowserTest {
 // Test that Autofill aggregates a minimum valid profile.
 // The minimum required address fields must be specified: First Name, Last Name,
 // Address Line 1, City, Zip Code, and State.
-// TODO(crbug.com/1090343): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(AutofillTest, DISABLED_AggregatesMinValidProfile) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, AggregatesMinValidProfile) {
   FormMap data;
   data["NAME_FIRST"] = "Bob";
   data["NAME_LAST"] = "Smith";
@@ -264,16 +270,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AggregatesMinValidProfileDifferentJS) {
 
 // Form submitted via JavaScript, the user's personal data is updated even
 // if the event handler on the submit event prevents submission of the form.
-// Flaky on Mac: https://crbug.com/1078506.
-#if defined(OS_MAC)
-#define MAYBE_ProfilesAggregatedWithSubmitHandler \
-  DISABLED_ProfilesAggregatedWithSubmitHandler
-#else
-#define MAYBE_ProfilesAggregatedWithSubmitHandler \
-  ProfilesAggregatedWithSubmitHandler
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillTest,
-                       MAYBE_ProfilesAggregatedWithSubmitHandler) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
   FormMap data;
   data["NAME_FIRST"] = "Bob";
   data["NAME_LAST"] = "Smith";
@@ -443,18 +440,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
 //   The phone number does not have a leading '+'.
 //   The phone number has a leading international direct dialing (IDD) code.
 // This does not apply to US numbers. For US numbers, '+' is removed.
-
-// Flaky on Windows. http://crbug.com/500491
-// Also flaky on Linux. http://crbug.com/935629
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_UsePlusSignForInternationalNumber \
-    DISABLED_UsePlusSignForInternationalNumber
-#else
-#define MAYBE_UsePlusSignForInternationalNumber \
-    UsePlusSignForInternationalNumber
-#endif
-
-IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_UsePlusSignForInternationalNumber) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
   std::vector<FormMap> profiles;
 
   FormMap data1;
@@ -598,9 +584,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Mininum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
-// DISABLED: http://crbug.com/281541
-IN_PROC_BROWSER_TEST_F(AutofillTest,
-                       DISABLED_ProfilesNotMergedWhenNoMinAddressData) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
   AggregateProfilesIntoAutofillPrefs("dataset_no_address.txt");
 
   ASSERT_EQ(0u, personal_data_manager()->GetProfiles().size());
@@ -609,6 +593,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Test Autofill ability to merge duplicate profiles and throw away junk.
 // TODO(isherman): this looks redundant, consider removing.
 // DISABLED: http://crbug.com/281541
+// This tests opens and submits over 240 forms which does not finish within the
+// allocated time of browser_tests. This should be converted into a unittest.
 IN_PROC_BROWSER_TEST_F(AutofillTest,
                        DISABLED_MergeAggregatedDuplicatedProfiles) {
   int num_of_profiles =
@@ -647,8 +633,7 @@ class AutofillAccessibilityTest : public AutofillTest {
 };
 
 // Test that autofill available state is correctly set on accessibility node.
-// crbug.com/1162484
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   // Navigate to url.
