@@ -50,7 +50,8 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
 }
 
 void PepperBrowserConnection::DidDeleteInProcessInstance(PP_Instance instance) {
-  Send(new FrameHostMsg_DidDeleteInProcessInstance(instance));
+  if (auto* io_host = GetIOHost())
+    io_host->DidDeleteInProcessInstance(instance);
 }
 
 void PepperBrowserConnection::SendBrowserCreate(

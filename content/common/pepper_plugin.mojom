@@ -29,6 +29,9 @@ interface PepperIOHost {
                              int32 frame_routing_id,
                              url.mojom.Url document_url,
                              url.mojom.Url plugin_url);
+
+  // Notification that an in-process instance has been destroyed.
+  DidDeleteInProcessInstance(int32 instance_id);
 };
 
 // This interface is used on the renderer IO thread and is received on the

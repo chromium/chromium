@@ -283,11 +283,6 @@ IPC_SYNC_MESSAGE_CONTROL3_3(FrameHostMsg_OpenChannelToPepperPlugin,
                             base::ProcessId /* plugin_pid */,
                             int /* plugin_child_id */)
 
-// Message from the renderer to the browser indicating the in-process instance
-// has been destroyed.
-IPC_MESSAGE_CONTROL1(FrameHostMsg_DidDeleteInProcessInstance,
-                     int32_t /* instance */)
-
 // Notification that a plugin has created a new plugin instance. The parameters
 // indicate:
 //  - The plugin process ID that we're creating the instance for.

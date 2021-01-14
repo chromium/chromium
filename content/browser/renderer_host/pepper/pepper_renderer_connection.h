@@ -55,13 +55,12 @@ class PepperRendererConnection
       PP_Instance instance,
       const std::vector<IPC::Message>& nested_msgs);
 
-  void OnMsgDidDeleteInProcessInstance(PP_Instance instance);
-
   // mojom::PepperPluginInstanceIOHost overrides;
   void DidCreateInProcessInstance(int32_t instance,
                                   int32_t render_frame_id,
                                   const GURL& document_url,
                                   const GURL& plugin_url) override;
+  void DidDeleteInProcessInstance(int32_t instance) override;
 
   int render_process_id_;
 

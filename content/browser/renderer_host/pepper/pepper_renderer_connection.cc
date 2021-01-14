@@ -149,8 +149,6 @@ bool PepperRendererConnection::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(PepperRendererConnection, msg)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_CreateResourceHostsFromHost,
                         OnMsgCreateResourceHostsFromHost)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_DidDeleteInProcessInstance,
-                        OnMsgDidDeleteInProcessInstance)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -242,8 +240,7 @@ void PepperRendererConnection::DidCreateInProcessInstance(
   in_process_host_->AddInstance(instance, instance_data);
 }
 
-void PepperRendererConnection::OnMsgDidDeleteInProcessInstance(
-    PP_Instance instance) {
+void PepperRendererConnection::DidDeleteInProcessInstance(int32_t instance) {
   // 'instance' is possibly invalid. The host must be careful not to trust it.
   in_process_host_->DeleteInstance(instance);
 }
