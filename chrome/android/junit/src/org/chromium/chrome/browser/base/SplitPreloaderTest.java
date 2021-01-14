@@ -71,7 +71,9 @@ public class SplitPreloaderTest {
             if (ThreadUtils.runningOnUiThread()) {
                 mUiThreadContextNames.add(name);
             } else {
-                mBackgroundThreadContextNames.add(name);
+                synchronized (mBackgroundThreadContextNames) {
+                    mBackgroundThreadContextNames.add(name);
+                }
             }
             return new SplitContext(this, name);
         }
@@ -81,7 +83,9 @@ public class SplitPreloaderTest {
         }
 
         public List<String> getBackgroundThreadContextNames() {
-            return mBackgroundThreadContextNames;
+            synchronized (mBackgroundThreadContextNames) {
+                return new ArrayList<>(mBackgroundThreadContextNames);
+            }
         }
     }
 
