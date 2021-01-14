@@ -7,10 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -25,37 +21,31 @@ namespace {
 
 const char kAPIScope[] = "https://www.googleapis.com/auth/chrome-safe-browsing";
 
-#if defined(OS_ANDROID)
-const int kTimeoutDelayFromMilliseconds = 50;
-#else
-const int kTimeoutDelayFromMilliseconds = 1000;
-#endif
-
 }  // namespace
 
 SafeBrowsingPrimaryAccountTokenFetcher::SafeBrowsingPrimaryAccountTokenFetcher(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager),
-      requests_sent_(0),
       weak_ptr_factory_(this) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
 }
 
 SafeBrowsingPrimaryAccountTokenFetcher::
-    ~SafeBrowsingPrimaryAccountTokenFetcher() {
-  for (auto& id_and_callback : callbacks_) {
-    std::move(id_and_callback.second).Run(std::string());
-  }
-}
+    ~SafeBrowsingPrimaryAccountTokenFetcher() = default;
 
 void SafeBrowsingPrimaryAccountTokenFetcher::Start(
     Callback callback) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
-  const int request_id = requests_sent_;
-  requests_sent_++;
+
+  // NOTE: base::Unretained() is safe below as this object owns
+  // |token_fetch_tracker_|, and the callback will not be invoked after
+  // |token_fetch_tracker_| is destroyed.
+  const int request_id = token_fetch_tracker_.StartTrackingTokenFetch(
+      std::move(callback),
+      base::BindOnce(&SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout,
+                     base::Unretained(this)));
   CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
       signin::ConsentLevel::kNotRequired);
-  callbacks_[request_id] = std::move(callback);
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           account_id, "safe_browsing_service", {kAPIScope},
@@ -63,11 +53,6 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
               &SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched,
               weak_ptr_factory_.GetWeakPtr(), request_id),
           signin::AccessTokenFetcher::Mode::kImmediate);
-  base::PostDelayedTask(
-      FROM_HERE, CreateTaskTraits(ThreadID::UI),
-      base::BindOnce(&SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::TimeDelta::FromMilliseconds(kTimeoutDelayFromMilliseconds));
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
@@ -77,24 +62,16 @@ void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.TokenFetcher.ErrorType",
                             error.state(), GoogleServiceAuthError::NUM_STATES);
   if (error.state() == GoogleServiceAuthError::NONE)
-    Finish(request_id, access_token_info.token);
+    token_fetch_tracker_.OnTokenFetchComplete(request_id,
+                                              access_token_info.token);
   else
-    Finish(request_id, std::string());
+    token_fetch_tracker_.OnTokenFetchComplete(request_id, std::string());
+
+  token_fetchers_.erase(request_id);
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout(int request_id) {
-  Finish(request_id, std::string());
-}
-
-void SafeBrowsingPrimaryAccountTokenFetcher::Finish(
-    int request_id,
-    const std::string& access_token) {
-  if (callbacks_.contains(request_id)) {
-    std::move(callbacks_[request_id]).Run(access_token);
-  }
-
   token_fetchers_.erase(request_id);
-  callbacks_.erase(request_id);
 }
 
 }  // namespace safe_browsing

@@ -78,7 +78,26 @@ source_set("referrer_chain_provider") {
 }
 
 source_set("token_fetcher") {
-  sources = [ "safe_browsing_token_fetcher.h" ]
+  sources = [
+    "safe_browsing_token_fetch_tracker.cc",
+    "safe_browsing_token_fetch_tracker.h",
+    "safe_browsing_token_fetcher.h",
+  ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/common:thread_utils",
+  ]
+}
+
+source_set("token_fetcher_unit_tests") {
+  testonly = true
+  sources = [ "safe_browsing_token_fetch_tracker_unittest.cc" ]
+
+  deps = [
+    ":token_fetcher",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common:test_support",
+    "//testing/gtest",
+  ]
 }

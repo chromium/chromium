@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetch_tracker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -40,20 +41,15 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
   void OnTokenTimeout(int request_id);
-  void Finish(int request_id, const std::string& access_token);
 
   // Reference to the identity manager to fetch from.
   signin::IdentityManager* identity_manager_;
-
-  // The count of requests sent. This is used as an ID for requests.
-  int requests_sent_;
 
   // Active fetchers, keyed by ID.
   base::flat_map<int, std::unique_ptr<signin::AccessTokenFetcher>>
       token_fetchers_;
 
-  // Active callbacks, keyed by ID.
-  base::flat_map<int, Callback> callbacks_;
+  SafeBrowsingTokenFetchTracker token_fetch_tracker_;
 
   base::WeakPtrFactory<SafeBrowsingPrimaryAccountTokenFetcher>
       weak_ptr_factory_;
