@@ -292,7 +292,9 @@ class CloudPolicyClientTest : public testing::Test {
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     em::RegisterBrowserRequest* enrollment_request =
         enrollment_token_request_.mutable_register_browser_request();
+#if !defined(OS_IOS)
     enrollment_request->set_machine_name(policy::GetMachineName());
+#endif
     enrollment_request->set_os_platform(policy::GetOSPlatform());
     enrollment_request->set_os_version(policy::GetOSVersion());
 #if defined(OS_IOS)

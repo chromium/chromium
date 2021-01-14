@@ -277,7 +277,11 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
 
   enterprise_management::RegisterBrowserRequest* request =
       config->request()->mutable_register_browser_request();
+#if !defined(OS_IOS)
+  // For iOS devices, the machine name is determined by server side logic using
+  // the client ID and / or the device model.
   request->set_machine_name(GetMachineName());
+#endif  // !defined(OS_IOS)
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
 #if defined(OS_IOS)

@@ -900,8 +900,8 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if not device_id:
       return (400, 'Parameter deviceid is missing.')
 
-    if not msg.machine_name:
-      return (400, 'Invalid machine name: ')
+    if not msg.machine_name and not msg.device_model:
+      return (400, 'Either machine name or device model must be non-empty.')
 
     if enrollment_token == INVALID_ENROLLMENT_TOKEN:
       return (401, 'Invalid enrollment token')
