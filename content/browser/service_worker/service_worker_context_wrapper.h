@@ -47,6 +47,7 @@ namespace content {
 class BrowserContext;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextObserver;
+class ServiceWorkerStorageControlImpl;
 class StoragePartitionImpl;
 class URLLoaderFactoryGetter;
 
@@ -355,6 +356,16 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactoryForUpdateCheck(
       const GURL& scope);
 
+  // Binds a ServiceWorkerStorageControl.
+  void BindStorageControl(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver);
+
+  using StorageControlBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>)>;
+  // Sets a callback to bind ServiceWorkerStorageControl for testing.
+  void SetStorageControlBinderForTest(StorageControlBinder binder);
+
  private:
   friend class BackgroundSyncManagerTest;
   friend class base::DeleteHelper<ServiceWorkerContextWrapper>;
@@ -373,12 +384,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Init() with a custom database task runner and BrowserContext. Explicitly
   // called from EmbeddedWorkerTestHelper.
   void InitInternal(
-      const base::FilePath& user_data_directory,
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
       ChromeBlobStorageContext* blob_context,
       URLLoaderFactoryGetter* loader_factory_getter,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
       BrowserContext* browser_context);
 
   // If |include_installing_version| is true, |callback| is called if there is
@@ -552,6 +561,17 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   base::OnceClosure on_registrations_initialized_;
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
+
+  // TODO(crbug.com/1055677): Remove `storage_control_` when
+  // storage::mojom::Partition supports ServiceWorkerStorageControl. An instance
+  // of this impl should live in the storage service, not here.
+  std::unique_ptr<ServiceWorkerStorageControlImpl> storage_control_;
+  // These fields are used to (re)create `storage_control_`.
+  base::FilePath user_data_directory_;
+  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+
+  // A callback to bind ServiceWorkerStorageControl. Used for tests.
+  StorageControlBinder storage_control_binder_for_test_;
 
   // Temporary for moving context core to the UI thread.
   scoped_refptr<base::TaskRunner> core_thread_task_runner_;

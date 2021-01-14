@@ -32,12 +32,7 @@
 
 class GURL;
 
-namespace base {
-class FilePath;
-}
-
 namespace storage {
-class QuotaManagerProxy;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -100,16 +95,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     DISALLOW_COPY_AND_ASSIGN(ContainerHostIterator);
   };
 
-  // This is owned by the StoragePartition, which will supply it with
-  // the local path on disk. Given an empty |user_data_directory|,
-  // nothing will be stored on disk. |observer_list| is created in
+  // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
   // ServiceWorkerContextWrapper. When Notify() of |observer_list| is called in
   // ServiceWorkerContextCore, the methods of ServiceWorkerContextCoreObserver
   // will be called on the thread which called AddObserver() of |observer_list|.
   ServiceWorkerContextCore(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-      storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
       URLLoaderFactoryGetter* url_loader_factory_getter,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>

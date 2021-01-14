@@ -1482,7 +1482,7 @@ TEST_F(ServiceWorkerVersionTest, WriteMetadata_RemoteStorageDisconnection) {
       version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
       completion.callback());
 
-  helper_->context()->registry()->SimulateStorageRestartForTesting();
+  helper_->SimulateStorageRestartForTesting();
 
   ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
 }

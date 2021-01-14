@@ -17,7 +17,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/browser/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -230,19 +229,9 @@ class ServiceWorkerRegistry::StoragePolicyObserver
 };
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
-    const base::FilePath& user_data_directory,
     ServiceWorkerContextCore* context,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy)
     : context_(context),
-      storage_control_(std::make_unique<ServiceWorkerStorageControlImpl>(
-          ServiceWorkerStorage::Create(user_data_directory,
-                                       database_task_runner,
-                                       quota_manager_proxy))),
-      user_data_directory_(user_data_directory),
-      database_task_runner_(database_task_runner),
-      quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
@@ -253,14 +242,6 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerContextCore* context,
     ServiceWorkerRegistry* old_registry)
     : context_(context),
-      storage_control_(std::make_unique<ServiceWorkerStorageControlImpl>(
-          ServiceWorkerStorage::Create(
-              old_registry->user_data_directory_,
-              old_registry->database_task_runner_,
-              old_registry->quota_manager_proxy_.get()))),
-      user_data_directory_(old_registry->user_data_directory_),
-      database_task_runner_(old_registry->database_task_runner_),
-      quota_manager_proxy_(old_registry->quota_manager_proxy_),
       special_storage_policy_(old_registry->special_storage_policy_) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
@@ -787,12 +768,6 @@ void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
 void ServiceWorkerRegistry::DisableStorageForTesting(
     base::OnceClosure callback) {
   GetRemoteStorageControl()->Disable(std::move(callback));
-}
-
-void ServiceWorkerRegistry::SimulateStorageRestartForTesting() {
-  storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
-      ServiceWorkerStorage::Create(user_data_directory_, database_task_runner_,
-                                   quota_manager_proxy_.get()));
 }
 
 void ServiceWorkerRegistry::Start() {
@@ -1479,6 +1454,7 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   FinishRemoteCall(call_id);
+  remote_storage_control_.reset();
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
 }
 
@@ -1567,8 +1543,9 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
       << "Rebinding is not supported yet.";
 
   if (!remote_storage_control_.is_bound()) {
-    storage_control_->Bind(
+    context_->wrapper()->BindStorageControl(
         remote_storage_control_.BindNewPipeAndPassReceiver());
+    DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,
                        weak_factory_.GetWeakPtr()));

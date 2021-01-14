@@ -266,9 +266,6 @@ void ServiceWorkerContextCore::ContainerHostIterator::
 }
 
 ServiceWorkerContextCore::ServiceWorkerContextCore(
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy,
     URLLoaderFactoryGetter* url_loader_factory_getter,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -281,10 +278,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
                                     blink::mojom::ServiceWorkerContainerHost,
                                     ServiceWorkerContainerHost*>>()),
       registry_(std::make_unique<ServiceWorkerRegistry>(
-          user_data_directory,
           this,
-          std::move(database_task_runner),
-          quota_manager_proxy,
           special_storage_policy)),
       job_coordinator_(std::make_unique<ServiceWorkerJobCoordinator>(this)),
       loader_factory_getter_(url_loader_factory_getter),

@@ -17,12 +17,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace storage {
-class QuotaManagerProxy;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -30,7 +25,6 @@ namespace content {
 
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
-class ServiceWorkerStorageControlImpl;
 
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
@@ -74,10 +68,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
 
   ServiceWorkerRegistry(
-      const base::FilePath& user_data_directory,
       ServiceWorkerContextCore* context,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-      storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy);
 
   // For re-creating the registry from the old one. This is called when
@@ -247,8 +238,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // Call storage::mojom::ServiceWorkerStorageControl::Disable() immediately.
   // This method sends an IPC message without using the queuing mechanism.
   void DisableStorageForTesting(base::OnceClosure callback);
-
-  void SimulateStorageRestartForTesting();
 
  private:
   friend class ServiceWorkerRegistryTest;
@@ -468,14 +457,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;
-  // TODO(crbug.com/1055677): Remove this field after all storage operations are
-  // called via |remote_storage_control_|. An instance of this impl should live
-  // in the storage service.
-  std::unique_ptr<ServiceWorkerStorageControlImpl> storage_control_;
-
-  const base::FilePath user_data_directory_;
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   bool is_storage_disabled_ = false;
 

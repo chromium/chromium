@@ -31,6 +31,7 @@
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_quota_client.h"
+#include "content/browser/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
@@ -227,27 +228,19 @@ void ServiceWorkerContextWrapper::Init(
   DCHECK(storage_partition_);
 
   is_incognito_ = user_data_directory.empty();
-  // The database task runner is BLOCK_SHUTDOWN in order to support
-  // ClearSessionOnlyOrigins() (called due to the "clear on browser exit"
-  // content setting).
-  // TODO(falken): Only block shutdown for that particular task, when someday
-  // task runners support mixing task shutdown behaviors.
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  InitInternal(user_data_directory, quota_manager_proxy, special_storage_policy,
-               blob_context, loader_factory_getter,
-               std::move(database_task_runner),
-               storage_partition_->browser_context());
+
+  user_data_directory_ = user_data_directory;
+  quota_manager_proxy_ = quota_manager_proxy;
+
+  InitInternal(quota_manager_proxy, special_storage_policy, blob_context,
+               loader_factory_getter, storage_partition_->browser_context());
 }
 
 void ServiceWorkerContextWrapper::InitInternal(
-    const base::FilePath& user_data_directory,
     storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy,
     ChromeBlobStorageContext* blob_context,
     URLLoaderFactoryGetter* loader_factory_getter,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
     BrowserContext* browser_context) {
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       non_network_pending_loader_factory_bundle_for_update_check;
@@ -263,7 +256,6 @@ void ServiceWorkerContextWrapper::InitInternal(
   }
 
   context_core_ = std::make_unique<ServiceWorkerContextCore>(
-      user_data_directory, std::move(database_task_runner), quota_manager_proxy,
       special_storage_policy, loader_factory_getter,
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
@@ -279,6 +271,7 @@ void ServiceWorkerContextWrapper::Shutdown() {
 
   storage_partition_ = nullptr;
   process_manager_->Shutdown();
+  storage_control_.reset();
   context_core_.reset();
 }
 
@@ -1543,11 +1536,13 @@ void ServiceWorkerContextWrapper::OnStatusChangedForFindReadyRegistration(
 void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  storage_control_.reset();
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     context_core_.reset();
     return;
   }
-  context_core_.reset(new ServiceWorkerContextCore(context_core_.get(), this));
+  context_core_ =
+      std::make_unique<ServiceWorkerContextCore>(context_core_.get(), this);
   DVLOG(1) << "Restarted ServiceWorkerContextCore successfully.";
   context_core_->OnStorageWiped();
 }
@@ -1680,6 +1675,37 @@ ServiceWorkerContextWrapper::
   }
 
   return factory_bundle;
+}
+
+void ServiceWorkerContextWrapper::BindStorageControl(
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+        receiver) {
+  if (storage_control_binder_for_test_) {
+    storage_control_binder_for_test_.Run(std::move(receiver));
+  } else {
+    // TODO(crbug.com/1055677): Use storage_partition() to bind the control when
+    // ServiceWorkerStorageControl is moved to the Storage Service.
+    DCHECK(!storage_control_);
+
+    // The database task runner is BLOCK_SHUTDOWN in order to support
+    // ClearSessionOnlyOrigins() (called due to the "clear on browser exit"
+    // content setting).
+    // TODO(falken): Only block shutdown for that particular task, when someday
+    // task runners support mixing task shutdown behaviors.
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
+        ServiceWorkerStorage::Create(user_data_directory_,
+                                     std::move(database_task_runner),
+                                     quota_manager_proxy_.get()));
+    storage_control_->Bind(std::move(receiver));
+  }
+}
+
+void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(
+    StorageControlBinder binder) {
+  storage_control_binder_for_test_ = std::move(binder);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

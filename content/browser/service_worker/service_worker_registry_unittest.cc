@@ -278,6 +278,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
+  EmbeddedWorkerTestHelper* helper() { return helper_.get(); }
   ServiceWorkerContextCore* context() { return helper_->context(); }
   ServiceWorkerRegistry* registry() { return context()->registry(); }
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage_control() {
@@ -1270,7 +1271,7 @@ TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
   ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
 
   // This will disconnect mojo connection of the remote storage.
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   // The connection should be recovered and inflight calls should be retried
   // automatically.
@@ -1301,7 +1302,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
 
   // Store two registrations. Restart the remote storage several times.
   {
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     base::RunLoop loop1;
     registry()->StoreRegistration(
@@ -1311,7 +1312,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
           loop1.Quit();
         }));
 
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     base::RunLoop loop2;
     registry()->StoreRegistration(
@@ -1322,7 +1323,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 2U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1340,7 +1341,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 1U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
@@ -1371,7 +1372,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
             }));
 
     EXPECT_EQ(inflight_call_count(), 2U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1402,7 +1403,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 2U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1420,7 +1421,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 1U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
@@ -1461,7 +1462,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 4U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1525,7 +1526,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
           }));
 
   EXPECT_EQ(inflight_call_count(), 2U);
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   loop1.Run();
   loop2.Run();
@@ -1554,7 +1555,7 @@ TEST_F(ServiceWorkerRegistryTest,
               loop.Quit();
             }));
 
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
     EXPECT_EQ(inflight_call_count(), 1U);
 
     loop.Run();
@@ -1572,7 +1573,7 @@ TEST_F(ServiceWorkerRegistryTest,
               loop.Quit();
             }));
 
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
     EXPECT_EQ(inflight_call_count(), 1U);
 
     loop.Run();
@@ -1621,7 +1622,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 2U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1662,7 +1663,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
             }));
 
     EXPECT_EQ(inflight_call_count(), 3U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1695,7 +1696,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
             }));
 
     EXPECT_EQ(inflight_call_count(), 2U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1729,7 +1730,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
         }));
 
     EXPECT_EQ(inflight_call_count(), 3U);
-    registry()->SimulateStorageRestartForTesting();
+    helper()->SimulateStorageRestartForTesting();
 
     loop1.Run();
     loop2.Run();
@@ -1749,7 +1750,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_DeleteAndStartOver) {
       }));
 
   EXPECT_EQ(inflight_call_count(), 1U);
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   base::HistogramTester histogram_tester;
   loop.Run();
@@ -1769,7 +1770,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_PerformStorageCleanup) {
       base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
   EXPECT_EQ(inflight_call_count(), 1U);
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   base::HistogramTester histogram_tester;
   loop.Run();
@@ -1788,7 +1789,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_Disable) {
   registry()->PrepareForDeleteAndStartOver();
 
   EXPECT_EQ(inflight_call_count(), 1U);
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   base::HistogramTester histogram_tester;
   EnsureRemoteCallsAreExecuted();
@@ -1821,7 +1822,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
   special_storage_policy()->AddSessionOnly(kOrigin.GetURL());
   special_storage_policy()->NotifyPolicyChanged();
 
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
 
   EnsureRemoteCallsAreExecuted();
   // All Mojo calls must be done at this point.
@@ -2364,7 +2365,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
   // waiting version associated with the registration.
 
   // Restarting should not schedule resource purging.
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
   storage_control().FlushForTesting();
 
   ASSERT_EQ(GetPurgeableResourceIds().size(), 0u);
@@ -2382,7 +2383,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
   ASSERT_TRUE(VerifyBasicResponse(storage_control(), resource_id2_, true));
 
   // Restarting should not change the situation.
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
   storage_control().FlushForTesting();
 
   EXPECT_THAT(GetPurgeableResourceIds(), testing::UnorderedElementsAreArray(
@@ -2411,7 +2412,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, RetryInflightCalls_Resources) {
   registry()->StoreUncommittedResourceId(kResourceId, registration_->scope());
   EXPECT_EQ(inflight_call_count(), 1U);
 
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
   EnsureRemoteCallsAreExecuted();
 
   EXPECT_EQ(inflight_call_count(), 0U);
@@ -2421,7 +2422,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, RetryInflightCalls_Resources) {
   registry()->DoomUncommittedResource(kResourceId);
   EXPECT_EQ(inflight_call_count(), 1U);
 
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
   EnsureRemoteCallsAreExecuted();
 
   EXPECT_EQ(inflight_call_count(), 0U);
