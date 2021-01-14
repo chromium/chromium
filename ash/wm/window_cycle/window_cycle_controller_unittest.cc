@@ -1026,8 +1026,10 @@ class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
 
   // WindowCycleControllerTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kLimitAltTabToActiveDesk);
+    // |features::kBento| overwrites |features::kLimitAltTabToActiveDesk|, so
+    // Bento needs to be disabled first.
+    scoped_feature_list_.InitWithFeatures({features::kLimitAltTabToActiveDesk},
+                                          {features::kBento});
     WindowCycleControllerTest::SetUp();
   }
 
