@@ -57,6 +57,8 @@ enum class RepeatableQueriesInsertPosition {
   kEnd,        // At the end of MV tiles.
 };
 
+// Parameter determining the module load timeout.
+extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the type of stateful data to request.
 extern const char kNtpStatefulTasksModuleDataParam[];
 
@@ -72,6 +74,8 @@ double GetLocalHistoryRepeatableQueriesFrequencyExponent();
 // queries should be inserted.
 RepeatableQueriesInsertPosition GetRepeatableQueriesInsertPosition();
 
+// Returns the timeout after which the load of a module should be aborted.
+base::TimeDelta GetModulesLoadTimeout();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

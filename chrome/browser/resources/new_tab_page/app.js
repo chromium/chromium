@@ -536,7 +536,8 @@ class AppElement extends PolymerElement {
       return;
     }
     this.moduleDescriptors_ =
-        await ModuleRegistry.getInstance().initializeModules();
+        await ModuleRegistry.getInstance().initializeModules(
+            loadTimeData.getInteger('modulesLoadTimeout'));
   }
 
   /** @private */

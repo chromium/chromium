@@ -31,6 +31,7 @@ suite('NewTabPageAppTest', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
+      modulesLoadTimeout: 0,
       realboxEnabled: false,
     });
   });

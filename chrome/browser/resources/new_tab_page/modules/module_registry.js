@@ -29,10 +29,12 @@ export class ModuleRegistry {
   /**
    * Initializes the modules previously set via |registerModules| and returns
    * the initialized descriptors.
+   * @param {number} timeout Timeout in milliseconds after which initialization
+   *     of a particular module aborts.
    * @return {!Promise<!Array<!ModuleDescriptor>>}
    */
-  async initializeModules() {
-    await Promise.all(this.descriptors_.map(d => d.initialize()));
+  async initializeModules(timeout) {
+    await Promise.all(this.descriptors_.map(d => d.initialize(timeout)));
     return this.descriptors_.filter(descriptor => !!descriptor.element);
   }
 }

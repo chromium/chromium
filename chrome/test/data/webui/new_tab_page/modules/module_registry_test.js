@@ -18,7 +18,7 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     ]);
 
     // Act.
-    const modulesPromise = ModuleRegistry.getInstance().initializeModules();
+    const modulesPromise = ModuleRegistry.getInstance().initializeModules(0);
     // Delayed promise resolution to test async module instantiation.
     bazModuleResolver.resolve(bazModule);
     const modules = await modulesPromise;

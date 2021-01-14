@@ -53,4 +53,20 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     assertEquals(null, moduleDescriptor.element);
     assertEquals(0, testProxy.handler.getCallCount('onModuleLoaded'));
   });
+
+  test('module load times out', async () => {
+    // Arrange.
+    const moduleDescriptor = new ModuleDescriptor(
+        'foo', 100, () => new Promise(() => {}) /* Never resolves. */);
+
+    // Act.
+    const initializePromise = moduleDescriptor.initialize(123);
+    const [callback, timeout] = await testProxy.whenCalled('setTimeout');
+    callback();
+    await initializePromise;
+
+    // Assert.
+    assertEquals(null, moduleDescriptor.element);
+    assertEquals(123, timeout);
+  });
 });

@@ -2349,6 +2349,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "NtpModulesLoadTimeoutMillisecondsParam": "3000"
+                    },
                     "enable_features": [
                         "NtpModules",
                         "NtpShoppingTasksModule"

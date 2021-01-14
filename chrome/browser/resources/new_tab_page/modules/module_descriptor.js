@@ -47,9 +47,22 @@ export class ModuleDescriptor {
     return this.element_;
   }
 
-  async initialize() {
+  /**
+   * Initializes the module. On success, |this.element| will be populated after
+   * the returned promise has resolved.
+   * @param {number} timeout Timeout in milliseconds after which initialization
+   *     aborts.
+   * @return {!Promise}
+   */
+  async initialize(timeout) {
     const loadStartTime = BrowserProxy.getInstance().now();
-    this.element_ = await this.initializeCallback_();
+    this.element_ = await Promise.race([
+      this.initializeCallback_(), new Promise(resolve => {
+        BrowserProxy.getInstance().setTimeout(() => {
+          resolve(null);
+        }, timeout);
+      })
+    ]);
     if (!this.element_) {
       return;
     }
