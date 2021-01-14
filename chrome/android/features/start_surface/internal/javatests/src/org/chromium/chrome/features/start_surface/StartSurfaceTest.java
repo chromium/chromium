@@ -47,10 +47,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
@@ -915,10 +917,7 @@ public class StartSurfaceTest {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
         }
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        CriteriaHelper.pollUiThread(this::isOverviewVisible);
         waitForTabModel();
         assertThat(
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
@@ -932,6 +931,19 @@ public class StartSurfaceTest {
         assertThat(
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
                 equalTo(2));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getTabCreator(false).launchNTP());
+        CriteriaHelper.pollUiThread(this::isOverviewVisible);
+        onView(allOf(withId(R.id.search_box_text), isDisplayed()));
+        TextView urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        onView(withId(R.id.search_box_text)).perform(click());
+        Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
+    }
+
+    private boolean isOverviewVisible() {
+        return mActivityTestRule.getActivity().getLayoutManager() != null
+                && mActivityTestRule.getActivity().getLayoutManager().overviewVisible();
     }
 
     @Test
