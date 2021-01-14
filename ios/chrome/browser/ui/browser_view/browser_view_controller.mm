@@ -406,6 +406,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Whether or not Incognito* is enabled.
   BOOL _isOffTheRecord;
+  // Whether the current content is incognito and requires biometric
+  // authentication from the user before it can be accessed.
+  BOOL _itemsRequireAuthentication;
 
   // The last point within |contentArea| that's received a touch.
   CGPoint _lastTapPoint;
@@ -4800,6 +4803,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - IncognitoReauthConsumer
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
+  _itemsRequireAuthentication = require;
   if (require) {
     if (!self.blockingView) {
       self.blockingView = [[IncognitoReauthView alloc] init];
@@ -4833,7 +4837,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           self.blockingView.alpha = 0;
         }
         completion:^(BOOL finished) {
-          [self.blockingView removeFromSuperview];
+          // In an extreme case, this method can be called twice in quick
+          // succession, before the animation completes. Check if the blocking
+          // UI should be shown or the animation needs to be rolled back.
+          if (_itemsRequireAuthentication) {
+            self.blockingView.alpha = 1;
+          } else {
+            [self.blockingView removeFromSuperview];
+          }
         }];
   }
 }

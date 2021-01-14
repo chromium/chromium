@@ -34,8 +34,9 @@
 
 @interface IncognitoReauthSceneAgent ()
 
-// Set when the scene goes foreground. Checks if any incognito tabs were open.
-@property(nonatomic, assign) BOOL windowHadIncognitoContentOnForeground;
+// Whether the window had incognito content (e.g. at least one open tab) upon
+// backgrounding.
+@property(nonatomic, assign) BOOL windowHadIncognitoContentWhenBackgrounded;
 
 // Tracks wether the user authenticated for incognito since last launch.
 @property(nonatomic, assign) BOOL authenticatedSinceLastForeground;
@@ -68,7 +69,8 @@
 }
 
 - (BOOL)isAuthenticationRequired {
-  return [self featureEnabled] && self.windowHadIncognitoContentOnForeground &&
+  return [self featureEnabled] &&
+         self.windowHadIncognitoContentWhenBackgrounded &&
          !self.authenticatedSinceLastForeground;
 }
 
@@ -122,8 +124,27 @@
   }
 }
 
-- (void)setWindowHadIncognitoContentOnForeground:(BOOL)hadIncognitoContent {
-  _windowHadIncognitoContentOnForeground = hadIncognitoContent;
+- (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
+  BOOL hasIncognitoContent = NO;
+  if (sceneState.interfaceProvider.hasIncognitoInterface) {
+    hasIncognitoContent =
+        sceneState.interfaceProvider.incognitoInterface.browser
+            ->GetWebStateList()
+            ->count() > 0;
+  }
+
+  self.windowHadIncognitoContentWhenBackgrounded = hasIncognitoContent;
+
+  if (self.featureEnabled) {
+    [self notifyObservers];
+  }
+}
+
+- (void)setWindowHadIncognitoContentWhenBackgrounded:(BOOL)hadIncognitoContent {
+  if (_windowHadIncognitoContentWhenBackgrounded == hadIncognitoContent) {
+    return;
+  }
+  _windowHadIncognitoContentWhenBackgrounded = hadIncognitoContent;
   if (self.featureEnabled) {
     [self notifyObservers];
   }
@@ -140,18 +161,10 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
+    [self updateWindowHasIncognitoContent:sceneState];
     self.authenticatedSinceLastForeground = NO;
-  }
-
-  if (level >= SceneActivationLevelForegroundInactive) {
-    if (sceneState.interfaceProvider.hasIncognitoInterface) {
-      self.windowHadIncognitoContentOnForeground =
-          sceneState.interfaceProvider.incognitoInterface.browser
-              ->GetWebStateList()
-              ->count() > 0;
-    } else {
-      self.windowHadIncognitoContentOnForeground = NO;
-    }
+  } else if (level >= SceneActivationLevelForegroundInactive) {
+    [self updateWindowHasIncognitoContent:sceneState];
   }
 }
 

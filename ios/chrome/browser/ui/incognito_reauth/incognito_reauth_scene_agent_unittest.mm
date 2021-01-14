@@ -120,9 +120,6 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
 };
 
-// TODO: add test that after successful auth, auth is not required
-// TODO: add test that after unsuccessful auth, auth is required
-
 // Test that when the feature pref is disabled, auth isn't required.
 TEST_F(IncognitoReauthSceneAgentTest, PrefDisabled) {
   SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true,
