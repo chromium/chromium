@@ -100,46 +100,21 @@ unsigned RemoteFrameClientImpl::BackForwardLength() {
   return 2;
 }
 
-void RemoteFrameClientImpl::FrameRectsChanged(
-    const IntRect& local_frame_rect,
-    const IntRect& screen_space_rect) {
-  web_frame_->Client()->FrameRectsChanged(local_frame_rect, screen_space_rect);
+void RemoteFrameClientImpl::WillSynchronizeVisualProperties(
+    bool synchronized_props_changed,
+    bool capture_sequence_number_changed,
+    const gfx::Size& compositor_viewport_size) {
+  web_frame_->Client()->WillSynchronizeVisualProperties(
+      synchronized_props_changed, capture_sequence_number_changed,
+      compositor_viewport_size);
 }
 
-void RemoteFrameClientImpl::ZoomLevelChanged(double zoom_level) {
-  web_frame_->Client()->ZoomLevelChanged(zoom_level);
+const viz::LocalSurfaceId& RemoteFrameClientImpl::GetLocalSurfaceId() const {
+  return web_frame_->Client()->GetLocalSurfaceId();
 }
 
-void RemoteFrameClientImpl::UpdateCaptureSequenceNumber(
-    uint32_t sequence_number) {
-  web_frame_->Client()->UpdateCaptureSequenceNumber(sequence_number);
-}
-
-void RemoteFrameClientImpl::PageScaleFactorChanged(
-    float page_scale_factor,
-    bool is_pinch_gesture_active) {
-  web_frame_->Client()->PageScaleFactorChanged(page_scale_factor,
-                                               is_pinch_gesture_active);
-}
-
-void RemoteFrameClientImpl::DidChangeScreenInfo(
-    const ScreenInfo& original_screen_info) {
-  web_frame_->Client()->DidChangeScreenInfo(original_screen_info);
-}
-
-void RemoteFrameClientImpl::DidChangeRootWindowSegments(
-    const std::vector<gfx::Rect>& root_widget_window_segments) {
-  web_frame_->Client()->DidChangeRootWindowSegments(
-      root_widget_window_segments);
-}
-
-void RemoteFrameClientImpl::DidChangeVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  web_frame_->Client()->DidChangeVisibleViewportSize(visible_viewport_size);
-}
-
-void RemoteFrameClientImpl::SynchronizeVisualProperties() {
-  web_frame_->Client()->SynchronizeVisualProperties();
+bool RemoteFrameClientImpl::RemoteProcessGone() const {
+  return web_frame_->Client()->RemoteProcessGone();
 }
 
 AssociatedInterfaceProvider*

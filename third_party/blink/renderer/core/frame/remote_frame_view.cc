@@ -106,7 +106,7 @@ void RemoteFrameView::SetViewportIntersection(
   new_state.compositor_visible_rect = gfx::Rect(compositing_rect_);
   if (!last_intersection_state_.Equals(new_state)) {
     last_intersection_state_ = new_state;
-    remote_frame_->Client()->SynchronizeVisualProperties();
+    GetFrame().SynchronizeVisualProperties();
     remote_frame_->GetRemoteFrameHostRemote().UpdateViewportIntersection(
         new_state.Clone());
   } else if (needs_frame_rect_propagation_) {
@@ -228,7 +228,7 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
       std::max(compositing_scale_factor_, kMinCompositingScaleFactor);
 
   if (compositing_scale_factor_ != previous_scale_factor)
-    remote_frame_->Client()->SynchronizeVisualProperties();
+    remote_frame_->SynchronizeVisualProperties();
 }
 
 void RemoteFrameView::Dispose() {
@@ -268,7 +268,7 @@ void RemoteFrameView::PropagateFrameRects() {
   if (LocalFrameView* parent = ParentFrameView()) {
     screen_space_rect = parent->ConvertToRootFrame(screen_space_rect);
   }
-  remote_frame_->Client()->FrameRectsChanged(frame_rect, screen_space_rect);
+  remote_frame_->FrameRectsChanged(frame_rect, screen_space_rect);
 }
 
 void RemoteFrameView::Paint(GraphicsContext& context,

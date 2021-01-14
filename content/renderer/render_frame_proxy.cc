@@ -255,29 +255,6 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
   render_view_ = render_view;
   ancestor_web_frame_widget_ = ancestor_widget;
 
-  // |ancestor_web_frame_widget_| can be null if this is a proxy for a remote
-  // main frame, or a subframe of that proxy. We don't need to register as an
-  // observer [since there is no ancestor RenderWidget]. The observer is used to
-  // propagate VisualProperty changes down the frame/process hierarchy. Remote
-  // main frame proxies do not participate in this flow.
-  if (ancestor_web_frame_widget_) {
-    pending_visual_properties_.zoom_level =
-        render_view->GetWebView()->ZoomLevel();
-    pending_visual_properties_.page_scale_factor =
-        ancestor_web_frame_widget_->PageScaleInMainFrame();
-    pending_visual_properties_.is_pinch_gesture_active =
-        ancestor_web_frame_widget_->PinchGestureActiveInMainFrame();
-    pending_visual_properties_.screen_info =
-        ancestor_web_frame_widget_->GetOriginalScreenInfo();
-    pending_visual_properties_.visible_viewport_size =
-        ancestor_web_frame_widget_->VisibleViewportSizeInDIPs();
-    const blink::WebVector<gfx::Rect>& window_segments =
-        ancestor_web_frame_widget_->WindowSegments();
-    pending_visual_properties_.root_widget_window_segments.assign(
-        window_segments.begin(), window_segments.end());
-    SynchronizeVisualProperties();
-  }
-
   std::pair<FrameProxyMap::iterator, bool> result =
       g_frame_proxy_map.Get().insert(std::make_pair(web_frame_, this));
   CHECK(result.second) << "Inserted a duplicate item.";
@@ -286,68 +263,8 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
     compositing_helper_ = std::make_unique<ChildFrameCompositingHelper>(this);
 }
 
-void RenderFrameProxy::ResendVisualProperties() {
-  // Reset |sent_visual_properties_| in order to allocate a new
-  // viz::LocalSurfaceId.
-  sent_visual_properties_ = base::nullopt;
-  SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::DidChangeScreenInfo(
-    const blink::ScreenInfo& screen_info) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.screen_info = screen_info;
-  if (crashed_) {
-    // Update the sad page to match the current ScreenInfo.
-    compositing_helper_->ChildFrameGone(local_frame_size(),
-                                        screen_info.device_scale_factor);
-    return;
-  }
-  SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::ZoomLevelChanged(double zoom_level) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.zoom_level = zoom_level;
-  SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::DidChangeRootWindowSegments(
-    const std::vector<gfx::Rect>& root_widget_window_segments) {
-  pending_visual_properties_.root_widget_window_segments =
-      std::move(root_widget_window_segments);
-  SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::PageScaleFactorChanged(float page_scale_factor,
-                                              bool is_pinch_gesture_active) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.page_scale_factor = page_scale_factor;
-  pending_visual_properties_.is_pinch_gesture_active = is_pinch_gesture_active;
-  SynchronizeVisualProperties();
-}
-
-viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() {
+viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() const {
   return frame_sink_id_;
-}
-
-void RenderFrameProxy::DidChangeVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.visible_viewport_size = visible_viewport_size;
-  SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::UpdateCaptureSequenceNumber(
-    uint32_t capture_sequence_number) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.capture_sequence_number = capture_sequence_number;
-  SynchronizeVisualProperties();
 }
 
 void RenderFrameProxy::SetReplicatedState(const FrameReplicationState& state) {
@@ -430,9 +347,9 @@ bool RenderFrameProxy::Send(IPC::Message* message) {
 }
 
 void RenderFrameProxy::ChildProcessGone() {
-  crashed_ = true;
-  compositing_helper_->ChildFrameGone(local_frame_size(),
-                                      screen_info().device_scale_factor);
+  remote_process_gone_ = true;
+  compositing_helper_->ChildFrameGone(
+      ancestor_web_frame_widget_->GetOriginalScreenInfo().device_scale_factor);
 }
 
 void RenderFrameProxy::DidStartLoading() {
@@ -448,87 +365,34 @@ void RenderFrameProxy::DidUpdateVisualProperties(
 
   // The viz::LocalSurfaceId has changed so we call SynchronizeVisualProperties
   // here to embed it.
-  SynchronizeVisualProperties();
+  web_frame_->SynchronizeVisualProperties();
 }
 
 void RenderFrameProxy::EnableAutoResize(const gfx::Size& min_size,
                                         const gfx::Size& max_size) {
   DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.auto_resize_enabled = true;
-  pending_visual_properties_.min_size_for_auto_resize = min_size;
-  pending_visual_properties_.max_size_for_auto_resize = max_size;
-  SynchronizeVisualProperties();
+  web_frame_->EnableAutoResize(min_size, max_size);
 }
 
 void RenderFrameProxy::DisableAutoResize() {
   DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.auto_resize_enabled = false;
-  SynchronizeVisualProperties();
+  web_frame_->DisableAutoResize();
 }
 
 void RenderFrameProxy::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   FrameSinkIdChanged(frame_sink_id);
 }
 
-void RenderFrameProxy::SynchronizeVisualProperties() {
+void RenderFrameProxy::WillSynchronizeVisualProperties(
+    bool synchronized_props_changed,
+    bool capture_sequence_number_changed,
+    const gfx::Size& compositor_viewport_size) {
   DCHECK(ancestor_web_frame_widget_);
+  DCHECK(frame_sink_id_.is_valid());
+  DCHECK(!remote_process_gone_);
 
-  if (!frame_sink_id_.is_valid() || crashed_)
-    return;
-
-  // Note that the following flag is true if the capture sequence number
-  // actually changed. That is, it is false if we did not have
-  // |sent_visual_properties_|, which is different from
-  // |synchronized_props_changed| below.
-  bool capture_sequence_number_changed =
-      sent_visual_properties_ &&
-      sent_visual_properties_->capture_sequence_number !=
-          pending_visual_properties_.capture_sequence_number;
-
-  if (web_frame_) {
-    pending_visual_properties_.compositor_viewport =
-        web_frame_->GetCompositingRect();
-    pending_visual_properties_.compositing_scale_factor =
-        web_frame_->GetCompositingScaleFactor();
-  }
-
-  bool synchronized_props_changed =
-      !sent_visual_properties_ ||
-      sent_visual_properties_->auto_resize_enabled !=
-          pending_visual_properties_.auto_resize_enabled ||
-      sent_visual_properties_->min_size_for_auto_resize !=
-          pending_visual_properties_.min_size_for_auto_resize ||
-      sent_visual_properties_->max_size_for_auto_resize !=
-          pending_visual_properties_.max_size_for_auto_resize ||
-      sent_visual_properties_->local_frame_size !=
-          pending_visual_properties_.local_frame_size ||
-      sent_visual_properties_->screen_space_rect.size() !=
-          pending_visual_properties_.screen_space_rect.size() ||
-      sent_visual_properties_->screen_info !=
-          pending_visual_properties_.screen_info ||
-      sent_visual_properties_->zoom_level !=
-          pending_visual_properties_.zoom_level ||
-      sent_visual_properties_->page_scale_factor !=
-          pending_visual_properties_.page_scale_factor ||
-      sent_visual_properties_->compositing_scale_factor !=
-          pending_visual_properties_.compositing_scale_factor ||
-      sent_visual_properties_->is_pinch_gesture_active !=
-          pending_visual_properties_.is_pinch_gesture_active ||
-      sent_visual_properties_->visible_viewport_size !=
-          pending_visual_properties_.visible_viewport_size ||
-      sent_visual_properties_->compositor_viewport !=
-          pending_visual_properties_.compositor_viewport ||
-      sent_visual_properties_->root_widget_window_segments !=
-          pending_visual_properties_.root_widget_window_segments ||
-      capture_sequence_number_changed;
-
-  if (synchronized_props_changed) {
+  if (synchronized_props_changed)
     parent_local_surface_id_allocator_->GenerateId();
-    pending_visual_properties_.local_surface_id =
-        parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
-  }
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
   // everything is synchronized.
@@ -536,31 +400,8 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
                                     ? cc::DeadlinePolicy::UseInfiniteDeadline()
                                     : cc::DeadlinePolicy::UseDefaultDeadline();
   viz::SurfaceId surface_id(frame_sink_id_, GetLocalSurfaceId());
-  compositing_helper_->SetSurfaceId(
-      surface_id, pending_visual_properties_.compositor_viewport.size(),
-      deadline);
-
-  bool rect_changed = !sent_visual_properties_ ||
-                      sent_visual_properties_->screen_space_rect !=
-                          pending_visual_properties_.screen_space_rect;
-  bool visual_properties_changed = synchronized_props_changed || rect_changed;
-
-  if (!visual_properties_changed)
-    return;
-
-  // Let the browser know about the updated view rect.
-  web_frame_->SetVisualProperties(pending_visual_properties_);
-
-  sent_visual_properties_ = pending_visual_properties_;
-
-  TRACE_EVENT_WITH_FLOW2(
-      TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-      "RenderFrameProxy::SynchronizeVisualProperties Send Message",
-      TRACE_ID_GLOBAL(
-          pending_visual_properties_.local_surface_id.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_OUT, "message",
-      "FrameHostMsg_SynchronizeVisualProperties", "local_surface_id",
-      pending_visual_properties_.local_surface_id.ToString());
+  compositing_helper_->SetSurfaceId(surface_id, compositor_viewport_size,
+                                    deadline);
 }
 
 void RenderFrameProxy::FrameDetached(DetachType type) {
@@ -628,25 +469,6 @@ void RenderFrameProxy::Navigate(
   GetFrameProxyHost()->OpenURL(std::move(params));
 }
 
-void RenderFrameProxy::FrameRectsChanged(
-    const blink::WebRect& local_frame_rect,
-    const blink::WebRect& screen_space_rect) {
-  DCHECK(ancestor_web_frame_widget_);
-
-  pending_visual_properties_.screen_space_rect = gfx::Rect(screen_space_rect);
-  pending_visual_properties_.local_frame_size =
-      gfx::Size(local_frame_rect.width, local_frame_rect.height);
-  pending_visual_properties_.screen_info =
-      ancestor_web_frame_widget_->GetOriginalScreenInfo();
-  if (crashed_) {
-    // Update the sad page to match the current size.
-    compositing_helper_->ChildFrameGone(local_frame_size(),
-                                        screen_info().device_scale_factor);
-    return;
-  }
-  SynchronizeVisualProperties();
-}
-
 base::UnguessableToken RenderFrameProxy::GetDevToolsFrameToken() {
   return devtools_frame_token_;
 }
@@ -675,6 +497,10 @@ const viz::LocalSurfaceId& RenderFrameProxy::GetLocalSurfaceId() const {
   return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
+bool RenderFrameProxy::RemoteProcessGone() const {
+  return remote_process_gone_;
+}
+
 mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {
   if (!frame_proxy_host_remote_.is_bound())
     GetRemoteAssociatedInterfaces()->GetInterface(&frame_proxy_host_remote_);
@@ -700,12 +526,12 @@ RenderFrameProxy::GetRemoteAssociatedInterfaces() {
 void RenderFrameProxy::WasEvicted() {
   // On eviction, the last SurfaceId is invalidated. We need to allocate a new
   // id.
-  ResendVisualProperties();
+  web_frame_->ResendVisualProperties();
 }
 
 void RenderFrameProxy::FrameSinkIdChanged(
     const viz::FrameSinkId& frame_sink_id) {
-  crashed_ = false;
+  remote_process_gone_ = false;
   // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
   // two different frame sinks, so recreate it here.
   if (frame_sink_id_ != frame_sink_id) {
@@ -716,7 +542,7 @@ void RenderFrameProxy::FrameSinkIdChanged(
 
   // Resend the FrameRects and allocate a new viz::LocalSurfaceId when the view
   // changes.
-  ResendVisualProperties();
+  web_frame_->ResendVisualProperties();
 }
 
 }  // namespace content

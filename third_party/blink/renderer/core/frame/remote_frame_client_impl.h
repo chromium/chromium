@@ -32,18 +32,12 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
                 mojo::PendingRemote<mojom::blink::BlobURLToken>,
                 const base::Optional<WebImpression>& impression) override;
   unsigned BackForwardLength() override;
-  void FrameRectsChanged(const IntRect& local_frame_rect,
-                         const IntRect& screen_space_rect) override;
-  void ZoomLevelChanged(double zoom_level) override;
-  void UpdateCaptureSequenceNumber(uint32_t sequence_number) override;
-  void PageScaleFactorChanged(float page_scale_factor,
-                              bool is_pinch_gesture_active) override;
-  void DidChangeScreenInfo(const ScreenInfo& original_screen_info) override;
-  void DidChangeRootWindowSegments(
-      const std::vector<gfx::Rect>& root_widget_window_segments) override;
-  void DidChangeVisibleViewportSize(
-      const gfx::Size& visible_viewport_size) override;
-  void SynchronizeVisualProperties() override;
+  void WillSynchronizeVisualProperties(
+      bool synchronized_props_changed,
+      bool capture_sequence_number_changed,
+      const gfx::Size& compositor_viewport_size) override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
+  bool RemoteProcessGone() const override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
   viz::FrameSinkId GetFrameSinkId() override;
   void WasEvicted() override;

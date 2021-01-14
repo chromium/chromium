@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "cc/paint/paint_canvas.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -21,9 +22,7 @@
 
 namespace blink {
 
-struct ScreenInfo;
 class WebURLRequest;
-struct WebRect;
 
 class WebRemoteFrameClient {
  public:
@@ -46,10 +45,14 @@ class WebRemoteFrameClient {
       CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase> blob_url_token,
       const base::Optional<WebImpression>& impression) {}
 
-  virtual void FrameRectsChanged(const WebRect& local_frame_rect,
-                                 const WebRect& screen_space_rect) {}
+  virtual void WillSynchronizeVisualProperties(
+      bool synchronized_props_changed,
+      bool capture_sequence_number_changed,
+      const gfx::Size& compositor_viewport_size) {}
 
-  virtual void SynchronizeVisualProperties() {}
+  virtual const viz::LocalSurfaceId& GetLocalSurfaceId() const = 0;
+
+  virtual bool RemoteProcessGone() const { return false; }
 
   // Returns an AssociatedInterfaceProvider the frame can use to request
   // associated interfaces from the browser.
@@ -62,29 +65,7 @@ class WebRemoteFrameClient {
     return base::UnguessableToken::Create();
   }
 
-  // Called when the main frame's zoom level is changed and should be propagated
-  // to the remote's associated view.
-  virtual void ZoomLevelChanged(double zoom_level) {}
-
-  // Called when the local root's capture sequence number has changed.
-  virtual void UpdateCaptureSequenceNumber(uint32_t sequence_number) {}
-
-  // Called when the local page scale factor changed.
-  virtual void PageScaleFactorChanged(float page_scale_factor,
-                                      bool is_pinch_gesture_active) {}
-
-  // Called when the local root's screen info changes.
-  virtual void DidChangeScreenInfo(const ScreenInfo& original_screen_info) {}
-
-  // Called when the local root's window segments change.
-  virtual void DidChangeRootWindowSegments(
-      const std::vector<gfx::Rect>& root_widget_window_segments) {}
-
-  // Called when the local root's visible viewport changes size.
-  virtual void DidChangeVisibleViewportSize(
-      const gfx::Size& visible_viewport_size) {}
-
-  virtual viz::FrameSinkId GetFrameSinkId() {
+  virtual viz::FrameSinkId GetFrameSinkId() const {
     NOTREACHED();
     return viz::FrameSinkId();
   }

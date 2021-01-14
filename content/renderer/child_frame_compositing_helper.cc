@@ -33,7 +33,6 @@ ChildFrameCompositingHelper::~ChildFrameCompositingHelper() {
 }
 
 void ChildFrameCompositingHelper::ChildFrameGone(
-    const gfx::Size& frame_size_in_dip,
     float device_scale_factor) {
   surface_id_ = viz::SurfaceId();
   device_scale_factor_ = device_scale_factor;

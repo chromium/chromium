@@ -642,10 +642,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
                ReconstructReplicationStateForTesting(child_frame_1),
                base::UnguessableToken::Create());
   EXPECT_TRUE(root_web_frame->FirstChild()->IsWebRemoteFrame());
-  RenderFrameProxy* child_proxy_1 = RenderFrameProxy::FromWebFrame(
-      root_web_frame->FirstChild()->ToWebRemoteFrame());
-  ASSERT_TRUE(child_proxy_1);
-  EXPECT_FALSE(child_proxy_1->is_pinch_gesture_active_for_testing());
+  EXPECT_FALSE(root_web_frame->FirstChild()
+                   ->ToWebRemoteFrame()
+                   ->GetPendingVisualPropertiesForTesting()
+                   .is_pinch_gesture_active);
 
   // Set the |is_pinch_gesture_active| flag.
   cc::ApplyViewportChangesArgs args;
@@ -657,7 +657,10 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   args.scroll_gesture_did_end = false;
 
   view()->GetWebView()->MainFrameWidget()->ApplyViewportChangesForTesting(args);
-  EXPECT_TRUE(child_proxy_1->is_pinch_gesture_active_for_testing());
+  EXPECT_TRUE(root_web_frame->FirstChild()
+                  ->ToWebRemoteFrame()
+                  ->GetPendingVisualPropertiesForTesting()
+                  .is_pinch_gesture_active);
 
   // Create a new remote child, and get its proxy. Unloading will force creation
   // and registering of a new RenderFrameProxy, which should pick up the
@@ -667,17 +670,25 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
                ReconstructReplicationStateForTesting(child_frame_2),
                base::UnguessableToken::Create());
   EXPECT_TRUE(root_web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
-  RenderFrameProxy* child_proxy_2 = RenderFrameProxy::FromWebFrame(
-      root_web_frame->FirstChild()->NextSibling()->ToWebRemoteFrame());
-
   // Verify new child has the flag too.
-  EXPECT_TRUE(child_proxy_2->is_pinch_gesture_active_for_testing());
+  EXPECT_TRUE(root_web_frame->FirstChild()
+                  ->NextSibling()
+                  ->ToWebRemoteFrame()
+                  ->GetPendingVisualPropertiesForTesting()
+                  .is_pinch_gesture_active);
 
   // Reset the flag, make sure both children respond.
   args.is_pinch_gesture_active = false;
   view()->GetWebView()->MainFrameWidget()->ApplyViewportChangesForTesting(args);
-  EXPECT_FALSE(child_proxy_1->is_pinch_gesture_active_for_testing());
-  EXPECT_FALSE(child_proxy_2->is_pinch_gesture_active_for_testing());
+  EXPECT_FALSE(root_web_frame->FirstChild()
+                   ->ToWebRemoteFrame()
+                   ->GetPendingVisualPropertiesForTesting()
+                   .is_pinch_gesture_active);
+  EXPECT_FALSE(root_web_frame->FirstChild()
+                   ->NextSibling()
+                   ->ToWebRemoteFrame()
+                   ->GetPendingVisualPropertiesForTesting()
+                   .is_pinch_gesture_active);
 }
 
 // Test that we get form state change notifications when input fields change.
@@ -1128,7 +1139,6 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
   EXPECT_EQ(device_scale,
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
-  EXPECT_EQ(device_scale, child_proxy->screen_info().device_scale_factor);
 
   TestEmulatedSizeDprDsf(640, 480, 3.f, device_scale);
 
@@ -1136,7 +1146,6 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   EXPECT_EQ(3.f, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
   EXPECT_EQ(device_scale,
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
-  EXPECT_EQ(device_scale, child_proxy->screen_info().device_scale_factor);
 
   ReceiveDisableDeviceEmulation(view());
 

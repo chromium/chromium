@@ -3,6 +3,9 @@ specific_include_rules = {
         "+media/media_buildflags.h",
         "+net/http/http_request_headers.h"
     ],
+    "empty_clients.cc" : [
+        "+components/viz/common/surfaces/local_surface_id.h"
+    ],
     "progress_tracker_test.cc" : [
         "+base/run_loop.h"
     ],

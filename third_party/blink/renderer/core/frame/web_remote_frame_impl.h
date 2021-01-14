@@ -26,6 +26,7 @@ struct FrameVisualProperties;
 class RemoteFrame;
 class RemoteFrameClientImpl;
 enum class WebFrameLoadType;
+class WebFrameWidget;
 class WebView;
 struct WebRect;
 class WindowAgentFactory;
@@ -102,18 +103,23 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetReplicatedInsecureNavigationsSet(const WebVector<unsigned>&) override;
   void SetReplicatedAdFrameType(
       mojom::blink::AdFrameType ad_frame_type) override;
-  void SetVisualProperties(
-      const blink::FrameVisualProperties& properties) override;
   void DidStartLoading() override;
   bool IsIgnoredForHitTest() const override;
   void UpdateUserActivationState(
       mojom::blink::UserActivationUpdateType update_type,
       mojom::blink::UserActivationNotificationType notification_type) override;
   void SetHadStickyUserActivationBeforeNavigation(bool value) override;
+  void EnableAutoResize(const gfx::Size& min_size,
+                        const gfx::Size& max_size) override;
+  void DisableAutoResize() override;
   v8::Local<v8::Object> GlobalProxy() const override;
   WebRect GetCompositingRect() override;
+  void SynchronizeVisualProperties() override;
+  void ResendVisualProperties() override;
   float GetCompositingScaleFactor() override;
   WebString UniqueName() const override;
+  const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
+      const override;
   void InitializeCoreFrame(Page&,
                            FrameOwner*,
                            WebFrame* parent,
@@ -133,6 +139,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   friend class RemoteFrameClientImpl;
 
   void SetCoreFrame(RemoteFrame*);
+  void InitializeFrameVisualProperties(WebFrameWidget* ancestor_widget,
+                                       WebView* web_view);
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense
   // to call these on a WebRemoteFrameImpl.

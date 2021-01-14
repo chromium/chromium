@@ -418,9 +418,18 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
   security_context_.SetInsecureNavigationsSet(set);
 }
 
-void RemoteFrame::SetVisualProperties(
-    const blink::FrameVisualProperties& properties) {
-  GetRemoteFrameHostRemote().SynchronizeVisualProperties(properties);
+void RemoteFrame::FrameRectsChanged(const IntRect& local_frame_rect,
+                                    const IntRect& screen_space_rect) {
+  pending_visual_properties_.screen_space_rect = gfx::Rect(screen_space_rect);
+  pending_visual_properties_.local_frame_size =
+      gfx::Size(local_frame_rect.Width(), local_frame_rect.Height());
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::InitializeFrameVisualProperties(
+    const FrameVisualProperties& properties) {
+  pending_visual_properties_ = properties;
+  SynchronizeVisualProperties();
 }
 
 void RemoteFrame::WillEnterFullscreen(
@@ -834,6 +843,136 @@ void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
     container_policy = Owner()->GetFramePolicy().container_policy;
   security_context_.InitializeFeaturePolicy(
       feature_policy_header_, container_policy, parent_feature_policy);
+}
+
+void RemoteFrame::SynchronizeVisualProperties() {
+  if (!GetFrameSinkId().is_valid() || Client()->RemoteProcessGone())
+    return;
+
+  bool capture_sequence_number_changed =
+      sent_visual_properties_ &&
+      sent_visual_properties_->capture_sequence_number !=
+          pending_visual_properties_.capture_sequence_number;
+
+  if (view_) {
+    pending_visual_properties_.compositor_viewport =
+        view_->GetCompositingRect();
+    pending_visual_properties_.compositing_scale_factor =
+        view_->GetCompositingScaleFactor();
+  }
+
+  bool synchronized_props_changed =
+      !sent_visual_properties_ ||
+      sent_visual_properties_->auto_resize_enabled !=
+          pending_visual_properties_.auto_resize_enabled ||
+      sent_visual_properties_->min_size_for_auto_resize !=
+          pending_visual_properties_.min_size_for_auto_resize ||
+      sent_visual_properties_->max_size_for_auto_resize !=
+          pending_visual_properties_.max_size_for_auto_resize ||
+      sent_visual_properties_->local_frame_size !=
+          pending_visual_properties_.local_frame_size ||
+      sent_visual_properties_->screen_space_rect.size() !=
+          pending_visual_properties_.screen_space_rect.size() ||
+      sent_visual_properties_->screen_info !=
+          pending_visual_properties_.screen_info ||
+      sent_visual_properties_->zoom_level !=
+          pending_visual_properties_.zoom_level ||
+      sent_visual_properties_->page_scale_factor !=
+          pending_visual_properties_.page_scale_factor ||
+      sent_visual_properties_->compositing_scale_factor !=
+          pending_visual_properties_.compositing_scale_factor ||
+      sent_visual_properties_->is_pinch_gesture_active !=
+          pending_visual_properties_.is_pinch_gesture_active ||
+      sent_visual_properties_->visible_viewport_size !=
+          pending_visual_properties_.visible_viewport_size ||
+      sent_visual_properties_->compositor_viewport !=
+          pending_visual_properties_.compositor_viewport ||
+      sent_visual_properties_->root_widget_window_segments !=
+          pending_visual_properties_.root_widget_window_segments ||
+      sent_visual_properties_->capture_sequence_number !=
+          pending_visual_properties_.capture_sequence_number;
+
+  Client()->WillSynchronizeVisualProperties(
+      synchronized_props_changed, capture_sequence_number_changed,
+      pending_visual_properties_.compositor_viewport.size());
+  pending_visual_properties_.local_surface_id = Client()->GetLocalSurfaceId();
+
+  bool rect_changed = !sent_visual_properties_ ||
+                      sent_visual_properties_->screen_space_rect !=
+                          pending_visual_properties_.screen_space_rect;
+  bool visual_properties_changed = synchronized_props_changed || rect_changed;
+
+  if (!visual_properties_changed)
+    return;
+
+  // Let the browser know about the updated view rect.
+  GetRemoteFrameHostRemote().SynchronizeVisualProperties(
+      pending_visual_properties_);
+
+  sent_visual_properties_ = pending_visual_properties_;
+
+  TRACE_EVENT_WITH_FLOW2(
+      TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+      "RenderFrameProxy::SynchronizeVisualProperties Send Message",
+      TRACE_ID_GLOBAL(
+          pending_visual_properties_.local_surface_id.submission_trace_id()),
+      TRACE_EVENT_FLAG_FLOW_OUT, "message",
+      "FrameHostMsg_SynchronizeVisualProperties", "local_surface_id",
+      pending_visual_properties_.local_surface_id.ToString());
+}
+
+void RemoteFrame::ResendVisualProperties() {
+  sent_visual_properties_ = base::nullopt;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::DidChangeScreenInfo(const ScreenInfo& screen_info) {
+  pending_visual_properties_.screen_info = screen_info;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::ZoomLevelChanged(double zoom_level) {
+  pending_visual_properties_.zoom_level = zoom_level;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::DidChangeRootWindowSegments(
+    const std::vector<gfx::Rect>& root_widget_window_segments) {
+  pending_visual_properties_.root_widget_window_segments =
+      std::move(root_widget_window_segments);
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::PageScaleFactorChanged(float page_scale_factor,
+                                         bool is_pinch_gesture_active) {
+  pending_visual_properties_.page_scale_factor = page_scale_factor;
+  pending_visual_properties_.is_pinch_gesture_active = is_pinch_gesture_active;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::DidChangeVisibleViewportSize(
+    const gfx::Size& visible_viewport_size) {
+  pending_visual_properties_.visible_viewport_size = visible_viewport_size;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::UpdateCaptureSequenceNumber(
+    uint32_t capture_sequence_number) {
+  pending_visual_properties_.capture_sequence_number = capture_sequence_number;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::EnableAutoResize(const gfx::Size& min_size,
+                                   const gfx::Size& max_size) {
+  pending_visual_properties_.auto_resize_enabled = true;
+  pending_visual_properties_.min_size_for_auto_resize = min_size;
+  pending_visual_properties_.max_size_for_auto_resize = max_size;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::DisableAutoResize() {
+  pending_visual_properties_.auto_resize_enabled = false;
+  SynchronizeVisualProperties();
 }
 
 void RemoteFrame::BindToReceiver(

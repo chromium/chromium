@@ -217,6 +217,31 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
       frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
       insert_type, GetFrameToken(), window_agent_factory, interface_registry_,
       associated_interface_provider_));
+
+  // If this is not a top-level frame, we need to send FrameVisualProperties to
+  // the remote renderer process. Some of the properties are inherited from the
+  // WebFrameWidget containing this frame, and this is true for regular frames
+  // in the frame tree as well as for portals, which are not in the frame tree;
+  // hence the code to traverse up through FrameOwner.
+  WebFrameWidget* ancestor_widget = nullptr;
+  if (parent) {
+    while (parent && !parent->IsWebLocalFrame())
+      parent = parent->Parent();
+    if (parent) {
+      ancestor_widget =
+          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
+    }
+  } else if (owner && owner->IsLocal()) {
+    ancestor_widget =
+        WebLocalFrameImpl::FromFrame(To<HTMLFrameOwnerElement>(owner)
+                                         ->GetDocument()
+                                         .GetFrame()
+                                         ->LocalFrameRoot())
+            ->FrameWidget();
+  }
+  if (ancestor_widget)
+    InitializeFrameVisualProperties(ancestor_widget, View());
+
   GetFrame()->CreateView();
   frame_->Tree().SetName(name);
 }
@@ -258,6 +283,24 @@ void WebRemoteFrameImpl::SetCcLayer(cc::Layer* layer,
 
 void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {
   frame_ = frame;
+}
+
+void WebRemoteFrameImpl::InitializeFrameVisualProperties(
+    WebFrameWidget* ancestor_widget,
+    WebView* web_view) {
+  FrameVisualProperties visual_properties;
+  visual_properties.zoom_level = web_view->ZoomLevel();
+  visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
+  visual_properties.is_pinch_gesture_active =
+      ancestor_widget->PinchGestureActiveInMainFrame();
+  visual_properties.screen_info = ancestor_widget->GetOriginalScreenInfo();
+  visual_properties.visible_viewport_size =
+      ancestor_widget->VisibleViewportSizeInDIPs();
+  const WebVector<gfx::Rect>& window_segments =
+      ancestor_widget->WindowSegments();
+  visual_properties.root_widget_window_segments.assign(window_segments.begin(),
+                                                       window_segments.end());
+  GetFrame()->InitializeFrameVisualProperties(visual_properties);
 }
 
 WebRemoteFrameImpl* WebRemoteFrameImpl::FromFrame(RemoteFrame& frame) {
@@ -326,11 +369,6 @@ void WebRemoteFrameImpl::SetReplicatedAdFrameType(
   GetFrame()->SetReplicatedAdFrameType(ad_frame_type);
 }
 
-void WebRemoteFrameImpl::SetVisualProperties(
-    const blink::FrameVisualProperties& properties) {
-  GetFrame()->SetVisualProperties(properties);
-}
-
 void WebRemoteFrameImpl::DidStartLoading() {
   GetFrame()->DidStartLoading();
 }
@@ -350,6 +388,15 @@ void WebRemoteFrameImpl::SetHadStickyUserActivationBeforeNavigation(
   GetFrame()->SetHadStickyUserActivationBeforeNavigation(value);
 }
 
+void WebRemoteFrameImpl::EnableAutoResize(const gfx::Size& min_size,
+                                          const gfx::Size& max_size) {
+  GetFrame()->EnableAutoResize(min_size, max_size);
+}
+
+void WebRemoteFrameImpl::DisableAutoResize() {
+  GetFrame()->DisableAutoResize();
+}
+
 v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
   return GetFrame()
       ->GetWindowProxy(DOMWrapperWorld::MainWorld())
@@ -360,12 +407,25 @@ WebRect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
 }
 
+void WebRemoteFrameImpl::SynchronizeVisualProperties() {
+  GetFrame()->SynchronizeVisualProperties();
+}
+
+void WebRemoteFrameImpl::ResendVisualProperties() {
+  GetFrame()->ResendVisualProperties();
+}
+
 float WebRemoteFrameImpl::GetCompositingScaleFactor() {
   return GetFrame()->View()->GetCompositingScaleFactor();
 }
 
 WebString WebRemoteFrameImpl::UniqueName() const {
   return GetFrame()->UniqueName();
+}
+
+const FrameVisualProperties&
+WebRemoteFrameImpl::GetPendingVisualPropertiesForTesting() const {
+  return GetFrame()->GetPendingVisualPropertiesForTesting();
 }
 
 WebRemoteFrameImpl::WebRemoteFrameImpl(

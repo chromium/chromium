@@ -137,9 +137,6 @@ class WebRemoteFrame : public WebFrame {
   virtual void SetReplicatedAdFrameType(
       blink::mojom::AdFrameType ad_frame_type) = 0;
 
-  virtual void SetVisualProperties(
-      const blink::FrameVisualProperties& properties) = 0;
-
   virtual void DidStartLoading() = 0;
 
   // Returns true if this frame should be ignored during hittesting.
@@ -155,9 +152,15 @@ class WebRemoteFrame : public WebFrame {
       mojom::UserActivationNotificationType notification_type) = 0;
 
   virtual void SetHadStickyUserActivationBeforeNavigation(bool value) = 0;
+  virtual void EnableAutoResize(const gfx::Size& min_size,
+                                const gfx::Size& max_size) = 0;
+  virtual void DisableAutoResize() = 0;
 
   // Return the interest rect for compositing in the frame's space.
   virtual WebRect GetCompositingRect() = 0;
+
+  virtual void SynchronizeVisualProperties() = 0;
+  virtual void ResendVisualProperties() = 0;
 
   // Returns the ideal raster scale factor for the OOPIF's compositor so that it
   // doesn't raster at a higher scale than it needs to.
@@ -166,6 +169,9 @@ class WebRemoteFrame : public WebFrame {
   // Unique name is an opaque identifier for maintaining association with
   // session restore state for this frame.
   virtual WebString UniqueName() const = 0;
+
+  virtual const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
+      const = 0;
 
   RemoteFrameToken GetRemoteFrameToken() const {
     return RemoteFrameToken(GetFrameToken());

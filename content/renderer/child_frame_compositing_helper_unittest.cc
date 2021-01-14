@@ -76,7 +76,7 @@ TEST_F(ChildFrameCompositingHelperTest, ChildFrameGoneClearsFallback) {
   EXPECT_EQ(surface_id, compositing_helper()->surface_id());
 
   // Reporting that the child frame is gone should clear the surface id.
-  compositing_helper()->ChildFrameGone(frame_size_in_dip, 1.f);
+  compositing_helper()->ChildFrameGone(1.f);
   EXPECT_FALSE(compositing_helper()->surface_id().is_valid());
 }
 

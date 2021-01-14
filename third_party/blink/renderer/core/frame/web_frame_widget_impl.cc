@@ -1381,8 +1381,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     // local root for this widget.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](uint32_t capture_sequence_number, RemoteFrame* remote_frame) {
-          remote_frame->Client()->UpdateCaptureSequenceNumber(
-              capture_sequence_number);
+          remote_frame->UpdateCaptureSequenceNumber(capture_sequence_number);
         },
         visual_properties.capture_sequence_number));
   }
@@ -1413,8 +1412,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](const gfx::Size& visible_viewport_size, RemoteFrame* remote_frame) {
-          remote_frame->Client()->DidChangeVisibleViewportSize(
-              visible_viewport_size);
+          remote_frame->DidChangeVisibleViewportSize(visible_viewport_size);
         },
         widget_base_->VisibleViewportSizeInDIPs()));
   }
@@ -1774,7 +1772,7 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
   // RemoteFrames that are below the local root for this widget.
   ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
       [](double zoom_level, RemoteFrame* remote_frame) {
-        remote_frame->Client()->ZoomLevelChanged(zoom_level);
+        remote_frame->ZoomLevelChanged(zoom_level);
       },
       zoom_level));
 }
@@ -2295,7 +2293,7 @@ void WebFrameWidgetImpl::SetWindowSegments(
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](const std::vector<gfx::Rect>& window_segments,
            RemoteFrame* remote_frame) {
-          remote_frame->Client()->DidChangeRootWindowSegments(window_segments);
+          remote_frame->DidChangeRootWindowSegments(window_segments);
         },
         window_segments_param));
   }
@@ -3682,8 +3680,8 @@ void WebFrameWidgetImpl::NotifyPageScaleFactorChanged(
   ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
       [](float page_scale_factor, bool is_pinch_gesture_active,
          RemoteFrame* remote_frame) {
-        remote_frame->Client()->PageScaleFactorChanged(page_scale_factor,
-                                                       is_pinch_gesture_active);
+        remote_frame->PageScaleFactorChanged(page_scale_factor,
+                                             is_pinch_gesture_active);
       },
       page_scale_factor, is_pinch_gesture_active));
 }
@@ -3756,7 +3754,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   if (previous_original_screen_info != original_screen_info) {
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](const ScreenInfo& original_screen_info, RemoteFrame* remote_frame) {
-          remote_frame->Client()->DidChangeScreenInfo(original_screen_info);
+          remote_frame->DidChangeScreenInfo(original_screen_info);
         },
         original_screen_info));
   }

@@ -113,9 +113,34 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void SetInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy);
   void SetInsecureNavigationsSet(const WebVector<unsigned>&);
-  void SetVisualProperties(const blink::FrameVisualProperties& properties);
+  void FrameRectsChanged(const IntRect& local_frame_rect,
+                         const IntRect& screen_space_rect);
+  void InitializeFrameVisualProperties(const FrameVisualProperties& properties);
+  void SynchronizeVisualProperties();
+  void ResendVisualProperties();
+
+  // Called when the local root's screen info changes.
+  void DidChangeScreenInfo(const ScreenInfo& screen_info);
+  // Called when the main frame's zoom level is changed and should be propagated
+  // to the remote's associated view.
+  void ZoomLevelChanged(double zoom_level);
+  // Called when the local root's window segments change.
+  void DidChangeRootWindowSegments(
+      const std::vector<gfx::Rect>& root_widget_window_segments);
+  // Called when the local page scale factor changed.
+  void PageScaleFactorChanged(float page_scale_factor,
+                              bool is_pinch_gesture_active);
+  // Called when the local root's visible viewport changes size.
+  void DidChangeVisibleViewportSize(const gfx::Size& visible_viewport_size);
+  // Called when the local root's capture sequence number has changed.
+  void UpdateCaptureSequenceNumber(uint32_t sequence_number);
+  void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size);
+  void DisableAutoResize();
 
   const String& UniqueName() const { return unique_name_; }
+  const FrameVisualProperties& GetPendingVisualPropertiesForTesting() const {
+    return pending_visual_properties_;
+  }
 
   // blink::mojom::RemoteFrame overrides:
   void WillEnterFullscreen(mojom::blink::FullscreenOptionsPtr) override;
@@ -213,6 +238,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;
+  base::Optional<blink::FrameVisualProperties> sent_visual_properties_;
+  blink::FrameVisualProperties pending_visual_properties_;
   cc::Layer* cc_layer_ = nullptr;
   bool is_surface_layer_ = false;
   ParsedFeaturePolicy feature_policy_header_;

@@ -649,28 +649,21 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
 
       )HTML");
   base::RunLoop().RunUntilIdle();
-  class PageScaleRemoteFrameClient
-      : public frame_test_helpers::TestWebRemoteFrameClient {
-   public:
-    void PageScaleFactorChanged(float page_scale_factor,
-                                bool is_pinch_gesture_active) override {
-      page_scale_factor_changed_ = true;
-    }
-    bool page_scale_factor_changed_ = false;
-  };
-
-  PageScaleRemoteFrameClient page_scale_remote_frame_client;
   EXPECT_TRUE(WebView().MainFrame()->FirstChild());
   {
     WebFrame* grandchild = WebView().MainFrame()->FirstChild()->FirstChild();
     EXPECT_TRUE(grandchild);
     EXPECT_TRUE(grandchild->IsWebLocalFrame());
-    grandchild->Swap(
-        frame_test_helpers::CreateRemote(&page_scale_remote_frame_client));
+    grandchild->Swap(frame_test_helpers::CreateRemote());
   }
   auto* widget = WebView().MainFrameViewWidget();
   widget->SetPageScaleStateAndLimits(1.3f, true, 1.0f, 3.0f);
-  EXPECT_TRUE(page_scale_remote_frame_client.page_scale_factor_changed_);
+  EXPECT_EQ(
+      To<WebRemoteFrameImpl>(WebView().MainFrame()->FirstChild()->FirstChild())
+          ->GetFrame()
+          ->GetPendingVisualPropertiesForTesting()
+          .page_scale_factor,
+      1.3f);
   WebView().MainFrame()->FirstChild()->FirstChild()->Detach();
 }
 

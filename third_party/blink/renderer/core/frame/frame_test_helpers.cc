@@ -746,6 +746,15 @@ void TestWebRemoteFrameClient::FrameDetached(DetachType type) {
   self_owned_.reset();
 }
 
+viz::FrameSinkId TestWebRemoteFrameClient::GetFrameSinkId() const {
+  return viz::FrameSinkId();
+}
+
+const viz::LocalSurfaceId& TestWebRemoteFrameClient::GetLocalSurfaceId() const {
+  DEFINE_STATIC_LOCAL(viz::LocalSurfaceId, dummy_local_surface_id, ());
+  return dummy_local_surface_id;
+}
+
 TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
   if (!widget_input_handler_host_)
     widget_input_handler_host_ = std::make_unique<TestWidgetInputHandlerHost>();

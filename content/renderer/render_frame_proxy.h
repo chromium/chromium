@@ -33,7 +33,6 @@
 
 namespace blink {
 class WebFrameWidget;
-struct WebRect;
 }
 
 namespace content {
@@ -134,19 +133,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // Propagate VisualProperties updates from a local root RenderWidget to the
-  // child RenderWidget represented by this proxy, which is hosted in another
-  // renderer frame tree.
-  // TODO(danakj): These should all be grouped into a single method, then we
-  // would only get one update per UpdateVisualProperties IPC received in the
-  // RenderWidget, and we would only need to send one update to the browser as
-  // a result.
-  void DidChangeScreenInfo(const blink::ScreenInfo& screen_info) override;
-  void DidChangeRootWindowSegments(
-      const std::vector<gfx::Rect>& root_widget_window_segments) override;
-  void DidChangeVisibleViewportSize(
-      const gfx::Size& visible_viewport_size) override;
-
   // Pass replicated information, such as security origin, to this
   // RenderFrameProxy's WebRemoteFrame.
   void SetReplicatedState(const FrameReplicationState& state);
@@ -155,18 +141,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   RenderViewImpl* render_view() { return render_view_; }
   blink::WebRemoteFrame* web_frame() { return web_frame_; }
   std::string unique_name() const;
-
-  const gfx::Rect& screen_space_rect() const {
-    return pending_visual_properties_.screen_space_rect;
-  }
-
-  const gfx::Size& local_frame_size() const {
-    return pending_visual_properties_.local_frame_size;
-  }
-
-  const blink::ScreenInfo& screen_info() const {
-    return pending_visual_properties_.screen_info;
-  }
 
   // blink::WebRemoteFrameClient implementation:
   void FrameDetached(DetachType type) override;
@@ -183,22 +157,13 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
           blob_url_token,
       const base::Optional<blink::WebImpression>& impression) override;
-  void FrameRectsChanged(const blink::WebRect& local_frame_rect,
-                         const blink::WebRect& screen_space_rect) override;
-  void SynchronizeVisualProperties() override;
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
+  bool RemoteProcessGone() const override;
   base::UnguessableToken GetDevToolsFrameToken() override;
-  void ZoomLevelChanged(double zoom_level) override;
-  void UpdateCaptureSequenceNumber(uint32_t capture_sequence_number) override;
-  void PageScaleFactorChanged(float page_scale_factor,
-                              bool is_pinch_gesture_active) override;
-  viz::FrameSinkId GetFrameSinkId() override;
+  viz::FrameSinkId GetFrameSinkId() const override;
   void WasEvicted() override;
 
   void DidStartLoading();
-
-  bool is_pinch_gesture_active_for_testing() {
-    return pending_visual_properties_.is_pinch_gesture_active;
-  }
 
   // Called when the associated FrameSinkId has changed.
   void FrameSinkIdChanged(const viz::FrameSinkId& frame_sink_id);
@@ -212,8 +177,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
             blink::WebFrameWidget* ancestor_widget,
             bool parent_is_local);
 
-  void ResendVisualProperties();
-
   mojom::RenderFrameProxyHost* GetFrameProxyHost();
 
   // mojom::RenderFrameProxy implementation:
@@ -224,13 +187,15 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const cc::RenderFrameMetadata& metadata) override;
   void ChildProcessGone() override;
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void WillSynchronizeVisualProperties(
+      bool synchronized_props_changed,
+      bool capture_sequence_number_changed,
+      const gfx::Size& compositor_viewport_size) override;
 
   // ChildFrameCompositor:
   cc::Layer* GetLayer() override;
   void SetLayer(scoped_refptr<cc::Layer> layer, bool is_surface_layer) override;
   SkBitmap* GetSadPageBitmap() override;
-
-  const viz::LocalSurfaceId& GetLocalSurfaceId() const;
 
   // The |AgentSchedulingGroup| this proxy is associated with. NOTE: This is
   // different than the |AgentSchedulingGroup| associated with the frame being
@@ -268,17 +233,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // defined by the browser and passed into Blink upon frame creation.
   base::UnguessableToken devtools_frame_token_;
 
-  // TODO(fsamuel): Most RenderFrameProxys don't host viz::Surfaces and
-  // therefore don't care to synchronize ResizeParams with viz::LocalSurfaceIds.
-  // Perhaps this can be moved to ChildFrameCompositingHelper?
-  // The last ResizeParams sent to the browser process, if any.
-  base::Optional<blink::FrameVisualProperties> sent_visual_properties_;
-
-  // The current set of ResizeParams. This may or may not match
-  // |sent_visual_properties_|.
-  blink::FrameVisualProperties pending_visual_properties_;
-
-  bool crashed_ = false;
+  bool remote_process_gone_ = false;
 
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>

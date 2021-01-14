@@ -44,8 +44,7 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
                     const gfx::Size& frame_size_in_dip,
                     const cc::DeadlinePolicy& deadline);
   void UpdateVisibility(bool visible);
-  void ChildFrameGone(const gfx::Size& frame_size_in_dip,
-                      float device_scale_factor);
+  void ChildFrameGone(float device_scale_factor);
 
   const viz::SurfaceId& surface_id() const { return surface_id_; }
 
