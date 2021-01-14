@@ -128,17 +128,18 @@ base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   if (!ConnectorsEnabled())
     return base::nullopt;
 
+  base::Optional<ReportingSettings> settings =
+      connectors_manager_->GetReportingSettings(connector);
+  if (!settings.has_value())
+    return base::nullopt;
+
   base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
     return base::nullopt;
 
-  base::Optional<ReportingSettings> settings =
-      connectors_manager_->GetReportingSettings(connector);
-  if (settings.has_value()) {
-    settings.value().dm_token = dm_token.value().value;
-    settings.value().per_profile =
-        dm_token.value().scope == policy::POLICY_SCOPE_USER;
-  }
+  settings.value().dm_token = dm_token.value().value;
+  settings.value().per_profile =
+      dm_token.value().scope == policy::POLICY_SCOPE_USER;
 
   return settings;
 }
@@ -149,15 +150,16 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (!ConnectorsEnabled())
     return base::nullopt;
 
+  base::Optional<AnalysisSettings> settings =
+      connectors_manager_->GetAnalysisSettings(url, connector);
+  if (!settings.has_value())
+    return base::nullopt;
+
   base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
     return base::nullopt;
 
-  base::Optional<AnalysisSettings> settings =
-      connectors_manager_->GetAnalysisSettings(url, connector);
-  if (settings.has_value()) {
-    settings.value().dm_token = dm_token.value().value;
-  }
+  settings.value().dm_token = dm_token.value().value;
 
   return settings;
 }
@@ -187,6 +189,12 @@ base::Optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
     const {
   if (!ConnectorsEnabled())
     return base::nullopt;
+
+  if (Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) ==
+      safe_browsing::REAL_TIME_CHECK_DISABLED) {
+    return base::nullopt;
+  }
 
   base::Optional<DmToken> dm_token =
       GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);

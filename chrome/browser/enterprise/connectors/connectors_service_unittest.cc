@@ -185,14 +185,10 @@ INSTANTIATE_TEST_CASE_P(
                      testing::Bool(),
                      testing::ValuesIn({0, 1, 2})));
 
-class ConnectorsServiceRealtimeURLCheckTest : public ConnectorsServiceTest {
- public:
-  ConnectorsServiceRealtimeURLCheckTest() {
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-};
-
 TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
   profile_->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);

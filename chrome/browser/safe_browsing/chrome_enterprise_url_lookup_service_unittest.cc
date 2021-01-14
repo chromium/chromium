@@ -67,6 +67,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         /*is_off_the_record=*/false);
 
     test_profile_->GetPrefs()->SetInteger(
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+        REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+    test_profile_->GetPrefs()->SetInteger(
         prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
   }
