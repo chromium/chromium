@@ -381,7 +381,7 @@ LogicalOffset NGBlockLayoutAlgorithm::CalculateLogicalOffset(
     const NGFragment& fragment,
     LayoutUnit child_bfc_line_offset,
     const base::Optional<LayoutUnit>& child_bfc_block_offset) {
-  LayoutUnit inline_size = container_builder_.Size().inline_size;
+  LayoutUnit inline_size = container_builder_.InlineSize();
   TextDirection direction = ConstraintSpace().Direction();
 
   if (child_bfc_block_offset && container_builder_.BfcBlockOffset()) {
@@ -1181,7 +1181,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
 
   LogicalOffset logical_offset = LogicalFromBfcOffsets(
       positioned_float.bfc_offset, bfc_offset, float_inline_size,
-      container_builder_.Size().inline_size, ConstraintSpace().Direction());
+      container_builder_.InlineSize(), ConstraintSpace().Direction());
 
   container_builder_.AddResult(*positioned_float.layout_result, logical_offset);
 }
@@ -1379,7 +1379,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
   LogicalOffset logical_offset = LogicalFromBfcOffsets(
       child_bfc_offset, ContainerBfcOffset(), fragment.InlineSize(),
-      container_builder_.Size().inline_size, ConstraintSpace().Direction());
+      container_builder_.InlineSize(), ConstraintSpace().Direction());
 
   if (!PositionOrPropagateListMarker(*layout_result, &logical_offset,
                                      previous_inflow_position))

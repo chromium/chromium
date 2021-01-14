@@ -118,6 +118,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 #if DCHECK_IS_ON()
     if (has_block_fragmentation_)
       DCHECK(block_size_is_for_all_fragments_);
+    DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
   }
@@ -137,6 +138,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 #if DCHECK_IS_ON()
     if (has_block_fragmentation_)
       DCHECK(!block_size_is_for_all_fragments_);
+    DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
   }
