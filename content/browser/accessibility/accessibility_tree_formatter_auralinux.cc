@@ -30,6 +30,13 @@
     return base::Value(base::Value::Type::DICTIONARY); \
   }
 
+#define CHECK_ATSPI_ERROR_NULLPTR(error) \
+  if (error) {                           \
+    LOG(ERROR) << error->message;        \
+    g_clear_error(&error);               \
+    return nullptr;                      \
+  }
+
 const char kChromeTitle[] = "Google Chrome";
 const char kChromiumTitle[] = "Chromium";
 const char kFirefoxTitle[] = "Firefox";
@@ -50,6 +57,7 @@ class AccessibilityTreeFormatterAuraLinux : public ui::AXTreeFormatterBase {
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+  AtspiAccessible* FindActiveDocument(AtspiAccessible* root) const;
   void RecursiveBuildTree(AtspiAccessible* node,
                           base::DictionaryValue* dict) const;
   void RecursiveBuildTree(AtkObject*, base::DictionaryValue*) const;
@@ -133,24 +141,35 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
     free(name);
   }
 
-  if (matched_children.size() == 1) {
-    AtspiAccessible* node = matched_children[0].second;
-    CHECK(node);
-
-    base::DictionaryValue dict;
-    RecursiveBuildTree(node, &dict);
-    return std::move(dict);
+  if (matched_children.size() == 0) {
+    LOG(ERROR) << "No application matched.";
+    return base::Value(base::Value::Type::DICTIONARY);
   }
 
-  if (matched_children.size()) {
+  if (matched_children.size() > 1) {
     LOG(ERROR) << "Matched more than one application. "
                << "Try to make a more specific pattern.";
     for (auto& match : matched_children) {
       LOG(ERROR) << "  * " << match.first;
     }
+    return base::Value(base::Value::Type::DICTIONARY);
   }
 
-  return base::Value(base::Value::Type::DICTIONARY);
+  AtspiAccessible* node = matched_children[0].second;
+  CHECK(node);
+
+  // Active tab
+  if (selector.types & AXTreeSelector::ActiveTab) {
+    node = FindActiveDocument(node);
+    if (!node) {
+      LOG(ERROR) << "No active document was found.";
+      return base::Value(base::Value::Type::DICTIONARY);
+    }
+  }
+
+  base::DictionaryValue dict;
+  RecursiveBuildTree(node, &dict);
+  return std::move(dict);
 }
 
 base::Value AccessibilityTreeFormatterAuraLinux::BuildTree(
@@ -198,6 +217,50 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForWindow(
   }
 
   return base::Value(base::Value::Type::DICTIONARY);
+}
+
+AtspiAccessible* AccessibilityTreeFormatterAuraLinux::FindActiveDocument(
+    AtspiAccessible* node) const {
+  GError* error = nullptr;
+
+  AtspiRole role = atspi_accessible_get_role(node, &error);
+  CHECK_ATSPI_ERROR_NULLPTR(error)
+
+  // Get embeds relation pointing to active web document.
+  if (role == ATSPI_ROLE_FRAME) {
+    g_autoptr(GArray) relations =
+        atspi_accessible_get_relation_set(node, &error);
+    CHECK_ATSPI_ERROR_NULLPTR(error)
+    if (!relations) {
+      return nullptr;
+    }
+
+    for (guint idx = 0; idx < relations->len; idx++) {
+      AtspiRelation* relation = g_array_index(relations, AtspiRelation*, idx);
+      if (atspi_relation_get_relation_type(relation) == ATSPI_RELATION_EMBEDS &&
+          atspi_relation_get_n_targets(relation) > 0) {
+        return atspi_relation_get_target(relation, 0);
+      }
+    }
+    return nullptr;
+  }
+
+  int child_count = atspi_accessible_get_child_count(node, &error);
+  CHECK_ATSPI_ERROR_NULLPTR(error)
+
+  for (int i = 0; i < child_count; i++) {
+    AtspiAccessible* child =
+        atspi_accessible_get_child_at_index(node, i, &error);
+    CHECK_ATSPI_ERROR_NULLPTR(error)
+
+    CHECK(child);
+    AtspiAccessible* found = FindActiveDocument(child);
+    if (found) {
+      return found;
+    }
+  }
+
+  return nullptr;
 }
 
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
