@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -115,8 +115,8 @@ void WebLayerRenderFrameObserver::CapturePageText(
   if (document_loader && document_loader->HasUnreachableURL())
     return;
 
-  // Don't index/capture pages that are being prerendered.
-  if (prerender::PrerenderHelper::IsPrerendering(render_frame()))
+  // Don't index/capture pages that are being no-state prefetched.
+  if (prerender::NoStatePrefetchHelper::IsPrefetching(render_frame()))
     return;
 
     // Don't capture contents unless there is either a translate agent or a

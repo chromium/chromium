@@ -4,7 +4,7 @@
 
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
@@ -49,11 +49,11 @@ bool DeferMediaLoad(content::RenderFrame* render_frame,
   // and has never played any media before.  We want to allow future loads even
   // when hidden to allow playlist-like functionality.
   //
-  // NOTE: This is also used to defer media loading for prerender.
+  // NOTE: This is also used to defer media loading for NoStatePrefetch.
   if ((render_frame->GetRenderView()->GetWebView()->GetVisibilityState() !=
            content::PageVisibilityState::kVisible &&
        !has_played_media_before) ||
-      prerender::PrerenderHelper::IsPrerendering(render_frame)) {
+      prerender::NoStatePrefetchHelper::IsPrefetching(render_frame)) {
     new MediaLoadDeferrer(render_frame->GetRenderView(), std::move(closure));
     return true;
   }

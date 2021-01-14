@@ -5,7 +5,7 @@
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 
 #include "base/logging.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -22,7 +22,8 @@ NoStatePrefetchClient::NoStatePrefetchClient(content::RenderView* render_view)
 NoStatePrefetchClient::~NoStatePrefetchClient() = default;
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
-  return PrerenderHelper::IsPrerendering(render_view()->GetMainRenderFrame());
+  return NoStatePrefetchHelper::IsPrefetching(
+      render_view()->GetMainRenderFrame());
 }
 
 void NoStatePrefetchClient::OnDestruct() {

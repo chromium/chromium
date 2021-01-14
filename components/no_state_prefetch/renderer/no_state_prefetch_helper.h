@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_RENDERER_PRERENDER_HELPER_H_
-#define COMPONENTS_NO_STATE_PREFETCH_RENDERER_PRERENDER_HELPER_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_HELPER_H_
+#define COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_HELPER_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -19,24 +19,24 @@ class URLLoaderThrottle;
 namespace prerender {
 class PrerenderURLLoaderThrottle;
 
-// Helper class to track whether its RenderFrame is currently being prerendered.
-// Created when prerendering starts and deleted as soon as it stops.
-class PrerenderHelper
+// Helper class to track whether its RenderFrame is currently being no-state
+// prefetched. Created when prefetching starts and deleted as soon as it stops.
+class NoStatePrefetchHelper
     : public content::RenderFrameObserver,
-      public content::RenderFrameObserverTracker<PrerenderHelper> {
+      public content::RenderFrameObserverTracker<NoStatePrefetchHelper> {
  public:
-  PrerenderHelper(content::RenderFrame* render_frame,
-                  const std::string& histogram_prefix);
+  NoStatePrefetchHelper(content::RenderFrame* render_frame,
+                        const std::string& histogram_prefix);
 
-  ~PrerenderHelper() override;
+  ~NoStatePrefetchHelper() override;
 
   // Configures and returns a new PrerenderURLLoaderThrottle instance if the
-  // indicated frame has an associated PrerenderHelper.
+  // indicated frame has an associated NoStatePrefetchHelper.
   static std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateThrottle(
       int render_frame_id);
 
-  // Returns true if |render_frame| is currently prerendering.
-  static bool IsPrerendering(const content::RenderFrame* render_frame);
+  // Returns true if |render_frame| is currently prefetching.
+  static bool IsPrefetching(const content::RenderFrame* render_frame);
 
   std::string histogram_prefix() const { return histogram_prefix_; }
 
@@ -56,11 +56,11 @@ class PrerenderHelper
   base::TimeTicks start_time_;
   base::TimeTicks parsed_time_;
 
-  base::WeakPtrFactory<PrerenderHelper> weak_factory_{this};
+  base::WeakPtrFactory<NoStatePrefetchHelper> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHelper);
+  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchHelper);
 };
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_RENDERER_PRERENDER_HELPER_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_HELPER_H_

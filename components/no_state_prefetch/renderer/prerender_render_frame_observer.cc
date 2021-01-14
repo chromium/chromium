@@ -4,7 +4,7 @@
 
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -34,15 +34,14 @@ void PrerenderRenderFrameObserver::OnDestruct() {
 
 void PrerenderRenderFrameObserver::SetIsPrerendering(
     const std::string& histogram_prefix) {
-  // If the PrerenderHelper for this frame already exists, don't create it. It
-  // can already be created for subframes during handling of RenderFrameCreated,
-  // if the parent frame was prerendering at time of subframe creation.
-  auto* prerender_helper = prerender::PrerenderHelper::Get(render_frame());
-  if (!prerender_helper) {
-    // The PrerenderHelper will destroy itself either after recording
+  // If the NoStatePrefetchHelper for this frame already exists, don't create
+  // it. It can already be created for subframes during handling of
+  // RenderFrameCreated, if the parent frame was prerendering at time of
+  // subframe creation.
+  if (!prerender::NoStatePrefetchHelper::Get(render_frame())) {
+    // The NoStatePrefetchHelper will destroy itself either after recording
     // histograms or on destruction of the RenderView.
-    prerender_helper =
-        new prerender::PrerenderHelper(render_frame(), histogram_prefix);
+    new prerender::NoStatePrefetchHelper(render_frame(), histogram_prefix);
   }
 
   prerender::PrerenderObserverList::SetIsPrerenderingForFrame(

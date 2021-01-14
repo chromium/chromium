@@ -89,7 +89,7 @@
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
@@ -534,13 +534,15 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   if (!render_frame->IsMainFrame()) {
-    auto* prerender_helper = prerender::PrerenderHelper::Get(
-        render_frame->GetRenderView()->GetMainRenderFrame());
-    if (prerender_helper) {
+    auto* main_frame_no_state_prefetch_helper =
+        prerender::NoStatePrefetchHelper::Get(
+            render_frame->GetRenderView()->GetMainRenderFrame());
+    if (main_frame_no_state_prefetch_helper) {
       // Avoid any race conditions from having the browser tell subframes that
-      // they're prerendering.
-      new prerender::PrerenderHelper(render_frame,
-                                     prerender_helper->histogram_prefix());
+      // they're no-state prefetching.
+      new prerender::NoStatePrefetchHelper(
+          render_frame,
+          main_frame_no_state_prefetch_helper->histogram_prefix());
     }
   }
 
@@ -955,19 +957,19 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                   : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
         }
 
-        // Delay loading plugins if prerendering.
-        // TODO(mmenke):  In the case of prerendering, feed into
+        // Delay loading plugins if no-state prefetching.
+        // TODO(mmenke):  In the case of NoStatePrefetch, feed into
         //                ChromeContentRendererClient::CreatePlugin instead, to
         //                reduce the chance of future regressions.
-        bool is_prerendering =
-            prerender::PrerenderHelper::IsPrerendering(render_frame);
+        bool is_no_state_prefetching =
+            prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 
-        if (is_prerendering) {
+        if (is_no_state_prefetching) {
           placeholder = ChromePluginPlaceholder::CreateBlockedPlugin(
               render_frame, params, info, identifier, group_name,
               IDR_BLOCKED_PLUGIN_HTML,
               l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));
-          placeholder->set_blocked_for_prerendering(is_prerendering);
+          placeholder->set_blocked_for_prerendering(is_no_state_prefetching);
           placeholder->AllowLoading();
           break;
         }
@@ -1311,7 +1313,7 @@ void ChromeContentRendererClient::WillSendRequest(
 
 bool ChromeContentRendererClient::IsPrefetchOnly(
     content::RenderFrame* render_frame) {
-  return prerender::PrerenderHelper::IsPrerendering(render_frame);
+  return prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 }
 
 uint64_t ChromeContentRendererClient::VisitedLinkHash(const char* canonical_url,

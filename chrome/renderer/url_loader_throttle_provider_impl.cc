@@ -20,7 +20,7 @@
 #include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/common/content_features.h"
@@ -153,7 +153,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   if (type_ == content::URLLoaderThrottleProviderType::kFrame &&
       !is_frame_resource) {
     auto throttle =
-        prerender::PrerenderHelper::MaybeCreateThrottle(render_frame_id);
+        prerender::NoStatePrefetchHelper::MaybeCreateThrottle(render_frame_id);
     if (throttle)
       throttles.push_back(std::move(throttle));
   }

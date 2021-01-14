@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,26 +17,26 @@
 
 namespace prerender {
 
-PrerenderHelper::PrerenderHelper(content::RenderFrame* render_frame,
-                                 const std::string& histogram_prefix)
+NoStatePrefetchHelper::NoStatePrefetchHelper(
+    content::RenderFrame* render_frame,
+    const std::string& histogram_prefix)
     : content::RenderFrameObserver(render_frame),
-      content::RenderFrameObserverTracker<PrerenderHelper>(render_frame),
+      content::RenderFrameObserverTracker<NoStatePrefetchHelper>(render_frame),
       histogram_prefix_(histogram_prefix),
-      start_time_(base::TimeTicks::Now()) {
-}
+      start_time_(base::TimeTicks::Now()) {}
 
-PrerenderHelper::~PrerenderHelper() = default;
+NoStatePrefetchHelper::~NoStatePrefetchHelper() = default;
 
 // static
-std::unique_ptr<blink::URLLoaderThrottle> PrerenderHelper::MaybeCreateThrottle(
-    int render_frame_id) {
+std::unique_ptr<blink::URLLoaderThrottle>
+NoStatePrefetchHelper::MaybeCreateThrottle(int render_frame_id) {
   content::RenderFrame* render_frame =
       content::RenderFrame::FromRoutingID(render_frame_id);
-  auto* prerender_helper =
-      render_frame ? PrerenderHelper::Get(
-                         render_frame->GetRenderView()->GetMainRenderFrame())
-                   : nullptr;
-  if (!prerender_helper)
+  auto* helper = render_frame
+                     ? NoStatePrefetchHelper::Get(
+                           render_frame->GetRenderView()->GetMainRenderFrame())
+                     : nullptr;
+  if (!helper)
     return nullptr;
 
   mojo::PendingRemote<mojom::PrerenderCanceler> canceler;
@@ -44,38 +44,39 @@ std::unique_ptr<blink::URLLoaderThrottle> PrerenderHelper::MaybeCreateThrottle(
       canceler.InitWithNewPipeAndPassReceiver());
 
   auto throttle = std::make_unique<PrerenderURLLoaderThrottle>(
-      prerender_helper->histogram_prefix(), std::move(canceler));
-  prerender_helper->AddThrottle(*throttle);
+      helper->histogram_prefix(), std::move(canceler));
+  helper->AddThrottle(*throttle);
   return throttle;
 }
 
 // static.
-bool PrerenderHelper::IsPrerendering(const content::RenderFrame* render_frame) {
-  return PrerenderHelper::Get(render_frame) != nullptr;
+bool NoStatePrefetchHelper::IsPrefetching(
+    const content::RenderFrame* render_frame) {
+  return NoStatePrefetchHelper::Get(render_frame) != nullptr;
 }
 
-void PrerenderHelper::DidFinishDocumentLoad() {
+void NoStatePrefetchHelper::DidFinishDocumentLoad() {
   parsed_time_ = base::TimeTicks::Now();
   prefetch_finished_ = true;
   if (prefetch_count_ == 0)
     SendPrefetchFinished();
 }
 
-void PrerenderHelper::OnDestruct() {
+void NoStatePrefetchHelper::OnDestruct() {
   delete this;
 }
 
-void PrerenderHelper::AddThrottle(PrerenderURLLoaderThrottle& throttle) {
+void NoStatePrefetchHelper::AddThrottle(PrerenderURLLoaderThrottle& throttle) {
   // Keep track of how many pending throttles we have, as we want to defer
   // sending the "prefetch finished" signal until they are destroyed. This is
   // important since that signal tells the browser that it can tear down this
   // renderer which could interrupt subresource prefetching.
   prefetch_count_++;
   throttle.set_destruction_closure(base::BindOnce(
-      &PrerenderHelper::OnThrottleDestroyed, weak_factory_.GetWeakPtr()));
+      &NoStatePrefetchHelper::OnThrottleDestroyed, weak_factory_.GetWeakPtr()));
 }
 
-void PrerenderHelper::OnThrottleDestroyed() {
+void NoStatePrefetchHelper::OnThrottleDestroyed() {
   if (--prefetch_count_ == 0 && prefetch_finished_) {
     UMA_HISTOGRAM_MEDIUM_TIMES(
         "Prerender.NoStatePrefetchRendererLifetimeExtension",
@@ -84,7 +85,7 @@ void PrerenderHelper::OnThrottleDestroyed() {
   }
 }
 
-void PrerenderHelper::SendPrefetchFinished() {
+void NoStatePrefetchHelper::SendPrefetchFinished() {
   DCHECK(prefetch_count_ == 0 && prefetch_finished_);
   UMA_HISTOGRAM_MEDIUM_TIMES("Prerender.NoStatePrefetchRendererParseTime",
                              parsed_time_ - start_time_);

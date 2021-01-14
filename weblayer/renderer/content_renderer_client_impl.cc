@@ -14,7 +14,7 @@
 #include "components/js_injection/renderer/js_communication.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
@@ -128,13 +128,15 @@ void ContentRendererClientImpl::RenderFrameCreated(
   new js_injection::JsCommunication(render_frame);
 
   if (!render_frame->IsMainFrame()) {
-    auto* prerender_helper = prerender::PrerenderHelper::Get(
-        render_frame->GetRenderView()->GetMainRenderFrame());
-    if (prerender_helper) {
+    auto* main_frame_no_state_prefetch_helper =
+        prerender::NoStatePrefetchHelper::Get(
+            render_frame->GetRenderView()->GetMainRenderFrame());
+    if (main_frame_no_state_prefetch_helper) {
       // Avoid any race conditions from having the browser tell subframes that
-      // they're prerendering.
-      new prerender::PrerenderHelper(render_frame,
-                                     prerender_helper->histogram_prefix());
+      // they're no-state prefetching.
+      new prerender::NoStatePrefetchHelper(
+          render_frame,
+          main_frame_no_state_prefetch_helper->histogram_prefix());
     }
   }
 }
@@ -198,7 +200,7 @@ void ContentRendererClientImpl::
 
 bool ContentRendererClientImpl::IsPrefetchOnly(
     content::RenderFrame* render_frame) {
-  return prerender::PrerenderHelper::IsPrerendering(render_frame);
+  return prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 }
 
 bool ContentRendererClientImpl::DeferMediaLoad(
