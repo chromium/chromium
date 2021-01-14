@@ -78,6 +78,7 @@ tools/metrics/histograms/histograms_xml/phonehub/histograms.xml
 tools/metrics/histograms/histograms_xml/platform/histograms.xml
 tools/metrics/histograms/histograms_xml/plugin/histograms.xml
 tools/metrics/histograms/histograms_xml/power/histograms.xml
+tools/metrics/histograms/histograms_xml/prefetch/histograms.xml
 tools/metrics/histograms/histograms_xml/print/histograms.xml
 tools/metrics/histograms/histograms_xml/printing/histograms.xml
 tools/metrics/histograms/histograms_xml/profile/histograms.xml
