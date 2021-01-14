@@ -1578,11 +1578,21 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   // TODO(dmazzoni): remove this const_cast.
   AtomicString aria_live;
-  cached_live_region_root_ =
-      IsLiveRegionRoot()
-          ? const_cast<AXObject*>(this)
-          : (ParentObjectIfExists() ? ParentObjectIfExists()->LiveRegionRoot()
-                                    : nullptr);
+  if (GetNode() && IsA<Document>(GetNode())) {
+    // The document is never a live region root. This extra bit of logic also
+    // protects against going up the parent chain from a popup document, into
+    // a parent document with unclean layout.
+    cached_live_region_root_ = nullptr;
+  } else if (RoleValue() == ax::mojom::blink::Role::kInlineTextBox) {
+    // Inline text boxes do not need live region properties.
+    cached_live_region_root_ = nullptr;
+  } else {
+    cached_live_region_root_ =
+        IsLiveRegionRoot()
+            ? const_cast<AXObject*>(this)
+            : (ParentObjectIfExists() ? ParentObjectIfExists()->LiveRegionRoot()
+                                      : nullptr);
+  }
   cached_aria_column_index_ = ComputeAriaColumnIndex();
   cached_aria_row_index_ = ComputeAriaRowIndex();
 
