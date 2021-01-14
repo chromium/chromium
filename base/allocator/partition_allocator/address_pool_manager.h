@@ -35,7 +35,16 @@ namespace internal {
 // IsManagedByPartitionAllocNormalBuckets use the bitmaps to judge whether a
 // given address is managed by the direct map or normal buckets.
 class BASE_EXPORT AddressPoolManager {
+  static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
+
  public:
+  static constexpr uint64_t kNormalBucketMaxSize =
+#if defined(PA_HAS_64_BITS_POINTERS)
+      16 * kGiB;
+#else
+      4 * kGiB;
+#endif
+
   static AddressPoolManager* GetInstance();
 
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -82,9 +91,8 @@ class BASE_EXPORT AddressPoolManager {
    private:
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
-    static constexpr size_t kGiB = 1024 * 1024 * 1024;
-    static constexpr size_t kMaxSupportedSize = 16 * kGiB;
-    static constexpr size_t kMaxBits = kMaxSupportedSize / kSuperPageSize;
+    static constexpr size_t kMaxBits = kNormalBucketMaxSize / kSuperPageSize;
+
     base::Lock lock_;
     std::bitset<kMaxBits> alloc_bitset_ GUARDED_BY(lock_);
     // An index of a bit in the bitset before which we know for sure there all
@@ -100,14 +108,16 @@ class BASE_EXPORT AddressPoolManager {
 #endif
   };
 
-  ALWAYS_INLINE Pool* GetPool(pool_handle handle);
+  ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
+    PA_DCHECK(0 < handle && handle <= kNumPools);
+    return &pools_[handle - 1];
+  }
 
   static constexpr size_t kNumPools = 2;
   Pool pools_[kNumPools];
 
 #else   // defined(PA_HAS_64_BITS_POINTERS)
 
-  static constexpr size_t kGiB = 1024 * 1024 * 1024;
   static constexpr uint64_t kAddressSpaceSize = 4ULL * kGiB;
   static constexpr size_t kNormalBucketBits =
       kAddressSpaceSize / kSuperPageSize;

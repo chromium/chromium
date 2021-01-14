@@ -59,6 +59,10 @@ class BASE_EXPORT PartitionAddressSpace {
            normal_bucket_pool_base_address_;
   }
 
+  static ALWAYS_INLINE uintptr_t NormalBucketPoolBase() {
+    return normal_bucket_pool_base_address_;
+  }
+
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
   PartitionAddressSpace(const PartitionAddressSpace&) = delete;

@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <condition_variable>
-#include <map>
 #include <mutex>
 #include <numeric>
 #include <set>
 #include <thread>
 #include <vector>
 
+#include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -151,24 +151,86 @@ class PCScan<thread_safe>::PCScanTask final {
   using SuperPages =
       std::set<uintptr_t, std::less<>, MetadataAllocator<uintptr_t>>;
 
-  QuarantineBitmap* TryFindScannerBitmapForPointer(uintptr_t maybe_ptr) const;
+  class SuperPagesBitmap final {
+   public:
+    void Populate(const SuperPages& super_pages) {
+      for (uintptr_t super_page_base : super_pages) {
+        PA_DCHECK(!(super_page_base % kSuperPageAlignment));
+        PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
+            reinterpret_cast<char*>(super_page_base)));
+        bitset_.set((super_page_base - normal_bucket_pool_base_) >>
+                    kSuperPageShift);
+      }
+    }
+
+    ALWAYS_INLINE bool Test(uintptr_t maybe_ptr) const {
+#if defined(PA_HAS_64_BITS_POINTERS)
+      PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
+          reinterpret_cast<char*>(maybe_ptr)));
+#endif
+      return bitset_.test(static_cast<size_t>(
+          (maybe_ptr - normal_bucket_pool_base_) >> kSuperPageShift));
+    }
+
+   private:
+    static constexpr size_t kBitmapSize =
+        AddressPoolManager::kNormalBucketMaxSize >> kSuperPageShift;
+
+    std::bitset<kBitmapSize> bitset_;
+    const uintptr_t normal_bucket_pool_base_ =
+#if defined(PA_HAS_64_BITS_POINTERS)
+        PartitionAddressSpace::NormalBucketPoolBase();
+#else
+        0;
+#endif
+  };
+
+  struct BitmapLookupPolicy {
+    ALWAYS_INLINE bool TestPointer(uintptr_t maybe_ptr) const {
+#if defined(PA_HAS_64_BITS_POINTERS)
+      // First, do a fast bitmask check to see if the pointer points to the
+      // normal bucket pool.
+      if (!PartitionAddressSpace::IsInNormalBucketPool(
+              reinterpret_cast<void*>(maybe_ptr)))
+        return false;
+#endif
+      return task_.super_pages_bitmap_.Test(maybe_ptr);
+    }
+    const PCScanTask& task_;
+  };
+
+  struct BinaryLookupPolicy {
+    ALWAYS_INLINE bool TestPointer(uintptr_t maybe_ptr) const {
+      const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
+      auto it = task_.super_pages_.lower_bound(super_page_base);
+      return it != task_.super_pages_.end() && *it == super_page_base;
+    }
+    const PCScanTask& task_;
+  };
+
+  template <class LookupPolicy>
+  ALWAYS_INLINE QuarantineBitmap* TryFindScannerBitmapForPointer(
+      uintptr_t maybe_ptr) const;
 
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
-  size_t TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr);
-
-  // Clear quarantined objects inside the PCScan task.
-  void ClearQuarantinedObjects() const;
+  template <class LookupPolicy>
+  ALWAYS_INLINE size_t TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr);
 
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
+  template <class LookupPolicy>
   size_t ScanPartitions();
 
   // Scans a range of addresses and marks reachable quarantined objects. Returns
   // the size of marked objects. The function race-fully reads the heap and
   // therefore TSAN is disabled for it.
+  template <class LookupPolicy>
   size_t ScanRange(Root* root, uintptr_t* begin, uintptr_t* end)
       NO_SANITIZE("thread");
+
+  // Clear quarantined objects inside the PCScan task.
+  void ClearQuarantinedObjects() const;
 
   // Sweeps (frees) unreachable quarantined entries. Returns the size of swept
   // objects.
@@ -179,24 +241,22 @@ class PCScan<thread_safe>::PCScanTask final {
   ScanAreas scan_areas_;
   LargeScanAreas large_scan_areas_;
   SuperPages super_pages_;
+  SuperPagesBitmap super_pages_bitmap_;
 };
 
 template <bool thread_safe>
-QuarantineBitmap*
+template <class LookupPolicy>
+ALWAYS_INLINE QuarantineBitmap*
 PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
-  // TODO(bikineev): Consider using the bitset in AddressPoolManager::Pool to
-  // quickly find a super page.
-  const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
-
-  auto it = super_pages_.lower_bound(super_page_base);
-  if (it == super_pages_.end() || *it != super_page_base)
+  // First, check if |maybe_ptr| points to a valid super page.
+  LookupPolicy lookup{*this};
+  if (!lookup.TestPointer(maybe_ptr))
     return nullptr;
-
+  // Check if we are not pointing to metadata/guard pages.
   if (!IsWithinSuperPagePayload(reinterpret_cast<char*>(maybe_ptr),
                                 true /*with pcscan*/))
     return nullptr;
-
   // We are certain here that |maybe_ptr| points to the super page payload.
   return QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
                                      pcscan_.quarantine_data_.epoch(),
@@ -214,10 +274,12 @@ PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
 template <bool thread_safe>
-size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
+template <class LookupPolicy>
+ALWAYS_INLINE size_t
+PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
     uintptr_t maybe_ptr) {
   // Check if maybe_ptr points somewhere to the heap.
-  auto* bitmap = TryFindScannerBitmapForPointer(maybe_ptr);
+  auto* bitmap = TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
   if (!bitmap)
     return 0;
 
@@ -273,6 +335,7 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
 }
 
 template <bool thread_safe>
+template <class LookupPolicy>
 size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
     Root* root,
     uintptr_t* begin,
@@ -280,8 +343,6 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
   static_assert(alignof(uintptr_t) % alignof(void*) == 0,
                 "Alignment of uintptr_t must be at least as strict as "
                 "alignment of a pointer type.");
-  const bool uses_giga_cage = root->UsesGigaCage();
-  (void)uses_giga_cage;
   size_t new_quarantine_size = 0;
 
   for (uintptr_t* payload = begin; payload < end; ++payload) {
@@ -289,36 +350,18 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
     auto maybe_ptr = *payload;
     if (!maybe_ptr)
       continue;
-    size_t slot_size = 0;
-// TODO(bikineev): Remove the preprocessor condition after 32bit GigaCage is
-// implemented.
-#if defined(PA_HAS_64_BITS_POINTERS)
-    // On partitions without extras (partitions with aligned allocations),
-    // memory is not allocated from the GigaCage.
-    if (uses_giga_cage) {
-      // With GigaCage, we first do a fast bitmask check to see if the
-      // pointer points to the normal bucket pool.
-      if (!PartitionAddressSpace::IsInNormalBucketPool(
-              reinterpret_cast<void*>(maybe_ptr)))
-        continue;
-      // Otherwise, search in the list of super pages.
-      slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
-      // TODO(bikineev): Check IsInDirectBucketPool.
-    } else
-#endif
-    {
-      slot_size = TryMarkObjectInNormalBucketPool(maybe_ptr);
-    }
-
-    new_quarantine_size += slot_size;
+    new_quarantine_size +=
+        TryMarkObjectInNormalBucketPool<LookupPolicy>(maybe_ptr);
   }
 
   return new_quarantine_size;
 }
 
 template <bool thread_safe>
+template <class LookupPolicy>
 size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
   PCSCAN_EVENT(scopes::kScan);
+
   size_t new_quarantine_size = 0;
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
@@ -343,14 +386,15 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
       uintptr_t* payload_end =
           reinterpret_cast<uintptr_t*>(current_slot + scan_area.slot_size);
       PA_DCHECK(payload_end <= scan_area.end);
-      new_quarantine_size += ScanRange(
+      new_quarantine_size += ScanRange<LookupPolicy>(
           root, reinterpret_cast<uintptr_t*>(current_slot), payload_end);
     }
   }
   for (auto scan_area : scan_areas_) {
     auto* root = Root::FromPointerInNormalBucketPool(
         reinterpret_cast<char*>(scan_area.begin));
-    new_quarantine_size += ScanRange(root, scan_area.begin, scan_area.end);
+    new_quarantine_size +=
+        ScanRange<LookupPolicy>(root, scan_area.begin, scan_area.end);
   }
   return new_quarantine_size;
 }
@@ -428,11 +472,19 @@ template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   PCSCAN_EVENT(scopes::kPCScan);
 
+  const bool is_with_gigacage = features::IsPartitionAllocGigaCageEnabled();
+  if (is_with_gigacage) {
+    // Prepare super page bitmap for fast scanning.
+    super_pages_bitmap_.Populate(super_pages_);
+  }
+
   // Clear all quarantined objects.
   ClearQuarantinedObjects();
 
   // Mark and sweep the quarantine list.
-  const auto new_quarantine_size = ScanPartitions();
+  const auto new_quarantine_size = is_with_gigacage
+                                       ? ScanPartitions<BitmapLookupPolicy>()
+                                       : ScanPartitions<BinaryLookupPolicy>();
   const auto swept_bytes = SweepQuarantine();
 
   ReportStats(swept_bytes, pcscan_.quarantine_data_.last_size(),

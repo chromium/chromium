@@ -202,12 +202,6 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
 AddressPoolManager::Pool::Pool() = default;
 AddressPoolManager::Pool::~Pool() = default;
 
-ALWAYS_INLINE AddressPoolManager::Pool* AddressPoolManager::GetPool(
-    pool_handle handle) {
-  PA_DCHECK(0 < handle && handle <= kNumPools);
-  return &pools_[handle - 1];
-}
-
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 
 namespace {
