@@ -339,7 +339,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   DCHECK(client_);
   DCHECK(decoder_);
   TRACE_EVENT1("media", "MojoVideoDecoderService::OnDecoderOutput",
-               "video_frame", frame->AsHumanReadableString())
+               "video_frame", frame->AsHumanReadableString());
 
   // All MojoVideoDecoder-based decoders are hardware decoders. If you're the
   // first to implement an out-of-process decoder that is not power efficent,

@@ -379,7 +379,7 @@ void AudioOutputDevice::OnStreamCreated(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket_handle,
     bool playing_automatically) {
-  TRACE_EVENT0("audio", "AudioOutputDevice::OnStreamCreated")
+  TRACE_EVENT0("audio", "AudioOutputDevice::OnStreamCreated");
 
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DCHECK(shared_memory_region.IsValid());
