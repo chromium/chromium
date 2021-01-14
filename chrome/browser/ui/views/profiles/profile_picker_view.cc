@@ -878,7 +878,8 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
     // by policy.
     entry->SetIsEphemeral(false);
   }
-  entry->SetLocalProfileName(name_for_signed_in_profile_);
+  entry->SetLocalProfileName(name_for_signed_in_profile_,
+                             /*is_default_name=*/false);
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 

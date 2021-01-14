@@ -316,7 +316,12 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   EXPECT_EQ(path, entry->GetPath());
 
   EXPECT_CALL(observer(), OnProfileNameChanged(path, _)).Times(2);
-  TEST_STRING16_ACCESSORS(ProfileAttributesEntry, entry, LocalProfileName);
+  entry->SetLocalProfileName(base::ASCIIToUTF16("first_value"), true);
+  EXPECT_EQ(base::ASCIIToUTF16("first_value"), entry->GetLocalProfileName());
+  EXPECT_TRUE(entry->IsUsingDefaultName());
+  entry->SetLocalProfileName(base::ASCIIToUTF16("second_value"), false);
+  EXPECT_EQ(base::ASCIIToUTF16("second_value"), entry->GetLocalProfileName());
+  EXPECT_FALSE(entry->IsUsingDefaultName());
   VerifyAndResetCallExpectations();
 
   TEST_STRING16_ACCESSORS(ProfileAttributesEntry, entry, ShortcutName);
@@ -545,7 +550,8 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
       GetProfilePath("alpha_path"), &entry));
 
   // Trigger a ProfileInfoCache re-sort.
-  entry->SetLocalProfileName(base::ASCIIToUTF16("zulu_name"));
+  entry->SetLocalProfileName(base::ASCIIToUTF16("zulu_name"),
+                             /*is_default_name=*/false);
   EXPECT_EQ(GetProfilePath("alpha_path"), entry->GetPath());
 }
 
@@ -600,7 +606,8 @@ TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
   ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
       GetProfilePath("testing_profile_path0"), &second_entry));
 
-  first_entry->SetLocalProfileName(base::ASCIIToUTF16("NewName"));
+  first_entry->SetLocalProfileName(base::ASCIIToUTF16("NewName"),
+                                   /*is_default_name=*/false);
   EXPECT_EQ(base::ASCIIToUTF16("NewName"), second_entry->GetName());
   EXPECT_EQ(first_entry, second_entry);
 
@@ -608,7 +615,8 @@ TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
   // should be reflected by the ProfileAttributesStorage.
   EXPECT_EQ(base::ASCIIToUTF16("NewName"), second_entry->GetName());
 
-  second_entry->SetLocalProfileName(base::ASCIIToUTF16("OtherNewName"));
+  second_entry->SetLocalProfileName(base::ASCIIToUTF16("OtherNewName"),
+                                    /*is_default_name=*/false);
   EXPECT_EQ(base::ASCIIToUTF16("OtherNewName"), first_entry->GetName());
 }
 

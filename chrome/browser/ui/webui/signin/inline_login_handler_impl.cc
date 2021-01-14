@@ -244,7 +244,7 @@ void SetProfileName(const base::FilePath& profile_path,
     return;
   }
 
-  entry->SetLocalProfileName(name);
+  entry->SetLocalProfileName(name, /*is_default_name=*/false);
 }
 
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,

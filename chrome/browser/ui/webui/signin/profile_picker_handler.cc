@@ -495,7 +495,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
   CHECK(g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile_path.value(), &entry));
-  entry->SetLocalProfileName(profile_name);
+  entry->SetLocalProfileName(profile_name, /*is_default_name=*/false);
 }
 
 void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {

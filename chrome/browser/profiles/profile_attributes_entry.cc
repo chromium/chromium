@@ -494,8 +494,11 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
 }
 
-void ProfileAttributesEntry::SetLocalProfileName(const base::string16& name) {
-  if (SetString16(kNameKey, name))
+void ProfileAttributesEntry::SetLocalProfileName(const base::string16& name,
+                                                 bool is_default_name) {
+  bool changed = SetString16(kNameKey, name);
+  changed |= SetBool(kIsUsingDefaultNameKey, is_default_name);
+  if (changed)
     profile_info_cache_->NotifyIfProfileNamesHaveChanged();
 }
 

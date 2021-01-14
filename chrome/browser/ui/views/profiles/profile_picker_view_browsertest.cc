@@ -777,7 +777,8 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
                       ->GetProfileAttributesStorage()
                       .GetProfileAttributesWithPath(
                           browser()->profile()->GetPath(), &entry));
-      entry->SetLocalProfileName(base::UTF8ToUTF16(kOriginalProfileName));
+      entry->SetLocalProfileName(base::UTF8ToUTF16(kOriginalProfileName),
+                                 entry->IsUsingDefaultName());
     }
     CheckPolicyApplied(browser()->profile());
   }

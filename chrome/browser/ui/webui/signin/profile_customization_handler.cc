@@ -90,7 +90,8 @@ void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   DCHECK(!profile_name.empty());
-  GetProfileEntry()->SetLocalProfileName(profile_name);
+  GetProfileEntry()->SetLocalProfileName(profile_name,
+                                         /*is_default_name=*/false);
 
   if (done_closure_)
     std::move(done_closure_).Run();

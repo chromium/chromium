@@ -217,7 +217,7 @@ TEST_F(ProfileListDesktopTest, ModifyingNameResortsCorrectly) {
   ProfileAttributesEntry* entry;
   ASSERT_TRUE(manager()->profile_attributes_storage()->
                   GetProfileAttributesWithPath(profile1->GetPath(), &entry));
-  entry->SetLocalProfileName(ASCIIToUTF16(newname1));
+  entry->SetLocalProfileName(ASCIIToUTF16(newname1), false);
   EXPECT_EQ(1, change_count());
 
   // Now the first menu item should be named "beta", and the second be "gamma".

@@ -315,7 +315,7 @@ class ProfileShortcutManagerTest : public testing::Test {
     ASSERT_TRUE(profile_attributes_storage_->
                     GetProfileAttributesWithPath(profile_path, &entry));
     ASSERT_NE(entry->GetLocalProfileName(), new_profile_name);
-    entry->SetLocalProfileName(new_profile_name);
+    entry->SetLocalProfileName(new_profile_name, /*is_default_name=*/false);
     task_environment_.RunUntilIdle();
   }
 
@@ -798,7 +798,7 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
 
   const base::string16 new_profile_3_name = L"New Name 3";
-  entry_3->SetLocalProfileName(new_profile_3_name);
+  entry_3->SetLocalProfileName(new_profile_3_name, /*is_default_name=*/false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(new_profile_3_name));
@@ -808,7 +808,7 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
   ProfileAttributesEntry* entry_2;
   ASSERT_TRUE(profile_attributes_storage_->
                   GetProfileAttributesWithPath(profile_2_path_, &entry_2));
-  entry_2->SetLocalProfileName(new_profile_2_name);
+  entry_2->SetLocalProfileName(new_profile_2_name, /*is_default_name=*/false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_2_name_));
   ValidateProfileShortcut(FROM_HERE, new_profile_2_name, profile_2_path_);

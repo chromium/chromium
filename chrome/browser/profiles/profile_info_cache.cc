@@ -591,7 +591,8 @@ void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     if (!IsDefaultProfileName(
             profile_name, /*include_check_for_legacy_profile_name=*/false)) {
       entries[i]->SetLocalProfileName(
-          ChooseNameForNewProfile(entries[i]->GetAvatarIconIndex()));
+          ChooseNameForNewProfile(entries[i]->GetAvatarIconIndex()),
+          /*is_default_name=*/true);
       continue;
     }
 
@@ -604,7 +605,8 @@ void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     for (size_t j = i + 1; j < entries.size(); j++) {
       if (profile_name == entries[j]->GetLocalProfileName()) {
         entries[j]->SetLocalProfileName(
-            ChooseNameForNewProfile(entries[j]->GetAvatarIconIndex()));
+            ChooseNameForNewProfile(entries[j]->GetAvatarIconIndex()),
+            /*is_default_name=*/true);
       }
     }
   }

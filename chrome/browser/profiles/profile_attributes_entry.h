@@ -159,7 +159,8 @@ class ProfileAttributesEntry {
   // value is UTF8 encoded.
   std::string GetHostedDomain() const;
 
-  void SetLocalProfileName(const base::string16& name);
+  // |is_using_default| should be set to false for non default profile names.
+  void SetLocalProfileName(const base::string16& name, bool is_default_name);
   void SetShortcutName(const base::string16& name);
   void SetActiveTimeToNow();
   void SetIsOmitted(bool is_omitted);
@@ -175,6 +176,7 @@ class ProfileAttributesEntry {
   void SetSignedInWithCredentialProvider(bool value);
   void SetIsEphemeral(bool value);
   void SetIsGuest(bool value);
+  // TODO(msalama): Remove this function.
   void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
   void SetIsAuthError(bool value);

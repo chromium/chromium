@@ -1579,8 +1579,7 @@ void ProfileImpl::UpdateNameInStorage() {
                        .GetProfileAttributesWithPath(GetPath(), &entry);
   if (has_entry) {
     entry->SetLocalProfileName(
-        base::UTF8ToUTF16(GetPrefs()->GetString(prefs::kProfileName)));
-    entry->SetIsUsingDefaultName(
+        base::UTF8ToUTF16(GetPrefs()->GetString(prefs::kProfileName)),
         GetPrefs()->GetBoolean(prefs::kProfileUsingDefaultName));
   }
 }

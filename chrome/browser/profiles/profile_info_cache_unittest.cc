@@ -258,8 +258,7 @@ TEST_F(ProfileInfoCacheTest, GAIAName) {
   EXPECT_EQ(gaia_name, entry_2->GetName());
 
   base::string16 custom_name(ASCIIToUTF16("Custom name"));
-  entry_2->SetLocalProfileName(custom_name);
-  entry_2->SetIsUsingDefaultName(false);
+  entry_2->SetLocalProfileName(custom_name, false);
 
   base::string16 expected_profile_name =
       GetConcatenation(gaia_name, custom_name);
@@ -287,12 +286,11 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
 
   // Set a custom profile name.
-  entry_1->SetIsUsingDefaultName(false);
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"));
+  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt (Work)"), entry_1->GetName());
 
   // Set the profile name to be equal to GAIA name.
-  entry_1->SetLocalProfileName(ASCIIToUTF16("patt"));
+  entry_1->SetLocalProfileName(ASCIIToUTF16("patt"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
 
   // Multiple profiles.
@@ -305,7 +303,7 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Person 2"), entry_2->GetName());
 
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"));
+  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt (Work)"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Person 2"), entry_2->GetName());
 
@@ -316,8 +314,7 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
 
   // Mark profile name as default.
-  entry_1->SetIsUsingDefaultName(true);
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Person 1"));
+  entry_1->SetLocalProfileName(ASCIIToUTF16("Person 1"), true);
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
 
@@ -343,19 +340,18 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(ASCIIToUTF16("Patt (Person 3)"), entry_3->GetName());
 
   // Customize the profile name for one of the two profiles.
-  entry_3->SetIsUsingDefaultName(false);
-  entry_3->SetLocalProfileName(ASCIIToUTF16("Personal"));
+  entry_3->SetLocalProfileName(ASCIIToUTF16("Personal"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Patt (Personal)"), entry_3->GetName());
 
   // Set one of the profile names to be equal to GAIA name, we should show
   // the profile name even if it is Person n to clear ambiguity.
-  entry_3->SetLocalProfileName(ASCIIToUTF16("patt"));
+  entry_3->SetLocalProfileName(ASCIIToUTF16("patt"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt (Person 1)"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_3->GetName());
 
   // Never show the profile name if it is equal GAIA name.
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Patt"));
+  entry_1->SetLocalProfileName(ASCIIToUTF16("Patt"), false);
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
   EXPECT_EQ(ASCIIToUTF16("Patt"), entry_3->GetName());
   EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
@@ -402,7 +398,7 @@ TEST_F(ProfileInfoCacheTest, MutateProfile) {
   GetCache()->GetProfileAttributesWithPath(profile_path_2, &entry_2);
 
   base::string16 new_name = ASCIIToUTF16("new_name");
-  entry_2->SetLocalProfileName(new_name);
+  entry_2->SetLocalProfileName(new_name, false);
   EXPECT_EQ(new_name, entry_2->GetName());
   EXPECT_NE(new_name, entry_1->GetName());
 
