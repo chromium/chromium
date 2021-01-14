@@ -2383,13 +2383,16 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()));
   test::TapWebViewElementWithIdInIframe(web_state(), "normal-link");
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    id URL = ExecuteJavaScript(@"window.frames[0].location.pathname;");
-    return [@"/pony.html" isEqual:URL] == YES;
+    std::unique_ptr<base::Value> URL =
+        ExecuteJavaScript(@"window.frames[0].location.pathname;");
+    return URL->is_string() && URL->GetString() == "/pony.html";
   }));
   ASSERT_TRUE(web_state()->GetNavigationManager()->CanGoBack());
   ASSERT_FALSE(web_state()->GetNavigationManager()->CanGoForward());
-  id history_length = ExecuteJavaScript(@"history.length;");
-  ASSERT_NSEQ(@2, history_length);
+  std::unique_ptr<base::Value> history_length =
+      ExecuteJavaScript(@"history.length;");
+  ASSERT_TRUE(history_length->is_double());
+  ASSERT_EQ(2, history_length->GetDouble());
 
   // Go back to top.
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
@@ -2410,8 +2413,9 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
 
   web_state()->GetNavigationManager()->GoBack();
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    id URL = ExecuteJavaScript(@"window.frames[0].location.pathname;");
-    return [@"/links.html" isEqual:URL] == YES;
+    std::unique_ptr<base::Value> URL =
+        ExecuteJavaScript(@"window.frames[0].location.pathname;");
+    return URL->is_string() && URL->GetString() == "/links.html";
   }));
   ASSERT_TRUE(web_state()->GetNavigationManager()->CanGoForward());
   ASSERT_FALSE(web_state()->GetNavigationManager()->CanGoBack());

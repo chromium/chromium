@@ -70,7 +70,6 @@ source_set("autofill") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/web/common",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",
@@ -179,7 +178,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/webdata_services",
     "//ios/testing:block_swizzler",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",
@@ -565,7 +563,6 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
   ]

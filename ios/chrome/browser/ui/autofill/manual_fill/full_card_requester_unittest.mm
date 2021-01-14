@@ -21,7 +21,6 @@
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -73,11 +72,6 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     personal_data_manager_.SetPrefService(chrome_browser_state_->GetPrefs());
 
     AddCreditCard(autofill::test::GetCreditCard());  // Visa.
-
-    // Set up what is needed to have an instance of autofill::AutofillManager.
-    CRWTestJSInjectionReceiver* injectionReceiver =
-        [[CRWTestJSInjectionReceiver alloc] init];
-    web_state()->SetJSInjectionReceiver(injectionReceiver);
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = std::make_unique<web::FakeMainWebFrame>(

@@ -6,7 +6,6 @@
 
 #include "base/mac/foundation_util.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 

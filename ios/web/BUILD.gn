@@ -417,7 +417,6 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -436,7 +435,6 @@ source_set("ios_web_web_state_js_unittests") {
   sources = [
     "web_state/js/common_js_unittest.mm",
     "web_state/js/context_menu_js_unittest.mm",
-    "web_state/js/crw_js_injection_manager_unittest.mm",
     "web_state/js/find_in_page_js_unittest.mm",
     "web_state/js/message_js_unittest.mm",
   ]
@@ -542,8 +540,6 @@ test("ios_web_inttests") {
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
-    "//ios/web/public/deprecated",
-    "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",

@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -107,11 +106,6 @@ class TranslateInfobarMediatorTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(browser_state_.get());
     web_state->SetNavigationManager(std::move(navigation_manager));
-
-    // Set up JS injection receiver.
-    CRWTestJSInjectionReceiver* injectionReceiver =
-        [[CRWTestJSInjectionReceiver alloc] init];
-    web_state->SetJSInjectionReceiver(injectionReceiver);
 
     // Create IOSLanguageDetectionTabHelper.
     language::IOSLanguageDetectionTabHelper::CreateForWebState(

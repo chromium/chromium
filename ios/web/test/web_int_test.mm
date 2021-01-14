@@ -7,10 +7,12 @@
 #import "base/ios/block_types.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observer.h"
+#include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "ios/web/public/web_state_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -79,9 +81,12 @@ void WebIntTest::TearDown() {
   WebTest::TearDown();
 }
 
-id WebIntTest::ExecuteJavaScript(NSString* script) {
-  return web::test::ExecuteJavaScript(web_state()->GetJSInjectionReceiver(),
-                                      script);
+std::unique_ptr<base::Value> WebIntTest::ExecuteJavaScript(NSString* script) {
+  return web::test::ExecuteJavaScript(web_state(),
+                                      base::SysNSStringToUTF8(script));
+  //  web_state()->ExecuteJavaScript
+  //  return web::test::ExecuteJavaScript(web_state()->GetJSInjectionReceiver(),
+  //                                      script);
 }
 
 bool WebIntTest::ExecuteBlockAndWaitForLoad(const GURL& url,

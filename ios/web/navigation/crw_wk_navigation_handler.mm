@@ -900,8 +900,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // committed.
   if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
       !IsPlaceholderUrl(webViewURL)) {
-    [self.JSInjector resetInjectedScriptSet];
-
     const std::string& mime_type = self.webStateImpl->GetContentsMimeType();
     if (web::IsContentTypeHtml(mime_type) ||
         web::IsContentTypeImage(mime_type) || mime_type.empty()) {

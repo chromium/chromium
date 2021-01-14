@@ -10,9 +10,6 @@
 
 #include "base/compiler_specific.h"
 
-@class CRWJSInjectionManager;
-@class CRWJSInjectionReceiver;
-
 namespace web {
 namespace test {
 
@@ -21,12 +18,6 @@ namespace test {
 // NSString (string), NSNumber (number or boolean), NSDictionary (object),
 // NSArray (array), NSNull (null), NSDate (Date), nil (undefined or execution
 // exception).
-
-// Executes JavaScript on the |manager| and returns the result as an id.
-id ExecuteJavaScript(CRWJSInjectionManager* manager, NSString* script);
-
-// Executes JavaScript on the |receiver| and returns the result as an id.
-id ExecuteJavaScript(CRWJSInjectionReceiver* receiver, NSString* script);
 
 // Executes JavaScript on |web_view| and returns the result as an id.
 // |error| can be null and will be updated only if script execution fails.

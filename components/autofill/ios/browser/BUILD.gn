@@ -93,7 +93,6 @@ source_set("unit_tests") {
     "//components/leveldb_proto:leveldb_proto",
     "//components/prefs",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

@@ -30,7 +30,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/driver/test_sync_service.h"
-#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -82,9 +81,6 @@ class CWVAutofillControllerTest : public PlatformTest {
         autofill::prefs::kAutofillProfileEnabled, true);
 
     web_state_.SetBrowserState(&browser_state_);
-    CRWTestJSInjectionReceiver* injectionReceiver =
-        [[CRWTestJSInjectionReceiver alloc] init];
-    web_state_.SetJSInjectionReceiver(injectionReceiver);
 
     js_autofill_manager_ = [[FakeJSAutofillManager alloc] init];
 

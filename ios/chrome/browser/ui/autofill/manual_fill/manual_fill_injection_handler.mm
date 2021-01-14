@@ -27,7 +27,6 @@
 #include "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
@@ -50,9 +49,6 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;
-
-// Convenience getter for the current injection reciever.
-@property(nonatomic, readonly) CRWJSInjectionReceiver* injectionReceiver;
 
 // Convenience getter for the current suggestion manager.
 @property(nonatomic, readonly) autofill::JsSuggestionManager* suggestionManager;
@@ -183,14 +179,6 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 }
 
 #pragma mark - Getters
-
-- (CRWJSInjectionReceiver*)injectionReceiver {
-  web::WebState* webState = self.webStateList->GetActiveWebState();
-  if (webState) {
-    return webState->GetJSInjectionReceiver();
-  }
-  return nil;
-}
 
 - (autofill::JsSuggestionManager*)suggestionManager {
   autofill::JsSuggestionManager* suggestionManager = nullptr;

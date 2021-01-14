@@ -104,17 +104,17 @@ class HistoryStateOperationsTest : public web::WebIntTest {
 
   // Returns the state object returned by JavaScript.
   std::string GetJavaScriptState() {
-    return base::SysNSStringToUTF8(ExecuteJavaScript(@"window.history.state"));
+    return ExecuteJavaScript(@"window.history.state")->GetString();
   }
 
   // Executes JavaScript to check whether the onload text is visible.
   bool IsOnLoadTextVisible() {
-    return [ExecuteJavaScript(kOnLoadCheckScript) boolValue];
+    return ExecuteJavaScript(kOnLoadCheckScript)->GetBool();
   }
 
   // Executes JavaScript to check whether the no-op text is visible.
   bool IsNoOpTextVisible() {
-    return [ExecuteJavaScript(kNoOpCheckScript) boolValue];
+    return ExecuteJavaScript(kNoOpCheckScript)->GetBool();
   }
 
   // Waits for the NoOp text to be visible.

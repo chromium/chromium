@@ -21,16 +21,6 @@
 // reject the request if the page has some elevated privileges.
 - (void)executeUserJavaScript:(NSString*)script
             completionHandler:(void (^)(id, NSError*))completionHandler;
-
-// Checks to see if the script for a class has been injected into the
-// current page already.
-- (BOOL)scriptHasBeenInjectedForClass:(Class)injectionManagerClass;
-
-// Injects the given script into the current page on behalf of
-// |injectionManagerClass|. This should only be used for injecting
-// the manager's script, and not for evaluating arbitrary JavaScript.
-- (void)injectScript:(NSString*)script forClass:(Class)injectionManagerClass;
-
 @end
 
 #endif  // IOS_WEB_PUBLIC_DEPRECATED_CRW_JS_INJECTION_EVALUATOR_H_

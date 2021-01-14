@@ -40,10 +40,6 @@
 // Designated initializer. Initializes with |delegate|.
 - (instancetype)initWithDelegate:(id<CRWJSInjectorDelegate>)delegate;
 
-// Resets list of all scripts injected with |injectScript|. Affects only results
-// returned by |scriptHasBeenInjectedForClass|.
-- (void)resetInjectedScriptSet;
-
 // Injects windowId in the web page.
 - (void)injectWindowID;
 

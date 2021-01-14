@@ -16,8 +16,6 @@
 #include "components/translate/ios/browser/translate_controller.h"
 #include "ios/web/public/web_state_observer.h"
 
-@class CRWJSInjectionReceiver;
-
 namespace web {
 class NavigationManager;
 class WebState;

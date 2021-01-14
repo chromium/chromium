@@ -63,7 +63,6 @@ source_set("manual_fill") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
   ]
@@ -175,7 +174,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/test:test_support",
-    "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

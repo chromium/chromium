@@ -18,7 +18,6 @@
 #import "components/autofill/ios/browser/js_autofill_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/prefs/pref_service.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -85,11 +84,7 @@ class AutofillAgentTests : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    // Mock CRWJSInjectionReceiver for verifying interactions.
-    mock_js_injection_receiver_ =
-        [OCMockObject mockForClass:[CRWJSInjectionReceiver class]];
     fake_web_state_.SetBrowserState(&fake_browser_state_);
-    fake_web_state_.SetJSInjectionReceiver(mock_js_injection_receiver_);
     fake_web_state_.SetContentIsHTML(true);
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
@@ -117,7 +112,6 @@ class AutofillAgentTests : public PlatformTest {
   autofill::TestAutofillClient client_;
   std::unique_ptr<PrefService> prefs_;
   AutofillAgent* autofill_agent_;
-  id mock_js_injection_receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillAgentTests);
 };

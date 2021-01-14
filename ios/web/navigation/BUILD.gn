@@ -24,7 +24,6 @@ source_set("navigation") {
     "//ios/web/js_messaging",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated:deprecated_navigation_util",
     "//ios/web/public/download",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",

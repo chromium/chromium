@@ -10,8 +10,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/page_script_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_manager.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,36 +22,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace test {
-
-id ExecuteJavaScript(CRWJSInjectionManager* manager, NSString* script) {
-  __block NSString* result = nil;
-  __block NSError* error = nil;
-  __block bool completed = false;
-  [manager executeJavaScript:script
-           completionHandler:^(id execution_result, NSError* execution_error) {
-             result = [execution_result copy];
-             error = [execution_error copy];
-             completed = true;
-           }];
-
-  BOOL success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return completed;
-  });
-  // Log stack trace to provide some context.
-  EXPECT_TRUE(success && !error)
-      << "CRWJSInjectionManager failed to complete javascript execution.\n"
-      << base::SysNSStringToUTF8(
-             [[NSThread callStackSymbols] componentsJoinedByString:@"\n"])
-      << "error: \n"
-      << base::SysNSStringToUTF8(error.description);
-  return result;
-}
-
-id ExecuteJavaScript(CRWJSInjectionReceiver* receiver, NSString* script) {
-  CRWJSInjectionManager* manager =
-      [[CRWJSInjectionManager alloc] initWithReceiver:receiver];
-  return ExecuteJavaScript(manager, script);
-}
 
 id ExecuteJavaScript(WKWebView* web_view, NSString* script) {
   return ExecuteJavaScript(web_view, script, nil);

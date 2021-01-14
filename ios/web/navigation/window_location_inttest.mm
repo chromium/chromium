@@ -81,26 +81,27 @@ class WindowLocationTest : public web::WebIntTest {
     NSString* set_url_script =
         [NSString stringWithFormat:kUpdateURLScriptFormat, url_spec.c_str()];
     ExecuteJavaScript(set_url_script);
-    NSString* injected_url =
-        base::mac::ObjCCastStrict<NSString>(ExecuteJavaScript(kGetURLScript));
-    ASSERT_EQ(url_spec, base::SysNSStringToUTF8(injected_url));
+    std::unique_ptr<base::Value> injected_url =
+        ExecuteJavaScript(kGetURLScript);
+    ASSERT_TRUE(injected_url->is_string());
+    ASSERT_EQ(url_spec, injected_url->GetString());
   }
 
   // Executes JavaScript on the window.location test page and returns whether
   // |kOnLoadText| is visible.
   bool IsOnLoadTextVisible() {
-    NSNumber* text_visible = base::mac::ObjCCastStrict<NSNumber>(
-        ExecuteJavaScript(kOnLoadCheckScript));
-    return [text_visible boolValue];
+    std::unique_ptr<base::Value> text_visible =
+        ExecuteJavaScript(kOnLoadCheckScript);
+    return text_visible->GetBool();
   }
 
   // Executes JavaScript on the window.location test page and returns whether
   // the no-op text is visible.  It is displayed 0.5 seconds after a button is
   // tapped, and can be used to verify that a navigation did not occur.
   bool IsNoOpTextVisible() {
-    NSNumber* text_visible = base::mac::ObjCCastStrict<NSNumber>(
-        ExecuteJavaScript(kNoOpCheckScript));
-    return [text_visible boolValue];
+    std::unique_ptr<base::Value> text_visible =
+        ExecuteJavaScript(kNoOpCheckScript);
+    return text_visible->GetBool();
   }
 
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
