@@ -23151,9 +23151,10 @@ Called by update_document_policy_enum.py.-->
   <int value="810" label="ProfilePickerOnStartupAvailability"/>
   <int value="811" label="SigninInterceptionEnabled"/>
   <int value="812" label="RemoteAccessHostAllowRemoteAccessConnections"/>
-  <int value="813" label="ManagedConfigurationsPerOrigin"/>
+  <int value="813" label="ManagedConfigurationPerOrigin"/>
   <int value="814" label="RemoteAccessHostMaximumSessionDurationMinutes"/>
   <int value="815" label="EnableDeprecatedPrivetPrinting"/>
+  <int value="816" label="BrowserLabsEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

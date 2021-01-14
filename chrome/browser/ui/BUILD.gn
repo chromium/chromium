@@ -169,6 +169,8 @@ static_library("ui") {
     "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
+    "toolbar/chrome_labs_prefs.cc",
+    "toolbar/chrome_labs_prefs.h",
     "toolbar/chrome_location_bar_model_delegate.cc",
     "toolbar/chrome_location_bar_model_delegate.h",
     "translate/source_language_combobox_model.cc",

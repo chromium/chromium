@@ -8335,5 +8335,15 @@
         "prefs": { "signin.interception_enabled": { "value": false, "location": "user_profile" } }
       }
     ]
-  }
+  },
+  "BrowserLabsEnabled":{
+    "os": ["win", "linux", "mac"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests":[
+      {
+        "policies": {"BrowserLabsEnabled": false},
+        "prefs": {"browser_labs_enabled": {"value": false, "location": "user_profile"}}
+      }
+    ]
+    }
 }

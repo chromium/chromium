@@ -4471,6 +4471,38 @@
       On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, KDC policy is always respected.''',
     },
     {
+      'name': 'BrowserLabsEnabled',
+      'owners': ['elainechien@chromium.org', 'robliao@chromium.org'],
+      'type': 'main',
+      'schema' : {'type': 'boolean'},
+      'supported_on': ['chrome.*:89-'],
+      'future_on' : ['chrome_os'],
+      'example_value': False,
+      'features':{
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable browser experimental features toolbar entrypoint',
+        },
+        {
+          'value': False,
+          'caption': 'Disable browser experimental features toolbar entrypoint',
+        },
+      ],
+      'id': 816,
+      'default': True,
+      'caption': '''Browser experiments icon in toolbar''',
+      'tags': ['google-sharing'],
+      'desc': '''Setting the policy to Enabled or leaving the policy unset means that users can access browser experimental features through an icon in the toolbar
+
+      Setting the policy to Disabled removes the browser experimental features icon from the toolbar.
+
+      chrome://flags and any other means of turning off and on browser features will still behave as expected regardless of whether this policy is Enabled or Disabled.'''
+    },
+    {
       'name': 'GSSAPILibraryName',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'string',
@@ -25184,6 +25216,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 815,
+  'highest_id_currently_used': 816,
   'highest_atomic_group_id_currently_used': 40
 }

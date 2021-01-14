@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -269,7 +270,9 @@ void ToolbarView::Init() {
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
 
-  if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
+  if (base::FeatureList::IsEnabled(features::kChromeLabs) &&
+      browser_->profile()->GetPrefs()->GetBoolean(
+          chrome_labs_prefs::kBrowserLabsEnabled)) {
     chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>());
   }
 
