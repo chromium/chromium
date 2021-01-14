@@ -165,7 +165,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // The RTP timestamp associated with this video frame. Stored as a double
   // since base::DictionaryValue doesn't have a uint32_t type.
   //
-  // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource
+  // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
   base::Optional<double> rtp_timestamp;
 
   // For video frames coming from a remote source, this is the time the
