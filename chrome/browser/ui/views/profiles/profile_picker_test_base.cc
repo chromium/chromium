@@ -82,6 +82,30 @@ class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
   GURL url_;
 };
 
+// Waits until a view is deleted.
+class ViewDeletedWaiter : public views::ViewObserver {
+ public:
+  explicit ViewDeletedWaiter(views::View* view) {
+    DCHECK(view);
+    observation_.Observe(view);
+  }
+  ~ViewDeletedWaiter() override = default;
+
+  // Waits until the view is deleted.
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    // Reset the observation before the view is actually deleted.
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 }  // namespace
 
 ProfilePickerTestBase::ProfilePickerTestBase() {
@@ -118,6 +142,13 @@ void ProfilePickerTestBase::WaitForFirstPaint(content::WebContents* contents,
                                               const GURL& url) {
   DCHECK(contents);
   FirstVisuallyNonEmptyPaintObserver(contents, url).Wait();
+}
+
+void ProfilePickerTestBase::WaitForPickerClosed() {
+  if (!ProfilePicker::IsOpen())
+    return;
+  ViewDeletedWaiter(view()).Wait();
+  ASSERT_FALSE(ProfilePicker::IsOpen());
 }
 
 content::WebContents* ProfilePickerTestBase::web_contents() {

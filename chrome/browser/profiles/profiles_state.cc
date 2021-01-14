@@ -310,13 +310,17 @@ bool ArePublicSessionRestrictionsEnabled() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+base::string16 GetDefaultNameForNewEnterpriseProfile() {
+  return l10n_util::GetStringUTF16(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+}
+
 base::string16 GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
   if (!account_info.IsManaged())
     return base::UTF8ToUTF16(account_info.given_name);
-  return l10n_util::GetStringUTF16(
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+  return GetDefaultNameForNewEnterpriseProfile();
 }
 
 base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(

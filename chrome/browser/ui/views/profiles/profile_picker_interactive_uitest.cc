@@ -27,30 +27,6 @@
 
 namespace {
 
-// Waits until a view is deleted.
-class ViewDeletedWaiter : public views::ViewObserver {
- public:
-  explicit ViewDeletedWaiter(views::View* view) {
-    DCHECK(view);
-    observation_.Observe(view);
-  }
-  ~ViewDeletedWaiter() override = default;
-
-  // Waits until the view is deleted.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override {
-    // Reset the observation before the view is actually deleted.
-    observation_.Reset();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
-
 // Waits until the widget bounds change.
 class WidgetBoundsChangeWaiter : public views::WidgetObserver {
  public:
@@ -97,13 +73,6 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         widget()->GetNativeWindow(), ui::VKEY_W, control, shift, /*alt=*/false,
         command));
-  }
-
-  void WaitForPickerClosed() {
-    if (!ProfilePicker::IsOpen())
-      return;
-    ViewDeletedWaiter(view()).Wait();
-    ASSERT_FALSE(ProfilePicker::IsOpen());
   }
 };
 

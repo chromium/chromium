@@ -99,6 +99,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
+  void NavigationStateChanged(content::WebContents* source,
+                              content::InvalidateTypes changed_flags) override;
 
   // IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
@@ -116,6 +118,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   void BackButtonPressed(const ui::Event& event);
 
+  // Checks whether the sign-in flow is in progress.
+  bool IsSigningIn() const;
+
   // Helper functions to deal with the lack of extended account info.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
   void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
@@ -127,6 +132,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
                                   bool enterprise_sync_consent_needed);
   void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
                                       bool enterprise_sync_consent_needed);
+
+  // Finishes the flow by finalizing the profile and continuing the SAML sign-in
+  // in a browser window.
+  void FinishSignedInCreationFlowForSAML();
 
   // Internal callback to finish the last steps of the signed-in creation flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,

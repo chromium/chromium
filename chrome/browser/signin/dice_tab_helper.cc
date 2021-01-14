@@ -28,11 +28,6 @@ void DiceTabHelper::InitializeSigninFlow(
   DCHECK(signin_url.is_valid());
   DCHECK(signin_url_.is_empty() || signin_url_ == signin_url);
 
-  // The signin page must be loading.
-  DCHECK(web_contents()->GetController().GetPendingEntry());
-  DCHECK_EQ(signin_url,
-            web_contents()->GetController().GetPendingEntry()->GetURL());
-
   signin_url_ = signin_url;
   signin_access_point_ = access_point;
   signin_reason_ = reason;
