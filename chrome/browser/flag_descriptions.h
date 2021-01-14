@@ -2868,6 +2868,9 @@ extern const char kPdfFormSaveDescription[];
 extern const char kPdfViewerUpdateName[];
 extern const char kPdfViewerUpdateDescription[];
 
+extern const char kPdfViewerDocumentPropertiesName[];
+extern const char kPdfViewerDocumentPropertiesDescription[];
+
 extern const char kPdfViewerPresentationModeName[];
 extern const char kPdfViewerPresentationModeDescription[];
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

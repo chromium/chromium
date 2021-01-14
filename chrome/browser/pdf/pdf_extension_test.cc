@@ -389,6 +389,9 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     if (ShouldEnablePdfViewerPresentationMode()) {
       enabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
     }
+    if (ShouldEnablePdfViewerDocumentProperties()) {
+      enabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
+    }
     return enabled;
   }
 
@@ -400,6 +403,9 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     if (!ShouldEnablePdfViewerPresentationMode()) {
       disabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
     }
+    if (!ShouldEnablePdfViewerDocumentProperties()) {
+      disabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
+    }
     return disabled;
   }
 
@@ -408,6 +414,9 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
   // Hook to set up whether the PdfViewerPresentationMode feature is enabled.
   virtual bool ShouldEnablePdfViewerPresentationMode() const { return false; }
+
+  // Hook to set up whether the PdfViewerDocumentProperties feature is enabled.
+  virtual bool ShouldEnablePdfViewerDocumentProperties() const { return false; }
 
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
@@ -917,13 +926,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerPdfSidenav) {
   RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest,
-                       ViewerPropertiesDialogTest) {
-  // The properties dialog formats some values based on locale.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
-  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
-}
-
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnailBar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
@@ -934,6 +936,23 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnail) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
+}
+
+class PDFExtensionDocumentPropertiesEnabledTest
+    : public PDFExtensionJSTestBase {
+ public:
+  ~PDFExtensionDocumentPropertiesEnabledTest() override = default;
+
+ protected:
+  bool ShouldEnablePDFViewerUpdate() const override { return true; }
+  bool ShouldEnablePdfViewerDocumentProperties() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionDocumentPropertiesEnabledTest,
+                       ViewerPropertiesDialog) {
+  // The properties dialog formats some values based on locale.
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
+  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
 class PDFExtensionPresentationModeEnabledTest : public PDFExtensionJSTestBase {

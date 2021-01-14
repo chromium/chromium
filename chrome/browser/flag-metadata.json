@@ -3894,6 +3894,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "pdf-viewer-document-properties",
+    "owners": [ "dhoss", "dpapad" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "pdf-viewer-presentation-mode",
     "owners": [ "dpapad" ],
     "expiry_milestone": 92

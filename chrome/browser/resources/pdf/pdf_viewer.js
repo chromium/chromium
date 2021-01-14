@@ -182,6 +182,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
+      documentPropertiesEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       fileName_: String,
 
       /** @private */
@@ -751,7 +757,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   onPropertiesClick_() {
-    assert(this.pdfViewerUpdateEnabled_);
+    assert(this.documentPropertiesEnabled_);
     assert(!this.showPropertiesDialog_);
     this.showPropertiesDialog_ = true;
   }
@@ -852,6 +858,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   handleStrings(strings) {
     super.handleStrings(strings);
 
+    this.documentPropertiesEnabled_ =
+        loadTimeData.getBoolean('documentPropertiesEnabled');
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
     this.pdfFormSaveEnabled_ = loadTimeData.getBoolean('pdfFormSaveEnabled');

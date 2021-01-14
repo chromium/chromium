@@ -314,7 +314,12 @@ const tests = [
   },
   async function testPropertiesButton() {
     const toolbar = createToolbar();
-    const button = toolbar.shadowRoot.querySelector('#properties-button');
+    let button = toolbar.shadowRoot.querySelector('#properties-button');
+    chrome.test.assertFalse(!!button);
+
+    toolbar.documentPropertiesEnabled = true;
+    await flushTasks();
+    button = toolbar.shadowRoot.querySelector('#properties-button');
     chrome.test.assertTrue(!!button);
 
     const whenFired = eventToPromise('properties-click', toolbar);

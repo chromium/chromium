@@ -47,6 +47,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       // </if>
       docTitle: String,
       docLength: Number,
+      documentPropertiesEnabled: Boolean,
       hasEdits: Boolean,
       hasEnteredAnnotationMode: Boolean,
       isFormFieldFocused: Boolean,
@@ -228,6 +229,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   /** @private */
   onPropertiesClick_() {
+    assert(this.documentPropertiesEnabled);
     PDFMetrics.record(UserAction.PROPERTIES);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('properties-click'));

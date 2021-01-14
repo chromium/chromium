@@ -4885,6 +4885,12 @@ const char kPdfViewerUpdateDescription[] =
     "When enabled, the PDF viewer will display an updated UI with new "
     "options and features.";
 
+const char kPdfViewerDocumentPropertiesName[] =
+    "PDF Viewer Document Properties";
+const char kPdfViewerDocumentPropertiesDescription[] =
+    "When enabled, the PDF viewer will include an option in the toolbar's "
+    "overflow menu to open a dialog containing document properties.";
+
 const char kPdfViewerPresentationModeName[] = "PDF Viewer Presentation Mode";
 const char kPdfViewerPresentationModeDescription[] =
     "When enabled, the PDF viewer will include an option in the toolbar's "

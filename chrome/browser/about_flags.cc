@@ -4730,6 +4730,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfViewerUpdateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPDFViewerUpdate)},
 
+    {"pdf-viewer-document-properties",
+     flag_descriptions::kPdfViewerDocumentPropertiesName,
+     flag_descriptions::kPdfViewerDocumentPropertiesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfViewerDocumentProperties)},
+
     {"pdf-viewer-presentation-mode",
      flag_descriptions::kPdfViewerPresentationModeName,
      flag_descriptions::kPdfViewerPresentationModeDescription, kOsDesktop,
