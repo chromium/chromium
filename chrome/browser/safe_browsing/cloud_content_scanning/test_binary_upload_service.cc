@@ -18,6 +18,7 @@ TestBinaryUploadService::TestBinaryUploadService()
 void TestBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  last_request_ = request->content_analysis_request();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&Request::FinishRequest, std::move(request),
                                 saved_result_, saved_response_));

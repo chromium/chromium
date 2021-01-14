@@ -39,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -184,13 +185,25 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       content::DownloadItemUtils::GetBrowserContext(item));
   bool safe_browsing_enabled =
       profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
+  auto settings = DeepScanningRequest::ShouldUploadBinary(item);
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
+      base::FeatureList::IsEnabled(
+          kSafeBrowsingDisableConsumerCsdForEnterprise) &&
+      settings.has_value()) {
+    UploadForDeepScanning(item, std::move(callback),
+                          DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+                          std::move(settings.value()));
+    return true;
+  }
 
   if (safe_browsing_enabled) {
     CheckClientDownload(item, std::move(callback));
     return true;
   }
 
-  auto settings = DeepScanningRequest::ShouldUploadBinary(item);
+  // TODO(https://crbug.com/1165815): Remove this check once the enterpise CSD
+  // check has fully launched.
   if (settings.has_value()) {
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,

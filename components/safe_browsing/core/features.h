@@ -69,6 +69,14 @@ extern const base::Feature kPasswordProtectionForSignedInUsers;
 // Controls whether Chrome prompts Advanced Protection users for deep scanning.
 extern const base::Feature kPromptAppForDeepScanning;
 
+// Controls whether we are performing enterprise download checks for users with
+// the appropriate policies enabled.
+extern const base::Feature kSafeBrowsingEnterpriseCsd;
+
+// Controls whether we are disabling consumer download checks for users using
+// the enterprise download checks.
+extern const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise;
+
 // Controls whether Safe Browsing uses separate NetworkContexts for each
 // profile.
 extern const base::Feature kSafeBrowsingSeparateNetworkContexts;
