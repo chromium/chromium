@@ -123,7 +123,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool WasResponseCached() override { return was_response_cached_; }
   const net::ProxyServer& GetProxyServer() override { return proxy_server_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
-  const base::Optional<Impression>& GetImpression() override {
+  const base::Optional<blink::Impression>& GetImpression() override {
     return impression_;
   }
   const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
@@ -206,7 +206,7 @@ class MockNavigationHandle : public NavigationHandle {
   void set_proxy_server(const net::ProxyServer& proxy_server) {
     proxy_server_ = proxy_server;
   }
-  void set_impression(const Impression& impression) {
+  void set_impression(const blink::Impression& impression) {
     impression_ = impression;
   }
   void set_initiator_frame_token(
@@ -251,7 +251,7 @@ class MockNavigationHandle : public NavigationHandle {
   base::Optional<url::Origin> initiator_origin_;
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
-  base::Optional<Impression> impression_;
+  base::Optional<blink::Impression> impression_;
   base::Optional<base::UnguessableToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 };

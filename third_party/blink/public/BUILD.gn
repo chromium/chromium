@@ -117,6 +117,7 @@ source_set("blink_headers") {
     "platform/child_url_loader_factory_bundle.h",
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
+    "platform/impression_conversions.h",
     "platform/input/input_handler_proxy.h",
     "platform/input/input_handler_proxy_client.h",
     "platform/input/predictor_factory.h",

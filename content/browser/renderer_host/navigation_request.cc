@@ -724,7 +724,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     NavigationEntryImpl* entry,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
-    const base::Optional<Impression>& impression) {
+    const base::Optional<blink::Impression>& impression) {
   // TODO(arthursonzogni): Form submission with the "GET" method is possible.
   // This is not currently handled here.
   bool is_form_submission = !!post_body;
@@ -4997,7 +4997,7 @@ const std::string& NavigationRequest::GetHrefTranslate() {
   return common_params().href_translate;
 }
 
-const base::Optional<Impression>& NavigationRequest::GetImpression() {
+const base::Optional<blink::Impression>& NavigationRequest::GetImpression() {
   return begin_params()->impression;
 }
 

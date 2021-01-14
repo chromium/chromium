@@ -14,7 +14,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -24,6 +23,7 @@
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -367,7 +367,7 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns, if available, the impression associated with the link clicked to
   // initiate this navigation. The impression is available for the entire
   // lifetime of the navigation.
-  virtual const base::Optional<Impression>& GetImpression() = 0;
+  virtual const base::Optional<blink::Impression>& GetImpression() = 0;
 
   // Returns the frame token associated with the frame that initiated the
   // navigation. This can be nullptr if the navigation was not associated with a

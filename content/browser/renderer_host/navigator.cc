@@ -512,7 +512,7 @@ void Navigator::RequestOpenURL(
     blink::mojom::TriggeringEventInfo triggering_event_info,
     const std::string& href_translate,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    const base::Optional<Impression>& impression) {
+    const base::Optional<blink::Impression>& impression) {
   // Note: This can be called for subframes (even when OOPIFs are not possible)
   // if the disposition calls for a different window.
 
@@ -601,7 +601,7 @@ void Navigator::NavigateFromFrameProxy(
     const std::string& extra_headers,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool has_user_gesture,
-    const base::Optional<Impression>& impression) {
+    const base::Optional<blink::Impression>& impression) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
     NOTREACHED();

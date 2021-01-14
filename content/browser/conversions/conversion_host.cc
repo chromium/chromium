@@ -149,7 +149,7 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   url::Origin impression_origin = std::move((*it.get())->second);
   DCHECK(navigation_handle->GetImpression());
-  const Impression& impression = *(navigation_handle->GetImpression());
+  const blink::Impression& impression = *(navigation_handle->GetImpression());
 
   // If the impression's conversion destination does not match the final top
   // frame origin of this new navigation ignore it.

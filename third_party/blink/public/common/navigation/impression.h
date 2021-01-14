@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_IMPRESSION_H_
-#define CONTENT_PUBLIC_COMMON_IMPRESSION_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_IMPRESSION_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_IMPRESSION_H_
 
 #include <stdint.h>
 #include <string>
 
 #include "base/time/time.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
 
-namespace content {
+namespace blink {
 
 // An impression represents a click on an anchor tag that has special Conversion
 // Measurement attributes declared. When the anchor is clicked, an impression is
@@ -23,7 +23,7 @@ namespace content {
 //
 // Used for IPC transport of WebImpression. WebImpression cannot be used
 // directly as it contains non-header-only blink types.
-struct CONTENT_EXPORT Impression {
+struct BLINK_COMMON_EXPORT Impression {
   Impression();
   Impression(const Impression& other);
   Impression& operator=(const Impression& other);
@@ -47,6 +47,6 @@ struct CONTENT_EXPORT Impression {
   base::Optional<base::TimeDelta> expiry;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_COMMON_IMPRESSION_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_IMPRESSION_H_

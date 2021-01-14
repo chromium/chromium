@@ -156,6 +156,7 @@ source_set("headers") {
     "mime_util/mime_util.h",
     "mobile_metrics/mobile_friendliness.h",
     "native_io/native_io_utils.h",
+    "navigation/impression.h",
     "notifications/notification_constants.h",
     "notifications/notification_mojom_traits.h",
     "notifications/notification_resources.h",

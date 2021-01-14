@@ -14,7 +14,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/impression.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -22,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -158,7 +158,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   void set_origin(const url::Origin& origin) { origin_ = origin; }
 
-  void set_impression(const Impression& impression) {
+  void set_impression(const blink::Impression& impression) {
     impression_ = impression;
   }
 
@@ -294,7 +294,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   base::Optional<net::SSLInfo> ssl_info_;
   base::Optional<blink::PageState> page_state_;
   base::Optional<url::Origin> origin_;
-  base::Optional<Impression> impression_;
+  base::Optional<blink::Impression> impression_;
   int64_t post_id_ = -1;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that

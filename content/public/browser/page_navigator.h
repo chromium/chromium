@@ -19,11 +19,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -154,7 +154,7 @@ struct CONTENT_EXPORT OpenURLParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<Impression> impression;
+  base::Optional<blink::Impression> impression;
 };
 
 class PageNavigator {

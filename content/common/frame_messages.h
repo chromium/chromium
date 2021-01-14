@@ -29,7 +29,6 @@
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/common_param_traits.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -120,7 +120,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::NavigationDownloadPolicy)
   IPC_STRUCT_TRAITS_MEMBER(blocking_downloads_in_sandbox_enabled)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::Impression)
+IPC_STRUCT_TRAITS_BEGIN(blink::Impression)
   IPC_STRUCT_TRAITS_MEMBER(conversion_destination)
   IPC_STRUCT_TRAITS_MEMBER(reporting_origin)
   IPC_STRUCT_TRAITS_MEMBER(impression_data)

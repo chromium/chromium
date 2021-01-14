@@ -8,8 +8,8 @@
 
 #include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/impression_conversions.h"
 #include "content/renderer/menu_item_builder.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 
 namespace content {
 
@@ -51,8 +51,10 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
 
   params.link_text = data.link_text.Utf16();
 
-  if (data.impression)
-    params.impression = ConvertWebImpressionToImpression(*data.impression);
+  if (data.impression) {
+    params.impression =
+        blink::ConvertWebImpressionToImpression(*data.impression);
+  }
 
   params.source_type = static_cast<ui::MenuSourceType>(data.source_type);
 

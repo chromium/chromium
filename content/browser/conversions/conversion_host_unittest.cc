@@ -30,8 +30,8 @@ namespace {
 
 const char kConversionUrl[] = "https://b.com";
 
-Impression CreateValidImpression() {
-  Impression result;
+blink::Impression CreateValidImpression() {
+  blink::Impression result;
   result.conversion_destination = url::Origin::Create(GURL(kConversionUrl));
   result.reporting_origin = url::Origin::Create(GURL("https://c.com"));
   result.impression_data = 1UL;
@@ -374,7 +374,7 @@ TEST_F(ConversionHostTest,
     auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
         GURL(test_case.conversion_origin), main_rfh());
 
-    Impression impression;
+    blink::Impression impression;
     impression.conversion_destination =
         url::Origin::Create(GURL(test_case.conversion_origin));
     impression.reporting_origin =

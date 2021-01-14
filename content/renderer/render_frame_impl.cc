@@ -70,7 +70,6 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/untrustworthy_context_menu_params.h"
@@ -96,7 +95,6 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
-#include "content/renderer/impression_conversions.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
 #include "content/renderer/loader/resource_dispatcher.h"
@@ -150,6 +148,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -165,6 +164,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -5647,8 +5647,10 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
 
   params->initiator_frame_token = info->initiator_frame_token;
 
-  if (info->impression)
-    params->impression = ConvertWebImpressionToImpression(*info->impression);
+  if (info->impression) {
+    params->impression =
+        blink::ConvertWebImpressionToImpression(*info->impression);
+  }
 
   if (GetContentClient()->renderer()->AllowPopup())
     params->user_gesture = true;
@@ -5971,8 +5973,8 @@ void RenderFrameImpl::BeginNavigationInternal(
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
           info->impression
-              ? base::make_optional<Impression>(
-                    ConvertWebImpressionToImpression(*info->impression))
+              ? base::make_optional<blink::Impression>(
+                    blink::ConvertWebImpressionToImpression(*info->impression))
               : base::nullopt,
           renderer_before_unload_start, renderer_before_unload_end);
 

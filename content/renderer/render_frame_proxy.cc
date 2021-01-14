@@ -18,12 +18,10 @@
 #include "content/common/input_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/child_frame_compositing_helper.h"
-#include "content/renderer/impression_conversions.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -33,8 +31,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -454,7 +454,7 @@ void RenderFrameProxy::Navigate(
                       : base::nullopt;
 
   if (impression)
-    params->impression = ConvertWebImpressionToImpression(*impression);
+    params->impression = blink::ConvertWebImpressionToImpression(*impression);
 
   // Note: For the AdFrame/Sandbox download policy here it only covers the case
   // where the navigation initiator frame is ad. The download_policy may be

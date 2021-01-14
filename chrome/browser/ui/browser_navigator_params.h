@@ -17,11 +17,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -306,7 +306,7 @@ struct NavigateParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<content::Impression> impression;
+  base::Optional<blink::Impression> impression;
 
   // True if the navigation was initiated by typing in the omnibox but the typed
   // text didn't have a scheme such as http or https (e.g. google.com), and

@@ -57,11 +57,11 @@ class ImpressionObserver : public TestNavigationObserver {
     }
   }
 
-  const Impression& last_impression() { return *last_impression_; }
+  const blink::Impression& last_impression() { return *last_impression_; }
 
   // Waits for |expected_num_impressions_| navigations with impressions, and
   // returns the last impression.
-  const Impression& Wait() {
+  const blink::Impression& Wait() {
     if (num_impressions_ >= expected_num_impressions_)
       return *last_impression_;
     impression_loop_.Run();
@@ -78,7 +78,7 @@ class ImpressionObserver : public TestNavigationObserver {
  private:
   size_t num_impressions_ = 0u;
   const size_t expected_num_impressions_ = 0u;
-  base::Optional<Impression> last_impression_;
+  base::Optional<blink::Impression> last_impression_;
   bool waiting_for_null_impression_ = false;
   base::RunLoop impression_loop_;
 };
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
 
   // Wait for the impression to be seen by the observer.
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
 
   // Verify the attributes of the impression are set as expected.
   EXPECT_EQ(1UL, last_impression.impression_data);
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
 
   // Wait for the impression to be seen by the observer.
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
   EXPECT_EQ(1UL, impression_observer.last_impression().impression_data);
 }
 
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
 
   // Wait for the impression to be seen by the observer.
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
   EXPECT_EQ(1UL, impression_observer.last_impression().impression_data);
 }
 
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
 
   // Wait for the impression to be seen by the observer.
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
   EXPECT_EQ(0UL, impression_observer.last_impression().impression_data);
 }
 
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(
   impression_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(ExecJs(shell(), "simulateMiddleClick(\'link\');"));
 
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
 
   // Verify the attributes of the impression are set as expected.
   EXPECT_EQ(1UL, last_impression.impression_data);
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(
                             ui::DomCode::ENTER, ui::VKEY_RETURN, false, false,
                             false, false);
 
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
 
   // Verify the attributes of the impression are set as expected.
   EXPECT_EQ(1UL, last_impression.impression_data);
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
                 reportingOrigin: "https://report.com", impressionExpiry: 1000});)"));
 
   // Wait for the impression to be seen by the observer.
-  Impression last_impression = impression_observer.Wait();
+  blink::Impression last_impression = impression_observer.Wait();
 
   // Verify the attributes of the impression are set as expected.
   EXPECT_EQ(1UL, last_impression.impression_data);

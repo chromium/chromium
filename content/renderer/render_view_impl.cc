@@ -22,10 +22,10 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/impression_conversions.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
@@ -383,7 +383,7 @@ WebView* RenderViewImpl::CreateView(
   params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
 
   if (impression) {
-    params->impression = ConvertWebImpressionToImpression(*impression);
+    params->impression = blink::ConvertWebImpressionToImpression(*impression);
   }
 
   // We preserve this information before sending the message since |params| is

@@ -14,10 +14,10 @@
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/common/impression.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/navigation_initiator.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -134,7 +134,7 @@ class CONTENT_EXPORT Navigator {
       blink::mojom::TriggeringEventInfo triggering_event_info,
       const std::string& href_translate,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      const base::Optional<Impression>& impression);
+      const base::Optional<blink::Impression>& impression);
 
   // Called when a document requests a navigation in another document through a
   // RenderFrameProxy. If |method| is "POST", then |post_body| needs to specify
@@ -155,7 +155,7 @@ class CONTENT_EXPORT Navigator {
       const std::string& extra_headers,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool has_user_gesture,
-      const base::Optional<Impression>& impression);
+      const base::Optional<blink::Impression>& impression);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
   // If |frame_tree_node| has a NavigationRequest waiting for the renderer

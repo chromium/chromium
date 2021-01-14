@@ -25,11 +25,11 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -274,7 +274,7 @@ class NavigationController {
 
     // Impression info associated with this navigation. Should only be populated
     // for navigations originating from a link click.
-    base::Optional<Impression> impression;
+    base::Optional<blink::Impression> impression;
 
     DISALLOW_COPY_AND_ASSIGN(LoadURLParams);
   };

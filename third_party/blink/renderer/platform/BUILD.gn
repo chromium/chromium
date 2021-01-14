@@ -497,6 +497,7 @@ component("platform") {
     "disk_data_allocator.h",
     "disk_data_metadata.h",
     "exported/file_path_conversion.cc",
+    "exported/impression_conversions.cc",
     "exported/interface_registry.cc",
     "exported/mediastream/web_media_stream.cc",
     "exported/mediastream/web_media_stream_source.cc",

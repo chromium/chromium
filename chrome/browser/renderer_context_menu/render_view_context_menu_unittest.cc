@@ -31,7 +31,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/impression.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
@@ -39,6 +38,7 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/input_field_type.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 
@@ -552,7 +552,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
   params.link_url = params.link_url;
-  params.impression = content::Impression();
+  params.impression = blink::Impression();
   auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
   EXPECT_TRUE(delegate.last_navigation_params());

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/impression.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 
-#include "third_party/blink/public/platform/web_security_origin.h"
-
-namespace content {
+namespace blink {
 
 Impression::Impression() = default;
 
@@ -16,4 +14,4 @@ Impression& Impression::operator=(const Impression& other) = default;
 
 Impression::~Impression() = default;
 
-}  // namespace content
+}  // namespace blink
