@@ -17,7 +17,6 @@
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -64,7 +63,7 @@ base::Optional<RedirectPosition> GetEnforcementRedirectPosition(
 SubresourceFilterSafeBrowsingActivationThrottle::
     SubresourceFilterSafeBrowsingActivationThrottle(
         content::NavigationHandle* handle,
-        SubresourceFilterClient* client,
+        Delegate* delegate,
         scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager)
@@ -76,7 +75,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
                            io_task_runner_,
                            base::ThreadTaskRunnerHandle::Get()),
                        base::OnTaskRunnerDeleter(io_task_runner_)),
-      client_(client) {
+      delegate_(delegate) {
   DCHECK(handle->IsInMainFrame());
 
   CheckCurrentUrl();
@@ -205,9 +204,11 @@ void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {
     activation_decision = ActivationDecision::FORCED_ACTIVATION;
   }
 
-  // Let the embedder get the last word when it comes to activation level.
-  activation_level = client_->OnPageActivationComputed(
-      navigation_handle(), activation_level, &activation_decision);
+  // Let the delegate adjust the activation decision if present.
+  if (delegate_) {
+    activation_level = delegate_->OnPageActivationComputed(
+        navigation_handle(), activation_level, &activation_decision);
+  }
 
   LogMetricsOnChecksComplete(selection.matched_list, activation_decision,
                              activation_level);
