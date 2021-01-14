@@ -122,8 +122,19 @@ class ASH_EXPORT CaptureModeController
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
+  CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
+
  private:
   friend class CaptureModeTestApi;
+  friend class VideoRecordingWatcher;
+
+  // Called by |video_recording_watcher_| to inform us that the |window| being
+  // recorded (i.e. |is_recording_in_progress_| is true) is about to move to a
+  // |new_root|. This is needed so we can inform the recording service of this
+  // change so that it can switch its capture target to the new root's frame
+  // sink.
+  void OnRecordedWindowChangingRoot(aura::Window* window,
+                                    aura::Window* new_root);
 
   // Returns true if screen recording needs to be blocked due to protected
   // content. |window| is the window being recorded or desired to be recorded.

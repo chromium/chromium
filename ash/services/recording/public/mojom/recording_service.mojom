@@ -96,4 +96,18 @@ interface RecordingService {
   // Stops an on-going video recording. The remaining frames will continue being
   // provided to the client until OnRecordingEnded() is called.
   StopRecording();
+
+  // Called by the client to let the service know that a window being recorded
+  // is about to move to a different display (i.e a different root window),
+  // giving it the |new_frame_sink_id| of that new root window. It also provides
+  // the |new_max_video_size| in DIPs (since the new display may have different
+  // bounds).
+  // Note that changing the window's root doesn't affect the window's
+  // SubtreeCaptureId, and therefore it doesn't need to be reprovided.
+  // This can *only* be called when the service is already recording a window
+  // (i.e. RecordWindow() has already been called to start the recording of a
+  // window).
+  OnRecordedWindowChangingRoot(
+      viz.mojom.FrameSinkId new_frame_sink_id,
+      gfx.mojom.Size new_max_video_size);
 };

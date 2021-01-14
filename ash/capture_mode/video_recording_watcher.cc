@@ -6,7 +6,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -62,12 +61,7 @@ void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(
   if (!new_root)
     return;
 
-  // When a window being recorded changes displays either due to a display
-  // getting disconnected, or moved by the user, the stop-recording button
-  // should follow that window to that display.
-  capture_mode_util::SetStopRecordingButtonVisibility(window->GetRootWindow(),
-                                                      false);
-  capture_mode_util::SetStopRecordingButtonVisibility(new_root, true);
+  controller_->OnRecordedWindowChangingRoot(window_being_recorded_, new_root);
 }
 
 }  // namespace ash

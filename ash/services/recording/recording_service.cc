@@ -50,6 +50,20 @@ uint64_t CalculateVpxEncoderBitrate(const gfx::Size& capture_size) {
                                         kBitsPerSecondPerSquarePixel));
 }
 
+// Given the desired |capture_size|, it creates and returns the options needed
+// to configure the video encoder.
+media::VideoEncoder::Options CreateVideoEncoderOptions(
+    const gfx::Size& capture_size) {
+  media::VideoEncoder::Options video_encoder_options;
+  video_encoder_options.bitrate = CalculateVpxEncoderBitrate(capture_size);
+  video_encoder_options.framerate = kMaxFrameRate;
+  video_encoder_options.frame_size = capture_size;
+  // This value, expressed as a number of frames, forces the encoder to code
+  // a keyframe if one has not been coded in the last keyframe_interval frames.
+  video_encoder_options.keyframe_interval = 100;
+  return video_encoder_options;
+}
+
 media::AudioParameters GetAudioParameters() {
   static_assert(kAudioSampleRate % 100 == 0,
                 "Audio sample rate is not divisible by 100");
@@ -101,8 +115,6 @@ void RecordingService::RecordWindow(
     const gfx::Size& max_video_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  // TODO(crbug.com/1143930): Window recording doesn't produce any frames at the
-  // moment.
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
                     VideoCaptureParams::CreateForWindowCapture(
@@ -131,6 +143,27 @@ void RecordingService::StopRecording() {
   if (audio_capturer_)
     audio_capturer_->Stop();
   audio_capturer_.reset();
+}
+
+void RecordingService::OnRecordedWindowChangingRoot(
+    const viz::FrameSinkId& new_frame_sink_id,
+    const gfx::Size& new_max_video_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (!current_video_capture_params_) {
+    // A recording might terminate before we signal the client with an
+    // |OnRecordingEnded()| call.
+    return;
+  }
+
+  // If there's a change in the new root's size, we must reconfigure the video
+  // encoder so that output video has the correct dimensions.
+  if (current_video_capture_params_->OnRecordedWindowChangingRoot(
+          video_capturer_remote_, new_frame_sink_id, new_max_video_size)) {
+    encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
+        .WithArgs(CreateVideoEncoderOptions(
+            current_video_capture_params_->GetCaptureSize()));
+  }
 }
 
 void RecordingService::OnFrameCaptured(
@@ -253,19 +286,12 @@ void RecordingService::StartNewRecording(
   client_remote_.Bind(std::move(client));
 
   current_video_capture_params_ = std::move(capture_params);
-  const auto capture_size = current_video_capture_params_->GetCaptureSize();
-  media::VideoEncoder::Options video_encoder_options;
-  video_encoder_options.bitrate = CalculateVpxEncoderBitrate(capture_size);
-  video_encoder_options.framerate = kMaxFrameRate;
-  video_encoder_options.frame_size = capture_size;
-  // This value, expressed as a number of frames, forces the encoder to code
-  // a keyframe if one has not been coded in the last keyframe_interval frames.
-  video_encoder_options.keyframe_interval = 100;
-
   const bool should_record_audio = audio_stream_factory.is_valid();
 
   encoder_muxer_ = RecordingEncoderMuxer::Create(
-      encoding_task_runner_, video_encoder_options,
+      encoding_task_runner_,
+      CreateVideoEncoderOptions(
+          current_video_capture_params_->GetCaptureSize()),
       should_record_audio ? &audio_parameters_ : nullptr,
       base::BindRepeating(&RecordingService::OnMuxerWrite,
                           base::Unretained(this)),
@@ -365,14 +391,12 @@ void RecordingService::OnRecordingFailure() {
 
 void RecordingService::OnEncoderMuxerFlushed(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
-  DCHECK(encoder_muxer_);
 
   // If flushing the encoders and muxers resulted in some chunks being cached
   // here, we flush them to the client now.
   if (number_of_buffered_chunks_)
     FlushBufferedChunks();
 
-  encoder_muxer_.Reset();
   main_task_runner_->PostNonNestableTask(
       FROM_HERE, base::BindOnce(&RecordingService::SignalRecordingEndedToClient,
                                 base::Unretained(this), success));
@@ -386,7 +410,9 @@ void RecordingService::SignalMuxerOutputToClient(std::string muxer_output) {
 
 void RecordingService::SignalRecordingEndedToClient(bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK(encoder_muxer_);
 
+  encoder_muxer_.Reset();
   client_remote_->OnRecordingEnded(success);
 }
 

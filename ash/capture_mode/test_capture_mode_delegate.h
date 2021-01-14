@@ -10,6 +10,8 @@
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
@@ -21,6 +23,12 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   TestCaptureModeDelegate(const TestCaptureModeDelegate&) = delete;
   TestCaptureModeDelegate& operator=(const TestCaptureModeDelegate&) = delete;
   ~TestCaptureModeDelegate() override;
+
+  // Gets the current frame sink id being captured by the fake service.
+  viz::FrameSinkId GetCurrentFrameSinkId() const;
+
+  // Gets the current video size being captured by the fake service.
+  gfx::Size GetCurrentVideoSize() const;
 
   // CaptureModeDelegate:
   base::FilePath GetActiveUserDownloadsDir() const override;

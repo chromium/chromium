@@ -70,11 +70,43 @@ class WindowCaptureParams : public VideoCaptureParams {
     capturer->SetAutoThrottlingEnabled(true);
   }
 
-  gfx::Size GetCaptureSize() const override { return initial_video_size_; }
+  gfx::Size GetCaptureSize() const override {
+    // For now, the capturer sends us video frames whose sizes are equal to the
+    // size of the root on which the window resides. Therefore,
+    // |max_video_size_| should be used to initialize the video encoder.
+    // Otherwise, the pixels of the output video will be squished. With this
+    // approach, it's possible to resize the window within those bounds without
+    // having to change the size of the output video. However, this may not be
+    // a desired way.
+    // TODO(https://crbug.com/1165708): Investigate how to fix this in the
+    // capturer for M-89 or M-90.
+    return max_video_size_;
+  }
+
+  bool OnRecordedWindowChangingRoot(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+      viz::FrameSinkId new_frame_sink_id,
+      const gfx::Size& new_max_video_size) override {
+    DCHECK(new_frame_sink_id.is_valid());
+
+    // The video encoder deals with video frames. Changing the frame sink ID
+    // doesn't affect the encoder. What affects it is a change in the video
+    // frames size.
+    const bool should_reconfigure_video_encoder =
+        max_video_size_ != new_max_video_size;
+
+    max_video_size_ = new_max_video_size;
+    frame_sink_id_ = new_frame_sink_id;
+    capturer->SetResolutionConstraints(initial_video_size_, max_video_size_,
+                                       /*use_fixed_aspect_ratio=*/false);
+    capturer->ChangeTarget(frame_sink_id_, subtree_capture_id_);
+
+    return should_reconfigure_video_encoder;
+  }
 
  private:
   const gfx::Size initial_video_size_;
-  const gfx::Size max_video_size_;
+  gfx::Size max_video_size_;
 };
 
 // -----------------------------------------------------------------------------
@@ -159,6 +191,14 @@ void VideoCaptureParams::InitializeVideoCapturer(
 gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(
     const gfx::Rect& original_frame_visible_rect) const {
   return original_frame_visible_rect;
+}
+
+bool VideoCaptureParams::OnRecordedWindowChangingRoot(
+    mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+    viz::FrameSinkId new_frame_sink_id,
+    const gfx::Size& new_max_video_size) {
+  CHECK(false) << "This can only be called when recording a video";
+  return false;
 }
 
 VideoCaptureParams::VideoCaptureParams(viz::FrameSinkId frame_sink_id,

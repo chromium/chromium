@@ -4,8 +4,8 @@
 
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 
@@ -17,10 +17,14 @@ namespace ash {
 class FakeRecordingService : public recording::mojom::RecordingService {
  public:
   FakeRecordingService() : receiver_(this) {}
-
   FakeRecordingService(const FakeRecordingService&) = delete;
   FakeRecordingService& operator=(const FakeRecordingService&) = delete;
   ~FakeRecordingService() override = default;
+
+  const viz::FrameSinkId& current_frame_sink_id() const {
+    return current_frame_sink_id_;
+  }
+  const gfx::Size& video_size() const { return video_size_; }
 
   void Bind(
       mojo::PendingReceiver<recording::mojom::RecordingService> receiver) {
@@ -35,6 +39,9 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& fullscreen_size) override {
     remote_client_.Bind(std::move(client));
+    current_frame_sink_id_ = frame_sink_id;
+    current_capture_source_ = CaptureModeSource::kFullscreen;
+    video_size_ = fullscreen_size;
   }
   void RecordWindow(
       mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
@@ -45,6 +52,9 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       const gfx::Size& initial_window_size,
       const gfx::Size& max_window_size) override {
     remote_client_.Bind(std::move(client));
+    current_frame_sink_id_ = frame_sink_id;
+    current_capture_source_ = CaptureModeSource::kWindow;
+    video_size_ = max_window_size;
   }
   void RecordRegion(
       mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
@@ -52,17 +62,30 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& fullscreen_size,
-      const gfx::Rect& corp_region) override {
+      const gfx::Rect& crop_region) override {
     remote_client_.Bind(std::move(client));
+    current_frame_sink_id_ = frame_sink_id;
+    current_capture_source_ = CaptureModeSource::kRegion;
+    video_size_ = crop_region.size();
   }
   void StopRecording() override {
     remote_client_->OnRecordingEnded(/*success=*/true);
     remote_client_.FlushForTesting();
   }
+  void OnRecordedWindowChangingRoot(
+      const viz::FrameSinkId& new_frame_sink_id,
+      const gfx::Size& new_max_video_size) override {
+    DCHECK_EQ(current_capture_source_, CaptureModeSource::kWindow);
+    current_frame_sink_id_ = new_frame_sink_id;
+    video_size_ = new_max_video_size;
+  }
 
  private:
   mojo::Receiver<recording::mojom::RecordingService> receiver_;
   mojo::Remote<recording::mojom::RecordingServiceClient> remote_client_;
+  viz::FrameSinkId current_frame_sink_id_;
+  CaptureModeSource current_capture_source_ = CaptureModeSource::kFullscreen;
+  gfx::Size video_size_;
 };
 
 // -----------------------------------------------------------------------------
@@ -76,6 +99,15 @@ TestCaptureModeDelegate::TestCaptureModeDelegate() {
 }
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
+
+viz::FrameSinkId TestCaptureModeDelegate::GetCurrentFrameSinkId() const {
+  return fake_service_ ? fake_service_->current_frame_sink_id()
+                       : viz::FrameSinkId();
+}
+
+gfx::Size TestCaptureModeDelegate::GetCurrentVideoSize() const {
+  return fake_service_ ? fake_service_->video_size() : gfx::Size();
+}
 
 base::FilePath TestCaptureModeDelegate::GetActiveUserDownloadsDir() const {
   return fake_downloads_dir_;

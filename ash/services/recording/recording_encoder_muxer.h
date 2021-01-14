@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -78,6 +79,13 @@ class RecordingEncoderMuxer {
     return !on_failure_callback_;
   }
 
+  // Creates and initializes the video encoder if none exists, or recreates and
+  // reinitializes it otherwise. This is useful when the video frame dimensions
+  // may need to change dynamically (such as when a recorded window gets moved
+  // to a display with different bounds).
+  void InitializeVideoEncoder(
+      const media::VideoEncoder::Options& video_encoder_options);
+
   // Encodes and muxes the given video |frame|.
   void EncodeVideo(scoped_refptr<media::VideoFrame> frame);
 
@@ -104,10 +112,11 @@ class RecordingEncoderMuxer {
       FailureCallback on_failure_callback);
   ~RecordingEncoderMuxer();
 
-  // Called when the video encoder is initialized to provide the |status| of the
-  // initialization. If initialization failed, |on_failure_callback_| will
+  // Called when the video |encoder| is initialized to provide the |status| of
+  // the initialization. If initialization failed, |on_failure_callback_| will
   // be triggered.
-  void OnVideoEncoderInitialized(media::Status status);
+  void OnVideoEncoderInitialized(media::VpxVideoEncoder* encoder,
+                                 media::Status status);
 
   // Performs the actual encoding of the given video |frame|. It should never be
   // called before the video encoder is initialized. Video frames received
@@ -138,7 +147,8 @@ class RecordingEncoderMuxer {
   // the value of |for_video|.
   void NotifyFailure(FailureType type, bool for_video);
 
-  media::VpxVideoEncoder video_encoder_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<media::VpxVideoEncoder> video_encoder_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<media::AudioOpusEncoder> audio_encoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -173,6 +183,9 @@ class RecordingEncoderMuxer {
       false;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<RecordingEncoderMuxer> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace recording

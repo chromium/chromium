@@ -16,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -1496,6 +1497,39 @@ TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(window->subtree_capture_id().is_valid());
+}
+
+TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
+  UpdateDisplay("400x400,401+0-800x800");
+  auto roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // The capturer should capture from the frame sink of the first display, and
+  // the video size should match the size of the current root window.
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(roots[0]->GetFrameSinkId(), test_delegate->GetCurrentFrameSinkId());
+  EXPECT_EQ(roots[0]->bounds().size(), test_delegate->GetCurrentVideoSize());
+
+  // Moving a window to a different display should be propagated to the service,
+  // with the new root's frame sink ID, and the new root's size.
+  window_util::MoveWindowToDisplay(window.get(),
+                                   roots[1]->GetHost()->GetDisplayId());
+  test_api.FlushRecordingServiceForTesting();
+  ASSERT_EQ(window->GetRootWindow(), roots[1]);
+  EXPECT_EQ(roots[1]->GetFrameSinkId(), test_delegate->GetCurrentFrameSinkId());
+  EXPECT_EQ(roots[1]->bounds().size(), test_delegate->GetCurrentVideoSize());
 }
 
 // Tests the behavior of screen recording with the presence of HDCP secure

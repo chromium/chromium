@@ -45,6 +45,35 @@ base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
       std::move(on_failure_callback));
 }
 
+void RecordingEncoderMuxer::InitializeVideoEncoder(
+    const media::VideoEncoder::Options& video_encoder_options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Note: The VpxVideoEncoder supports changing the encoding options
+  // dynamically, but it won't work for all frame size changes and may cause
+  // encoding failures. Therefore, it's better to recreate and reinitialize a
+  // new encoder. See media::VpxVideoEncoder::ChangeOptions() for more details.
+
+  if (video_encoder_ && is_video_encoder_initialized_) {
+    auto* encoder_ptr = video_encoder_.get();
+    encoder_ptr->Flush(base::BindOnce(
+        // Holds on to the old encoder until it flushes its buffers, then
+        // destroys it.
+        [](std::unique_ptr<media::VpxVideoEncoder> old_encoder,
+           media::Status status) {},
+        std::move(video_encoder_)));
+  }
+
+  is_video_encoder_initialized_ = false;
+  video_encoder_ = std::make_unique<media::VpxVideoEncoder>();
+  video_encoder_->Initialize(
+      media::VP8PROFILE_ANY, video_encoder_options,
+      base::BindRepeating(&RecordingEncoderMuxer::OnVideoEncoderOutput,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderInitialized,
+                     weak_ptr_factory_.GetWeakPtr(), video_encoder_.get()));
+}
+
 void RecordingEncoderMuxer::EncodeVideo(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -85,9 +114,9 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
   // asynchronously.
   if (audio_encoder_)
     audio_encoder_->Flush();
-  video_encoder_.Flush(
+  video_encoder_->Flush(
       base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderFlushed,
-                     base::Unretained(this), std::move(on_done)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
 }
 
 RecordingEncoderMuxer::RecordingEncoderMuxer(
@@ -95,39 +124,41 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
     const media::AudioParameters* audio_input_params,
     media::WebmMuxer::WriteDataCB muxer_output_callback,
     FailureCallback on_failure_callback)
-    : audio_encoder_(
-          !audio_input_params
-              ? nullptr
-              : std::make_unique<media::AudioOpusEncoder>(
-                    *audio_input_params,
-                    base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
-                                        base::Unretained(this)),
-                    base::BindRepeating(&RecordingEncoderMuxer::OnEncoderStatus,
-                                        base::Unretained(this),
-                                        /*for_video=*/false),
-                    // 0 means the encoder picks bitrate automatically.
-                    /*bits_per_second=*/0)),
-      webm_muxer_(media::kCodecOpus,
+    : webm_muxer_(media::kCodecOpus,
                   /*has_video_=*/true,
                   /*has_audio_=*/!!audio_input_params,
                   muxer_output_callback),
       on_failure_callback_(std::move(on_failure_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  video_encoder_.Initialize(
-      media::VP8PROFILE_ANY, video_encoder_options,
-      base::BindRepeating(&RecordingEncoderMuxer::OnVideoEncoderOutput,
-                          base::Unretained(this)),
-      base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderInitialized,
-                     base::Unretained(this)));
+  if (audio_input_params) {
+    audio_encoder_ = std::make_unique<media::AudioOpusEncoder>(
+        *audio_input_params,
+        base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&RecordingEncoderMuxer::OnEncoderStatus,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            /*for_video=*/false),
+        // 0 means the encoder picks bitrate automatically.
+        /*bits_per_second=*/0);
+  }
+
+  InitializeVideoEncoder(video_encoder_options);
 }
 
 RecordingEncoderMuxer::~RecordingEncoderMuxer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void RecordingEncoderMuxer::OnVideoEncoderInitialized(media::Status status) {
+void RecordingEncoderMuxer::OnVideoEncoderInitialized(
+    media::VpxVideoEncoder* encoder,
+    media::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ignore initialization of encoders that were removed as part of
+  // reinitialization.
+  if (video_encoder_.get() != encoder)
+    return;
 
   if (!status.is_ok()) {
     LOG(ERROR) << "Could not initialize the video encoder: "
@@ -152,10 +183,10 @@ void RecordingEncoderMuxer::EncodeVideoImpl(
     return;
 
   video_visible_rect_sizes_.push(frame->visible_rect().size());
-  video_encoder_.Encode(
+  video_encoder_->Encode(
       frame, /*key_frame=*/false,
       base::BindOnce(&RecordingEncoderMuxer::OnEncoderStatus,
-                     base::Unretained(this), /*for_video=*/true));
+                     weak_ptr_factory_.GetWeakPtr(), /*for_video=*/true));
 }
 
 void RecordingEncoderMuxer::OnVideoEncoderOutput(

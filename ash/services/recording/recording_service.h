@@ -64,6 +64,9 @@ class RecordingService : public mojom::RecordingService,
       const gfx::Size& full_capture_size,
       const gfx::Rect& crop_region) override;
   void StopRecording() override;
+  void OnRecordedWindowChangingRoot(
+      const viz::FrameSinkId& new_frame_sink_id,
+      const gfx::Size& new_max_video_size) override;
 
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
@@ -190,9 +193,11 @@ class RecordingService : public mojom::RecordingService,
   scoped_refptr<media::AudioCapturerSource> audio_capturer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
-  // Performs all encoding and muxing operations on the |encoding_task_runner_|,
-  // and it is bound to the sequence of that task runner.
-  base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_;
+  // Performs all encoding and muxing operations asynchronously on the
+  // |encoding_task_runner_|. However, the |encoder_muxer_| object itself is
+  // constructed, used, and destroyed on the main thread sequence.
+  base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_
+      GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // To avoid doing a ton of IPC calls to the client for each muxed chunk
   // received from |encoder_muxer_| in OnMuxerWrite(), we buffer those chunks

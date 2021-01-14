@@ -491,6 +491,26 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   OnVideoRecordCountDownFinished();
 }
 
+void CaptureModeController::OnRecordedWindowChangingRoot(
+    aura::Window* window,
+    aura::Window* new_root) {
+  DCHECK(is_recording_in_progress_);
+  DCHECK(video_recording_watcher_);
+  DCHECK_EQ(window, video_recording_watcher_->window_being_recorded());
+  DCHECK(recording_service_remote_);
+  DCHECK(new_root);
+
+  // When a window being recorded changes displays either due to a display
+  // getting disconnected, or moved by the user, the stop-recording button
+  // should follow that window to that display.
+  capture_mode_util::SetStopRecordingButtonVisibility(window->GetRootWindow(),
+                                                      false);
+  capture_mode_util::SetStopRecordingButtonVisibility(new_root, true);
+
+  recording_service_remote_->OnRecordedWindowChangingRoot(
+      new_root->GetFrameSinkId(), new_root->GetBoundsInRootWindow().size());
+}
+
 bool CaptureModeController::ShouldBlockRecordingForContentProtection(
     aura::Window* window) const {
   if (window->IsRootWindow()) {
