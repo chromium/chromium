@@ -135,6 +135,7 @@
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
 <translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}one{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}other{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
@@ -166,6 +167,7 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">অতিথি হিসাবে ব্রাউজ করুন</translation>
 <translation id="54609108002486618">পরিচালিত</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{আর {0} বার চেষ্টা করতে পারবেন}one{আর {0} বার চেষ্টা করতে পারবেন}other{আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5635169860413004179">রিপোর্ট দেখুন</translation>
 <translation id="5670702108860320605">BSSID</translation>

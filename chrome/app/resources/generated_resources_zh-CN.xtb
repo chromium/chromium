@@ -798,6 +798,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />已准备就绪，可以进行安装。</translation>
 <translation id="1868193363684582383">“Ok Google”</translation>
 <translation id="1868553836791672080">此版 Chromium 无法检查密码</translation>
+<translation id="1869433484041798909">书签按钮</translation>
 <translation id="187145082678092583">收起部分应用</translation>
 <translation id="1871534214638631766">在您右键点击或长按内容时显示相关信息</translation>
 <translation id="1871615898038944731">您的 <ph name="DEVICE_TYPE" /> 使用的操作系统已为最新版本</translation>
@@ -829,6 +830,7 @@
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome 无法将这些密码保存到您的 Google 帐号中，但您依然可以将它们保存在此设备上。</translation>
+<translation id="1903995858055162096">不是您的设备？请使用<ph name="BEGIN_LINK" />访客模式<ph name="END_LINK" />。</translation>
 <translation id="1905375423839394163">Chromebook 设备名称</translation>
 <translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
 <translation id="1906828677882361942">禁止任何网站访问串行端口</translation>
@@ -5437,6 +5439,7 @@
 <translation id="7251346854160851420">默认壁纸</translation>
 <translation id="7253521419891527137">了解详情(&amp;L)</translation>
 <translation id="7254951428499890870">确定要以诊断模式启动“<ph name="APP_NAME" />”吗？</translation>
+<translation id="725497546968438223">书签文件夹按钮</translation>
 <translation id="7255002516883565667">此刻，您有 1 张卡只能在这部设备上使用</translation>
 <translation id="7255935316994522020">应用</translation>
 <translation id="7256069762010468647">该网站正在使用您的摄像头</translation>
@@ -5698,6 +5701,7 @@
 <translation id="7564847347806291057">结束进程</translation>
 <translation id="7566118625369982896">管理 Play 应用链接</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
+<translation id="756876171895853918">自定义头像</translation>
 <translation id="7568790562536448087">更新</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7571643774869182231">存储空间不足，无法更新</translation>

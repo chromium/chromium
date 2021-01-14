@@ -2605,6 +2605,7 @@
 <translation id="3900789207771372462">কিছু এক্সটেনশন আপনার ব্রাউজিং অ্যাক্টিভিটি দেখতে পাবে - তার মধ্যে ব্যক্তিগত তথ্যও আছে।</translation>
 <translation id="3900966090527141178">পাসওয়ার্ড এক্সপোর্ট করুন</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
+<translation id="3903187154317825986">আগে থেকেই তৈরি করা কীবোর্ড</translation>
 <translation id="3904326018476041253">লোকেশন ভিত্তিক পরিষেবা</translation>
 <translation id="3905761538810670789">অ্যাপ্লিকেশান মেরামত করুন</translation>
 <translation id="3906232975181435906">মোবাইল প্রোফাইল ইনস্টল করা হচ্ছে, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
@@ -2901,6 +2902,7 @@
 <translation id="4267924571297947682">অভিভাবকের থেকে অনুমতি নিন</translation>
 <translation id="4267953847983678297">মোবাইল নেটওয়ার্কে অটোমেটিক কানেক্ট করুন</translation>
 <translation id="4268025649754414643">কী চিহ্নকরণ</translation>
+<translation id="4268670020635416342">একটি নাম বা লেবেল যোগ করুন যেমন, কর্মস্থল, ব্যক্তিগত বা শিশু</translation>
 <translation id="4270393598798225102">ভার্সন <ph name="NUMBER" /></translation>
 <translation id="4274667386947315930">সাইন-ইন সংক্রান্ত ডেটা</translation>
 <translation id="4275291496240508082">ডিভাইস স্টার্ট করার সময় হওয়া শব্দ</translation>
@@ -4623,6 +4625,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপনার নেটওয়ার্কে নতুন প্রিন্টারটি}one{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}other{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}}</translation>
 <translation id="6285770818046456882">যে ডিভাইস ব্যবহার করে আপনাকে ফাইল ট্রান্সফার করা হচ্ছিল সেটি ট্রান্সফার বন্ধ করে দিয়েছে</translation>
 <translation id="6290613030083731160">শেয়ার করার মতো আশেপাশে কোনও ডিভাইস উপলভ্য নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="6291741848715722067">কনফার্মেশন কোড</translation>
 <translation id="6291949900244949761">কোনও সাইট ইউএসবি ডিভাইস অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
@@ -5850,6 +5853,7 @@
 <translation id="7719367874908701697">পৃষ্ঠা জুম</translation>
 <translation id="7719588063158526969">ডিভাইসের নামটি খুবই বড়</translation>
 <translation id="7721179060400456005">উইন্ডোগুলিকে স্ক্রিন জুড়ে দেখানোর অনুমতি দিন।</translation>
+<translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7722040605881499779">আপডেটের জন্য প্রয়োজন: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7728465250249629478">ডিভাইসের ভাষা পরিবর্তন করুন</translation>
@@ -6178,6 +6182,7 @@
 <translation id="8074127646604999664">সম্প্রতি বন্ধ করা সাইটগুলিকে ডেটা পাঠানো ও গ্রহণ শেষ করতে অনুমতি দিন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8076835018653442223">আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে আপনার ডিভাইসে স্থানীয় ফাইলের অ্যাক্সেস বন্ধ করা আছে</translation>
+<translation id="8079153653197012234"><ph name="PROFILE_NAME" /> এর জন্য আপনার কনফার্মেশন কোড লিখুন।</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">ADB ডিবাগিং বন্ধ করতে চান?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"-এর সাথে পেয়ার করবেন?</translation>

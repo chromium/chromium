@@ -99,6 +99,7 @@
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
+<translation id="452711251841752011">欢迎使用 Chromium；已打开新的浏览器窗口</translation>
 <translation id="4544142686420020088">Chromium 未能更新，因为出了点问题。<ph name="BEGIN_LINK" />请解决导致 Chromium 更新失败的问题<ph name="END_LINK" />。</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="459535195905078186">Chromium 应用</translation>
@@ -157,6 +158,7 @@
 <translation id="6248213926982192922">将 Chromium 设置为默认浏览器</translation>
 <translation id="6266342355635466082">Chromium 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
+<translation id="6281746429495226318">自定义您的 Chromium 个人资料</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6309712487085796862">Chromium 正在使用您的摄像头。</translation>
 <translation id="6333502561965082103">Chromium 正在执行另一项操作，请稍后重试。</translation>
