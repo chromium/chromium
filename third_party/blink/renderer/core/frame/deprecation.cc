@@ -70,6 +70,8 @@ enum Milestone {
   kM89 = 89,
   kM90 = 90,
   kM91 = 91,
+  kM92 = 92,
+  kM93 = 93,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -130,6 +132,10 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2021, 4, 0, 13, 4};
     case kM91:
       return {2021, 5, 0, 25, 4};
+    case kM92:
+      return {2021, 7, 0, 20, 4};
+    case kM93:
+      return {2021, 8, 0, 31, 4};
   }
 
   NOTREACHED();
@@ -554,6 +560,16 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                          "::marker") +
                   " See https://chromestatus.com/feature/6730096436051968 for "
                   "more details."};
+
+    case WebFeature::kRTCPeerConnectionSdpSemanticsPlanB:
+      return {"RTCPeerConnectionSdpSemanticsPlanB", kM93,
+              "Plan B SDP semantics, which is used when constructing an "
+              "RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy "
+              "version of the Session Description Protocol that has severe "
+              "compatibility issues on modern browsers. The standardized SDP "
+              "format, \"unified-plan\", has been used by default since M72 "
+              "(January, 2019). Dropping support for Plan B is targeted for "
+              "M93 (Canary: July 15, 2021; Stable: August 24, 2021)."};
 
     // Features that aren't deprecated don't have a deprecation message.
     default:

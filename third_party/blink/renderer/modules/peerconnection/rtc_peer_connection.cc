@@ -324,6 +324,8 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (configuration->hasSdpSemantics()) {
     if (configuration->sdpSemantics() == "plan-b") {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
+      Deprecation::CountDeprecation(
+          context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
     } else {
       DCHECK_EQ(configuration->sdpSemantics(), "unified-plan");
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
