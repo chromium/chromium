@@ -24,7 +24,7 @@ namespace {
 const float kEpsilon = std::numeric_limits<float>::epsilon() * 2;
 
 // Benchmark parameters.
-const float kTestDurationSec = 1.0;
+const float kTestDurationSec = 10.0;
 
 }  // namespace
 
