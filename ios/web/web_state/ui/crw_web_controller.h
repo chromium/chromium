@@ -191,6 +191,10 @@ class WebStateImpl;
 // Adds the webView back in the view hierarchy.
 - (void)addWebViewToViewHierarchy;
 
+// Notifies this controller that the surface size has changed due to
+// multiwindow action or orientation change.
+- (void)surfaceSizeChanged;
+
 @end
 
 #pragma mark Testing

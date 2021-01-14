@@ -255,8 +255,6 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 // |completion| is called with nullptr.
 typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion;
-// Called by NSNotificationCenter upon orientation changes.
-- (void)orientationDidChange;
 // Queries the web view for the user-scalable meta tag and calls
 // |-applyPageDisplayState:userScalable:| with the result.
 - (void)applyPageDisplayState:(const web::PageDisplayState&)displayState;
@@ -318,11 +316,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         std::make_unique<web::JsWindowErrorManager>(_webStateImpl);
     _cookieBlockingErrorLogger =
         std::make_unique<web::CookieBlockingErrorLogger>(_webStateImpl);
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(orientationDidChange)
-               name:UIApplicationDidChangeStatusBarOrientationNotification
-             object:nil];
 
     _navigationHandler = [[CRWWKNavigationHandler alloc] initWithDelegate:self];
 
@@ -1315,7 +1308,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
                }];
 }
 
-- (void)orientationDidChange {
+- (void)surfaceSizeChanged {
   // When rotating, the available zoom scale range may change, zoomScale's
   // percentage into this range should remain constant.  However, there are
   // two known bugs with respect to adjusting the zoomScale on rotation:

@@ -42,6 +42,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/autofill:autofill_internal",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/find_in_page",

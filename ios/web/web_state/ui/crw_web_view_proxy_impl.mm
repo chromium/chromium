@@ -186,4 +186,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView becomeFirstResponder];
 }
 
+- (void)surfaceSizeChanged {
+  [_webController surfaceSizeChanged];
+}
+
 @end

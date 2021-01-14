@@ -724,17 +724,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)registerForOrientationChangeNotifications {
-  // Register to both device orientation and UI orientation did change
-  // notification as these two events may be triggered independantely.
+  // Register device orientation. UI orientation will be registered by
+  // each window BVC. These two events may be triggered independantely.
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(orientationDidChange:)
              name:UIDeviceOrientationDidChangeNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(orientationDidChange:)
-             name:UIApplicationDidChangeStatusBarOrientationNotification
            object:nil];
 }
 
