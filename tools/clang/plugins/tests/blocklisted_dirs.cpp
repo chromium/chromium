@@ -18,5 +18,5 @@ struct Derived2 : public Base {
 
 #line 123 "/src/chrome-breakpad/src/breakpad/myheader.h"
 struct Derived3 : public Base {
-  virtual void foo();  // Should not warn; file is in a blacklisted dir.
+  virtual void foo();  // Should not warn; file is in a blocklisted dir.
 };
