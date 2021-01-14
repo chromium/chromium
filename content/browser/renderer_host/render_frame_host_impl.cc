@@ -857,6 +857,22 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
 }
 
+// Enum used for Navigation.VerifyDidCommitParams histogram, to indicate which
+// DidCommitProvisionalLoadParams differ when comparing browser- vs
+// renderer-calculated values.
+// Do NOT delete or reorder existing entries.
+enum class VerifyDidCommitParamsDifference {
+  kIntendedAsNewEntry = 0,
+  kMethod = 1,
+  kURLIsUnreachable = 2,
+  kBaseURL = 3,
+  kPostID = 4,
+  kIsOverridingUserAgent = 5,
+  kHTTPStatusCode = 6,
+  kShouldUpdateHistory = 7,
+  kMaxValue = kShouldUpdateHistory,
+};
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -9778,6 +9794,11 @@ bool ShouldVerify(const std::string& param) {
 #endif
 }
 
+void LogVerifyDidCommitParamsDifference(
+    VerifyDidCommitParamsDifference difference) {
+  UMA_HISTOGRAM_ENUMERATION("Navigation.VerifyDidCommitParams", difference);
+}
+
 void RenderFrameHostImpl::
     VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
         NavigationRequest* request,
@@ -10000,11 +10021,48 @@ void RenderFrameHostImpl::
             params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
+  DCHECK(base_url_expectations_match);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
-  DCHECK(base_url_expectations_match);
+
+  // Log histograms to trigger Chrometto slow reports, allowing us to see traces
+  // to analyze what happened in these navigations.
+  if (request->commit_params().intended_as_new_entry !=
+      params.intended_as_new_entry) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kIntendedAsNewEntry);
+  }
+  if (browser_method != params.method) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kMethod);
+  }
+  if (browser_url_is_unreachable != params.url_is_unreachable) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kURLIsUnreachable);
+  }
+  if (!base_url_expectations_match) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kBaseURL);
+  }
+  if (browser_post_id != params.post_id) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kPostID);
+  }
+  if (browser_is_overriding_user_agent != params.is_overriding_user_agent) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kIsOverridingUserAgent);
+  }
+  if (browser_http_status_code != params.http_status_code) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kHTTPStatusCode);
+  }
+  if (browser_should_update_history != params.should_update_history) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kShouldUpdateHistory);
+  }
+
   base::debug::DumpWithoutCrashing();
 }
 
