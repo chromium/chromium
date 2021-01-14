@@ -719,11 +719,11 @@ export function scanningAppTest() {
 
   test('PanelContainerContent', () => {
     return initializeScanningApp(expectedScanners, capabilities).then(() => {
-      const panelContainer = scanningApp.$$('.panel-container');
+      const panelContainer = scanningApp.$$('#panelContainer');
       assertTrue(!!panelContainer);
 
-      const leftPanel = scanningApp.$$('.panel-container > .left-panel');
-      const rightPanel = scanningApp.$$('.panel-container > .right-panel');
+      const leftPanel = scanningApp.$$('#panelContainer > #leftPanel');
+      const rightPanel = scanningApp.$$('#panelContainer > #rightPanel');
 
       assertTrue(!!leftPanel);
       assertTrue(!!rightPanel);

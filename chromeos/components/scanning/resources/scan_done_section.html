@@ -1,15 +1,6 @@
 <style include="scanning-fonts">
-  #titleContainer {
-    align-items: center;
-    display: flex;
-    margin-bottom: 24px;
-    margin-inline-start: 32px;
-    margin-top: 0;
-  }
-
   .container,
-  #doneButtonContainer,
-  #titleContainer {
+  #doneButtonContainer {
     width: 272px;
   }
 
@@ -17,20 +8,13 @@
     @apply --scanning-done-section-option-font;
     align-items: center;
     color: var(--scanning-done-section-option-text-color);
-    cursor: pointer;
     display: flex;
     height: 36px;
     margin-bottom: 8px;
     margin-inline-end: 32px;
     margin-inline-start: 32px;
-    margin-top: 0;
+    margin-top: 8px;
     padding-inline-end: 16px;
-  }
-
-  #checkMarkIcon {
-    margin-inline-end: 12px;
-    min-height: 24px;
-    min-width: 24px;
   }
 
   #doneButtonContainer {
@@ -43,39 +27,21 @@
     padding-inline-end: 16px;
   }
 
-  #title {
-    @apply --scanning-done-section-title-font;
-    color: var(--scanning-done-section-title-text-color);
-    flex-direction: column;
-    margin: 0;
-  }
-
-  .button {
-    flex-direction: column;
-    height: 20px;
-    margin: 0;
-    width: 20px;
-  }
-
   .label {
     flex-basis: 252px;
     flex-grow: 0;
     flex-shrink: 0;
   }
+
+  #folderLink {
+    color: var(--google-blue-600);
+    text-decoration: none;
+  }
 </style>
-<div id="titleContainer">
-  <iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
-  <h1 id="title">
-    [[titleText_]]
-  </h1>
-</div>
-<div class="container" on-click="showFileInLocation_">
-  <span id="showFileLocationLabel" class="label" aria-hidden="true">
-    [[i18n('showFileLocationLabel')]]
+<div class="container">
+  <span id="fileSavedText" class="label"
+      inner-h-t-m-l="[[fileSavedTextContent_]]">
   </span>
-  <cr-icon-button id="showFileButton" class="button" iron-icon="cr:open-in-new"
-      aria-labelledby="showFileLocationLabel">
-  </cr-icon-button>
 </div>
 <div id="doneButtonContainer">
   <cr-button id="doneButton" class="action-button"

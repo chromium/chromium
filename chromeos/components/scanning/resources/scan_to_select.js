@@ -28,9 +28,12 @@ Polymer({
   properties: {
     /**
      * The lowest level directory in |selectedFilePath|.
-     * @private
+     * @type {string}
      */
-    displayText_: String,
+    selectedFolder: {
+      type: String,
+      notify: true,
+    },
 
     /** @type {string} */
     selectedFilePath: {
@@ -42,7 +45,7 @@ Polymer({
   /** @override */
   created() {
     // Default option is 'My files'.
-    this.displayText_ = this.i18n('myFilesSelectOption');
+    this.selectedFolder = this.i18n('myFilesSelectOption');
 
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
@@ -56,8 +59,8 @@ Polymer({
   onSelectFolder_() {
     this.browserProxy_.requestScanToLocation().then(
         /* @type {!SelectedPath} */ (selectedPath) => {
-          // When the select dialog closes, set dropdown back to |displayText_|
-          // option.
+          // When the select dialog closes, set dropdown back to
+          // |selectedFolder| option.
           this.$.scanToSelect.selectedIndex = 0;
 
           const baseName = selectedPath.baseName;
@@ -68,7 +71,7 @@ Polymer({
             return;
           }
 
-          this.displayText_ = baseName;
+          this.selectedFolder = baseName;
           this.selectedFilePath = filePath;
         });
   },

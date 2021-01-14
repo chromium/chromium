@@ -568,17 +568,14 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SCANNING_APP_FILE_SAVED_TEXT" desc="The text displayed in the Scanning App when a scan job is completed and the file is saved.">
         {COUNT, plural,
-        =1 {Scanned file saved}
-        other {Scanned files saved}}
+        =1 {Your file has been successfully scanned and saved to <ph name="LINK_BEGIN">&lt;a id="folderLink"&gt;</ph><ph name="FOLDER_NAME">$1<ex>My files</ex></ph><ph name="LINK_END">&lt;/a&gt;</ph>.}
+        other {Your files have been successfully scanned and saved to <ph name="LINK_BEGIN">&lt;a id="folderLink"&gt;</ph><ph name="FOLDER_NAME">$1<ex>My files</ex></ph><ph name="LINK_END">&lt;/a&gt;</ph>.}}
       </message>
       <message name="IDS_SCANNING_APP_DONE_BUTTON_TEXT" desc="The text displayed for the button the user clicks to return to the intial Scanning App page after a scan job is completed.">
         Done
       </message>
       <message name="IDS_SCANNING_APP_CANCEL_BUTTON_TEXT" desc="The text displayed for the button to cancel an ongoing scan job.">
         Cancel
-      </message>
-      <message name="IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL" desc="The label for the button that opens the Files app. The Files app will open with the user's saved scan file highlighted.">
-        Show file location
       </message>
       <message name="IDS_SCANNING_APP_START_SCAN_FAILED_TOAST" desc="The error message displayed when a scan job fails to start.">
         Couldn't start scanning

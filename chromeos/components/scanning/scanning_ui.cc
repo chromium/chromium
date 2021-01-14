@@ -96,7 +96,6 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
       {"scanningImagesAriaLabel", IDS_SCANNING_APP_SCANNING_IMAGES_ARIA_LABEL},
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
-      {"showFileLocationLabel", IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
       {"startScanFailedToast", IDS_SCANNING_APP_START_SCAN_FAILED_TOAST},
       {"twoSidedDocFeederOptionText",

@@ -54,7 +54,11 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   getPluralString(name, count) {
     this.methodCalled('getPluralString');
     return Promise.resolve(
-        count === 1 ? 'Scanned file saved!' : 'Scanned files saved!');
+        count === 1 ?
+            'Your file has been successfully scanned and saved to ' +
+                '<a id="folderLink">$1</a>.' :
+            'Your files have been successfully scanned and saved to ' +
+                '<a id="folderLink">$1</a>.');
   }
 
   /** @param {!SelectedPath} selectedPath */

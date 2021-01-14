@@ -99,6 +99,12 @@ Polymer({
     selectedResolution: String,
 
     /**
+     * Used to indicate where scanned files are saved when a scan is complete.
+     * @type {string}
+     */
+    selectedFolder: String,
+
+    /**
      * Used to determine when certain parts of the app should be shown or hidden
      * and enabled or disabled.
      * @private {!AppState}
@@ -566,4 +572,15 @@ Polymer({
     this.setAppState_(AppState.READY);
     window.open('http://support.google.com/chromebook?p=chrome_scanning');
   },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  getNumFilesSaved_() {
+    return this.selectedFileType ===
+            chromeos.scanning.mojom.FileType.kPdf.toString() ?
+        1 :
+        this.pageNumber_;
+  }
 });
