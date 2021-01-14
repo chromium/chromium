@@ -14,7 +14,6 @@
 #endif
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -42,22 +41,19 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
  protected:
   // DnsConfigService:
   void ReadConfigNow() override;
-  void ReadHostsNow() override;
   bool StartWatching() override;
 
-  // Create |config_reader_| and |hosts_reader_|.
-  void CreateReaders();
+  // Create |config_reader_|.
+  void CreateReader();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DnsConfigServicePosixTest,
                            ChangeConfigMultipleTimes);
   class Watcher;
   class ConfigReader;
-  class HostsReader;
 
   std::unique_ptr<Watcher> watcher_;
   scoped_refptr<ConfigReader> config_reader_;
-  scoped_refptr<HostsReader> hosts_reader_;
 
   DISALLOW_COPY_AND_ASSIGN(DnsConfigServicePosix);
 };

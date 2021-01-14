@@ -8,12 +8,18 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/sequence_checker.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "net/dns/dns_hosts.h"
+#include "net/dns/serial_worker.h"
 
 namespace net {
 
@@ -22,18 +28,22 @@ const base::TimeDelta DnsConfigService::kInvalidationTimeout =
     base::TimeDelta::FromMilliseconds(150);
 
 DnsConfigService::DnsConfigService(
+    base::FilePath::StringPieceType hosts_file_path,
     base::Optional<base::TimeDelta> config_change_delay)
     : watch_failed_(false),
       have_config_(false),
       have_hosts_(false),
       need_update_(false),
       last_sent_empty_(true),
-      config_change_delay_(config_change_delay) {
+      config_change_delay_(config_change_delay),
+      hosts_file_path_(hosts_file_path) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 DnsConfigService::~DnsConfigService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (hosts_reader_)
+    hosts_reader_->Cancel();
 }
 
 void DnsConfigService::ReadConfig(const CallbackType& callback) {
@@ -79,6 +89,48 @@ void DnsConfigService::Watcher::OnHostsChanged(bool succeeded) {
 
 void DnsConfigService::Watcher::CheckOnCorrectSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+DnsConfigService::HostsReader::HostsReader(
+    DnsConfigService* service,
+    base::FilePath::StringPieceType hosts_file_path)
+    : service_(service), hosts_file_path_(hosts_file_path) {}
+
+DnsConfigService::HostsReader::~HostsReader() = default;
+
+bool DnsConfigService::HostsReader::ReadHosts(DnsHosts* out_dns_hosts) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  DCHECK(!hosts_file_path_.empty());
+  return ParseHostsFile(hosts_file_path_, out_dns_hosts);
+}
+
+bool DnsConfigService::HostsReader::AddAdditionalHostsTo(DnsHosts& dns_hosts) {
+  // Nothing to add in base implementation.
+  return true;
+}
+
+void DnsConfigService::HostsReader::DoWork() {
+  success_ = ReadHosts(&hosts_) && AddAdditionalHostsTo(hosts_);
+}
+
+void DnsConfigService::HostsReader::OnWorkFinished() {
+  if (success_) {
+    service_->OnHostsRead(hosts_);
+  } else {
+    LOG(WARNING) << "Failed to read DnsHosts.";
+  }
+}
+
+void DnsConfigService::ReadHostsNow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!hosts_reader_) {
+    DCHECK(!hosts_file_path_.empty());
+    hosts_reader_ =
+        base::MakeRefCounted<HostsReader>(this, hosts_file_path_.value());
+  }
+  hosts_reader_->WorkNow();
 }
 
 void DnsConfigService::InvalidateConfig() {

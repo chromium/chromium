@@ -306,52 +306,14 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   DISALLOW_COPY_AND_ASSIGN(ConfigReader);
 };
 
-// A SerialWorker that reads the HOSTS file and runs Callback.
-class DnsConfigServicePosix::HostsReader : public SerialWorker {
- public:
-  explicit HostsReader(DnsConfigServicePosix* service)
-      : service_(service), success_(false) {
-    // Allow execution on another thread; nothing thread-specific about
-    // constructor.
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
-
- private:
-  ~HostsReader() override {}
-
-  void DoWork() override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    success_ = ParseHostsFile(base::FilePath(kFilePathHosts), &hosts_);
-  }
-
-  void OnWorkFinished() override {
-    if (success_) {
-      service_->OnHostsRead(hosts_);
-    } else {
-      LOG(WARNING) << "Failed to read DnsHosts.";
-    }
-  }
-
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
-  DnsConfigServicePosix* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  DnsHosts hosts_;
-  bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostsReader);
-};
-
-DnsConfigServicePosix::DnsConfigServicePosix() {
+DnsConfigServicePosix::DnsConfigServicePosix()
+    : DnsConfigService(kFilePathHosts) {
   // Allow constructing on one thread and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 DnsConfigServicePosix::~DnsConfigServicePosix() {
   config_reader_->Cancel();
-  hosts_reader_->Cancel();
 }
 
 void DnsConfigServicePosix::RefreshConfig() {
@@ -365,23 +327,17 @@ void DnsConfigServicePosix::ReadConfigNow() {
   config_reader_->WorkNow();
 }
 
-void DnsConfigServicePosix::ReadHostsNow() {
-  hosts_reader_->WorkNow();
-}
-
 bool DnsConfigServicePosix::StartWatching() {
-  CreateReaders();
+  CreateReader();
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_.reset(new Watcher(this));
   return watcher_->Watch();
 }
 
-void DnsConfigServicePosix::CreateReaders() {
+void DnsConfigServicePosix::CreateReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!config_reader_);
   config_reader_ = base::MakeRefCounted<ConfigReader>(this);
-  DCHECK(!hosts_reader_);
-  hosts_reader_ = base::MakeRefCounted<HostsReader>(this);
 }
 
 #if !defined(OS_ANDROID)

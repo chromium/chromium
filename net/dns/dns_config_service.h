@@ -8,7 +8,9 @@
 #include <map>
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -17,6 +19,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
+#include "net/dns/serial_worker.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -45,6 +48,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Useful for platforms where multiple changes may be made and detected before
   // the config is stabilized and ready to be read.
   explicit DnsConfigService(
+      base::FilePath::StringPieceType hosts_file_path,
       base::Optional<base::TimeDelta> config_change_delay =
           base::TimeDelta::FromMilliseconds(50));
   virtual ~DnsConfigService();
@@ -102,9 +106,53 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
+  // Reader of HOSTS files. In this base implementation, uses standard logic
+  // appropriate to most platforms to read the HOSTS file located at
+  // `service->GetHostsFilePath()`.
+  class HostsReader : public SerialWorker {
+   public:
+    HostsReader(DnsConfigService* service,
+                base::FilePath::StringPieceType hosts_file_path);
+
+    HostsReader(const HostsReader&) = delete;
+    HostsReader& operator=(const HostsReader&) = delete;
+
+   protected:
+    ~HostsReader() override;
+
+    // Reads the HOSTS file and parses to a `DnsHosts`. Returns false on
+    // failure. Will be called on a separate blockable ThreadPool thread.
+    //
+    // Override if needed to implement platform-specific behavior, e.g. for a
+    // platform-specific HOSTS format.
+    virtual bool ReadHosts(DnsHosts* out_dns_hosts);
+
+    // Adds any necessary additional entries to the given `DnsHosts`. Returns
+    // false on failure. Will be called on a separate blockable ThreadPool
+    // thread.
+    //
+    // Override if needed to implement platform-specific behavior.
+    virtual bool AddAdditionalHostsTo(DnsHosts& dns_hosts);
+
+    // SerialWorker:
+    void DoWork() final;
+    void OnWorkFinished() final;
+
+   private:
+    // Raw pointer to owning DnsConfigService. This must never be accessed
+    // inside DoWork(), since service may be destroyed while SerialWorker is
+    // running on worker thread.
+    DnsConfigService* const service_;
+    // Written in DoWork, read in OnWorkFinished, no locking necessary.
+    DnsHosts hosts_;
+    bool success_ = false;
+
+    const base::FilePath hosts_file_path_;
+  };
+
   // Immediately attempts to read the current configuration.
   virtual void ReadConfigNow() = 0;
-  virtual void ReadHostsNow() = 0;
+  virtual void ReadHostsNow();
   // Registers system watchers. Returns true iff succeeds.
   virtual bool StartWatching() = 0;
 
@@ -150,6 +198,11 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   bool last_sent_empty_;
 
   const base::Optional<base::TimeDelta> config_change_delay_;
+  const base::FilePath hosts_file_path_;
+
+  // Created only if needed in ReadHostsNow() to avoid creating unnecessarily if
+  // overridden for a platform-specific implementation.
+  scoped_refptr<HostsReader> hosts_reader_;
 
   // Started in Invalidate*, cleared in On*Read.
   base::OneShotTimer timer_;

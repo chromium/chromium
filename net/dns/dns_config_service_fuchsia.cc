@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 
 namespace net {
 namespace internal {
 
-DnsConfigServiceFuchsia::DnsConfigServiceFuchsia() = default;
+DnsConfigServiceFuchsia::DnsConfigServiceFuchsia()
+    : DnsConfigService(
+          base::FilePath::StringPieceType() /* hosts_file_path */) {}
 DnsConfigServiceFuchsia::~DnsConfigServiceFuchsia() = default;
 
 void DnsConfigServiceFuchsia::ReadConfigNow() {

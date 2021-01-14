@@ -4,6 +4,8 @@
 
 #include "net/dns/dns_config_service_win.h"
 
+#include <sysinfoapi.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -29,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/dns_hosts.h"
@@ -679,47 +682,30 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
   bool success_;
 };
 
-// Reads hosts from HOSTS file and fills in localhost and local computer name if
-// necessary. All work performed in ThreadPool.
-class DnsConfigServiceWin::HostsReader : public SerialWorker {
+// Extension of DnsConfigService::HostsReader that fills in localhost and local
+// computer name if necessary.
+class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
  public:
   explicit HostsReader(DnsConfigServiceWin* service)
-      : path_(GetHostsPath()),
-        service_(service),
-        success_(false) {
+      : DnsConfigService::HostsReader(service, GetHostsPath().value()) {}
+
+  HostsReader(const HostsReader&) = delete;
+  HostsReader& operator=(const HostsReader&) = delete;
+
+ protected:
+  bool AddAdditionalHostsTo(DnsHosts& dns_hosts) override {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    return AddLocalhostEntries(&dns_hosts);
   }
 
  private:
-  ~HostsReader() override {}
-
-  void DoWork() override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    success_ = false;
-    if (ParseHostsFile(path_, &hosts_))
-      success_ = AddLocalhostEntries(&hosts_);
-  }
-
-  void OnWorkFinished() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (success_) {
-      service_->OnHostsRead(hosts_);
-    } else {
-      LOG(WARNING) << "Failed to read DnsHosts.";
-    }
-  }
-
-  const base::FilePath path_;
-  DnsConfigServiceWin* service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  DnsHosts hosts_;
-  bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostsReader);
+  ~HostsReader() override = default;
 };
 
 DnsConfigServiceWin::DnsConfigServiceWin()
-    : DnsConfigService(base::nullopt /* config_change_delay */) {
+    : DnsConfigService(GetHostsPath().value(),
+                       base::nullopt /* config_change_delay */) {
   // Allow constructing on one sequence and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

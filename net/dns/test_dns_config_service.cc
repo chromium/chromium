@@ -4,10 +4,15 @@
 
 #include "net/dns/test_dns_config_service.h"
 
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/optional.h"
+
 namespace net {
 
 TestDnsConfigService::TestDnsConfigService()
-    : DnsConfigService(base::nullopt /* config_change_delay */) {}
+    : DnsConfigService(base::FilePath::StringPieceType() /* hosts_file_path */,
+                       base::nullopt /* config_change_delay */) {}
 
 TestDnsConfigService::~TestDnsConfigService() = default;
 
