@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://web-platform.test:8001/wasm/jsapi/wasm-constants.js' failed to load.
+Harness: the test ran to completion.
+
