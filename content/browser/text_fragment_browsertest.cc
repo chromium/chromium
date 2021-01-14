@@ -582,27 +582,100 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   EXPECT_DID_SCROLL(false);
 }
 
+// Test that Tab key press puts focus from the start of selection.
+IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, TabFocus) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(
+      "/scrollable_page_with_anchor.html#:~:text=text"));
+  WebContents* main_contents = shell()->web_contents();
+  RenderFrameSubmissionObserver frame_observer(main_contents);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForPageLoad(main_contents);
+  frame_observer.WaitForScrollOffsetAtTop(
+      /*expected_scroll_offset_at_top=*/false);
+
+  DOMMessageQueue msg_queue;
+  SimulateKeyPress(main_contents, ui::DomKey::TAB, ui::DomCode::TAB,
+                   ui::VKEY_TAB, false, false, false, false);
+
+  // Wait for focus to happen.
+  std::string message;
+  EXPECT_TRUE(msg_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"FocusDone2\"", message);
+}
+
 class ForceLoadAtTopBrowserTest : public TextFragmentAnchorBrowserTest {
  protected:
-  void SetUpOnMainThread() override {
-    TextFragmentAnchorBrowserTest::SetUpOnMainThread();
+  // Loads the given path as predetermined HTML response with a
+  // |Document-Policy: force-load-at-top| header and waits for the navigation
+  // to finish.
+  void LoadScrollablePageWithContent(const std::string& path) {
+    std::size_t hash_pos = path.find("#");
+    std::string path_without_fragment = path;
+    if (hash_pos != std::string::npos) {
+      path_without_fragment = path.substr(0, hash_pos);
+    }
+    net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                        path_without_fragment);
+
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TextFragmentAnchorBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "ForceLoadAtTop");
+    GURL url(embedded_test_server()->GetURL(path));
+    RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+
+    // Load the target document.
+    TestNavigationManager navigation_manager(shell()->web_contents(), url);
+    shell()->LoadURL(url);
+
+    // Start navigation
+    ASSERT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.ResumeNavigation();
+
+    // Send Document-Policy header
+    response.WaitForRequest();
+    std::string response_string =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Document-Policy: force-load-at-top\r\n"
+        "\r\n"
+        R"HTML(
+          <html>
+            <head>
+              <meta name="viewport" content="width=device-width">
+              <script>
+                let did_scroll = false;
+                window.addEventListener('scroll', () => {
+                  did_scroll = true;
+                });
+              </script>
+              <style>
+                p {
+                  position: absolute;
+                  top: 10000px;
+                }
+              </style>
+            </head>
+            <body>
+              <a id="link" href="#text">Go Down</a>
+              <p id="text">Some text</p>
+            </body>
+          </html>
+        )HTML";
+    response.Send(response_string);
+    response.Done();
+
+    ASSERT_TRUE(navigation_manager.WaitForResponse());
+    navigation_manager.ResumeNavigation();
+    navigation_manager.WaitForNavigationFinished();
   }
 };
 
 // Test that scroll restoration is disabled with ForceLoadAtTop
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
-  GURL url(
-      embedded_test_server()->GetURL("/scrollable_page_with_content.html"));
+  ASSERT_NO_FATAL_FAILURE(LoadScrollablePageWithContent("/index.html"));
+
   WebContents* main_contents = shell()->web_contents();
   RenderFrameSubmissionObserver frame_observer(main_contents);
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 
   // Scroll down the page a bit
@@ -632,11 +705,9 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
 
 // Test that element fragment anchor scrolling is disabled with ForceLoadAtTop
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
-  GURL url(embedded_test_server()->GetURL(
-      "/scrollable_page_with_content.html#text"));
+  ASSERT_NO_FATAL_FAILURE(LoadScrollablePageWithContent("/index.html#text"));
   WebContents* main_contents = shell()->web_contents();
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 
   // Wait a short amount of time to ensure the page does not scroll.
@@ -651,11 +722,9 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, SameDocumentNavigation) {
-  GURL url(
-      embedded_test_server()->GetURL("/scrollable_page_with_content.html"));
+  ASSERT_NO_FATAL_FAILURE(LoadScrollablePageWithContent("/index.html"));
   WebContents* main_contents = shell()->web_contents();
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
   {
     const cc::RenderFrameMetadata& last_metadata =
@@ -674,12 +743,11 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, SameDocumentNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
-  GURL url(embedded_test_server()->GetURL(
-      "/scrollable_page_with_content.html#:~:text=text"));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadScrollablePageWithContent("/index.html#:~:text=text"));
   WebContents* main_contents = shell()->web_contents();
   RenderFrameSubmissionObserver frame_observer(main_contents);
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 
   // Wait a short amount of time to ensure the page does not scroll.
@@ -691,28 +759,6 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
   const cc::RenderFrameMetadata& last_metadata =
       RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
   EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
-}
-
-// Test that Tab key press puts focus from the start of selection.
-IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, TabFocus) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(
-      "/scrollable_page_with_anchor.html#:~:text=text"));
-  WebContents* main_contents = shell()->web_contents();
-  RenderFrameSubmissionObserver frame_observer(main_contents);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  WaitForPageLoad(main_contents);
-  frame_observer.WaitForScrollOffsetAtTop(
-      /*expected_scroll_offset_at_top=*/false);
-
-  DOMMessageQueue msg_queue;
-  SimulateKeyPress(main_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
-
-  // Wait for focus to happen.
-  std::string message;
-  EXPECT_TRUE(msg_queue.WaitForMessage(&message));
-  EXPECT_EQ("\"FocusDone2\"", message);
 }
 
 }  // namespace content
