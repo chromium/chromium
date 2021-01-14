@@ -608,13 +608,6 @@ class PredictionManagerTest : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
 };
 
-// No support for Mac, Windows or ChromeOS.
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
-#else
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
-#endif
-
 TEST_F(PredictionManagerTest, RemoteFetchingDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -822,8 +815,7 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest,
-       DISABLE_ON_WIN_MAC_CHROMEOS(
-           NoPredictionModelForRegisteredOptimizationTarget)) {
+       NoPredictionModelForRegisteredOptimizationTarget) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
@@ -1427,8 +1419,7 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest,
-       DISABLE_ON_WIN_MAC_CHROMEOS(
-           ShouldTargetNavigationStoreUnavailableModelUnknown)) {
+       ShouldTargetNavigationStoreUnavailableModelUnknown) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
@@ -1570,9 +1561,7 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
 }
 
-TEST_F(
-    PredictionManagerTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(UpdateModelWithUnsupportedOptimizationTarget)) {
+TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
@@ -1599,16 +1588,16 @@ TEST_F(
   prediction_manager()->UpdatePredictionModelsForTesting(
       get_models_response.get());
 
-    EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
-              prediction_manager()->ShouldTargetNavigation(
-                  navigation_handle.get(),
-                  proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
+  EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
+            prediction_manager()->ShouldTargetNavigation(
+                navigation_handle.get(),
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
 
-    TestPredictionModel* test_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_FALSE(test_prediction_model);
+  TestPredictionModel* test_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_FALSE(test_prediction_model);
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
 }
 
