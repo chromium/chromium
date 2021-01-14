@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -139,6 +140,8 @@ constexpr char kJSSubject[] = "subject";
 constexpr char kJSKeywords[] = "keywords";
 constexpr char kJSCreator[] = "creator";
 constexpr char kJSProducer[] = "producer";
+constexpr char kJSCreationDate[] = "creationDate";
+constexpr char kJSModDate[] = "modDate";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
 // Get password (Plugin -> Page)
 constexpr char kJSGetPasswordType[] = "getPassword";
@@ -2453,6 +2456,20 @@ void OutOfProcessInstance::SendMetadata() {
   if (!document_metadata.producer.empty()) {
     metadata_data.Set(pp::Var(kJSProducer),
                       pp::Var(document_metadata.producer));
+  }
+
+  if (!document_metadata.creation_date.is_null()) {
+    metadata_data.Set(
+        pp::Var(kJSCreationDate),
+        pp::Var(base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(
+            document_metadata.creation_date))));
+  }
+
+  if (!document_metadata.mod_date.is_null()) {
+    metadata_data.Set(
+        pp::Var(kJSModDate),
+        pp::Var(base::UTF16ToUTF8(
+            base::TimeFormatShortDateAndTime(document_metadata.mod_date))));
   }
 
   metadata_data.Set(

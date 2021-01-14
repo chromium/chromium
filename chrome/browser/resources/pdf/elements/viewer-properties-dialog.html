@@ -79,11 +79,15 @@
       </tr>
       <tr>
         <td class="name">$i18n{propertiesCreated}</td>
-        <td class="value" id="created">-</td>
+        <td class="value" id="created">
+          [[getOrPlaceholder_(documentMetadata.creationDate)]]
+        </td>
       </tr>
       <tr>
         <td class="name">$i18n{propertiesModified}</td>
-        <td class="value" id="modified">-</td>
+        <td class="value" id="modified">
+          [[getOrPlaceholder_(documentMetadata.modDate)]]
+        </td>
       </tr>
       <tr class="break">
         <td class="name">$i18n{propertiesApplication}</td>
