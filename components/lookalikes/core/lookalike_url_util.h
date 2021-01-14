@@ -138,7 +138,7 @@ bool IsEditDistanceAtMostOne(const base::string16& str1,
 // Returns whether |navigated_domain| and |matched_domain| are likely to be edit
 // distance false positives, and thus the user should *not* be warned.
 //
-// Assumes |navigated_domain| and |matched_domain| are edit distance matches.
+// Assumes |navigated_domain| and |matched_domain| are edit distance of 1 apart.
 bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
                                        const DomainInfo& matched_domain);
 

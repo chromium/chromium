@@ -347,6 +347,22 @@ bool IsAllowedToBeEmbedded(
          EndsWithPermittedDomains(embedded_target, embedding_domain);
 }
 
+// Returns the first character of the first string that is different from the
+// second string. Strings should be at least 1 edit distance apart.
+char GetFirstDifferentChar(const std::string& str1, const std::string& str2) {
+  std::string::const_iterator i1 = str1.begin();
+  std::string::const_iterator i2 = str2.begin();
+  while (i1 != str1.end() && i2 != str2.end()) {
+    if (*i1 != *i2) {
+      return *i1;
+    }
+    i1++;
+    i2++;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 }  // namespace
 
 DomainInfo::DomainInfo(const std::string& arg_hostname,
@@ -493,6 +509,17 @@ bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
   } else {  // navigated_dom_len > matched_dom_len
     // e.g. poodle vs oodle
     if (nav_dom.substr(1) == matched_dom) {
+      return true;
+    }
+  }
+
+  // Ignore domains that only differ by an insertion of a "-".
+  if (nav_dom_len != matched_dom_len) {
+    if (nav_dom_len < matched_dom_len &&
+        GetFirstDifferentChar(matched_dom, nav_dom) == '-') {
+      return true;
+    } else if (nav_dom_len > matched_dom_len &&
+               GetFirstDifferentChar(nav_dom, matched_dom) == '-') {
       return true;
     }
   }

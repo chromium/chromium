@@ -105,6 +105,14 @@ TEST(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
       {"abcde.com", "axbcde.com", false},   // Deletion
       {"axbcde.com", "abcde.com", false},   // Insertion
       {"axbcde.com", "aybcde.com", false},  // Substitution
+
+      // We permit matches that only differ due to a single "-".
+      {"-abcde.com", "abcde.com", true},
+      {"ab-cde.com", "abcde.com", true},
+      {"abcde-.com", "abcde.com", true},
+      {"abcde.com", "-abcde.com", true},
+      {"abcde.com", "ab-cde.com", true},
+      {"abcde.com", "abcde-.com", true},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =
