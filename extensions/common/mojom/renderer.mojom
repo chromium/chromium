@@ -30,4 +30,7 @@ interface Renderer {
   SetSessionInfo(Channel channel,
                  FeatureSessionType session,
                  bool is_lock_screen_context);
+
+  // Tells the renderer process the platform's system font.
+  SetSystemFont(string font_family, string font_size);
 };

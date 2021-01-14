@@ -876,7 +876,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_SetScriptingAllowlist,
                       OnSetScriptingAllowlist)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_SetSystemFont, OnSetSystemFont)
   IPC_MESSAGE_HANDLER(ExtensionMsg_SetWebViewPartitionID,
                       OnSetWebViewPartitionID)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
@@ -1007,6 +1006,12 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // We don't do anything with existing platform-app stylesheets. They will
   // stay resident, but the URL pattern corresponding to the unloaded
   // extension's URL just won't match anything anymore.
+}
+
+void Dispatcher::SetSystemFont(const std::string& font_family,
+                               const std::string& font_size) {
+  system_font_family_ = font_family;
+  system_font_size_ = font_size;
 }
 
 void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
@@ -1178,12 +1183,6 @@ void Dispatcher::SetSessionInfo(version_info::Channel channel,
 void Dispatcher::OnSetScriptingAllowlist(
     const ExtensionsClient::ScriptingAllowlist& extension_ids) {
   ExtensionsClient::Get()->SetScriptingAllowlist(extension_ids);
-}
-
-void Dispatcher::OnSetSystemFont(const std::string& font_family,
-                                 const std::string& font_size) {
-  system_font_family_ = font_family;
-  system_font_size_ = font_size;
 }
 
 void Dispatcher::OnSetWebViewPartitionID(const std::string& partition_id) {

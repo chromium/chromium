@@ -127,8 +127,7 @@ void RendererStartupHelper::InitializeProcess(
 
   // Platform apps need to know the system font.
   // TODO(dbeam): this is not the system font in all cases.
-  process->Send(new ExtensionMsg_SetSystemFont(webui::GetFontFamily(),
-                                               webui::GetFontSize()));
+  renderer->SetSystemFont(webui::GetFontFamily(), webui::GetFontSize());
 
   // Scripting allowlist. This is modified by tests and must be communicated
   // to renderers.

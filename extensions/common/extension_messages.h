@@ -568,11 +568,6 @@ IPC_MESSAGE_ROUTED4(ExtensionMsg_MessageInvoke,
 IPC_MESSAGE_ROUTED1(ExtensionMsg_SetFrameName,
                     std::string /* frame_name */)
 
-// Tell the renderer process the platforms system font.
-IPC_MESSAGE_CONTROL2(ExtensionMsg_SetSystemFont,
-                     std::string /* font_family */,
-                     std::string /* font_size */)
-
 // Notifies the renderer that extensions were loaded in the browser.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
                      std::vector<ExtensionMsg_Loaded_Params>)

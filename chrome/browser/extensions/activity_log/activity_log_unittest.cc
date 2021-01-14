@@ -83,7 +83,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,
                       bool is_lock_screen_context) override {}
-
+  void SetSystemFont(const std::string& font_family,
+                     const std::string& font_size) override {}
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 

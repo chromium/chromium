@@ -220,7 +220,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type,
                       bool lock_screen_context) override;
-
+  void SetSystemFont(const std::string& font_family,
+                     const std::string& font_size) override;
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnCancelSuspend(const std::string& extension_id);
@@ -245,8 +246,6 @@ class Dispatcher : public content::RenderThreadObserver,
                        const base::ListValue& event_args);
   void OnSetScriptingAllowlist(
       const ExtensionsClient::ScriptingAllowlist& extension_ids);
-  void OnSetSystemFont(const std::string& font_family,
-                       const std::string& font_size);
   void OnSetWebViewPartitionID(const std::string& partition_id);
   void OnShouldSuspend(const std::string& extension_id, uint64_t sequence_id);
   void OnSuspend(const std::string& extension_id);
