@@ -24,6 +24,7 @@ namespace {
 
 namespace api_epk = api::enterprise_platform_keys;
 namespace api_epki = api::enterprise_platform_keys_internal;
+using KeystoreService = crosapi::mojom::KeystoreService;
 
 std::vector<uint8_t> VectorFromString(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
@@ -57,7 +58,7 @@ const char kInvalidKeystoreType[] = "Invalid keystore type.";
 // extension. |context| is the browser context in which the extension is hosted.
 std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
   int version = chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
-      crosapi::mojom::KeystoreService::Uuid_);
+      KeystoreService::Uuid_);
   if (version < min_version)
     return kUnsupportedByAsh;
 
@@ -140,7 +141,8 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
       api_epki::GenerateKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(/*min_version=*/2, browser_context());
+  std::string error = ValidateCrosapi(KeystoreService::kGenerateKeyMinVersion,
+                                      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -179,7 +181,8 @@ EnterprisePlatformKeysGetCertificatesFunction::Run() {
       api_epk::GetCertificates::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(/*min_version=*/2, browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kGetCertificatesMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -222,7 +225,8 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
       api_epk::ImportCertificate::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(/*min_version=*/2, browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kAddCertificateMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -254,7 +258,8 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
       api_epk::RemoveCertificate::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(/*min_version=*/2, browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kRemoveCertificateMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -285,7 +290,8 @@ ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGetTokensFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->empty());
 
-  std::string error = ValidateCrosapi(/*min_version=*/1, browser_context());
+  std::string error = ValidateCrosapi(KeystoreService::kGetKeyStoresMinVersion,
+                                      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -366,7 +372,9 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
       api_epk::ChallengeUserKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(/*min_version=*/0, browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }

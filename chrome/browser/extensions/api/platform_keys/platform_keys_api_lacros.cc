@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 
 namespace extensions {
@@ -18,6 +19,7 @@ namespace extensions {
 namespace api_pki = api::platform_keys_internal;
 using SigningScheme = crosapi::mojom::KeystoreSigningScheme;
 using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
+using KeystoreService = crosapi::mojom::KeystoreService;
 
 namespace {
 const char kUnsupportedByAsh[] = "Not implemented.";
@@ -103,7 +105,8 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
-          crosapi::mojom::KeystoreService::Uuid_) < 3) {
+          KeystoreService::Uuid_) <
+      static_cast<int>(KeystoreService::kGetPublicKeyMinVersion)) {
     return RespondNow(Error(kUnsupportedByAsh));
   }
 
@@ -168,7 +171,8 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
-          crosapi::mojom::KeystoreService::Uuid_) < 4) {
+          KeystoreService::Uuid_) <
+      static_cast<int>(KeystoreService::kSignMinVersion)) {
     return RespondNow(Error(kUnsupportedByAsh));
   }
 
