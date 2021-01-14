@@ -166,15 +166,6 @@ class PredictionModelDownloadManagerTest : public testing::Test {
       if (!path_exists)
         return true;
 
-      base::File::Error file_error = base::File::GetLastFileError();
-      // In the event this does not fix the flake, log the error so we know what
-      // it is.
-      // TODO(crbug/1156112): Remove this log once the flake has been resolved.
-      DLOG(ERROR) << "Path Exists Error: " << file_error;
-
-      if (file_error != base::File::FILE_ERROR_ACCESS_DENIED)
-        return !path_exists;
-
       // Retry if the last file error is access denied since it's likely that
       // the file is in the process of being deleted.
     }
