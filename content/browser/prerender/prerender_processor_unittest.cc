@@ -205,5 +205,48 @@ TEST_F(PrerenderProcessorTest, CancelBeforeStart) {
   EXPECT_EQ(bad_message_error, "PP_CANCEL_BEFORE_START");
 }
 
+// Tests that prerendering triggered by <link rel=next> is aborted. This trigger
+// is not supported for now, but we may want to support it if NoStatePrefetch
+// re-enables it again. See https://crbug.com/1161545.
+TEST_F(PrerenderProcessorTest, RelTypeNext) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+
+  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  render_frame_host->BindPrerenderProcessor(
+      render_frame_host, remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  // Set kNext instead of the default kPrerender.
+  attributes->rel_type = blink::mojom::PrerenderRelType::kNext;
+  attributes->referrer = blink::mojom::Referrer::New();
+
+  // Start() call with kNext should be aborted.
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+  remote->Start(std::move(attributes));
+  remote.FlushForTesting();
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+
+  // Start() call with kNext is a valid request, currently it's not supported
+  // though. The request shouldn't result in a bad message failure.
+  EXPECT_TRUE(bad_message_error.empty());
+
+  // Cancel() call should not be reported as a bad mojo message as well.
+  remote->Cancel();
+  remote.FlushForTesting();
+  EXPECT_TRUE(bad_message_error.empty());
+}
+
 }  // namespace
 }  // namespace content

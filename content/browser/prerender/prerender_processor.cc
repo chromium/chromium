@@ -38,6 +38,16 @@ void PrerenderProcessor::Start(
   }
   state_ = State::kStarted;
 
+  // Prerendering is only supported for <link rel=prerender>.
+  // We may want to support it for <link rel=next> if NoStatePrefetch re-enables
+  // it again. See https://crbug.com/1161545.
+  switch (attributes->rel_type) {
+    case blink::mojom::PrerenderRelType::kPrerender:
+      break;
+    case blink::mojom::PrerenderRelType::kNext:
+      return;
+  }
+
   // TODO(https://crbug.com/1132746): Validate the origin, etc and send
   // mojo::ReportBadMessage() if necessary like the legacy prerender
   // `prerender::PrerenderProcessorImpl::Start()`.
