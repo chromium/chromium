@@ -2578,7 +2578,9 @@ void DragAllToSeparateWindowAndCancelStep2(
 #define MAYBE_DragAllToSeparateWindowAndCancel \
   DISABLED_DragAllToSeparateWindowAndCancel
 #else
-#define MAYBE_DragAllToSeparateWindowAndCancel DragAllToSeparateWindowAndCancel
+// TODO(https://crbug.com/1163775): Flaky on Windows and Linux.
+#define MAYBE_DragAllToSeparateWindowAndCancel \
+  DISABLED_DragAllToSeparateWindowAndCancel
 #endif
 
 // Creates two browsers, selects all tabs in first, drags into second, then hits
