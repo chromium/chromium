@@ -3658,7 +3658,8 @@ blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
     const cc::LayerTreeSettings& settings) {
   return media_factory_.CreateMediaPlayer(
       source, client, inspector_context, encrypted_client, initial_cdm, sink_id,
-      GetLocalRootWebFrameWidget()->GetFrameSinkId(), settings);
+      GetLocalRootWebFrameWidget()->GetFrameSinkId(), settings,
+      agent_scheduling_group_.agent_group_scheduler().CompositorTaskRunner());
 }
 
 std::unique_ptr<blink::WebContentSettingsClient>

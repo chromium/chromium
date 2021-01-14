@@ -955,9 +955,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
   isolate->SetAddHistogramSampleFunction(AddHistogramSample);
   isolate->SetAddCrashKeyCallback(AddCrashKey);
 
-  main_thread_compositor_task_runner_ =
-      main_thread_scheduler_->CompositorTaskRunner();
-
   if (!command_line.HasSwitch(switches::kDisableThreadedCompositing))
     InitializeCompositorThread();
 
@@ -1299,11 +1296,6 @@ bool RenderThreadImpl::IsElasticOverscrollEnabled() {
 
 bool RenderThreadImpl::IsUseZoomForDSFEnabled() {
   return is_zoom_for_dsf_enabled_;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-RenderThreadImpl::GetCompositorMainThreadTaskRunner() {
-  return main_thread_compositor_task_runner_;
 }
 
 gpu::GpuMemoryBufferManager* RenderThreadImpl::GetGpuMemoryBufferManager() {

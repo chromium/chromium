@@ -114,6 +114,9 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
     return base::ThreadTaskRunnerHandle::Get();
   }
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
 };
 
 class DummyPageScheduler : public PageScheduler {

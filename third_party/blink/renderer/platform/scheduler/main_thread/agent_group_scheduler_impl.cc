@@ -48,6 +48,18 @@ std::unique_ptr<PageScheduler> AgentGroupSchedulerImpl::CreatePageScheduler(
   return page_scheduler;
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+AgentGroupSchedulerImpl::DefaultTaskRunner() {
+  return default_task_runner_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+AgentGroupSchedulerImpl::CompositorTaskRunner() {
+  // We temporarily redirect the per-AGS compositor task runner to the main
+  // thread's compositor task runner.
+  return main_thread_scheduler_.CompositorTaskRunner();
+}
+
 AgentGroupScheduler& AgentGroupSchedulerImpl::AsAgentGroupScheduler() {
   return *this;
 }

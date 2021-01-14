@@ -31,6 +31,12 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
   // Default task runners for different AgentSchedulingGroup would be
   // independent and won't have any ordering guarantees between them.
   virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() = 0;
+
+  // Compositor task runner for an AgentSchedulingGroup.
+  // Compositor task runners for different AgentSchedulingGroup would be
+  // independent and won't have any ordering guarantees between them.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  CompositorTaskRunner() = 0;
 };
 
 }  // namespace scheduler

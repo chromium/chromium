@@ -212,8 +212,6 @@ class CONTENT_EXPORT RenderThreadImpl
                                 base::PassKey<AgentSchedulingGroup>);
 
   bool IsThreadedAnimationEnabled();
-  scoped_refptr<base::SingleThreadTaskRunner>
-  GetCompositorMainThreadTaskRunner();
 
   // viz::mojom::CompositingModeWatcher implementation.
   void CompositingModeFallbackToSoftware() override;
@@ -542,9 +540,6 @@ class CONTENT_EXPORT RenderThreadImpl
   std::unique_ptr<viz::Gpu> gpu_;
 
   std::unique_ptr<VariationsRenderThreadObserver> variations_observer_;
-
-  scoped_refptr<base::SingleThreadTaskRunner>
-      main_thread_compositor_task_runner_;
 
   // Compositor settings.
   int gpu_rasterization_msaa_sample_count_;

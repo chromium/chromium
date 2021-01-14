@@ -246,6 +246,8 @@ blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
 // Creates the VideoFrameSubmitter and its task_runner based on the current
 // SurfaceLayerMode;
 std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner>*
         video_frame_compositor_task_runner,
     const cc::LayerTreeSettings& settings,
@@ -284,10 +286,8 @@ std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
 
   auto log_roughness_cb =
       base::BindRepeating(LogRoughness, base::Owned(media_log->Clone()));
-  auto post_to_context_provider_cb =
-      base::BindRepeating(&PostContextProviderToCallback,
-                          content::RenderThreadImpl::current()
-                              ->GetCompositorMainThreadTaskRunner());
+  auto post_to_context_provider_cb = base::BindRepeating(
+      &PostContextProviderToCallback, main_thread_compositor_task_runner);
   return blink::WebVideoFrameSubmitter::Create(
       std::move(post_to_context_provider_cb), std::move(log_roughness_cb),
       settings, use_sync_primitives);
@@ -357,7 +357,6 @@ bool UseMediaPlayerRenderer(const GURL& url) {
 }
 #endif  // defined(OS_ANDROID)
 
-
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     blink::WebMediaPlayerClient* client,
@@ -366,12 +365,14 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     blink::WebContentDecryptionModule* initial_cdm,
     const blink::WebString& sink_id,
     viz::FrameSinkId parent_frame_sink_id,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner) {
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   if (source.IsMediaStream()) {
-    return CreateWebMediaPlayerForMediaStream(client, inspector_context,
-                                              sink_id, web_frame,
-                                              parent_frame_sink_id, settings);
+    return CreateWebMediaPlayerForMediaStream(
+        client, inspector_context, sink_id, web_frame, parent_frame_sink_id,
+        settings, main_thread_compositor_task_runner);
   }
 
   // If |source| was not a MediaStream, it must be a URL.
@@ -466,9 +467,9 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   scoped_refptr<base::SingleThreadTaskRunner>
       video_frame_compositor_task_runner;
   const auto surface_layer_mode = GetSurfaceLayerMode(MediaPlayerType::kNormal);
-  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      CreateSubmitter(&video_frame_compositor_task_runner, settings,
-                      media_log.get(), render_frame_, surface_layer_mode);
+  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter = CreateSubmitter(
+      main_thread_compositor_task_runner, &video_frame_compositor_task_runner,
+      settings, media_log.get(), render_frame_, surface_layer_mode);
 
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner =
       render_thread->GetMediaThreadTaskRunner();
@@ -697,7 +698,9 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
     const blink::WebString& sink_id,
     blink::WebLocalFrame* frame,
     viz::FrameSinkId parent_frame_sink_id,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner) {
   RenderThreadImpl* const render_thread = RenderThreadImpl::current();
 
   scoped_refptr<base::SingleThreadTaskRunner>
@@ -717,9 +720,9 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
 
   const auto surface_layer_mode =
       GetSurfaceLayerMode(MediaPlayerType::kMediaStream);
-  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      CreateSubmitter(&video_frame_compositor_task_runner, settings,
-                      media_log.get(), render_frame_, surface_layer_mode);
+  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter = CreateSubmitter(
+      main_thread_compositor_task_runner, &video_frame_compositor_task_runner,
+      settings, media_log.get(), render_frame_, surface_layer_mode);
 
   return new blink::WebMediaPlayerMS(
       frame, client, GetWebMediaPlayerDelegate(), std::move(media_log),

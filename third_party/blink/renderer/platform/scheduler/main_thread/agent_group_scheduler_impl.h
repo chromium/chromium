@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AGENT_GROUP_SCHEDULER_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
@@ -30,9 +31,8 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return default_task_runner_;
-  }
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   MainThreadSchedulerImpl& GetMainThreadScheduler() {
     return main_thread_scheduler_;
   }
