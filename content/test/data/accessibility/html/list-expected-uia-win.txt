@@ -1,23 +1,23 @@
 Document
 ++List
-++++ListItem Name='tic'
+++++ListItem
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='tic' IsControlElement=false
-++++ListItem Name='tac'
+++++ListItem
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='tac' IsControlElement=false
-++++ListItem Name='toe'
+++++ListItem
 ++++++Group
 ++++++++Text Name='• ' IsControlElement=false
 ++++++Text Name='toe' IsControlElement=false
 ++List
-++++ListItem Name='tic'
+++++ListItem
 ++++++Text Name='tic' IsControlElement=false
 ++++Text Name=' '
-++++ListItem Name='tac'
+++++ListItem
 ++++++Text Name='tac' IsControlElement=false
 ++++Text Name=' '
-++++ListItem Name='toe'
+++++ListItem
 ++++++Text Name='toe' IsControlElement=false
