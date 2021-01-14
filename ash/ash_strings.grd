@@ -3207,7 +3207,10 @@ Here are some things you can try to get started.
         Screen capture
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE" desc="The title of the notificaton which shows after a screenshot is taken.">
-        Screenshot taken and saved to clipboard
+        Screenshot taken
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD" desc="The banner string shown above the notification which notifies the user that the screenshot has been copied to clipboard.">
+        Copied to clipboard
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE" desc="The titile of the notification which shows after a screen recording is taken.">
         Screen recording taken
