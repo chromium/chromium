@@ -123,6 +123,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   // views::Button overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // views::View overrides:
   base::string16 GetTooltipText(const gfx::Point& p) const override;

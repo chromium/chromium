@@ -896,6 +896,13 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
+void AppListItemView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
+      apps_grid_view_->is_in_folder()));
+  SchedulePaint();
+}
+
 base::string16 AppListItemView::GetTooltipText(const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
