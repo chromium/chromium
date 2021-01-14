@@ -923,7 +923,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     switch (properties) {
       case cc::EventListenerProperties::kBlockingAndPassive:
       case cc::EventListenerProperties::kPassive:
-        result = DID_HANDLE_NON_BLOCKING;
+        result = DID_NOT_HANDLE_NON_BLOCKING;
         break;
       case cc::EventListenerProperties::kNone:
         result = DROP_EVENT;
@@ -1182,7 +1182,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
           *allowed_touch_action != cc::TouchAction::kNone) {
         TRACE_EVENT_INSTANT0("input", "NonBlocking due to allowed touchaction",
                              TRACE_EVENT_SCOPE_THREAD);
-        result = DID_HANDLE_NON_BLOCKING;
+        result = DID_NOT_HANDLE_NON_BLOCKING;
       } else {
         TRACE_EVENT_INSTANT0("input", "DidNotHandle due to no touchaction",
                              TRACE_EVENT_SCOPE_THREAD);
@@ -1200,7 +1200,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
                          "listener", event_listener_class);
     switch (event_listener_class) {
       case cc::EventListenerProperties::kPassive:
-        result = DID_HANDLE_NON_BLOCKING;
+        result = DID_NOT_HANDLE_NON_BLOCKING;
         break;
       case cc::EventListenerProperties::kBlocking:
         // The touch area rects above already have checked whether it hits
@@ -1210,7 +1210,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
       case cc::EventListenerProperties::kBlockingAndPassive:
         // There is at least one passive listener that needs to possibly
         // be notified so it can't be dropped.
-        result = DID_HANDLE_NON_BLOCKING;
+        result = DID_NOT_HANDLE_NON_BLOCKING;
         break;
       case cc::EventListenerProperties::kNone:
         result = DROP_EVENT;
@@ -1230,12 +1230,12 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
         touch_event.GetType() == WebInputEvent::Type::kTouchStart))) {
     TRACE_EVENT_INSTANT0("input", "Non blocking due to skip filter",
                          TRACE_EVENT_SCOPE_THREAD);
-    result = DID_HANDLE_NON_BLOCKING;
+    result = DID_NOT_HANDLE_NON_BLOCKING;
   }
 
   // Merge |touch_result_| and |result| so the result has the highest
   // priority value according to the sequence; (DROP_EVENT,
-  // DID_HANDLE_NON_BLOCKING, DID_NOT_HANDLE).
+  // DID_NOT_HANDLE_NON_BLOCKING, DID_NOT_HANDLE).
   if (!touch_result_.has_value() || touch_result_ == DROP_EVENT ||
       result == DID_NOT_HANDLE) {
     TRACE_EVENT_INSTANT2(
@@ -1282,7 +1282,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
                                   cc::EventListenerProperties::kNone) {
     TRACE_EVENT_INSTANT0("input", "NonBlocking due to TouchEnd handler",
                          TRACE_EVENT_SCOPE_THREAD);
-    result = DID_HANDLE_NON_BLOCKING;
+    result = DID_NOT_HANDLE_NON_BLOCKING;
   }
 
   bool is_in_inertial_scrolling_on_impl =

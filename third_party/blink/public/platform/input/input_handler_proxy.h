@@ -102,7 +102,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
     // will be ACK'ed to the browser before being dispatched to the main
     // thread.
     // TODO(bokan): It's not clear that we need a separate status for this
-    // case, why can't we just use the DID_HANDLE_NON_BLOCKING below?
+    // case, why can't we just use the DID_NOT_HANDLE_NON_BLOCKING below?
     DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING,
 
     // Set to indicate that the event needs to be sent to the main thread (e.g.
@@ -111,10 +111,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
     // passive). Because it isn't cancellable, the event (and future events)
     // will be sent non-blocking and be acked to the browser before being
     // dispatchehd to the main thread.
-    // TODO(bokan): The semantics of DID/DID_NOT HANDLE are whether the main
-    // thread needs to know about the event. In this case, we expect the event
-    // to be forwarded to the main thread so this should be DID_NOT_HANDLE.
-    DID_HANDLE_NON_BLOCKING,
+    DID_NOT_HANDLE_NON_BLOCKING,
 
     // The compositor didn't handle the event but has determined the main
     // thread doesn't care about the event either (e.g. it's a touch event and

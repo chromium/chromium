@@ -79,7 +79,7 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
       return mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
     case InputHandlerProxy::DROP_EVENT:
       return mojom::blink::InputEventResultState::kNoConsumerExists;
-    case InputHandlerProxy::DID_HANDLE_NON_BLOCKING:
+    case InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING:
       return mojom::blink::InputEventResultState::kSetNonBlocking;
     case InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST:
     default:
