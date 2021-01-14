@@ -79,6 +79,8 @@ TypeConverter<blink::Manifest, blink::mojom::blink::ManifestPtr>::Convert(
   if (!input->scope.IsEmpty())
     output.scope = input->scope;
 
+  output.capture_links = input->capture_links;
+
   return output;
 }
 

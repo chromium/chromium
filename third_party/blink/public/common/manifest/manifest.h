@@ -237,6 +237,8 @@ struct BLINK_COMMON_EXPORT Manifest {
   // document URL if start URL isn't present) with filename, query, and fragment
   // removed.
   GURL scope;
+
+  mojom::CaptureLinks capture_links = mojom::CaptureLinks::kUndefined;
 };
 
 }  // namespace blink

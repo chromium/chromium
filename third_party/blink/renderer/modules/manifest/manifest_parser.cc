@@ -117,6 +117,7 @@ void ManifestParser::Parse() {
 
   manifest_->gcm_sender_id = ParseGCMSenderID(root_object.get());
   manifest_->shortcuts = ParseShortcuts(root_object.get());
+  manifest_->capture_links = ParseCaptureLinks(root_object.get());
 
   ManifestUmaUtil::ParseSucceeded(manifest_);
 }
@@ -1212,6 +1213,48 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
   base::Optional<String> gcm_sender_id =
       ParseString(object, "gcm_sender_id", Trim);
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
+}
+
+mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
+    const JSONObject* object) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppEnableLinkCapturing))
+    return mojom::blink::CaptureLinks::kUndefined;
+
+  String capture_links_string;
+  if (object->GetString("capture_links", &capture_links_string)) {
+    mojom::blink::CaptureLinks capture_links =
+        CaptureLinksFromString(capture_links_string.Utf8());
+    if (capture_links == mojom::blink::CaptureLinks::kUndefined) {
+      AddErrorInfo("capture_links value '" + capture_links_string +
+                   "' ignored, unknown value.");
+    }
+    return capture_links;
+  }
+
+  if (JSONArray* list = object->GetArray("capture_links")) {
+    for (wtf_size_t i = 0; i < list->size(); ++i) {
+      const JSONValue* item = list->at(i);
+      if (!item->AsString(&capture_links_string)) {
+        AddErrorInfo("capture_links value '" + item->ToJSONString() +
+                     "' ignored, string expected.");
+        continue;
+      }
+
+      mojom::blink::CaptureLinks capture_links =
+          CaptureLinksFromString(capture_links_string.Utf8());
+      if (capture_links != mojom::blink::CaptureLinks::kUndefined)
+        return capture_links;
+
+      AddErrorInfo("capture_links value '" + capture_links_string +
+                   "' ignored, unknown value.");
+    }
+    return mojom::blink::CaptureLinks::kUndefined;
+  }
+
+  AddErrorInfo(
+      "property 'capture_links' ignored, type string or array of strings "
+      "expected.");
+  return mojom::blink::CaptureLinks::kUndefined;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

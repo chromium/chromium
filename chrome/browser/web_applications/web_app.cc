@@ -266,6 +266,10 @@ void WebApp::SetSyncFallbackData(SyncFallbackData sync_fallback_data) {
   sync_fallback_data_ = std::move(sync_fallback_data);
 }
 
+void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
+  capture_links_ = capture_links;
+}
+
 void WebApp::SetLaunchQueryParams(
     base::Optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
@@ -363,6 +367,7 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   }
   for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
     out << "  url_handler: " << url_handler << std::endl;
+  out << "  capture_links: " << app.capture_links_ << std::endl;
 
   out << " chromeos_data: " << app.chromeos_data_.has_value() << std::endl;
   if (app.chromeos_data_.has_value())
@@ -429,6 +434,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
         app.url_handlers_,
+        app.capture_links_,
         app.client_data_.system_web_app_data
         // clang-format on
     );

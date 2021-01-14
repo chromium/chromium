@@ -7,6 +7,7 @@ module blink.mojom;
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
+import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -44,7 +45,7 @@ struct Manifest {
   // TODO(crbug.com/829689): This field is non-standard and part of a Chrome
   // experiment. See:
   // https://github.com/WICG/file-handling/blob/master/explainer.md
-  // As such, this field should not be exposed to the drive-by web.
+  // As such, this field should not be exposed by default.
   array<ManifestFileHandler> file_handlers;
 
   // TODO(crbug.com/1019239): This is going into the mainline manifest spec,
@@ -73,6 +74,12 @@ struct Manifest {
   mojo_base.mojom.String16? gcm_sender_id;
 
   url.mojom.Url scope;
+
+  // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
+  // As such, this field should not be exposed by default.
+  CaptureLinks capture_links;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:

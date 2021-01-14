@@ -106,6 +106,7 @@ mojom("mojom_platform") {
     "loader/transferrable_url_loader.mojom",
     "loader/url_loader_factory_bundle.mojom",
     "locks/lock_manager.mojom",
+    "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",
     "manifest/manifest.mojom",
     "manifest/manifest_manager.mojom",

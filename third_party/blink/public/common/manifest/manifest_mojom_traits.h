@@ -152,6 +152,11 @@ struct BLINK_COMMON_EXPORT
     return manifest.prefer_related_applications;
   }
 
+  static blink::mojom::CaptureLinks capture_links(
+      const ::blink::Manifest& manifest) {
+    return manifest.capture_links;
+  }
+
   static bool Read(blink::mojom::ManifestDataView data, ::blink::Manifest* out);
 };
 

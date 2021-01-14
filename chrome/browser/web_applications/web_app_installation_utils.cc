@@ -150,6 +150,8 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
     // default (windowed).
     web_app.SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
   }
+
+  web_app.SetCaptureLinks(web_app_info.capture_links);
 }
 
 }  // namespace web_app

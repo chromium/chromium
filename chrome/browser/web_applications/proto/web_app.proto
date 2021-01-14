@@ -193,4 +193,15 @@ message WebAppProto {
   repeated WebAppUrlHandlerProto url_handlers = 27;
 
   optional ClientDataProto client_data = 28;
+
+  // This enum should be synced with |ManifestCaptureLinks| in
+  // third_party/blink/public/mojom/manifest/manifest.mojom
+  enum CaptureLinks {
+    // UNDEFINED if optional |capture_links| is absent.
+    NONE = 1;
+    NEW_CLIENT = 2;
+    EXISTING_CLIENT_NAVIGATE = 3;
+  }
+
+  optional CaptureLinks capture_links = 29;
 }

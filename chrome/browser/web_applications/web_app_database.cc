@@ -74,6 +74,33 @@ apps::ShareTarget::Enctype ProtoToEnctype(ShareTarget_Enctype enctype) {
   }
 }
 
+blink::mojom::CaptureLinks ProtoToCaptureLinks(
+    WebAppProto::CaptureLinks capture_links) {
+  switch (capture_links) {
+    case WebAppProto_CaptureLinks_NONE:
+      return blink::mojom::CaptureLinks::kNone;
+    case WebAppProto_CaptureLinks_NEW_CLIENT:
+      return blink::mojom::CaptureLinks::kNewClient;
+    case WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE:
+      return blink::mojom::CaptureLinks::kExistingClientNavigate;
+  }
+}
+
+WebAppProto::CaptureLinks CaptureLinksToProto(
+    blink::mojom::CaptureLinks capture_links) {
+  switch (capture_links) {
+    case blink::mojom::CaptureLinks::kUndefined:
+      NOTREACHED();
+      FALLTHROUGH;
+    case blink::mojom::CaptureLinks::kNone:
+      return WebAppProto_CaptureLinks_NONE;
+    case blink::mojom::CaptureLinks::kNewClient:
+      return WebAppProto_CaptureLinks_NEW_CLIENT;
+    case blink::mojom::CaptureLinks::kExistingClientNavigate:
+      return WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
+  }
+}
+
 }  // anonymous namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
@@ -315,6 +342,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
     url_handler_proto->set_origin(url_handler.origin.Serialize());
   }
+
+  if (web_app.capture_links() != blink::mojom::CaptureLinks::kUndefined)
+    local_data->set_capture_links(CaptureLinksToProto(web_app.capture_links()));
+  else
+    local_data->clear_capture_links();
 
   return local_data;
 }
@@ -648,6 +680,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     url_handlers.push_back(std::move(url_handler));
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
+
+  if (local_data.has_capture_links())
+    web_app->SetCaptureLinks(ProtoToCaptureLinks(local_data.capture_links()));
+  else
+    web_app->SetCaptureLinks(blink::mojom::CaptureLinks::kUndefined);
 
   return web_app;
 }

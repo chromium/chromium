@@ -189,6 +189,11 @@ struct WebApplicationInfo {
   // User preference as to whether to auto run the app on OS login.
   // Currently only supported in Windows platform.
   bool run_on_os_login = false;
+
+  // The link capturing behaviour to use for navigations into in the app's
+  // scope.
+  blink::mojom::CaptureLinks capture_links =
+      blink::mojom::CaptureLinks::kUndefined;
 };
 
 std::ostream& operator<<(std::ostream& out,

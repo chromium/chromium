@@ -4050,4 +4050,120 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, CaptureLinksParseRules) {
+  // Feature not enabled, should not be parsed.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "none" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+class ManifestCaptureLinksParserTest : public ManifestParserTest {
+ public:
+  ManifestCaptureLinksParserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAppEnableLinkCapturing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ManifestCaptureLinksParserTest, CaptureLinksParseRules) {
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "none" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNone);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": ["new-client"] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNewClient);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Empty array is fine.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": [] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Unknown single string.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "unknown" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value 'unknown' ignored, unknown value.",
+              errors()[0]);
+  }
+
+  // First known value in array is used.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "capture_links": ["none", "existing-client-navigate"] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNone);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "capture_links": [
+        "unknown",
+        "existing-client-navigate",
+        "also-unknown",
+        "none"
+      ]
+    })");
+    EXPECT_EQ(manifest->capture_links,
+              mojom::blink::CaptureLinks::kExistingClientNavigate);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value 'unknown' ignored, unknown value.",
+              errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "capture_links": [
+        1234,
+        "new-client",
+        null,
+        "none"
+      ]
+    })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNewClient);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value '1234' ignored, string expected.",
+              errors()[0]);
+  }
+
+  // Don't parse if the property isn't a string or array of strings.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": null })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'capture_links' ignored, type string or array of strings "
+        "expected.",
+        errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": 1234 })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'capture_links' ignored, type string or array of strings "
+        "expected.",
+        errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": [12, 34] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("capture_links value '12' ignored, string expected.",
+              errors()[0]);
+    EXPECT_EQ("capture_links value '34' ignored, string expected.",
+              errors()[1]);
+  }
+}
+
 }  // namespace blink

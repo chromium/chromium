@@ -171,6 +171,8 @@ class WebApp {
     return downloaded_shortcuts_menu_icons_sizes_;
   }
 
+  blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -223,6 +225,7 @@ class WebApp {
   void SetInstallTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
+  void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -274,6 +277,8 @@ class WebApp {
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
   SyncFallbackData sync_fallback_data_;
   apps::UrlHandlers url_handlers_;
+  blink::mojom::CaptureLinks capture_links_ =
+      blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   // New fields must be added to |operator==| and |operator<<|.
 };

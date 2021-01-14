@@ -285,6 +285,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->shortcuts_menu_item_infos =
         UpdateShortcutsMenuItemInfosFromManifest(manifest.shortcuts);
   }
+
+  web_app_info->capture_links = manifest.capture_links;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

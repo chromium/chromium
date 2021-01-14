@@ -163,6 +163,11 @@ class WebAppDatabaseTest : public WebAppTest {
     return url_handlers;
   }
 
+  static blink::mojom::CaptureLinks CreateCaptureLinks(uint32_t suffix) {
+    return static_cast<blink::mojom::CaptureLinks>(
+        suffix % static_cast<uint32_t>(blink::mojom::CaptureLinks::kMaxValue));
+  }
+
   static std::vector<WebApplicationShortcutsMenuItemInfo>
   CreateShortcutsMenuItemInfos(const std::string& base_url, uint32_t suffix) {
     std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
@@ -302,6 +307,7 @@ class WebAppDatabaseTest : public WebAppTest {
       app->SetShareTarget(CreateShareTarget(random.next_uint()));
     app->SetProtocolHandlers(CreateProtocolHandlers(random.next_uint()));
     app->SetUrlHandlers(CreateUrlHandlers(random.next_uint()));
+    app->SetCaptureLinks(CreateCaptureLinks(random.next_uint()));
 
     const int num_additional_search_terms = random.next_uint(8);
     std::vector<std::string> additional_search_terms(
@@ -748,6 +754,21 @@ TEST_F(WebAppDatabaseTest, WebAppWithShareTargetRoundTrip) {
   share_target.params.text = "Text";
   share_target.params.url = "Url";
   app->SetShareTarget(std::move(share_target));
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+
+TEST_F(WebAppDatabaseTest, WebAppWithCaptureLinksRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+  auto app_id = app->app_id();
+
+  app->SetCaptureLinks(blink::mojom::CaptureLinks::kExistingClientNavigate);
 
   controller().RegisterApp(std::move(app));
 

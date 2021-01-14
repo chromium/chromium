@@ -113,6 +113,9 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
   if (!data.ReadScope(&out->scope))
     return false;
 
+  if (!data.ReadCaptureLinks(&out->capture_links))
+    return false;
+
   return true;
 }
 
