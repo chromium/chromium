@@ -211,9 +211,8 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   }
   // Add breakdowns for memory that isn't attributed to an execution context.
   breakdown.push_back(
-      CreateUnattributedBreakdown(measurement->detached_memory, "Detached"));
-  breakdown.push_back(
       CreateUnattributedBreakdown(measurement->shared_memory, "Shared"));
+  // TODO(1085129): Report memory usage of detached frames once implemented.
   // Add an empty breakdown entry as required by the spec.
   // See https://github.com/WICG/performance-measure-memory/issues/10.
   breakdown.push_back(EmptyBreakdown());
