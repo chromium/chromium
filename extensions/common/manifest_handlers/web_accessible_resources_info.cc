@@ -125,7 +125,9 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
       return nullptr;
     }
 
-    if (!(matches || extension_ids || use_dynamic_url)) {
+    bool use_dynamic_url_bool = use_dynamic_url && use_dynamic_url->GetBool();
+
+    if (!matches && !extension_ids && !use_dynamic_url_bool) {
       *error = get_error(
           i, "Entry must at least have resources, and one other valid key.");
       return nullptr;
@@ -168,10 +170,6 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
         }
         extension_id_list.emplace_back(extension_id_str);
       }
-    }
-    bool use_dynamic_url_bool = false;
-    if (use_dynamic_url) {
-      use_dynamic_url_bool = use_dynamic_url->GetBool();
     }
 
     info->web_accessible_resources.emplace_back(

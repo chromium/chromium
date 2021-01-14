@@ -125,11 +125,12 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Valid) {
               "unexpected_key": ["allowed"]
             }
           ])"},
-      {"Succeed if only the use_dynamic_url key is set, but not others.",
+      {"Succeed if use_dynamic_url key is true, irrespective of matches or "
+       "extension_ids.",
        R"([
             {
               "resources": ["test"],
-              "use_dynamic_url": false
+              "use_dynamic_url": true
             }
           ])"},
   };
@@ -161,6 +162,16 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "resources": ["error"]
             }
         ])",
+       "Invalid value for 'web_accessible_resources[0]'. Entry "
+       "must at least have resources, and one other valid key."},
+      {"Error if use_dynamic_url is false, and missing extension_ids or "
+       "matches.",
+       R"([
+            {
+              "resources": ["test"],
+              "use_dynamic_url": false
+            }
+          ])",
        "Invalid value for 'web_accessible_resources[0]'. Entry "
        "must at least have resources, and one other valid key."},
       {"Error if incorrect keyed object type is present.",
@@ -214,7 +225,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
             }
         ])",
        "Invalid value for 'web_accessible_resources[0]'. Invalid "
-       "match pattern."}};
+       "match pattern."},
+  };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     LoadAndExpectError(GetManifestData(test_case.web_accessible_resources),
