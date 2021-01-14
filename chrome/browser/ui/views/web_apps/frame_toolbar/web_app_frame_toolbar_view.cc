@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/views/layout/flex_layout.h"
-
-const char WebAppFrameToolbarView::kViewClassName[] = "WebAppFrameToolbarView";
+#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_utils.h"
 
 WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
                                                BrowserView* browser_view)
@@ -72,10 +72,10 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
 
   UpdateStatusIconsVisibility();
 
-  DCHECK(!browser_view_->toolbar_button_provider() ||
-         browser_view_->toolbar_button_provider()
-                 ->GetAsAccessiblePaneView()
-                 ->GetClassName() == GetClassName())
+  DCHECK(
+      !browser_view_->toolbar_button_provider() ||
+      views::IsViewClass<WebAppFrameToolbarView>(
+          browser_view_->toolbar_button_provider()->GetAsAccessiblePaneView()))
       << "This should be the first ToolbarButtorProvider or a replacement for "
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
@@ -108,6 +108,11 @@ void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
     return;
   paint_as_active_ = active;
   UpdateChildrenColor();
+  OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
+}
+
+bool WebAppFrameToolbarView::GetPaintAsActive() const {
+  return paint_as_active_;
 }
 
 std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
@@ -228,10 +233,6 @@ WebAppFrameToolbarView::GetPageActionIconControllerForTesting() {
   return right_container_->page_action_icon_controller();
 }
 
-const char* WebAppFrameToolbarView::GetClassName() const {
-  return kViewClassName;
-}
-
 void WebAppFrameToolbarView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
@@ -260,3 +261,7 @@ void WebAppFrameToolbarView::UpdateChildrenColor() {
       foreground_color,
       paint_as_active_ ? active_background_color_ : inactive_background_color_);
 }
+
+BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)
+ADD_PROPERTY_METADATA(bool, PaintAsActive)
+END_METADATA

@@ -11,19 +11,24 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class BrowserView;
 
 // The 'app menu' button for a web app window.
 class WebAppMenuButton : public AppMenuButton {
  public:
+  METADATA_HEADER(WebAppMenuButton);
   static int GetMenuButtonSizeForBrowser(Browser* browser);
   explicit WebAppMenuButton(BrowserView* browser_view,
                             base::string16 accessible_name = base::string16());
+  WebAppMenuButton(const WebAppMenuButton&) = delete;
+  WebAppMenuButton& operator=(const WebAppMenuButton&) = delete;
   ~WebAppMenuButton() override;
 
   // Sets the color of the menu button icon and highlight.
   void SetColor(SkColor color);
+  SkColor GetColor() const;
 
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
@@ -39,17 +44,12 @@ class WebAppMenuButton : public AppMenuButton {
  private:
   void FadeHighlightOff();
 
-  // views::View:
-  const char* GetClassName() const override;
-
   // The containing browser view.
   BrowserView* browser_view_;
 
-  SkColor ink_drop_color_ = gfx::kPlaceholderColor;
+  SkColor color_ = gfx::kPlaceholderColor;
 
   base::OneShotTimer highlight_off_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppMenuButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
