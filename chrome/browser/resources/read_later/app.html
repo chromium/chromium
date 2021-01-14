@@ -86,7 +86,8 @@
     </div>
     <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0">
+          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+          data="[[item]]" tabindex="0">
       </read-later-item>
     </template>
     <div hidden="[[!readItems_.length]]" class="sub-heading">
@@ -94,7 +95,8 @@
     </div>
     <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0">
+          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+          data="[[item]]" tabindex="0">
       </read-later-item>
     </template>
   </iron-selector>

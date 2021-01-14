@@ -84,6 +84,16 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
+   * @param {!readLater.mojom.ReadLaterEntry} item
+   * @return {string}
+   * @private
+   */
+  ariaLabel_(item) {
+    return `${item.title} - ${item.displayUrl} - ${
+        item.displayTimeSinceUpdate}`;
+  }
+
+  /**
    * @return {boolean}
    * @private
    */
