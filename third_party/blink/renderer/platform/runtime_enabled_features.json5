@@ -1170,8 +1170,7 @@
     },
     {
       name:"MeasureMemory",
-      origin_trial_feature_name: "MeasureMemory",
-      status:"experimental",
+      status:"stable",
     },
     {
       name: "MediaCapabilitiesDynamicRange",
