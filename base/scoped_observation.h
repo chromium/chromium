@@ -56,7 +56,9 @@ class ScopedObservation {
   // Adds the object passed to the constructor as an observer on |source|.
   // IsObserving() must be false.
   void Observe(Source* source) {
-    DCHECK_EQ(source_, nullptr);
+    // TODO(https://crbug.com/1145565): Make this a DCHECK once ScopedObserver
+    //     has been fully retired.
+    CHECK_EQ(source_, nullptr);
     source_ = source;
     (source_->*AddObsFn)(observer_);
   }
