@@ -372,9 +372,11 @@ void WaylandToplevelWindow::TriggerStateChanges() {
 }
 
 void WaylandToplevelWindow::SetWindowState(PlatformWindowState state) {
-  previous_state_ = state_;
-  state_ = state;
-  TriggerStateChanges();
+  if (state_ != state) {
+    previous_state_ = state_;
+    state_ = state;
+    TriggerStateChanges();
+  }
 }
 
 WmMoveResizeHandler* WaylandToplevelWindow::AsWmMoveResizeHandler() {
