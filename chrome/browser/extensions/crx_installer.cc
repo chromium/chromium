@@ -58,6 +58,7 @@
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
@@ -904,13 +905,22 @@ void CrxInstaller::UpdateCreationFlagsAndCompleteInstall(
   if (withholding_behavior == kWithholdPermissions)
     creation_flags_ |= Extension::WITHHOLD_PERMISSIONS;
 
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile());
+  const GURL update_url =
+      extension_management->GetEffectiveUpdateURL(*(extension()));
+  const bool updates_from_webstore_or_empty_update_url =
+      update_url.is_empty() || extension_urls::IsWebstoreUpdateUrl(update_url);
   if (!shared_file_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&CrxInstaller::CompleteInstall, this))) {
+          FROM_HERE,
+          base::BindOnce(&CrxInstaller::CompleteInstall, this,
+                         updates_from_webstore_or_empty_update_url))) {
     NOTREACHED();
   }
 }
 
-void CrxInstaller::CompleteInstall() {
+void CrxInstaller::CompleteInstall(
+    bool updates_from_webstore_or_empty_update_url) {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
   if (current_version_.IsValid() &&
@@ -928,7 +938,8 @@ void CrxInstaller::CompleteInstall() {
       ExtensionAssetsManager::GetInstance();
   assets_manager->InstallExtension(
       extension(), unpacked_extension_root_, install_directory_, profile(),
-      base::BindOnce(&CrxInstaller::ReloadExtensionAfterInstall, this));
+      base::Bind(&CrxInstaller::ReloadExtensionAfterInstall, this),
+      updates_from_webstore_or_empty_update_url);
 }
 
 void CrxInstaller::ReloadExtensionAfterInstall(

@@ -25,11 +25,13 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
   }
 
   // Override from ExtensionAssetsManager.
-  void InstallExtension(const Extension* extension,
-                        const base::FilePath& unpacked_extension_root,
-                        const base::FilePath& local_install_dir,
-                        Profile* profile,
-                        InstallExtensionCallback callback) override {
+  void InstallExtension(
+      const Extension* extension,
+      const base::FilePath& unpacked_extension_root,
+      const base::FilePath& local_install_dir,
+      Profile* profile,
+      InstallExtensionCallback callback,
+      bool updates_from_webstore_or_empty_update_url) override {
     std::move(callback).Run(file_util::InstallExtension(
         unpacked_extension_root, extension->id(), extension->VersionString(),
         local_install_dir));

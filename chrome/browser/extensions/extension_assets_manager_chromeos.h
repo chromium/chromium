@@ -41,11 +41,13 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Override from ExtensionAssetsManager.
-  void InstallExtension(const Extension* extension,
-                        const base::FilePath& unpacked_extension_root,
-                        const base::FilePath& local_install_dir,
-                        Profile* profile,
-                        InstallExtensionCallback callback) override;
+  void InstallExtension(
+      const Extension* extension,
+      const base::FilePath& unpacked_extension_root,
+      const base::FilePath& local_install_dir,
+      Profile* profile,
+      InstallExtensionCallback callback,
+      bool updates_from_webstore_or_empty_update_url) override;
   void UninstallExtension(const std::string& id,
                           Profile* profile,
                           const base::FilePath& local_install_dir,
@@ -75,7 +77,8 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   // Return |true| if |extension| can be installed in a shared place for all
   // users on the device.
   static bool CanShareAssets(const Extension* extension,
-                             const base::FilePath& unpacked_extension_root);
+                             const base::FilePath& unpacked_extension_root,
+                             bool updates_from_webstore_or_empty_update_url);
 
   // Called on the UI thread to check if a given version of the |extension|
   // already exists at the shared location.

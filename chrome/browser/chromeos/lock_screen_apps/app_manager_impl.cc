@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -32,6 +33,7 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 
@@ -132,6 +134,7 @@ void InstallExtensionCopy(
     const base::FilePath& original_path,
     const base::FilePath& target_install_dir,
     Profile* profile,
+    bool updates_from_webstore_or_empty_update_url,
     const ExtensionCallback& callback) {
   base::FilePath target_dir = target_install_dir.Append(extension->id());
   base::FilePath install_temp_dir =
@@ -159,7 +162,8 @@ void InstallExtensionCopy(
       extension.get(), temp_copy, target_install_dir, profile,
       base::Bind(&LoadInstalledExtension, extension->id(),
                  extension->location(), extension->creation_flags(),
-                 base::Passed(std::move(extension_temp_dir)), callback));
+                 base::Passed(std::move(extension_temp_dir)), callback),
+      updates_from_webstore_or_empty_update_url);
 }
 
 }  // namespace
@@ -423,11 +427,19 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
       extensions::ExtensionSystem::Get(lock_screen_profile_)
           ->extension_service();
 
+  const GURL update_url =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(
+          lock_screen_profile_)
+          ->GetEffectiveUpdateURL(*lock_profile_app);
+  bool updates_from_webstore_or_empty_update_url =
+      update_url.is_empty() || extension_urls::IsWebstoreUpdateUrl(update_url);
+
   extensions::GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &InstallExtensionCopy, lock_profile_app, app->path(),
           lock_screen_service->install_directory(), lock_screen_profile_,
+          updates_from_webstore_or_empty_update_url,
           base::Bind(&InvokeCallbackOnTaskRunner,
                      base::Bind(&AppManagerImpl::CompleteLockScreenAppInstall,
                                 weak_ptr_factory_.GetWeakPtr(), install_count_,

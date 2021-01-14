@@ -317,7 +317,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   // Runs on File thread. Install the unpacked extension into the profile and
   // notify the frontend.
-  void CompleteInstall();
+  void CompleteInstall(bool updates_from_webstore);
 
   // Reloads extension on File thread and reports installation result back
   // to UI thread.
