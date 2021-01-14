@@ -102,6 +102,15 @@ class PrintServersManagerImpl : public PrintServersManager {
     if (!is_complete) {
       return;
     }
+    // Create an entry in the device log.
+    if (is_complete) {
+      PRINTER_LOG(EVENT) << "The list of print servers has been completed. "
+                         << "Number of print servers: " << print_servers.size();
+      if (!print_servers.empty()) {
+        base::UmaHistogramCounts1000("Printing.PrintServers.ServersToQuery",
+                                     print_servers.size());
+      }
+    }
 
     print_servers_ = std::map<std::string, PrintServer>();
     std::vector<PrintServer> print_servers_list;

@@ -66,15 +66,6 @@ class ServerPrintersProviderImpl
   void OnServersChanged(bool servers_are_complete,
                         const std::map<GURL, PrintServer>& servers) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Create an entry in the device log.
-    if (servers_are_complete) {
-      PRINTER_LOG(EVENT) << "The list of print servers has been completed. "
-                         << "Number of print servers: " << servers.size();
-      if (!servers.empty()) {
-        base::UmaHistogramCounts1000("Printing.PrintServers.ServersToQuery",
-                                     servers.size());
-      }
-    }
     // Save previous state.
     const bool previous_complete = IsComplete();
     // Initialize new state.
