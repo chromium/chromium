@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant.details;
 
 import static org.chromium.chrome.browser.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -18,6 +16,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.ThumbnailUtils;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
@@ -34,6 +33,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
@@ -100,7 +100,8 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
     private final int mTextPlaceholdersHeight;
     private final int mTextPlaceholdersMargin;
 
-    private ValueAnimator mPulseAnimation;
+    private ValueAnimator mPlaceholdersColorAnimation;
+    private List<Callback<Integer>> mPlaceholdersColorCallbacks = new ArrayList<>();
     private ImageFetcher mImageFetcher;
 
     AssistantDetailsAdapter(Context context, ImageFetcher imageFetcher) {
@@ -162,6 +163,9 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
                 return details.get(newItemPosition);
             }
         }, /* detectMoves= */ false);
+
+        // Stop the placeholders animation.
+        stopPlaceholderAnimations();
 
         // Set the details.
         mDetails.clear();
@@ -322,8 +326,6 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
 
         if (shouldStartOrContinuePlaceholderAnimation(details.getPlaceholdersConfiguration())) {
             startOrContinuePlaceholderAnimations(details, viewHolder);
-        } else {
-            stopPlaceholderAnimations();
         }
     }
 
@@ -361,29 +363,26 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
 
     private void startOrContinuePlaceholderAnimations(
             AssistantDetails details, ViewHolder viewHolder) {
-        if (mPulseAnimation != null) {
-            return;
+        // Start the placeholders color animation if necessary.
+        if (mPlaceholdersColorAnimation == null) {
+            mPlaceholdersColorAnimation =
+                    ValueAnimator.ofInt(mPulseAnimationStartColor, mPulseAnimationEndColor);
+            mPlaceholdersColorAnimation.setDuration(PULSING_DURATION_MS);
+            mPlaceholdersColorAnimation.setEvaluator(new ArgbEvaluator());
+            mPlaceholdersColorAnimation.setRepeatCount(ValueAnimator.INFINITE);
+            mPlaceholdersColorAnimation.setRepeatMode(ValueAnimator.REVERSE);
+            mPlaceholdersColorAnimation.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
+            mPlaceholdersColorAnimation.addUpdateListener(animation -> {
+                // Set the color of the placeholders.
+                int animatedValue = (int) animation.getAnimatedValue();
+                setPlaceholdersColor(animatedValue);
+            });
+            mPlaceholdersColorAnimation.start();
         }
-        mPulseAnimation = ValueAnimator.ofInt(mPulseAnimationStartColor, mPulseAnimationEndColor);
-        mPulseAnimation.setDuration(PULSING_DURATION_MS);
-        mPulseAnimation.setEvaluator(new ArgbEvaluator());
-        mPulseAnimation.setRepeatCount(ValueAnimator.INFINITE);
-        mPulseAnimation.setRepeatMode(ValueAnimator.REVERSE);
-        mPulseAnimation.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
-        mPulseAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                viewHolder.mTitleView.setBackgroundColor(Color.TRANSPARENT);
-                viewHolder.mDescriptionLine1View.setBackgroundColor(Color.TRANSPARENT);
-                viewHolder.mDescriptionLine2View.setBackgroundColor(Color.TRANSPARENT);
-                viewHolder.mDescriptionLine3View.setBackgroundColor(Color.TRANSPARENT);
-                viewHolder.mDefaultImage.setColor(Color.TRANSPARENT);
-            }
-        });
 
+        // Change the background color of the placeholders when the animated value changes.
         AssistantPlaceholdersConfiguration placeholders = details.getPlaceholdersConfiguration();
-        mPulseAnimation.addUpdateListener(animation -> {
-            int animatedValue = (int) animation.getAnimatedValue();
+        mPlaceholdersColorCallbacks.add(animatedValue -> {
             viewHolder.mTitleView.setBackgroundColor(
                     placeholders.getShowTitlePlaceholder() ? animatedValue : Color.TRANSPARENT);
             viewHolder.mDescriptionLine1View.setBackgroundColor(
@@ -398,14 +397,27 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
             viewHolder.mDefaultImage.setColor(
                     placeholders.getShowImagePlaceholder() ? animatedValue : Color.TRANSPARENT);
         });
-        mPulseAnimation.start();
     }
 
     private void stopPlaceholderAnimations() {
-        if (mPulseAnimation != null) {
-            mPulseAnimation.cancel();
-            mPulseAnimation = null;
+        setPlaceholdersColor(Color.TRANSPARENT);
+        mPlaceholdersColorCallbacks.clear();
+
+        if (mPlaceholdersColorAnimation != null) {
+            mPlaceholdersColorAnimation.cancel();
+            mPlaceholdersColorAnimation = null;
         }
+    }
+
+    private void setPlaceholdersColor(int color) {
+        for (Callback<Integer> callback : mPlaceholdersColorCallbacks) {
+            callback.onResult(color);
+        }
+    }
+
+    @VisibleForTesting
+    boolean isRunningPlaceholdersAnimation() {
+        return mPlaceholdersColorAnimation != null;
     }
 
     /**

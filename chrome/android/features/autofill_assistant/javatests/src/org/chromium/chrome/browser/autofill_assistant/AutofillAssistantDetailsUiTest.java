@@ -122,6 +122,9 @@ public class AutofillAssistantDetailsUiTest {
 
     private static void setDetails(AssistantDetailsModel model, AssistantDetails... details) {
         runOnUiThreadBlocking(() -> model.setDetailsList(Arrays.asList(details)));
+
+        // Wait for the main thread to be idle (i.e. the UI should be stable).
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Before
@@ -487,5 +490,31 @@ public class AutofillAssistantDetailsUiTest {
         onView(allOf(viewMatchers.mTitleView, withText("title 1"))).check(matches(isDisplayed()));
         onView(allOf(viewMatchers.mTitleView, withText("title 2"))).check(matches(isDisplayed()));
         onView(allOf(viewMatchers.mTitleView, withText("title 3"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testPlaceholdersAnimation() throws Exception {
+        // Test that the placeholders animation is running only when details have placeholders.
+        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsCoordinator coordinator = createCoordinator(model);
+
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
+        setDetails(model,
+                new AssistantDetails("title 1", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false, NO_PLACEHOLDERS));
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
+        setDetails(model,
+                new AssistantDetails("title 1", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false,
+                        new AssistantPlaceholdersConfiguration(
+                                /* showImagePlaceholder= */ true,
+                                /* showTitlePlaceholder= */ false,
+                                /* showDescriptionLine1Placeholder= */ false,
+                                /* showDescriptionLine2Placeholder= */ false,
+                                /* showDescriptionLine3Placeholder= */ false)));
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(true));
+        setDetails(model);
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
     }
 }

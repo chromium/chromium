@@ -2400,7 +2400,7 @@ message ShowDetailsProto {
   //
   // Note that it's not possible to delay the clearing of the details. If
   // |data_to_show| is not set, then the details will be cleared directly.
-  optional bool delay_ms = 7;
+  optional int32 delay_ms = 7;
 }
 
 // Set the value of an form element.

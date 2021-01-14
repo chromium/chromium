@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
  */
 public class AssistantDetailsCoordinator {
     private final RecyclerView mView;
+    private final AssistantDetailsAdapter mAdapter;
 
     public AssistantDetailsCoordinator(
             Context context, AssistantDetailsModel model, ImageFetcher imageFetcher) {
@@ -33,13 +35,13 @@ public class AssistantDetailsCoordinator {
                 context, LinearLayoutManager.VERTICAL, /* reverseLayout= */ false));
         mView.setBackgroundResource(R.drawable.autofill_assistant_details_bg);
         mView.addItemDecoration(new DetailsItemDecoration(context));
-        AssistantDetailsAdapter adapter = new AssistantDetailsAdapter(context, imageFetcher);
-        mView.setAdapter(adapter);
+        mAdapter = new AssistantDetailsAdapter(context, imageFetcher);
+        mView.setAdapter(mAdapter);
 
         // Listen to the model and set the details on the adapter when they change.
         model.addObserver((source, propertyKey) -> {
             if (propertyKey == AssistantDetailsModel.DETAILS) {
-                adapter.setDetails(model.get(AssistantDetailsModel.DETAILS));
+                mAdapter.setDetails(model.get(AssistantDetailsModel.DETAILS));
             }
         });
 
@@ -60,6 +62,11 @@ public class AssistantDetailsCoordinator {
 
     public RecyclerView getView() {
         return mView;
+    }
+
+    @VisibleForTesting
+    public boolean isRunningPlaceholdersAnimationForTesting() {
+        return mAdapter.isRunningPlaceholdersAnimation();
     }
 
     /** A divider that is drawn after each details, except the last one. */
