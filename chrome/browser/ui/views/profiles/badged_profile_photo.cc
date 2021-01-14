@@ -12,6 +12,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -114,9 +115,6 @@ class BadgeView : public ::views::ImageView {
 
 }  // namespace
 
-// static
-const char BadgedProfilePhoto::kViewClassName[] = "BadgedProfilePhoto";
-
 // BadgedProfilePhoto -------------------------------------------------
 
 BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
@@ -140,6 +138,5 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
       gfx::Size(kBadgedProfilePhotoWidth, kBadgedProfilePhotoHeight));
 }
 
-const char* BadgedProfilePhoto::GetClassName() const {
-  return kViewClassName;
-}
+BEGIN_METADATA(BadgedProfilePhoto, views::View)
+END_METADATA

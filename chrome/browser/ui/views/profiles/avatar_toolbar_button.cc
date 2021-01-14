@@ -33,6 +33,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -41,10 +42,6 @@ namespace {
 constexpr int kIconSizeForNonTouchUi = 22;
 
 }  // namespace
-
-// static
-const char AvatarToolbarButton::kAvatarToolbarButtonClassName[] =
-    "AvatarToolbarButton";
 
 AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
     : AvatarToolbarButton(browser, nullptr) {}
@@ -192,10 +189,6 @@ void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
   delegate_->ShowHighlightAnimation();
 }
 
-bool AvatarToolbarButton::IsParentHighlighted() const {
-  return parent_ && parent_->GetHighlighted();
-}
-
 void AvatarToolbarButton::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -207,10 +200,6 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
 void AvatarToolbarButton::NotifyHighlightAnimationFinished() {
   for (AvatarToolbarButton::Observer& observer : observer_list_)
     observer.OnAvatarHighlightAnimationFinished();
-}
-
-const char* AvatarToolbarButton::GetClassName() const {
-  return kAvatarToolbarButtonClassName;
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -314,3 +303,6 @@ void AvatarToolbarButton::SetInsets() {
       touch_ui ? 0 : (kDefaultIconSize - kIconSizeForNonTouchUi) / 2);
   SetLayoutInsetDelta(layout_insets);
 }
+
+BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)
+END_METADATA
