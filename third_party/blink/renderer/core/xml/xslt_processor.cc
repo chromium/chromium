@@ -88,8 +88,10 @@ Document* XSLTProcessor::CreateDocumentFromSource(
   }
 
   if (frame) {
-    auto params = std::make_unique<WebNavigationParams>();
-    params->url = url;
+    auto* previous_document_loader = frame->Loader().GetDocumentLoader();
+    DCHECK(previous_document_loader);
+    std::unique_ptr<WebNavigationParams> params =
+        previous_document_loader->CreateWebNavigationParamsToCloneDocument();
     WebNavigationParams::FillStaticResponse(
         params.get(), mime_type,
         source_encoding.IsEmpty() ? "UTF-8" : source_encoding,

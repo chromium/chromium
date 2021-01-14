@@ -114,6 +114,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                  std::unique_ptr<WebNavigationParams> navigation_params);
   ~DocumentLoader() override;
 
+  // Returns WebNavigationParams that can be used to clone DocumentLoader. Used
+  // for javascript: URL and XSLT commits, where we want to create a new
+  // Document but keep most of the property of the current DocumentLoader.
+  std::unique_ptr<WebNavigationParams>
+  CreateWebNavigationParamsToCloneDocument();
+
   static bool WillLoadUrlAsEmpty(const KURL&);
 
   LocalFrame* GetFrame() const { return frame_; }
@@ -217,6 +223,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   };
   InitialScrollState& GetInitialScrollState() { return initial_scroll_state_; }
 
+  enum State { kNotStarted, kProvisional, kCommitted, kSentDidFinishLoad };
+
   void DispatchLinkHeaderPreloads(const ViewportDescription*,
                                   PreloadHelper::MediaPreloadPolicy);
 
@@ -292,7 +300,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void SetHistoryItemStateForCommit(HistoryItem* old_item,
                                     WebFrameLoadType,
-                                    HistoryNavigationType);
+                                    HistoryNavigationType,
+                                    CommitReason commit_reason);
 
   mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
   TakePendingWorkerTimingReceiver(int request_id);
@@ -497,7 +506,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   ClientHintsPreferences client_hints_preferences_;
   InitialScrollState initial_scroll_state_;
 
-  enum State { kNotStarted, kProvisional, kCommitted, kSentDidFinishLoad };
   State state_;
 
   // Used to block the parser.
