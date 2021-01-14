@@ -2,15 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {assertEquals, assertNotReached} from 'chrome://test/chai_assert.js';
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {createCrostiniForTest} from '../../background/js/mock_crostini.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {util} from '../../common/js/util.m.js';
+import {DialogType} from './dialog_type.m.js';
+import {DirectoryModel} from './directory_model.m.js';
+import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
+import {FileSelectionHandler} from './file_selection.m.js';
+import {MockMetadataModel} from './metadata/mock_metadata.m.js';
+import {MetadataUpdateController} from './metadata_update_controller.m.js';
+import {NamingController} from './naming_controller.m.js';
+import {TaskController} from './task_controller.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.m.js';
 
 /**
  * Mock metrics.
- * @type {!Object}
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} valid
  */
-window.metrics = {
-  recordEnum: function() {},
-};
+metrics.recordEnum = function(name, value, valid) {};
 
 /**
  * Mock chrome APIs.
@@ -19,7 +40,7 @@ window.metrics = {
 let mockChrome;
 
 // Set up test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getBoolean = key => false;
   window.loadTimeData.getString = id => id;
@@ -51,7 +72,7 @@ function setUp() {
   setupFileManagerPrivate();
   installMockChrome(mockChrome);
 
-  // Install cr.ui <command> elements on the page.
+  // Install <command> elements on the page.
   document.body.innerHTML = [
     '<command id="default-task">',
     '<command id="open-with">',
@@ -59,8 +80,8 @@ function setUp() {
     '<command id="show-submenu">',
   ].join('');
 
-  // Initialize cr.ui.Command with the <command>s.
-  cr.ui.decorate('command', cr.ui.Command);
+  // Initialize Command with the <command>s.
+  decorate('command', Command);
 }
 
 /**
@@ -146,7 +167,7 @@ function setupFileManagerPrivate() {
 /**
  * Tests that executeEntryTask() runs the expected task.
  */
-function testExecuteEntryTask(callback) {
+export function testExecuteEntryTask(callback) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
@@ -170,7 +191,7 @@ function testExecuteEntryTask(callback) {
  * Tests that getFileTasks() does not call .fileManagerPrivate.getFileTasks()
  * multiple times when the selected entries are not changed.
  */
-function testGetFileTasksShouldNotBeCalledMultipleTimes(callback) {
+export function testGetFileTasksShouldNotBeCalledMultipleTimes(callback) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
@@ -207,7 +228,7 @@ function testGetFileTasksShouldNotBeCalledMultipleTimes(callback) {
  * correspond to FileSelectionHandler.selection at the time getFileTasks() is
  * called.
  */
-function testGetFileTasksShouldNotReturnObsoletePromise(callback) {
+export function testGetFileTasksShouldNotReturnObsoletePromise(callback) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
@@ -239,7 +260,7 @@ function testGetFileTasksShouldNotReturnObsoletePromise(callback) {
  * Tests that changing the file selection during a getFileTasks() call causes
  * the getFileTasks() promise to reject.
  */
-function testGetFileTasksShouldNotCacheRejectedPromise(callback) {
+export function testGetFileTasksShouldNotCacheRejectedPromise(callback) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');

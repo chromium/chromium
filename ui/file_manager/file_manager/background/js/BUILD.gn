@@ -349,8 +349,10 @@ js_library("mock_crostini.m") {
     ":crostini.m",
     "//ui/file_manager/externs/background:crostini.m",
   ]
-  visibility +=
-      [ "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest.m" ]
+  visibility += [
+    "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest.m",
+    "//ui/file_manager/file_manager/foreground/js:task_controller_unittest.m",
+  ]
 
   extra_deps = [ ":modulize" ]
 }

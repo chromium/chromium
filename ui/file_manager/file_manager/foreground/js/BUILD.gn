@@ -65,6 +65,7 @@ js_type_check("closure_compile_jsmodules") {
     ":selection_menu_controller.m",
     ":sort_menu_controller.m",
     ":spinner_controller.m",
+    ":task_controller.m",
     ":task_history.m",
     ":thumbnail_loader.m",
     ":web_store_utils.m",
@@ -1450,15 +1451,55 @@ js_library("task_controller") {
   externs_list = [ "//ui/file_manager/externs/background/progress_center.js" ]
 }
 
-js_unittest("task_controller_unittest") {
+js_library("task_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/task_controller.m.js" ]
   deps = [
-    ":fake_file_selection_handler",
-    ":task_controller",
-    "metadata:mock_metadata",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/file_manager/background/js:mock_crostini",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
+    ":dialog_type.m",
+    ":directory_model.m",
+    ":file_selection.m",
+    ":file_tasks.m",
+    ":file_transfer_controller.m",
+    ":metadata_update_controller.m",
+    ":naming_controller.m",
+    ":task_history.m",
+    "metadata:metadata_model.m",
+    "ui:file_manager_ui.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:crostini.m",
+    "//ui/file_manager/externs/background:progress_center.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("task_controller_unittest.m") {
+  deps = [
+    ":dialog_type.m",
+    ":directory_model.m",
+    ":fake_file_selection_handler.m",
+    ":file_selection.m",
+    ":metadata_update_controller.m",
+    ":naming_controller.m",
+    ":task_controller.m",
+    "metadata:mock_metadata.m",
+    "ui:file_manager_ui.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:progress_center.m",
+    "//ui/file_manager/file_manager/background/js:mock_crostini.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
   ]
 }
 
@@ -1562,6 +1603,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":navigation_list_model_unittest.m",
     ":providers_model_unittest.m",
     ":spinner_controller_unittest.m",
+    ":task_controller_unittest.m",
     ":thumbnail_loader_unittest.m",
   ]
 
@@ -1580,7 +1622,6 @@ js_test_gen_html("js_test_gen_html") {
   deps = [
     ":file_manager_commands_unittest",
     ":import_controller_unittest",
-    ":task_controller_unittest",
   ]
   mocks = [ "$externs_path/file_manager_private.js" ]
 }
@@ -1630,6 +1671,7 @@ js_modulizer("modulize") {
     "sort_menu_controller.js",
     "selection_menu_controller.js",
     "file_tasks.js",
+    "task_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites + [
