@@ -61,7 +61,7 @@
 @property(nonatomic, strong) NewTabPageViewController* ntpViewController;
 
 // Mediator owned by this Coordinator.
-@property(nonatomic, strong) NTPHomeMediator* NTPMediator;
+@property(nonatomic, strong) NTPHomeMediator* ntpMediator;
 
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -145,7 +145,7 @@
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  self.NTPMediator = [[NTPHomeMediator alloc]
+  self.ntpMediator = [[NTPHomeMediator alloc]
              initWithWebState:self.webState
            templateURLService:templateURLService
                     URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
@@ -155,7 +155,7 @@
                    logoVendor:ios::GetChromeBrowserProvider()->CreateLogoVendor(
                                   self.browser, self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
-  self.NTPMediator.browser = self.browser;
+  self.ntpMediator.browser = self.browser;
 
   self.contentSuggestionsCoordinator = [[ContentSuggestionsCoordinator alloc]
       initWithBaseViewController:nil
@@ -163,7 +163,7 @@
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.toolbarDelegate = self.toolbarDelegate;
   self.contentSuggestionsCoordinator.panGestureHandler = self.panGestureHandler;
-  self.contentSuggestionsCoordinator.ntpMediator = self.NTPMediator;
+  self.contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
 
   [self.contentSuggestionsCoordinator start];
@@ -195,6 +195,7 @@
 
     self.ntpViewController.headerController =
         self.contentSuggestionsCoordinator.headerController;
+    self.ntpMediator.primaryViewController = self.ntpViewController;
   }
 
   base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));

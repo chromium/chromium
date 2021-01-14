@@ -324,6 +324,8 @@
                         headerController:self.headerController];
     self.ntpMediator.headerCollectionInteractionHandler =
         self.headerCollectionInteractionHandler;
+    DCHECK(!self.ntpMediator.primaryViewController);
+    self.ntpMediator.primaryViewController = self.suggestionsViewController;
   }
 
   self.dragDropHandler = [[URLDragDropHandler alloc] init];

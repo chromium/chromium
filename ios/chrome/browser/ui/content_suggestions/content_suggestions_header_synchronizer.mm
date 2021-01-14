@@ -248,7 +248,7 @@ initWithCollectionController:
 }
 
 - (CGFloat)pinnedOffsetY {
-  return [self.headerController pinnedOffsetY];
+  return [self.headerController pinnedOffsetY] - self.additionalOffset;
 }
 
 - (CGFloat)headerHeight {

@@ -517,7 +517,7 @@ const char kNTPHelpURL[] =
 }
 
 - (BOOL)isScrolledToTop {
-  return self.suggestionsViewController.scrolledToTop;
+  return self.primaryViewController.scrolledToTop;
 }
 
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
