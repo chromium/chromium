@@ -13,10 +13,12 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
@@ -42,9 +45,15 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class InterceptNavigationDelegateTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String BASE_PAGE = "/chrome/test/data/navigation_interception/";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
@@ -90,8 +99,7 @@ public class InterceptNavigationDelegateTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = sActivityTestRule.getActivity();
         final Tab tab = mActivity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             InterceptNavigationDelegateClientImpl client =
@@ -118,7 +126,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromTimer() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
@@ -129,7 +137,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromUserGesture() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -142,7 +150,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallback() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -155,7 +163,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallbackAndShortTimeout() throws TimeoutException {
-        mActivityTestRule.loadUrl(
+        sActivityTestRule.loadUrl(
                 mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
@@ -169,7 +177,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromXHRCallbackAndLongTimeout() throws TimeoutException {
-        mActivityTestRule.loadUrl(
+        sActivityTestRule.loadUrl(
                 mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LONG_TIMEOUT_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
@@ -182,7 +190,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @SmallTest
     public void testNavigationFromImageOnLoad() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_IMAGE_ONLOAD_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_IMAGE_ONLOAD_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
@@ -195,7 +203,7 @@ public class InterceptNavigationDelegateTest {
     @Test
     @MediumTest
     public void testExternalAppIframeNavigation() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_IFRAME_PAGE));
         Assert.assertEquals(1, mNavParamHistory.size());
 
         DOMUtils.clickNode(mActivity.getActivityTab().getWebContents(), "first");
