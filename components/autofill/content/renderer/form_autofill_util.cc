@@ -1654,10 +1654,8 @@ bool IsWebElementVisible(const blink::WebElement& element) {
 
 base::string16 GetFormIdentifier(const WebFormElement& form) {
   base::string16 identifier = form.GetName().Utf16();
-  static base::NoDestructor<WebString> kId("id");
   if (identifier.empty())
-    identifier = form.GetAttribute(*kId).Utf16();
-
+    identifier = form.GetIdAttribute().Utf16();
   return identifier;
 }
 
@@ -1707,7 +1705,6 @@ void WebFormControlElementToFormField(
   DCHECK(field);
   DCHECK(!element.IsNull());
   static base::NoDestructor<WebString> kAutocomplete("autocomplete");
-  static base::NoDestructor<WebString> kId("id");
   static base::NoDestructor<WebString> kName("name");
   static base::NoDestructor<WebString> kRole("role");
   static base::NoDestructor<WebString> kPlaceholder("placeholder");
@@ -1716,7 +1713,7 @@ void WebFormControlElementToFormField(
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
   field->name = element.NameForAutofill().Utf16();
-  field->id_attribute = element.GetAttribute(*kId).Utf16();
+  field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = element.GetAttribute(*kName).Utf16();
   field->unique_renderer_id =
       FieldRendererId(element.UniqueRendererFormControlId());

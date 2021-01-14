@@ -80,6 +80,10 @@ WebString WebElement::TagName() const {
   return ConstUnwrap<Element>()->tagName();
 }
 
+WebString WebElement::GetIdAttribute() const {
+  return ConstUnwrap<Element>()->GetIdAttribute();
+}
+
 bool WebElement::HasHTMLTagName(const WebString& tag_name) const {
   // How to create                     class              nodeName localName
   // createElement('input')            HTMLInputElement   INPUT    input

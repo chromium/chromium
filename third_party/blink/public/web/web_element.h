@@ -68,6 +68,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   bool IsEditable() const;
   // Returns the qualified name, which may contain a prefix and a colon.
   WebString TagName() const;
+  // Returns the id attribute.
+  WebString GetIdAttribute() const;
   // Check if this element has the specified local tag name, and the HTML
   // namespace. Tag name matching is case-insensitive.
   bool HasHTMLTagName(const WebString&) const;
