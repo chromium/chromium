@@ -948,10 +948,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Reauthorization.Result" enum="ArcProvisioningStatus"
-    expires_after="2021-02-07">
+    expires_after="2022-01-12">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
-  <owner>khmel@google.com</owner>
+  <owner>mhasank@google.com</owner>
   <owner>arc-core@gmail.com</owner>
   <summary>
     The result (success or the type of failure) of ARC reauthorization.
