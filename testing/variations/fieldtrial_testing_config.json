@@ -3222,24 +3222,6 @@
             ]
         }
     ],
-    "ForwardMemoryPressureEventsToGpuProcess": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForwardMemoryPressureEventsToGpuProcess"
-                    ]
-                }
-            ]
-        }
-    ],
     "FragmentItem": [
         {
             "platforms": [
