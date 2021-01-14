@@ -535,6 +535,7 @@ public class AppBannerManagerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1166410")
     @SmallTest
     @Feature({"AppBanners"})
     public void testAppInstalledModalNativeAppBannerBrowserTabWithUrl() throws Exception {
@@ -552,6 +553,7 @@ public class AppBannerManagerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1166410")
     @SmallTest
     @Feature({"AppBanners"})
     public void testAppInstalledModalNativeAppBannerCustomTab() throws Exception {
@@ -610,6 +612,7 @@ public class AppBannerManagerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1166410")
     @SmallTest
     @Feature({"AppBanners"})
     public void testModalNativeAppBannerCanBeTriggeredMultipleTimesBrowserTab() throws Exception {
