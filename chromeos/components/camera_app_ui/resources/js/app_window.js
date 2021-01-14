@@ -2,21 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
+import * as dom from './dom.js';
 import {
   ErrorInfo,  // eslint-disable-line no-unused-vars
   PerfEntry,  // eslint-disable-line no-unused-vars
   PerfEvent,
+  Resolution,
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
 const TOP_BAR_HEIGHT = 32;
 
-// Default window outer size when using 4x3 camera preview.
-export const DEFAULT_PREVIEW_4X3_WINDOW_SIZE = [788, 538 + TOP_BAR_HEIGHT];
+const DEFAULT_WINDOW_WIDTH = 764;
 
-// Default window outer size when using 16x9 camera preview.
-export const DEFAULT_PREVIEW_16X9_WINDOW_SIZE = [788, 428 + TOP_BAR_HEIGHT];
+/**
+ * Gets default window size which minimizes the letterbox area for given preview
+ * aspect ratio.
+ * @param {number} aspectRatio Preview aspect ratio.
+ * @return {!Resolution}
+ */
+export function getDefaultWindowSize(aspectRatio) {
+  const style = getComputedStyle(dom.get('#preview-box', HTMLDivElement));
+  const bottom = parseInt(style.bottom, 10);
+  const left = parseInt(style.left, 10);
+  const right = parseInt(style.right, 10);
+
+  return new Resolution(
+      DEFAULT_WINDOW_WIDTH,
+      Math.round(
+          (DEFAULT_WINDOW_WIDTH - (left + right)) / aspectRatio + bottom +
+          TOP_BAR_HEIGHT));
+}
 
 /**
  * Class which is used to coordinate the setup of window between Tast side and
