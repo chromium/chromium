@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+#include <vector>
 
 #include "base/check.h"
 #include "base/ios/ios_util.h"
@@ -15,6 +16,8 @@
 #include "components/safe_browsing/core/features.h"
 #include "ios/web/common/features.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
+#include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/web_client.h"
@@ -208,6 +211,21 @@ WKWebViewConfigurationProvider::GetContentRuleListProvider() {
 
 void WKWebViewConfigurationProvider::UpdateScripts() {
   [configuration_.userContentController removeAllUserScripts];
+
+  JavaScriptFeatureManager* java_script_feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(browser_state_);
+
+  std::vector<JavaScriptFeature*> features;
+  for (JavaScriptFeature* feature :
+       java_script_features::GetBuiltInJavaScriptFeatures()) {
+    features.push_back(feature);
+  }
+  for (JavaScriptFeature* feature :
+       GetWebClient()->GetJavaScriptFeatures(browser_state_)) {
+    features.push_back(feature);
+  }
+  java_script_feature_manager->ConfigureFeatures(features);
+
   // Main frame script depends upon scripts injected into all frames, so the
   // "AllFrames" scripts must be injected first.
   [configuration_.userContentController

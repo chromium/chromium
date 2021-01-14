@@ -56,11 +56,23 @@ source_set("java_script_feature") {
   ]
 }
 
+source_set("java_script_feature_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [ "//ios/web/public/js_messaging" ]
+
+  sources = [
+    "java_script_feature_util_impl.h",
+    "java_script_feature_util_impl.mm",
+  ]
+}
+
 source_set("unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":java_script_feature",
+    ":java_script_feature_util",
     ":js_messaging",
     "//base",
     "//base/test:test_support",
@@ -69,6 +81,7 @@ source_set("unittests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
@@ -77,6 +90,7 @@ source_set("unittests") {
     "crw_js_window_id_manager_unittest.mm",
     "crw_wk_script_message_router_unittest.mm",
     "java_script_content_world_unittest.mm",
+    "java_script_feature_manager_unittest.mm",
     "java_script_feature_unittest.mm",
     "page_script_util_unittest.mm",
     "web_frame_impl_unittest.mm",

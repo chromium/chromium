@@ -42,6 +42,9 @@ class FakeWebClient : public web::WebClient {
 
   base::RefCountedMemory* GetDataResourceBytes(int id) const override;
 
+  std::vector<JavaScriptFeature*> GetJavaScriptFeatures(
+      BrowserState* browser_state) const override;
+
   NSString* GetDocumentStartScriptForMainFrame(
       BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForAllFrames(
@@ -71,6 +74,9 @@ class FakeWebClient : public web::WebClient {
   // Changes Early Page Script for testing purposes.
   void SetEarlyPageScript(NSString* page_script);
 
+  // Changes Java Script Features for testing.
+  void SetJavaScriptFeatures(std::vector<JavaScriptFeature*> features);
+
   // Overrides AllowCertificateError response.
   void SetAllowCertificateErrors(bool flag);
 
@@ -88,6 +94,7 @@ class FakeWebClient : public web::WebClient {
 
  private:
   base::string16 plugin_not_supported_text_;
+  std::vector<JavaScriptFeature*> java_script_features_;
   NSString* early_page_script_ = nil;
   // Last arguments passed to AllowCertificateError.
   int last_cert_error_code_ = 0;

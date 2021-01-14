@@ -37,6 +37,7 @@ namespace web {
 
 class BrowserState;
 class BrowserURLRewriter;
+class JavaScriptFeature;
 class SerializableUserDataManager;
 class WebClient;
 class WebMainParts;
@@ -121,6 +122,10 @@ class WebClient {
   // Gives the embedder a chance to add url rewriters to the BrowserURLRewriter
   // singleton.
   virtual void PostBrowserURLRewriterCreation(BrowserURLRewriter* rewriter) {}
+
+  // Gives the embedder a chance to provide custom JavaScriptFeatures.
+  virtual std::vector<JavaScriptFeature*> GetJavaScriptFeatures(
+      BrowserState* browser_state) const;
 
   // Gives the embedder a chance to provide the JavaScript to be injected into
   // the web view as early as possible. Result must not be nil.

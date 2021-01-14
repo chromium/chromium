@@ -131,6 +131,8 @@ source_set("wk_web_view_configuration_provider") {
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/js_messaging:java_script_feature_util",
     "//ios/web/public",
     "//ios/web/web_state/js",
     "//ios/web/webui",

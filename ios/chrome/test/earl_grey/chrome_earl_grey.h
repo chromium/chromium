@@ -28,7 +28,7 @@ namespace chrome_test_util {
 // error resulting from the execution, if one occurs. The return value is the
 // result of the JavaScript execution. If the request is timed out, then nil is
 // returned.
-id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
+id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 
 }  // namespace chrome_test_util
 

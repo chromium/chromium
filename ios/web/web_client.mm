@@ -75,6 +75,11 @@ base::RefCountedMemory* WebClient::GetDataResourceBytes(int resource_id) const {
   return nullptr;
 }
 
+std::vector<JavaScriptFeature*> WebClient::GetJavaScriptFeatures(
+    BrowserState* browser_state) const {
+  return std::vector<JavaScriptFeature*>();
+}
+
 NSString* WebClient::GetDocumentStartScriptForAllFrames(
     BrowserState* browser_state) const {
   return @"";

@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
@@ -221,6 +222,33 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateScripts) {
   EXPECT_EQ(
       0U,
       [initial_script.source rangeOfString:updated_main_frame_script].length);
+}
+
+// Tests that configuration's userContentController has additional scripts
+// injected for JavaScriptFeatures configured through the WebClient.
+TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
+  FakeWebClient* client = GetWebClient();
+
+  WKUserContentController* user_content_controller =
+      GetProvider().GetWebViewConfiguration().userContentController;
+  unsigned long original_script_count =
+      [user_content_controller.userScripts count];
+
+  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "all_frames_web_bundle",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
+
+  std::unique_ptr<web::JavaScriptFeature> feature =
+      std::make_unique<web::JavaScriptFeature>(
+          web::JavaScriptFeature::ContentWorld::kPageContentWorld,
+          feature_scripts);
+
+  client->SetJavaScriptFeatures({feature.get()});
+  GetProvider().UpdateScripts();
+
+  EXPECT_GT([user_content_controller.userScripts count], original_script_count);
 }
 
 // Tests that observers methods are correctly triggered when observing the

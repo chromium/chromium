@@ -460,6 +460,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/deprecated:test_doubles",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/security",

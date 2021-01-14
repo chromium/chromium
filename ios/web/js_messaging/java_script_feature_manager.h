@@ -11,7 +11,7 @@
 #include "base/supports_user_data.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 
-@class WKUserContentController;
+//@class WKUserContentController;
 
 namespace web {
 
@@ -41,9 +41,9 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
   JavaScriptFeatureManager& operator=(const JavaScriptFeatureManager&) = delete;
 
  private:
-  JavaScriptFeatureManager(WKUserContentController* user_content_controller);
+  JavaScriptFeatureManager(BrowserState* browser_state);
 
-  WKUserContentController* user_content_controller_ = nullptr;
+  BrowserState* browser_state_;
 
   // The content world shared with the page content JavaScript.
   std::unique_ptr<JavaScriptContentWorld> page_content_world_;

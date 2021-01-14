@@ -101,11 +101,8 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
   web_bundle =
       [web_bundle stringByReplacingOccurrencesOfString:@"$(COOKIE_STATE)"
                                             withString:injectedCookieState];
-  NSString* script = [NSString
-      stringWithFormat:@"%@; %@; %@; %@; %@", GetPageScript(@"base_js"),
-                       GetPageScript(@"common_js"),
-                       GetPageScript(@"message_js"), web_bundle,
-                       embedder_page_script];
+  NSString* script =
+      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
   return MakeScriptInjectableOnce(@"start_all_frames", script);
 }
 
