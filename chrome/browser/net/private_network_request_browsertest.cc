@@ -69,16 +69,26 @@ GURL PublicNonSecureURL(const net::EmbeddedTestServer& server) {
 }
 
 constexpr WebFeature kAllAddressSpaceFeatures[] = {
-    WebFeature::kAddressSpaceLocalEmbeddedInPrivateSecureContext,
-    WebFeature::kAddressSpaceLocalEmbeddedInPrivateNonSecureContext,
-    WebFeature::kAddressSpaceLocalEmbeddedInPublicSecureContext,
-    WebFeature::kAddressSpaceLocalEmbeddedInPublicNonSecureContext,
-    WebFeature::kAddressSpaceLocalEmbeddedInUnknownSecureContext,
-    WebFeature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext,
-    WebFeature::kAddressSpacePrivateEmbeddedInPublicSecureContext,
-    WebFeature::kAddressSpacePrivateEmbeddedInPublicNonSecureContext,
-    WebFeature::kAddressSpacePrivateEmbeddedInUnknownSecureContext,
-    WebFeature::kAddressSpacePrivateEmbeddedInUnknownNonSecureContext,
+    WebFeature::kAddressSpacePrivateSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePublicSecureContextEmbeddedPrivate,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
+    WebFeature::kAddressSpaceUnknownSecureContextEmbeddedPrivate,
+    WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
+    WebFeature::kAddressSpacePrivateSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpacePublicSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
+    WebFeature::kAddressSpacePublicSecureContextNavigatedToPrivate,
+    WebFeature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
+    WebFeature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
+    WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
 };
 
 // Returns a map of WebFeature to bucket count. Skips buckets with zero counts.
@@ -186,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
-      ElementsAre(Pair(
-          WebFeature::kAddressSpaceLocalEmbeddedInPublicSecureContext, 1)));
+      ElementsAre(
+          Pair(WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1)));
 }
 
 // This test verifies that when a non-secure context served from the public
@@ -209,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
       ElementsAre(Pair(
-          WebFeature::kAddressSpaceLocalEmbeddedInPublicNonSecureContext, 1)));
+          WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1)));
 }
 
 // This test verifies that when page embeds an empty iframe pointing to
@@ -263,8 +273,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
   // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
-      ElementsAre(Pair(
-          WebFeature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext, 1)));
+      ElementsAre(
+          Pair(WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
+               1)));
 }
 
 // This test verifies that when a non-secure context served from the public
@@ -300,8 +311,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
   // TODO(https://crbug.com/1129326): Expect InPublicNonSecureContext?
   EXPECT_THAT(
       GetAddressSpaceFeatureBucketCounts(histogram_tester),
-      ElementsAre(Pair(
-          WebFeature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext, 1)));
+      ElementsAre(
+          Pair(WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
+               1)));
 }
 
 class PrivateNetworkRequestWithFeatureEnabledBrowserTest

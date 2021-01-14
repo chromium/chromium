@@ -30,6 +30,12 @@
 
 #include "third_party/blink/renderer/core/loader/address_space_feature.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+
 namespace blink {
 
 using AddressSpace = network::mojom::blink::IPAddressSpace;
@@ -37,22 +43,22 @@ using Feature = mojom::blink::WebFeature;
 
 // Returns the kAddressSpaceLocal* WebFeature enum value corresponding to the
 // given client loading a resource from the local address space, if any.
-base::Optional<Feature> AddressSpaceLocalFeature(
+base::Optional<Feature> AddressSpaceLocalFeatureForSubresource(
     AddressSpace client_address_space,
     bool client_is_secure_context) {
   switch (client_address_space) {
     case AddressSpace::kUnknown:
       return client_is_secure_context
-                 ? Feature::kAddressSpaceLocalEmbeddedInUnknownSecureContext
-                 : Feature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext;
+                 ? Feature::kAddressSpaceUnknownSecureContextEmbeddedLocal
+                 : Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal;
     case AddressSpace::kPublic:
       return client_is_secure_context
-                 ? Feature::kAddressSpaceLocalEmbeddedInPublicSecureContext
-                 : Feature::kAddressSpaceLocalEmbeddedInPublicNonSecureContext;
+                 ? Feature::kAddressSpacePublicSecureContextEmbeddedLocal
+                 : Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal;
     case AddressSpace::kPrivate:
       return client_is_secure_context
-                 ? Feature::kAddressSpaceLocalEmbeddedInPrivateSecureContext
-                 : Feature::kAddressSpaceLocalEmbeddedInPrivateNonSecureContext;
+                 ? Feature::kAddressSpacePrivateSecureContextEmbeddedLocal
+                 : Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal;
     case AddressSpace::kLocal:
       return base::nullopt;  // Local to local is fine, we do not track it.
   }
@@ -60,20 +66,18 @@ base::Optional<Feature> AddressSpaceLocalFeature(
 
 // Returns the kAddressSpacePrivate* WebFeature enum value corresponding to the
 // given client loading a resource from the private address space, if any.
-base::Optional<Feature> AddressSpacePrivateFeature(
+base::Optional<Feature> AddressSpacePrivateFeatureForSubresource(
     AddressSpace client_address_space,
     bool client_is_secure_context) {
   switch (client_address_space) {
     case AddressSpace::kUnknown:
       return client_is_secure_context
-                 ? Feature::kAddressSpacePrivateEmbeddedInUnknownSecureContext
-                 : Feature::
-                       kAddressSpacePrivateEmbeddedInUnknownNonSecureContext;
+                 ? Feature::kAddressSpaceUnknownSecureContextEmbeddedPrivate
+                 : Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate;
     case AddressSpace::kPublic:
       return client_is_secure_context
-                 ? Feature::kAddressSpacePrivateEmbeddedInPublicSecureContext
-                 : Feature::
-                       kAddressSpacePrivateEmbeddedInPublicNonSecureContext;
+                 ? Feature::kAddressSpacePublicSecureContextEmbeddedPrivate
+                 : Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate;
     case AddressSpace::kPrivate:
     case AddressSpace::kLocal:
       // Private or local to local is fine, we do not track it.
@@ -81,7 +85,7 @@ base::Optional<Feature> AddressSpacePrivateFeature(
   }
 }
 
-base::Optional<Feature> AddressSpaceFeature(
+base::Optional<Feature> AddressSpaceFeatureForSubresource(
     AddressSpace client_address_space,
     bool client_is_secure_context,
     AddressSpace resource_address_space) {
@@ -90,12 +94,115 @@ base::Optional<Feature> AddressSpaceFeature(
     case AddressSpace::kPublic:
       return base::nullopt;
     case AddressSpace::kPrivate:
-      return AddressSpacePrivateFeature(client_address_space,
-                                        client_is_secure_context);
+      return AddressSpacePrivateFeatureForSubresource(client_address_space,
+                                                      client_is_secure_context);
     case AddressSpace::kLocal:
-      return AddressSpaceLocalFeature(client_address_space,
-                                      client_is_secure_context);
+      return AddressSpaceLocalFeatureForSubresource(client_address_space,
+                                                    client_is_secure_context);
   }
+}
+
+// Returns the kAddressSpaceLocal* WebFeature enum value corresponding to the
+// given client loading a resource from the local address space, if any.
+base::Optional<Feature> AddressSpaceLocalFeatureForNavigation(
+    AddressSpace client_address_space,
+    bool is_secure_context) {
+  switch (client_address_space) {
+    case AddressSpace::kUnknown:
+      return is_secure_context
+                 ? Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal
+                 : Feature::
+                       kAddressSpaceUnknownNonSecureContextNavigatedToLocal;
+    case AddressSpace::kPublic:
+      return is_secure_context
+                 ? Feature::kAddressSpacePublicSecureContextNavigatedToLocal
+                 : Feature::kAddressSpacePublicNonSecureContextNavigatedToLocal;
+    case AddressSpace::kPrivate:
+      return is_secure_context
+                 ? Feature::kAddressSpacePrivateSecureContextNavigatedToLocal
+                 : Feature::
+                       kAddressSpacePrivateNonSecureContextNavigatedToLocal;
+    case AddressSpace::kLocal:
+      return base::nullopt;  // Local to local is fine, we do not track it.
+  }
+}
+
+// Returns the kAddressSpacePrivate* WebFeature enum value corresponding to the
+// given client loading a resource from the private address space, if any.
+base::Optional<Feature> AddressSpacePrivateFeatureForNavigation(
+    AddressSpace client_address_space,
+    bool is_secure_context) {
+  switch (client_address_space) {
+    case AddressSpace::kUnknown:
+      return is_secure_context
+                 ? Feature::kAddressSpaceUnknownSecureContextNavigatedToPrivate
+                 : Feature::
+                       kAddressSpaceUnknownNonSecureContextNavigatedToPrivate;
+    case AddressSpace::kPublic:
+      return is_secure_context
+                 ? Feature::kAddressSpacePublicSecureContextNavigatedToPrivate
+                 : Feature::
+                       kAddressSpacePublicNonSecureContextNavigatedToPrivate;
+    case AddressSpace::kPrivate:
+    case AddressSpace::kLocal:
+      // Private or local to local is fine, we do not track it.
+      return base::nullopt;
+  }
+}
+
+base::Optional<Feature> AddressSpaceFeatureForNavigation(
+    AddressSpace client_address_space,
+    bool is_secure_context,
+    AddressSpace response_address_space) {
+  switch (response_address_space) {
+    case AddressSpace::kUnknown:
+    case AddressSpace::kPublic:
+      return base::nullopt;
+    case AddressSpace::kPrivate:
+      return AddressSpacePrivateFeatureForNavigation(client_address_space,
+                                                     is_secure_context);
+    case AddressSpace::kLocal:
+      return AddressSpaceLocalFeatureForNavigation(client_address_space,
+                                                   is_secure_context);
+  }
+}
+
+base::Optional<Feature> AddressSpaceFeature(
+    FetchType fetch_type,
+    AddressSpace client_address_space,
+    bool client_is_secure_context,
+    AddressSpace response_address_space) {
+  switch (fetch_type) {
+    case FetchType::kSubresource:
+      return AddressSpaceFeatureForSubresource(client_address_space,
+                                               client_is_secure_context,
+                                               response_address_space);
+    case FetchType::kNavigation:
+      return AddressSpaceFeatureForNavigation(client_address_space,
+                                              client_is_secure_context,
+                                              response_address_space);
+  }
+}
+
+void RecordAddressSpaceFeature(FetchType fetch_type,
+                               LocalFrame* client_frame,
+                               const ResourceResponse& response) {
+  if (!client_frame) {
+    return;
+  }
+
+  LocalDOMWindow* window = client_frame->DomWindow();
+  base::Optional<WebFeature> feature =
+      AddressSpaceFeature(fetch_type, window->AddressSpace(),
+                          window->IsSecureContext(), response.AddressSpace());
+  if (!feature.has_value()) {
+    return;
+  }
+
+  // This WebFeature encompasses all private network requests.
+  UseCounter::Count(window,
+                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
+  UseCounter::Count(window, *feature);
 }
 
 }  // namespace blink

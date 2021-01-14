@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/loader/address_space_feature.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
@@ -776,26 +775,6 @@ bool MixedContentChecker::ShouldAutoupgrade(
   }
 
   return true;
-}
-
-void MixedContentChecker::CheckMixedPrivatePublic(
-    LocalFrame* frame,
-    const ResourceResponse& response) {
-  if (!frame)
-    return;
-
-  LocalDOMWindow* window = frame->DomWindow();
-  base::Optional<WebFeature> feature =
-      AddressSpaceFeature(window->AddressSpace(), window->IsSecureContext(),
-                          response.AddressSpace());
-  if (!feature.has_value()) {
-    return;
-  }
-
-  // This WebFeature encompasses all private network requests.
-  UseCounter::Count(window,
-                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-  UseCounter::Count(window, *feature);
 }
 
 void MixedContentChecker::HandleCertificateError(

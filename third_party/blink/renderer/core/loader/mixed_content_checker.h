@@ -109,9 +109,6 @@ class CORE_EXPORT MixedContentChecker final {
                                 WebContentSettingsClient* settings_client,
                                 const KURL& url);
 
-  static void CheckMixedPrivatePublic(LocalFrame*,
-                                      const ResourceResponse& response);
-
   static WebMixedContentContextType ContextTypeForInspector(
       LocalFrame*,
       const ResourceRequest&);

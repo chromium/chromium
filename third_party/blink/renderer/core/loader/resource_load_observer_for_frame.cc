@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/loader/address_space_feature.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -145,7 +146,7 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
       return;
   }
 
-  MixedContentChecker::CheckMixedPrivatePublic(frame, response);
+  RecordAddressSpaceFeature(FetchType::kSubresource, frame, response);
 
   std::unique_ptr<AlternateSignedExchangeResourceInfo> alternate_resource_info;
 

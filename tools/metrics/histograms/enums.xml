@@ -30837,18 +30837,26 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3685" label="XRDepthInformationGetDepth"/>
   <int value="3686" label="XRDepthInformationDataAttribute"/>
   <int value="3687" label="InterestCohortAPI_interestCohort_Method"/>
-  <int value="3688" label="AddressSpaceLocalEmbeddedInPrivateSecureContext"/>
-  <int value="3689" label="AddressSpaceLocalEmbeddedInPrivateNonSecureContext"/>
-  <int value="3690" label="AddressSpaceLocalEmbeddedInPublicSecureContext"/>
-  <int value="3691" label="AddressSpaceLocalEmbeddedInPublicNonSecureContext"/>
-  <int value="3692" label="AddressSpaceLocalEmbeddedInUnknownSecureContext"/>
-  <int value="3693" label="AddressSpaceLocalEmbeddedInUnknownNonSecureContext"/>
-  <int value="3694" label="AddressSpacePrivateEmbeddedInPublicSecureContext"/>
+  <int value="3688"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInPrivateSecureContext"/>
+  <int value="3689"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInPrivateNonSecureContext"/>
+  <int value="3690"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInPublicSecureContext"/>
+  <int value="3691"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInPublicNonSecureContext"/>
+  <int value="3692"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInUnknownSecureContext"/>
+  <int value="3693"
+      label="OBSOLETE_AddressSpaceLocalEmbeddedInUnknownNonSecureContext"/>
+  <int value="3694"
+      label="OBSOLETE_AddressSpacePrivateEmbeddedInPublicSecureContext"/>
   <int value="3695"
-      label="AddressSpacePrivateEmbeddedInPublicNonSecureContext"/>
-  <int value="3696" label="AddressSpacePrivateEmbeddedInUnknownSecureContext"/>
+      label="OBSOLETE_AddressSpacePrivateEmbeddedInPublicNonSecureContext"/>
+  <int value="3696"
+      label="OBSOLETE_AddressSpacePrivateEmbeddedInUnknownSecureContext"/>
   <int value="3697"
-      label="AddressSpacePrivateEmbeddedInUnknownNonSecureContext"/>
+      label="OBSOLETE_AddressSpacePrivateEmbeddedInUnknownNonSecureContext"/>
   <int value="3698" label="ThirdPartyAccess"/>
   <int value="3699" label="ThirdPartyActivation"/>
   <int value="3700" label="ThirdPartyAccessAndActivation"/>
@@ -30904,6 +30912,30 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3750" label="PaymentHandlerStandardizedPaymentMethodIdentifier"/>
   <int value="3751" label="WebCodecsAudioEncoder"/>
   <int value="3752" label="EmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO"/>
+  <int value="3753" label="AddressSpacePrivateSecureContextEmbeddedLocal"/>
+  <int value="3754" label="AddressSpacePrivateNonSecureContextEmbeddedLocal"/>
+  <int value="3755" label="AddressSpacePublicSecureContextEmbeddedLocal"/>
+  <int value="3756" label="AddressSpacePublicNonSecureContextEmbeddedLocal"/>
+  <int value="3757" label="AddressSpacePublicSecureContextEmbeddedPrivate"/>
+  <int value="3758" label="AddressSpacePublicNonSecureContextEmbeddedPrivate"/>
+  <int value="3759" label="AddressSpaceUnknownSecureContextEmbeddedLocal"/>
+  <int value="3760" label="AddressSpaceUnknownNonSecureContextEmbeddedLocal"/>
+  <int value="3761" label="AddressSpaceUnknownSecureContextEmbeddedPrivate"/>
+  <int value="3762" label="AddressSpaceUnknownNonSecureContextEmbeddedPrivate"/>
+  <int value="3763" label="AddressSpacePrivateSecureContextNavigatedToLocal"/>
+  <int value="3764"
+      label="AddressSpacePrivateNonSecureContextNavigatedToLocal"/>
+  <int value="3765" label="AddressSpacePublicSecureContextNavigatedToLocal"/>
+  <int value="3766" label="AddressSpacePublicNonSecureContextNavigatedToLocal"/>
+  <int value="3767" label="AddressSpacePublicSecureContextNavigatedToPrivate"/>
+  <int value="3768"
+      label="AddressSpacePublicNonSecureContextNavigatedToPrivate"/>
+  <int value="3769" label="AddressSpaceUnknownSecureContextNavigatedToLocal"/>
+  <int value="3770"
+      label="AddressSpaceUnknownNonSecureContextNavigatedToLocal"/>
+  <int value="3771" label="AddressSpaceUnknownSecureContextNavigatedToPrivate"/>
+  <int value="3772"
+      label="AddressSpaceUnknownNonSecureContextNavigatedToPrivate"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

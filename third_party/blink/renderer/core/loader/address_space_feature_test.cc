@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/address_space_feature.h"
 
 #include <iosfwd>
+#include <string>
 #include <vector>
 
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -42,6 +43,24 @@ namespace {
 using AddressSpace = network::mojom::blink::IPAddressSpace;
 using Feature = mojom::blink::WebFeature;
 
+constexpr FetchType kAllFetchTypes[]{
+    FetchType::kSubresource,
+    FetchType::kNavigation,
+};
+
+std::string FetchTypeToString(FetchType type) {
+  switch (type) {
+    case FetchType::kSubresource:
+      return "FetchType::kSubresource";
+    case FetchType::kNavigation:
+      return "FetchType::kNavigation";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out, FetchType type) {
+  return out << FetchTypeToString(type);
+}
+
 constexpr AddressSpace kAllAddressSpaces[] = {
     AddressSpace::kUnknown,
     AddressSpace::kPublic,
@@ -51,6 +70,7 @@ constexpr AddressSpace kAllAddressSpaces[] = {
 
 // Encapsulates arguments to AddressSpaceFeature.
 struct Input {
+  FetchType fetch_type;
   AddressSpace client_address_space;
   bool client_is_secure_context;
   AddressSpace resource_address_space;
@@ -58,14 +78,16 @@ struct Input {
 
 // Convenience for HasMappedFeature().
 bool operator==(const Input& lhs, const Input& rhs) {
-  return lhs.client_address_space == rhs.client_address_space &&
+  return lhs.fetch_type == rhs.fetch_type &&
+         lhs.client_address_space == rhs.client_address_space &&
          lhs.client_is_secure_context == rhs.client_is_secure_context &&
          lhs.resource_address_space == rhs.resource_address_space;
 }
 
 // Allows use of Input arguments to SCOPED_TRACE().
 std::ostream& operator<<(std::ostream& out, const Input& input) {
-  return out << "Input{ client_address_space: " << input.client_address_space
+  return out << "Input{ fetch_type: " << input.fetch_type
+             << ", client_address_space: " << input.client_address_space
              << ", client_is_secure_context: " << input.client_is_secure_context
              << ", resource_address_space: " << input.resource_address_space
              << " }";
@@ -74,23 +96,27 @@ std::ostream& operator<<(std::ostream& out, const Input& input) {
 // Returns all possible Input values.
 std::vector<Input> AllInputs() {
   std::vector<Input> result;
-  for (AddressSpace client_address_space : kAllAddressSpaces) {
-    for (bool client_is_secure_context : {false, true}) {
-      for (AddressSpace resource_address_space : kAllAddressSpaces) {
-        result.push_back({
-            client_address_space,
-            client_is_secure_context,
-            resource_address_space,
-        });
+
+  for (FetchType fetch_type : kAllFetchTypes) {
+    for (AddressSpace client_address_space : kAllAddressSpaces) {
+      for (bool client_is_secure_context : {false, true}) {
+        for (AddressSpace resource_address_space : kAllAddressSpaces) {
+          result.push_back({
+              fetch_type,
+              client_address_space,
+              client_is_secure_context,
+              resource_address_space,
+          });
+        }
       }
     }
   }
   return result;
 }
 
-// Convenience: calls AddressSpaceFeature() on input's components.
+// Convenience: calls AddressSpaceFeatureForSubresource() on input's components.
 base::Optional<Feature> AddressSpaceFeatureForInput(const Input& input) {
-  return AddressSpaceFeature(input.client_address_space,
+  return AddressSpaceFeature(input.fetch_type, input.client_address_space,
                              input.client_is_secure_context,
                              input.resource_address_space);
 }
@@ -104,44 +130,104 @@ struct FeatureMapping {
 // The list of all features and their mapped inputs.
 constexpr FeatureMapping kFeatureMappings[] = {
     {
-        {AddressSpace::kUnknown, false, AddressSpace::kPrivate},
-        Feature::kAddressSpacePrivateEmbeddedInUnknownNonSecureContext,
+        {FetchType::kSubresource, AddressSpace::kUnknown, false,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
     },
     {
-        {AddressSpace::kUnknown, true, AddressSpace::kPrivate},
-        Feature::kAddressSpacePrivateEmbeddedInUnknownSecureContext,
+        {FetchType::kSubresource, AddressSpace::kUnknown, true,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownSecureContextEmbeddedPrivate,
     },
     {
-        {AddressSpace::kUnknown, false, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext,
+        {FetchType::kSubresource, AddressSpace::kUnknown, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
     },
     {
-        {AddressSpace::kUnknown, true, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInUnknownSecureContext,
+        {FetchType::kSubresource, AddressSpace::kUnknown, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownSecureContextEmbeddedLocal,
     },
     {
-        {AddressSpace::kPublic, false, AddressSpace::kPrivate},
-        Feature::kAddressSpacePrivateEmbeddedInPublicNonSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPublic, false,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
     },
     {
-        {AddressSpace::kPublic, true, AddressSpace::kPrivate},
-        Feature::kAddressSpacePrivateEmbeddedInPublicSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPublic, true,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicSecureContextEmbeddedPrivate,
     },
     {
-        {AddressSpace::kPublic, false, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInPublicNonSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPublic, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
     },
     {
-        {AddressSpace::kPublic, true, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInPublicSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPublic, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePublicSecureContextEmbeddedLocal,
     },
     {
-        {AddressSpace::kPrivate, false, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInPrivateNonSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPrivate, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
     },
     {
-        {AddressSpace::kPrivate, true, AddressSpace::kLocal},
-        Feature::kAddressSpaceLocalEmbeddedInPrivateSecureContext,
+        {FetchType::kSubresource, AddressSpace::kPrivate, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateSecureContextEmbeddedLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kUnknown, false,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kUnknown, true,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kUnknown, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kUnknown, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPublic, false,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPublic, true,
+         AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicSecureContextNavigatedToPrivate,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPublic, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePublicNonSecureContextNavigatedToLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPublic, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePublicSecureContextNavigatedToLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPrivate, false,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
+    },
+    {
+        {FetchType::kNavigation, AddressSpace::kPrivate, true,
+         AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateSecureContextNavigatedToLocal,
     },
 };
 
@@ -177,8 +263,8 @@ TEST(AddressSpaceFeatureTest, ReturnsFeatureIffResourceLessPublic) {
   }
 }
 
-// This test verifies that AddressSpaceFeature() maps inputs to features as
-// declared in kFeatureMappings.
+// This test verifies that AddressSpaceFeatureForX() maps inputs to
+// features as declared in kFeatureMappings.
 TEST(AddressSpaceFeatureTest, MapsAllFeaturesCorrectly) {
   for (const FeatureMapping& mapping : kFeatureMappings) {
     SCOPED_TRACE(mapping.input);
@@ -191,7 +277,7 @@ TEST(AddressSpaceFeatureTest, MapsAllFeaturesCorrectly) {
 }
 
 // This test verifies that all inputs that yield a Feature when run through
-// AddressSpaceFeature() are included in kFeatureMappings.
+// AddressSpaceFeatureForX() are included in kFeatureMappings.
 TEST(AddressSpaceFeatureTest, FeatureMappingsAreComplete) {
   for (const Input& input : AllInputs()) {
     SCOPED_TRACE(input);
