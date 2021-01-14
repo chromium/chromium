@@ -16616,7 +16616,7 @@
       'owners': ['jonmann@chromium.org', 'cvandermerwe@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:89-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
