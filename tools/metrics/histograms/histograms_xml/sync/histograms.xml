@@ -108,6 +108,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.BookmarksWithoutFullTitle.OnInitialMerge"
     units="bookmarks" expires_after="M89">
+  <obsolete>
+    Removed as of M89.
+  </obsolete>
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromiumg.org</owner>
   <summary>
@@ -118,6 +121,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.BookmarksWithoutFullTitle.OnRemoteUpdate"
     units="bookmarks" expires_after="M89">
+  <obsolete>
+    Removed as of M89.
+  </obsolete>
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromiumg.org</owner>
   <summary>

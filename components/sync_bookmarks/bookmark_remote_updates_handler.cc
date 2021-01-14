@@ -794,7 +794,6 @@ void BookmarkRemoteUpdatesHandler::ReuploadEntityIfNeeded(
       !tracked_entity->bookmark_node()->is_permanent_node() &&
       IsBookmarkEntityReuploadNeeded(entity_data)) {
     bookmark_tracker_->IncrementSequenceNumber(tracked_entity);
-    ++valid_updates_without_full_title_;
   }
 }
 
