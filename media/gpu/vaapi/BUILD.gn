@@ -222,6 +222,7 @@ source_set("unit_test") {
     "vaapi_image_decode_accelerator_worker_unittest.cc",
     "vaapi_video_decode_accelerator_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
+    "vaapi_wrapper_unittest.cc",
     "vp9_encoder_unittest.cc",
     "vp9_temporal_layers_unittest.cc",
   ]

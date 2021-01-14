@@ -348,7 +348,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // allocated VABufferIDs stay alive until DestroyPendingBuffers_Locked(). Note
   // that this method does not submit the buffers for execution, they are simply
   // stored until ExecuteAndDestroyPendingBuffers()/Execute_Locked(). The
-  // ownership of |data| stays with the caller.
+  // ownership of |data| stays with the caller. On failure, all pending buffers
+  // are destroyed.
   bool SubmitBuffer(VABufferType va_buffer_type,
                     size_t size,
                     const void* data) WARN_UNUSED_RESULT;
@@ -470,6 +471,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
  private:
   friend class base::RefCountedThreadSafe<VaapiWrapper>;
+  friend class VaapiWrapperTest;
 
   FRIEND_TEST_ALL_PREFIXES(VaapiTest, LowQualityEncodingSetting);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, ScopedVAImage);
@@ -497,11 +499,13 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                       const std::vector<VABufferID>& va_buffers)
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_) WARN_UNUSED_RESULT;
 
-  void DestroyPendingBuffers_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  virtual void DestroyPendingBuffers_Locked()
+      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   // Requests libva to allocate a new VABufferID of type |va_buffer.type|, then
-  // maps-and-copies |va_buffer.size| contents of |va_buffer.data| to it.
-  bool SubmitBuffer_Locked(const VABufferDescriptor& va_buffer)
+  // maps-and-copies |va_buffer.size| contents of |va_buffer.data| to it. If a
+  // failure occurs, calls DestroyPendingBuffers_Locked() and returns false.
+  virtual bool SubmitBuffer_Locked(const VABufferDescriptor& va_buffer)
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_) WARN_UNUSED_RESULT;
 
   // Maps |va_buffer_id| and, if successful, copies the contents of |va_buffer|

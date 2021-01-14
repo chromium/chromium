@@ -2809,11 +2809,13 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
   va_lock_->AssertAcquired();
 
   DCHECK(IsValidVABufferType(va_buffer.type));
-  DCHECK(va_buffer.data);
-
+  base::ScopedClosureRunner pending_buffers_destroyer_on_failure(base::BindOnce(
+      &VaapiWrapper::DestroyPendingBuffers_Locked, base::Unretained(this)));
   unsigned int va_buffer_size;
-  if (!base::CheckedNumeric<size_t>(va_buffer.size)
-           .AssignIfValid(&va_buffer_size)) {
+  // We use a null |va_buffer|.data for testing: it signals that we want this
+  // SubmitBuffer_Locked() call to fail.
+  if (!va_buffer.data || !base::CheckedNumeric<size_t>(va_buffer.size)
+                              .AssignIfValid(&va_buffer_size)) {
     return false;
   }
 
@@ -2831,6 +2833,7 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
     return false;
 
   pending_va_buffers_.push_back(buffer_id);
+  pending_buffers_destroyer_on_failure.ReplaceClosure(base::DoNothing());
   return true;
 }
 
