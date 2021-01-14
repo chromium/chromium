@@ -267,7 +267,10 @@ component("network_service") {
       "sct_auditing_cache.cc",
       "sct_auditing_cache.h",
     ]
-    deps += [ "//components/certificate_transparency" ]
+    deps += [
+      "//components/certificate_transparency",
+      "//components/version_info",
+    ]
   }
 
   if (is_linux || is_chromeos) {

@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps);
 
-  sct_auditing::TLSConnectionReport* GetPendingReport(
+  sct_auditing::SCTClientReport* GetPendingReport(
       const net::SHA256HashValue& cache_key);
 
   // Sends the report associated with `cache_key` to `report_uri` (which is
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   }
 
   base::MRUCache<net::SHA256HashValue,
-                 std::unique_ptr<sct_auditing::TLSConnectionReport>>*
+                 std::unique_ptr<sct_auditing::SCTClientReport>>*
   GetCacheForTesting() {
     return &cache_;
   }
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
                         int http_response_code);
 
   base::MRUCache<net::SHA256HashValue,
-                 std::unique_ptr<sct_auditing::TLSConnectionReport>>
+                 std::unique_ptr<sct_auditing::SCTClientReport>>
       cache_;
 
   bool enabled_ = false;

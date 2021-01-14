@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "components/version_info/version_info.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -42,24 +43,6 @@ namespace network {
 namespace {
 
 constexpr int kSendSCTReportTimeoutSeconds = 30;
-
-sct_auditing::SCTWithSourceAndVerifyStatus::Source MapSCTOriginToSource(
-    net::ct::SignedCertificateTimestamp::Origin origin) {
-  switch (origin) {
-    case net::ct::SignedCertificateTimestamp::Origin::SCT_EMBEDDED:
-      return sct_auditing::SCTWithSourceAndVerifyStatus::Source::
-          SCTWithSourceAndVerifyStatus_Source_EMBEDDED;
-    case net::ct::SignedCertificateTimestamp::Origin::SCT_FROM_TLS_EXTENSION:
-      return sct_auditing::SCTWithSourceAndVerifyStatus::Source::
-          SCTWithSourceAndVerifyStatus_Source_TLS_EXTENSION;
-    case net::ct::SignedCertificateTimestamp::Origin::SCT_FROM_OCSP_RESPONSE:
-      return sct_auditing::SCTWithSourceAndVerifyStatus::Source::
-          SCTWithSourceAndVerifyStatus_Source_OCSP_RESPONSE;
-    default:
-      return sct_auditing::SCTWithSourceAndVerifyStatus::Source::
-          SCTWithSourceAndVerifyStatus_Source_SOURCE_UNSPECIFIED;
-  }
-}
 
 // Records the high-water mark of the cache size (in number of reports).
 void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t hwm) {
@@ -153,7 +136,8 @@ void SCTAuditingCache::MaybeEnqueueReport(
   if (!enabled_ || !context->is_sct_auditing_enabled())
     return;
 
-  auto report = std::make_unique<sct_auditing::TLSConnectionReport>();
+  auto report = std::make_unique<sct_auditing::SCTClientReport>();
+  auto* tls_report = report->add_certificate_report();
 
   // Encode the SCTs in the report and generate the cache key. The hash of the
   // SCTs is used as the cache key to deduplicate reports with the same SCTs.
@@ -168,22 +152,21 @@ void SCTAuditingCache::MaybeEnqueueReport(
     if (sct.status != net::ct::SCT_STATUS_OK)
       continue;
 
-    auto* sct_source_and_status = report->add_included_scts();
+    auto* sct_source_and_status = tls_report->add_included_sct();
     // TODO(crbug.com/1082860): Update the proto to remove the status entirely
     // since only valid SCTs are reported now.
     sct_source_and_status->set_status(
-        sct_auditing::SCTWithSourceAndVerifyStatus::SctVerifyStatus::
-            SCTWithSourceAndVerifyStatus_SctVerifyStatus_OK);
+        sct_auditing::SCTWithVerifyStatus::SctVerifyStatus::
+            SCTWithVerifyStatus_SctVerifyStatus_OK);
 
-    sct_source_and_status->set_source(MapSCTOriginToSource(sct.sct->origin));
     net::ct::EncodeSignedCertificateTimestamp(
-        sct.sct, sct_source_and_status->mutable_sct());
+        sct.sct, sct_source_and_status->mutable_serialized_sct());
 
-    SHA256_Update(&ctx, sct_source_and_status->sct().data(),
-                  sct_source_and_status->sct().size());
+    SHA256_Update(&ctx, sct_source_and_status->serialized_sct().data(),
+                  sct_source_and_status->serialized_sct().size());
   }
   // Don't handle reports if there were no valid SCTs.
-  if (report->included_scts().empty())
+  if (tls_report->included_sct().empty())
     return;
 
   net::SHA256HashValue cache_key;
@@ -198,6 +181,8 @@ void SCTAuditingCache::MaybeEnqueueReport(
   }
   RecordSCTAuditingReportDeduplicatedMetrics(false);
 
+  report->set_user_agent(version_info::GetProductNameAndVersionForUserAgent());
+
   // Set the `cache_key` with an null report. If we don't choose to sample these
   // SCTs, then we don't need to store a report as we won't reference it again
   // (and can save on memory usage). If we do choose to sample these SCTs, we
@@ -210,7 +195,7 @@ void SCTAuditingCache::MaybeEnqueueReport(
   }
   RecordSCTAuditingReportSampledMetrics(true);
 
-  auto* connection_context = report->mutable_context();
+  auto* connection_context = tls_report->mutable_context();
   base::TimeDelta time_since_unix_epoch =
       base::Time::Now() - base::Time::UnixEpoch();
   connection_context->set_time_seen(time_since_unix_epoch.InSeconds());
@@ -241,7 +226,7 @@ void SCTAuditingCache::MaybeEnqueueReport(
   SendReport(cache_key);
 }
 
-sct_auditing::TLSConnectionReport* SCTAuditingCache::GetPendingReport(
+sct_auditing::SCTClientReport* SCTAuditingCache::GetPendingReport(
     const net::SHA256HashValue& cache_key) {
   auto it = cache_.Get(cache_key);
   if (it == cache_.end())

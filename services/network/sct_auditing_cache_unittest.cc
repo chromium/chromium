@@ -213,7 +213,9 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
                              chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
     for (const auto& entry : *cache.GetCacheForTesting()) {
-      ASSERT_NE("example1.com", entry.second->context().origin().hostname());
+      ASSERT_NE(
+          "example1.com",
+          entry.second->certificate_report(0).context().origin().hostname());
     }
   }
 }
@@ -287,7 +289,9 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
   for (const auto& entry : *cache.GetCacheForTesting()) {
-    ASSERT_NE("example2.com", entry.second->context().origin().hostname());
+    ASSERT_NE(
+        "example2.com",
+        entry.second->certificate_report(0).context().origin().hostname());
   }
 }
 
@@ -531,9 +535,10 @@ TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
 
   // No invalid SCTs should be in any reports in the cache.
   for (const auto& entry : *cache.GetCacheForTesting()) {
-    for (auto& sct_and_status : entry.second->included_scts()) {
+    for (auto& sct_and_status :
+         entry.second->certificate_report(0).included_sct()) {
       // Decode the SCT and check that only the valid SCT was included.
-      base::StringPiece encoded_sct(sct_and_status.sct());
+      base::StringPiece encoded_sct(sct_and_status.serialized_sct());
       scoped_refptr<net::ct::SignedCertificateTimestamp> decoded_sct;
       ASSERT_TRUE(net::ct::DecodeSignedCertificateTimestamp(&encoded_sct,
                                                             &decoded_sct));
