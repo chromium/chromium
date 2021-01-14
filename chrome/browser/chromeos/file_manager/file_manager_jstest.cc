@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTapHandler) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
-  RunTestURL("foreground/js/file_tasks_unittest_gen.html");
+  RunTestURL("foreground/js/file_tasks_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {

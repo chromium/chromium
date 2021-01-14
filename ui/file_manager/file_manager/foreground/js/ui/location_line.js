@@ -11,6 +11,7 @@
 // #import {PathComponent} from '../path_component.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {metrics} from '../../../common/js/metrics.m.js';
+// #import './breadcrumb.m.js';
 // clang-format on
 
 /**

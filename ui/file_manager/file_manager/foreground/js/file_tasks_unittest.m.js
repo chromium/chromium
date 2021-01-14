@@ -2,11 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {createCrostiniForTest} from '../../background/js/mock_crostini.m.js';
+import {MockProgressCenter} from '../../background/js/mock_progress_center.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
+import {FilesPasswordDialog} from '../elements/files_password_dialog.m.js';
+import {DirectoryModel} from './directory_model.m.js';
+import {FileTasks} from './file_tasks.m.js';
+import {FileTransferController} from './file_transfer_controller.m.js';
+import {MetadataModel} from './metadata/metadata_model.m.js';
+import {NamingController} from './naming_controller.m.js';
+import {TaskHistory} from './task_history.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.m.js';
+
 /**
  * Utility function that appends value under a given name in the store.
  * @param {!Map<string, !Array<string|number>>} store
  * @param {string} name
- * @param {string|number} value
+ * @param {!*} value
  */
 function record(store, name, value) {
   let recorded = store.get(name);
@@ -28,17 +49,23 @@ const enumMap = new Map();
 const countMap = new Map();
 
 /**
- * Mock metrics
- * @type {!Object}
+ * Mock metrics.recordEnum.
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} valid
  */
-window.metrics = {
-  recordEnum: (name, value, valid) => {
-    assertTrue(valid.includes(value));
-    record(enumMap, name, value);
-  },
-  recordSmallCount: (name, value) => {
-    record(countMap, name, value);
-  },
+metrics.recordEnum = function(name, value, valid) {
+  assertTrue(valid.includes(value));
+  record(enumMap, name, value);
+};
+
+/**
+ * Mock metrics.recordSmallCount.
+ * @param {string} name Short metric name.
+ * @param {number} value Value to be recorded.
+ */
+metrics.recordSmallCount = function(name, value) {
+  record(countMap, name, value);
 };
 
 /**
@@ -93,7 +120,7 @@ const zipMountPanelId = 'Mounting: ' + fakeMountedZipUrl;
 const errorZipMountPanelId = 'Cannot mount: ' + fakeMountedZipUrl;
 
 // Set up test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
   window.loadTimeData.getBoolean = key => false;
@@ -324,7 +351,7 @@ function showImportCrostiniImageDialogIsCalled(entries) {
 /**
  * Tests opening a .exe file.
  */
-function testToOpenExeFile(callback) {
+export function testToOpenExeFile(callback) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.exe');
 
@@ -337,7 +364,7 @@ function testToOpenExeFile(callback) {
 /**
  * Tests opening a .dmg file.
  */
-function testToOpenDmgFile(callback) {
+export function testToOpenDmgFile(callback) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.dmg');
 
@@ -349,7 +376,7 @@ function testToOpenDmgFile(callback) {
 /**
  * Tests opening a .crx file.
  */
-function testToOpenCrxFile(callback) {
+export function testToOpenCrxFile(callback) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.crx');
 
@@ -362,7 +389,7 @@ function testToOpenCrxFile(callback) {
 /**
  * Tests opening a .rtf file.
  */
-function testToOpenRtfFile(callback) {
+export function testToOpenRtfFile(callback) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.rtf');
 
@@ -374,7 +401,7 @@ function testToOpenRtfFile(callback) {
 /**
  * Tests opening an entry that has external metadata type.
  */
-function testOpenSuggestAppsDialogWithMetadata(callback) {
+export function testOpenSuggestAppsDialogWithMetadata(callback) {
   const showByExtensionAndMimeIsCalled = new Promise((resolve, reject) => {
     const mockFileSystem = new MockFileSystem('volumeId');
     const mockEntry = MockFileEntry.create(mockFileSystem, '/test.rtf');
@@ -412,7 +439,7 @@ function testOpenSuggestAppsDialogWithMetadata(callback) {
  * Tests opening an entry that has no extension. Since the entry extension and
  * entry MIME type are required, the onFalure method should be called.
  */
-function testOpenSuggestAppsDialogFailure(callback) {
+export function testOpenSuggestAppsDialogFailure(callback) {
   const onFailureIsCalled = new Promise((resolve, reject) => {
     const mockFileSystem = new MockFileSystem('volumeId');
     const mockEntry = MockFileEntry.create(mockFileSystem, '/test');
@@ -437,7 +464,7 @@ function testOpenSuggestAppsDialogFailure(callback) {
  * Tests opening the task picker with an entry that does not have a default app
  * but there are multiple apps that could open it.
  */
-function testOpenTaskPicker(callback) {
+export function testOpenTaskPicker(callback) {
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
         callback.bind(
@@ -471,7 +498,7 @@ function testOpenTaskPicker(callback) {
  * but there are multiple apps that could open it. The app with the most recent
  * task execution order should execute.
  */
-function testOpenWithMostRecentlyExecuted(callback) {
+export function testOpenWithMostRecentlyExecuted(callback) {
   const latestTaskId = 'handler-extension-most-recently-executed|app|any';
   const oldTaskId = 'handler-extension-executed-before|app|any';
 
@@ -555,7 +582,7 @@ function testOpenWithMostRecentlyExecuted(callback) {
 /**
  * Tests opening a .zip file.
  */
-function testOpenZipWithZipArchiver(callback) {
+export function testOpenZipWithZipArchiver(callback) {
   const zipArchiverTaskId = 'dmboannefpncccogfdikhmhpmdnddgoe|app|open';
 
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
@@ -640,7 +667,7 @@ function setUpInstallLinuxPackage() {
  * Tests opening a .deb file. The crostini linux package install dialog should
  * be called.
  */
-function testOpenInstallLinuxPackageDialog(callback) {
+export function testOpenInstallLinuxPackageDialog(callback) {
   const fileManager = setUpInstallLinuxPackage();
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.deb');
@@ -671,7 +698,7 @@ function testOpenInstallLinuxPackageDialog(callback) {
  * Tests opening a .tini file. The import crostini image dialog should be
  * called.
  */
-function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
+export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
         callback.bind(
@@ -696,7 +723,7 @@ function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
  * Checks that the function that returns a file type for file entry handles
  * correctly identifies files with known and unknown extensions.
  */
-function testGetViewFileType() {
+export function testGetViewFileType() {
   const mockFileSystem = new MockFileSystem('volumeId');
   const testData = [
     {extension: 'log', expected: '.log'},
@@ -713,7 +740,7 @@ function testGetViewFileType() {
 /**
  * Checks that we are correctly recording UMA about Share action.
  */
-function testRecordSharingAction() {
+export function testRecordSharingAction() {
   // Setup: create a fake metrics object that can be examined for content.
   const mockFileSystem = new MockFileSystem('volumeId');
 
@@ -746,7 +773,7 @@ function testRecordSharingAction() {
 /**
  * Checks that file task is correctly recognized as a file sharing task.
  */
-function testIsSharingTask() {
+export function testIsSharingTask() {
   const mockShareTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
     verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
   });
@@ -761,7 +788,7 @@ function testIsSharingTask() {
  * Checks that a task sharing files with external apps correctly records
  * UMA statistics.
  */
-async function testShareWith(done) {
+export async function testShareWith(done) {
   const fileManager = getMockFileManager();
   const mockFileSystem = new MockFileSystem('volumeId');
   const entries = [
@@ -794,7 +821,8 @@ async function testShareWith(done) {
  * successfully.
  * @suppress {visibility}
  */
-async function testMountArchiveAndChangeDirectoryNotificationSuccess(done) {
+export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
+    done) {
   const fileManager = getMockFileManager();
 
   // Define FileTasks instance.
@@ -832,8 +860,8 @@ async function testMountArchiveAndChangeDirectoryNotificationSuccess(done) {
  * resolves with an error.
  * @suppress {visibility}
  */
-async function testMountArchiveAndChangeDirectoryNotificationInvalidArchive(
-    done) {
+export async function
+testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done) {
   const fileManager = getMockFileManager();
 
   // Define FileTasks instance.
@@ -866,8 +894,8 @@ async function testMountArchiveAndChangeDirectoryNotificationInvalidArchive(
  * for an encrypted archive is canceled.
  * @suppress {visibility}
  */
-async function testMountArchiveAndChangeDirectoryNotificationCancelPassword(
-    done) {
+export async function
+testMountArchiveAndChangeDirectoryNotificationCancelPassword(done) {
   const fileManager = getMockFileManager();
 
   // Define FileTasks instance.
@@ -905,8 +933,8 @@ async function testMountArchiveAndChangeDirectoryNotificationCancelPassword(
  * encrypted archive.
  * @suppress {visibility}
  */
-async function testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
-    done) {
+export async function
+testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(done) {
   const fileManager = getMockFileManager();
 
   // Define FileTasks instance.

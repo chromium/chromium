@@ -926,6 +926,7 @@ js_library("location_line") {
 js_library("location_line.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/location_line.m.js" ]
   deps = [
+    ":breadcrumb.m",
     ":list_container.m",
     "//ui/file_manager/externs:files_app_entry_interfaces.m",
     "//ui/file_manager/externs:volume_manager.m",
