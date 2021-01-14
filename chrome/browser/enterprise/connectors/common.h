@@ -29,9 +29,6 @@ constexpr char kKeyBlockLargeFiles[] = "block_large_files";
 constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
 constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
-constexpr char kKeyCustomMessages[] = "custom_messages";
-constexpr char kKeyCustomMessagesMessage[] = "message";
-constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 
 enum class ReportingConnector {
   SECURITY_EVENT,
@@ -59,8 +56,6 @@ struct AnalysisSettings {
   bool block_password_protected_files = false;
   bool block_large_files = false;
   bool block_unsupported_file_types = false;
-  std::string custom_message_text;
-  GURL custom_message_learn_more_url;
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.
   size_t minimum_data_size = 100;

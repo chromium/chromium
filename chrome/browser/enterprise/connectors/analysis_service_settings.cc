@@ -61,23 +61,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_value.FindBoolKey(kKeyBlockUnsupportedFileTypes).value_or(false);
   minimum_data_size_ =
       settings_value.FindIntKey(kKeyMinimumDataSize).value_or(100);
-
-  const base::Value* custom_messages =
-      settings_value.FindListKey(kKeyCustomMessages);
-  if (custom_messages && custom_messages->is_list() &&
-      !custom_messages->GetList().empty()) {
-    // As of now, this list can only contain one value. At some point, it
-    // might be necessary to iterate further in order to find the most
-    // appropriate message, for instance by considering the message and
-    // browser's locales or other signals.
-    const base::Value& value = custom_messages->GetList()[0];
-    const std::string* message = value.FindStringKey(kKeyCustomMessagesMessage);
-    custom_message_text_ = message ? *message : "";
-
-    const std::string* url =
-        value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);
-    custom_message_learn_more_url_ = url ? GURL(*url) : GURL();
-  }
 }
 
 // static
@@ -125,8 +108,6 @@ base::Optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   settings.analysis_url = GURL(service_provider_->analysis_url());
   DCHECK(settings.analysis_url.is_valid());
   settings.minimum_data_size = minimum_data_size_;
-  settings.custom_message_text = custom_message_text_;
-  settings.custom_message_learn_more_url = custom_message_learn_more_url_;
 
   return settings;
 }
