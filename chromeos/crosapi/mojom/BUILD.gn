@@ -37,7 +37,7 @@ mojom("mojom") {
       traits_headers = [ "//chromeos/crosapi/mojom/bitmap_mojom_traits.h" ]
       traits_public_deps = [
         ":mojom_traits",
-        "//chromeos/crosapi/cpp",
+        "//chromeos/crosapi/cpp:cpp_internal",
       ]
     },
   ]
@@ -63,7 +63,7 @@ component("mojom_traits") {
 
   public_deps = [
     ":mojom_shared",
-    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/cpp:cpp_internal",
     "//mojo/public/cpp/base:shared_typemap_traits",
   ]
 }

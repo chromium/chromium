@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_LACROS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_LACROS_H_
 
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -23,6 +24,9 @@ class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
  private:
   ~PlatformKeysInternalGetPublicKeyFunction() override;
   ResponseAction Run() override;
+
+  using ResultPtr = crosapi::mojom::GetPublicKeyResultPtr;
+  void OnGetPublicKey(ResultPtr result_ptr);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKey",
                              PLATFORMKEYSINTERNAL_GETPUBLICKEY)
