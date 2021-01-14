@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/browser_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
