@@ -266,7 +266,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
     https_url_with_content_ = https_server_->GetURL("/english_page.html");
     https_url_without_content_ = https_server_->GetURL("/empty.html");
-    model_file_url_ = models_server_->GetURL("/unsignedmodel.crx3");
+    model_file_url_ = models_server_->GetURL("/signed_valid_model.crx3");
 
     // Set up an OptimizationGuideKeyedService consumer.
     consumer_ = std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
@@ -1016,11 +1016,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
                        TestSuccessfulModelFileFlow) {
-  // TODO(crbug/1146151): Remove this switch once we can produce a signed model
-  // file.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableModelDownloadVerificationForTesting);
-
   base::HistogramTester histogram_tester;
 
   SetResponseType(

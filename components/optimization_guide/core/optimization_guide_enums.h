@@ -148,9 +148,11 @@ enum class PredictionModelDownloadStatus {
   kFailedModelFileOtherError,
   // The model info was invalid.
   kFailedModelInfoInvalid,
+  // The CRX file was a valid CRX file but did not come from a valid publisher.
+  kFailedCrxInvalidPublisher,
 
   // Add new values above this line.
-  kMaxValue = kFailedModelInfoInvalid,
+  kMaxValue = kFailedCrxInvalidPublisher,
 };
 
 }  // namespace optimization_guide

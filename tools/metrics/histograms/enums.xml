@@ -55623,6 +55623,10 @@ Called by update_net_trust_anchors.py.-->
     The download was successfully verified, but the model info contained in the
     model info file was invalid.
   </int>
+  <int value="10" label="Failed to verify download publisher">
+    The download was a valid CRX file but came from a publisher that is
+    untrusted.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">

@@ -4135,6 +4135,7 @@ test("unit_tests") {
       "data/file_select_helper/",
       "data/media/feeds/media-feed.json",
       "data/offline_pages/",
+      "data/optimization_guide/",
       "data/osdd/",
       "data/public_offline_pages/",
 

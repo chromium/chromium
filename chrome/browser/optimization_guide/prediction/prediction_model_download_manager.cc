@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
+#include "crypto/sha2.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace optimization_guide {
@@ -31,6 +32,13 @@ namespace {
 
 // Header for API key.
 constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
+
+// The SHA256 hash of the public key for the Optimization Guide Server that
+// we require models to come from.
+constexpr uint8_t kPublisherKeyHash[] = {
+    0x0f, 0x01, 0x7c, 0x8e, 0x09, 0xaf, 0x7d, 0x61, 0x54, 0xcb, 0xde,
+    0x9c, 0x80, 0x59, 0xcf, 0x49, 0x3d, 0x08, 0xdf, 0x60, 0x3d, 0x7d,
+    0x4d, 0xd7, 0x8a, 0xa6, 0xfb, 0x63, 0x43, 0x28, 0xbd, 0x0b};
 
 const net::NetworkTrafficAnnotationTag
     kOptimizationGuidePredictionModelsTrafficAnnotation =
@@ -208,15 +216,33 @@ PredictionModelDownloadManager::ProcessDownload(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
   if (!switches::ShouldSkipModelDownloadVerificationForTesting()) {
-    // Verify that the |file_path| contains a file signed with a key we trust.
-    crx_file::VerifierResult verifier_result = crx_file::Verify(
-        file_path, crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
-        /*required_key_hashes=*/{},
-        /*required_file_hash=*/{}, /*public_key=*/nullptr,
-        /*crx_id=*/nullptr);
+    // Verify that the |file_path| contains a valid CRX file.
+    std::string public_key;
+    crx_file::VerifierResult verifier_result =
+        crx_file::Verify(file_path, crx_file::VerifierFormat::CRX3,
+                         /*required_key_hashes=*/{},
+                         /*required_file_hash=*/{}, &public_key,
+                         /*crx_id=*/nullptr);
     if (verifier_result != crx_file::VerifierResult::OK_FULL) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedCrxVerification);
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      return base::nullopt;
+    }
+
+    // Verify that the CRX3 file is from a publisher we trust.
+    std::vector<uint8_t> publisher_key_hash(std::begin(kPublisherKeyHash),
+                                            std::end(kPublisherKeyHash));
+
+    std::vector<uint8_t> public_key_hash(crypto::kSHA256Length);
+    crypto::SHA256HashString(public_key, public_key_hash.data(),
+                             public_key_hash.size());
+
+    if (publisher_key_hash != public_key_hash) {
+      RecordPredictionModelDownloadStatus(
+          PredictionModelDownloadStatus::kFailedCrxInvalidPublisher);
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
           base::BindOnce(base::GetDeleteFileCallback(), file_path));
