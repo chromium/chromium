@@ -110,7 +110,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <token key="Screen">
     <variant name="BluetoothOrWifiDisabled"/>
-    <variant name="InitialConnecting"/>
+    <variant name="InitialConnecting">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
     <variant name="Onboarding.ExistingMultideviceUser"/>
     <variant name="Onboarding.NewMultideviceUser"/>
     <variant name="OnboardingDismissPrompt"/>
@@ -139,6 +143,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.NotificationOptIn"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Renamed to PhoneHub.NotificationOptInEvents on 1/2021 in M89.
+  </obsolete>
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Events for the given notification opt-in prompt.</summary>
+</histogram>
+
 <histogram name="PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
@@ -158,6 +172,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
+</histogram>
+
+<histogram name="PhoneHub.Screen.OnSettingsButtonClicked" enum="PhoneHubScreen"
+    expires_after="2021-10-31">
+  <obsolete>
+    Renamed to PhoneHub.ScreenOnSettingsButtonClicked on 1/2021 in M89.
+  </obsolete>
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen when the settings button is clicked in the tray
+    bubble.
+  </summary>
 </histogram>
 
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"

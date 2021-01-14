@@ -52,12 +52,12 @@ void LogScreenOnBubbleClose(Screen screen) {
 }
 
 void LogScreenOnSettingsButtonClicked(Screen screen) {
-  base::UmaHistogramEnumeration("PhoneHub.Screen.OnSettingsButtonClicked",
+  base::UmaHistogramEnumeration("PhoneHub.ScreenOnSettingsButtonClicked",
                                 screen);
 }
 
 void LogNotificationOptInEvent(InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration("PhoneHub.NotificationOptIn", event);
+  base::UmaHistogramEnumeration("PhoneHub.NotificationOptInEvents", event);
 }
 
 void LogTabContinuationChipClicked(int tab_index) {
