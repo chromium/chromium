@@ -897,6 +897,50 @@ TEST_F(TranslatePrefsTest, DefaultBlockedLanguages) {
   ExpectBlockedLanguageListContent(blocked_languages_expected);
 }
 
+// Series of tests for the AlwaysTranslateLanguagesList manipulation functions.
+TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "en");
+  EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  // IsLanguagePairOnAlwaysTranslateList
+  EXPECT_TRUE(
+      translate_prefs_->IsLanguagePairOnAlwaysTranslateList("af", "en"));
+  EXPECT_FALSE(
+      translate_prefs_->IsLanguagePairOnAlwaysTranslateList("af", "es"));
+  EXPECT_FALSE(
+      translate_prefs_->IsLanguagePairOnAlwaysTranslateList("am", "en"));
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("am", "es");
+  EXPECT_TRUE(
+      translate_prefs_->IsLanguagePairOnAlwaysTranslateList("am", "es"));
+
+  // GetAlwaysTranslateLanguages
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("aa", "es");
+  // Use 'tl' as the translate language which is 'fil' as a Chrome language.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("tl", "es");
+  std::vector<std::string> always_translate_languages =
+      translate_prefs_->GetAlwaysTranslateLanguages();
+  EXPECT_EQ(std::vector<std::string>({"aa", "af", "am", "fil"}),
+            always_translate_languages);
+  always_translate_languages.clear();
+
+  // RemoveLanguagePairs
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("af",
+                                                              "<anything>");
+  always_translate_languages = translate_prefs_->GetAlwaysTranslateLanguages();
+  EXPECT_EQ(std::vector<std::string>({"aa", "am", "fil"}),
+            always_translate_languages);
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("aa",
+                                                              "<anything>");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("am",
+                                                              "<anything>");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl",
+                                                              "<anything>");
+
+  // AlwaysTranslateList should be empty now
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+}
+
 TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   prefs_.SetString(language::prefs::kAcceptLanguages, "en");
   TranslateDownloadManager::GetInstance()->set_application_locale("en");

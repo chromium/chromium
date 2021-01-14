@@ -51,7 +51,6 @@ public class TranslateBridge {
     /**
      * Sets the language that the contents of the tab needs to be translated to.
      * No-op in case target language is invalid or not supported.
-     *
      * @param targetLanguage language code in ISO 639 format.
      */
     public static void setPredefinedTargetLanguage(Tab tab, String targetLanguage) {
@@ -59,16 +58,18 @@ public class TranslateBridge {
     }
 
     /**
-     * @return The original language code of the given tab. Empty string if no language was detected
-     *         yet.
+     * Get the original page language of the given Tab.
+     * @param tab The tab to get original language code for.
+     * @return String The original language code. Empty string if no language has been detected.
      */
     public static String getOriginalLanguage(Tab tab) {
         return TranslateBridgeJni.get().getOriginalLanguage(tab.getWebContents());
     }
 
     /**
-     * @return The current language code of the given tab. Empty string if no language was detected
-     *         yet.
+     * Get the current page language of the given Tab.
+     * @param tab The tab to get current language code for.
+     * @return String The current language code. Empty string if no language has been detected.
      */
     public static String getCurrentLanguage(Tab tab) {
         return TranslateBridgeJni.get().getCurrentLanguage(tab.getWebContents());
@@ -87,11 +88,6 @@ public class TranslateBridge {
      */
     public static void setDefaultTargetLanguage(String targetLanguage) {
         TranslateBridgeJni.get().setDefaultTargetLanguage(targetLanguage);
-    }
-
-    /** @return whether the given string is blocked for translation. */
-    public static boolean isBlockedLanguage(String language) {
-        return TranslateBridgeJni.get().isBlockedLanguage(language);
     }
 
     /**
@@ -128,7 +124,6 @@ public class TranslateBridge {
 
     /**
      * Reset accept-languages to its default value.
-     *
      * @param defaultLocale A fall-back value such as en_US, de_DE, zh_CN, etc.
      */
     public static void resetAcceptLanguages(String defaultLocale) {
@@ -156,9 +151,15 @@ public class TranslateBridge {
         return list;
     }
 
+    /** @return List of languages to always translate. */
+    public static List<String> getAlwaysTranslateLanguages() {
+        List<String> list = new ArrayList<>();
+        TranslateBridgeJni.get().getAlwaysTranslateLanguages(list);
+        return list;
+    }
+
     /**
      * Update accept language for the current user.
-     *
      * @param languageCode A valid language code to update.
      * @param add Whether this is an "add" operation or "delete" operation.
      */
@@ -168,7 +169,6 @@ public class TranslateBridge {
 
     /**
      * Move a language to the given position of the user's accept language.
-     *
      * @param languageCode A valid language code to set.
      * @param offset The offset from the original position of the language.
      */
@@ -178,7 +178,6 @@ public class TranslateBridge {
 
     /**
      * Given an array of language codes, sets the order of the user's accepted languages to match.
-     *
      * @param codes The new order for the user's accepted languages.
      */
     public static void setLanguageOrder(String[] codes) {
@@ -186,16 +185,15 @@ public class TranslateBridge {
     }
 
     /**
-     * @param languageCode A valid language code to check.
-     * @return Whether the given language is blocked by the user.
+     * @param language The language code to check.
+     * @return boolean Whether the given string is blocked for translation.
      */
-    public static boolean isBlockedLanguage2(String languageCode) {
-        return TranslateBridgeJni.get().isBlockedLanguage2(languageCode);
+    public static boolean isBlockedLanguage(String language) {
+        return TranslateBridgeJni.get().isBlockedLanguage(language);
     }
 
     /**
      * Sets the blocked state of a given language.
-     *
      * @param languageCode A valid language code to change.
      * @param blocked Whether to set language blocked.
      */
@@ -233,15 +231,15 @@ public class TranslateBridge {
         String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         void setDefaultTargetLanguage(String targetLanguage);
-        boolean isBlockedLanguage(String language);
         void getModelLanguages(LinkedHashSet<String> set);
         void resetAcceptLanguages(String defaultLocale);
         void getChromeAcceptLanguages(List<LanguageItem> list);
         void getUserAcceptLanguages(List<String> list);
+        void getAlwaysTranslateLanguages(List<String> list);
         void updateUserAcceptLanguages(String language, boolean add);
         void moveAcceptLanguage(String language, int offset);
         void setLanguageOrder(String[] codes);
-        boolean isBlockedLanguage2(String language);
+        boolean isBlockedLanguage(String language);
         void setLanguageBlockedState(String language, boolean blocked);
         boolean getExplicitLanguageAskPromptShown();
         void setExplicitLanguageAskPromptShown(boolean shown);

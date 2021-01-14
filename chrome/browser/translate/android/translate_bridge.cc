@@ -198,14 +198,11 @@ static void JNI_TranslateBridge_SetDefaultTargetLanguage(
 static jboolean JNI_TranslateBridge_IsBlockedLanguage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_language_string) {
-  std::string language_we_might_block =
-      ConvertJavaStringToUTF8(env, j_language_string);
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  PrefService* pref_service = profile->GetPrefs();
+  std::string language_code(ConvertJavaStringToUTF8(env, j_language_string));
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
-      ChromeTranslateClient::CreateTranslatePrefs(pref_service);
+      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
   DCHECK(translate_prefs);
-  return translate_prefs->IsBlockedLanguage(language_we_might_block);
+  return translate_prefs->IsBlockedLanguage(language_code);
 }
 
 // Gets all the model languages and calls back to the Java
@@ -227,6 +224,19 @@ static void JNI_TranslateBridge_GetModelLanguages(
         env, set,
         base::android::ConvertUTF8ToJavaString(env, details.lang_code));
   }
+}
+
+// Gets all languages that should always be translated as a Java List.
+static void JNI_TranslateBridge_GetAlwaysTranslateLanguages(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& list) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
+
+  Java_TranslateBridge_copyStringArrayToList(
+      env, list,
+      ToJavaArrayOfStrings(env,
+                           translate_prefs->GetAlwaysTranslateLanguages()));
 }
 
 // static
@@ -408,24 +418,6 @@ static void JNI_TranslateBridge_MoveAcceptLanguage(
   }
 
   translate_prefs->RearrangeLanguage(language_code, where, offset, languages);
-}
-
-static jboolean JNI_TranslateBridge_IsBlockedLanguage2(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& language) {
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
-      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-
-  std::string language_code(ConvertJavaStringToUTF8(env, language));
-  language::ToTranslateLanguageSynonym(&language_code);
-
-  // Application language is always blocked.
-  std::string app_locale = g_browser_process->GetApplicationLocale();
-  language::ToTranslateLanguageSynonym(&app_locale);
-  if (app_locale == language_code)
-    return true;
-
-  return translate_prefs->IsBlockedLanguage(language_code);
 }
 
 static void JNI_TranslateBridge_SetLanguageBlockedState(

@@ -240,6 +240,10 @@ class TranslatePrefs {
       base::StringPiece original_language,
       base::StringPiece target_language);
 
+  // Gets the languages that are set to always translate formatted as Chrome
+  // language codes.
+  std::vector<std::string> GetAlwaysTranslateLanguages() const;
+
   // These methods are used to track how many times the user has denied the
   // translation for a specific language. (So we can present a UI to blocklist
   // that language if the user keeps denying translations).
