@@ -25,7 +25,7 @@ namespace content {
 // FileSystemAccessPermissionContext instance.
 //
 // FileSystemAccessPermissionGrant instances are not thread safe, and should
-// only be used (and referenced) on the same sequence as the PermssionContext
+// only be used (and referenced) on the same sequence as the PermissionContext
 // that created them, i.e. the UI thread.
 class CONTENT_EXPORT FileSystemAccessPermissionGrant
     : public base::RefCounted<FileSystemAccessPermissionGrant> {
