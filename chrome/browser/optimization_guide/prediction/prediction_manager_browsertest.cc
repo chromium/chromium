@@ -456,8 +456,15 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       FCPReachedSessionStatisticsUpdated) {
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
+#else
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
+#endif
+
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(FCPReachedSessionStatisticsUpdated)) {
   RegisterWithKeyedService();
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
@@ -471,8 +478,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
   EXPECT_EQ(1u, session_fcp->GetNumberOfSamples());
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       NoFCPSessionStatisticsUnchanged) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoFCPSessionStatisticsUnchanged)) {
   RegisterWithKeyedService();
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
@@ -493,8 +501,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
   EXPECT_EQ(current_mean, session_fcp->GetMean());
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       ModelsAndFeaturesStoreInitialized) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(ModelsAndFeaturesStoreInitialized)) {
   base::HistogramTester histogram_tester;
   content::NetworkConnectionChangeSimulator().SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_2G);
@@ -517,8 +526,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       OnlyHostModelFeaturesInGetModelsResponse) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(OnlyHostModelFeaturesInGetModelsResponse)) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -537,8 +547,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       OnlyPredictionModelsInGetModelsResponse) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(OnlyPredictionModelsInGetModelsResponse)) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -563,8 +574,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       PredictionModelFetchFailed) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(PredictionModelFetchFailed)) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   base::HistogramTester histogram_tester;
 
@@ -590,8 +602,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       HostModelFeaturesClearedOnHistoryClear) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(HostModelFeaturesClearedOnHistoryClear)) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -696,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       IncognitoDoesntFetchModels) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(IncognitoDoesntFetchModels)) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithModelsAndFeatures);
   base::HistogramTester histogram_tester;
@@ -756,7 +770,7 @@ class PredictionManagerBrowserSameOriginTest
 // Regression test for https://crbug.com/1037945. Tests that the origin of the
 // previous navigation is computed correctly.
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
-                       IsSameOriginNavigation) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(IsSameOriginNavigation)) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -809,8 +823,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
       "OptimizationGuide.PredictionManager.IsSameOrigin", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
-                       ShouldTargetNavigationAsync) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserSameOriginTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(ShouldTargetNavigationAsync)) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -886,7 +901,8 @@ class PredictionManagerNoUserPermissionsTest
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
-                       HostsAndFieldTrialsNotPassedWhenNoUserPermissions) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(
+                           HostsAndFieldTrialsNotPassedWhenNoUserPermissions)) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -990,8 +1006,10 @@ class PredictionManagerModelDownloadingBrowserTest
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestDownloadUrlAcceptedByDownloadServiceButInvalid) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerModelDownloadingBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(
+        TestDownloadUrlAcceptedByDownloadServiceButInvalid)) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -1013,8 +1031,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestSuccessfulModelFileFlow) {
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerModelDownloadingBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestSuccessfulModelFileFlow)) {
   // TODO(crbug/1146151): Remove this switch once we can produce a signed model
   // file.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
