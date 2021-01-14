@@ -182,16 +182,16 @@ DeviceSettingsService::OwnershipStatus
 }
 
 void DeviceSettingsService::GetOwnershipStatusAsync(
-    const OwnershipStatusCallback& callback) {
+    OwnershipStatusCallback callback) {
   if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
     // Report status immediately.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, GetOwnershipStatus()));
+        FROM_HERE, base::BindOnce(std::move(callback), GetOwnershipStatus()));
   } else {
     // If the key hasn't been loaded yet, enqueue the callback to be fired when
     // the next SessionManagerOperation completes. If no operation is pending,
     // start a load operation to fetch the key and report the result.
-    pending_ownership_status_callbacks_.push_back(callback);
+    pending_ownership_status_callbacks_.push_back(std::move(callback));
     if (pending_operations_.empty())
       EnqueueLoad(false);
   }
@@ -365,8 +365,8 @@ void DeviceSettingsService::NotifyDeviceSettingsUpdated() const {
 void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   std::vector<OwnershipStatusCallback> callbacks;
   callbacks.swap(pending_ownership_status_callbacks_);
-  for (const auto& callback : callbacks) {
-    callback.Run(GetOwnershipStatus());
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(GetOwnershipStatus());
   }
 }
 

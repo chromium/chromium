@@ -62,7 +62,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     OWNERSHIP_TAKEN
   };
 
-  typedef base::Callback<void(OwnershipStatus)> OwnershipStatusCallback;
+  typedef base::OnceCallback<void(OwnershipStatus)> OwnershipStatusCallback;
 
   // Status codes for Load() and Store().
   // These values are logged to UMA. Entries should not be renumbered and
@@ -171,7 +171,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Determines the ownership status and reports the result to |callback|. This
   // is guaranteed to never return OWNERSHIP_UNKNOWN.
-  void GetOwnershipStatusAsync(const OwnershipStatusCallback& callback);
+  void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
 
   // Checks whether we have the private owner key.
   //
