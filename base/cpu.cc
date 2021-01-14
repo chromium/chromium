@@ -35,20 +35,9 @@
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
 #include "base/files/file_util.h"
-#include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-
 // Temporary definitions until a new hwcap.h is pulled in.
 #define HWCAP2_MTE (1 << 18)
 #define HWCAP2_BTI (1 << 17)
-
-struct ProcCpuInfo {
-  std::string brand;
-  uint8_t implementer = 0;
-  uint32_t part_number = 0;
-};
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -149,68 +138,33 @@ uint64_t xgetbv(uint32_t xcr) {
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
-StringPairs::const_iterator FindFirstProcCpuKey(const StringPairs& pairs,
-                                                StringPiece key) {
-  return ranges::find_if(pairs, [key](const StringPairs::value_type& pair) {
-    return TrimWhitespaceASCII(pair.first, base::TRIM_ALL) == key;
-  });
-}
-
-// Parses information about the ARM processor. Note that depending on the CPU
-// package, processor configuration, and/or kernel version, this may only
-// report information about the processor on which this thread is running. This
-// can happen on heterogeneous-processor SoCs like Snapdragon 808, which has 4
-// Cortex-A53 and 2 Cortex-A57. Unfortunately there is not a universally
-// reliable way to examine the CPU part information for all cores.
-const ProcCpuInfo* ParseProcCpu() {
-  static const ProcCpuInfo* info = []() {
+std::string* CpuInfoBrand() {
+  static std::string* brand = []() {
     // This function finds the value from /proc/cpuinfo under the key "model
     // name" or "Processor". "model name" is used in Linux 3.8 and later (3.7
     // and later for arm64) and is shown once per CPU. "Processor" is used in
     // earler versions and is shown only once at the top of /proc/cpuinfo
     // regardless of the number CPUs.
-    const char kModelNamePrefix[] = "model name";
-    const char kProcessorPrefix[] = "Processor";
+    const char kModelNamePrefix[] = "model name\t: ";
+    const char kProcessorPrefix[] = "Processor\t: ";
 
-    std::string cpuinfo;
-    ReadFileToString(FilePath("/proc/cpuinfo"), &cpuinfo);
-    DCHECK(!cpuinfo.empty());
+    std::string contents;
+    ReadFileToString(FilePath("/proc/cpuinfo"), &contents);
+    DCHECK(!contents.empty());
 
-    ProcCpuInfo* info = new ProcCpuInfo();
-
-    StringPairs pairs;
-    if (!SplitStringIntoKeyValuePairs(cpuinfo, ':', '\n', &pairs)) {
-      NOTREACHED();
-      return info;
+    std::istringstream iss(contents);
+    std::string line;
+    while (std::getline(iss, line)) {
+      if (line.compare(0, strlen(kModelNamePrefix), kModelNamePrefix) == 0)
+        return new std::string(line.substr(strlen(kModelNamePrefix)));
+      if (line.compare(0, strlen(kProcessorPrefix), kProcessorPrefix) == 0)
+        return new std::string(line.substr(strlen(kProcessorPrefix)));
     }
 
-    auto model_name = FindFirstProcCpuKey(pairs, kModelNamePrefix);
-    if (model_name == pairs.end())
-      model_name = FindFirstProcCpuKey(pairs, kProcessorPrefix);
-    if (model_name != pairs.end()) {
-      info->brand =
-          std::string(TrimWhitespaceASCII(model_name->second, TRIM_ALL));
-    }
-
-    auto implementer_string = FindFirstProcCpuKey(pairs, "CPU implementer");
-    if (implementer_string != pairs.end()) {
-      // HexStringToUInt() handles the leading whitespace on the value.
-      uint32_t implementer;
-      HexStringToUInt(implementer_string->second, &implementer);
-      if (!CheckedNumeric<uint32_t>(implementer)
-               .AssignIfValid(&info->implementer)) {
-        info->implementer = 0;
-      }
-    }
-
-    auto part_number_string = FindFirstProcCpuKey(pairs, "CPU part");
-    if (part_number_string != pairs.end())
-      HexStringToUInt(part_number_string->second, &info->part_number);
-
-    return info;
+    return new std::string();
   }();
 
-  return info;
+  return brand;
 }
 #endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) ||
         // defined(OS_LINUX) || defined(OS_CHROMEOS))
@@ -336,10 +290,7 @@ void CPU::Initialize() {
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-  const ProcCpuInfo* info = ParseProcCpu();
-  cpu_brand_ = info->brand;
-  implementer_ = info->implementer;
-  part_number_ = info->part_number;
+  cpu_brand_ = *CpuInfoBrand();
 
 #if defined(ARCH_CPU_ARM64)
   // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2

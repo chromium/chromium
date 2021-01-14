@@ -5,7 +5,6 @@
 #include "base/cpu.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -191,18 +190,3 @@ TEST(CPU, X86FamilyAndModel) {
   EXPECT_EQ(ext_model, 7);
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
-
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS))
-TEST(CPU, ARMImplementerAndPartNumber) {
-  base::CPU cpu;
-
-  const std::string& cpu_brand = cpu.cpu_brand();
-
-  EXPECT_FALSE(cpu_brand.empty());
-  EXPECT_EQ(cpu_brand, base::TrimWhitespaceASCII(cpu_brand, base::TRIM_ALL));
-  EXPECT_GT(cpu.implementer(), 0u);
-  EXPECT_GT(cpu.part_number(), 0u);
-}
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_LINUX) ||
-        // defined(OS_ANDROID) || defined(OS_CHROMEOS))
