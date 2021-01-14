@@ -70,7 +70,7 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
       return;
     }
     case mojom::blink::RequestIdTokenStatus::kSuccess: {
-      resolver->Resolve();
+      resolver->Resolve(id_token);
       return;
     }
   }
@@ -95,8 +95,13 @@ WebID::WebID(ExecutionContext& context)
 ScriptPromise WebID::get(ScriptState* script_state,
                          const WebIDRequestOptions* options,
                          ExceptionState& exception_state) {
-  if (!options->hasProvider() || !options->hasRequest()) {
-    exception_state.ThrowTypeError("Invalid WebIDRequestOptions");
+  if (!options->hasProvider()) {
+    exception_state.ThrowTypeError("Invalid parameters: provider required.");
+    return ScriptPromise();
+  }
+
+  if (!options->hasRequest()) {
+    exception_state.ThrowTypeError("Invalid parameters: request required.");
     return ScriptPromise();
   }
 
