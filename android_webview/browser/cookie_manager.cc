@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/path_service.h"
@@ -96,20 +95,11 @@ enum class SecureCookieAction {
   kMaxValue = kDisallowedAndroidR,
 };
 
-// Since this function parses the set-cookie line into a ParsedCookie, it is
-// convenient to hook into here to get the SameSite value from the parsed
-// cookie for histogramming.
-GURL MaybeFixUpSchemeForSecureCookieAndGetSameSite(
-    const GURL& host,
-    const std::string& value,
-    bool workaround_http_secure_cookies,
-    net::CookieSameSiteString* samesite_out,
-    bool* should_allow_cookie) {
+GURL MaybeFixUpSchemeForSecureCookie(const GURL& host,
+                                     const std::string& value,
+                                     bool workaround_http_secure_cookies,
+                                     bool* should_allow_cookie) {
   net::ParsedCookie parsed_cookie(value);
-
-  // Grab the SameSite value for histogramming.
-  DCHECK(samesite_out);
-  parsed_cookie.SameSite(samesite_out);
 
   *should_allow_cookie = true;
 
@@ -471,14 +461,9 @@ void CookieManager::SetCookieHelper(const GURL& host,
                                     base::OnceCallback<void(bool)> callback) {
   DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
 
-  net::CookieSameSiteString samesite = net::CookieSameSiteString::kUnspecified;
   bool should_allow_cookie = true;
-  const GURL& new_host = MaybeFixUpSchemeForSecureCookieAndGetSameSite(
-      host, value, workaround_http_secure_cookies_, &samesite,
-      &should_allow_cookie);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Android.WebView.CookieManager.SameSiteAttributeValue", samesite);
+  const GURL& new_host = MaybeFixUpSchemeForSecureCookie(
+      host, value, workaround_http_secure_cookies_, &should_allow_cookie);
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> cc(
@@ -488,11 +473,6 @@ void CookieManager::SetCookieHelper(const GURL& host,
   if (!cc || !should_allow_cookie) {
     MaybeRunCookieCallback(std::move(callback), false);
     return;
-  }
-
-  if (cc->SameSite() == net::CookieSameSite::NO_RESTRICTION) {
-    UMA_HISTOGRAM_BOOLEAN("Android.WebView.CookieManager.SameSiteNoneIsSecure",
-                          cc->IsSecure());
   }
 
   // Note: CookieStore and network::CookieManager both accept a
