@@ -28,6 +28,7 @@ public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
     private Callback<Bitmap> mBitmapCallback;
     private Rect mRect;
+    private Callback<Integer> mErrorCallback;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -41,26 +42,25 @@ public class LongScreenshotsCompositor {
      * @param rect The area of the captured webpage that should be composited.
      * @param response The proto with the address of the captured bitmap.
      * @param bitmapCallback Callback to process the composited bitmap.
+     * @param errorCallback Callback to process any errors.
      */
     public LongScreenshotsCompositor(GURL url,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, PaintPreviewProto response, Rect rect,
-            Callback<Bitmap> bitmapCallback) {
+            Callback<Bitmap> bitmapCallback, Callback<Integer> errorCallback) {
         mBitmapCallback = bitmapCallback;
         mRect = rect;
+        mErrorCallback = errorCallback;
 
-        // TODO(tgupta): Look into warmupCompositor
-        mDelegate = getCompositorDelegateFactory().createForProto(nativePaintPreviewServiceProvider,
-                response, url, directoryKey, true, this::onCompositorReady,
-                this::onCompositorError);
+        mDelegate = new PlayerCompositorDelegateImpl(nativePaintPreviewServiceProvider, response,
+                url, directoryKey, true, this::onCompositorReady, errorCallback);
     }
 
     /**
      * Called when the compositor cannot be successfully initialized.
      */
     private void onCompositorError(@CompositorStatus int status) {
-        // do nothing for now
-        // TODO(tgupta): Figure out what to display to the user at this point.
+        mErrorCallback.onResult(status);
     }
 
     /**
@@ -72,7 +72,7 @@ public class LongScreenshotsCompositor {
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
-        // TODO(tgupta): Keep track of the returned id.
+        // TODO(tgupta): Pass the request id back to the Entry for tracking.
         mDelegate.requestBitmap(mRect, 1, mBitmapCallback, this::onError);
     }
 
@@ -80,8 +80,7 @@ public class LongScreenshotsCompositor {
      * Called when there was an error compositing the bitmap.
      */
     public void onError() {
-        // do nothing for now
-        // TODO(tgupta): Figure out what to display to the user at this point.
+        mErrorCallback.onResult(CompositorStatus.REQUEST_BITMAP_FAILURE);
     }
 
     public void destroy() {

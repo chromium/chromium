@@ -131,9 +131,16 @@ public class LongScreenshotsCompositorTest {
             }
         };
 
+        Callback<Integer> onErrorCallback = new Callback<Integer>() {
+            @Override
+            public void onResult(Integer result) {
+                Assert.fail("Error should not be thrown");
+            }
+        };
+
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
                 mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), mRect, onBitmapResult);
+                PaintPreviewProto.getDefaultInstance(), mRect, onBitmapResult, onErrorCallback);
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null);

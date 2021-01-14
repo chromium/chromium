@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -49,10 +47,11 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     public void captureScreenshot() {
         EntryManager entryManager = new EntryManager(mActivity, mTab);
 
-        entryManager.generateInitialBitmap(new Callback<Bitmap>() {
+        LongScreenshotsEntry entry = entryManager.generateInitialEntry();
+        entry.setListener(new LongScreenshotsEntry.EntryListener() {
             @Override
-            public void onResult(Bitmap result) {
-                mScreenshot = result;
+            public void onResult(int status) {
+                mScreenshot = entry.getBitmap();
                 launchSharesheet();
             }
         });
