@@ -1660,54 +1660,6 @@ struct FuzzTraits<SkBitmap> {
 };
 
 template <>
-struct FuzzTraits<network::DataElement> {
-  static bool Fuzz(network::DataElement* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): Support mutation.
-    if (!fuzzer->ShouldGenerate())
-      return true;
-
-    switch (RandInRange(2)) {
-      case 0: {
-        // network::DataElement::Type::TYPE_BYTES
-        if (RandEvent(2)) {
-          *p = network::DataElement(
-              network::DataElementBytes(std::vector<uint8_t>()));
-        } else {
-          char data[256];
-          int data_len = RandInRange(sizeof(data));
-          fuzzer->FuzzBytes(&data[0], data_len);
-          *p = network::DataElement(network::DataElementBytes(
-              std::vector<uint8_t>(std::begin(data), std::end(data))));
-        }
-        return true;
-      }
-      case 1: {
-        // network::DataElement::Type::TYPE_FILE
-        base::FilePath path;
-        uint64_t offset;
-        uint64_t length;
-        base::Time modification_time;
-        if (!FuzzParam(&path, fuzzer))
-          return false;
-        if (!FuzzParam(&offset, fuzzer))
-          return false;
-        if (!FuzzParam(&length, fuzzer))
-          return false;
-        if (!FuzzParam(&modification_time, fuzzer))
-          return false;
-        *p = network::DataElement(
-            network::DataElementFile(path, offset, length, modification_time));
-        return true;
-      }
-      default: {
-        NOTREACHED();
-        return false;
-      }
-    }
-  }
-};
-
-template <>
 struct FuzzTraits<ui::LatencyInfo> {
   static bool Fuzz(ui::LatencyInfo* p, Fuzzer* fuzzer) {
     // TODO(inferno): Add param traits for |latency_components|.

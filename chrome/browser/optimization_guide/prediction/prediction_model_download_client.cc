@@ -11,6 +11,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "components/download/public/background_service/download_metadata.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 namespace optimization_guide {
 
