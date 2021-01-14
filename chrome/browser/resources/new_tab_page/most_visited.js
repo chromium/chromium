@@ -828,7 +828,7 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onTouchStart_(e) {
-    if (this.reordering_) {
+    if (this.reordering_ || !this.customLinksEnabled_) {
       return;
     }
     const tileElement = /** @type {HTMLElement} */ (e.composedPath().find(
@@ -836,18 +836,18 @@ class MostVisitedElement extends PolymerElement {
     if (!tileElement) {
       return;
     }
-    const {pageX, pageY} = e.changedTouches[0];
-    this.dragStart_(tileElement, pageX, pageY);
+    const {clientX, clientY} = e.changedTouches[0];
+    this.dragStart_(tileElement, clientX, clientY);
     const touchMove = e => {
-      const {pageX, pageY} = e.changedTouches[0];
-      this.dragOver_(pageX, pageY);
+      const {clientX, clientY} = e.changedTouches[0];
+      this.dragOver_(clientX, clientY);
     };
     const touchEnd = e => {
       this.ownerDocument.removeEventListener('touchmove', touchMove);
       tileElement.removeEventListener('touchend', touchEnd);
       tileElement.removeEventListener('touchcancel', touchEnd);
-      const {pageX, pageY} = e.changedTouches[0];
-      this.dragEnd_(pageX, pageY);
+      const {clientX, clientY} = e.changedTouches[0];
+      this.dragEnd_(clientX, clientY);
       this.reordering_ = false;
     };
     this.ownerDocument.addEventListener('touchmove', touchMove);

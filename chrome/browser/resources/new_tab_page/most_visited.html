@@ -58,8 +58,7 @@
     display: flex;
     flex-direction: column;
     height: var(--tile-size);
-    margin-bottom: 13px;
-    margin-top: 3px;
+    margin-bottom: 16px;
     opacity: 1;
     outline: none;
     padding-bottom: 4px;
@@ -71,6 +70,10 @@
     transition-timing-function: ease-in-out;
     user-select: none;
     width: var(--tile-size);
+  }
+
+  .tile {
+    touch-action: none;
   }
 
   :host-context(.focus-outline-visible) .tile:focus,
