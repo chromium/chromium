@@ -63,8 +63,43 @@ base::Time ConvertToBaseTime(uint64_t time) {
       base::TimeDelta::FromMicroseconds(time));
 }
 
+// Converts 'compromised_credentials' into PasswordIssues.
+// 'compromised_credentials' should contain only unique Compromise Types.
+sync_pb::PasswordSpecificsData::PasswordIssues
+PasswordIssuesFromCompromisedCredentials(
+    const std::vector<CompromisedCredentials>& compromised_credentials) {
+  sync_pb::PasswordSpecificsData::PasswordIssues issues;
+  for (const auto& compromised_credential : compromised_credentials) {
+    sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
+    issue.set_date_first_detection_microseconds(
+        compromised_credential.create_time.ToDeltaSinceWindowsEpoch()
+            .InMicroseconds());
+    issue.set_is_muted(compromised_credential.is_muted.value());
+    switch (compromised_credential.compromise_type) {
+      case CompromiseType::kLeaked:
+        DCHECK(!issues.has_leaked_password_issue());
+        *issues.mutable_leaked_password_issue() = std::move(issue);
+        break;
+      case CompromiseType::kPhished:
+        DCHECK(!issues.has_phished_password_issue());
+        *issues.mutable_phished_password_issue() = std::move(issue);
+        break;
+      case CompromiseType::kWeak:
+        DCHECK(!issues.has_weak_password_issue());
+        *issues.mutable_weak_password_issue() = std::move(issue);
+        break;
+      case CompromiseType::kReused:
+        DCHECK(!issues.has_reused_password_issue());
+        *issues.mutable_reused_password_issue() = std::move(issue);
+        break;
+    }
+  }
+  return issues;
+}
+
 sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form) {
+    const PasswordForm& password_form,
+    const std::vector<CompromisedCredentials>& compromised_credentials) {
   sync_pb::PasswordSpecifics specifics;
   sync_pb::PasswordSpecificsData* password_data =
       specifics.mutable_client_only_encrypted_data();
@@ -94,6 +129,8 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
       password_form.federation_origin.opaque()
           ? std::string()
           : password_form.federation_origin.Serialize());
+  *password_data->mutable_password_issues() =
+      PasswordIssuesFromCompromisedCredentials(compromised_credentials);
   return specifics;
 }
 
@@ -153,10 +190,10 @@ std::vector<CompromisedCredentials> CompromisedCredentialsFromEntityChange(
   const sync_pb::PasswordSpecificsData& password_data =
       entity_change.data().specifics.password().client_only_encrypted_data();
 
-  std::vector<CompromisedCredentials> issues;
+  std::vector<CompromisedCredentials> compromised_credentials;
 
   if (!password_data.has_password_issues())
-    return issues;
+    return compromised_credentials;
 
   const std::string& signon_realm = password_data.signon_realm();
   const base::string16& username =
@@ -164,31 +201,34 @@ std::vector<CompromisedCredentials> CompromisedCredentialsFromEntityChange(
 
   const auto& password_issues = password_data.password_issues();
   if (password_issues.has_leaked_password_issue()) {
-    issues.emplace_back(CreateCompromisedCredentials(
+    compromised_credentials.push_back(CreateCompromisedCredentials(
         signon_realm, username, CompromiseType::kLeaked,
         password_issues.leaked_password_issue()));
   }
   if (password_issues.has_reused_password_issue()) {
-    issues.emplace_back(CreateCompromisedCredentials(
+    compromised_credentials.push_back(CreateCompromisedCredentials(
         signon_realm, username, CompromiseType::kReused,
         password_issues.reused_password_issue()));
   }
   if (password_issues.has_weak_password_issue()) {
-    issues.emplace_back(CreateCompromisedCredentials(
+    compromised_credentials.push_back(CreateCompromisedCredentials(
         signon_realm, username, CompromiseType::kWeak,
         password_issues.weak_password_issue()));
   }
   if (password_issues.has_phished_password_issue()) {
-    issues.emplace_back(CreateCompromisedCredentials(
+    compromised_credentials.push_back(CreateCompromisedCredentials(
         signon_realm, username, CompromiseType::kPhished,
         password_issues.phished_password_issue()));
   }
-  return issues;
+  return compromised_credentials;
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityData(const PasswordForm& form) {
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const PasswordForm& form,
+    const std::vector<CompromisedCredentials>& compromised_credentials) {
   auto entity_data = std::make_unique<syncer::EntityData>();
-  *entity_data->specifics.mutable_password() = SpecificsFromPassword(form);
+  *entity_data->specifics.mutable_password() =
+      SpecificsFromPassword(form, compromised_credentials);
   entity_data->name = form.signon_realm;
   return entity_data;
 }
@@ -343,8 +383,13 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     switch (change.type()) {
       case PasswordStoreChange::ADD:
       case PasswordStoreChange::UPDATE: {
-        change_processor()->Put(storage_key, CreateEntityData(change.form()),
-                                &metadata_change_list);
+        const std::vector<CompromisedCredentials> compromised_credentials =
+            password_store_sync_->ReadSecurityIssues(
+                FormPrimaryKey(change.primary_key()));
+        change_processor()->Put(
+            storage_key,
+            CreateEntityData(change.form(), compromised_credentials),
+            &metadata_change_list);
         break;
       }
       case PasswordStoreChange::REMOVE: {
@@ -437,8 +482,11 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     for (const auto& pair : key_to_local_form_map) {
       const int primary_key = pair.first;
       const PasswordForm& local_password_form = *pair.second;
+      const std::vector<CompromisedCredentials> compromised_credentials =
+          password_store_sync_->ReadSecurityIssues(FormPrimaryKey(primary_key));
+
       std::unique_ptr<syncer::EntityData> local_form_entity_data =
-          CreateEntityData(local_password_form);
+          CreateEntityData(local_password_form, compromised_credentials);
       const std::string client_tag_of_local_password =
           GetClientTag(*local_form_entity_data);
       client_tags_of_local_passwords.insert(client_tag_of_local_password);
@@ -790,7 +838,10 @@ void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
   for (const std::string& storage_key : storage_keys) {
     int primary_key = ParsePrimaryKey(storage_key);
     if (key_to_form_map.count(primary_key) != 0) {
-      batch->Put(storage_key, CreateEntityData(*key_to_form_map[primary_key]));
+      const std::vector<CompromisedCredentials> compromised_credentials =
+          password_store_sync_->ReadSecurityIssues(FormPrimaryKey(primary_key));
+      batch->Put(storage_key, CreateEntityData(*key_to_form_map[primary_key],
+                                               compromised_credentials));
     }
   }
   std::move(callback).Run(std::move(batch));
@@ -810,8 +861,11 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& pair : key_to_form_map) {
     PasswordForm form = *pair.second;
+    const std::vector<CompromisedCredentials> compromised_credentials =
+        password_store_sync_->ReadSecurityIssues(FormPrimaryKey(pair.first));
     form.password_value = base::UTF8ToUTF16("<redacted>");
-    batch->Put(base::NumberToString(pair.first), CreateEntityData(form));
+    batch->Put(base::NumberToString(pair.first),
+               CreateEntityData(form, compromised_credentials));
   }
   std::move(callback).Run(std::move(batch));
 }
