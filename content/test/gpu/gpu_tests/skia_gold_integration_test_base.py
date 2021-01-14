@@ -314,6 +314,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         _ToNonEmptyStrOrNone(img_params.driver_vendor),
         'combined_hardware_identifier':
         _GetCombinedHardwareIdentifier(img_params),
+        'browser_type':
+        _ToNonEmptyStrOrNone(self.browser.browser_type),
     }
     # If we have a grace period active, then the test is potentially flaky.
     # Include a pair that will cause Gold to ignore any untriaged images, which
