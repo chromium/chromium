@@ -3228,21 +3228,6 @@
             ]
         }
     ],
-    "FullscreenController": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FullscreenControllerBrowserScoped"
-                    ]
-                }
-            ]
-        }
-    ],
     "FuzzyAppSearch": [
         {
             "platforms": [
@@ -3444,24 +3429,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LogBreadcrumbs"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSDefaultBrowserFullscreenPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "min_os_version": "14.0.1"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserFullscreenPromo"
                     ]
                 }
             ]
@@ -4460,21 +4427,6 @@
             ]
         }
     ],
-    "NativeContextMenusStudy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableNativeContextMenus"
-                    ]
-                }
-            ]
-        }
-    ],
     "NavigationPredictor": [
         {
             "platforms": [
@@ -4849,25 +4801,6 @@
             ]
         }
     ],
-    "OmniboxLocalEntities": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "DesktopAndAndroidExperiments",
-                    "enable_features": [
-                        "OmniboxLocalEntitySuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxOnDeviceHeadSuggestNonIncognito": [
         {
             "platforms": [
@@ -4881,26 +4814,6 @@
                     "name": "OnDeviceHeadSuggest_NonIncognito_Enabled",
                     "enable_features": [
                         "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxPreserveDefaultMatchAgainstAsyncUpdate": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Beta_Enabled",
-                    "enable_features": [
-                        "OmniboxPreserveDefaultMatchAgainstAsyncUpdate"
                     ]
                 }
             ]
@@ -6127,22 +6040,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReportSaveDataSavings"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RevampedContextMenu": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RevampedContextMenu"
                     ]
                 }
             ]
@@ -7951,21 +7848,6 @@
                     "params": {
                         "blocklist_additions": "00060000:e,fffd:e,ed5f25a4:e"
                     }
-                }
-            ]
-        }
-    ],
-    "WebComponentsV0": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_20200708",
-                    "disable_features": [
-                        "WebComponentsV0"
-                    ]
                 }
             ]
         }
