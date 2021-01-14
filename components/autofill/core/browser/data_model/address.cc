@@ -345,39 +345,24 @@ void Address::GetMatchingTypes(const base::string16& text,
   if (!entered_country_code.empty() && country_code == entered_country_code)
     matching_types->insert(ADDRESS_HOME_COUNTRY);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_from_text =
-            AlternativeStateNameMap::GetCanonicalStateName(country_code, text);
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_from_profile = GetCanonicalizedStateName();
+  l10n::CaseInsensitiveCompare compare;
+  AutofillProfileComparator comparator(app_locale);
+  // Check to see if the |text| could be the full name or abbreviation of a
+  // state.
+  base::string16 canon_text = comparator.NormalizeForComparison(text);
+  base::string16 state_name;
+  base::string16 state_abbreviation;
+  state_names::GetNameAndAbbreviation(canon_text, &state_name,
+                                      &state_abbreviation);
 
-    if (canonical_state_name_from_text && canonical_state_name_from_profile &&
-        canonical_state_name_from_text.value() ==
-            canonical_state_name_from_profile.value()) {
+  if (!state_name.empty() || !state_abbreviation.empty()) {
+    base::string16 canon_profile_state = comparator.NormalizeForComparison(
+        GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
+    if ((!state_name.empty() &&
+         compare.StringsEqual(state_name, canon_profile_state)) ||
+        (!state_abbreviation.empty() &&
+         compare.StringsEqual(state_abbreviation, canon_profile_state))) {
       matching_types->insert(ADDRESS_HOME_STATE);
-    }
-  } else {
-    l10n::CaseInsensitiveCompare compare;
-    AutofillProfileComparator comparator(app_locale);
-    // Check to see if the |text| could be the full name or abbreviation of a
-    // state.
-    base::string16 canon_text = comparator.NormalizeForComparison(text);
-    base::string16 state_name;
-    base::string16 state_abbreviation;
-    state_names::GetNameAndAbbreviation(canon_text, &state_name,
-                                        &state_abbreviation);
-
-    if (!state_name.empty() || !state_abbreviation.empty()) {
-      base::string16 canon_profile_state = comparator.NormalizeForComparison(
-          GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
-      if ((!state_name.empty() &&
-           compare.StringsEqual(state_name, canon_profile_state)) ||
-          (!state_abbreviation.empty() &&
-           compare.StringsEqual(state_abbreviation, canon_profile_state))) {
-        matching_types->insert(ADDRESS_HOME_STATE);
-      }
     }
   }
 }

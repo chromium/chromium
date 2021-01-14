@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -2159,6 +2160,86 @@ TEST_F(AutofillManagerTest,
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
                                      FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
                                      1);
+}
+
+// Test that we properly match typed values to stored state data.
+TEST_F(AutofillManagerTest, DetermineStateFieldTypeForUpload) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "Bavaria", "",
+                       "DE", "");
+
+  const char* const kValidMatches[] = {"by", "Bavaria", "Bayern",
+                                       "BY", "B.Y",     "B-Y"};
+  for (const char* valid_match : kValidMatches) {
+    SCOPED_TRACE(valid_match);
+    FormData form;
+    FormFieldData field;
+
+    test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+    form.fields.push_back(field);
+
+    test::CreateTestFormField("State", "state", valid_match, "text", &field);
+    form.fields.push_back(field);
+
+    FormStructure form_structure(form);
+    EXPECT_EQ(form_structure.field_count(), 2U);
+
+    autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                           &form_structure);
+    EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  const char* const kInvalidMatches[] = {"Garbage", "BYA",   "BYA is a state",
+                                         "Bava",    "Empty", ""};
+  for (const char* invalid_match : kInvalidMatches) {
+    SCOPED_TRACE(invalid_match);
+    FormData form;
+    FormFieldData field;
+
+    test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+    form.fields.push_back(field);
+
+    test::CreateTestFormField("State", "state", invalid_match, "text", &field);
+    form.fields.push_back(field);
+
+    FormStructure form_structure(form);
+    EXPECT_EQ(form_structure.field_count(), 2U);
+
+    autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                           &form_structure);
+    EXPECT_FALSE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "California",
+      {{.canonical_name = "California",
+        .abbreviations = {"CA"},
+        .alternative_names = {}}});
+
+  test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "California",
+                       "", "US", "");
+
+  FormData form;
+  FormFieldData field;
+
+  test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("State", "state", "CA", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  EXPECT_EQ(form_structure.field_count(), 2U);
+
+  autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                         &form_structure);
+  EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
 }
 
 // Test that we return normal Autofill suggestions when trying to autofill

@@ -288,6 +288,14 @@ class AutofillManager : public AutofillHandler,
 
   // A public wrapper that calls |TriggerRefill| for testing purposes only.
   void TriggerRefillForTest(const FormData& form) { TriggerRefill(form); }
+
+  // A public wrapper that calls |PreProcessStateMatchingTypes| for testing
+  // purposes.
+  void PreProcessStateMatchingTypesForTest(
+      const std::vector<AutofillProfile>& profiles,
+      FormStructure* form_structure) {
+    PreProcessStateMatchingTypes(profiles, form_structure);
+  }
 #endif
 
  protected:
@@ -590,6 +598,14 @@ class AutofillManager : public AutofillHandler,
 
   // Retrieves the page language from |client_|
   LanguageCode GetPageLanguage() const override;
+
+  // For each submitted field in the |form_structure|, it determines whether
+  // |ADDRESS_HOME_STATE| is a possible matching type.
+  // This method is intended to run matching type detection on the browser UI
+  // thread.
+  void PreProcessStateMatchingTypes(
+      const std::vector<AutofillProfile>& profiles,
+      FormStructure* form_structure);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Whether to show the option to use virtual card in the autofill popup.

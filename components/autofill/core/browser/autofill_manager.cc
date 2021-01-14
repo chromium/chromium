@@ -807,6 +807,11 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
   form_structure->set_randomized_encoder(
       RandomizedEncoder::Create(client_->GetPrefs()));
 
+  // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
+  // |form_structure| with the help of |AlternativeStateNameMap|.
+  // |AlternativeStateNameMap| can only be accessed on the main UI thread.
+  PreProcessStateMatchingTypes(copied_profiles, form_structure.get());
+
   // Note that ownership of |form_structure| is passed to the second task,
   // using |base::Owned|. We MUST temporarily hang on to the raw form pointer
   // so that we can safely pass the address to the first callback regardless of
@@ -2119,6 +2124,9 @@ void AutofillManager::DeterminePossibleFieldTypesForUpload(
     if (IsUPIVirtualPaymentAddress(value))
       matching_types.insert(UPI_VPA);
 
+    if (field->state_is_a_matching_type())
+      matching_types.insert(ADDRESS_HOME_STATE);
+
     if (matching_types.empty()) {
       matching_types.insert(UNKNOWN_TYPE);
       ServerFieldTypeValidityStateMap matching_types_validities;
@@ -2671,6 +2679,44 @@ LanguageCode AutofillManager::GetPageLanguage() const {
   if (!language_state)
     return LanguageCode();
   return LanguageCode(language_state->current_language());
+}
+
+void AutofillManager::PreProcessStateMatchingTypes(
+    const std::vector<AutofillProfile>& profiles,
+    FormStructure* form_structure) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    return;
+  }
+
+  for (const auto& profile : profiles) {
+    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+        canonical_state_name_from_profile =
+            profile.GetAddress().GetCanonicalizedStateName();
+
+    if (!canonical_state_name_from_profile)
+      continue;
+
+    const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+    const base::string16& country_code =
+        profile.GetInfo(kCountryCode, app_locale_);
+
+    for (auto& field : *form_structure) {
+      if (field->state_is_a_matching_type())
+        continue;
+
+      base::Optional<AlternativeStateNameMap::CanonicalStateName>
+          canonical_state_name_from_text =
+              AlternativeStateNameMap::GetCanonicalStateName(
+                  base::UTF16ToUTF8(country_code), field->value);
+
+      if (canonical_state_name_from_text &&
+          canonical_state_name_from_text.value() ==
+              canonical_state_name_from_profile.value()) {
+        field->set_state_is_a_matching_type();
+      }
+    }
+  }
 }
 
 }  // namespace autofill

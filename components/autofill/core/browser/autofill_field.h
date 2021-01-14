@@ -186,6 +186,14 @@ class AutofillField : public FormFieldData {
     return password_requirements_;
   }
 
+  // Getter and Setter methods for |state_is_a_matching_type_|.
+  void set_state_is_a_matching_type(bool value = true) {
+    state_is_a_matching_type_ = value;
+  }
+  const bool& state_is_a_matching_type() const {
+    return state_is_a_matching_type_;
+  }
+
   // For each type in |possible_types_| that's missing from
   // |possible_types_validities_|, will add it to the
   // |possible_types_validities_| and will set its validity to UNVALIDATED. This
@@ -278,6 +286,9 @@ class AutofillField : public FormFieldData {
   // triggered the vote.
   AutofillUploadContents::Field::VoteType vote_type_ =
       AutofillUploadContents::Field::NO_INFORMATION;
+
+  // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
+  bool state_is_a_matching_type_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillField);
 };

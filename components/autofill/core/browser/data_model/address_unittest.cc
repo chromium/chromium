@@ -441,51 +441,6 @@ TEST_P(AddressTest, TestAreStatesEqual) {
   }
 }
 
-// Test that we properly match typed values to stored state data.
-TEST_P(AddressTest, IsState) {
-  base::test::ScopedFeatureList feature;
-  // The feature
-  // |features::kAutofillEnableSupportForMoreStructureInAddresses| is disabled
-  // since it is incompatible with the feature
-  // |features::kAutofillUseStateMappingCache|.
-  feature.InitWithFeatures(
-      {features::kAutofillUseAlternativeStateNameMap},
-      {features::kAutofillEnableSupportForMoreStructureInAddresses});
-
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  Address address;
-  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
-
-  const char* const kValidMatches[] = {"by", "Bavaria", "Bayern",
-                                       "BY", "B.Y",     "B-Y"};
-  for (const char* valid_match : kValidMatches) {
-    SCOPED_TRACE(valid_match);
-    ServerFieldTypeSet matching_types;
-    address.GetMatchingTypes(ASCIIToUTF16(valid_match), "", &matching_types);
-    ASSERT_EQ(1U, matching_types.size());
-    EXPECT_THAT(matching_types, testing::Contains(ADDRESS_HOME_STATE));
-  }
-
-  const char* const kInvalidMatches[] = {"Garbage", "BYA",   "BYA is a state",
-                                         "Bava",    "Empty", ""};
-  for (const char* invalid_match : kInvalidMatches) {
-    SCOPED_TRACE(invalid_match);
-    ServerFieldTypeSet matching_types;
-    address.GetMatchingTypes(ASCIIToUTF16(invalid_match), "", &matching_types);
-    EXPECT_THAT(matching_types.find(ADDRESS_HOME_STATE), matching_types.end());
-  }
-
-  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("California"));
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
-
-  ServerFieldTypeSet matching_types;
-  address.GetMatchingTypes(ASCIIToUTF16("CA"), "", &matching_types);
-  EXPECT_THAT(matching_types.find(ADDRESS_HOME_STATE), matching_types.end());
-}
-
 // Verifies that Address::GetInfo() correctly combines address lines.
 TEST_P(AddressTest, GetStreetAddress) {
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
