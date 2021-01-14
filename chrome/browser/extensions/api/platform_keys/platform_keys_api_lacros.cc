@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api_lacros.h"
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +16,7 @@
 namespace extensions {
 
 namespace api_pki = api::platform_keys_internal;
+using SigningScheme = crosapi::mojom::KeystoreSigningScheme;
 using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
 
 namespace {
@@ -21,6 +24,8 @@ const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
 const char kErrorAlgorithmNotPermittedByCertificate[] =
     "The requested Algorithm is not permitted by the certificate.";
+const char kErrorAlgorithmNotSupported[] = "Algorithm not supported.";
+const char kErrorInvalidToken[] = "The token is not valid.";
 
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
@@ -31,6 +36,50 @@ base::Optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
     return SigningAlgorithmName::kRsassaPkcs115;
   if (input == kWebCryptoEcdsa)
     return SigningAlgorithmName::kEcdsa;
+  return base::nullopt;
+}
+
+base::Optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
+    const std::string& input) {
+  if (input == "user")
+    return crosapi::mojom::KeystoreType::kUser;
+  if (input == "system")
+    return crosapi::mojom::KeystoreType::kDevice;
+  return base::nullopt;
+}
+
+base::Optional<SigningScheme> SigningSchemeFromStrings(
+    const std::string& hashing,
+    const std::string& signing) {
+  if (hashing == "none") {
+    if (signing == kWebCryptoRsassaPkcs1v15)
+      return SigningScheme::kRsassaPkcs1V15None;
+    return base::nullopt;
+  }
+  if (hashing == "SHA-1") {
+    if (signing == kWebCryptoRsassaPkcs1v15)
+      return SigningScheme::kRsassaPkcs1V15Sha1;
+    if (signing == kWebCryptoEcdsa)
+      return SigningScheme::kEcdsaSha1;
+  }
+  if (hashing == "SHA-256") {
+    if (signing == kWebCryptoRsassaPkcs1v15)
+      return SigningScheme::kRsassaPkcs1V15Sha256;
+    if (signing == kWebCryptoEcdsa)
+      return SigningScheme::kEcdsaSha256;
+  }
+  if (hashing == "SHA-384") {
+    if (signing == kWebCryptoRsassaPkcs1v15)
+      return SigningScheme::kRsassaPkcs1V15Sha384;
+    if (signing == kWebCryptoEcdsa)
+      return SigningScheme::kEcdsaSha384;
+  }
+  if (hashing == "SHA-512") {
+    if (signing == kWebCryptoRsassaPkcs1v15)
+      return SigningScheme::kRsassaPkcs1V15Sha512;
+    if (signing == kWebCryptoEcdsa)
+      return SigningScheme::kEcdsaSha512;
+  }
   return base::nullopt;
 }
 
@@ -114,7 +163,51 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
 
 ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
-  return RespondNow(Error("Not implemented."));
+  std::unique_ptr<api_pki::Sign::Params> params(
+      api_pki::Sign::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+          crosapi::mojom::KeystoreService::Uuid_) < 4) {
+    return RespondNow(Error(kUnsupportedByAsh));
+  }
+
+  // These APIs are used in security-sensitive contexts. We need to ensure that
+  // the user for ash is the same as the user for lacros. We do this by
+  // restricting the API to the default profile, which is guaranteed to be the
+  // same user.
+  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
+    return RespondNow(Error(kUnsupportedProfile));
+
+  base::Optional<crosapi::mojom::KeystoreType> keystore_type =
+      KeystoreTypeFromString(params->token_id);
+  if (!keystore_type) {
+    return RespondNow(Error(kErrorInvalidToken));
+  }
+
+  base::Optional<SigningScheme> scheme = SigningSchemeFromStrings(
+      params->hash_algorithm_name, params->algorithm_name);
+  if (!scheme) {
+    return RespondNow(Error(kErrorAlgorithmNotSupported));
+  }
+
+  auto cb = base::BindOnce(&PlatformKeysInternalSignFunction::OnSign, this);
+  chromeos::LacrosChromeServiceImpl::Get()->keystore_service_remote()->Sign(
+      keystore_type.value(), params->public_key, scheme.value(), params->data,
+      extension_id(), std::move(cb));
+  return RespondLater();
+}
+
+void PlatformKeysInternalSignFunction::OnSign(ResultPtr result) {
+  using Result = crosapi::mojom::KeystoreBinaryResult;
+  switch (result->which()) {
+    case Result::Tag::ERROR_MESSAGE:
+      Respond(Error(result->get_error_message()));
+      return;
+    case Result::Tag::BLOB:
+      Respond(ArgumentList(api_pki::Sign::Results::Create(result->get_blob())));
+      return;
+  }
 }
 
 PlatformKeysVerifyTLSServerCertificateFunction::

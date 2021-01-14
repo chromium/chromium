@@ -36,6 +36,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
 
   // mojom::KeystoreService:
   using KeystoreType = mojom::KeystoreType;
+  using SigningScheme = mojom::KeystoreSigningScheme;
   void ChallengeAttestationOnlyKeystore(
       const std::string& challenge,
       mojom::KeystoreType type,
@@ -56,6 +57,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void GetPublicKey(const std::vector<uint8_t>& certificate,
                     mojom::KeystoreSigningAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback) override;
+  void Sign(KeystoreType keystore,
+            const std::vector<uint8_t>& public_key,
+            SigningScheme scheme,
+            const std::vector<uint8_t>& data,
+            const std::string& extension_id,
+            SignCallback callback) override;
 
  private:
   static void OnGetTokens(
@@ -73,6 +80,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
                                   chromeos::platform_keys::Status status);
   static void OnRemoveCertificate(RemoveCertificateCallback callback,
                                   chromeos::platform_keys::Status status);
+  static void OnDidSign(SignCallback callback,
+                        const std::string& signature,
+                        chromeos::platform_keys::Status status);
 
   // |challenge| is used as a opaque identifier to match against the unique_ptr
   // in outstanding_challenges_. It should not be dereferenced.

@@ -289,7 +289,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
            platform_keys::KeyType key_type,
            platform_keys::HashAlgorithm hash_algorithm,
            const std::string& extension_id,
-           const SignCallback& callback,
+           SignCallback callback,
            ExtensionPlatformKeysService* service)
       : token_id_(token_id),
         data_(data),
@@ -298,7 +298,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
         key_type_(key_type),
         hash_algorithm_(hash_algorithm),
         extension_id_(extension_id),
-        callback_(callback),
+        callback_(std::move(callback)),
         service_(service) {}
 
   ~SignTask() override {}
@@ -370,8 +370,9 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   void OnCanUseKeyForSigningKnown(bool allowed) {
     if (!allowed) {
-      callback_.Run(std::string() /* no signature */,
-                    platform_keys::Status::kErrorKeyNotAllowedForSigning);
+      std::move(callback_).Run(
+          std::string() /* no signature */,
+          platform_keys::Status::kErrorKeyNotAllowedForSigning);
       next_step_ = Step::DONE;
       DoStep();
       return;
@@ -393,7 +394,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       LOG(ERROR) << "Marking a key used for signing failed: "
                  << platform_keys::StatusToString(status);
       next_step_ = Step::DONE;
-      callback_.Run(std::string() /* no signature */, status);
+      std::move(callback_).Run(std::string() /* no signature */, status);
       DoStep();
       return;
     }
@@ -428,7 +429,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   }
 
   void DidSign(const std::string& signature, platform_keys::Status status) {
-    callback_.Run(signature, status);
+    std::move(callback_).Run(signature, status);
     DoStep();
   }
 
@@ -445,7 +446,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   const platform_keys::KeyType key_type_;
   const platform_keys::HashAlgorithm hash_algorithm_;
   const std::string extension_id_;
-  const SignCallback callback_;
+  SignCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
@@ -815,12 +816,12 @@ void ExtensionPlatformKeysService::SignDigest(
     platform_keys::KeyType key_type,
     platform_keys::HashAlgorithm hash_algorithm,
     const std::string& extension_id,
-    const SignCallback& callback) {
+    SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(
       std::make_unique<SignTask>(token_id, data, public_key_spki_der,
                                  /*raw_pkcs1=*/false, key_type, hash_algorithm,
-                                 extension_id, callback, this));
+                                 extension_id, std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
@@ -828,12 +829,13 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
     const std::string& data,
     const std::string& public_key_spki_der,
     const std::string& extension_id,
-    const SignCallback& callback) {
+    SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<SignTask>(
       token_id, data, public_key_spki_der,
       /*raw_pkcs1=*/true, /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
-      platform_keys::HASH_ALGORITHM_NONE, extension_id, callback, this));
+      platform_keys::HASH_ALGORITHM_NONE, extension_id, std::move(callback),
+      this));
 }
 
 void ExtensionPlatformKeysService::SelectClientCertificates(
