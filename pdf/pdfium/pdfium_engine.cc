@@ -38,6 +38,7 @@
 #include "pdf/draw_utils/shadow.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
+#include "pdf/pdf_utils/dates.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_document.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_read.h"
@@ -3960,6 +3961,9 @@ void PDFiumEngine::LoadDocumentMetadata() {
   doc_metadata_.keywords = GetTrimmedMetadataByField("Keywords");
   doc_metadata_.creator = GetTrimmedMetadataByField("Creator");
   doc_metadata_.producer = GetTrimmedMetadataByField("Producer");
+  doc_metadata_.creation_date =
+      ParsePdfDate(GetTrimmedMetadataByField("CreationDate"));
+  doc_metadata_.mod_date = ParsePdfDate(GetTrimmedMetadataByField("ModDate"));
 }
 
 std::string PDFiumEngine::GetTrimmedMetadataByField(

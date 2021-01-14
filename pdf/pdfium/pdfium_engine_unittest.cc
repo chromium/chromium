@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -356,6 +357,16 @@ TEST_F(PDFiumEngineTest, GetDocumentMetadata) {
   EXPECT_EQ("testing,chromium,pdfium,document,info", doc_metadata.keywords);
   EXPECT_EQ("Your Preferred Text Editor", doc_metadata.creator);
   EXPECT_EQ("fixup_pdf_template.py", doc_metadata.producer);
+
+  base::Time expected_creation_date;
+  ASSERT_TRUE(base::Time::FromUTCString("2020-02-05 15:39:12",
+                                        &expected_creation_date));
+  EXPECT_EQ(expected_creation_date, doc_metadata.creation_date);
+
+  base::Time expected_mod_date;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2020-02-06 09:42:34", &expected_mod_date));
+  EXPECT_EQ(expected_mod_date, doc_metadata.mod_date);
 }
 
 TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
@@ -374,6 +385,8 @@ TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   EXPECT_THAT(doc_metadata.keywords, IsEmpty());
   EXPECT_THAT(doc_metadata.creator, IsEmpty());
   EXPECT_THAT(doc_metadata.producer, IsEmpty());
+  EXPECT_TRUE(doc_metadata.creation_date.is_null());
+  EXPECT_TRUE(doc_metadata.mod_date.is_null());
 }
 
 TEST_F(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
