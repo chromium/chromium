@@ -1339,6 +1339,8 @@ Position LayoutBlock::PositionForBox(InlineBox* box, bool start) const {
 
   Node* const node = box->GetLineLayoutItem().NonPseudoNode();
   if (!node) {
+    if (!NonPseudoNode())
+      return Position();
     if (start)
       return Position::FirstPositionInOrBeforeNode(*NonPseudoNode());
     return Position::LastPositionInOrAfterNode(*NonPseudoNode());
