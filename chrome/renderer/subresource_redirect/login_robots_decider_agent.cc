@@ -12,6 +12,7 @@
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "content/public/renderer/render_frame.h"
 
 namespace subresource_redirect {
@@ -52,7 +53,7 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
     blink::AssociatedInterfaceRegistry* associated_interfaces,
     content::RenderFrame* render_frame)
     : PublicResourceDeciderAgent(associated_interfaces, render_frame) {
-  DCHECK(IsLoginRobotsCheckedCompressionEnabled());
+  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -136,7 +137,7 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
     mojom::CompressPublicImagesHintsPtr images_hints) {
   // This mojo from browser process should not be called for robots rules based
   // subresource compression on non logged-in pages.
-  DCHECK(IsLoginRobotsCheckedCompressionEnabled());
+  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
   NOTREACHED();
 }
 

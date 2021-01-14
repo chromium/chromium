@@ -5,11 +5,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/login_robots_decider_test_util.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/subresource_redirect/subresource_redirect_test_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -118,7 +118,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
   }
 
   void SetUpRobotsRules(const std::string& origin,
-                        const std::vector<Rule>& patterns) {
+                        const std::vector<RobotsRule>& patterns) {
     login_robots_decider_agent_->UpdateRobotsRulesForTesting(
         url::Origin::Create(GURL(origin)), GetRobotsRulesProtoString(patterns));
   }

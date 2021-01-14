@@ -1576,10 +1576,9 @@ if (!is_android) {
       "../renderer/chrome_render_frame_observer_browsertest.cc",
       "../renderer/lite_video/lite_video_hint_agent_browsertest.cc",
       "../renderer/subresource_redirect/login_robots_decider_agent_browsertest.cc",
-      "../renderer/subresource_redirect/login_robots_decider_test_util.cc",
-      "../renderer/subresource_redirect/login_robots_decider_test_util.h",
       "../renderer/subresource_redirect/login_robots_url_loader_throttle_browsertest.cc",
       "../renderer/subresource_redirect/public_image_hints_decider_agent_browsertest.cc",
+      "../renderer/subresource_redirect/subresource_redirect_renderer_browsertest.cc",
       "../renderer/translate/per_frame_translate_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",
       "../renderer/translate/translate_script_browsertest.cc",
@@ -1909,6 +1908,8 @@ if (!is_android) {
         }
       }
     }
+
+    deps += [ "//components/subresource_redirect:test_support" ]
 
     if (enable_extensions) {
       sources += [
@@ -3850,8 +3851,6 @@ test("unit_tests") {
     "../renderer/media/flash_embed_rewrite_unittest.cc",
     "../renderer/net/net_error_helper_core_unittest.cc",
     "../renderer/plugins/plugin_uma_unittest.cc",
-    "../renderer/subresource_redirect/login_robots_decider_test_util.cc",
-    "../renderer/subresource_redirect/login_robots_decider_test_util.h",
     "../renderer/subresource_redirect/robots_rules_parser_unittest.cc",
     "../renderer/subresource_redirect/subresource_redirect_util_unittest.cc",
     "../renderer/v8_unwinder_unittest.cc",
@@ -4231,6 +4230,7 @@ test("unit_tests") {
     "//components/spellcheck:buildflags",
     "//components/strings",
     "//components/subresource_filter/core/browser:test_support",
+    "//components/subresource_redirect:test_support",
     "//components/sync:test_support",
     "//components/sync_device_info:test_support",
     "//components/sync_sessions:test_support",
