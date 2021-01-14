@@ -589,6 +589,15 @@ gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
       resource_id);
 }
 
+#if defined(OS_MAC)
+base::FilePath ChromeContentClient::GetChildProcessPath(
+    int child_flags,
+    const base::FilePath& helpers_path) {
+  NOTREACHED() << "Unsupported child process flags!";
+  return {};
+}
+#endif  // OS_MAC
+
 std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
 #if BUILDFLAG(ENABLE_NACL)
   switch (type) {

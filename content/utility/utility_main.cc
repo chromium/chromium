@@ -58,16 +58,20 @@ int UtilityMain(const MainFunctionParams& parameters) {
           : base::MessagePumpType::DEFAULT;
 
 #if defined(OS_MAC)
-  // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop. In
-  // a sandboxed utility process, NSApp attempts to acquire more Mach resources
-  // than a restrictive sandbox policy should allow. Services that require a
-  // TYPE_UI pump generally just need a NS/CFRunLoop to pump system work
-  // sources, so choose that pump type instead. A NSRunLoop MessagePump is used
-  // for TYPE_UI MessageLoops on non-main threads.
-  base::MessagePump::OverrideMessagePumpForUIFactory(
-      []() -> std::unique_ptr<base::MessagePump> {
-        return std::make_unique<base::MessagePumpNSRunLoop>();
-      });
+  auto sandbox_type =
+      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+  if (sandbox_type != sandbox::policy::SandboxType::kNoSandbox) {
+    // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop.
+    // In a sandboxed utility process, NSApp attempts to acquire more Mach
+    // resources than a restrictive sandbox policy should allow. Services that
+    // require a TYPE_UI pump generally just need a NS/CFRunLoop to pump system
+    // work sources, so choose that pump type instead. A NSRunLoop MessagePump
+    // is used for TYPE_UI MessageLoops on non-main threads.
+    base::MessagePump::OverrideMessagePumpForUIFactory(
+        []() -> std::unique_ptr<base::MessagePump> {
+          return std::make_unique<base::MessagePumpNSRunLoop>();
+        });
+  }
 #endif
 
 #if defined(OS_FUCHSIA)

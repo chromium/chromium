@@ -125,6 +125,12 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // CHILD_NORMAL, and this cannot be combined with any other CHILD_* values.
     CHILD_LAUNCH_X86_64,
 #endif  // ARCH_CPU_ARM64
+
+    // Marker for the start of embedder-specific helper child process types.
+    // Values greater than CHILD_EMBEDDER_FIRST are reserved to be used by the
+    // embedder to add custom process types and will be resolved via
+    // ContentClient::GetChildPath().
+    CHILD_EMBEDDER_FIRST,
 #endif
   };
 

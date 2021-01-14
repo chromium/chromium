@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/child_process_host_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc.mojom.h"
@@ -104,7 +105,9 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
 #if BUILDFLAG(ENABLE_PLUGINS)
     } else if (flags == CHILD_PLUGIN) {
       child_base_name += kMacHelperSuffix_plugin;
-#endif
+#endif  // ENABLE_PLUGINS
+    } else if (flags > CHILD_EMBEDDER_FIRST) {
+      return GetContentClient()->GetChildProcessPath(flags, child_path);
     } else {
       NOTREACHED();
     }
@@ -114,7 +117,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
                      .Append("MacOS")
                      .Append(child_base_name);
   }
-#endif
+#endif  // OS_MAC
 
   return child_path;
 }
