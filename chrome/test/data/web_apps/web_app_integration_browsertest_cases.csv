@@ -14,3 +14,11 @@ navigate_installable, install_omnibox_or_menu, list_apps_internal, set_open_in_t
 navigate_installable, install_omnibox_or_menu, list_apps_internal, set_open_in_tab_internal, navigate_browser_in_scope, assert_install_icon_shown
 Linux, Mac, Win | navigate_installable,install_omnibox_or_menu,launch_internal, uninstall_from_menu,navigate_browser_in_scope, assert_install_icon_shown,assert_launch_icon_not_shown,
 ChromeOS | navigate_installable,install_omnibox_or_menu,launch_internal, uninstall_internal,navigate_browser_in_scope, assert_install_icon_shown,assert_launch_icon_not_shown,
+# Journey 5
+# TODO(https://crbug.com/1156344, https://crbug.com/1156680): s/add_policy_app_internal_windowed/user_signin, add_policy_app_windowed_shortcut/
+# TODO(https://crbug.com/1156694): s/assert_display_mode_standalone_internal/list_apps, assert_app_in_list_windowed/
+add_policy_app_internal_windowed, assert_display_mode_standalone_internal,
+# Journey 11
+# TODO(https://crbug.com/1156344, https://crbug.com/1156678): s/add_policy_app_internal_tabbed/user_signin, add_policy_app_tabbed_shortcut/
+# TODO(https://crbug.com/1156693): s/assert_display_mode_browser_internal/list_apps, assert_app_in_list_tabbed/
+add_policy_app_internal_tabbed, assert_display_mode_browser_internal,

@@ -225,7 +225,9 @@ class WebAppIntegrationBrowserTest
   // alphabetical order.
   void ExecuteAction(const std::string& action_string) {
     if (action_string == "add_policy_app_internal_tabbed") {
-      AddPolicyAppInternalTabbed();
+      AddPolicyAppInternal(base::Value(kDefaultLaunchContainerTabValue));
+    } else if (action_string == "add_policy_app_internal_windowed") {
+      AddPolicyAppInternal(base::Value(kDefaultLaunchContainerWindowValue));
     } else if (action_string == "close_pwa") {
       ClosePWA();
     } else if (action_string == "install_create_shortcut_tabbed") {
@@ -256,6 +258,10 @@ class WebAppIntegrationBrowserTest
       AssertAppInListNotWindowed();
     } else if (action_string == "assert_app_not_in_list") {
       AssertAppNotInList();
+    } else if (action_string == "assert_display_mode_standalone_internal") {
+      AssertDisplayModeStandaloneInternal();
+    } else if (action_string == "assert_display_mode_browser_internal") {
+      AssertDisplayModeBrowserInternal();
     } else if (action_string == "assert_installable") {
       AssertInstallable();
     } else if (action_string == "assert_install_icon_shown") {
@@ -277,7 +283,7 @@ class WebAppIntegrationBrowserTest
   }
 
   // Automated Testing Actions
-  void AddPolicyAppInternalTabbed() {
+  void AddPolicyAppInternal(base::Value default_launch_container) {
     GURL url = GetInstallableAppURL();
     auto* web_app_registrar =
         WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
@@ -297,7 +303,7 @@ class WebAppIntegrationBrowserTest
       base::Value item(base::Value::Type::DICTIONARY);
       item.SetKey(kUrlKey, base::Value(url.spec()));
       item.SetKey(kDefaultLaunchContainerKey,
-                  base::Value(kDefaultLaunchContainerTabValue));
+                  std::move(default_launch_container));
       ListPrefUpdate update(profile()->GetPrefs(),
                             prefs::kWebAppInstallForceList);
       update->Append(item.Clone());
@@ -346,7 +352,7 @@ class WebAppIntegrationBrowserTest
   }
 
   void LaunchInternal() {
-    auto* web_app_provider = WebAppProvider::Get(profile());
+    auto* web_app_provider = GetProvider();
     AppRegistrar& app_registrar = web_app_provider->registrar();
     DisplayMode display_mode =
         app_registrar.GetAppEffectiveDisplayMode(app_id_);
@@ -478,6 +484,16 @@ class WebAppIntegrationBrowserTest
     EXPECT_FALSE(display_mode == blink::mojom::DisplayMode::kStandalone);
   }
   void AssertAppNotInList() { EXPECT_FALSE(base::Contains(app_ids_, app_id_)); }
+
+  void AssertDisplayModeStandaloneInternal() {
+    EXPECT_EQ(GetProvider()->registrar().GetAppEffectiveDisplayMode(app_id_),
+              DisplayMode::kStandalone);
+  }
+  void AssertDisplayModeBrowserInternal() {
+    EXPECT_EQ(GetProvider()->registrar().GetAppEffectiveDisplayMode(app_id_),
+              DisplayMode::kBrowser);
+  }
+
   void AssertInstallable() { EXPECT_TRUE(last_navigation_result_.installable); }
 
   void AssertInstallIconShown() {
@@ -532,6 +548,7 @@ class WebAppIntegrationBrowserTest
 
   Profile* profile() { return browser()->profile(); }
   Browser* app_browser() { return app_browser_; }
+  WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
   std::vector<std::string>& testing_actions() { return testing_actions_; }
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
 
