@@ -16435,14 +16435,8 @@
       },
       {
         "args": [
-          "--far-file",
-          "gen/fuchsia/engine/web_engine/web_engine.far",
-          "--far-file",
-          "gen/fuchsia/runners/cast_runner/cast_runner.far",
-          "--total-size-name",
-          "chrome_fuchsia",
-          "--compression-args",
-          "-14"
+          "--sizes-path",
+          "fuchsia/release/size_tests/fyi_sizes.json"
         ],
         "isolate_name": "fuchsia_sizes",
         "merge": {
@@ -16469,14 +16463,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--far-file",
-          "gen/fuchsia/engine/web_engine/web_engine.far",
-          "--far-file",
-          "gen/fuchsia/runners/cast_runner/cast_runner.far",
-          "--total-size-name",
-          "chrome_fuchsia",
-          "--compression-args",
-          "-14"
+          "--sizes-path",
+          "fuchsia/release/size_tests/fyi_sizes.json"
         ],
         "isolate_name": "fuchsia_sizes",
         "merge": {

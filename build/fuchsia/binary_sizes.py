@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 import uuid
 
@@ -83,6 +84,91 @@ def CreateSizesHistogram(package_sizes):
         CreateSizesHistogramItem('%s_%s' % (name, 'uncompressed'),
                                  size.uncompressed, sizes_guid))
   return histogram
+
+
+def CreateTestResults(test_status, timestamp):
+  """Create test results data to write to JSON test results file.
+
+  The JSON data format is defined in
+  https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md
+  """
+
+  results = {
+      'tests': {},
+      'interrupted': False,
+      'path_delimiter': '.',
+      'version': 3,
+      'seconds_since_epoch': timestamp,
+  }
+
+  num_failures_by_type = {result: 0 for result in ['FAIL', 'PASS', 'CRASH']}
+  for metric in test_status:
+    actual_status = test_status[metric]
+    num_failures_by_type[actual_status] += 1
+    results['tests'][metric] = {
+        'expected': 'PASS',
+        'actual': actual_status,
+    }
+  results['num_failures_by_type'] = num_failures_by_type
+
+  return results
+
+
+def GetTestStatus(package_sizes, sizes_config, test_completed):
+  """Checks package sizes against size limits.
+
+  Returns a tuple of overall test pass/fail status and a dictionary mapping size
+  limit checks to PASS/FAIL/CRASH status."""
+
+  if not test_completed:
+    test_status = {'binary_sizes': 'CRASH'}
+  else:
+    test_status = {}
+    for metric, limit in sizes_config['size_limits'].items():
+      # Strip the "_compressed" suffix from |metric| if it exists.
+      match = re.match(r'(?P<name>\w+)_compressed', metric)
+      package_name = match.group('name') if match else metric
+      if package_name not in package_sizes:
+        raise Exception('package "%s" not in sizes "%s"' %
+                        (package_name, str(package_sizes)))
+      if package_sizes[package_name].compressed <= limit:
+        test_status[metric] = 'PASS'
+      else:
+        test_status[metric] = 'FAIL'
+
+  all_tests_passed = all(status == 'PASS' for status in test_status.values())
+
+  return all_tests_passed, test_status
+
+
+def WriteSimpleTestResults(results_path, test_completed):
+  """Writes simplified test results file.
+
+  Used when test status is not available.
+  """
+
+  simple_isolated_script_output = {
+      'valid': test_completed,
+      'failures': [],
+      'version': 'simplified',
+  }
+  with open(results_path, 'w') as output_file:
+    json.dump(simple_isolated_script_output, output_file)
+
+
+def WriteTestResults(results_path, test_completed, test_status, timestamp):
+  """Writes test results file containing test PASS/FAIL/CRASH statuses."""
+
+  if test_status:
+    test_results = CreateTestResults(test_status, timestamp)
+    with open(results_path, 'w') as results_file:
+      json.dump(test_results, results_file)
+  else:
+    WriteSimpleTestResults(results_path, test_completed)
+
+  test_results = CreateTestResults(test_status, timestamp)
+  with open(results_path, 'w') as results_file:
+    json.dump(test_results, results_file)
 
 
 def GetZstdPathFromPlatform():
@@ -280,7 +366,7 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir, excluded_paths,
   return package_sizes
 
 
-def GetBinarySizes(args):
+def GetBinarySizes(args, sizes_config):
   """Get binary size data for packages specified in args.
 
   If "total_size_name" is set, then computes a synthetic package size which is
@@ -289,17 +375,18 @@ def GetBinarySizes(args):
   # Calculate compressed and uncompressed package sizes.
   sdk_libs = GetSDKLibs()
   extract_dir = args.extract_dir if args.extract_dir else tempfile.mkdtemp()
-  package_sizes = GetPackageSizes(args.far_file, args.build_out_dir,
-                                  extract_dir, sdk_libs, args.compression_args,
-                                  args.verbose)
+  package_sizes = GetPackageSizes(sizes_config['far_files'], args.build_out_dir,
+                                  extract_dir, sdk_libs,
+                                  sizes_config['zstd_args'], args.verbose)
   if not args.extract_dir:
     shutil.rmtree(extract_dir)
 
   # Optionally calculate total compressed and uncompressed package sizes.
-  if args.total_size_name:
+  if 'far_total_name' in sizes_config:
     compressed = sum([a.compressed for a in package_sizes.values()])
     uncompressed = sum([a.uncompressed for a in package_sizes.values()])
-    package_sizes[args.total_size_name] = PackageSizes(compressed, uncompressed)
+    package_sizes[sizes_config['far_total_name']] = PackageSizes(
+        compressed, uncompressed)
 
   for name, size in package_sizes.items():
     print('%s: compressed %d, uncompressed %d' %
@@ -317,20 +404,10 @@ def main():
       required=True,
       help='Location of the build artifacts.',
   )
-  parser.add_argument('--compression-args',
-                      '--zstd_args',
-                      action='append',
-                      default=[],
-                      help='Arguments to pass to zstd compression utility.')
   parser.add_argument(
       '--extract-dir',
       help='Debugging option, specifies directory for extracted FAR files.'
       'If present, extracted files will not be deleted after use.')
-  parser.add_argument(
-      '--far-file',
-      required=True,
-      action='append',
-      help='Name of Fuchsia package FAR file (may be used more than once.)')
   parser.add_argument(
       '--isolated-script-test-output',
       type=os.path.realpath,
@@ -341,13 +418,17 @@ def main():
       'automatically supplied by the recipe infrastructure when this script '
       'is invoked by a recipe call to api.chromium.runtest().')
   parser.add_argument(
+      '--sizes-path',
+      default=os.path.join('fuchsia', 'release', 'size_tests',
+                           'fyi_sizes.json'),
+      help='path to package size limits json file.  The path is relative to '
+      'the workspace src directory')
+  parser.add_argument(
       '--test-revision-cp',
       help='Set the chromium commit point NNNNNN from a build property value '
       'like "refs/heads/master@{#NNNNNNN}".  Intended for use in recipes with '
       'the build property got_revision_cp',
   )
-  parser.add_argument('--total-size-name',
-                      help='Enable a total sizes metric and specify its name')
   parser.add_argument('--verbose',
                       '-v',
                       action='store_true',
@@ -358,23 +439,16 @@ def main():
                       help=argparse.SUPPRESS)
   args = parser.parse_args()
 
-  # Optionally prefix the output_dir to the histogram_path.
-  if args.output_dir and args.histogram_path:
-    args.histogram_path = os.path.join(args.output_dir, args.histogram_path)
-
-  # If the zstd compression level is not specified, use Fuchsia's default level.
-  compression_level_args = [
-      value for value in args.compression_args if re.match(r'-\d+$', value)
-  ]
-  if not compression_level_args:
-    args.compression_args.append('-14')
-
   if args.verbose:
     print('Fuchsia binary sizes')
     print('Working directory', os.getcwd())
     print('Args:')
     for var in vars(args):
       print('  {}: {}'.format(var, getattr(args, var) or ''))
+
+  # Optionally prefix the output_dir to the histogram_path.
+  if args.output_dir and args.histogram_path:
+    args.histogram_path = os.path.join(args.output_dir, args.histogram_path)
 
   if not os.path.isdir(args.build_out_dir):
     raise Exception('Could not find build output directory "%s".' %
@@ -385,17 +459,27 @@ def main():
         'Could not find FAR file extraction output directory "%s".' %
         args.extract_dir)
 
-  for far_rel_path in args.far_file:
+  with open(os.path.join(DIR_SOURCE_ROOT, args.sizes_path)) as sizes_file:
+    sizes_config = json.load(sizes_file)
+
+  if args.verbose:
+    print('Sizes Config:')
+    print(json.dumps(sizes_config))
+
+  # If the zstd compression level is not specified, use Fuchsia's default level.
+  sizes_config.setdefault('zstd_args', [])
+  if not any(re.match(r'-\d+$', arg) for arg in sizes_config['zstd_args']):
+    sizes_config['zstd_args'].append('-14')
+
+  for far_rel_path in sizes_config['far_files']:
     far_abs_path = os.path.join(args.build_out_dir, far_rel_path)
     if not os.path.isfile(far_abs_path):
       raise Exception('Could not find FAR file "%s".' % far_abs_path)
 
-  isolated_script_output = {
-      'valid': False,
-      'failures': [],
-      'version': 'simplified'
-  }
+  test_completed = False
   test_name = 'sizes'
+  timestamp = time.time()
+  sizes_histogram = []
 
   results_directory = None
   if args.isolated_script_test_output:
@@ -405,29 +489,28 @@ def main():
       os.makedirs(results_directory)
 
   try:
-    package_sizes = GetBinarySizes(args)
+    package_sizes = GetBinarySizes(args, sizes_config)
     sizes_histogram = CreateSizesHistogram(package_sizes)
-    isolated_script_output = {
-        'valid': True,
-        'failures': [],
-        'version': 'simplified',
-    }
+    test_completed = True
   except:
     _, value, trace = sys.exc_info()
     traceback.print_tb(trace)
     print(str(value))
-    return 1
   finally:
-    if results_directory:
-      results_path = os.path.join(results_directory, 'test_results.json')
-      with open(results_path, 'w') as output_file:
-        json.dump(isolated_script_output, output_file)
+    all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
+                                                  test_completed)
 
-      histogram_path = os.path.join(results_directory, 'perf_results.json')
-      with open(histogram_path, 'w') as f:
+    if results_directory:
+      WriteTestResults(os.path.join(results_directory, 'test_results.json'),
+                       test_completed, test_status, timestamp)
+      with open(os.path.join(results_directory, 'perf_results.json'), 'w') as f:
         json.dump(sizes_histogram, f)
 
-  return 0
+    if args.isolated_script_test_output:
+      WriteTestResults(args.isolated_script_test_output, test_completed,
+                       test_status, timestamp)
+
+    return 0 if all_tests_passed else 1
 
 
 if __name__ == '__main__':
