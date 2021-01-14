@@ -9,10 +9,17 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
-      "bounds": [99, 99],
+      "bounds": [88, 88],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "bounds": [99, 99],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
     },
     {
       "name": "VerticalScrollbar",
@@ -32,6 +39,15 @@
     },
     {
       "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, -300, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

@@ -654,9 +654,6 @@
       status: "test",
     },
     {
-      name: "CullRectUpdate",
-    },
-    {
       name: "CustomElementDefaultStyle",
       status: "experimental",
     },
