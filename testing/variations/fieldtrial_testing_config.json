@@ -3638,32 +3638,6 @@
             ]
         }
     ],
-    "IndexedDBHighPriority": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HighPriorityDatabaseTaskType"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "HighPriorityDatabaseTaskType"
-                    ]
-                }
-            ]
-        }
-    ],
     "InhibitBlobMemoryControllerMemoryPressureResponse": [
         {
             "platforms": [
