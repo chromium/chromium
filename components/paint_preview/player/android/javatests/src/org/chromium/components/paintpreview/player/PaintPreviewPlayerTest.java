@@ -147,26 +147,26 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    public void nestedLinkClickTest() throws Exception {
+    @DisableIf.Build(message = "Test is failing on Android P, see crbug.com/1110939.",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    nestedLinkClickTest() throws Exception {
         initPlayerManager(true);
         final View playerHostView = mPlayerManager.getView();
         assertLinkUrl(playerHostView, 220, 220, TEST_IN_VIEWPORT_LINK_URL);
         assertLinkUrl(playerHostView, 300, 270, TEST_IN_VIEWPORT_LINK_URL);
 
-        // Temporarily commenting out as this is flaky on P.
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        int deviceHeight = device.getDisplayHeight();
+        int statusBarHeight = statusBarHeight();
+        int navigationBarHeight = navigationBarHeight();
+        int padding = 20;
+        int fromY = deviceHeight - navigationBarHeight - padding;
+        int toY = statusBarHeight + padding;
+        mLinkClickHandler.mUrl = null;
+        device.swipe(300, fromY, 300, toY, 10);
 
-        // UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        // int deviceHeight = device.getDisplayHeight();
-        // int statusBarHeight = statusBarHeight();
-        // int navigationBarHeight = navigationBarHeight();
-        // int padding = 20;
-        // int fromY = deviceHeight - navigationBarHeight - padding;
-        // int toY = statusBarHeight + padding;
-        // mLinkClickHandler.mUrl = null;
-        // device.swipe(300, fromY, 300, toY, 10);
-
-        // Manually click as assertLinkUrl() doesn't handle subframe scrolls well.
-        // assertLinkUrl(playerHostView, 200, 1500, TEST_OUT_OF_VIEWPORT_LINK_URL);
+        assertLinkUrl(playerHostView, 200, 1500, TEST_OUT_OF_VIEWPORT_LINK_URL);
     }
 
     @Test
