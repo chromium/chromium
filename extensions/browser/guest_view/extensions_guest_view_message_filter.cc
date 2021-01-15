@@ -46,6 +46,7 @@ namespace extensions {
 const uint32_t ExtensionsGuestViewMessageFilter::kFilteredMessageClasses[] = {
     GuestViewMsgStart, ExtensionsGuestViewMsgStart};
 
+
 ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
     int render_process_id,
     BrowserContext* context)
@@ -53,7 +54,8 @@ ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
                              base::size(kFilteredMessageClasses),
                              render_process_id,
                              context),
-      content::BrowserAssociatedInterface<mojom::GuestView>(this) {}
+      content::BrowserAssociatedInterface<mojom::GuestView>(this, this) {
+}
 
 void ExtensionsGuestViewMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,

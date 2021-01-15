@@ -76,12 +76,14 @@ class ProxyRunner : public IPC::Listener {
 class TestDriverMessageFilter
     : public BrowserMessageFilter,
       public BrowserAssociatedInterface<
-          mojom::BrowserAssociatedInterfaceTestDriver> {
+          mojom::BrowserAssociatedInterfaceTestDriver>,
+      public mojom::BrowserAssociatedInterfaceTestDriver {
  public:
   TestDriverMessageFilter()
       : BrowserMessageFilter(0),
         BrowserAssociatedInterface<mojom::BrowserAssociatedInterfaceTestDriver>(
-            this) {}
+            this, this) {
+  }
 
  private:
   ~TestDriverMessageFilter() override {}

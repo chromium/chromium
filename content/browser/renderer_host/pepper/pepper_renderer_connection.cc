@@ -97,7 +97,7 @@ PendingHostCreator::~PendingHostCreator() {
 PepperRendererConnection::PepperRendererConnection(int render_process_id)
     : BrowserMessageFilter(kPepperFilteredMessageClasses,
                            base::size(kPepperFilteredMessageClasses)),
-      BrowserAssociatedInterface<mojom::PepperIOHost>(this),
+      BrowserAssociatedInterface<mojom::PepperIOHost>(this, this),
       render_process_id_(render_process_id) {
   // Only give the renderer permission for stable APIs.
   in_process_host_.reset(new BrowserPpapiHostImpl(this,
