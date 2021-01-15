@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+<script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("Tests that when a request is made on a Geolocation object after its frame has been disconnected, no callbacks are made and no crash occurs.");
+
+var iframe = document.createElement('iframe');
+
+let mock = geolocationMock;
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+iframe.src = 'resources/disconnected-frame-already-inner1.html';
+document.body.appendChild(iframe);
+
+function onFirstIframeLoaded() {
+    iframeGeolocation = iframe.contentWindow.navigator.geolocation;
+    iframe.src = 'resources/disconnected-frame-already-inner2.html';
+}
+
+function onSecondIframeLoaded() {
+    iframeGeolocation.getCurrentPosition(function () {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    });
+    setTimeout(finishTest, 1000);
+}
+
+function finishTest() {
+    finishJSTest();
+}
+</script>
+</body>
+</html>

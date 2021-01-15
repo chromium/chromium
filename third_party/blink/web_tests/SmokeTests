@@ -766,7 +766,6 @@ fast/xsl/xslt-fragment-in-empty-doc.html
 fragmentation/margin-top-at-top-of-fragmentainer.html
 fullscreen/full-screen-inline-split-crash.html
 fullscreen/full-screen-request-rejected.html
-geolocation-api/enabled.html
 harness-tests/wpt/console_logging.html
 hittesting/border-hittest-inlineFlowBox.html
 hittesting/hittest-inline-block-with-abspos.html
@@ -988,3 +987,4 @@ webexposed/internal-properties-should-not-be-exposed.html
 webexposed/permissions-attribute.html
 webexposed/web-animations-api.html
 webmidi/permission.html
+wpt_internal/geolocation-api/enabled.html

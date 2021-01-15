@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+<script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("Tests that Geoposition timestamps are well-formed (non-zero and in the same units as Date.getTime).");
+
+var mockLatitude = 51.478;
+var mockLongitude = -0.166;
+var mockAccuracy = 100.0;
+
+var now = new Date().getTime();
+shouldBeTrue('now != 0');
+var t = null;
+var then = null;
+
+let mock = geolocationMock;
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
+
+function checkPosition(p) {
+    t = p.timestamp;
+    var d = new Date();
+    then = d.getTime();
+    shouldBeTrue('t != 0');
+    shouldBeTrue('then != 0');
+    shouldBeTrue('now - 1 <= t'); // Avoid rounding errors
+    if (now - 1 > t) {
+        debug("  now - 1 = " + (now-1));
+        debug("  t = " + t);
+    }
+    shouldBeTrue('t <= then + 1'); // Avoid rounding errors
+    if (t > then + 1) {
+        debug("  t = " + t);
+        debug("  then + 1 = " + (then + 1));
+    }
+    finishJSTest();
+}
+
+navigator.geolocation.getCurrentPosition(checkPosition);
+</script>
+</body>
+</html>

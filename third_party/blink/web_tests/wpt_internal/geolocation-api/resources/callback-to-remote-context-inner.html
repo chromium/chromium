@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <script src="../../resources/js-test.js"></script>
+    <script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+    <script src="/gen/services/device/public/mojom/geolocation.mojom.js"></script>
+    <script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+    <script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+    <script src="geolocation-mock.js"></script>
+    <script>
+      function init() {
+          let mock = geolocationMock;
+          mock.setGeolocationPermission(true);
+          mock.setGeolocationPosition(51.478, -0.166, 100);
+          window.parent.onIframeReady()
+      }
+    </script>
+  </head>
+  <body onload="init()">
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+<script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description('Tests that when a cached position is available the callback for getCurrentPosition is called only once. This is a regression test for http://crbug.com/311876 .');
+
+// Only one success callback should be reported per call to getCurrentPosition.
+var reportCount = 0;
+var isSuccess;
+
+function reportCallback(success, id) {
+    isSuccess = success;
+    shouldBeTrue('isSuccess');
+    getCurrentPositionCallId = id;
+    shouldBe('getCurrentPositionCallId', 'reportCount');
+    if (++reportCount >= 3)
+        finishJSTest();
+}
+
+var getCurrentPositionCall = 0;
+function getPosition(milliseconds) {
+    var id = getCurrentPositionCall++;
+    var fn = function() {
+        navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    reportCallback(true, id);
+                },
+                function(error) {
+                    reportCallback(false, id);
+                },
+                { maximumAge:600000, timeout:0 });
+    };
+    setTimeout(fn, milliseconds);
+}
+
+let mock = geolocationMock;
+mock.setGeolocationPosition(31.478, -0.166, 100);
+mock.setGeolocationPermission(true);
+
+// Make a geolocation request to populate the cached value so requests with a
+// timeout of 0 can succeed.
+navigator.geolocation.getCurrentPosition(function(position) {
+    // The test terminates at the 3rd reported callback. If the bug still exists
+    // this happens after the 2nd call to getCurrentPosition, one of them is a
+    // repeat of the first.
+    getPosition(0);
+    getPosition(100);
+    getPosition(200);
+}, function(error) {
+    testFailed('Error callback invoked unexpectedly');
+});
+</script>
+</body>
+</html>

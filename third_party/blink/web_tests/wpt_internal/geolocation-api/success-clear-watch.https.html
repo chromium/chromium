@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+<script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("This tests removing the watcher from a position callback does not causes assertions.");
+
+var mockLatitude = 51.478;
+var mockLongitude = -0.166;
+var mockAccuracy = 100;
+
+let mock = geolocationMock;
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude,
+                            mockLongitude,
+                            mockAccuracy);
+
+var watchId = navigator.geolocation.watchPosition(function() {
+    navigator.geolocation.clearWatch(watchId);
+    finishJSTest();
+}, function(e) {
+    navigator.geolocation.clearWatch(watchId);
+    finishJSTest();
+});
+</script>
+</body>
+</html>

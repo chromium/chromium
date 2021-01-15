@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
+<script src="geolocation-mock.js"></script>
+<script type="module">
+const parent = window.parent;
+geolocationMock.setGeolocationPermission(true);
+
+// Query the position but intercept the query so the service doesn't respond
+// immediately. If it responds too early, we won't exercise the intended code
+// path, i.e. geolocation API receiving a response from the service after page
+// unload. Similarly, issuing the request too late will also fail to exercise
+// that path because the mock service may not receive the request in time to
+// process and reply to it.
+//
+// Instead, we ensure the service sees the request before moving forward, but
+// we defer its response until we're within the unload handler below.
+const promise = geolocationMock.interceptQueryNextPosition();
+navigator.geolocation.getCurrentPosition(
+    parent.onGeolocationResponse, parent.onGeolocationResponse,
+    {timeout: 500, maximumAge:0});
+const respond = await promise;
+document.body.onunload =
+    () => respond(geolocationMock.makeGeoposition(1, 2, 3));
+parent.navigateToSecondPage();
+</script>
