@@ -193,7 +193,8 @@ void WebViewPlugin::UpdateGeometry(const WebRect& window_rect,
 
   // Plugin updates are forbidden during Blink layout. Therefore,
   // UpdatePluginForNewGeometry must be posted to a task to run asynchronously.
-  blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+  web_view_helper_.main_frame()
+      ->GetAgentGroupScheduler()
       ->CompositorTaskRunner()
       ->PostTask(FROM_HERE,
                  base::BindOnce(&WebViewPlugin::UpdatePluginForNewGeometry,
