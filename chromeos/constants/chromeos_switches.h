@@ -85,8 +85,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableMachineCertRequest[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kDisableMultiDisplayLayout[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableNewZIPUnpacker[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
@@ -182,7 +180,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kNeedArcMigrationPolicyCheck[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kNoteTakingAppIds[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kOobeEulaUrlForTests[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kOobeForceShowScreen[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kOobeForceTabletFirstRun[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kOobeGuestSession[];

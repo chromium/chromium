@@ -222,9 +222,6 @@ const char kDisableLoginAnimations[] = "disable-login-animations";
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 
-// Disables the multiple display layout UI.
-const char kDisableMultiDisplayLayout[] = "disable-multi-display-layout";
-
 // Disables the ChromeVox hint timer in OOBE, which can lead to unexpected
 // behavior during tests.
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
@@ -471,11 +468,6 @@ const char kNeedArcMigrationPolicyCheck[] = "need-arc-migration-policy-check";
 // An optional comma-separated list of IDs of apps that can be used to take
 // notes. If unset, a hardcoded list is used instead.
 const char kNoteTakingAppIds[] = "note-taking-app-ids";
-
-// Forces OOBE/login to force show a comma-separated list of screens from
-// chromeos::kScreenNames in oobe_screen.cc. Supported screens are:
-//   user-image
-const char kOobeForceShowScreen[] = "oobe-force-show-screen";
 
 // Allows the eula url to be overridden for tests.
 const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
