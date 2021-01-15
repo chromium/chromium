@@ -120,7 +120,7 @@ void TCPDeviceProvider::QueryDevices(SerialsCallback callback) {
 }
 
 void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,
-                                        const DeviceInfoCallback& callback) {
+                                        DeviceInfoCallback callback) {
   AndroidDeviceManager::DeviceInfo device_info;
   device_info.model = kDeviceModel;
   device_info.connected = true;
@@ -137,7 +137,7 @@ void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, device_info));
+      FROM_HERE, base::BindOnce(std::move(callback), device_info));
 }
 
 void TCPDeviceProvider::OpenSocket(const std::string& serial,

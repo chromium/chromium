@@ -14,10 +14,9 @@
 
 class AdbClientSocket {
  public:
-  typedef base::OnceCallback<void(int, const std::string&)> CommandCallback;
-  typedef base::OnceCallback<void(int result,
-                                  std::unique_ptr<net::StreamSocket>)>
-      SocketCallback;
+  using CommandCallback = base::OnceCallback<void(int, const std::string&)>;
+  using SocketCallback =
+      base::OnceCallback<void(int result, std::unique_ptr<net::StreamSocket>)>;
 
   static void AdbQuery(int port,
                        const std::string& query,

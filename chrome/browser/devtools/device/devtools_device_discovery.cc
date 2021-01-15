@@ -405,7 +405,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::Start(
   auto request =
       base::WrapRefCounted(new DiscoveryRequest(std::move(callback)));
   device_manager->QueryDevices(
-      base::Bind(&DiscoveryRequest::ReceivedDevices, request));
+      base::BindOnce(&DiscoveryRequest::ReceivedDevices, request));
 }
 
 DevToolsDeviceDiscovery::DiscoveryRequest::DiscoveryRequest(
@@ -424,7 +424,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDevices(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& device : devices) {
     device->QueryDeviceInfo(
-        base::Bind(&DiscoveryRequest::ReceivedDeviceInfo, this, device));
+        base::BindOnce(&DiscoveryRequest::ReceivedDeviceInfo, this, device));
   }
 }
 
@@ -439,7 +439,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDeviceInfo(
        it != remote_device->browsers().end(); ++it) {
     device->SendJsonRequest(
         (*it)->socket(), kVersionRequest,
-        base::Bind(&DiscoveryRequest::ReceivedVersion, this, device, *it));
+        base::BindOnce(&DiscoveryRequest::ReceivedVersion, this, device, *it));
   }
 }
 
@@ -452,7 +452,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
 
   device->SendJsonRequest(
       browser->socket(), kPageListRequest,
-      base::Bind(&DiscoveryRequest::ReceivedPages, this, device, browser));
+      base::BindOnce(&DiscoveryRequest::ReceivedPages, this, device, browser));
 
   if (result < 0)
     return;

@@ -200,7 +200,7 @@ AndroidDeviceManager::AndroidWebSocket::AndroidWebSocket(
   DCHECK(device_);
   device_->HttpUpgrade(
       socket_name, path, net::WebSocketEncoder::kClientExtensions,
-      base::Bind(&AndroidWebSocket::Connected, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AndroidWebSocket::Connected, weak_factory_.GetWeakPtr()));
 }
 
 AndroidDeviceManager::AndroidWebSocket::~AndroidWebSocket() = default;

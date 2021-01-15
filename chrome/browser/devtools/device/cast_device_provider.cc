@@ -167,11 +167,11 @@ void CastDeviceProvider::QueryDevices(SerialsCallback callback) {
 }
 
 void CastDeviceProvider::QueryDeviceInfo(const std::string& serial,
-                                         const DeviceInfoCallback& callback) {
+                                         DeviceInfoCallback callback) {
   auto it_device = device_info_map_.find(serial);
   if (it_device == device_info_map_.end())
     return;
-  callback.Run(it_device->second);
+  std::move(callback).Run(it_device->second);
 }
 
 void CastDeviceProvider::OpenSocket(const std::string& serial,

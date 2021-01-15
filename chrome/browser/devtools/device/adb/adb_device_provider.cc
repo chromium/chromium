@@ -53,9 +53,9 @@ void AdbDeviceProvider::QueryDevices(SerialsCallback callback) {
 }
 
 void AdbDeviceProvider::QueryDeviceInfo(const std::string& serial,
-                                        const DeviceInfoCallback& callback) {
+                                        DeviceInfoCallback callback) {
   AndroidDeviceManager::QueryDeviceInfo(base::BindOnce(&RunCommand, serial),
-                                        callback);
+                                        std::move(callback));
 }
 
 void AdbDeviceProvider::OpenSocket(const std::string& serial,

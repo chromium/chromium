@@ -66,10 +66,10 @@ net::NetworkTrafficAnnotationTag kAndroidDeviceManagerTrafficAnnotation =
 
 static void PostDeviceInfoCallback(
     scoped_refptr<base::SingleThreadTaskRunner> response_task_runner,
-    const AndroidDeviceManager::DeviceInfoCallback& callback,
+    AndroidDeviceManager::DeviceInfoCallback callback,
     const AndroidDeviceManager::DeviceInfo& device_info) {
-  response_task_runner->PostTask(FROM_HERE,
-                                 base::BindOnce(callback, device_info));
+  response_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), device_info));
 }
 
 static void PostCommandCallback(
@@ -329,43 +329,44 @@ class HttpRequest {
 
 class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
  public:
-  typedef AndroidDeviceManager::DeviceInfo DeviceInfo;
-  typedef AndroidDeviceManager::DeviceProvider DeviceProvider;
-  typedef AndroidDeviceManager::DeviceProviders DeviceProviders;
-  typedef AndroidDeviceManager::DeviceDescriptors DeviceDescriptors;
-  typedef base::Callback<void(std::unique_ptr<DeviceDescriptors>)>
-      DescriptorsCallback;
+  using DeviceInfo = AndroidDeviceManager::DeviceInfo;
+  using DeviceProvider = AndroidDeviceManager::DeviceProvider;
+  using DeviceProviders = AndroidDeviceManager::DeviceProviders;
+  using DeviceDescriptors = AndroidDeviceManager::DeviceDescriptors;
+  using DescriptorsCallback =
+      base::OnceCallback<void(std::unique_ptr<DeviceDescriptors>)>;
 
   static void Start(
       scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
       const DeviceProviders& providers,
-      const DescriptorsCallback& callback) {
+      DescriptorsCallback callback) {
     // Don't keep counted reference on calling thread;
     scoped_refptr<DevicesRequest> request =
-        base::WrapRefCounted(new DevicesRequest(callback));
-    for (auto it = providers.begin(); it != providers.end(); ++it) {
+        base::WrapRefCounted(new DevicesRequest(std::move(callback)));
+    for (const auto& provider : providers) {
       device_task_runner->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              &DeviceProvider::QueryDevices, *it,
-              base::BindOnce(&DevicesRequest::ProcessSerials, request, *it)));
+          base::BindOnce(&DeviceProvider::QueryDevices, provider,
+                         base::BindOnce(&DevicesRequest::ProcessSerials,
+                                        request, provider)));
     }
     device_task_runner->ReleaseSoon(FROM_HERE, std::move(request));
   }
 
  private:
-  explicit DevicesRequest(const DescriptorsCallback& callback)
+  explicit DevicesRequest(DescriptorsCallback callback)
       : response_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-        callback_(callback),
+        callback_(std::move(callback)),
         descriptors_(new DeviceDescriptors()) {}
 
   friend class base::RefCountedThreadSafe<DevicesRequest>;
   ~DevicesRequest() {
     response_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(callback_, std::move(descriptors_)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback_), std::move(descriptors_)));
   }
 
-  typedef std::vector<std::string> Serials;
+  using Serials = std::vector<std::string>;
 
   void ProcessSerials(scoped_refptr<DeviceProvider> provider, Serials serials) {
     for (auto it = serials.begin(); it != serials.end(); ++it) {
@@ -380,10 +381,9 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
   std::unique_ptr<DeviceDescriptors> descriptors_;
 };
 
-void OnCountDevices(const base::Callback<void(int)>& callback,
-                    int device_count) {
+void OnCountDevices(base::OnceCallback<void(int)> callback, int device_count) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(callback, device_count));
+      FROM_HERE, base::BindOnce(std::move(callback), device_count));
 }
 
 }  // namespace
@@ -445,13 +445,13 @@ AndroidDeviceManager::DeviceProvider::~DeviceProvider() {
 }
 
 void AndroidDeviceManager::Device::QueryDeviceInfo(
-    const DeviceInfoCallback& callback) {
+    DeviceInfoCallback callback) {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &DeviceProvider::QueryDeviceInfo, provider_, serial_,
-          base::Bind(&PostDeviceInfoCallback,
-                     base::ThreadTaskRunnerHandle::Get(), callback)));
+      base::BindOnce(&DeviceProvider::QueryDeviceInfo, provider_, serial_,
+                     base::BindOnce(&PostDeviceInfoCallback,
+                                    base::ThreadTaskRunnerHandle::Get(),
+                                    std::move(callback))));
 }
 
 void AndroidDeviceManager::Device::OpenSocket(const std::string& socket_name,
@@ -562,18 +562,20 @@ void AndroidDeviceManager::SetDeviceProviders(
   providers_ = providers;
 }
 
-void AndroidDeviceManager::QueryDevices(const DevicesCallback& callback) {
-  DevicesRequest::Start(handler_thread_->message_loop(), providers_,
-                        base::Bind(&AndroidDeviceManager::UpdateDevices,
-                                   weak_factory_.GetWeakPtr(), callback));
+void AndroidDeviceManager::QueryDevices(DevicesCallback callback) {
+  DevicesRequest::Start(
+      handler_thread_->message_loop(), providers_,
+      base::BindOnce(&AndroidDeviceManager::UpdateDevices,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AndroidDeviceManager::CountDevices(
-    const base::Callback<void(int)>& callback) {
+    base::OnceCallback<void(int)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   handler_thread_->message_loop()->PostTask(
-      FROM_HERE, base::BindOnce(&UsbDeviceManagerHelper::CountDevices,
-                                base::BindOnce(&OnCountDevices, callback)));
+      FROM_HERE,
+      base::BindOnce(&UsbDeviceManagerHelper::CountDevices,
+                     base::BindOnce(&OnCountDevices, std::move(callback))));
 }
 
 void AndroidDeviceManager::set_usb_device_manager_for_test(
@@ -594,7 +596,7 @@ AndroidDeviceManager::~AndroidDeviceManager() {
 }
 
 void AndroidDeviceManager::UpdateDevices(
-    const DevicesCallback& callback,
+    DevicesCallback callback,
     std::unique_ptr<DeviceDescriptors> descriptors) {
   Devices response;
   DeviceWeakMap new_devices;
@@ -614,5 +616,5 @@ void AndroidDeviceManager::UpdateDevices(
     new_devices[it->serial] = device->weak_factory_.GetWeakPtr();
   }
   devices_.swap(new_devices);
-  callback.Run(response);
+  std::move(callback).Run(response);
 }

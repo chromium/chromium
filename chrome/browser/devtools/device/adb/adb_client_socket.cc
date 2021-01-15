@@ -126,8 +126,9 @@ class AdbQuerySocket : AdbClientSocket {
       return;
     }
     bool is_void = current_query_ < queries_.size() - 1;
-    SendCommand(query, is_void,
-        base::Bind(&AdbQuerySocket::OnResponse, base::Unretained(this)));
+    SendCommand(
+        query, is_void,
+        base::BindOnce(&AdbQuerySocket::OnResponse, base::Unretained(this)));
   }
 
   void OnResponse(int result, const std::string& response) {
