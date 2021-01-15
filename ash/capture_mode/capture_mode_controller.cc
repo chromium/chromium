@@ -198,13 +198,49 @@ void ShowFailureNotification() {
                    /*optional_fields=*/{}, /*delegate=*/nullptr);
 }
 
+// Returns the ID of the message or the title for the notification based on
+// |allowance| and |for_title|.
+int GetDisabledNotificationMessageId(CaptureAllowance allowance,
+                                     bool for_title) {
+  switch (allowance) {
+    case CaptureAllowance::kDisallowedByPolicy:
+      return for_title ? IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE
+                       : IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
+    case CaptureAllowance::kDisallowedByDlp:
+      return for_title ? IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_TITLE
+                       : IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_MESSAGE;
+    case CaptureAllowance::kDisallowedByHdcp:
+      return for_title ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
+                       : IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
+    case CaptureAllowance::kAllowed:
+      NOTREACHED();
+      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
+  }
+}
+
+// Shows a notification informing the user that Capture Mode operations are
+// currently disabled. |allowance| identifies the reason why the operation is
+// currently disabled.
+void ShowDisabledNotification(CaptureAllowance allowance) {
+  DCHECK(allowance != CaptureAllowance::kAllowed);
+  ShowNotification(
+      kScreenCaptureNotificationId,
+      GetDisabledNotificationMessageId(allowance, /*for_title=*/true),
+      GetDisabledNotificationMessageId(allowance, /*for_title=*/false),
+      /*optional_fields=*/{}, /*delegate=*/nullptr,
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
+      allowance == CaptureAllowance::kDisallowedByHdcp
+          ? kCaptureModeIcon
+          : vector_icons::kBusinessIcon);
+}
+
 // Shows a notification informing the user that video recording was stopped. If
 // |for_hdcp| is true, then this was due to a content-enforced protection,
 // otherwise it was due to DLP which is admin enforced.
 void ShowVideoRecordingStoppedNotification(bool for_hdcp) {
   ShowNotification(
       kScreenCaptureStoppedNotificationId,
-      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_STOPPED_TITLE
+      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
                : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_TITLE,
       for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE
                : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_MESSAGE,
@@ -687,8 +723,7 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
   OnRecordingEnded(/*success=*/false);
 }
 
-CaptureModeController::CaptureAllowance
-CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
+CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
     const CaptureParams& capture_params) const {
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     return CaptureAllowance::kDisallowedByPolicy;
@@ -898,40 +933,6 @@ void CaptureModeController::HandleNotificationClicked(
   // such as |screen_capture_path| which we use in this function.
   message_center::MessageCenter::Get()->RemoveNotification(
       kScreenCaptureNotificationId, /*by_user=*/false);
-}
-
-/* static */
-int CaptureModeController::GetDisabledNotificationMessageId(
-    CaptureModeController::CaptureAllowance allowance) {
-  switch (allowance) {
-    case CaptureAllowance::kDisallowedByPolicy:
-      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
-    case CaptureAllowance::kDisallowedByDlp:
-      return IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_MESSAGE;
-    case CaptureAllowance::kDisallowedByHdcp:
-      return IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
-    case CaptureAllowance::kAllowed:
-      NOTREACHED();
-      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
-  }
-}
-
-/* static */
-void CaptureModeController::ShowDisabledNotification(
-    CaptureModeController::CaptureAllowance allowance) {
-  DCHECK(allowance != CaptureAllowance::kAllowed);
-  int message_id = GetDisabledNotificationMessageId(allowance);
-  ShowNotification(
-      kScreenCaptureNotificationId,
-      allowance == CaptureAllowance::kDisallowedByDlp
-          ? IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_TITLE
-          : IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE,
-      message_id,
-      /*optional_fields=*/{}, /*delegate=*/nullptr,
-      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
-      allowance == CaptureAllowance::kDisallowedByHdcp
-          ? kCaptureModeIcon
-          : vector_icons::kBusinessIcon);
 }
 
 base::FilePath CaptureModeController::BuildImagePath() const {

@@ -169,12 +169,6 @@ class ASH_EXPORT CaptureModeController
   // Returns whether doing a screen capture is currently allowed by enterprise
   // policies and a reason otherwise.
   // ShouldBlockRecordingForContentProtection() should be used for HDCP checks.
-  enum class CaptureAllowance {
-    kAllowed,
-    kDisallowedByDlp,
-    kDisallowedByPolicy,
-    kDisallowedByHdcp
-  };
   CaptureAllowance IsCaptureAllowedByEnterprisePolicies(
       const CaptureParams& capture_params) const;
 
@@ -224,15 +218,6 @@ class ASH_EXPORT CaptureModeController
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
                                  base::Optional<int> button_index);
-
-  // Returns the message for the notification based on |allowance|.
-  static int GetDisabledNotificationMessageId(
-      CaptureModeController::CaptureAllowance allowance);
-  // Shows a notification informing the user that Capture Mode operations are
-  // currently disabled. |allowance| identifies the reason why the operation is
-  // currently disabled.
-  static void ShowDisabledNotification(
-      CaptureModeController::CaptureAllowance allowance);
 
   // Builds a path for a file of an image screenshot, or a video screen
   // recording, builds with display index if there are
