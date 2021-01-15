@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint
 #endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
-                       EmitAccessibilityEventsOnButtonFocusHint) {
+                       MAYBE_EmitAccessibilityEventsOnButtonFocusHint) {
   TestAXEventObserver observer;
   CreatePopupForTestQuery();
   ACMatches matches;
