@@ -260,26 +260,4 @@ bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
   return prefs_new_users_update->Remove(base::Value(user_id), NULL);
 }
 
-void SupervisedUserManagerImpl::UpdateManagerName(
-    const std::string& manager_id,
-    const base::string16& new_display_name) {
-  PrefService* local_state = g_browser_process->local_state();
-
-  const base::DictionaryValue* manager_ids =
-      local_state->GetDictionary(kSupervisedUserManagers);
-
-  DictionaryPrefUpdate manager_name_update(local_state,
-                                           kSupervisedUserManagerNames);
-  for (base::DictionaryValue::Iterator it(*manager_ids); !it.IsAtEnd();
-       it.Advance()) {
-    std::string user_id;
-    bool has_manager_id = it.value().GetAsString(&user_id);
-    DCHECK(has_manager_id);
-    if (user_id == manager_id) {
-      manager_name_update->SetWithoutPathExpansion(
-          it.key(), std::make_unique<base::Value>(new_display_name));
-    }
-  }
-}
-
 }  // namespace chromeos

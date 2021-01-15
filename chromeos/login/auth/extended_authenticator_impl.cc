@@ -62,14 +62,6 @@ void ExtendedAuthenticatorImpl::SetConsumer(AuthStatusConsumer* consumer) {
   consumer_ = consumer;
 }
 
-void ExtendedAuthenticatorImpl::AuthenticateToMount(
-    const UserContext& context,
-    ResultCallback success_callback) {
-  TransformKeyIfNeeded(
-      context, base::BindOnce(&ExtendedAuthenticatorImpl::DoAuthenticateToMount,
-                              this, std::move(success_callback)));
-}
-
 void ExtendedAuthenticatorImpl::AuthenticateToCheck(
     const UserContext& context,
     base::OnceClosure success_callback) {
@@ -179,20 +171,6 @@ void ExtendedAuthenticatorImpl::OnSaltObtained(const std::string& system_salt) {
   system_salt_callbacks_.clear();
 }
 
-void ExtendedAuthenticatorImpl::DoAuthenticateToMount(
-    ResultCallback success_callback,
-    const UserContext& user_context) {
-  RecordStartMarker("MountEx");
-  const Key* const key = user_context.GetKey();
-  CryptohomeClient::Get()->MountEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context.GetAccountId()),
-      cryptohome::CreateAuthorizationRequest(key->GetLabel(), key->GetSecret()),
-      cryptohome::MountRequest(),
-      base::BindOnce(&ExtendedAuthenticatorImpl::OnMountComplete, this,
-                     "MountEx", user_context, std::move(success_callback)));
-}
-
 void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
     base::OnceClosure success_callback,
     const UserContext& user_context) {
@@ -241,42 +219,6 @@ void ExtendedAuthenticatorImpl::DoRemoveKey(const std::string& key_to_remove,
       request,
       base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete, this,
                      "RemoveKeyEx", user_context, std::move(success_callback)));
-}
-
-void ExtendedAuthenticatorImpl::OnMountComplete(
-    const std::string& time_marker,
-    const UserContext& user_context,
-    ResultCallback success_callback,
-    base::Optional<cryptohome::BaseReply> reply) {
-  cryptohome::MountError return_code =
-      cryptohome::MountExReplyToMountError(reply);
-  RecordEndMarker(time_marker);
-  if (return_code == cryptohome::MOUNT_ERROR_NONE) {
-    const std::string& mount_hash =
-        cryptohome::MountExReplyToMountHash(reply.value());
-    if (success_callback)
-      std::move(success_callback).Run(mount_hash);
-    if (consumer_) {
-      UserContext copy = user_context;
-      copy.SetUserIDHash(mount_hash);
-      consumer_->OnAuthSuccess(copy);
-    }
-    return;
-  }
-  LOG(ERROR) << "MountEx failed. Error: " << return_code;
-  AuthState state = FAILED_MOUNT;
-  if (return_code == cryptohome::MOUNT_ERROR_TPM_COMM_ERROR ||
-      return_code == cryptohome::MOUNT_ERROR_TPM_DEFEND_LOCK ||
-      return_code == cryptohome::MOUNT_ERROR_TPM_NEEDS_REBOOT) {
-    state = FAILED_TPM;
-  }
-  if (return_code == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST)
-    state = NO_MOUNT;
-
-  if (consumer_) {
-    AuthFailure failure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
-    consumer_->OnAuthFailure(failure);
-  }
 }
 
 void ExtendedAuthenticatorImpl::OnOperationComplete(

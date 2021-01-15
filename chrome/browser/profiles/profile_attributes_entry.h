@@ -209,7 +209,8 @@ class ProfileAttributesEntry {
   // via AddAccount* functions).
   void RecordAccountMetrics() const;
 
-  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
+  // TODO(crbug/1155729): Check it is not used anymore for deprecated supervised
+  // users and remove it.
   static const char kSupervisedUserId[];
   static const char kIsOmittedFromProfileListKey[];
   static const char kAvatarIconKey[];

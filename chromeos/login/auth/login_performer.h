@@ -74,10 +74,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   void PerformLogin(const UserContext& user_context,
                     AuthorizationMode auth_mode);
 
-  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
-  // Performs supervised user login with a given |user_context|.
-  void LoginAsSupervisedUser(const UserContext& user_context);
-
   // Performs actions to prepare guest mode login.
   void LoginOffTheRecord();
 

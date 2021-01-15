@@ -165,13 +165,6 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
   }
 }
 
-void LoginPerformer::LoginAsSupervisedUser(const UserContext& user_context) {
-  // TODO(crbug.com/866790): remove this method as a part of further clean-up.
-  LOG(ERROR) << "Login attempt of supervised user detected.";
-  delegate_->AllowlistCheckFailed(user_context.GetAccountId().GetUserEmail());
-  return;
-}
-
 void LoginPerformer::LoginAsPublicSession(const UserContext& user_context) {
   if (!CheckPolicyForUser(user_context.GetAccountId())) {
     DCHECK(delegate_);

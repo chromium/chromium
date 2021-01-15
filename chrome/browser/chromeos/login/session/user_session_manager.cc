@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -86,7 +85,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,8 +94,6 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/channel_info.h"
@@ -106,7 +102,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
@@ -163,9 +158,6 @@
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
 using signin::ConsentLevel;
@@ -173,10 +165,6 @@ using signin::ConsentLevel;
 namespace chromeos {
 
 namespace {
-
-// http://crbug/866790: After Supervised Users are deprecated, remove this.
-const char kUserSessionManagerNotifier[] = "chrome://settings/people";
-const char kSupervisedUserDeprecated[] = "supervised_user_deprecated";
 
 // Time to wait for child policy refresh. If that time is exceeded session
 // should start with cached policy.
@@ -1181,64 +1169,6 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
       NOTREACHED();
       break;
   }
-}
-
-// http://crbug/866790: After Supervised Users are deprecated, remove this.
-void ShowSupervisedUserDeprecationNotification(Profile* profile,
-                                               bool is_manager) {
-  base::string16 title;
-  base::string16 message;
-
-  if (is_manager) {
-    title = l10n_util::GetStringUTF16(
-        IDS_MANAGER_SUPERVISED_USER_EXPIRING_NOTIFICATION_TITLE);
-    message = l10n_util::GetStringUTF16(
-        IDS_MANAGER_SUPERVISED_USER_EXPIRING_NOTIFICATION_BODY);
-  } else {
-    title = l10n_util::GetStringUTF16(
-        IDS_SUPERVISED_USER_EXPIRING_NOTIFICATION_TITLE);
-    message = l10n_util::GetStringUTF16(
-        IDS_SUPERVISED_USER_EXPIRING_NOTIFICATION_BODY);
-  }
-
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](base::Optional<int> button_index) {
-            if (button_index) {
-              user_manager::UserManager* user_manager =
-                  user_manager::UserManager::Get();
-              Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-                  user_manager->GetPrimaryUser());
-
-              NavigateParams params(
-                  profile,
-                  GURL("https://support.google.com/chromebook/?p=new_account"),
-                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-              params.disposition = WindowOpenDisposition::NEW_WINDOW;
-              Navigate(&params);
-            }
-          }));
-
-  message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.buttons.push_back(
-      message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_SUPERVISED_USER_EXPIRING_NOTIFICATION_LEARN_MORE)));
-
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kSupervisedUserDeprecated,
-          title, message, base::string16(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kUserSessionManagerNotifier),
-          rich_notification_data, std::move(delegate),
-          chromeos::kNotificationWarningIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_priority(message_center::SYSTEM_PRIORITY);
-
-  NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
-      /*metadata=*/nullptr);
 }
 
 void UserSessionManager::InitProfilePreferences(

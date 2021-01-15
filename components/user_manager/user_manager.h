@@ -356,7 +356,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
 
   // Returns true if |account_id| is deprecated supervised.
-  // TODO(crbug.com/1155729): Check it is not used anymore and remove it.
+  // TODO(crbug/1155729): Check it is not used anymore and remove it.
   virtual bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const = 0;
 

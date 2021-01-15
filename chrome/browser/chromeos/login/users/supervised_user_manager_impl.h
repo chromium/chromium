@@ -17,6 +17,8 @@ class ChromeUserManagerImpl;
 class CrosSettings;
 class SupervisedUserTestBase;
 
+// TODO(crbug.com/1155729): Check this entire class is not used anymore for
+// deprecated supervised users and remove it with all dependencies.
 // Implementation of the UserManager.
 class SupervisedUserManagerImpl : public SupervisedUserManager {
  public:
@@ -43,12 +45,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
   void RemoveNonCryptohomeData(const std::string& user_id);
 
   bool CheckForFirstRun(const std::string& user_id);
-
-  // TODO(crbug.com/866790): Check it is not used anymore and remove it with
-  // all dependencies.
-  // Update name if this user is manager of some managed users.
-  void UpdateManagerName(const std::string& manager_id,
-                         const base::string16& new_display_name);
 
   bool GetUserStringValue(const std::string& user_id,
                           const char* key,

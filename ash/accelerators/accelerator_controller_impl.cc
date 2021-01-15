@@ -1123,10 +1123,6 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
       return;
-    case AssistantAllowedState::DISALLOWED_BY_SUPERVISED_USER:
-      // supervised user is deprecated, wait for the code clean up.
-      NOTREACHED();
-      return;
     case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
       ShowToast(kAssistantErrorToastId,
                 l10n_util::GetStringUTF16(

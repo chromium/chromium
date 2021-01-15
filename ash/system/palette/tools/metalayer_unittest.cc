@@ -78,7 +78,6 @@ TEST_F(MetalayerToolTest, PaletteMenuState) {
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_POLICY,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_SUPERVISED_USER,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_INCOGNITO,
   };
   const base::string16 kLoading(base::ASCIIToUTF16("loading"));
