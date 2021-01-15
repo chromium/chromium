@@ -19,12 +19,19 @@
 
 namespace blink {
 
-FontIterator::FontIterator(ExecutionContext* context)
+FontIterator::FontIterator(ExecutionContext* context,
+                           const Vector<String>& selection)
     : ExecutionContextLifecycleObserver(context) {
   context->GetBrowserInterfaceBroker().GetInterface(
       remote_manager_.BindNewPipeAndPassReceiver());
   remote_manager_.set_disconnect_handler(
       WTF::Bind(&FontIterator::OnDisconnect, WrapWeakPersistent(this)));
+
+  for (const String& postscriptName : selection) {
+    // While postscript names are encoded in a subset of ASCII, we convert the
+    // input into UTF8. This will still allow exact matches to occur.
+    selection_.insert(postscriptName.Utf8());
+  }
 }
 
 ScriptPromise FontIterator::next(ScriptState* script_state) {
@@ -118,6 +125,11 @@ void FontIterator::DidGetEnumerationResponse(
 
   table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
   for (const auto& element : table.fonts()) {
+    // If the selection list contains items, only allow items that match.
+    if (!selection_.empty() &&
+        selection_.find(element.postscript_name().c_str()) == selection_.end())
+      continue;
+
     auto entry = FontEnumerationEntry{
         String::FromUTF8(element.postscript_name().c_str()),
         String::FromUTF8(element.full_name().c_str()),

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/font_access/font_iterator.h"
 #include "third_party/blink/renderer/modules/font_access/font_metadata.h"
+#include "third_party/blink/renderer/modules/font_access/query_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -43,12 +44,16 @@ FontManager::FontManager(ExecutionContext* context)
 }
 
 ScriptValue FontManager::query(ScriptState* script_state,
+                               const QueryOptions* options,
                                ExceptionState& exception_state) {
   if (exception_state.HadException())
     return ScriptValue();
 
-  auto* iterator =
-      MakeGarbageCollected<FontIterator>(ExecutionContext::From(script_state));
+  Vector<String> selection =
+      options->hasSelect() ? options->select() : Vector<String>();
+
+  auto* iterator = MakeGarbageCollected<FontIterator>(
+      ExecutionContext::From(script_state), std::move(selection));
   auto* isolate = script_state->GetIsolate();
   auto context = script_state->GetContext();
 

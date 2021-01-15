@@ -33,7 +33,7 @@ class FontManager final : public ScriptWrappable,
   FontManager operator=(const FontManager&) = delete;
 
   // FontManager IDL interface implementation.
-  ScriptValue query(ScriptState*, ExceptionState&);
+  ScriptValue query(ScriptState*, const QueryOptions* options, ExceptionState&);
   ScriptPromise showFontChooser(ScriptState*, const QueryOptions* options);
 
   void Trace(blink::Visitor*) const override;

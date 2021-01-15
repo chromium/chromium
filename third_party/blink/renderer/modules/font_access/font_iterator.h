@@ -31,7 +31,7 @@ class FontIterator final : public ScriptWrappable,
 
  public:
   using PermissionStatus = mojom::blink::PermissionStatus;
-  explicit FontIterator(ExecutionContext* context);
+  FontIterator(ExecutionContext* context, const Vector<String>& filter);
 
   ScriptPromise next(ScriptState*);
 
@@ -49,6 +49,11 @@ class FontIterator final : public ScriptWrappable,
   mojo::Remote<mojom::blink::FontAccessManager> remote_manager_;
 
   PermissionStatus permission_status_ = PermissionStatus::ASK;
+
+  // Used to select from results before they go back to the script.
+  // We use a std::string here because this is used at the boundary
+  // between Blink and Chromium and avoids unnecessary conversions.
+  std::set<std::string> selection_;
 };
 
 }  // namespace blink
