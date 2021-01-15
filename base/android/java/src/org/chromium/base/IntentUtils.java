@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.TransactionTooLargeException;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -472,5 +473,14 @@ public class IntentUtils {
             }
             throw e;
         }
+    }
+
+    /**
+     * @return True if the intent is a MAIN intent a launcher would send.
+     */
+    public static boolean isMainIntentFromLauncher(Intent intent) {
+        return intent != null && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
+                && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                && 0 == (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -45,6 +46,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader.PromoState;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
@@ -1790,6 +1793,29 @@ public class BookmarkTest {
         }
 
         onView(withText("Reading list")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarksDoesNotRecordLaunchMetrics() throws Throwable {
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        openBookmarkManager();
+        pressBack();
+        waitForTabbedActivity();
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+
+        openBookmarkManager();
+        onView(withText(TEST_PAGE_TITLE_GOOGLE)).perform(click());
+        waitForTabbedActivity();
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 
     /**

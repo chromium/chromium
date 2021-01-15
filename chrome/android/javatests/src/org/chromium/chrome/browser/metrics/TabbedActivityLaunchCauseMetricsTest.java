@@ -1,0 +1,101 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.metrics;
+
+import android.app.Activity;
+import android.content.Intent;
+
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+
+/**
+ * Integration tests for TabbedActivityLaunchCauseMetrics.
+ */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
+public final class TabbedActivityLaunchCauseMetricsTest {
+    @Rule
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    private static int histogramCountForValue(int value) {
+        if (!LibraryLoader.getInstance().isInitialized()) return 0;
+        return RecordHistogram.getHistogramValueCountForTesting(
+                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
+    }
+
+    @Test
+    @MediumTest
+    public void testMainIntentMetrics() throws Throwable {
+        final int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON);
+        mActivityTestRule.startMainActivityFromLauncher();
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON),
+                    Matchers.is(count + 1));
+        });
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
+        mActivityTestRule.resumeMainActivityFromLauncher();
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON),
+                    Matchers.is(count + 2));
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testNoMainIntentMetricsFromRecents() throws Throwable {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        ApplicationStatus.ActivityStateListener listener =
+                new ApplicationStatus.ActivityStateListener() {
+                    @Override
+                    public void onActivityStateChange(
+                            Activity activity, @ActivityState int newState) {
+                        if (newState == ActivityState.CREATED) {
+                            // Android strips FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY from sent intents,
+                            // so we have to inject it as early as possible during startup.
+                            activity.setIntent(activity.getIntent().addFlags(
+                                    Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY));
+                        }
+                    };
+                };
+        ApplicationStatus.registerStateListenerForAllActivities(listener);
+
+        final int mainCount =
+                histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON);
+        final int recentsCount = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
+
+        mActivityTestRule.startMainActivityFromIntent(intent, null);
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS),
+                    Matchers.is(recentsCount + 1));
+        });
+        Assert.assertEquals(mainCount,
+                histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON));
+        ApplicationStatus.unregisterActivityStateListener(listener);
+    }
+}

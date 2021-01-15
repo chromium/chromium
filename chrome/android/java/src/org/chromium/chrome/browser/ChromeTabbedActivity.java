@@ -924,7 +924,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TraceEvent.begin("ChromeTabbedActivity.onNewIntentWithNative");
 
             super.onNewIntentWithNative(intent);
-            if (isMainIntentFromLauncher(intent)) {
+            if (IntentUtils.isMainIntentFromLauncher(intent)) {
                 logMainIntentBehavior(intent);
             }
 
@@ -1027,7 +1027,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             showOverview(StartSurfaceState.SHOWING_START);
         }
 
-        if (isMainIntentFromLauncher(getIntent()) && mOverviewModeController.overviewVisible()) {
+        if (IntentUtils.isMainIntentFromLauncher(getIntent())
+                && mOverviewModeController.overviewVisible()) {
             RecordUserAction.record("MobileStartup.UserEnteredTabSwitcher");
         }
     }
@@ -1039,24 +1040,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Handle NTP intent.
             return true;
         } else if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs()
-                && isMainIntentFromLauncher(getIntent())
+                && IntentUtils.isMainIntentFromLauncher(getIntent())
                 && ReturnToChromeExperimentsUtil.getTotalTabCount(getTabModelSelector()) <= 0) {
             // Handle initial tab creation.
             return true;
         }
         long lastBackgroundedTimeMillis = mInactivityTracker.getLastBackgroundedTimeMs();
-        return isMainIntentFromLauncher(getIntent())
+        return IntentUtils.isMainIntentFromLauncher(getIntent())
                 && ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
     }
 
-    private boolean isMainIntentFromLauncher(Intent intent) {
-        return intent != null && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
-                && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-                && 0 == (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-    }
-
     private void logMainIntentBehavior(Intent intent) {
-        assert isMainIntentFromLauncher(intent);
+        assert IntentUtils.isMainIntentFromLauncher(intent);
         // TODO(tedchoc): We should cache the last visible time and reuse it to avoid different
         //                values of this depending on when it is called after the activity was
         //                shown.
@@ -1137,7 +1132,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     isIntentWithEffect = mIntentHandler.onNewIntent(intent);
                 }
 
-                if (isMainIntentFromLauncher(intent)) {
+                if (IntentUtils.isMainIntentFromLauncher(intent)) {
                     isMainIntentFromLauncher = true;
                     logMainIntentBehavior(intent);
                 }
