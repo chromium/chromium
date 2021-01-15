@@ -500,8 +500,9 @@ class WebAppIntegrationBrowserTest
     WebAppProviderBase* const provider =
         WebAppProviderBase::GetProviderBase(browser()->profile());
     AppRegistrar& app_registrar = provider->registrar();
-    DisplayMode display_mode = app_registrar.GetAppUserDisplayMode(app_id_);
-    EXPECT_FALSE(display_mode == blink::mojom::DisplayMode::kStandalone);
+    DisplayMode display_mode =
+        app_registrar.GetAppEffectiveDisplayMode(app_id_);
+    EXPECT_EQ(blink::mojom::DisplayMode::kBrowser, display_mode);
   }
   void AssertAppNotInList() { EXPECT_FALSE(base::Contains(app_ids_, app_id_)); }
 
