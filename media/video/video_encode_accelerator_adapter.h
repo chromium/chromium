@@ -140,6 +140,10 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   State state_ = State::kNotInitialized;
   base::Optional<bool> flush_support_;
 
+  // True if underlying instance of VEA can handle GPU backed frames with a
+  // size different from what VEA was configured for.
+  bool gpu_resize_supported_ = false;
+
   struct PendingEncode {
     PendingEncode();
     ~PendingEncode();

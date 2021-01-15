@@ -41,6 +41,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
                                        uint32_t framerate) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
                                        uint32_t framerate) override;
+  bool IsGpuFrameResizeSupported() override;
   void Destroy() override;
 
   const std::vector<uint32_t>& stored_bitrates() const {
@@ -71,6 +72,8 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
     encoding_callback_ = std::move(callback);
   }
 
+  void SupportResize() { resize_supported_ = true; }
+
  private:
   void DoRequireBitstreamBuffers(unsigned int input_count,
                                  const gfx::Size& input_coded_size,
@@ -84,6 +87,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   std::vector<uint32_t> stored_bitrates_;
   std::vector<VideoBitrateAllocation> stored_bitrate_allocations_;
   bool will_initialization_succeed_;
+  bool resize_supported_ = false;
 
   VideoEncodeAccelerator::Client* client_;
 

@@ -315,8 +315,17 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     return;
   }
 
-  bool resize_needed = (frame->visible_rect().size() != options_.frame_size);
-  bool use_gpu_buffer = frame->HasGpuMemoryBuffer() && !resize_needed;
+  const bool frame_needs_resizing =
+      frame->visible_rect().size() != options_.frame_size;
+
+  // Try using a frame with GPU buffer both are true:
+  // 1. the frame already has GPU buffer
+  // 2. frame doesn't need resizing or can be resized by GPU encoder.
+  bool use_gpu_buffer = frame->HasGpuMemoryBuffer() &&
+                        (!frame_needs_resizing || gpu_resize_supported_);
+
+  // Currently configured encoder's preference takes precedence overe heuristic
+  // above.
   if (input_buffer_preference_ == InputBufferKind::GpuMemBuf)
     use_gpu_buffer = true;
   if (input_buffer_preference_ == InputBufferKind::CpuMemBuf)
@@ -601,6 +610,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(Status status) {
 
   state_ = State::kReadyToEncode;
   flush_support_ = accelerator_->IsFlushSupported();
+  gpu_resize_supported_ = accelerator_->IsGpuFrameResizeSupported();
 
   // Send off the encodes that came in while we were waiting for initialization.
   for (auto& encode : pending_encodes_) {
@@ -685,7 +695,8 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(src_frame);
   if (src_frame->HasGpuMemoryBuffer() &&
-      src_frame->visible_rect().size() == size) {
+      src_frame->format() == PIXEL_FORMAT_NV12 &&
+      (gpu_resize_supported_ || src_frame->visible_rect().size() == size)) {
     // Nothing to do here, the input frame is already what we need
     return src_frame;
   }

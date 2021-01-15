@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -127,8 +128,7 @@ VideoEncodeAccelerator::~VideoEncodeAccelerator() = default;
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile()
     : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN),
       max_framerate_numerator(0),
-      max_framerate_denominator(0) {
-}
+      max_framerate_denominator(0) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     VideoCodecProfile profile,
@@ -150,6 +150,16 @@ void VideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
 
 bool VideoEncodeAccelerator::IsFlushSupported() {
   return false;
+}
+
+bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
+#if defined(OS_CHROMEOS)
+  // TODO(crbug.com/1166889) Add proper method overrides in
+  // MojoVideoEncodeAccelerator and other subclasses that might return true.
+  return true;
+#else
+  return false;
+#endif
 }
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
