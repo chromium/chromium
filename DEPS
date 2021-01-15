@@ -346,7 +346,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling securemessage
   # and whatever else without interference from each other.
-  'securemessage_revision': '3955ec1700b9381a2562df35d48e42487a33d7a1',
+  'securemessage_revision': 'f1637ffadae5638e37d6a97f97d90eb3d9e3f841',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ukey2
   # and whatever else without interference from each other.
