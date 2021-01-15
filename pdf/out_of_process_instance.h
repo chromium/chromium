@@ -211,10 +211,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   void ResetRecentlySentFindUpdate(int32_t);
 
-  // Figures out the location of any background rectangles (i.e. those that
-  // aren't painted by the PDF engine).
-  void CalculateBackgroundParts();
-
   // Returns a VarArray of Attachments. Each Attachment is a VarDictionary
   // which contains the following key/values:
   // - "name" - a string Var.
@@ -347,9 +343,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // The current cursor.
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
 
-  // Remaining area, in pixels, to render the pdf in after accounting for
-  // horizontal centering.
-  gfx::Rect available_area_;
   // The scroll offset in CSS pixels.
   pp::Point scroll_offset_;
 
@@ -376,12 +369,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Deferred invalidates while |in_paint_| is true.
   std::vector<gfx::Rect> deferred_invalidates_;
-
-  struct BackgroundPart {
-    gfx::Rect location;
-    uint32_t color;
-  };
-  std::vector<BackgroundPart> background_parts_;
 
   struct PrintSettings {
     PrintSettings() { Clear(); }

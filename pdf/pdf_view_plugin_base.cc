@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_view_plugin_base.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -15,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
@@ -58,6 +60,32 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
       base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
                                       : &PdfViewPluginBase::DidOpen,
                      GetWeakPtr(), std::move(loader)));
+}
+
+void PdfViewPluginBase::CalculateBackgroundParts() {
+  background_parts_.clear();
+  int left_width = available_area_.x();
+  int right_start = available_area_.right();
+  int right_width = std::abs(plugin_size().width() - available_area_.right());
+  int bottom = std::min(available_area_.bottom(), plugin_size().height());
+
+  // Note: we assume the display of the PDF document is always centered
+  // horizontally, but not necessarily centered vertically.
+  // Add the left rectangle.
+  BackgroundPart part = {gfx::Rect(left_width, bottom), GetBackgroundColor()};
+  if (!part.location.IsEmpty())
+    background_parts_.push_back(part);
+
+  // Add the right rectangle.
+  part.location = gfx::Rect(right_start, 0, right_width, bottom);
+  if (!part.location.IsEmpty())
+    background_parts_.push_back(part);
+
+  // Add the bottom rectangle.
+  part.location = gfx::Rect(0, bottom, plugin_size().width(),
+                            plugin_size().height() - bottom);
+  if (!part.location.IsEmpty())
+    background_parts_.push_back(part);
 }
 
 int PdfViewPluginBase::GetDocumentPixelWidth() const {

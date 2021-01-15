@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
@@ -38,7 +39,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
                std::vector<gfx::Rect>* pending) override;
 
  protected:
-  // The mininum zoom level allowed.
+  struct BackgroundPart {
+    gfx::Rect location;
+    uint32_t color;
+  };
+
+  // The minimum zoom level allowed.
   static constexpr double kMinZoom = 0.01;
 
   PdfViewPluginBase();
@@ -83,10 +89,25 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // background parts, and notifies the pdf engine.
   virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
 
+  // Figures out the location of any background rectangles (i.e. those that
+  // aren't painted by the PDF engine).
+  void CalculateBackgroundParts();
+
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
+
+  const std::vector<BackgroundPart>& background_parts() const {
+    return background_parts_;
+  }
+
+  const gfx::Rect& available_area() const { return available_area_; }
+
+  // TODO(https://crbug.com/1140629): Remove mutable_available_area()
+  // once all uses of it in OnGeometryChanged() are migrated to
+  // PdfViewPluginBase.
+  gfx::Rect& mutable_available_area() { return available_area_; }
 
   const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
@@ -128,6 +149,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
+
+  std::vector<BackgroundPart> background_parts_;
+
+  // Remaining area, in pixels, to render the pdf in after accounting for
+  // horizontal centering.
+  gfx::Rect available_area_;
 
   // The size of the entire document in pixels (i.e. if each page is 800 pixels
   // high and there are 10 pages, the height will be 8000).

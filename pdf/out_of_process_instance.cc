@@ -761,7 +761,7 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
       pp::Point point = mouse_event.GetPosition();
       pp::Point movement = mouse_event.GetMovement();
       ScalePoint(device_scale(), &point);
-      point.set_x(point.x() - available_area_.x());
+      point.set_x(point.x() - available_area().x());
 
       ScalePoint(device_scale(), &movement);
       mouse_event =
@@ -786,7 +786,7 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 
         pp::FloatPoint point = touch_point.position();
         ScaleFloatPoint(device_scale(), &point);
-        point.set_x(point.x() - available_area_.x());
+        point.set_x(point.x() - available_area().x());
 
         new_touch_event.AddTouchPoint(
             PP_TOUCHLIST_TYPE_TARGETTOUCHES,
@@ -970,8 +970,8 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   viewport_info.scroll.x = -plugin_offset().x();
   viewport_info.scroll.y =
       -top_toolbar_height_in_viewport_coords() - plugin_offset().y();
-  viewport_info.offset.x = available_area_.x() / (device_scale() * zoom());
-  viewport_info.offset.y = available_area_.y() / (device_scale() * zoom());
+  viewport_info.offset.x = available_area().x() / (device_scale() * zoom());
+  viewport_info.offset.y = available_area().y() / (device_scale() * zoom());
 
   viewport_info.zoom = zoom();
   viewport_info.scale = device_scale();
@@ -988,8 +988,8 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
                                             const gfx::Rect& right) {
-  pp::Point l(left.x() + available_area_.x(), left.y());
-  pp::Point r(right.x() + available_area_.x(), right.y());
+  pp::Point l(left.x() + available_area().x(), left.y());
+  pp::Point r(right.x() + available_area().x(), right.y());
 
   float inverse_scale = 1.0f / device_scale();
   ScalePoint(inverse_scale, &l);
@@ -1005,7 +1005,7 @@ void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
   pp::Point new_position(position.x(), position.y());
   ScalePoint(device_scale(), &new_position);
-  new_position.set_x(new_position.x() - available_area_.x());
+  new_position.set_x(new_position.x() - available_area().x());
   engine()->SetCaretPosition(PointFromPPPoint(new_position));
 }
 
@@ -1013,7 +1013,7 @@ void OutOfProcessInstance::MoveRangeSelectionExtent(
     const pp::FloatPoint& extent) {
   pp::Point new_extent(extent.x(), extent.y());
   ScalePoint(device_scale(), &new_extent);
-  new_extent.set_x(new_extent.x() - available_area_.x());
+  new_extent.set_x(new_extent.x() - available_area().x());
   engine()->MoveRangeSelectionExtent(PointFromPPPoint(new_extent));
 }
 
@@ -1021,11 +1021,11 @@ void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
                                               const pp::FloatPoint& extent) {
   pp::Point new_base_point(base.x(), base.y());
   ScalePoint(device_scale(), &new_base_point);
-  new_base_point.set_x(new_base_point.x() - available_area_.x());
+  new_base_point.set_x(new_base_point.x() - available_area().x());
 
   pp::Point new_extent_point(extent.x(), extent.y());
   ScalePoint(device_scale(), &new_extent_point);
-  new_extent_point.set_x(new_extent_point.x() - available_area_.x());
+  new_extent_point.set_x(new_extent_point.x() - available_area().x());
 
   engine()->SetSelectionBounds(PointFromPPPoint(new_base_point),
                                PointFromPPPoint(new_extent_point));
@@ -1034,7 +1034,7 @@ void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
 pp::Var OutOfProcessInstance::GetLinkAtPosition(const pp::Point& point) {
   pp::Point offset_point(point);
   ScalePoint(device_scale(), &offset_point);
-  offset_point.set_x(offset_point.x() - available_area_.x());
+  offset_point.set_x(offset_point.x() - available_area().x());
   return engine()->GetLinkAtPosition(PointFromPPPoint(offset_point));
 }
 
@@ -1191,19 +1191,19 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.IsEmpty())
       continue;
 
-    gfx::Rect pdf_rect = gfx::IntersectRects(rect, available_area_);
+    gfx::Rect pdf_rect = gfx::IntersectRects(rect, available_area());
     if (!pdf_rect.IsEmpty()) {
-      pdf_rect.Offset(available_area_.x() * -1, 0);
+      pdf_rect.Offset(available_area().x() * -1, 0);
 
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
       engine()->Paint(pdf_rect, skia_image_data_, pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
-        ready_rect.Offset(available_area_.OffsetFromOrigin());
+        ready_rect.Offset(available_area().OffsetFromOrigin());
         ready->push_back(PaintReadyRect(ready_rect, image_data_));
       }
       for (auto& pending_rect : pdf_pending) {
-        pending_rect.Offset(available_area_.OffsetFromOrigin());
+        pending_rect.Offset(available_area().OffsetFromOrigin());
         pending->push_back(pending_rect);
       }
     }
@@ -1219,7 +1219,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       FillRect(region, GetBackgroundColor());
     }
 
-    for (const auto& background_part : background_parts_) {
+    for (const auto& background_part : background_parts()) {
       gfx::Rect intersection =
           gfx::IntersectRects(background_part.location, rect);
       if (!intersection.IsEmpty()) {
@@ -1238,27 +1238,6 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                        weak_factory_.GetWeakPtr()),
         0);
   }
-}
-
-void OutOfProcessInstance::CalculateBackgroundParts() {
-  background_parts_.clear();
-  int left_width = available_area_.x();
-  int right_start = available_area_.right();
-  int right_width = abs(plugin_size().width() - available_area_.right());
-  int bottom = std::min(available_area_.bottom(), plugin_size().height());
-
-  // Add the left, right, and bottom rectangles.  Note: we assume only
-  // horizontal centering.
-  BackgroundPart part = {gfx::Rect(left_width, bottom), GetBackgroundColor()};
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
-  part.location = gfx::Rect(right_start, 0, right_width, bottom);
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
-  part.location = gfx::Rect(0, bottom, plugin_size().width(),
-                            plugin_size().height() - bottom);
-  if (!part.location.IsEmpty())
-    background_parts_.push_back(part);
 }
 
 pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
@@ -1328,13 +1307,13 @@ void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
     return;
   }
 
-  gfx::Rect offset_rect = rect + available_area_.OffsetFromOrigin();
+  gfx::Rect offset_rect = rect + available_area().OffsetFromOrigin();
   paint_manager().InvalidateRect(offset_rect);
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data_.is_null())
-    paint_manager().ScrollRect(available_area_, offset);
+    paint_manager().ScrollRect(available_area(), offset);
 }
 
 void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
@@ -2235,21 +2214,22 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   if (zoom() != old_zoom || device_scale() != old_device_scale)
     engine()->ZoomUpdated(zoom() * device_scale());
 
-  available_area_ = gfx::Rect(plugin_size());
+  mutable_available_area() = gfx::Rect(plugin_size());
   int doc_width = GetDocumentPixelWidth();
-  if (doc_width < available_area_.width()) {
-    available_area_.Offset((available_area_.width() - doc_width) / 2, 0);
-    available_area_.set_width(doc_width);
+  if (doc_width < available_area().width()) {
+    mutable_available_area().Offset((available_area().width() - doc_width) / 2,
+                                    0);
+    mutable_available_area().set_width(doc_width);
   }
   int bottom_of_document =
       GetDocumentPixelHeight() +
       (top_toolbar_height_in_viewport_coords() * device_scale());
-  if (bottom_of_document < available_area_.height())
-    available_area_.set_height(bottom_of_document);
+  if (bottom_of_document < available_area().height())
+    mutable_available_area().set_height(bottom_of_document);
 
   CalculateBackgroundParts();
-  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
-  engine()->PluginSizeUpdated(available_area_.size());
+  engine()->PageOffsetUpdated(available_area().OffsetFromOrigin());
+  engine()->PluginSizeUpdated(available_area().size());
 
   if (document_size().IsEmpty())
     return;
