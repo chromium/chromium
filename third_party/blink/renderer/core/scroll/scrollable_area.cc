@@ -768,9 +768,14 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
     return;
 
   if (!fade_overlay_scrollbars_timer_) {
-    fade_overlay_scrollbars_timer_.reset(new TaskRunnerTimer<ScrollableArea>(
-        ThreadScheduler::Current()->CompositorTaskRunner(), this,
-        &ScrollableArea::FadeOverlayScrollbarsTimerFired));
+    fade_overlay_scrollbars_timer_ =
+        std::make_unique<TaskRunnerTimer<ScrollableArea>>(
+            GetLayoutBox()
+                ->GetFrame()
+                ->GetFrameScheduler()
+                ->GetAgentGroupScheduler()
+                ->CompositorTaskRunner(),
+            this, &ScrollableArea::FadeOverlayScrollbarsTimerFired);
   }
 
   if (!scrollbar_captured_ && !mouse_over_scrollbar_) {
