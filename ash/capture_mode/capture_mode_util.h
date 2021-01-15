@@ -5,6 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
 
@@ -34,6 +36,10 @@ bool ShouldHideDragAffordance(FineTunePosition position);
 // Sets the visibility of the stop-recording button in the Shelf's status area
 // widget of the given |root| window.
 void SetStopRecordingButtonVisibility(aura::Window* root, bool visible);
+
+// Triggers an accessibility alert to give the user feedback.
+void TriggerAccessibilityAlert(const std::string& message);
+void TriggerAccessibilityAlert(int message_id);
 
 }  // namespace capture_mode_util
 

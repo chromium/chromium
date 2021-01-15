@@ -16,6 +16,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -27,6 +28,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
@@ -285,6 +287,27 @@ void ClipRectToFit(gfx::Rect* out_bounds, const gfx::Rect& rect) {
                           std::min(rect.bottom(), out_bounds->bottom()));
 }
 
+// Returns the appropriate |message_id| for a chromevox alert.
+// |for_toggle_alert| helps differentiate between the session start and when a
+// user toggles the source.
+int GetMessageIdForCaptureSource(CaptureModeSource source,
+                                 bool for_toggle_alert) {
+  switch (source) {
+    case CaptureModeSource::kFullscreen:
+      return for_toggle_alert
+                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_FULLSCREEN
+                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
+    case CaptureModeSource::kRegion:
+      return for_toggle_alert
+                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_REGION
+                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
+    default:
+      return for_toggle_alert
+                 ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_SOURCE_WINDOW
+                 : IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
+  }
+}
+
 }  // namespace
 
 class CaptureModeSession::CursorSetter {
@@ -460,6 +483,15 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   TabletModeController::Get()->AddObserver(this);
   current_root_->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
+
+  capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
+      l10n_util::GetStringUTF16(GetMessageIdForCaptureSource(
+          controller_->source(), /*for_toggle_alert=*/false)),
+      l10n_util::GetStringUTF16(
+          controller_->type() == CaptureModeType::kImage
+              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
+              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING)));
 }
 
 CaptureModeSession::~CaptureModeSession() {
@@ -485,6 +517,11 @@ CaptureModeSession::~CaptureModeSession() {
     dimensions_label_widget_->CloseNow();
   DCHECK(capture_mode_bar_widget_);
   capture_mode_bar_widget_->CloseNow();
+
+  if (a11y_alert_on_session_exit_) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
+  }
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
@@ -509,6 +546,9 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   UpdateCaptureLabelWidget();
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
+
+  capture_mode_util::TriggerAccessibilityAlert(
+      GetMessageIdForCaptureSource(new_source, /*for_toggle_alert=*/true));
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
@@ -516,6 +556,11 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   UpdateCaptureLabelWidget();
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
+
+  capture_mode_util::TriggerAccessibilityAlert(
+      new_type == CaptureModeType::kImage
+          ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE
+          : IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO);
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
