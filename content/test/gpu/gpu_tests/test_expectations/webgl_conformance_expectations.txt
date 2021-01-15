@@ -297,6 +297,9 @@ crbug.com/angleproject/2909 [ win intel angle-vulkan passthrough intel_lt_26.20.
 crbug.com/angleproject/2722 [ win intel angle-vulkan passthrough intel_lt_26.20.100.7323 ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1082565 [ win intel angle-opengl passthrough intel_lt_26.20.100.8141 ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
 
+# Intel OpenGL driver issue, fixed in 27.20.100.9126
+crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+
 # This is an OpenGL driver bug on Intel platform and it is fixed in
 # Intel Driver 25.20.100.6444.
 # Case no-over-optimization-on-uniform-array-09 always fail if run
