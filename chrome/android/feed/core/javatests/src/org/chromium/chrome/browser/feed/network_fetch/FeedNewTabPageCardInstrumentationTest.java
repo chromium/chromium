@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,6 +54,7 @@ public final class FeedNewTabPageCardInstrumentationTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1166575")
     @MediumTest
     @Feature({"FeedNewTabPage", "WPRRecordReplayTest", "RenderTest"})
     @WPRArchiveDirectory("chrome/android/feed/core/javatests/src/org/chromium/chrome/"
