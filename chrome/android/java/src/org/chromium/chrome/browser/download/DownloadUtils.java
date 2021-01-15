@@ -157,7 +157,6 @@ public class DownloadUtils {
                 // Sits on top of another Activity.
                 intent.addFlags(
                         Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(IntentHandler.EXTRA_PARENT_COMPONENT, activity.getComponentName());
                 activity.startActivity(intent);
             }
         }
