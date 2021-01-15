@@ -29,6 +29,9 @@
   ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1091754)).
     * Present proposal to security team, and begin socializing the proposal externally.
 * **A/B testing**: organize workshop on client-side A/B testing.
+* **JS Sampling Profiler**:
+  * Complete the GC integration work.
+  * Ship the API.
 
 ## 2020 Q4 Progress
 
@@ -38,6 +41,10 @@
   [Intent to Ship](https://groups.google.com/a/chromium.org/g/blink-dev/c/RExJ9a3SmQw).
 * **Page abandonment**: made some data available publicly and socialized it in a
   [blogpost](https://calendar.perfplanet.com/2020/abandonment/).
+* **JS Sampling Profiler**:
+  * Implemented the API so it requires COOP/COEP and gated it behind Document Policy.
+  * Finished a prototype of GC integration for the V8 sampling profiler (which will help reduce profiler startup time).
+  * Landed some initial support for code object refcounting.
 * **Smoothness**: published a proposal around dropped frames and presented it at TPAC.
 * **Back-forward cache**: determined that it is backwards compatible to expose a PerformanceNavigationTiming
   entry for back-forward navigations.
