@@ -244,18 +244,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       LayoutUnit percentage_resolution_inline_size) const;
 };
 
-// The NGBlockNode hash is based on its LayoutBox member.
-struct NGBlockNodeHash : PtrHash<const LayoutBox*> {
-  STATIC_ONLY(NGBlockNodeHash);
-  static unsigned GetHash(const NGBlockNode& key) {
-    return PtrHash<const LayoutBox>::GetHash(key.GetLayoutBox());
-  }
-  static bool Equal(const NGBlockNode& a, const NGBlockNode& b) {
-    return PtrHash<const LayoutBox>::Equal(a.GetLayoutBox(), b.GetLayoutBox());
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
 template <>
 struct DowncastTraits<NGBlockNode> {
   static bool AllowFrom(const NGLayoutInputNode& node) {
@@ -264,32 +252,5 @@ struct DowncastTraits<NGBlockNode> {
 };
 
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct DefaultHash<blink::NGBlockNode> {
-  STATIC_ONLY(DefaultHash);
-  typedef blink::NGBlockNodeHash Hash;
-};
-
-template <>
-struct HashTraits<blink::NGBlockNode>
-    : public GenericHashTraits<blink::NGBlockNode> {
-  static const bool kEmptyValueIsZero = false;
-  static const bool kHasIsEmptyValueFunction = true;
-  static bool IsEmptyValue(const blink::NGBlockNode& value) {
-    return !value.GetLayoutBox();
-  }
-  static blink::NGBlockNode EmptyValue() { return nullptr; }
-  static void ConstructDeletedValue(blink::NGBlockNode& slot, bool) {
-    slot = blink::NGBlockNode(reinterpret_cast<blink::LayoutBox*>(-1));
-  }
-  static bool IsDeletedValue(const blink::NGBlockNode& value) {
-    return value.GetLayoutBox() == reinterpret_cast<blink::LayoutBox*>(-1);
-  }
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_NODE_H_

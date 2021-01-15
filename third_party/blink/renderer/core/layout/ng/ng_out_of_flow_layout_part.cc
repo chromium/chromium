@@ -145,12 +145,13 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     }
 
     if (container_builder_->HasMulticolsWithPendingOOFs()) {
-      HashSet<NGBlockNode> multicols_with_pending_oofs;
+      NGContainerFragmentBuilder::MulticolCollection
+          multicols_with_pending_oofs;
       container_builder_->SwapMulticolsWithPendingOOFs(
           &multicols_with_pending_oofs);
       DCHECK(!multicols_with_pending_oofs.IsEmpty());
-      for (const NGBlockNode& multicol : multicols_with_pending_oofs)
-        LayoutOOFsInMulticol(multicol);
+      for (LayoutBox* multicol : multicols_with_pending_oofs)
+        LayoutOOFsInMulticol(NGBlockNode(multicol));
     }
   }
 
