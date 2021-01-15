@@ -173,6 +173,10 @@ ClipboardNudge::ClipboardNudge()
 
 ClipboardNudge::~ClipboardNudge() = default;
 
+void ClipboardNudge::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
+  CalculateAndSetWidgetBounds();
+}
+
 void ClipboardNudge::OnHotseatStateChanged(HotseatState old_state,
                                            HotseatState new_state) {
   CalculateAndSetWidgetBounds();
@@ -196,15 +200,36 @@ void ClipboardNudge::CalculateAndSetWidgetBounds() {
 
   widget_bounds =
       gfx::Rect(display_bounds.x() + kNudgeMargin,
-                display_bounds.height() - ShelfConfig::Get()->shelf_size() -
+                display_bounds.bottom() - ShelfConfig::Get()->shelf_size() -
                     nudge_height - kNudgeMargin,
                 nudge_width, nudge_height);
-  if (base::i18n::IsRTL())
-    widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin);
+
+  Shelf* shelf = RootWindowController::ForWindow(root_window_)->shelf();
+  bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
+                      shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
+
+  if (base::i18n::IsRTL()) {
+    if (shelf->alignment() == ShelfAlignment::kRight && !shelf_hidden) {
+      widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin -
+                          ShelfConfig::Get()->shelf_size());
+    } else {
+      widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin);
+    }
+  } else {
+    if (shelf->alignment() == ShelfAlignment::kLeft && !shelf_hidden) {
+      widget_bounds.set_x(display_bounds.x() +
+                          ShelfConfig::Get()->shelf_size() + kNudgeMargin);
+    }
+  }
+
+  if ((shelf->alignment() == ShelfAlignment::kBottom && shelf_hidden) ||
+      shelf->alignment() == ShelfAlignment::kLeft ||
+      shelf->alignment() == ShelfAlignment::kRight) {
+    widget_bounds.set_y(display_bounds.bottom() - nudge_height - kNudgeMargin);
+  }
 
   // Set the nudge's bounds above the hotseat when it is extended.
-  HotseatWidget* hotseat_widget =
-      RootWindowController::ForWindow(root_window_)->shelf()->hotseat_widget();
+  HotseatWidget* hotseat_widget = shelf->hotseat_widget();
   if (hotseat_widget->state() == HotseatState::kExtended) {
     widget_bounds.set_y(hotseat_widget->GetTargetBounds().y() - nudge_height -
                         kNudgeMargin);

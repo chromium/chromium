@@ -22,6 +22,7 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
   ~ClipboardNudge() override;
 
   // ShelfObserver overrides:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnHotseatStateChanged(HotseatState old_state,
                              HotseatState new_state) override;
   void Close();
