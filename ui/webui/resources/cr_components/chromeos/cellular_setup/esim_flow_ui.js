@@ -236,7 +236,7 @@ cr.define('cellular_setup', function() {
                 cellularSetup.ButtonState.SHOWN_AND_ENABLED :
                 cellularSetup.ButtonState.HIDDEN,
             done: cellularSetup.ButtonState.HIDDEN,
-            next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
+            forward: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
@@ -249,7 +249,7 @@ cr.define('cellular_setup', function() {
                 cellularSetup.ButtonState.HIDDEN,
             done: cellularSetup.ButtonState.HIDDEN,
             // TODO(crbug.com/1093185) Add a "Confirm" button state.
-            next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
+            forward: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
@@ -261,7 +261,7 @@ cr.define('cellular_setup', function() {
                 cellularSetup.ButtonState.SHOWN_AND_ENABLED :
                 cellularSetup.ButtonState.HIDDEN,
             done: cellularSetup.ButtonState.HIDDEN,
-            next: cellularSetup.ButtonState.HIDDEN,
+            forward: cellularSetup.ButtonState.HIDDEN,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
           };
@@ -271,7 +271,7 @@ cr.define('cellular_setup', function() {
             backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.HIDDEN,
             done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            next: cellularSetup.ButtonState.HIDDEN,
+            forward: cellularSetup.ButtonState.HIDDEN,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
@@ -287,10 +287,11 @@ cr.define('cellular_setup', function() {
     onActivationCodeUpdated_(event) {
       if (event.detail.activationCode) {
         this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+            'buttonState.forward', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
       } else {
         this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+            'buttonState.forward',
+            cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
       }
     },
 
@@ -299,12 +300,12 @@ cr.define('cellular_setup', function() {
       if (this.selectedProfile_) {
         this.set('buttonState.skipDiscovery', cellularSetup.ButtonState.HIDDEN);
         this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+            'buttonState.forward', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
       } else {
         this.set(
             'buttonState.skipDiscovery',
             cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-        this.set('buttonState.next', cellularSetup.ButtonState.HIDDEN);
+        this.set('buttonState.forward', cellularSetup.ButtonState.HIDDEN);
       }
     },
 
@@ -314,10 +315,11 @@ cr.define('cellular_setup', function() {
       // state.
       if (this.confirmationCode_) {
         this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+            'buttonState.forward', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
       } else {
         this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+            'buttonState.forward',
+            cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
       }
     },
 

@@ -181,7 +181,7 @@ cr.define('cellularSetup', function() {
     },
 
     navigateForward() {
-      // Navigate forward is only called by clicking next button
+      // Navigate forward is only called by clicking forward button
       // from the provisioning page.
       assert(this.selectedPSimPageName_ === PSimPageName.PROVISIONING);
       this.state_ = PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH;
@@ -210,7 +210,7 @@ cr.define('cellularSetup', function() {
             backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             done: cellularSetup.ButtonState.HIDDEN,
-            next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
+            forward: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
@@ -222,7 +222,7 @@ cr.define('cellularSetup', function() {
             backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             done: cellularSetup.ButtonState.HIDDEN,
-            next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            forward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
@@ -233,7 +233,7 @@ cr.define('cellularSetup', function() {
             backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cellularSetup.ButtonState.HIDDEN,
             done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            next: cellularSetup.ButtonState.HIDDEN,
+            forward: cellularSetup.ButtonState.HIDDEN,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };

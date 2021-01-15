@@ -31,7 +31,7 @@ suite('CellularSetupButtonBarTest', function() {
     buttonBar.buttonState = {
       backward: state,
       cancel: state,
-      next: state,
+      forward: state,
       tryAgain: state,
       done: state,
       skipDiscovery: state,
@@ -68,7 +68,7 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#next')));
+    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#forward')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#done')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#skipDiscovery')));
   });
@@ -78,7 +78,7 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#next')));
+    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#forward')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#done')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#skipDiscovery')));
   });
@@ -88,7 +88,7 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonHidden(buttonBar.$$('#backward')));
     assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
     assertTrue(isButtonHidden(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonHidden(buttonBar.$$('#next')));
+    assertTrue(isButtonHidden(buttonBar.$$('#forward')));
     assertTrue(isButtonHidden(buttonBar.$$('#done')));
     assertTrue(isButtonHidden(buttonBar.$$('#skipDiscovery')));
   });

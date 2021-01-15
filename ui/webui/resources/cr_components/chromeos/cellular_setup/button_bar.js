@@ -67,7 +67,7 @@ Polymer({
   },
 
   /** @private */
-  onNextButtonClicked_() {
+  onForwardButtonClicked_() {
     this.fire('forward-nav-requested');
   },
 
@@ -85,8 +85,8 @@ Polymer({
         return this.buttonState.cancel;
       case cellularSetup.Button.DONE:
         return this.buttonState.done;
-      case cellularSetup.Button.NEXT:
-        return this.buttonState.next;
+      case cellularSetup.Button.FORWARD:
+        return this.buttonState.forward;
       case cellularSetup.Button.TRY_AGAIN:
         return this.buttonState.tryAgain;
       case cellularSetup.Button.SKIP_DISCOVERY:

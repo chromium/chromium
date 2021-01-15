@@ -25,7 +25,7 @@ cr.define('cellularSetup', function() {
     BACKWARD: 1,
     CANCEL: 2,
     DONE: 3,
-    NEXT: 4,
+    FORWARD: 4,
     TRY_AGAIN: 5,
     SKIP_DISCOVERY: 6,
   };
@@ -35,7 +35,7 @@ cr.define('cellularSetup', function() {
    *   backward: (!cellularSetup.ButtonState|undefined),
    *   cancel: (!cellularSetup.ButtonState|undefined),
    *   done: (!cellularSetup.ButtonState|undefined),
-   *   next: (!cellularSetup.ButtonState|undefined),
+   *   forward: (!cellularSetup.ButtonState|undefined),
    *   tryAgain: (!cellularSetup.ButtonState|undefined),
    *   skipDiscovery: (!cellularSetup.ButtonState|undefined),
    * }}
