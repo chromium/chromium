@@ -94,6 +94,10 @@ const base::Feature kDefaultEnableGpuRasterization{
 const base::Feature kDefaultEnableOopRasterization{
     "DefaultEnableOopRasterization", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the use of out of process rasterization for canvas.
+const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_WIN)
 // Use a high priority for GPU process on Windows.
 const base::Feature kGpuProcessHighPriorityWin{

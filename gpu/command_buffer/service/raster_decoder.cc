@@ -58,6 +58,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -1948,7 +1949,8 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     return;
   }
 
-  if (!shared_context_state_->GrContextIsGL()) {
+  if (!shared_context_state_->GrContextIsGL() ||
+      base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
     // Use Skia to copy texture if raster's gr_context() is not using GL.
     DoCopySubTextureINTERNALSkia(xoffset, yoffset, x, y, width, height,
                                  unpack_flip_y, source_mailbox, dest_mailbox);
@@ -2289,6 +2291,8 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
+
+  shared_context_state_->set_need_context_state_reset(true);
 
   // Allow uncleared access, as we manually handle clear tracking.
   std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>

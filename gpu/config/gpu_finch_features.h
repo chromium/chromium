@@ -29,6 +29,8 @@ GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
 
 GPU_EXPORT extern const base::Feature kDefaultEnableOopRasterization;
 
+GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
+
 #if defined(OS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
 
