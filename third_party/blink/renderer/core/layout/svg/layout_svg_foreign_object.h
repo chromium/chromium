@@ -72,7 +72,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   }
   FloatRect StrokeBoundingBox() const override {
     NOT_DESTROYED();
-    return ObjectBoundingBox();
+    return VisualRectInLocalSVGCoordinates();
   }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();

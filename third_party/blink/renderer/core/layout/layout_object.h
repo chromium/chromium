@@ -1262,10 +1262,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // SVGGraphicsElement::getBBox().
   // NOTE: Markers are not specifically ignored here by SVG 1.1 spec, but we
   // ignore them since stroke-width is ignored (and marker size can depend on
-  // stroke-width). objectBoundingBox is returned local coordinates.
+  // stroke-width). objectBoundingBox is returned in local coordinates and
+  // always unzoomed.
   // The name objectBoundingBox is taken from the SVG 1.1 spec.
   virtual FloatRect ObjectBoundingBox() const;
-  virtual FloatRect StrokeBoundingBox() const;
 
   // Returns the smallest rectangle enclosing all of the painted content
   // respecting clipping, masking, filters, opacity, stroke-width and markers.
@@ -1274,6 +1274,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // LayoutSVGViewportContainer and  LayoutSVGResourceMarker), the local SVG
   // coordinate space is the viewport space.
   virtual FloatRect VisualRectInLocalSVGCoordinates() const;
+
+  // Like VisualRectInLocalSVGCoordinates() but does not include visual overflow
+  // (name is misleading). May be zoomed (currently only for <foreignObject>,
+  // which represents this via its LocalToSVGParentTransform()).
+  virtual FloatRect StrokeBoundingBox() const;
 
   // This returns the transform applying to the local SVG coordinate space,
   // which combines the CSS transform properties and animation motion transform.
