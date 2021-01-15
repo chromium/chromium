@@ -47,10 +47,16 @@ gn gen $OUT_DIR
 GEN_H_TARGETS=`ninja -C $OUT_DIR -t targets all | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' | cut -d : -f 1`
 time ninja -C $OUT_DIR $GEN_H_TARGETS
 
+if grep -qE '^\s*target_os\s*=\s*("win"|win)' $OUT_DIR/args.gn
+then
+  TARGET_OS_OPTION="--target_os=win"
+fi
+
 # A preliminary rewriter run in a special mode that generates a list of fields
 # to ignore. These fields would likely lead to compiler errors if rewritten.
 echo "*** Generating the ignore list ***"
 time tools/clang/scripts/run_tool.py \
+    $TARGET_OS_OPTION \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
     --generate-compdb \
@@ -66,6 +72,7 @@ cat ~/scratch/automated-fields-to-ignore.txt \
 # Main rewrite.
 echo "*** Running the main rewrite phase ***"
 time tools/clang/scripts/run_tool.py \
+    $TARGET_OS_OPTION \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-fields=$HOME/scratch/combined-fields-to-ignore.txt \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
