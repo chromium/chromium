@@ -51,16 +51,9 @@ GetRestrictedCookieManagerForContext(
   StoragePartition* storage_partition =
       BrowserContext::GetDefaultStoragePartition(browser_context);
 
-  net::IsolationInfo isolation_info =
-      render_frame_host
-          ? render_frame_host->GetIsolationInfoForSubresources()
-          : net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                       top_frame_origin, origin,
-                                       site_for_cookies, base::nullopt);
-  DCHECK_EQ(origin, isolation_info.frame_origin().value());
-  DCHECK_EQ(top_frame_origin, isolation_info.top_frame_origin().value());
-  // TODO(https://crbug.com/911299): Check `site_for_cookies` and
-  // `isolation_info.site_for_cookies` are equivalent.
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, top_frame_origin, origin,
+      site_for_cookies, base::nullopt);
 
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)
