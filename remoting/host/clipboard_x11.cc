@@ -56,6 +56,9 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
 ClipboardX11::ClipboardX11() = default;
 
 ClipboardX11::~ClipboardX11() {
+  if (connection_) {
+    connection_->RemoveEventObserver(this);
+  }
   x_connection_watch_controller_ = nullptr;
 }
 
@@ -68,6 +71,7 @@ void ClipboardX11::Start(
     LOG(ERROR) << "Couldn't open X display";
     return;
   }
+  connection_->AddEventObserver(this);
   client_clipboard_.swap(client_clipboard);
 
   x_server_clipboard_.Init(
