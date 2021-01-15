@@ -479,17 +479,6 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceHostBrowserTest, RequestDictionary) {
   EXPECT_TRUE(GetEnableSpellcheckState());
 }
 
-// When the renderer notifies that it corrected a word, the render process
-// host should record UMA stats about the correction.
-IN_PROC_BROWSER_TEST_F(SpellcheckServiceHostBrowserTest, NotifyChecked) {
-  const char kMisspellRatio[] = "SpellCheck.MisspellRatio";
-
-  base::HistogramTester tester;
-  tester.ExpectTotalCount(kMisspellRatio, 0);
-  NotifyChecked();
-  tester.ExpectTotalCount(kMisspellRatio, 1);
-}
-
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 // When the renderer requests the spelling service for correcting text, the
 // render process host should call the remote spelling service.

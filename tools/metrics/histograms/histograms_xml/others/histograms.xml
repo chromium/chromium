@@ -14667,12 +14667,18 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SpellCheck.MisspellRatio" units="%" expires_after="M90">
+  <obsolete>
+    Removed 2021/01: the relevant code path isn't used anymore.
+  </obsolete>
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>The percentage of misspelled words within checked words.</summary>
 </histogram>
 
 <histogram name="SpellCheck.ReplaceRatio" units="%" expires_after="M90">
+  <obsolete>
+    Removed 2021/01: the relevant code path isn't used anymore.
+  </obsolete>
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>The percentage of replaced words within misspelled words.</summary>
