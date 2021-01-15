@@ -19,6 +19,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -84,6 +85,7 @@ class WebAppsChromeOs : public WebAppsBase,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  // menu_type is stored as |shortcut_id|.
   void ExecuteContextMenuCommand(const std::string& app_id,
                                  int command_id,
                                  const std::string& shortcut_id,
@@ -93,7 +95,6 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
                                     bool is_disabled) override;
-  // TODO(loyso): Implement app->last_launch_time field for the new system.
 
   // ArcAppListPrefs::Observer overrides.
   void OnPackageInstalled(
@@ -110,6 +111,13 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnNotificationClosed(const std::string& notification_id) override;
   void OnNotificationDisplayServiceDestroyed(
       NotificationDisplayService* service) override;
+
+  void OnShortcutsMenuIconsRead(
+      const std::string& app_id,
+      apps::mojom::MenuType menu_type,
+      apps::mojom::MenuItemsPtr menu_items,
+      GetMenuModelCallback callback,
+      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps);
 
   bool MaybeAddNotification(const std::string& app_id,
                             const std::string& notification_id);

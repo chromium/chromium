@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcut_item.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -84,6 +85,13 @@ void PopulateItemFromMojoMenuItems(
     apps::mojom::MenuItemPtr menu_item,
     ui::SimpleMenuModel* model,
     arc::ArcAppShortcutItems* arc_shortcut_items);
+
+// Convert |menu_type| to string. Useful to pass |menu_type| enum as string id.
+base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type);
+
+// Convert |menu_type| string to enum. Useful to pass |menu_type| enum as string
+// id.
+apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
 
 }  // namespace apps
 

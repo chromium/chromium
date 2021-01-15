@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -1019,3 +1020,116 @@ TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
 
   VerifyIcon(src_image_skia, dst_image_skia);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
+  gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
+      /*icon_bitmaps=*/std::map<SquareSizePx, SkBitmap>{},
+      /*icon_effects=*/apps::IconEffects::kNone,
+      /*size_hint_in_dip=*/32);
+
+  EXPECT_TRUE(converted_image.isNull());
+}
+
+TEST_F(WebAppIconFactoryTest,
+       ConvertSquareBitmapsToImageSkia_OneBigIconForDownscale) {
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k512,
+                            SK_ColorYELLOW);
+
+  gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
+      icon_bitmaps, /*icon_effects=*/apps::IconEffects::kNone,
+      /*size_hint_in_dip=*/32);
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ASSERT_TRUE(converted_image.HasRepresentation(scale));
+    EXPECT_EQ(
+        SK_ColorYELLOW,
+        converted_image.GetRepresentation(scale).GetBitmap().getColor(0, 0));
+  }
+}
+
+TEST_F(WebAppIconFactoryTest,
+       ConvertSquareBitmapsToImageSkia_OneSmallIconNoUpscale) {
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k16,
+                            SK_ColorMAGENTA);
+
+  gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
+      icon_bitmaps, /*icon_effects=*/apps::IconEffects::kNone,
+      /*size_hint_in_dip=*/32);
+  EXPECT_TRUE(converted_image.isNull());
+}
+
+TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
+  const std::vector<SquareSizePx> sizes_px{
+      web_app::icon_size::k16, web_app::icon_size::k32, web_app::icon_size::k48,
+      web_app::icon_size::k64, web_app::icon_size::k128};
+  const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED, SK_ColorMAGENTA,
+                                    SK_ColorGREEN, SK_ColorWHITE};
+
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  for (size_t i = 0; i < sizes_px.size(); ++i) {
+    web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
+  }
+
+  gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
+      icon_bitmaps, /*icon_effects=*/apps::IconEffects::kNone,
+      /*size_hint_in_dip=*/32);
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  // Expects 32px and 64px to be chosen for 32dip-normal and 32dip-hi-DPI (2.0f
+  // scale).
+  const std::vector<SkColor> expected_colors{SK_ColorRED, SK_ColorGREEN};
+
+  for (int i = 0; i < scale_factors.size(); ++i) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factors[i]);
+    ASSERT_TRUE(converted_image.HasRepresentation(scale));
+    EXPECT_EQ(
+        expected_colors[i],
+        converted_image.GetRepresentation(scale).GetBitmap().getColor(0, 0));
+  }
+}
+
+TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
+  const std::vector<SquareSizePx> sizes_px{web_app::icon_size::k48,
+                                           web_app::icon_size::k96};
+  const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED};
+
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  for (size_t i = 0; i < sizes_px.size(); ++i) {
+    web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
+  }
+
+  gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
+      icon_bitmaps, /*icon_effects=*/apps::IconEffects::kCrOsStandardIcon,
+      /*size_hint_in_dip=*/32);
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (int i = 0; i < scale_factors.size(); ++i) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factors[i]);
+    ASSERT_TRUE(converted_image.HasRepresentation(scale));
+
+    // No colour in the upper left corner.
+    EXPECT_FALSE(
+        converted_image.GetRepresentation(scale).GetBitmap().getColor(0, 0));
+
+    const SquareSizePx center_px = sizes_px[i] / 2;
+    EXPECT_EQ(colors[i],
+              converted_image.GetRepresentation(scale).GetBitmap().getColor(
+                  center_px, center_px));
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

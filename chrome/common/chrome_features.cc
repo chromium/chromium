@@ -233,6 +233,13 @@ const base::Feature kDesktopCaptureTabSharingInfobar{
 const base::Feature kDesktopPWAsAppIconShortcutsMenu{
     "DesktopPWAsAppIconShortcutsMenu", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS
+// UI surfaces.
+const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
+    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 const base::Feature kDesktopPWAsCacheDuringDefaultInstall{

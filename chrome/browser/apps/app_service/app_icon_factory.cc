@@ -188,7 +188,7 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
   return subset_image;
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::map<std::pair<int, int>, gfx::ImageSkia>& GetResourceIconCache() {
   static base::NoDestructor<std::map<std::pair<int, int>, gfx::ImageSkia>>
@@ -1200,6 +1200,58 @@ void ArcActivityIconsToImageSkias(
       base::MakeRefCounted<IconLoadingPipeline>(std::move(callback));
   icon_loader->LoadArcActivityIcons(icons);
 }
+
+gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
+    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    IconEffects icon_effects,
+    int size_hint_in_dip) {
+  if (icon_bitmaps.empty()) {
+    return gfx::ImageSkia{};
+  }
+
+  gfx::ImageSkia image_skia;
+  auto it = icon_bitmaps.begin();
+
+  for (ui::ScaleFactor scale_factor : ui::GetSupportedScaleFactors()) {
+    float icon_scale = ui::GetScaleForScaleFactor(scale_factor);
+
+    SquareSizePx icon_size_in_px =
+        gfx::ScaleToFlooredSize(gfx::Size(size_hint_in_dip, size_hint_in_dip),
+                                icon_scale)
+            .width();
+
+    while (it != icon_bitmaps.end() && it->first < icon_size_in_px) {
+      ++it;
+    }
+
+    if (it == icon_bitmaps.end() || it->second.empty()) {
+      continue;
+    }
+
+    SkBitmap bitmap = it->second;
+    // Resize |bitmap| to match |icon_scale|.
+    //
+    // TODO(crbug.com/1140356): All conversions in app_icon_factory.cc must
+    // perform CPU-heavy operations off the Browser UI thread.
+    if (bitmap.width() != icon_size_in_px) {
+      bitmap = skia::ImageOperations::Resize(
+          bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px,
+          icon_size_in_px);
+    }
+
+    image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, icon_scale));
+  }
+
+  if (image_skia.isNull()) {
+    return gfx::ImageSkia{};
+  }
+
+  image_skia.EnsureRepsForSupportedScales();
+  ApplyIconEffects(icon_effects, size_hint_in_dip, &image_skia);
+
+  return image_skia;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ApplyIconEffects(IconEffects icon_effects,

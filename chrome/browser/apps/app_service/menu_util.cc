@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -211,6 +212,23 @@ void PopulateItemFromMojoMenuItems(
       NOTREACHED();
       break;
   }
+}
+
+base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type) {
+  switch (menu_type) {
+    case apps::mojom::MenuType::kShelf:
+      return "shelf";
+    case apps::mojom::MenuType::kAppList:
+      return "applist";
+  }
+}
+
+apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type) {
+  if (base::LowerCaseEqualsASCII(menu_type, "shelf"))
+    return apps::mojom::MenuType::kShelf;
+  if (base::LowerCaseEqualsASCII(menu_type, "applist"))
+    return apps::mojom::MenuType::kAppList;
+  return apps::mojom::MenuType::kShelf;
 }
 
 }  // namespace apps

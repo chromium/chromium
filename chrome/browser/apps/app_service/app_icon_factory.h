@@ -109,6 +109,13 @@ void ArcActivityIconsToImageSkias(
     const std::vector<arc::mojom::ActivityIconPtr>& icons,
     base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)>
         callback);
+
+// TODO(crbug.com/1140356): Unify this function with IconLoadingPipeline class.
+// It's the same as IconLoadingPipeline::OnReadWebAppIcon().
+gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
+    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    IconEffects icon_effects,
+    int size_hint_in_dip);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Modifies |image_skia| to apply icon post-processing effects like badging and

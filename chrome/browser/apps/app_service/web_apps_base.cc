@@ -234,8 +234,7 @@ void WebAppsBase::Connect(
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppsBase::StartPublishingWebApps,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(subscriber_remote)));
+                                AsWeakPtr(), std::move(subscriber_remote)));
 }
 
 void WebAppsBase::LoadIcon(const std::string& app_id,

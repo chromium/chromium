@@ -44,6 +44,7 @@ struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsBase : public apps::PublisherBase,
+                    public base::SupportsWeakPtr<WebAppsBase>,
                     public web_app::AppRegistrarObserver,
                     public content_settings::Observer {
  public:
@@ -85,19 +86,15 @@ class WebAppsBase : public apps::PublisherBase,
   Profile* profile() const { return profile_; }
   web_app::WebAppProvider* provider() const { return provider_; }
 
-  base::WeakPtr<WebAppsBase> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   apps_util::IncrementingIconKeyFactory& icon_key_factory() {
     return icon_key_factory_;
   }
 
- private:
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
-
   // Can return nullptr in tests.
   const web_app::WebAppRegistrar* GetRegistrar() const;
+
+ private:
+  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -170,8 +167,6 @@ class WebAppsBase : public apps::PublisherBase,
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;
-
-  base::WeakPtrFactory<WebAppsBase> weak_ptr_factory_{this};
 };
 
 void PopulateIntentFilters(const web_app::WebApp& web_app,

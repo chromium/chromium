@@ -18,6 +18,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -278,6 +280,83 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
                    &menu_items);
   }
 
+  // Read shortcuts menu item icons from disk, if any.
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsAppIconShortcutsMenuUI) &&
+      !web_app->shortcuts_menu_item_infos().empty()) {
+    // TODO(crbug.com/1152661): ReadAllShortcutsMenuIcons must support
+    // IconPurpose::MASKABLE.
+    provider()->icon_manager().ReadAllShortcutsMenuIcons(
+        app_id,
+        base::BindOnce(&WebAppsChromeOs::OnShortcutsMenuIconsRead,
+                       base::AsWeakPtr<WebAppsChromeOs>(this), app_id,
+                       menu_type, std::move(menu_items), std::move(callback)));
+  } else {
+    std::move(callback).Run(std::move(menu_items));
+  }
+}
+
+void WebAppsChromeOs::OnShortcutsMenuIconsRead(
+    const std::string& app_id,
+    apps::mojom::MenuType menu_type,
+    apps::mojom::MenuItemsPtr menu_items,
+    GetMenuModelCallback callback,
+    ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
+  const web_app::WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    std::move(callback).Run(apps::mojom::MenuItems::New());
+    return;
+  }
+
+  AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
+
+  int menu_item_index = 0;
+
+  for (const WebApplicationShortcutsMenuItemInfo& menu_item_info :
+       web_app->shortcuts_menu_item_infos()) {
+    const std::map<SquareSizePx, SkBitmap>* menu_item_icon_bitmaps = nullptr;
+    if (menu_item_index < shortcuts_menu_icons_bitmaps.size()) {
+      menu_item_icon_bitmaps = &shortcuts_menu_icons_bitmaps[menu_item_index];
+    }
+
+    if (menu_item_index != 0) {
+      AddSeparator(ui::PADDED_SEPARATOR, &menu_items);
+    }
+
+    gfx::ImageSkia icon;
+    if (menu_item_icon_bitmaps) {
+      // TODO(crbug.com/1140356): Unify this constant with kAppShortcutIconSize
+      // from ArcAppShortcutsRequest class.
+      constexpr int kAppShortcutIconSizeDip = 32;
+
+      // TODO(crbug.com/1152661): Remove kCrOsStandardIcon and add
+      // kCrOsStandardBackground|kCrOsStandardMask effects for web app menu
+      // maskable icons.
+      IconEffects icon_effects = IconEffects::kNone;
+      if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+        icon_effects = IconEffects::kCrOsStandardIcon;
+      }
+
+      icon = ConvertSquareBitmapsToImageSkia(
+          *menu_item_icon_bitmaps, icon_effects,
+          /*size_hint_in_dip=*/kAppShortcutIconSizeDip);
+    }
+
+    // Uses integer |command_id| to store menu item index.
+    const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + menu_item_index;
+    // Passes menu_type argument as shortcut_id to use it in
+    // ExecuteContextMenuCommand().
+    std::string shortcut_id{MenuTypeToString(menu_type)};
+
+    const std::string label = base::UTF16ToUTF8(menu_item_info.name);
+
+    // TODO(crbug.com/1140356): Rename AddArcCommandItem to
+    // AddPublisherCommandItem.
+    AddArcCommandItem(command_id, shortcut_id, label, icon, &menu_items);
+
+    ++menu_item_index;
+  }
+
   std::move(callback).Run(std::move(menu_items));
 }
 
@@ -285,8 +364,37 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
                                                 int command_id,
                                                 const std::string& shortcut_id,
                                                 int64_t display_id) {
-  // TODO(crbug.com/1129721) Implement it for shortcut menu in web apps.
-  NOTIMPLEMENTED();
+  const web_app::WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  apps::mojom::LaunchSource launch_source;
+  // shortcut_id contains menu_type.
+  switch (MenuTypeFromString(shortcut_id)) {
+    case apps::mojom::MenuType::kShelf:
+      launch_source = apps::mojom::LaunchSource::kFromShelf;
+      break;
+    case apps::mojom::MenuType::kAppList:
+      launch_source = apps::mojom::LaunchSource::kFromAppListGridContextMenu;
+      break;
+  }
+
+  web_app::DisplayMode display_mode =
+      GetRegistrar()->GetAppEffectiveDisplayMode(app_id);
+
+  apps::AppLaunchParams params(
+      app_id, web_app::ConvertDisplayModeToAppLaunchContainer(display_mode),
+      WindowOpenDisposition::CURRENT_TAB, GetAppLaunchSource(launch_source),
+      display_id);
+
+  size_t menu_item_index = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
+  if (menu_item_index < web_app->shortcuts_menu_item_infos().size()) {
+    params.override_url =
+        web_app->shortcuts_menu_item_infos()[menu_item_index].url;
+  }
+
+  LaunchAppWithParams(std::move(params));
 }
 
 void WebAppsChromeOs::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
