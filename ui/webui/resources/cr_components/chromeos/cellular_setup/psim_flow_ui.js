@@ -82,6 +82,11 @@ cr.define('cellularSetup', function() {
             'selectedPSimPageName_, cellularMetadata_.*)',
       },
 
+      forwardButtonLabel: {
+        type: String,
+        notify: true,
+      },
+
       /**
        * @type {!cellularSetup.PSimUIState}
        * @private
@@ -223,8 +228,9 @@ cr.define('cellularSetup', function() {
           break;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+          this.forwardButtonLabel = this.i18n('done');
           buttonState = {
-            done: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         default:

@@ -24,6 +24,11 @@ Polymer({
       type: Object,
       value: cellularSetup.Button,
     },
+
+    forwardButtonLabel: {
+      type: String,
+      value: '',
+    }
   },
 
   /**
@@ -61,11 +66,6 @@ Polymer({
   },
 
   /** @private */
-  onDoneButtonClicked_() {
-    this.fire('complete-flow-requested');
-  },
-
-  /** @private */
   onForwardButtonClicked_() {
     this.fire('forward-nav-requested');
   },
@@ -82,14 +82,10 @@ Polymer({
         return this.buttonState.backward;
       case cellularSetup.Button.CANCEL:
         return this.buttonState.cancel;
-      case cellularSetup.Button.DONE:
-        return this.buttonState.done;
       case cellularSetup.Button.FORWARD:
         return this.buttonState.forward;
       case cellularSetup.Button.TRY_AGAIN:
         return this.buttonState.tryAgain;
-      case cellularSetup.Button.SKIP_DISCOVERY:
-        return this.buttonState.skipDiscovery;
       default:
         assertNotReached();
         return cellularSetup.ButtonState.ENABLED;

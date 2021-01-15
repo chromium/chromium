@@ -282,8 +282,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     test('Skip discovery flow', async function() {
       // Simulate pressing 'Skip'.
       assertTrue(
-          eSimPage.buttonState.skipDiscovery ===
-          cellularSetup.ButtonState.ENABLED);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
       eSimPage.navigateForward();
       Polymer.dom.flush();
 
@@ -313,7 +312,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // The 'Forward' button should now be enabled.
       assertTrue(
           eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
-      assertFalse(!!eSimPage.buttonState.skipDiscovery);
 
       // Simulate pressing 'Forward'.
       eSimPage.navigateForward();
@@ -339,7 +337,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // The 'Forward' button should now be enabled.
       assertTrue(
           eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
-      assertFalse(!!eSimPage.buttonState.skipDiscovery);
 
       // Simulate pressing 'Forward'.
       eSimPage.navigateForward();

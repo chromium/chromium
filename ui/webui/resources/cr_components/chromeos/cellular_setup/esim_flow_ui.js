@@ -37,6 +37,11 @@ cr.define('cellular_setup', function() {
       /** @type {!cellular_setup.CellularSetupDelegate} */
       delegate: Object,
 
+      forwardButtonLabel: {
+        type: String,
+        notify: true,
+      },
+
       /**
        * @type {!cellular_setup.ESimUiState}
        * @private
@@ -230,6 +235,7 @@ cr.define('cellular_setup', function() {
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
         case ESimUiState.ACTIVATION_CODE_ENTRY:
+          this.forwardButtonLabel = this.i18n('next');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
             cancel: this.delegate.shouldShowCancelButton() ?
@@ -239,26 +245,28 @@ cr.define('cellular_setup', function() {
           };
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
+          this.forwardButtonLabel = this.i18n('confirm');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
             cancel: this.delegate.shouldShowCancelButton() ?
                 cellularSetup.ButtonState.ENABLED :
                 undefined,
-            // TODO(crbug.com/1093185) Add a "Confirm" button state.
             forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
         case ESimUiState.PROFILE_SELECTION:
+          this.forwardButtonLabel = this.i18n('skipDiscovery');
           buttonState = {
             cancel: this.delegate.shouldShowCancelButton() ?
                 cellularSetup.ButtonState.ENABLED :
                 undefined,
-            skipDiscovery: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         case ESimUiState.SETUP_FINISH:
+          this.forwardButtonLabel = this.i18n('done');
           buttonState = {
-            done: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         default:
@@ -270,34 +278,25 @@ cr.define('cellular_setup', function() {
 
     /** @private */
     onActivationCodeUpdated_(event) {
-      if (event.detail.activationCode) {
-        this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
-      } else {
-        this.set('buttonState.forward', cellularSetup.ButtonState.DISABLED);
-      }
+      this.set(
+          'buttonState.forward',
+          event.detail.activationCode ? cellularSetup.ButtonState.ENABLED :
+                                        cellularSetup.ButtonState.DISABLED);
     },
 
     /** @private */
     onSelectedProfileChanged_() {
-      if (this.selectedProfile_) {
-        this.set('buttonState.skipDiscovery', undefined);
-        this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
-      } else {
-        this.set('buttonState.forward', undefined);
-        this.set(
-            'buttonState.skipDiscovery', cellularSetup.ButtonState.ENABLED);
-      }
+      this.forwardButtonLabel = this.selectedProfile_ ?
+          this.i18n('next') :
+          this.i18n('skipDiscovery');
     },
 
     /** @private */
     onConfirmationCodeUpdated_() {
-      // TODO(crbug.com/1093185) Change this to updating a "Confirm" button's
-      // state.
-      if (this.confirmationCode_) {
-        this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
-      } else {
-        this.set('buttonState.forward', cellularSetup.ButtonState.DISABLED);
-      }
+      this.set(
+          'buttonState.forward',
+          this.confirmationCode_ ? cellularSetup.ButtonState.ENABLED :
+                                   cellularSetup.ButtonState.DISABLED);
     },
 
     /** SubflowBehavior override */

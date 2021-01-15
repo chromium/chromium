@@ -44,26 +44,12 @@
         hidden$="[[isButtonHidden_(Button.TRY_AGAIN, buttonState.*)]]">
       [[i18n('tryAgain')]]
     </cr-button>
-    <cr-button id="done"
-        class="action-button"
-        on-click="onDoneButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.DONE, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.DONE, buttonState.*)]]">
-      [[i18n('done')]]
-    </cr-button>
-    <cr-button id="skipDiscovery"
-        class="action-button"
-        on-click="onNextButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.SKIP_DISCOVERY, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.SKIP_DISCOVERY, buttonState.*)]]">
-      [[i18n('skipDiscovery')]]
-    </cr-button>
     <cr-button id="forward"
         class="action-button"
         on-click="onForwardButtonClicked_"
         disabled="[[isButtonDisabled_(Button.FORWARD, buttonState.*)]]"
         hidden$="[[isButtonHidden_(Button.FORWARD, buttonState.*)]]">
-      [[i18n('next')]]
+      [[forwardButtonLabel]]
     </cr-button>
   </template>
   <script src="button_bar.js"></script>

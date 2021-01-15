@@ -57,12 +57,19 @@ Polymer({
       type: Object,
       observer: 'onPageChange_',
     },
+
+    /**
+     * Text for the button_bar's 'Forward' button.
+     * @private {string}
+     */
+    forwardButtonLabel_: {
+      type: String,
+    }
   },
 
   listeners: {
     'backward-nav-requested': 'onBackwardNavRequested_',
     'retry-requested': 'onRetryRequested_',
-    'complete-flow-requested': 'onCompleteFlowRequested_',
     'forward-nav-requested': 'onForwardNavRequested_',
     'cancel-requested': 'onCancelRequested_',
   },
@@ -95,11 +102,6 @@ Polymer({
   /** @private */
   onRetryRequested_() {
     // TODO(crbug.com/1093185): Add try again logic.
-  },
-
-  /** @private */
-  onCompleteFlowRequested_() {
-    // TODO(crbug.com/1093185): Add completion logic.
   },
 
   /** @private */

@@ -17,7 +17,8 @@
       <setup-selection-flow
           selected-page="{{selectedFlow_}}"
           button-state="{{buttonState_}}"
-          id="setup-selection-flow">
+          id="setup-selection-flow"
+          forward-button-label="{{forwardButtonLabel_}}">
       </setup-selection-flow>
       <template is="dom-if"
           if="[[isPSimSelected_(currentPageName)]]" restamp>
@@ -25,7 +26,8 @@
             button-state="{{buttonState_}}"
             name-of-carrier-pending-setup="{{flowTitle}}"
             delegate="[[delegate]]"
-            id="psim-flow-ui">
+            id="psim-flow-ui"
+            forward-button-label="{{forwardButtonLabel_}}">
         </psim-flow-ui>
       </template>
       <template is="dom-if"
@@ -33,11 +35,14 @@
         <esim-flow-ui
             button-state="{{buttonState_}}"
             delegate="[[delegate]]"
-            id="esim-flow-ui">
+            id="esim-flow-ui"
+            forward-button-label="{{forwardButtonLabel_}}">
         </esim-flow-ui>
       </template>
     </iron-pages>
-    <button-bar button-state="[[buttonState_]]">
+    <button-bar
+        button-state="[[buttonState_]]"
+        forward-button-label="[[forwardButtonLabel_]]">
     </button-bar>
   </template>
   <script src="cellular_setup.js"></script>
