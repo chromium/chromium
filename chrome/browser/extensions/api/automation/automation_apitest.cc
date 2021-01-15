@@ -292,6 +292,12 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop", "iframenav.html"))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/tabs",
                                   "desktop_not_requested.html")) << message_;
