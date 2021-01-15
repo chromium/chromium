@@ -13,15 +13,19 @@
 # instrumentation tests.
 {
   'masters': {
-    'dummy.master': {
-      'dummy.builder': 'android_release_bot_minimal_symbols_x86_webview_google',
-    },
+    'dummy.group': {
+      'dummy.builder.google_webview_pkg_name': 'android_weblayer_with_google_webview_pkg_name',
+      'dummy.builder.aosp_webview_pkg_name': 'android_weblayer_with_aosp_webview_pkg_name',
+    }
   },
 
   'configs': {
-    'android_release_bot_minimal_symbols_x86_webview_google': [
-      'android', 'release_bot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'webview_google',
+    'android_weblayer_with_aosp_webview_pkg_name': [
+      'android_release_bot_minimal_symbols_x86'
+    ],
+
+    'android_weblayer_with_google_webview_pkg_name': [
+      'android_release_bot_minimal_symbols_x86_webview_google'
     ],
   },
 
@@ -34,6 +38,18 @@
     # which are not allowed to have proprietary codecs enabled.
     'android': {
       'mixins': ['android_without_codecs', 'chrome_with_codecs'],
+    },
+
+    # Default webview package name is com.android.webview which
+    # is necessary for skew tests to work on Android M and Anroid 10
+    # x86 builders.
+    'android_release_bot_minimal_symbols_x86': {
+      'mixins': ['android', 'release_bot', 'minimal_symbols', 'x86',
+                 'strip_debug_info', 'improved_debugging'],
+    },
+
+    'android_release_bot_minimal_symbols_x86_webview_google': {
+      'mixins': ['android_release_bot_minimal_symbols_x86', 'webview_google'],
     },
 
     'android_without_codecs': {
@@ -84,6 +100,10 @@
 
     'x86': {
       'gn_args': 'target_cpu="x86"',
+    },
+
+    'improved_debugging': {
+      'gn_args': 'is_java_debug=true dcheck_always_on=true',
     },
   },
 }
