@@ -31,11 +31,12 @@ after a set period of time (the **scanning speed**).
 
 The user can identify which element is currently focused because it is
 surrounded by a **focus ring**, which is two concentric rounded rectangles of
-contrasting colors (currently fixed at light blue and black) that surround the
+contrasting colors (currently fixed at light and dark blue) that surround the
 element. Sometimes, a second focus ring will appear onscreen, which has dashed
-rather than solid lines. This dashed focus ring provides a preview of which node
-will be focused, if the user selects the current node. It also provides a hint
-that the current node is a navigational node, and is not directly actionable.
+line for the inner rectangle. This dashed focus ring provides a preview of which
+node will be focused next, if the user selects the current node. It also
+provides a hint that the current node is a navigational node, and is not
+directly actionable.
 
 There are two types of navigational nodes: nodes that group other nodes
 together, and the **back button**. The back button allows a user to exit the
@@ -136,9 +137,9 @@ The Switch Access extension does the following, at a high level:
 
     - If it is a select command, the available actions are determined.
 
-If there is only one, it is performed (Note that for navigational nodes, this
-means entering or exiting a group). If more than one action is available, the
-menu is opened and focus jumps into the menu.
+    - If there is only one action, it is performed (Note that for navigational
+    nodes, this means entering or exiting a group). If more than one action is
+    available, the menu is opened and focus jumps into the menu.
 
 3. Listens for focus events, and moves Switch Access focus to follow system
 focus.
