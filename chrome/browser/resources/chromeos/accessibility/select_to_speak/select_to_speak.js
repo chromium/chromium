@@ -1490,6 +1490,9 @@ export class SelectToSpeak {
     }
     if (this.shouldShowNavigationControls_()) {
       options.rate = this.getSpeechRate_();
+      // Log speech rate multiple applied by Select-to-speak.
+      MetricsUtils.recordSpeechRateOverrideMultiplier(
+          this.speechRateMultiplier_);
     }
 
     const nodeGroupText = nodeGroup.text || '';
