@@ -130,6 +130,41 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
         std::move(nested_arguments));
   }
 
+  if (js_value->IsTypedArray()) {
+    auto typed_array = js_value.As<v8::TypedArray>();
+    mojom::blink::RemoteArrayType array_type;
+    if (typed_array->IsInt8Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt8Array;
+    } else if (typed_array->IsUint8Array() ||
+               typed_array->IsUint8ClampedArray()) {
+      array_type = mojom::blink::RemoteArrayType::kUint8Array;
+    } else if (typed_array->IsInt16Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt16Array;
+    } else if (typed_array->IsUint16Array()) {
+      array_type = mojom::blink::RemoteArrayType::kUint16Array;
+    } else if (typed_array->IsInt32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt32Array;
+    } else if (typed_array->IsUint32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kUint32Array;
+    } else if (typed_array->IsFloat32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kFloat32Array;
+    } else if (typed_array->IsFloat64Array()) {
+      array_type = mojom::blink::RemoteArrayType::kFloat64Array;
+    } else {
+      return nullptr;
+    }
+
+    auto remote_typed_array = mojom::blink::RemoteTypedArray::New();
+    mojo_base::BigBuffer buffer(typed_array->ByteLength());
+    typed_array->CopyContents(buffer.data(), buffer.size());
+
+    remote_typed_array->buffer = std::move(buffer);
+    remote_typed_array->type = array_type;
+
+    return mojom::blink::RemoteInvocationArgument::NewTypedArrayValue(
+        std::move(remote_typed_array));
+  }
+
   return nullptr;
 }
 

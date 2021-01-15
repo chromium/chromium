@@ -705,7 +705,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassInt8Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(1);");
         mActivityTestRule.executeJavaScript("int8_array = new Int8Array(buffer);");
@@ -781,7 +781,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassUint8Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(1);");
         mActivityTestRule.executeJavaScript("uint8_array = new Uint8Array(buffer);");
@@ -856,7 +856,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassInt16Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(2);");
         mActivityTestRule.executeJavaScript("int16_array = new Int16Array(buffer);");
@@ -900,7 +900,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassUint16Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(2);");
         mActivityTestRule.executeJavaScript("uint16_array = new Uint16Array(buffer);");
@@ -944,7 +944,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassUint16ArrayWithMaxValue(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(2);");
         mActivityTestRule.executeJavaScript("uint16_array = new Uint16Array(buffer);");
@@ -979,7 +979,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassInt32Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(4);");
         mActivityTestRule.executeJavaScript("int32_array = new Int32Array(buffer);");
@@ -1023,7 +1023,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassUint32Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(4);");
         mActivityTestRule.executeJavaScript("uint32_array = new Uint32Array(buffer);");
@@ -1067,7 +1067,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassUint32ArrayWithMaxValue(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(4);");
         mActivityTestRule.executeJavaScript("uint32_array = new Uint32Array(buffer);");
@@ -1103,7 +1103,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassFloat32Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(4);");
         mActivityTestRule.executeJavaScript("float32_array = new Float32Array(buffer);");
@@ -1147,7 +1147,7 @@ public class JavaBridgeArrayCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassFloat64Array(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(8);");
         mActivityTestRule.executeJavaScript("float64_array = new Float64Array(buffer);");

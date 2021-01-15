@@ -6,13 +6,16 @@ package org.chromium.content.browser.remoteobjects;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.blink.mojom.RemoteArrayType;
 import org.chromium.blink.mojom.RemoteInvocationArgument;
 import org.chromium.blink.mojom.RemoteInvocationError;
 import org.chromium.blink.mojom.RemoteInvocationResult;
 import org.chromium.blink.mojom.RemoteInvocationResultValue;
 import org.chromium.blink.mojom.RemoteObject;
+import org.chromium.blink.mojom.RemoteTypedArray;
 import org.chromium.blink.mojom.SingletonJavaScriptValue;
 import org.chromium.mojo.system.MojoException;
+import org.chromium.mojo_base.BigBufferUtil;
 import org.chromium.mojo_base.mojom.String16;
 
 import java.lang.annotation.Annotation;
@@ -22,6 +25,12 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -111,6 +120,10 @@ class RemoteObjectImpl implements RemoteObject {
     private final boolean mAllowInspection;
 
     private boolean mNotifiedReleasedObject;
+
+    public static final short UNSIGNED_BYTE_MASK = 0xff;
+    public static final int UNSIGNED_SHORT_MASK = 0xffff;
+    public static final long UNSIGNED_INT_MASK = 0xffffffffL;
 
     public RemoteObjectImpl(Object target, Class<? extends Annotation> safeAnnotationClass,
             Auditor auditor, ObjectIdAllocator objectIdAllocator, boolean allowInspection) {
@@ -271,6 +284,153 @@ class RemoteObjectImpl implements RemoteObject {
         int COERCE = 1;
     }
 
+    private static Object convertPrimitiveArrayElement(Number number, Class<?> parameterType) {
+        assert (parameterType.isPrimitive() && parameterType != boolean.class);
+        if (parameterType == byte.class) {
+            return number.byteValue();
+        } else if (parameterType == char.class) {
+            return (char) (number.intValue() & UNSIGNED_SHORT_MASK);
+        } else if (parameterType == short.class) {
+            return number.shortValue();
+        } else if (parameterType == int.class) {
+            return number.intValue();
+        } else if (parameterType == long.class) {
+            return number.longValue();
+        } else if (parameterType == float.class) {
+            return number.floatValue();
+        }
+
+        return number.doubleValue();
+    }
+
+    private abstract static class WrapBuffer {
+        private Class<?> mParameterType;
+        protected int mLength;
+
+        WrapBuffer(Class<?> parameterType) {
+            mParameterType = parameterType;
+        }
+
+        public Object copyArray() {
+            if (mParameterType == boolean.class) {
+                // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
+                // requires converting to false for 0 or NaN, true otherwise.
+                // The default value of the boolean elements in a boolean array is false.
+                return new boolean[mLength];
+            } else if (isFloatType() && mParameterType == char.class) {
+                // LIVECONNECT_COMPLIANCE: Existing behavior is to convert floating-point types to
+                // 0. Spec requires converting doubles similarly to how we convert floating-point
+                // types to other numeric types.
+                // The default value of the char elements in a char array is 0.
+                return new char[mLength];
+            } else if (mParameterType == String.class) {
+                // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null for all.
+                // The default value of the String elements in a String array is null.
+                return new String[mLength];
+            }
+
+            Object result = Array.newInstance(mParameterType, mLength);
+            for (int i = 0; i < mLength; i++) {
+                Array.set(result, i, convertPrimitiveArrayElement(get(i), mParameterType));
+            }
+            return result;
+        }
+
+        protected abstract Number get(int index);
+        protected boolean isFloatType() {
+            return false;
+        }
+    }
+
+    private static class WrapByteBuffer extends WrapBuffer {
+        ByteBuffer mBuffer;
+        boolean mUnsigned;
+        WrapByteBuffer(ByteBuffer buffer, Class<?> parameterType, boolean unsigned) {
+            super(parameterType);
+            mBuffer = buffer;
+            mLength = mBuffer.limit();
+            mUnsigned = unsigned;
+        }
+
+        @Override
+        protected Number get(int index) {
+            byte number = mBuffer.get(index);
+            return (mUnsigned ? (short) (number & UNSIGNED_BYTE_MASK) : number);
+        }
+    }
+
+    private static class WrapShortBuffer extends WrapBuffer {
+        ShortBuffer mBuffer;
+        boolean mUnsigned;
+        WrapShortBuffer(ShortBuffer buffer, Class<?> parameterType, boolean unsigned) {
+            super(parameterType);
+            mBuffer = buffer;
+            mLength = mBuffer.limit();
+            mUnsigned = unsigned;
+        }
+
+        @Override
+        protected Number get(int index) {
+            short number = mBuffer.get(index);
+            return (mUnsigned ? (int) (number & UNSIGNED_SHORT_MASK) : number);
+        }
+    }
+
+    private static class WrapIntBuffer extends WrapBuffer {
+        IntBuffer mBuffer;
+        boolean mUnsigned;
+        WrapIntBuffer(IntBuffer buffer, Class<?> parameterType, boolean unsigned) {
+            super(parameterType);
+            mBuffer = buffer;
+            mLength = mBuffer.limit();
+            mUnsigned = unsigned;
+        }
+
+        @Override
+        protected Number get(int index) {
+            int number = mBuffer.get(index);
+            return (mUnsigned ? (long) (number & UNSIGNED_INT_MASK) : number);
+        }
+    }
+
+    private static class WrapFloatBuffer extends WrapBuffer {
+        FloatBuffer mBuffer;
+        WrapFloatBuffer(FloatBuffer buffer, Class<?> parameterType) {
+            super(parameterType);
+            mBuffer = buffer;
+            mLength = mBuffer.limit();
+        }
+
+        @Override
+        protected Number get(int index) {
+            return mBuffer.get(index);
+        }
+
+        @Override
+        protected boolean isFloatType() {
+            return true;
+        }
+    }
+
+    private static class WrapDoubleBuffer extends WrapBuffer {
+        DoubleBuffer mBuffer;
+        WrapDoubleBuffer(DoubleBuffer buffer, Class<?> parameterType) {
+            super(parameterType);
+            mBuffer = buffer;
+            mLength = mBuffer.limit();
+        }
+
+        @Override
+        protected Number get(int index) {
+            return mBuffer.get(index);
+        }
+
+        @Override
+        protected boolean isFloatType() {
+            return true;
+        }
+    }
+
     private static Object convertArgument(RemoteInvocationArgument argument, Class<?> parameterType,
             @StringCoercionMode int stringCoercionMode) {
         switch (argument.which()) {
@@ -394,6 +554,62 @@ class RemoteObjectImpl implements RemoteObject {
                         Array.set(result, i, element);
                     }
                     return result;
+                } else if (parameterType == String.class) {
+                    return stringCoercionMode == StringCoercionMode.COERCE ? "undefined" : null;
+                } else if (parameterType.isPrimitive()) {
+                    return getPrimitiveZero(parameterType);
+                } else {
+                    // LIVECONNECT_COMPLIANCE: Existing behavior is to pass null. Spec requires
+                    // converting if the target type is netscape.javascript.JSObject, otherwise
+                    // raising a JavaScript exception.
+                    return null;
+                }
+            case RemoteInvocationArgument.Tag.TypedArrayValue:
+                RemoteTypedArray typedArrayValue = argument.getTypedArrayValue();
+                if (parameterType.isArray()) {
+                    Class<?> componentType = parameterType.getComponentType();
+
+                    // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for
+                    // multi-dimensional and object arrays. Spec requires handling them.
+                    if (!componentType.isPrimitive() && componentType != String.class) {
+                        return null;
+                    } else if (componentType.isArray()) {
+                        // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+                        // requires raising a JavaScript exception.
+                        return null;
+                    }
+
+                    // TODO(crbug.com/794320): Remove unnecessary copy for the performance.
+                    ByteBuffer typedBuffer = ByteBuffer.wrap(
+                            BigBufferUtil.getBytesFromBigBuffer(typedArrayValue.buffer));
+                    typedBuffer.order(ByteOrder.nativeOrder());
+
+                    if (typedArrayValue.type == RemoteArrayType.INT8_ARRAY) {
+                        return new WrapByteBuffer(typedBuffer, componentType, false).copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.UINT8_ARRAY) {
+                        return new WrapByteBuffer(typedBuffer, componentType, true).copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.INT16_ARRAY) {
+                        return new WrapShortBuffer(
+                                typedBuffer.asShortBuffer(), componentType, false)
+                                .copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.UINT16_ARRAY) {
+                        return new WrapShortBuffer(typedBuffer.asShortBuffer(), componentType, true)
+                                .copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.INT32_ARRAY) {
+                        return new WrapIntBuffer(typedBuffer.asIntBuffer(), componentType, false)
+                                .copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.UINT32_ARRAY) {
+                        return new WrapIntBuffer(typedBuffer.asIntBuffer(), componentType, true)
+                                .copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.FLOAT32_ARRAY) {
+                        return new WrapFloatBuffer(typedBuffer.asFloatBuffer(), componentType)
+                                .copyArray();
+                    } else if (typedArrayValue.type == RemoteArrayType.FLOAT64_ARRAY) {
+                        return new WrapDoubleBuffer(typedBuffer.asDoubleBuffer(), componentType)
+                                .copyArray();
+                    } else {
+                        return null;
+                    }
                 } else if (parameterType == String.class) {
                     return stringCoercionMode == StringCoercionMode.COERCE ? "undefined" : null;
                 } else if (parameterType.isPrimitive()) {

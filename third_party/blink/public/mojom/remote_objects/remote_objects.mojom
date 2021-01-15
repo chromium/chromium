@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // These interfaces allow an object implemented outside the Blink renderer
@@ -65,12 +66,29 @@ enum SingletonJavaScriptValue {
   kUndefined,
 };
 
+enum RemoteArrayType {
+  kInt8Array = 1,
+  kUint8Array,
+  kInt16Array,
+  kUint16Array,
+  kInt32Array,
+  kUint32Array,
+  kFloat32Array,
+  kFloat64Array,
+};
+
+struct RemoteTypedArray {
+  RemoteArrayType type;
+  mojo_base.mojom.BigBuffer buffer;
+};
+
 union RemoteInvocationArgument {
   double number_value;
   bool boolean_value;
   mojo_base.mojom.String16 string_value;
   SingletonJavaScriptValue singleton_value;
   array<RemoteInvocationArgument> array_value;
+  RemoteTypedArray typed_array_value;
 };
 
 enum RemoteInvocationError {
