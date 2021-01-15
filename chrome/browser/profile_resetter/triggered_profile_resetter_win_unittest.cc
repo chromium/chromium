@@ -26,7 +26,6 @@ class TriggeredProfileResetterTest : public testing::Test {
  protected:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
-    profile_builder.OverrideIsNewProfile(false);
     profile_ = profile_builder.Build();
 
     ASSERT_NO_FATAL_FAILURE(

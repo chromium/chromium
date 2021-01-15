@@ -68,7 +68,7 @@ class TestingProfileManager {
       int avatar_id,
       const std::string& supervised_user_id,
       TestingProfile::TestingFactories testing_factories,
-      base::Optional<bool> override_new_profile = base::nullopt,
+      base::Optional<bool> is_new_profile = base::nullopt,
       base::Optional<std::unique_ptr<policy::PolicyService>> policy_service =
           base::nullopt);
 

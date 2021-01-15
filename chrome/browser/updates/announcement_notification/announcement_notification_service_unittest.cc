@@ -130,7 +130,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     builder.SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable>());
     builder.SetProfileName(kProfileId);
-    builder.OverrideIsNewProfile(new_profile);
+    builder.SetIsNewProfile(new_profile);
     if (guest_profile || ephemeral_guest_profile)
       builder.SetGuestSession();
     test_profile_ = builder.Build();

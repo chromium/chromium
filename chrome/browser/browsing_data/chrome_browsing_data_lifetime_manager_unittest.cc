@@ -31,7 +31,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;
-  builder.OverrideIsNewProfile(true);
+  builder.SetIsNewProfile(true);
   auto testing_profile = builder.Build();
   testing_profile->GetPrefs()->Set(syncer::prefs::kSyncManaged,
                                    base::Value(true));
@@ -107,7 +107,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;
-  builder.OverrideIsNewProfile(true);
+  builder.SetIsNewProfile(true);
   auto testing_profile = builder.Build();
 
   content::MockBrowsingDataRemoverDelegate delegate;

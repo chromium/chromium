@@ -19,13 +19,10 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -43,7 +40,6 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/first_run/first_run.h"
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
@@ -418,19 +414,6 @@ bool Profile::ShouldRestoreOldSessionCookies() const {
 
 bool Profile::ShouldPersistSessionCookies() const {
   return false;
-}
-
-bool Profile::IsNewProfile() const {
-#if !defined(OS_ANDROID)
-  // The profile is new if the preference files has just been created, except on
-  // first run, because the installer may create a preference file. See
-  // https://crbug.com/728402
-  if (first_run::IsChromeFirstRun())
-    return true;
-#endif
-
-  return GetOriginalProfile()->GetPrefs()->GetInitializationStatus() ==
-         PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE;
 }
 
 void Profile::MaybeSendDestroyedNotification() {

@@ -90,6 +90,9 @@ class OffTheRecordProfileImpl : public Profile {
   void InitChromeOSPreferences() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Returns whether the wrapped underlying profile is new.
+  bool IsNewProfile() const override;
+
   GURL GetHomePage() override;
   void SetCreationTimeForTesting(base::Time creation_time) override;
 

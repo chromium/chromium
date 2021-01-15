@@ -591,6 +591,10 @@ void OffTheRecordProfileImpl::InitChromeOSPreferences() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+bool OffTheRecordProfileImpl::IsNewProfile() const {
+  return profile_->IsNewProfile();
+}
+
 GURL OffTheRecordProfileImpl::GetHomePage() {
   return profile_->GetHomePage();
 }

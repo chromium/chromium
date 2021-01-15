@@ -797,7 +797,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
 
   TestingProfile::Builder builder;
   builder.SetPath(dest_path);
-  builder.OverrideIsNewProfile(true);
+  builder.SetIsNewProfile(true);
   std::unique_ptr<Profile> profile = builder.Build();
 
   user_manager->UserLoggedIn(account_id, user_id_hash,
@@ -824,7 +824,7 @@ TEST_F(ProfileManagerTest, InitProfileForRegularToChildTransition) {
 
   TestingProfile::Builder builder;
   builder.SetPath(dest_path);
-  builder.OverrideIsNewProfile(false);
+  builder.SetIsNewProfile(false);
   std::unique_ptr<Profile> profile = builder.Build();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
 
@@ -852,7 +852,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
 
   TestingProfile::Builder builder;
   builder.SetPath(dest_path);
-  builder.OverrideIsNewProfile(false);
+  builder.SetIsNewProfile(false);
   builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
   std::unique_ptr<Profile> profile = builder.Build();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
@@ -881,7 +881,7 @@ TEST_F(ProfileManagerTest,
 
   TestingProfile::Builder builder;
   builder.SetPath(dest_path);
-  builder.OverrideIsNewProfile(false);
+  builder.SetIsNewProfile(false);
   builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
   std::unique_ptr<Profile> profile = builder.Build();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, false);

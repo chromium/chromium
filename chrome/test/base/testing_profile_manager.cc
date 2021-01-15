@@ -80,7 +80,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     int avatar_id,
     const std::string& supervised_user_id,
     TestingProfile::TestingFactories testing_factories,
-    base::Optional<bool> override_new_profile,
+    base::Optional<bool> is_new_profile,
     base::Optional<std::unique_ptr<policy::PolicyService>> policy_service) {
   DCHECK(called_set_up_);
 
@@ -106,8 +106,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetPrefService(std::move(prefs));
   builder.SetSupervisedUserId(supervised_user_id);
   builder.SetProfileName(profile_name);
-  if (override_new_profile)
-    builder.OverrideIsNewProfile(*override_new_profile);
+  builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
     builder.SetPolicyService(std::move(*policy_service));
 

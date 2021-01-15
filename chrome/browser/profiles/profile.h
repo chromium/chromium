@@ -499,8 +499,7 @@ class Profile : public content::BrowserContext {
 
   // Returns whether the profile is new.  A profile is new if the browser has
   // not been shut down since the profile was created.
-  // This method is virtual in order to be overridden for tests.
-  virtual bool IsNewProfile() const;
+  virtual bool IsNewProfile() const = 0;
 
   // Notify observers of |OnProfileWillBeDestroyed| for this profile, if it has
   // not already been called. It is necessary because most Profiles are

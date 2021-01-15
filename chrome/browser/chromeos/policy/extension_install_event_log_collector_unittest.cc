@@ -253,6 +253,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginLogout) {
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+  profile()->SetIsNewProfile(true);
   user_manager::User* user =
       fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, false /*is_affiliated*/, user_manager::USER_TYPE_REGULAR,
@@ -284,6 +285,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+  profile()->SetIsNewProfile(true);
   user_manager::User* user =
       fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, false /*is_affiliated*/, user_manager::USER_TYPE_REGULAR,
@@ -368,6 +370,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+  profile()->SetIsNewProfile(true);
   user_manager::User* user =
       fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, false /*is_affiliated*/, user_manager::USER_TYPE_REGULAR,

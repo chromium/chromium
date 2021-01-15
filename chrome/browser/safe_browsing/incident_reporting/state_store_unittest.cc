@@ -122,8 +122,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
     profile_ = profile_manager_.CreateTestingProfile(
         kProfileName_, factory.CreateSyncable(pref_registry),
         base::UTF8ToUTF16(kProfileName_), 0, std::string(),
-        TestingProfile::TestingFactories(),
-        /*override_new_profile=*/base::Optional<bool>(false));
+        TestingProfile::TestingFactories());
   }
 
   static const char kProfileName_[];

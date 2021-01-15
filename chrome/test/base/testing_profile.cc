@@ -221,6 +221,7 @@ TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
       original_profile_(nullptr),
       guest_session_(false),
       allows_browser_windows_(true),
+      is_new_profile_(false),
       last_session_exited_cleanly_(true),
       profile_path_(path),
       simple_dependency_manager_(SimpleDependencyManager::GetInstance()),
@@ -254,7 +255,7 @@ TestingProfile::TestingProfile(
     TestingProfile* parent,
     bool guest_session,
     bool allows_browser_windows,
-    base::Optional<bool> is_new_profile,
+    bool is_new_profile,
     const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
@@ -272,7 +273,7 @@ TestingProfile::TestingProfile(
       original_profile_(parent),
       guest_session_(guest_session),
       allows_browser_windows_(allows_browser_windows),
-      is_new_profile_(std::move(is_new_profile)),
+      is_new_profile_(is_new_profile),
       supervised_user_id_(supervised_user_id),
       last_session_exited_cleanly_(true),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1014,9 +1015,7 @@ bool TestingProfile::IsEphemeralGuestProfile() const {
 }
 
 bool TestingProfile::IsNewProfile() const {
-  if (is_new_profile_.has_value())
-    return is_new_profile_.value();
-  return Profile::IsNewProfile();
+  return is_new_profile_;
 }
 
 Profile::ExitType TestingProfile::GetLastSessionExitType() const {
@@ -1028,6 +1027,7 @@ TestingProfile::Builder::Builder()
       delegate_(nullptr),
       guest_session_(false),
       allows_browser_windows_(true),
+      is_new_profile_(false),
       profile_name_(kTestingProfile) {}
 
 TestingProfile::Builder::~Builder() {
@@ -1061,7 +1061,7 @@ void TestingProfile::Builder::DisallowBrowserWindows() {
   allows_browser_windows_ = false;
 }
 
-void TestingProfile::Builder::OverrideIsNewProfile(bool is_new_profile) {
+void TestingProfile::Builder::SetIsNewProfile(bool is_new_profile) {
   is_new_profile_ = is_new_profile;
 }
 
@@ -1119,7 +1119,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
       extension_policy_,
 #endif
       std::move(pref_service_), nullptr, guest_session_,
-      allows_browser_windows_, std::move(is_new_profile_), supervised_user_id_,
+      allows_browser_windows_, is_new_profile_, supervised_user_id_,
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_, base::Optional<OTRProfileID>()));
@@ -1144,7 +1144,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
       extension_policy_,
 #endif
       std::move(pref_service_), original_profile, guest_session_,
-      allows_browser_windows_, std::move(is_new_profile_), supervised_user_id_,
+      allows_browser_windows_, is_new_profile_, supervised_user_id_,
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_,

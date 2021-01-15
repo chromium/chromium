@@ -146,9 +146,8 @@ class TestingProfile : public Profile {
     // Makes Profile::AllowsBrowserWindows() return false.
     void DisallowBrowserWindows();
 
-    // Override the default behavior of is_new_profile to return the provided
-    // value.
-    void OverrideIsNewProfile(bool is_new_profile);
+    // Set the value to be returned by Profile::IsNewProfile().
+    void SetIsNewProfile(bool is_new_profile);
 
     // Sets the supervised user ID (which is empty by default). If it is set to
     // a non-empty string, the profile is supervised.
@@ -197,7 +196,7 @@ class TestingProfile : public Profile {
     Delegate* delegate_;
     bool guest_session_;
     bool allows_browser_windows_;
-    base::Optional<bool> is_new_profile_;
+    bool is_new_profile_;
     std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
@@ -236,7 +235,7 @@ class TestingProfile : public Profile {
       TestingProfile* parent,
       bool guest_session,
       bool allows_browser_windows,
-      base::Optional<bool> is_new_profile,
+      bool is_new_profile,
       const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
@@ -458,7 +457,7 @@ class TestingProfile : public Profile {
 
   bool allows_browser_windows_;
 
-  base::Optional<bool> is_new_profile_;
+  bool is_new_profile_;
 
   std::string supervised_user_id_;
 

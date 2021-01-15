@@ -173,6 +173,8 @@ class ProfileImpl : public Profile {
   void InitChromeOSPreferences() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  bool IsNewProfile() const override;
+
   void SetCreationTimeForTesting(base::Time creation_time) override;
   void RecordMainFrameNavigation() override {}
 
