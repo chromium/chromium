@@ -1078,8 +1078,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, UniqueIDsOnFrames) {
 // interfere with navigations. We switched to a different scheme, so now this is
 // just a test to make sure we can still navigate once we prune the history
 // list.
+// Test is flaky on Win and debug builds.
+#if defined(OS_WIN) || !defined(NDEBUG)
+#define MAYBE_DontIgnoreBackAfterNavEntryLimit \
+  DISABLED_DontIgnoreBackAfterNavEntryLimit
+#else
+#define MAYBE_DontIgnoreBackAfterNavEntryLimit DontIgnoreBackAfterNavEntryLimit
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       DontIgnoreBackAfterNavEntryLimit) {
+                       MAYBE_DontIgnoreBackAfterNavEntryLimit) {
   NavigationController& controller = shell()->web_contents()->GetController();
 
   const int kMaxEntryCount =
