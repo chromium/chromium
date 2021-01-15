@@ -77,7 +77,9 @@ public class CompositorView
     private boolean mPreloadedResources;
     private List<Runnable> mDrawingFinishedCallbacks;
 
-    private boolean mIsInVr;
+    // True while the compositor view is in VR Browser mode (obsolescent), or in a WebXR
+    // "immersive-ar" session with DOM Overlay enabled. This disables SurfaceControl while active.
+    private boolean mIsInXr;
 
     private boolean mIsSurfaceControlEnabled;
     private boolean mSelectionHandlesActive;
@@ -98,7 +100,7 @@ public class CompositorView
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
-                    && mCompositorSurfaceManager != null && !mIsInVr
+                    && mCompositorSurfaceManager != null && !mIsInXr
                     && mNativeCompositorView != 0) {
                 mCompositorSurfaceManager.shutDown();
                 createCompositorSurfaceManager();
@@ -208,7 +210,7 @@ public class CompositorView
     public void onSelectionHandlesStateChanged(boolean active) {
         // If the feature is disabled or we're in Vr mode, we are already rendering directly to the
         // SurfaceView.
-        if (!mIsSurfaceControlEnabled || mIsInVr) return;
+        if (!mIsSurfaceControlEnabled || mIsInXr) return;
 
         if (mSelectionHandlesActive == active) return;
         mSelectionHandlesActive = active;
@@ -340,20 +342,20 @@ public class CompositorView
      * @param enabled Whether to enter or leave overlay immersive ar mode.
      */
     public void setOverlayImmersiveArMode(boolean enabled) {
-        // In SurfaceControl mode, we don't need to switch surfaces for the compositor, we can
-        // continue using its already-translucent surface. (The ArImmersiveOverlay has its own
-        // separate opaque surface which is used for displaying the camera image and WebGL drawn
-        // content. The compositor surface appears on top of that as an overlay.)
-        // TODO(https://crbug.com/1122103): revisit once the stale-ChromeChildSurface issue is
-        // fixed.
-        if (!canUseSurfaceControl()
-                || mCompositorSurfaceManager.getFormatOfOwnedSurface() != PixelFormat.TRANSLUCENT) {
-            // If SurfaceControl is off, or if we haven't started using it yet, switch the
-            // compositor to a translucent surface, same as overlay video mode.
-            setOverlayVideoMode(enabled);
-        }
+        // Disable SurfaceControl for the duration of the session. This works around a black
+        // screen after activating the screen keyboard (IME), see https://crbug.com/1166248.
+        mIsInXr = enabled;
+
+        setOverlayVideoMode(enabled);
         CompositorViewJni.get().setOverlayImmersiveArMode(
                 mNativeCompositorView, CompositorView.this, enabled);
+        if (!enabled) {
+            // Exiting AR mode leaves SurfaceControl in a confused state if the screen keyboard
+            // (IME) was activated, see https://crbug.com/1166248. Reset the surface manager
+            // at session exit to work around this.
+            mCompositorSurfaceManager.shutDown();
+            createCompositorSurfaceManager();
+        }
     }
 
     private int getSurfacePixelFormat() {
@@ -376,7 +378,7 @@ public class CompositorView
     }
 
     private boolean canUseSurfaceControl() {
-        return !mIsInVr && !mSelectionHandlesActive;
+        return !mIsInXr && !mSelectionHandlesActive;
     }
 
     @Override
@@ -601,7 +603,7 @@ public class CompositorView
      */
     public void replaceSurfaceManagerForVr(
             CompositorSurfaceManager vrCompositorSurfaceManager, WindowAndroid window) {
-        mIsInVr = true;
+        mIsInXr = true;
 
         mCompositorSurfaceManager.shutDown();
         CompositorViewJni.get().setCompositorWindow(
@@ -619,7 +621,7 @@ public class CompositorView
      * @param windowToRestore The non-VR WindowAndroid to restore.
      */
     public void onExitVr(WindowAndroid windowToRestore) {
-        mIsInVr = false;
+        mIsInXr = false;
 
         if (mNativeCompositorView == 0) return;
         setWindowAndroid(windowToRestore);
