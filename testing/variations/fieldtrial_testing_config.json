@@ -7160,21 +7160,6 @@
             ]
         }
     ],
-    "UrgentDiscardingFromPerformanceManager": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20200129",
-                    "enable_features": [
-                        "UrgentDiscardingFromPerformanceManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseFluentLanguageModel": [
         {
             "platforms": [
