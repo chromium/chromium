@@ -5,10 +5,10 @@
 #include "components/password_manager/core/browser/possible_username_data.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using base::Time;
 using base::TimeDelta;
 
@@ -16,71 +16,65 @@ namespace password_manager {
 
 namespace {
 
-class IsPossibleUsernameValidTest : public testing::Test {
- public:
-  IsPossibleUsernameValidTest()
-      : possible_username_data_(
-            "https://example.com/" /* submitted_signon_realm */,
-            autofill::FieldRendererId(1u),
-            ASCIIToUTF16("username") /* value */,
-            base::Time::Now() /* last_change */,
-            10 /* driver_id */) {}
+constexpr base::char16 kUser[] = STRING16_LITERAL("user");
 
+class IsPossibleUsernameValidTest : public testing::Test {
  protected:
-  PossibleUsernameData possible_username_data_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  PossibleUsernameData possible_username_data_{
+      "https://example.com/" /* submitted_signon_realm */,
+      autofill::FieldRendererId(1u), kUser /* value */,
+      base::Time::Now() /* last_change */, 10 /* driver_id */};
 };
 
 TEST_F(IsPossibleUsernameValidTest, Valid) {
-  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
-                                      possible_username_data_.signon_realm,
-                                      possible_username_data_.last_change));
+  EXPECT_TRUE(IsPossibleUsernameValid(
+      possible_username_data_, possible_username_data_.signon_realm, {kUser}));
 }
 
 // Check that if time delta between last change and submission is more than 60
 // seconds, than data is invalid.
 TEST_F(IsPossibleUsernameValidTest, TimeDeltaBeforeLastChangeAndSubmission) {
-  Time valid_submission_time = possible_username_data_.last_change +
-                               kMaxDelayBetweenTypingUsernameAndSubmission;
-  Time invalid_submission_time =
-      valid_submission_time + TimeDelta::FromSeconds(1);
-  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
-                                      possible_username_data_.signon_realm,
-                                      valid_submission_time));
-  EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
-                                       possible_username_data_.signon_realm,
-                                       invalid_submission_time));
+  task_environment_.FastForwardBy(kMaxDelayBetweenTypingUsernameAndSubmission);
+  EXPECT_TRUE(IsPossibleUsernameValid(
+      possible_username_data_, possible_username_data_.signon_realm, {kUser}));
+  task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(IsPossibleUsernameValid(
+      possible_username_data_, possible_username_data_.signon_realm, {kUser}));
 }
 
 TEST_F(IsPossibleUsernameValidTest, SignonRealm) {
   EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
-                                       "https://m.example.com/",
-                                       possible_username_data_.last_change));
+                                       "https://m.example.com/", {kUser}));
 
   EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
-                                       "https://google.com/",
-                                       possible_username_data_.last_change));
+                                       "https://google.com/", {kUser}));
 }
 
 TEST_F(IsPossibleUsernameValidTest, PossibleUsernameValue) {
-  PossibleUsernameData possible_username_data = possible_username_data_;
+  // Different capitalization is okay.
+  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
+                                      possible_username_data_.signon_realm,
+                                      {STRING16_LITERAL("USER")}));
+  // Different email hosts are okay.
+  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
+                                      possible_username_data_.signon_realm,
+                                      {STRING16_LITERAL("user@gmail.com")}));
 
-  // White spaces are not allowed in username.
-  possible_username_data.value = ASCIIToUTF16("user name");
-  EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data,
-                                       possible_username_data.signon_realm,
-                                       possible_username_data.last_change));
+  // Other usernames are okay.
+  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
+                                      possible_username_data_.signon_realm,
+                                      {kUser, STRING16_LITERAL("alice")}));
 
-  // New lines are not allowed in username.
-  possible_username_data.value = ASCIIToUTF16("user\nname");
-  EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data,
-                                       possible_username_data.signon_realm,
-                                       possible_username_data.last_change));
+  // No usernames are not okay.
+  EXPECT_FALSE(IsPossibleUsernameValid(
+      possible_username_data_, possible_username_data_.signon_realm, {}));
 
-  // Digits and special characters are ok.
-  possible_username_data.value = ASCIIToUTF16("User_name1234!+&%#\'\"@");
-  EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data,
-                                      possible_username_data.signon_realm,
-                                      possible_username_data.last_change));
+  // Completely different usernames are not okay.
+  EXPECT_FALSE(IsPossibleUsernameValid(
+      possible_username_data_, possible_username_data_.signon_realm,
+      {STRING16_LITERAL("alice"), STRING16_LITERAL("bob")}));
 }
 
 }  // namespace

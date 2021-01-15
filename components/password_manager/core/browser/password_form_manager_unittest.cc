@@ -2098,8 +2098,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
   CreateFormManager(observed_form_only_password_fields_);
-  fetcher_->NotifyFetchCompleted();
-  const base::string16 possible_username = ASCIIToUTF16("possible_username");
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+  const base::string16 possible_username = ASCIIToUTF16("test@example.com");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(1),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2117,7 +2117,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 #else
   // Local heuristics on Android for username first flow are not supported, so
   // the username should not be taken from the username form.
-  EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
+  EXPECT_EQ(saved_match_.username_value,
+            form_manager_->GetPendingCredentials().username_value);
 #endif  // !defined(OS_ANDROID)
 }
 
@@ -2808,8 +2809,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   CreateFormManager(observed_form_only_password_fields_);
-  fetcher_->NotifyFetchCompleted();
-  const base::string16 possible_username = ASCIIToUTF16("possible_username");
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+  const base::string16 possible_username = ASCIIToUTF16("test@example.org");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(1u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
