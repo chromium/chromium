@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -15,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -143,24 +145,24 @@ bool IsVpnPresent() {
 }
 #endif  // defined(OS_ANDROID)
 
-bool ReadDnsConfig(DnsConfig* dns_config) {
+base::Optional<DnsConfig> ReadDnsConfig() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  dns_config->unhandled_options = false;
+
 #if !defined(OS_ANDROID)
-  bool success = false;
+  base::Optional<DnsConfig> dns_config;
 // TODO(fuchsia): Use res_ninit() when it's implemented on Fuchsia.
 #if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
   // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
   // res_init behaves the same way.
   memset(&_res, 0, sizeof(_res));
   if (res_init() == 0)
-    success = ConvertResStateToDnsConfig(_res, dns_config);
+    dns_config = ConvertResStateToDnsConfig(_res);
 #else  // all other OS_POSIX
   struct __res_state res;
   memset(&res, 0, sizeof(res));
   if (res_ninit(&res) == 0)
-    success = ConvertResStateToDnsConfig(res, dns_config);
+    dns_config = ConvertResStateToDnsConfig(res);
     // Prefer res_ndestroy where available.
 #if defined(OS_APPLE) || defined(OS_FREEBSD)
   res_ndestroy(&res);
@@ -169,26 +171,34 @@ bool ReadDnsConfig(DnsConfig* dns_config) {
 #endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
 #endif  // defined(OS_OPENBSD)
 
+  if (!dns_config.has_value())
+    return dns_config;
+
 #if defined(OS_MAC)
-  if (!DnsConfigWatcher::CheckDnsConfig(&dns_config->unhandled_options))
-    return false;
+  if (!DnsConfigWatcher::CheckDnsConfig(
+          dns_config->unhandled_options /* out_unhandled_options */)) {
+    return base::nullopt;
+  }
 #endif  // defined(OS_MAC)
   // Override |fallback_period| value to match default setting on Windows.
   dns_config->fallback_period = kDnsDefaultFallbackPeriod;
-  return success;
+  return dns_config;
 #else  // defined(OS_ANDROID)
-  dns_config->nameservers.clear();
+  DnsConfig dns_config;
 
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_MARSHMALLOW) {
-    return net::android::GetDnsServers(&dns_config->nameservers,
-                                       &dns_config->dns_over_tls_active,
-                                       &dns_config->dns_over_tls_hostname);
+    if (net::android::GetDnsServers(&dns_config.nameservers,
+                                    &dns_config.dns_over_tls_active,
+                                    &dns_config.dns_over_tls_hostname)) {
+      return dns_config;
+    }
+    return base::nullopt;
   }
 
   if (IsVpnPresent()) {
-    dns_config->unhandled_options = true;
-    return true;
+    dns_config.unhandled_options = true;
+    return dns_config;
   }
 
   // NOTE(pauljensen): __system_property_get and the net.dns1/2 properties are
@@ -200,25 +210,25 @@ bool ReadDnsConfig(DnsConfig* dns_config) {
   __system_property_get("net.dns2", property_value);
   std::string dns2_string = property_value;
   if (dns1_string.empty() && dns2_string.empty())
-    return false;
+    return base::nullopt;
 
   IPAddress dns1_address;
   IPAddress dns2_address;
   bool parsed1 = dns1_address.AssignFromIPLiteral(dns1_string);
   bool parsed2 = dns2_address.AssignFromIPLiteral(dns2_string);
   if (!parsed1 && !parsed2)
-    return false;
+    return base::nullopt;
 
   if (parsed1) {
     IPEndPoint dns1(dns1_address, dns_protocol::kDefaultPort);
-    dns_config->nameservers.push_back(dns1);
+    dns_config.nameservers.push_back(dns1);
   }
   if (parsed2) {
     IPEndPoint dns2(dns2_address, dns_protocol::kDefaultPort);
-    dns_config->nameservers.push_back(dns2);
+    dns_config.nameservers.push_back(dns2);
   }
 
-  return true;
+  return dns_config;
 #endif  // !defined(OS_ANDROID)
 }
 
@@ -226,7 +236,7 @@ bool ReadDnsConfig(DnsConfig* dns_config) {
 
 class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
  public:
-  explicit Watcher(DnsConfigServicePosix* service)
+  explicit Watcher(DnsConfigServicePosix& service)
       : DnsConfigService::Watcher(service) {}
   ~Watcher() override = default;
 
@@ -274,19 +284,18 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
 // net.dns1 and net.dns2; see #if around ReadDnsConfig above.)
 class DnsConfigServicePosix::ConfigReader : public SerialWorker {
  public:
-  explicit ConfigReader(DnsConfigServicePosix* service)
-      : service_(service), success_(false) {
+  explicit ConfigReader(DnsConfigServicePosix& service) : service_(&service) {
     // Allow execution on another thread; nothing thread-specific about
     // constructor.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  void DoWork() override { success_ = ReadDnsConfig(&dns_config_); }
+  void DoWork() override { dns_config_ = ReadDnsConfig(); }
 
   void OnWorkFinished() override {
     DCHECK(!IsCancelled());
-    if (success_) {
-      service_->OnConfigRead(dns_config_);
+    if (dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
     }
@@ -300,8 +309,7 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   // on worker thread.
   DnsConfigServicePosix* const service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  DnsConfig dns_config_;
-  bool success_;
+  base::Optional<DnsConfig> dns_config_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfigReader);
 };
@@ -330,25 +338,24 @@ void DnsConfigServicePosix::ReadConfigNow() {
 bool DnsConfigServicePosix::StartWatching() {
   CreateReader();
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
-  watcher_.reset(new Watcher(this));
+  watcher_ = std::make_unique<Watcher>(*this);
   return watcher_->Watch();
 }
 
 void DnsConfigServicePosix::CreateReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!config_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(this);
+  config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
 }
 
 #if !defined(OS_ANDROID)
-bool ConvertResStateToDnsConfig(const struct __res_state& res,
-                                DnsConfig* dns_config) {
-  DCHECK(dns_config);
+base::Optional<DnsConfig> ConvertResStateToDnsConfig(
+    const struct __res_state& res) {
+  DnsConfig dns_config;
+  dns_config.unhandled_options = false;
 
   if (!(res.options & RES_INIT))
-    return false;
-
-  dns_config->nameservers.clear();
+    return base::nullopt;
 
 #if defined(OS_APPLE) || defined(OS_FREEBSD)
   union res_sockaddr_union addresses[MAXNS];
@@ -360,9 +367,9 @@ bool ConvertResStateToDnsConfig(const struct __res_state& res,
     if (!ipe.FromSockAddr(
             reinterpret_cast<const struct sockaddr*>(&addresses[i]),
             sizeof addresses[i])) {
-      return false;
+      return base::nullopt;
     }
-    dns_config->nameservers.push_back(ipe);
+    dns_config.nameservers.push_back(ipe);
   }
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
@@ -383,11 +390,11 @@ bool ConvertResStateToDnsConfig(const struct __res_state& res,
       addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
       addr_len = sizeof *res._u._ext.nsaddrs[i];
     } else {
-      return false;
+      return base::nullopt;
     }
     if (!ipe.FromSockAddr(addr, addr_len))
-      return false;
-    dns_config->nameservers.push_back(ipe);
+      return base::nullopt;
+    dns_config.nameservers.push_back(ipe);
   }
 #else   // !(defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) ||
         // defined(OS_FREEBSD))
@@ -397,22 +404,22 @@ bool ConvertResStateToDnsConfig(const struct __res_state& res,
     if (!ipe.FromSockAddr(
             reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]),
             sizeof res.nsaddr_list[i])) {
-      return false;
+      return base::nullopt;
     }
-    dns_config->nameservers.push_back(ipe);
+    dns_config.nameservers.push_back(ipe);
   }
 #endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
 
-  dns_config->search.clear();
+  dns_config.search.clear();
   for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
-    dns_config->search.push_back(std::string(res.dnsrch[i]));
+    dns_config.search.emplace_back(res.dnsrch[i]);
   }
 
-  dns_config->ndots = res.ndots;
-  dns_config->fallback_period = base::TimeDelta::FromSeconds(res.retrans);
-  dns_config->attempts = res.retry;
+  dns_config.ndots = res.ndots;
+  dns_config.fallback_period = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config.attempts = res.retry;
 #if defined(RES_ROTATE)
-  dns_config->rotate = res.options & RES_ROTATE;
+  dns_config.rotate = res.options & RES_ROTATE;
 #endif
 #if !defined(RES_USE_DNSSEC)
   // Some versions of libresolv don't have support for the DO bit. In this
@@ -424,26 +431,26 @@ bool ConvertResStateToDnsConfig(const struct __res_state& res,
   // cannot be overwritten by /etc/resolv.conf
   const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
   if ((res.options & kRequiredOptions) != kRequiredOptions) {
-    dns_config->unhandled_options = true;
-    return true;
+    dns_config.unhandled_options = true;
+    return dns_config;
   }
 
   const unsigned kUnhandledOptions = RES_USEVC | RES_IGNTC | RES_USE_DNSSEC;
   if (res.options & kUnhandledOptions) {
-    dns_config->unhandled_options = true;
-    return true;
+    dns_config.unhandled_options = true;
+    return dns_config;
   }
 
-  if (dns_config->nameservers.empty())
-    return false;
+  if (dns_config.nameservers.empty())
+    return base::nullopt;
 
   // If any name server is 0.0.0.0, assume the configuration is invalid.
   // TODO(szym): Measure how often this happens. http://crbug.com/125599
-  for (unsigned i = 0; i < dns_config->nameservers.size(); ++i) {
-    if (dns_config->nameservers[i].address().IsZero())
-      return false;
+  for (const IPEndPoint& nameserver : dns_config.nameservers) {
+    if (nameserver.address().IsZero())
+      return base::nullopt;
   }
-  return true;
+  return dns_config;
 }
 
 #endif  // !defined(OS_ANDROID)

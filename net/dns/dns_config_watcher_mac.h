@@ -17,7 +17,7 @@ class DnsConfigWatcher {
   bool Watch(const base::RepeatingCallback<void(bool succeeded)>& callback);
 
   // Returns false iff a valid config could not be determined.
-  static bool CheckDnsConfig(bool* out_unhandled_options);
+  static bool CheckDnsConfig(bool& out_unhandled_options);
 
  private:
   NotifyWatcherMac watcher_;

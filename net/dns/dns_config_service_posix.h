@@ -59,11 +59,9 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
 };
 
 #if !defined(OS_ANDROID)
-// Fills in |dns_config| from |res|. Returns false iff a valid config could not
-// be determined.
-bool NET_EXPORT_PRIVATE
-ConvertResStateToDnsConfig(const struct __res_state& res,
-                           DnsConfig* dns_config);
+// Returns nullopt iff a valid config could not be determined.
+base::Optional<DnsConfig> NET_EXPORT_PRIVATE
+ConvertResStateToDnsConfig(const struct __res_state& res);
 #endif
 
 }  // namespace internal

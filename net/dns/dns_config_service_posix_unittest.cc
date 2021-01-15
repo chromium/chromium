@@ -8,6 +8,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -146,17 +147,16 @@ void InitializeExpectedConfig(DnsConfig* config) {
 
 TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   struct __res_state res;
-  DnsConfig config;
-  EXPECT_FALSE(config.IsValid());
   InitializeResState(&res);
-  ASSERT_TRUE(internal::ConvertResStateToDnsConfig(res, &config));
+  base::Optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
   CloseResState(&res);
-  EXPECT_TRUE(config.IsValid());
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
 
   DnsConfig expected_config;
-  EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config));
+  EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config.value()));
   InitializeExpectedConfig(&expected_config);
-  EXPECT_TRUE(expected_config.EqualsIgnoreHosts(config));
+  EXPECT_TRUE(expected_config.EqualsIgnoreHosts(config.value()));
 }
 
 TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
@@ -175,12 +175,11 @@ TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
   res.nsaddr_list[1] = sa;
   res.nscount = 2;
 
-  DnsConfig config;
-  EXPECT_FALSE(internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_FALSE(internal::ConvertResStateToDnsConfig(res));
 
   sa.sin_addr.s_addr = 0xDEADBEEF;
   res.nsaddr_list[0] = sa;
-  EXPECT_TRUE(internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_TRUE(internal::ConvertResStateToDnsConfig(res));
 }
 
 TEST(DnsConfigServicePosixTest, DestroyWhileJobsWorking) {

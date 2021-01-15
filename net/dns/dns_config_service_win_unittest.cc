@@ -4,11 +4,16 @@
 
 #include "net/dns/dns_config_service_win.h"
 
+#include <string>
+#include <vector>
+
 #include "base/check.h"
 #include "base/memory/free_deleter.h"
+#include "base/optional.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_protocol.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -18,33 +23,22 @@ namespace {
 TEST(DnsConfigServiceWinTest, ParseSearchList) {
   const struct TestCase {
     const wchar_t* input;
-    const char* output[4];  // NULL-terminated, empty if expected false
+    std::vector<std::string> expected;
   } cases[] = {
-      {L"chromium.org", {"chromium.org", nullptr}},
-      {L"chromium.org,org", {"chromium.org", "org", nullptr}},
+      {L"chromium.org", {"chromium.org"}},
+      {L"chromium.org,org", {"chromium.org", "org"}},
       // Empty suffixes terminate the list
-      {L"crbug.com,com,,org", {"crbug.com", "com", nullptr}},
+      {L"crbug.com,com,,org", {"crbug.com", "com"}},
       // IDN are converted to punycode
       {L"\u017c\xf3\u0142ta.pi\u0119\u015b\u0107.pl,pl",
-       {"xn--ta-4ja03asj.xn--pi-wla5e0q.pl", "pl", nullptr}},
+       {"xn--ta-4ja03asj.xn--pi-wla5e0q.pl", "pl"}},
       // Empty search list is invalid
-      {L"", {nullptr}},
-      {L",,", {nullptr}},
+      {L"", {}},
+      {L",,", {}},
   };
 
   for (const auto& t : cases) {
-    std::vector<std::string> actual_output, expected_output;
-    actual_output.push_back("UNSET");
-    for (const char* const* output = t.output; *output; ++output) {
-      expected_output.push_back(*output);
-    }
-    bool result = internal::ParseSearchList(t.input, &actual_output);
-    if (!expected_output.empty()) {
-      EXPECT_TRUE(result);
-      EXPECT_EQ(expected_output, actual_output);
-    } else {
-      EXPECT_FALSE(result) << "Unexpected parse success on " << t.input;
-    }
+    EXPECT_EQ(internal::ParseSearchList(t.input), t.expected);
   }
 }
 
@@ -183,14 +177,13 @@ TEST(DnsConfigServiceWinTest, ConvertAdapterAddresses) {
       expected_nameservers.push_back(IPEndPoint(ip, port));
     }
 
-    DnsConfig config;
-    bool success = internal::ConvertSettingsToDnsConfig(settings, &config);
+    base::Optional<DnsConfig> config =
+        internal::ConvertSettingsToDnsConfig(settings);
     bool expected_success = !expected_nameservers.empty();
-    EXPECT_EQ(expected_success, success);
-    EXPECT_EQ(expected_nameservers, config.nameservers);
-    if (success) {
-      ASSERT_EQ(1u, config.search.size());
-      EXPECT_EQ(t.expected_suffix, config.search[0]);
+    EXPECT_EQ(expected_success, config.has_value());
+    if (config.has_value()) {
+      EXPECT_EQ(expected_nameservers, config->nameservers);
+      EXPECT_THAT(config->search, testing::ElementsAre(t.expected_suffix));
     }
   }
 }
@@ -211,7 +204,7 @@ TEST(DnsConfigServiceWinTest, ConvertSuffixSearch) {
       internal::DnsSystemSettings::DevolutionSetting dnscache_devolution;
       internal::DnsSystemSettings::DevolutionSetting tcpip_devolution;
     } input_settings;
-    std::string expected_search[5];
+    std::vector<std::string> expected_search;
   } cases[] = {
       {
           // Policy SearchList override.
@@ -389,13 +382,10 @@ TEST(DnsConfigServiceWinTest, ConvertSuffixSearch) {
     settings.dnscache_devolution = t.input_settings.dnscache_devolution;
     settings.tcpip_devolution = t.input_settings.tcpip_devolution;
 
-    DnsConfig config;
-    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
-    std::vector<std::string> expected_search;
-    for (size_t j = 0; !t.expected_search[j].empty(); ++j) {
-      expected_search.push_back(t.expected_search[j]);
-    }
-    EXPECT_EQ(expected_search, config.search);
+    EXPECT_THAT(
+        internal::ConvertSettingsToDnsConfig(settings),
+        testing::Optional(testing::Field(
+            &DnsConfig::search, testing::ElementsAreArray(t.expected_search))));
   }
 }
 
@@ -416,9 +406,10 @@ TEST(DnsConfigServiceWinTest, AppendToMultiLabelName) {
     internal::DnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.append_to_multi_label_name = t.input;
-    DnsConfig config;
-    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
-    EXPECT_EQ(t.expected_output, config.append_to_multi_label_name);
+    EXPECT_THAT(
+        internal::ConvertSettingsToDnsConfig(settings),
+        testing::Optional(testing::Field(&DnsConfig::append_to_multi_label_name,
+                                         testing::Eq(t.expected_output))));
   }
 }
 
@@ -441,10 +432,11 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
     internal::DnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_name_resolution_policy = t.have_nrpt;
-    DnsConfig config;
-    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
-    EXPECT_EQ(t.unhandled_options, config.unhandled_options);
-    EXPECT_EQ(t.have_nrpt, config.use_local_ipv6);
+    base::Optional<DnsConfig> config =
+        internal::ConvertSettingsToDnsConfig(settings);
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(t.unhandled_options, config->unhandled_options);
+    EXPECT_EQ(t.have_nrpt, config->use_local_ipv6);
   }
 }
 
@@ -467,9 +459,10 @@ TEST(DnsConfigServiceWinTest, HaveProxy) {
     internal::DnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_proxy = t.have_proxy;
-    DnsConfig config;
-    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
-    EXPECT_EQ(t.unhandled_options, config.unhandled_options);
+    EXPECT_THAT(
+        internal::ConvertSettingsToDnsConfig(settings),
+        testing::Optional(testing::Field(&DnsConfig::unhandled_options,
+                                         testing::Eq(t.unhandled_options))));
   }
 }
 
@@ -483,9 +476,9 @@ TEST(DnsConfigServiceWinTest, UsesVpn) {
 
   internal::DnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
-  DnsConfig config;
-  EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
-  EXPECT_TRUE(config.unhandled_options);
+  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
+              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
+                                               testing::IsTrue())));
 }
 
 }  // namespace

@@ -80,7 +80,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
    public:
     // `service` is expected to own the created Watcher and thus stay valid for
     // the lifetime of the created Watcher.
-    explicit Watcher(DnsConfigService* service);
+    explicit Watcher(DnsConfigService& service);
     virtual ~Watcher();
 
     Watcher(const Watcher&) = delete;
@@ -108,11 +108,13 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   // Reader of HOSTS files. In this base implementation, uses standard logic
   // appropriate to most platforms to read the HOSTS file located at
-  // `service->GetHostsFilePath()`.
+  // `hosts_file_path`.
   class HostsReader : public SerialWorker {
    public:
-    HostsReader(DnsConfigService* service,
-                base::FilePath::StringPieceType hosts_file_path);
+    // `service` is expected to own the created reader and thus stay valid for
+    // the lifetime of the created reader.
+    HostsReader(base::FilePath::StringPieceType hosts_file_path,
+                DnsConfigService& service);
 
     HostsReader(const HostsReader&) = delete;
     HostsReader& operator=(const HostsReader&) = delete;
@@ -120,19 +122,19 @@ class NET_EXPORT_PRIVATE DnsConfigService {
    protected:
     ~HostsReader() override;
 
-    // Reads the HOSTS file and parses to a `DnsHosts`. Returns false on
+    // Reads the HOSTS file and parses to a `DnsHosts`. Returns nullopt on
     // failure. Will be called on a separate blockable ThreadPool thread.
     //
     // Override if needed to implement platform-specific behavior, e.g. for a
     // platform-specific HOSTS format.
-    virtual bool ReadHosts(DnsHosts* out_dns_hosts);
+    virtual base::Optional<DnsHosts> ReadHosts();
 
     // Adds any necessary additional entries to the given `DnsHosts`. Returns
     // false on failure. Will be called on a separate blockable ThreadPool
     // thread.
     //
     // Override if needed to implement platform-specific behavior.
-    virtual bool AddAdditionalHostsTo(DnsHosts& dns_hosts);
+    virtual bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts);
 
     // SerialWorker:
     void DoWork() final;
@@ -144,8 +146,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     // running on worker thread.
     DnsConfigService* const service_;
     // Written in DoWork, read in OnWorkFinished, no locking necessary.
-    DnsHosts hosts_;
-    bool success_ = false;
+    base::Optional<DnsHosts> hosts_;
 
     const base::FilePath hosts_file_path_;
   };
@@ -162,9 +163,9 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   void InvalidateHosts();
 
   // Called with new config. |config|.hosts is ignored.
-  void OnConfigRead(const DnsConfig& config);
+  void OnConfigRead(DnsConfig config);
   // Called with new hosts. Rest of the config is assumed unchanged.
-  void OnHostsRead(const DnsHosts& hosts);
+  void OnHostsRead(DnsHosts hosts);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

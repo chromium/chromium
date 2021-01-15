@@ -78,9 +78,7 @@ bool DnsConfigWatcher::Watch(
 }
 
 // static
-bool DnsConfigWatcher::CheckDnsConfig(bool* out_unhandled_options) {
-  DCHECK(out_unhandled_options);
-
+bool DnsConfigWatcher::CheckDnsConfig(bool& out_unhandled_options) {
   if (!GetDnsInfoApi().dns_configuration_copy)
     return false;
   std::unique_ptr<dns_config_t, DnsConfigTDeleter> dns_config(
@@ -100,7 +98,7 @@ bool DnsConfigWatcher::CheckDnsConfig(bool* out_unhandled_options) {
     ++num_resolvers;
   }
 
-  *out_unhandled_options = num_resolvers > 1;
+  out_unhandled_options = num_resolvers > 1;
   return true;
 }
 

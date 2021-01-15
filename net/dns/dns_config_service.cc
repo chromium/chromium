@@ -70,8 +70,8 @@ void DnsConfigService::RefreshConfig() {
   NOTREACHED();
 }
 
-DnsConfigService::Watcher::Watcher(DnsConfigService* service)
-    : service_(service) {}
+DnsConfigService::Watcher::Watcher(DnsConfigService& service)
+    : service_(&service) {}
 
 DnsConfigService::Watcher::~Watcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,31 +92,41 @@ void DnsConfigService::Watcher::CheckOnCorrectSequence() {
 }
 
 DnsConfigService::HostsReader::HostsReader(
-    DnsConfigService* service,
-    base::FilePath::StringPieceType hosts_file_path)
-    : service_(service), hosts_file_path_(hosts_file_path) {}
+    base::FilePath::StringPieceType hosts_file_path,
+    DnsConfigService& service)
+    : service_(&service), hosts_file_path_(hosts_file_path) {}
 
 DnsConfigService::HostsReader::~HostsReader() = default;
 
-bool DnsConfigService::HostsReader::ReadHosts(DnsHosts* out_dns_hosts) {
+base::Optional<DnsHosts> DnsConfigService::HostsReader::ReadHosts() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DCHECK(!hosts_file_path_.empty());
-  return ParseHostsFile(hosts_file_path_, out_dns_hosts);
+  DnsHosts dns_hosts;
+  if (!ParseHostsFile(hosts_file_path_, &dns_hosts))
+    return base::nullopt;
+
+  return dns_hosts;
 }
 
-bool DnsConfigService::HostsReader::AddAdditionalHostsTo(DnsHosts& dns_hosts) {
+bool DnsConfigService::HostsReader::AddAdditionalHostsTo(
+    DnsHosts& in_out_dns_hosts) {
   // Nothing to add in base implementation.
   return true;
 }
 
 void DnsConfigService::HostsReader::DoWork() {
-  success_ = ReadHosts(&hosts_) && AddAdditionalHostsTo(hosts_);
+  hosts_ = ReadHosts();
+  if (!hosts_.has_value())
+    return;
+
+  if (!AddAdditionalHostsTo(hosts_.value()))
+    hosts_.reset();
 }
 
 void DnsConfigService::HostsReader::OnWorkFinished() {
-  if (success_) {
-    service_->OnHostsRead(hosts_);
+  if (hosts_.has_value()) {
+    service_->OnHostsRead(std::move(hosts_).value());
   } else {
     LOG(WARNING) << "Failed to read DnsHosts.";
   }
@@ -128,7 +138,7 @@ void DnsConfigService::ReadHostsNow() {
   if (!hosts_reader_) {
     DCHECK(!hosts_file_path_.empty());
     hosts_reader_ =
-        base::MakeRefCounted<HostsReader>(this, hosts_file_path_.value());
+        base::MakeRefCounted<HostsReader>(hosts_file_path_.value(), *this);
   }
   hosts_reader_->WorkNow();
 }
@@ -149,7 +159,7 @@ void DnsConfigService::InvalidateHosts() {
   StartTimer();
 }
 
-void DnsConfigService::OnConfigRead(const DnsConfig& config) {
+void DnsConfigService::OnConfigRead(DnsConfig config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValid());
 
@@ -163,11 +173,11 @@ void DnsConfigService::OnConfigRead(const DnsConfig& config) {
     OnCompleteConfig();
 }
 
-void DnsConfigService::OnHostsRead(const DnsHosts& hosts) {
+void DnsConfigService::OnHostsRead(DnsHosts hosts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (hosts != dns_config_.hosts) {
-    dns_config_.hosts = hosts;
+    dns_config_.hosts = std::move(hosts);
     need_update_ = true;
   }
 

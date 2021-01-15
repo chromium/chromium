@@ -39,17 +39,15 @@ namespace net {
 namespace internal {
 
 // Converts a UTF-16 domain name to ASCII, possibly using punycode.
-// Returns true if the conversion succeeds and output is not empty. In case of
-// failure, |domain| might become dirty.
-bool NET_EXPORT_PRIVATE ParseDomainASCII(base::WStringPiece widestr,
-                                         std::string* domain);
+// Returns empty string on failure.
+std::string NET_EXPORT_PRIVATE ParseDomainASCII(base::WStringPiece widestr);
 
 // Parses |value| as search list (comma-delimited list of domain names) from
-// a registry key and stores it in |out|. Returns true on success. Empty
+// a registry key and stores it in |out|. Returns empty vector on failure. Empty
 // entries (e.g., "chromium.org,,org") terminate the list. Non-ascii hostnames
 // are converted to punycode.
-bool NET_EXPORT_PRIVATE ParseSearchList(const std::wstring& value,
-                                        std::vector<std::string>* out);
+std::vector<std::string> NET_EXPORT_PRIVATE
+ParseSearchList(base::WStringPiece value);
 
 // All relevant settings read from registry and IP Helper. This isolates our
 // logic from system calls and is exposed for unit tests. Keep it an aggregate
@@ -75,6 +73,9 @@ struct NET_EXPORT_PRIVATE DnsSystemSettings {
 
   DnsSystemSettings();
   ~DnsSystemSettings();
+
+  DnsSystemSettings(DnsSystemSettings&&);
+  DnsSystemSettings& operator=(DnsSystemSettings&&);
 
   // Filled in by GetAdapterAddresses. Note that the alternative
   // GetNetworkParams does not include IPv6 addresses.
@@ -114,11 +115,10 @@ struct NET_EXPORT_PRIVATE DnsSystemSettings {
   bool have_proxy = false;
 };
 
-// Fills in |dns_config| from |settings|. Exposed for tests. Returns false if a
-// valid config could not be determined.
-bool NET_EXPORT_PRIVATE
-ConvertSettingsToDnsConfig(const DnsSystemSettings& settings,
-                           DnsConfig* dns_config);
+// Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
+// a valid config could not be determined.
+base::Optional<DnsConfig> NET_EXPORT_PRIVATE
+ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
 
 // Service for reading and watching Windows system DNS settings. This object is
 // not thread-safe and methods may perform blocking I/O so methods must be
