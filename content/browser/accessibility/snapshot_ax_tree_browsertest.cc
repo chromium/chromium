@@ -468,8 +468,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, MaxNodes) {
   EXPECT_LT(waiter.snapshot().nodes.size(), 35U);
 }
 
-// TODO(dmazzoni): Re-enable after fixing flakiness.  http://crbug.com/1161541
-IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, DISABLED_Timeout) {
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Timeout) {
   GURL url(R"HTML(data:text/html,<body>
                   <style> p { margin: 50px; } </style>
                   <script>
@@ -485,24 +484,42 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, DISABLED_Timeout) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  AXTreeSnapshotWaiter waiter;
-  web_contents->RequestAXTreeSnapshot(
-      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
-                     base::Unretained(&waiter)),
-      ui::kAXModeComplete,
-      /* exclude_offscreen= */ false,
-      /* max_nodes= */ 0,
-      /* timeout= */ base::TimeDelta::FromMilliseconds(1));
-  waiter.Wait();
+  // Get the number of nodes with no timeout.
+  size_t actual_nodes = 0;
+  {
+    AXTreeSnapshotWaiter waiter;
+    web_contents->RequestAXTreeSnapshot(
+        base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                       base::Unretained(&waiter)),
+        ui::kAXModeComplete,
+        /* exclude_offscreen= */ false,
+        /* max_nodes= */ 0,
+        /* timeout= */ {});
+    waiter.Wait();
+    actual_nodes = waiter.snapshot().nodes.size();
+    LOG(INFO) << "Actual nodes: " << actual_nodes;
+  }
 
-  // Dump the whole tree if one of the assertions below fails
-  // to aid in debugging why it failed.
-  SCOPED_TRACE(waiter.snapshot().ToString());
+  // Request a snapshot with a timeout of 1 ms. The test succeeds if
+  // we get fewer nodes. There's a tiny chance we don't hit the timeout,
+  // so keep trying indefinitely until the test either passes or times out.
+  size_t nodes_with_timeout = actual_nodes;
+  while (nodes_with_timeout >= actual_nodes) {
+    AXTreeSnapshotWaiter waiter;
+    web_contents->RequestAXTreeSnapshot(
+        base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                       base::Unretained(&waiter)),
+        ui::kAXModeComplete,
+        /* exclude_offscreen= */ false,
+        /* max_nodes= */ 0,
+        /* timeout= */ base::TimeDelta::FromMilliseconds(1));
+    waiter.Wait();
 
-  // If we didn't set a timeout, thee would be at least 200 nodes on the page (2
-  // for every paragraph). By setting the max computation time to 1 ms, we
-  // should get a very small tree.
-  EXPECT_LT(waiter.snapshot().nodes.size(), 20U);
+    nodes_with_timeout = waiter.snapshot().nodes.size();
+    LOG(INFO) << "Nodes with timeout: " << nodes_with_timeout;
+  }
+
+  EXPECT_LT(nodes_with_timeout, actual_nodes);
 }
 
 }  // namespace content
