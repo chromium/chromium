@@ -314,6 +314,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
       std::move(intent));
+  params.launch_source = launch_source;
   return LaunchImpl(std::move(params));
 }
 
@@ -435,6 +436,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
   AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
       profile_, extension, event_flags, GetAppLaunchSource(launch_source),
       display_id);
+  params.launch_source = launch_source;
   ash::ShelfLaunchSource source = ConvertLaunchSource(launch_source);
   if ((source == ash::LAUNCH_FROM_APP_LIST ||
        source == ash::LAUNCH_FROM_APP_LIST_SEARCH) &&
@@ -460,6 +462,7 @@ void ExtensionAppsBase::LaunchAppWithFiles(
   AppLaunchParams params(
       app_id, container, ui::DispositionFromEventFlags(event_flags),
       GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
+  params.launch_source = launch_source;
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
   }

@@ -92,16 +92,8 @@ void LaunchTerminal(Profile* profile,
     LOG(WARNING) << "Empty launch params for terminal";
     return;
   }
-
-  // This LaunchSystemWebAppImpl call is necessary. Terminal App uses its own
-  // CrostiniApps publisher for launching. Calling LaunchSystemWebAppAsync
-  // would ask AppService to launch the App, which routes the launch request to
-  // this function, resulting in a loop.
-  //
-  // System Web Apps managed by Web App publisher should call
-  // LaunchSystemWebAppAsync.
-  web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::TERMINAL,
-                                  vsh_in_crosh_url, *params);
+  web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::TERMINAL,
+                              vsh_in_crosh_url, std::move(*params));
 }
 
 void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
@@ -114,18 +106,10 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   std::string path = "html/terminal_settings.html";
   // Use an app pop window to host the settings page.
   params->disposition = WindowOpenDisposition::NEW_POPUP;
-
-  // This LaunchSystemWebAppImpl call is necessary. Terminal App uses its own
-  // CrostiniApps publisher for launching. Calling LaunchSystemWebAppAsync
-  // would ask AppService to launch the App, which routes the launch request to
-  // this function, resulting in a loop.
-  //
-  // System Web Apps managed by Web App publisher should call
-  // LaunchSystemWebAppAsync.
-  web_app::LaunchSystemWebAppImpl(
+  web_app::LaunchSystemWebApp(
       profile, web_app::SystemAppType::TERMINAL,
       GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL, path})),
-      *params);
+      std::move(*params));
 }
 
 void RecordTerminalSettingsChangesUMAs(Profile* profile) {

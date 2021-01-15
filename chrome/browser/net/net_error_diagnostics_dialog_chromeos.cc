@@ -26,8 +26,9 @@ void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kConnectivityDiagnosticsWebUi)) {
-    LaunchSystemWebAppAsync(profile,
-                            web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
+    LaunchSystemWebApp(profile,
+                       web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
+                       GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl));
   } else {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
