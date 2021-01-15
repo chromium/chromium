@@ -3827,6 +3827,29 @@
             ]
         }
     ],
+    "KeyboardAccessoryPaymentOffer": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:keyboard_accessory_payment_offer_iph_trigger;comparator:<3;window:90;storage:360",
+                        "event_used": "name:keyboard_accessory_payment_suggestion_accepted;comparator:<2;window:90;storage:360",
+                        "session_rate": "any",
+                        "session_rate_impact": "IPH_KeyboardAccessoryBarSwiping"
+                    },
+                    "enable_features": [
+                        "IPH_KeyboardAccessoryPaymentOffer",
+                        "kAutofillEnableOffersInClankKeyboardAccessory"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardAccessorySwipingIPH": [
         {
             "platforms": [
