@@ -8857,6 +8857,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Translated"/>
 </enum>
 
+<enum name="BooleanUnavailable">
+  <int value="0" label="Available"/>
+  <int value="1" label="Unavailable"/>
+</enum>
+
 <enum name="BooleanUnderlay">
   <int value="0" label="Overlay Mode"/>
   <int value="1" label="Underlay Mode"/>

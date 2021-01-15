@@ -430,6 +430,8 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   bool is_allowlist_too_small =
       IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
                       kHighConfidenceAllowlistMinimumEntryCount);
+  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllowlistSizeTooSmall",
+                        is_allowlist_too_small);
   if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
       (!all_stores_available && is_artificial_prefix_empty)) {
