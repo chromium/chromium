@@ -4,24 +4,23 @@
 
 #include "components/invalidation/impl/invalidation_service_test_template.h"
 
-namespace internal {
+namespace invalidation {
 
 BoundFakeInvalidationHandler::BoundFakeInvalidationHandler(
-    const invalidation::InvalidationService& invalidator)
+    const InvalidationService& invalidator)
     : invalidator_(invalidator),
-      last_retrieved_state_(invalidation::DEFAULT_INVALIDATION_ERROR) {}
+      last_retrieved_state_(DEFAULT_INVALIDATION_ERROR) {}
 
 BoundFakeInvalidationHandler::~BoundFakeInvalidationHandler() = default;
 
-invalidation::InvalidatorState
-BoundFakeInvalidationHandler::GetLastRetrievedState() const {
+InvalidatorState BoundFakeInvalidationHandler::GetLastRetrievedState() const {
   return last_retrieved_state_;
 }
 
 void BoundFakeInvalidationHandler::OnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
+    InvalidatorState state) {
   FakeInvalidationHandler::OnInvalidatorStateChange(state);
   last_retrieved_state_ = invalidator_.GetInvalidatorState();
 }
 
-}  // namespace internal
+}  // namespace invalidation
