@@ -88,6 +88,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_watcher_view_host.h"
@@ -1389,6 +1390,36 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
     EndDrag(END_DRAG_COMPLETE);
 }
 
+void TabStrip::ScrollTabToVisible(int model_index) {
+  views::ScrollView* scroll_container =
+      views::ScrollView::GetScrollViewForContents(this);
+  if (!scroll_container) {
+    return;
+  }
+
+  gfx::Rect visible_content_rect = scroll_container->GetVisibleRect();
+  Tab* active_tab = tab_at(model_index);
+
+  if ((active_tab->x() >= visible_content_rect.x()) &&
+      (active_tab->bounds().right() <= visible_content_rect.right())) {
+    return;
+  }
+
+  bool scroll_left = active_tab->x() < visible_content_rect.x();
+  if (scroll_left) {
+    gfx::Rect new_visible(active_tab->x(), visible_content_rect.y(),
+                          visible_content_rect.width(),
+                          visible_content_rect.height());
+    ScrollRectToVisible(new_visible);
+  } else {
+    gfx::Rect new_visible(
+        active_tab->bounds().right() - visible_content_rect.width(),
+        visible_content_rect.y(), visible_content_rect.width(),
+        visible_content_rect.height());
+    ScrollRectToVisible(new_visible);
+  }
+}
+
 void TabStrip::SetTabData(int model_index, TabRendererData data) {
   Tab* tab = tab_at(model_index);
   const bool pinned = data.pinned;
@@ -1653,6 +1684,9 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     new_active_tab->ActiveStateChanged();
     layout_helper_->SetActiveTab(selected_tabs_.active(),
                                  new_selection.active());
+    if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+      ScrollTabToVisible(new_selection.active());
+    }
   }
 
   if (touch_layout_) {
