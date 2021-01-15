@@ -674,9 +674,7 @@ void InputMethodChromeOS::CommitText(
   // focused text input client does not support text input.
   if (!handling_key_event_ && !IsTextInputTypeNone()) {
     if (!SendFakeProcessKeyEvent(true))
-      GetTextInputClient()->InsertText(
-          utf16_text,
-          TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      GetTextInputClient()->InsertText(utf16_text, cursor_behavior);
     SendFakeProcessKeyEvent(false);
     result_text_.clear();
     result_text_cursor_ = 0;

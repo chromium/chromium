@@ -418,10 +418,16 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
   ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
 }
 
-void NativeInputMethodEngine::ImeObserver::CommitText(const std::string& text) {
+void NativeInputMethodEngine::ImeObserver::CommitText(
+    const std::string& text,
+    ime::mojom::CommitTextCursorBehavior cursor_behavior) {
   GetInputContext()->CommitText(
       NormalizeString(text),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      cursor_behavior ==
+              ime::mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
+          ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
+          : ui::TextInputClient::InsertTextCursorBehavior::
+                kMoveCursorAfterText);
 }
 
 void NativeInputMethodEngine::ImeObserver::SetComposition(

@@ -62,7 +62,8 @@ class InputEngine : public mojom::InputChannel {
   void ResetForRulebased() override;
   void GetRulebasedKeypressCountForTesting(
       GetRulebasedKeypressCountForTestingCallback callback) override;
-  void CommitText(const std::string& text) override;
+  void CommitText(const std::string& text,
+                  mojom::CommitTextCursorBehavior cursor_behavior) override;
   void SetComposition(const std::string& text) override;
   void SetCompositionRange(uint32_t start_byte_index,
                            uint32_t end_byte_index) override;

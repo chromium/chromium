@@ -195,7 +195,8 @@ void InputEngine::GetRulebasedKeypressCountForTesting(
   std::move(callback).Run(engine ? engine->process_key_count() : -1);
 }
 
-void InputEngine::CommitText(const std::string& text) {
+void InputEngine::CommitText(const std::string& text,
+                             mojom::CommitTextCursorBehavior cursor_behavior) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 

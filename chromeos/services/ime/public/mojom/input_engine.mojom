@@ -135,6 +135,11 @@ struct InputFieldInfo {
   PersonalizationMode personalization;
 };
 
+enum CommitTextCursorBehavior {
+  kMoveCursorAfterText = 0,
+  kMoveCursorBeforeText = 1,
+};
+
 struct AutocorrectSpan {
   // The range to set the autocorrect span to.
   gfx.mojom.Range autocorrect_range;
@@ -265,7 +270,7 @@ interface InputChannel {
   // composition is removed and `text` is inserted. Otherwise, `text` is
   // inserted at the current cursor position, deleting any text in the current
   // selection if any. In both cases, the cursor moves to the end of `text`.
-  CommitText(string text);
+  CommitText(string text, CommitTextCursorBehavior cursor_behavior);
 
   // Asks the input field to set composition with `text`. Replaces the current
   // composition if there is one. Otherwise, start a composition at the current
