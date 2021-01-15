@@ -599,6 +599,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint2"/>
+  <affected-histogram
+      name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3"/>
   <affected-histogram name="PageLoad.Bytes"/>
   <affected-histogram name="PageLoad.Cpu"/>
   <affected-histogram

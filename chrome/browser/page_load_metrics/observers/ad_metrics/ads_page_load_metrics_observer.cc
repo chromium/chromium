@@ -1188,8 +1188,8 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
 
     if (auto first_contentful_paint =
             ad_frame_data.earliest_first_contentful_paint()) {
-      ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint2",
-                    PAGE_LOAD_HISTOGRAM, visibility,
+      ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint3",
+                    PAGE_LOAD_LONG_HISTOGRAM, visibility,
                     first_contentful_paint.value());
     }
   }

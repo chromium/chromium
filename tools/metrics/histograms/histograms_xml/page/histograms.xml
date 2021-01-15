@@ -34,6 +34,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint2" units="ms"
     expires_after="2021-07-31">
+  <obsolete>
+    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint3 in Jan
+    2021 to increase the bucket range.
+  </obsolete>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    Records the time from frame navigation start to FirstContentfulPaint of each
+    ad frame that receives a FirstContentfulPaint. The time could be quite
+    large, as some ads don't paint until they're scrolled into view. But the
+    metric is still useful in aggregate.
+
+    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
+    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3" units="ms"
+    expires_after="2021-12-31">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>

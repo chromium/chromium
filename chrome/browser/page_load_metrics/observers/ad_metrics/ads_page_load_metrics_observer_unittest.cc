@@ -2857,7 +2857,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, NoFirstContentfulPaint_NotRecorded) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   histogram_tester().ExpectTotalCount(
-      "AdPaintTiming.NavigationToFirstContentfulPaint2", 0);
+      "AdPaintTiming.NavigationToFirstContentfulPaint3", 0);
 }
 
 TEST_F(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
@@ -2875,7 +2875,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint2"), 100,
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 100,
       1);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
@@ -2908,7 +2908,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   // The histogram value should be that of the earliest FCP recorded.
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint2"), 90,
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 90,
       1);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
@@ -2942,7 +2942,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   // The histogram value should be that of the earliest FCP recorded.
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint2"), 90,
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 90,
       1);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
@@ -2971,7 +2971,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
   // The histogram value should be that of the earliest FCP recorded.
   histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint2"), 90,
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 90,
       1);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
