@@ -21,6 +21,9 @@ class UpdateScreen;
 // representation. Owned by UpdateScreen.
 class UpdateView {
  public:
+  // The screen name must never change. It's stored into local state as a
+  // pending screen during OOBE update. So the value should be the same between
+  // versions.
   constexpr static StaticOobeScreenId kScreenId{"oobe-update"};
 
   // Enumeration of UI states. These values must be kept in sync with
