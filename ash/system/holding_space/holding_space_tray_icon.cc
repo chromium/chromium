@@ -129,6 +129,7 @@ HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
 
 void HoldingSpaceTrayIcon::Clear() {
   previews_update_weak_factory_.InvalidateWeakPtrs();
+  item_ids_.clear();
   previews_by_id_.clear();
   removed_previews_.clear();
   SetPreferredSize(CalculatePreferredSize());
