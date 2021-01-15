@@ -125,7 +125,7 @@ public interface Tab extends TabLifecycle {
      * @return Original url of the tab without any Chrome feature modifications applied
      *         (e.g. reader mode).
      */
-    String getOriginalUrl();
+    GURL getOriginalUrl();
 
     /**
      * @return The tab title.

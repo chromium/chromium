@@ -33,6 +33,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests for {@link LinkToTextCoordinator}.
@@ -67,15 +68,15 @@ public class LinkToTextCoordinatorTest {
 
     private Activity mAcivity;
     private static final String SELECTED_TEXT = "selection";
-    private static final String VISIBLE_URL = "www.example.com";
+    private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Before
     public void setUpTest() {
         mAcivity = Robolectric.setupActivity(Activity.class);
         MockitoAnnotations.initMocks(this);
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
-        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(VISIBLE_URL))
-                .thenReturn(VISIBLE_URL);
+        when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
+                .thenReturn(JUnitTestGURLs.getGURL(VISIBLE_URL));
 
         doNothing().when(mShareCallback).showThirdPartyShareSheet(any(), any(), anyLong());
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -86,7 +87,7 @@ public class LinkToTextCoordinatorTest {
     @SmallTest
     public void getUrlToShareTest() {
         String selector = "selector";
-        String expectedUrlToShare = "www.example.com#:~:text=selector";
+        String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
@@ -96,7 +97,7 @@ public class LinkToTextCoordinatorTest {
     @SmallTest
     public void getUrlToShareTest_URLWithFragment() {
         String selector = "selector";
-        String expectedUrlToShare = "www.example.com#:~:text=selector";
+        String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL + "#elementid", SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
@@ -106,7 +107,7 @@ public class LinkToTextCoordinatorTest {
     @SmallTest
     public void getUrlToShareTest_EmptySelector() {
         String selector = "";
-        String expectedUrlToShare = "www.example.com";
+        String expectedUrlToShare = VISIBLE_URL;
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));

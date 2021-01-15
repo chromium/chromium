@@ -109,7 +109,7 @@ public class TabContext {
         public static TabInfo createFromTab(Tab tab) {
             String referrerUrl = getReferrerUrlFromTab(tab);
             return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrlString(),
-                    tab.getOriginalUrl(), referrerUrl != null ? referrerUrl : "",
+                    tab.getOriginalUrl().getSpec(), referrerUrl != null ? referrerUrl : "",
                     CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrlString(),
                     tab.isIncognito());
         }

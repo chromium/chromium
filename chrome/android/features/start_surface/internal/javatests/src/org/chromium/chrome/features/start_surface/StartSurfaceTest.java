@@ -1091,10 +1091,12 @@ public class StartSurfaceTest {
             return;
         }
         mActivityTestRule.loadUrl("about:blank");
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> cta.getTabModelSelector().getCurrentTab().getOriginalUrl().equals(
-                                "about:blank"));
+        CriteriaHelper.pollUiThread(()
+                                            -> cta.getTabModelSelector()
+                                                       .getCurrentTab()
+                                                       .getOriginalUrl()
+                                                       .getSpec()
+                                                       .equals("about:blank"));
 
         // Click the home button should navigate to NTP instead of showing start surface.
         onView(withId(R.id.home_button)).perform(click());

@@ -93,16 +93,18 @@ public class LocationBarModelUnitTest {
     // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                url -> url.getSpec(),
+                IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
             setTab(tab, /*incognito=*/true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                url -> url.getSpec(),
+                IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
             setTab(tab, /*incognito=*/false);
         }
     }

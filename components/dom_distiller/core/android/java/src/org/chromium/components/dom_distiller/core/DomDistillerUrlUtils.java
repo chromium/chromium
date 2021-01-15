@@ -38,7 +38,7 @@ public final class DomDistillerUrlUtils {
     @Deprecated
     public static String getOriginalUrlFromDistillerUrl(String url) {
         if (TextUtils.isEmpty(url)) return url;
-        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url);
+        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url).getSpec();
     }
 
     /**
@@ -47,8 +47,8 @@ public final class DomDistillerUrlUtils {
      * @param url The current viewer URL.
      * @return the URL of the original page.
      */
-    public static String getOriginalUrlFromDistillerUrl(GURL url) {
-        if (url.isEmpty()) return url.getSpec();
+    public static GURL getOriginalUrlFromDistillerUrl(GURL url) {
+        if (url.isEmpty()) return url;
         return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url.getSpec());
     }
 
@@ -77,7 +77,7 @@ public final class DomDistillerUrlUtils {
     @VisibleForTesting
     public interface Natives {
         String getDistillerViewUrlFromUrl(String scheme, String url, String title);
-        String getOriginalUrlFromDistillerUrl(String viewerUrl);
+        GURL getOriginalUrlFromDistillerUrl(String viewerUrl);
         boolean isDistilledPage(String url);
         String getValueForKeyInUrl(String url, String key);
     }

@@ -369,6 +369,7 @@ android_library("ui_no_recycler_view_java") {
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_vectordrawable_vectordrawable_animated_java",
     "//ui/base/cursor/mojom:cursor_type_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums_srcjar" ]
@@ -482,6 +483,8 @@ junit_binary("ui_junit_tests") {
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
   android_manifest = "junit/AndroidManifest.xml"
 }

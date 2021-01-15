@@ -99,6 +99,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1026,7 +1027,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListItemsInSelectionMode() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, new GURL(TEST_URL_A));
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1055,7 +1056,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListItemMenuItems() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, new GURL(TEST_URL_A));
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1096,7 +1097,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListDeletion() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, new GURL(TEST_URL_A));
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) != null);
@@ -1140,7 +1141,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListOpenInCCT() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, new GURL(TEST_URL_A));
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) != null);
@@ -1673,7 +1674,7 @@ public class BookmarkTest {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel.addToReadingList("a", "https://a.com/reading_list_0");
+            mBookmarkModel.addToReadingList("a", new GURL("https://a.com/reading_list_0"));
             mManager.openFolder(mBookmarkModel.getRootFolderId());
         });
         onView(withText("Reading list")).check(matches(isDisplayed()));
@@ -1687,8 +1688,8 @@ public class BookmarkTest {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel.addToReadingList("a", "https://a.com/reading_list_0");
-            mBookmarkModel.addToReadingList("b", "https://a.com/reading_list_1");
+            mBookmarkModel.addToReadingList("a", new GURL("https://a.com/reading_list_0"));
+            mBookmarkModel.addToReadingList("b", new GURL("https://a.com/reading_list_1"));
             mManager.openFolder(mBookmarkModel.getRootFolderId());
         });
         onView(withText("Reading list")).check(matches(isDisplayed()));
@@ -1914,7 +1915,7 @@ public class BookmarkTest {
                 () -> mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, title, url));
     }
 
-    private BookmarkId addReadingListBookmark(final String title, final String url)
+    private BookmarkId addReadingListBookmark(final String title, final GURL url)
             throws ExecutionException {
         readPartnerBookmarks();
         return TestThreadUtils.runOnUiThreadBlocking(

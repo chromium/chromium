@@ -65,7 +65,7 @@ public final class ToolbarSecurityIconTest {
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
         mLocationBarModel = spy(
                 new LocationBarModel(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
-                        url -> url, window -> null, ToolbarTestUtils.OFFLINE_STATUS));
+                        url -> url.getSpec(), window -> null, ToolbarTestUtils.OFFLINE_STATUS));
         mLocationBarModel.initializeWithNative();
     }
 

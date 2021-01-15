@@ -772,8 +772,9 @@ public class OfflinePageUtils {
         if (OfflinePageUtils.isShowingTrustedOfflinePage(webContents) || offlinePage == null) {
             // TODO(crbug.com/1033178): dedupe the
             // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl() calls.
-            String distilledUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                    webContents.getVisibleUrl());
+            String distilledUrl =
+                    DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                            .getSpec();
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.
             LoadUrlParams params = new LoadUrlParams(distilledUrl, transitionTypeForReload);

@@ -79,7 +79,7 @@ public class StatusViewTest extends DummyUiActivityTestCase {
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
             mStatusView.setLocationBarDataProvider(
                     new LocationBarModel(mStatusView.getContext(), NewTabPageDelegate.EMPTY,
-                            url -> url, window -> null, ToolbarTestUtils.OFFLINE_STATUS));
+                            url -> url.getSpec(), window -> null, ToolbarTestUtils.OFFLINE_STATUS));
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             mStatusMCP = PropertyModelChangeProcessor.create(
                     mStatusModel, mStatusView, new StatusViewBinder());

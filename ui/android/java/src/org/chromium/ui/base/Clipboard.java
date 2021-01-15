@@ -38,6 +38,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.List;
@@ -379,8 +380,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * Copy the specified URL to the clipboard and show a toast indicating the action occurred.
      * @param url The URL to copy to the clipboard.
      */
-    public void copyUrlToClipboard(String url) {
-        ClipData clip = ClipData.newPlainText("url", url);
+    public void copyUrlToClipboard(GURL url) {
+        ClipData clip = ClipData.newPlainText("url", url.getSpec());
         if (setPrimaryClipNoException(clip)) {
             Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
         }

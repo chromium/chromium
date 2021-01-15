@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -187,7 +188,7 @@ public class BookmarkBottomSheetTest {
         // Add 1 bookmark and 1 unread page.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
-            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
+            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_A));
         });
 
         showBottomSheet();
@@ -205,8 +206,8 @@ public class BookmarkBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_A);
             mBookmarkModel.addBookmark(mBookmarkModel.getMobileFolderId(), 0, TITLE, TEST_URL_B);
-            mBookmarkModel.addToReadingList(TITLE, TEST_URL_A);
-            mBookmarkModel.addToReadingList(TITLE, TEST_URL_B);
+            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_A));
+            mBookmarkModel.addToReadingList(TITLE, new GURL(TEST_URL_B));
         });
 
         showBottomSheet();

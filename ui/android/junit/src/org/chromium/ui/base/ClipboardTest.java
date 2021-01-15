@@ -28,6 +28,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -111,8 +112,8 @@ public class ClipboardTest {
         ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
         clipboard.overrideClipboardManagerForTesting(clipboardManager);
 
-        String url = "https://google.com";
-        clipboard.copyUrlToClipboard(url);
+        String url = JUnitTestGURLs.SEARCH_URL;
+        clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
@@ -127,8 +128,8 @@ public class ClipboardTest {
         clipboard.overrideClipboardManagerForTesting(clipboardManager);
 
         doThrow(SecurityException.class).when(clipboardManager).setPrimaryClip(any(ClipData.class));
-        String url = "https://google.com";
-        clipboard.copyUrlToClipboard(url);
+        String url = JUnitTestGURLs.SEARCH_URL;
+        clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());

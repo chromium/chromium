@@ -191,7 +191,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Copy action button. */
     private void onCopyLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
-        Clipboard.getInstance().copyUrlToClipboard(mLastProcessedSuggestionURL.getSpec());
+        Clipboard.getInstance().copyUrlToClipboard(mLastProcessedSuggestionURL);
     }
 
     /** Invoked when user interacts with Edit action button. */

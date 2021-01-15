@@ -7,6 +7,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
   "+ui/android/java/src/org/chromium/ui",
   "+ui/android/java/src/org/chromium/ui/base",
+  "+url/android",
 ]
 
 specific_include_rules = {

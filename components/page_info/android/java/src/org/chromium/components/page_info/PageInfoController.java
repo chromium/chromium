@@ -168,14 +168,15 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         };
         // Long press the url text to copy it to the clipboard.
         viewParams.urlTitleLongClickCallback =
-                () -> Clipboard.getInstance().copyUrlToClipboard(mFullUrl.getSpec());
+                () -> Clipboard.getInstance().copyUrlToClipboard(mFullUrl);
 
         // Work out the URL and connection message and status visibility.
         // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         String url = mDelegate.isShowingOfflinePage()
                 ? mDelegate.getOfflinePageUrl()
-                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
+                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                          .getSpec();
 
         // This can happen if an invalid chrome-distiller:// url was entered.
         if (url == null) url = "";

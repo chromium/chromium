@@ -87,6 +87,7 @@ public class TabSuggestionsOrchestratorTest {
         doReturn("").when(gurl).getSpec();
         doReturn(gurl).when(webContents).getVisibleUrl();
         doReturn(webContents).when(tab).getWebContents();
+        doReturn(GURL.emptyGURL()).when(tab).getOriginalUrl();
         return tab;
     }
 

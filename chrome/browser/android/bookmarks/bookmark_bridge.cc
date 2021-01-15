@@ -826,12 +826,12 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_title,
-    const JavaParamRef<jstring>& j_url) {
+    const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
   const BookmarkNode* node = reading_list_manager_->Add(
-      GURL(base::android::ConvertJavaStringToUTF16(env, j_url)),
+      *url::GURLAndroid::ToNativeGURL(env, j_url),
       base::android::ConvertJavaStringToUTF8(env, j_title));
   return node ? JavaBookmarkIdCreateBookmarkId(env, node->id(),
                                                GetBookmarkType(node))

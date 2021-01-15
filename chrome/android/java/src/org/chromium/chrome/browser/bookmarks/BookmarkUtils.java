@@ -53,6 +53,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,7 +190,7 @@ public class BookmarkUtils {
      * @param context The associated context.
      * @return The bookmark ID created after saving the article to the reading list.
      */
-    public static BookmarkId addToReadingList(String url, String title,
+    public static BookmarkId addToReadingList(GURL url, String title,
             SnackbarManager snackbarManager, BookmarkBridge bookmarkBridge, Context context) {
         assert bookmarkBridge.isBookmarkModelLoaded();
         BookmarkId bookmarkId = bookmarkBridge.addToReadingList(title, url);
@@ -211,7 +212,7 @@ public class BookmarkUtils {
      * Will reset last used parent if it fails to add a bookmark
      */
     private static BookmarkId addBookmarkInternal(
-            Context context, BookmarkModel bookmarkModel, String title, String url) {
+            Context context, BookmarkModel bookmarkModel, String title, GURL url) {
         BookmarkId parent = getLastUsedParent(context);
         BookmarkItem parentItem = null;
         if (parent != null) {
@@ -221,8 +222,9 @@ public class BookmarkUtils {
                 || !parentItem.isFolder()) {
             parent = bookmarkModel.getDefaultFolder();
         }
-        BookmarkId bookmarkId =
-                bookmarkModel.addBookmark(parent, bookmarkModel.getChildCount(parent), title, url);
+        // TODO(crbug/783819): Migrate BookmarkModel to GURL.
+        BookmarkId bookmarkId = bookmarkModel.addBookmark(
+                parent, bookmarkModel.getChildCount(parent), title, url.getSpec());
 
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {

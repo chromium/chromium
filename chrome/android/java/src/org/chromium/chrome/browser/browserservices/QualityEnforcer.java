@@ -30,6 +30,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.net.NetError;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -81,18 +82,18 @@ public class QualityEnforcer {
                 });
             }
 
-            String newUrl = tab.getOriginalUrl();
+            GURL newUrl = tab.getOriginalUrl();
             if (isNavigationInScope(newUrl)) {
                 if (navigation.httpStatusCode() == 404) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR404, newUrl,
+                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR404, newUrl.getSpec(),
                             navigation.httpStatusCode());
                 } else if (navigation.httpStatusCode() >= 500
                         && navigation.httpStatusCode() <= 599) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR5XX, newUrl,
+                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR5XX, newUrl.getSpec(),
                             navigation.httpStatusCode());
                 } else if (navigation.errorCode() == NetError.ERR_INTERNET_DISCONNECTED) {
-                    trigger(tab, QualityEnforcementViolationType.UNAVAILABLE_OFFLINE, newUrl,
-                            navigation.httpStatusCode());
+                    trigger(tab, QualityEnforcementViolationType.UNAVAILABLE_OFFLINE,
+                            newUrl.getSpec(), navigation.httpStatusCode());
                 }
             }
         }
@@ -174,10 +175,11 @@ public class QualityEnforcer {
      * Updates whether the current url is verified and returns whether the source and destination
      * are both on the verified origin.
      */
-    private boolean isNavigationInScope(String newUrl) {
-        if (newUrl.equals("")) return false;
+    private boolean isNavigationInScope(GURL newUrl) {
+        if (newUrl.isEmpty()) return false;
         boolean wasVerified = mOriginVerified;
-        Promise<Boolean> result = mVerifier.verify(newUrl);
+        // TODO(crbug/783819): Migrate Verifier to GURL.
+        Promise<Boolean> result = mVerifier.verify(newUrl.getSpec());
         mOriginVerified = !result.isFulfilled() || result.getResult();
         return wasVerified && mOriginVerified;
     }

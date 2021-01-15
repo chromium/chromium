@@ -843,7 +843,7 @@ public class BookmarkBridge {
      * @return The bookmark ID created after saving the article to the reading list, or null on
      *         error.
      */
-    public @Nullable BookmarkId addToReadingList(String title, String url) {
+    public @Nullable BookmarkId addToReadingList(String title, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert title != null;
         assert url != null;
@@ -1109,7 +1109,7 @@ public class BookmarkBridge {
         BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
                 int index, String title, String url);
         BookmarkId addToReadingList(
-                long nativeBookmarkBridge, BookmarkBridge caller, String title, String url);
+                long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
         BookmarkItem getReadingListItem(
                 long nativeBookmarkBridge, BookmarkBridge caller, String url);
         void setReadStatus(

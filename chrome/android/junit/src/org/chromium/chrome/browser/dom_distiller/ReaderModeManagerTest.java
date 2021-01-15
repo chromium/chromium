@@ -111,8 +111,8 @@ public class ReaderModeManagerTest {
         when(DomDistillerUrlUtils.isDistilledPage(MOCK_DISTILLER_URL)).thenReturn(true);
         when(DomDistillerUrlUtils.isDistilledPage(MOCK_URL)).thenReturn(false);
 
-        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL.getSpec()))
-                .thenReturn(MOCK_URL.getSpec());
+        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL))
+                .thenReturn(MOCK_URL);
 
         mManager = new ReaderModeManager(mTab);
 

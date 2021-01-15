@@ -77,12 +77,13 @@ public class TabContextTest {
     private TabModelFilter mTabModelFilter;
 
     private Tab mTab0 = mockTab(TAB_0_ID, 6, "mock_title_tab_0", "mock_url_tab_0",
-            "mock_original_url_tab_0", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), 100);
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), 100);
     private Tab mRelatedTab0 = mockTab(RELATED_TAB_0_ID, 6, "mock_title_related_tab_0",
-            "mock_url_related_tab_0", "mock_original_url_related_tab_0",
+            "mock_url_related_tab_0", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), 200);
     private Tab mRelatedTab1 = mockTab(RELATED_TAB_1_ID, 6, "mock_title_related_tab_1",
-            "mock_url_related_tab_1", "mock_original_url_related_tab_1",
+            "mock_url_related_tab_1", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), 300);
 
     @Before
@@ -94,7 +95,7 @@ public class TabContextTest {
     }
 
     // TODO(yfriedman): All of these should be GURLs.
-    private static TabImpl mockTab(int id, int rootId, String title, String url, String originalUrl,
+    private static TabImpl mockTab(int id, int rootId, String title, String url, GURL originalUrl,
             GURL referrerUrl, long timestampMillis) {
         TabImpl tab = mock(TabImpl.class);
         doReturn(id).when(tab).getId();
@@ -161,8 +162,10 @@ public class TabContextTest {
 
     @Test
     public void testExcludeClosingTabs() {
-        Tab newTab1 = mockTab(NEW_TAB_1_ID, NEW_TAB_1_ID, "", "", "", GURL.emptyGURL(), 0);
-        Tab newTab2 = mockTab(NEW_TAB_2_ID, NEW_TAB_2_ID, "", "", "", GURL.emptyGURL(), 0);
+        Tab newTab1 =
+                mockTab(NEW_TAB_1_ID, NEW_TAB_1_ID, "", "", GURL.emptyGURL(), GURL.emptyGURL(), 0);
+        Tab newTab2 =
+                mockTab(NEW_TAB_2_ID, NEW_TAB_2_ID, "", "", GURL.emptyGURL(), GURL.emptyGURL(), 0);
         doReturn(mTab0).when(mTabModelFilter).getTabAt(eq(TAB_0_ID));
         doReturn(newTab1).when(mTabModelFilter).getTabAt(eq(TAB_0_ID + 1));
         doReturn(newTab2).when(mTabModelFilter).getTabAt(eq(TAB_0_ID + 2));

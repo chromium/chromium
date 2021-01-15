@@ -44,6 +44,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.net.URISyntaxException;
@@ -57,7 +58,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      */
     @FunctionalInterface
     public interface UrlFormatter {
-        String format(String url);
+        String format(GURL url);
     }
 
     /**
@@ -239,11 +240,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (mTab.isFrozen()) return buildUrlBarData(url, formattedUrl);
 
         if (DomDistillerUrlUtils.isDistilledPage(url)) {
-            String originalUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(url);
-            if (originalUrl != null) {
-                return buildUrlBarData(mUrlFormatter.format(originalUrl));
-            }
-            return buildUrlBarData(url, formattedUrl);
+            GURL originalUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
+            return buildUrlBarData(mUrlFormatter.format(originalUrl));
         }
 
         // Strip the scheme from committed preview pages only.
@@ -252,7 +250,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         if (isOfflinePage()) {
-            String originalUrl = mTab.getOriginalUrl();
+            GURL originalUrl = mTab.getOriginalUrl();
             formattedUrl = UrlUtilities.stripScheme(mUrlFormatter.format(originalUrl));
 
             // Clear the editing text for untrusted offline pages.
