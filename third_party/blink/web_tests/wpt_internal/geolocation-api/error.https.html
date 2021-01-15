@@ -3,21 +3,19 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 description("Tests Geolocation error callback using the mock service.");
 
-var mockMessage = "debug";
+const mockMessage = "debug";
 
-var error;
+let error;
 
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPermission(true);
 mock.setGeolocationPositionUnavailableError(mockMessage);
 
@@ -26,12 +24,12 @@ navigator.geolocation.getCurrentPosition(function(p) {
   finishJSTest();
 }, function(e) {
   error = e;
-  shouldBe('error.code', 'error.POSITION_UNAVAILABLE');
-  shouldBe('error.message', 'mockMessage');
-  shouldBe('error.UNKNOWN_ERROR', 'undefined');
-  shouldBe('error.PERMISSION_DENIED', '1');
-  shouldBe('error.POSITION_UNAVAILABLE', '2');
-  shouldBe('error.TIMEOUT', '3');
+  assert_equals(error.code, error.POSITION_UNAVAILABLE);
+  assert_equals(error.message, mockMessage);
+  assert_equals(error.UNKNOWN_ERROR, undefined);
+  assert_equals(error.PERMISSION_DENIED, 1);
+  assert_equals(error.POSITION_UNAVAILABLE, 2);
+  assert_equals(error.TIMEOUT, 3);
   finishJSTest();
 });
 </script>

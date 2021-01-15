@@ -3,33 +3,32 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 description("Tests that when a request is made on a Geolocation object, permission is denied and its Frame is disconnected before a callback is made, no callbacks are made.");
 
-var error;
-var iframe = document.createElement('iframe');
+let error;
+const iframe = document.createElement('iframe');
+let iframeGeolocation;
 
-function onIframeLoaded() {
+window.onIframeLoaded = function() {
     iframeGeolocation = iframe.contentWindow.navigator.geolocation;
     iframeGeolocation.getCurrentPosition(function() {
         testFailed('Success callback invoked unexpectedly');
         finishJSTest();
     }, function(e) {
         error = e;
-        shouldBe('error.code', 'error.PERMISSION_DENIED');
-        shouldBe('error.message', '"User denied Geolocation"');
+        assert_equals(error.code, error.PERMISSION_DENIED);
+        assert_equals(error.message, "User denied Geolocation");
         iframe.src = 'data:text/html,This frame should be visible when the test completes';
     });
 }
 
-function onIframeUnloaded() {
+window.onIframeUnloaded = function() {
     // Make another request, with permission already denied.
     iframeGeolocation.getCurrentPosition(function () {
         testFailed('Success callback invoked unexpectedly');
@@ -47,7 +46,7 @@ function onIframeUnloaded() {
 
 // Prime the Geolocation instance by denying permission. This makes sure that we execute the
 // same code path for both preemptive and non-preemptive permissions policies.
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPermission(false);
 mock.setGeolocationPosition(51.478, -0.166, 100);
 

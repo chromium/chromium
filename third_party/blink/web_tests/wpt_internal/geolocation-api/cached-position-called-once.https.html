@@ -3,33 +3,28 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 description('Tests that when a cached position is available the callback for getCurrentPosition is called only once. This is a regression test for http://crbug.com/311876 .');
 
 // Only one success callback should be reported per call to getCurrentPosition.
-var reportCount = 0;
-var isSuccess;
+let reportCount = 0;
 
 function reportCallback(success, id) {
-    isSuccess = success;
-    shouldBeTrue('isSuccess');
-    getCurrentPositionCallId = id;
-    shouldBe('getCurrentPositionCallId', 'reportCount');
+    assert_true(success);
+    assert_equals(id, reportCount);
     if (++reportCount >= 3)
         finishJSTest();
 }
 
-var getCurrentPositionCall = 0;
+let getCurrentPositionCall = 0;
 function getPosition(milliseconds) {
-    var id = getCurrentPositionCall++;
-    var fn = function() {
+    const id = getCurrentPositionCall++;
+    const fn = function() {
         navigator.geolocation.getCurrentPosition(
                 function(position) {
                     reportCallback(true, id);
@@ -42,7 +37,7 @@ function getPosition(milliseconds) {
     setTimeout(fn, milliseconds);
 }
 
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPosition(31.478, -0.166, 100);
 mock.setGeolocationPermission(true);
 

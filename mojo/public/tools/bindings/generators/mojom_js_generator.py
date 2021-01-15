@@ -1013,7 +1013,10 @@ class Generator(generator.Generator):
       if mojom.IsStructKind(token.parent_kind) or for_module:
         separator = "_"
 
-      return ".".join(name_prefix) + separator + ".".join(name)
+      if len(name_prefix) > 0:
+        return ".".join(name_prefix) + separator + ".".join(name)
+
+      return ".".join(name)
 
     return self._ExpressionToText(token)
 

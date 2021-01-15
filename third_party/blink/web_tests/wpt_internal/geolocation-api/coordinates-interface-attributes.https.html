@@ -3,20 +3,18 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 description("Test the attribute handling of the Coordinates interface");
 
 // Format: [Input], [Expected]
 // Input: latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed.
 // Expected: latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed.
-var testSet = [
+const testSet = [
     [[1, 2, 3], [1, 2, 3, null, null, null, null]],
     [[2, 3, 4, undefined, undefined, undefined, 5], [2, 3, 4, null, null, null, 5]],
     [[3, 4, 5, undefined, 6, undefined, 7], [3, 4, 5, null, 6, null, 7]],
@@ -24,10 +22,10 @@ var testSet = [
     [[5, 6, 7, 8, 9, 10, 11], [5, 6, 7, 8, 9, 10, 11]],
 ];
 
-var currentTestIndex = -1;
-var globalCoordinates = null;
+let currentTestIndex = -1;
+let globalCoordinates = null;
 
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPermission(true);
 
 function runNextTest()
@@ -38,13 +36,13 @@ function runNextTest()
 
 function verifyResults()
 {
-    shouldBe('globalCoordinates.latitude', 'testSet[currentTestIndex][1][0]');
-    shouldBe('globalCoordinates.longitude', 'testSet[currentTestIndex][1][1]');
-    shouldBe('globalCoordinates.accuracy', 'testSet[currentTestIndex][1][2]');
-    shouldBe('globalCoordinates.altitude', 'testSet[currentTestIndex][1][3]');
-    shouldBe('globalCoordinates.altitudeAccuracy', 'testSet[currentTestIndex][1][4]');
-    shouldBe('globalCoordinates.heading', 'testSet[currentTestIndex][1][5]');
-    shouldBe('globalCoordinates.speed', 'testSet[currentTestIndex][1][6]');
+    assert_equals(globalCoordinates.latitude, testSet[currentTestIndex][1][0]);
+    assert_equals(globalCoordinates.longitude, testSet[currentTestIndex][1][1]);
+    assert_equals(globalCoordinates.accuracy, testSet[currentTestIndex][1][2]);
+    assert_equals(globalCoordinates.altitude, testSet[currentTestIndex][1][3]);
+    assert_equals(globalCoordinates.altitudeAccuracy, testSet[currentTestIndex][1][4]);
+    assert_equals(globalCoordinates.heading, testSet[currentTestIndex][1][5]);
+    assert_equals(globalCoordinates.speed, testSet[currentTestIndex][1][6]);
 }
 
 var watchId = navigator.geolocation.watchPosition(function(position) {

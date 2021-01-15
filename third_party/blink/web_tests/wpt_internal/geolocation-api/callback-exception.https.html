@@ -3,35 +3,33 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 setup({allow_uncaught_exception: true});
 
 description("Tests that when an exception is thrown in the success callback, the error callback is not invoked. Note that this test throws an exception which is not caught.");
 
-var mockLatitude = 51.478;
-var mockLongitude = -0.166;
-var mockAccuracy = 100;
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100;
 
-var position;
+let position;
 
 let gotError = false;
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPermission(true);
 mock.setGeolocationPosition(mockLatitude,
                             mockLongitude,
                             mockAccuracy);
 navigator.geolocation.getCurrentPosition(function(p) {
     position = p;
-    shouldBe('position.coords.latitude', 'mockLatitude');
-    shouldBe('position.coords.longitude', 'mockLongitude');
-    shouldBe('position.coords.accuracy', 'mockAccuracy');
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
 
     // Yield to allow for the error callback to be invoked. The timer
     // must be started before the exception is thrown.

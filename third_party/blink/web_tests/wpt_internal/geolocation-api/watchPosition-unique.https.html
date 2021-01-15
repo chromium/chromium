@@ -3,33 +3,27 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
 
 description("Tests that navigator.geolocation.watchPosition returns unique results within its script execution context.");
 
-var watchID1;
-var watchID2;
-var watchID3;
+const mock = new GeolocationMock();
+mock.setGeolocationPosition(51.478, -0.166, 100.0);
 
-geolocationMock.setGeolocationPosition(51.478, -0.166, 100.0);
+const watchID1 = navigator.geolocation.watchPosition(function() { });
+const watchID2 = navigator.geolocation.watchPosition(function() { });
+const watchID3 = navigator.geolocation.watchPosition(function() { });
 
-watchID1 = navigator.geolocation.watchPosition(function() { });
-watchID2 = navigator.geolocation.watchPosition(function() { });
-watchID3 = navigator.geolocation.watchPosition(function() { });
-
-shouldBeTrue("watchID1 > 0");
-shouldBeTrue("watchID2 > 0");
-shouldBeTrue("watchID3 > 0");
-shouldBeTrue("watchID1 !== watchID2");
-shouldBeTrue("watchID1 !== watchID3");
-shouldBeTrue("watchID2 !== watchID3");
+assert_greater_than(watchID1, 0);
+assert_greater_than(watchID2, 0);
+assert_greater_than(watchID3, 0);
+assert_not_equals(watchID1, watchID2);
+assert_not_equals(watchID1, watchID3);
+assert_not_equals(watchID2, watchID3);
 finishJSTest();
 </script>
 </body>

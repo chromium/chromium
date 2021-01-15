@@ -3,12 +3,15 @@
  * PermissionService.
  */
 
-"use strict";
+import {GeolocationReceiver} from '/gen/services/device/public/mojom/geolocation.mojom.m.js';
+import {Geoposition_ErrorCode} from '/gen/services/device/public/mojom/geoposition.mojom.m.js';
+import {GeolocationService, GeolocationServiceReceiver} from '/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.m.js';
+import {PermissionStatus} from '/gen/third_party/blink/public/mojom/permissions/permission_status.mojom.m.js';
 
-class GeolocationMock {
+export class GeolocationMock {
   constructor() {
     this.geolocationServiceInterceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.GeolocationService.name);
+        new MojoInterfaceInterceptor(GeolocationService.$interfaceName);
     this.geolocationServiceInterceptor_.oninterfacerequest =
         e => this.connectGeolocationService_(e.handle);
     this.geolocationServiceInterceptor_.start();
@@ -37,9 +40,9 @@ class GeolocationMock {
      * permission requests will block until setGeolocationPermission is called
      * to allow or deny permission requests.
      *
-     * @type {!blink.mojom.PermissionStatus}
+     * @type {!PermissionStatus}
      */
-    this.permissionStatus_ = blink.mojom.PermissionStatus.ASK;
+    this.permissionStatus_ = PermissionStatus.ASK;
     this.rejectGeolocationServiceConnections_ = false;
 
     /**
@@ -48,10 +51,8 @@ class GeolocationMock {
      */
     this.queryNextPositionIntercept_ = null;
 
-    this.geolocationBindingSet_ = new mojo.BindingSet(
-        device.mojom.Geolocation);
-    this.geolocationServiceBindingSet_ = new mojo.BindingSet(
-        blink.mojom.GeolocationService);
+    this.geolocationReceiver_ = new GeolocationReceiver(this);
+    this.geolocationServiceReceiver_ = new GeolocationServiceReceiver(this);
   }
 
   connectGeolocationService_(handle) {
@@ -59,7 +60,7 @@ class GeolocationMock {
       handle.close();
       return;
     }
-    this.geolocationServiceBindingSet_.addBinding(this, handle);
+    this.geolocationServiceReceiver_.$.bindHandle(handle);
   }
 
   setHighAccuracy(highAccuracy) {
@@ -116,16 +117,6 @@ class GeolocationMock {
   makeGeoposition(latitude, longitude, accuracy, altitude = undefined,
                   altitudeAccuracy = undefined, heading = undefined,
                   speed = undefined) {
-    const position = new device.mojom.Geoposition();
-    position.latitude = latitude;
-    position.longitude = longitude;
-    position.accuracy = accuracy;
-    position.altitude = altitude;
-    position.altitudeAccuracy = altitudeAccuracy;
-    position.heading = heading;
-    position.speed = speed;
-    position.timestamp = new mojoBase.mojom.Time();
-
     // The new Date().getTime() returns the number of milliseconds since the
     // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
     // device.mojom.Geoposition represents the value of microseconds since the
@@ -135,12 +126,12 @@ class GeolocationMock {
     const unixEpoch = Date.UTC(1970,0,1,0,0,0,0);
     // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
     const epochDeltaInMs = unixEpoch - windowsEpoch;
-
-    position.timestamp.internalValue =
-        (new Date().getTime() + epochDeltaInMs)  * 1000;
-    position.errorMessage = '';
-    position.valid = true;
-    return position;
+    const timestamp =
+        {internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)};
+    const errorMessage = '';
+    const valid = true;
+    return {latitude, longitude, accuracy, altitude, altitudeAccuracy, heading,
+            speed, timestamp, errorMessage, valid};
   }
 
   /**
@@ -160,12 +151,12 @@ class GeolocationMock {
    * the error set by this call.
    */
   setGeolocationPositionUnavailableError(message) {
-    this.geoposition_ = new device.mojom.Geoposition();
-    this.geoposition_.valid = false;
-    this.geoposition_.timestamp = new mojoBase.mojom.Time();
-    this.geoposition_.errorMessage = message;
-    this.geoposition_.errorCode =
-        device.mojom.Geoposition.ErrorCode.POSITION_UNAVAILABLE;
+    this.geoposition_ = {
+      valid: false,
+      timestamp: {internalValue: 0n},
+      errorMessage: message,
+      errorCode: Geoposition_ErrorCode.POSITION_UNAVAILABLE,
+    };
   }
 
   /**
@@ -188,23 +179,23 @@ class GeolocationMock {
    * This accepts the request as long as the permission has been set to
    * granted.
    */
-  createGeolocation(request, user_gesture) {
+  createGeolocation(receiver, user_gesture) {
     switch (this.permissionStatus_) {
-     case blink.mojom.PermissionStatus.ASK:
+     case PermissionStatus.ASK:
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve(this.createGeolocation(request, user_gesture));
+          resolve(this.createGeolocation(receiver, user_gesture));
         }, 50);
       });
-      setTimeout(() => { this.createGeolocation(request, user_gesture)}, 50);
+      setTimeout(() => { this.createGeolocation(receiver, user_gesture)}, 50);
       break;
 
-     case blink.mojom.PermissionStatus.GRANTED:
-      this.geolocationBindingSet_.addBinding(this, request);
+     case PermissionStatus.GRANTED:
+      this.geolocationReceiver_.$.bindHandle(receiver.handle);
       break;
 
      default:
-      request.close();
+      receiver.handle.close();
     }
     return Promise.resolve(this.permissionStatus_);
   }
@@ -213,9 +204,7 @@ class GeolocationMock {
    * Sets whether the next geolocation permission request should be allowed.
    */
   setGeolocationPermission(allowed) {
-    this.permissionStatus_ = allowed ? blink.mojom.PermissionStatus.GRANTED
-                                     : blink.mojom.PermissionStatus.DENIED;
+    this.permissionStatus_ = allowed ? PermissionStatus.GRANTED
+                                     : PermissionStatus.DENIED;
   }
 }
-
-let geolocationMock = new GeolocationMock();

@@ -3,39 +3,37 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="/gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
 <script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
 description("Tests that the PositionOptions.maximumAge parameter is correctly applied.");
 
-var mockLatitude = 51.478;
-var mockLongitude = -0.166;
-var mockAccuracy = 100.0;
+let mockLatitude = 51.478;
+let mockLongitude = -0.166;
+let mockAccuracy = 100.0;
 
-var mockMessage = 'test';
+const mockMessage = 'test';
 
-var position;
-var error;
+let position;
+let error;
 
 function checkPosition(p) {
     position = p;
-    shouldBe('position.coords.latitude', 'mockLatitude');
-    shouldBe('position.coords.longitude', 'mockLongitude');
-    shouldBe('position.coords.accuracy', 'mockAccuracy');
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
 }
 
 function checkError(e) {
     error = e;
-    shouldBe('error.code', 'error.POSITION_UNAVAILABLE');
-    shouldBe('error.message', 'mockMessage');
+    assert_equals(error.code, error.POSITION_UNAVAILABLE);
+    assert_equals(error.message, mockMessage);
 }
 
-let mock = geolocationMock;
+const mock = new GeolocationMock();
 mock.setGeolocationPermission(true);
 mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
 
