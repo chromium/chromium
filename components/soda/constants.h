@@ -13,6 +13,10 @@ enum class LanguageCode {
   kNone = 0,
   kEnUs = 1,
   kJaJp = 2,
+  kDeDe = 3,
+  kEsEs = 4,
+  kFrFr = 5,
+  kItIt = 6,
 };
 
 // Location of the libsoda binary within the SODA installation directory.
@@ -24,14 +28,6 @@ extern const base::FilePath::CharType kSodaInstallationRelativePath[];
 // Location of the SODA language packs relative to the components
 // directory.
 extern const base::FilePath::CharType kSodaLanguagePacksRelativePath[];
-
-// Location of the SODA en-US language pack component relative to the components
-// directory.
-extern const base::FilePath::CharType kSodaEnUsInstallationRelativePath[];
-
-// Location of the SODA ja-JP language pack component relative to the components
-// directory.
-extern const base::FilePath::CharType kSodaJaJpInstallationRelativePath[];
 
 // Location of the SODA models directory relative to the language pack
 // installation directory.
@@ -53,11 +49,6 @@ const base::FilePath GetLatestSodaDirectory();
 // Get the path to the SODA binary. Returns an empty path if SODA is not
 // installed.
 const base::FilePath GetSodaBinaryPath();
-
-LanguageCode GetLanguageCode(std::string language);
-
-// Gets a collection of paths to SODA language pack directories.
-std::vector<base::FilePath> GetSodaLanguagePackDirectories();
 
 }  // namespace speech
 

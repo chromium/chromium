@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "base/version.h"
+#include "components/soda/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
 
-class SodaEnUsComponentInstallerTest : public ::testing::Test {
+class SodaLanguagePackComponentInstallerTest : public ::testing::Test {
  public:
-  SodaEnUsComponentInstallerTest()
+  SodaLanguagePackComponentInstallerTest()
       : fake_install_dir_(FILE_PATH_LITERAL("base/install/dir/")),
         fake_version_("0.0.1") {}
 
@@ -22,12 +24,13 @@ class SodaEnUsComponentInstallerTest : public ::testing::Test {
   base::Version fake_version_;
 };
 
-TEST_F(SodaEnUsComponentInstallerTest, ComponentReady_CallsLambda) {
+TEST_F(SodaLanguagePackComponentInstallerTest, ComponentReady_CallsLambda) {
   base::FilePath given_path;
-  OnSodaEnUsComponentReadyCallback lambda = base::BindLambdaForTesting(
+  OnSodaLanguagePackComponentReadyCallback lambda = base::BindLambdaForTesting(
       [&](const base::FilePath& path) { given_path = path; });
 
-  SodaEnUsComponentInstallerPolicy policy(std::move(lambda));
+  SodaLanguagePackComponentConfig config {speech::LanguageCode::kEnUs};
+  SodaLanguagePackComponentInstallerPolicy policy(config, std::move(lambda));
 
   policy.ComponentReady(fake_version_, fake_install_dir_,
                         std::make_unique<base::DictionaryValue>());

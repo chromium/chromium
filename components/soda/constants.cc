@@ -26,12 +26,6 @@ constexpr base::FilePath::CharType kSodaInstallationRelativePath[] =
 constexpr base::FilePath::CharType kSodaLanguagePacksRelativePath[] =
     FILE_PATH_LITERAL("SODALanguagePacks");
 
-constexpr base::FilePath::CharType kSodaEnUsInstallationRelativePath[] =
-    FILE_PATH_LITERAL("SODALanguagePacks/en-US");
-
-constexpr base::FilePath::CharType kSodaJaJpInstallationRelativePath[] =
-    FILE_PATH_LITERAL("SODALanguagePacks/ja-JP");
-
 constexpr base::FilePath::CharType kSodaLanguagePackDirectoryRelativePath[] =
     FILE_PATH_LITERAL("SODAModels");
 
@@ -72,38 +66,6 @@ const base::FilePath GetSodaBinaryPath() {
   base::FilePath soda_dir = GetLatestSodaDirectory();
   return soda_dir.empty() ? base::FilePath()
                           : soda_dir.Append(kSodaBinaryRelativePath);
-}
-
-LanguageCode GetLanguageCode(std::string language) {
-  if (language.empty()) {
-    return LanguageCode::kNone;
-  }
-
-  if (language == "en-US") {
-    return LanguageCode::kEnUs;
-  }
-
-  if (language == "ja-JP") {
-    return LanguageCode::kJaJp;
-  }
-
-  NOTREACHED();
-  return LanguageCode::kNone;
-}
-
-std::vector<base::FilePath> GetSodaLanguagePackDirectories() {
-  std::vector<base::FilePath> paths;
-
-  base::FilePath components_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &components_dir);
-
-  if (!components_dir.empty()) {
-    paths.push_back(components_dir.Append(kSodaEnUsInstallationRelativePath));
-    paths.push_back(components_dir.Append(kSodaJaJpInstallationRelativePath));
-  }
-
-  return paths;
 }
 
 }  // namespace speech

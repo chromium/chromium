@@ -10,13 +10,13 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
-#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
@@ -89,30 +89,26 @@ void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
 bool SodaInstallerImpl::IsSodaRegistered() {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return true;
-  std::vector<std::string> component_ids =
-      g_browser_process->component_updater()->GetComponentIDs();
-  bool has_soda = false;
-  bool has_language_pack = false;
-  for (std::string id : component_ids) {
-    if (id == component_updater::SodaComponentInstallerPolicy::GetExtensionId())
-      has_soda = true;
-    if (id == component_updater::SodaEnUsComponentInstallerPolicy::
-                  GetExtensionId() ||
-        id == component_updater::SodaJaJpComponentInstallerPolicy::
-                  GetExtensionId()) {
-      has_language_pack = true;
-    }
-  }
+  base::flat_set<std::string> component_ids = component_updater::
+      SodaLanguagePackComponentInstallerPolicy::GetExtensionIds();
+  const bool has_soda = component_ids.contains(
+      component_updater::SodaComponentInstallerPolicy::GetExtensionId());
+  const bool has_language_pack =
+      std::any_of(component_ids.begin(), component_ids.end(),
+                  [&component_ids](const std::string& id) {
+                    return component_ids.contains(id);
+                  });
+
   return has_soda && has_language_pack;
 }
 
 void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
-  if (id != component_updater::SodaComponentInstallerPolicy::GetExtensionId() &&
-      id != component_updater::SodaEnUsComponentInstallerPolicy::
-                GetExtensionId() &&
-      id !=
-          component_updater::SodaJaJpComponentInstallerPolicy::GetExtensionId())
+  if (!component_updater::SodaLanguagePackComponentInstallerPolicy::
+           GetExtensionIds()
+               .contains(id) &&
+      id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
     return;
+  }
 
   switch (event) {
     case Events::COMPONENT_UPDATE_FOUND:

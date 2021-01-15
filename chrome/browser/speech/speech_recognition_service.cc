@@ -5,6 +5,7 @@
 #include "chrome/browser/speech/speech_recognition_service.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -101,17 +102,14 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
 }
 
 base::FilePath SpeechRecognitionService::GetSodaConfigPath(PrefService* prefs) {
-  speech::LanguageCode language = speech::GetLanguageCode(
-      prefs->GetString(prefs::kLiveCaptionLanguageCode));
-  PrefService* global_prefs = g_browser_process->local_state();
-  switch (language) {
-    case speech::LanguageCode::kNone:
-      NOTREACHED();
-      return base::FilePath();
-    case speech::LanguageCode::kEnUs:
-      return global_prefs->GetFilePath(prefs::kSodaEnUsConfigPath);
-    case speech::LanguageCode::kJaJp:
-      return global_prefs->GetFilePath(prefs::kSodaJaJpConfigPath);
+  base::Optional<component_updater::SodaLanguagePackComponentConfig>
+      language_config = component_updater::
+          SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
+              prefs->GetString(prefs::kLiveCaptionLanguageCode));
+
+  if (language_config) {
+    return g_browser_process->local_state()->GetFilePath(
+        language_config.value().config_path_pref);
   }
 
   return base::FilePath();

@@ -8,8 +8,7 @@
 #include "base/files/file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
-#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -178,8 +177,12 @@ void UpdateSodaInstallDirPref(PrefService* prefs,
 void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
   registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaEnUsConfigPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaJaJpConfigPath, base::FilePath());
+
+  // Register language pack config path preferences.
+  for (const component_updater::SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
+  }
 }
 
 void RegisterSodaComponent(ComponentUpdateService* cus,
@@ -206,7 +209,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 
       installer->Register(cus, std::move(callback));
     } else {
-      auto deletion_time =
+      base::Time deletion_time =
           global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
       if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
         base::DeletePathRecursively(speech::GetSodaDirectory());
@@ -225,24 +228,12 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       base::FeatureList::IsEnabled(media::kLiveCaption)) {
     if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-      speech::LanguageCode language = speech::GetLanguageCode(
-          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
-      switch (language) {
-        case speech::LanguageCode::kNone:
-          // Do nothing.
-          break;
-        case speech::LanguageCode::kEnUs:
-          RegisterSodaEnUsComponent(
-              cus, global_prefs,
-              base::BindOnce(&SodaEnUsComponentInstallerPolicy::
-                                 UpdateSodaEnUsComponentOnDemand));
-          break;
-        case speech::LanguageCode::kJaJp:
-          RegisterSodaJaJpComponent(
-              cus, global_prefs,
-              base::BindOnce(&SodaJaJpComponentInstallerPolicy::
-                                 UpdateSodaJaJpComponentOnDemand));
-          break;
+      base::Optional<component_updater::SodaLanguagePackComponentConfig>
+          config = SodaLanguagePackComponentInstallerPolicy::
+              GetLanguageComponentConfig(
+                  profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+      if (config) {
+        RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs);
       }
     }
   }

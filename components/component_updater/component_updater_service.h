@@ -172,8 +172,7 @@ class OnDemandUpdater {
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
   friend class SodaComponentInstallerPolicy;
-  friend class SodaEnUsComponentInstallerPolicy;
-  friend class SodaJaJpComponentInstallerPolicy;
+  friend class SodaLanguagePackComponentInstallerPolicy;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

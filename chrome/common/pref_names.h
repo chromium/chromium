@@ -196,6 +196,10 @@ extern const char kLiveCaptionLanguageCode[];
 extern const char kSodaBinaryPath[];
 extern const char kSodaEnUsConfigPath[];
 extern const char kSodaJaJpConfigPath[];
+extern const char kSodaDeDeConfigPath[];
+extern const char kSodaEsEsConfigPath[];
+extern const char kSodaFrFrConfigPath[];
+extern const char kSodaItItConfigPath[];
 extern const char kSodaScheduledDeletionTime[];
 #endif
 #if defined(OS_MAC)
