@@ -138,8 +138,7 @@ void RendererStartupHelper::InitializeProcess(
   // partition ID to it.
   std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
   if (!webview_partition_id.empty()) {
-    process->Send(new ExtensionMsg_SetWebViewPartitionID(
-        WebViewGuest::GetPartitionID(process)));
+    renderer->SetWebViewPartitionID(webview_partition_id);
   }
 
   BrowserContext* renderer_context = process->GetBrowserContext();

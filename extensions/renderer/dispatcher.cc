@@ -876,8 +876,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_SetScriptingAllowlist,
                       OnSetScriptingAllowlist)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_SetWebViewPartitionID,
-                      OnSetWebViewPartitionID)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
@@ -1012,6 +1010,12 @@ void Dispatcher::SetSystemFont(const std::string& font_family,
                                const std::string& font_size) {
   system_font_family_ = font_family;
   system_font_size_ = font_size;
+}
+
+void Dispatcher::SetWebViewPartitionID(const std::string& partition_id) {
+  // |webview_partition_id_| cannot be changed once set.
+  CHECK(webview_partition_id_.empty() || webview_partition_id_ == partition_id);
+  webview_partition_id_ = partition_id;
 }
 
 void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
@@ -1183,12 +1187,6 @@ void Dispatcher::SetSessionInfo(version_info::Channel channel,
 void Dispatcher::OnSetScriptingAllowlist(
     const ExtensionsClient::ScriptingAllowlist& extension_ids) {
   ExtensionsClient::Get()->SetScriptingAllowlist(extension_ids);
-}
-
-void Dispatcher::OnSetWebViewPartitionID(const std::string& partition_id) {
-  // |webview_partition_id_| cannot be changed once set.
-  CHECK(webview_partition_id_.empty() || webview_partition_id_ == partition_id);
-  webview_partition_id_ = partition_id;
 }
 
 void Dispatcher::OnShouldSuspend(const std::string& extension_id,

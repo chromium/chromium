@@ -720,10 +720,6 @@ IPC_MESSAGE_CONTROL1(ExtensionMsg_WatchPages,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_TransferBlobs,
                      std::vector<std::string> /* blob_uuids */)
 
-// Report the WebView partition ID to the WebView guest renderer process.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_SetWebViewPartitionID,
-                     std::string /* webview_partition_id */)
-
 // Enable or disable spatial navigation.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_SetSpatialNavigationEnabled,
                     bool /* spatial_nav_enabled */)

@@ -33,4 +33,7 @@ interface Renderer {
 
   // Tells the renderer process the platform's system font.
   SetSystemFont(string font_family, string font_size);
+
+  // Reports the WebView partition ID to the WebView guest renderer process.
+  SetWebViewPartitionID(string partition_id);
 };

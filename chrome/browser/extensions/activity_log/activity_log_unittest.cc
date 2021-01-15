@@ -85,6 +85,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
                       bool is_lock_screen_context) override {}
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override {}
+  void SetWebViewPartitionID(const std::string& partition_id) override {}
+
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 
