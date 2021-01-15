@@ -24,7 +24,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -41,8 +40,6 @@ namespace {
 
 constexpr base::TimeDelta kImpressionThreshold =
     base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kZeroStateImpressionThreshold =
-    base::TimeDelta::FromSeconds(1);
 
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
@@ -54,19 +51,6 @@ SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     }
   }
   return results;
-}
-
-bool IsZeroStateFile(const SearchResult& result) {
-  return result.result_type() == AppListSearchResultType::kZeroStateFile;
-}
-
-bool IsDriveQuickAccess(const SearchResult& result) {
-  return result.result_type() == AppListSearchResultType::kDriveQuickAccess;
-}
-
-void LogFileImpressions(SearchResultType result_type) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ZeroStateResultsList.FileImpressions",
-                            result_type, SEARCH_RESULT_TYPE_BOUNDARY);
 }
 
 }  // namespace
@@ -120,21 +104,9 @@ int SearchResultListView::DoUpdate() {
 
   std::vector<SearchResult*> display_results = GetSearchResults();
 
-  // TODO(crbug.com/1076270): The logic for zero state and Drive quick access
-  // files below exists only for metrics, and can be folded into the
-  // AppListNotifier and done in chrome.
-  bool found_zero_state_file = false;
-  bool found_drive_quick_access = false;
-
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < display_results.size()) {
-      if (IsZeroStateFile(*display_results[i])) {
-        found_zero_state_file = true;
-      } else if (IsDriveQuickAccess(*display_results[i])) {
-        found_drive_quick_access = true;
-      }
-
       result_view->SetResult(display_results[i]);
       result_view->SetVisible(true);
     } else {
@@ -161,26 +133,6 @@ int SearchResultListView::DoUpdate() {
     impression_timer_.Stop();
   impression_timer_.Start(FROM_HERE, kImpressionThreshold, this,
                           &SearchResultListView::LogImpressions);
-
-  // Log impressions for local zero state files.
-  if (!found_zero_state_file)
-    zero_state_file_impression_timer_.Stop();
-  if (found_zero_state_file && !previous_found_zero_state_file_) {
-    zero_state_file_impression_timer_.Start(
-        FROM_HERE, kZeroStateImpressionThreshold,
-        base::BindOnce(&LogFileImpressions, ZERO_STATE_FILE));
-  }
-  previous_found_zero_state_file_ = found_zero_state_file;
-
-  // Log impressions for Drive Quick Access files.
-  if (!found_drive_quick_access)
-    drive_quick_access_impression_timer_.Stop();
-  if (found_drive_quick_access && !previous_found_drive_quick_access_) {
-    drive_quick_access_impression_timer_.Start(
-        FROM_HERE, kZeroStateImpressionThreshold,
-        base::BindOnce(&LogFileImpressions, DRIVE_QUICK_ACCESS));
-  }
-  previous_found_drive_quick_access_ = found_drive_quick_access;
 
   set_container_score(
       display_results.empty()
@@ -264,11 +216,6 @@ void SearchResultListView::VisibilityChanged(View* starting_from,
   // We only do this work when is_visible is false.
   if (is_visible)
     return;
-
-  zero_state_file_impression_timer_.Stop();
-  drive_quick_access_impression_timer_.Stop();
-  previous_found_zero_state_file_ = false;
-  previous_found_drive_quick_access_ = false;
 }
 
 std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {

@@ -525,6 +525,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.NotifierCreationSuccess"
     enum="BooleanSuccess" expires_after="2021-02-07">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>edimitriadis@chromium.org</owner>
   <summary>
@@ -613,6 +616,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResultsList.FileImpressions"
     enum="AppListSearchResult" expires_after="2021-02-07">
+  <obsolete>
+    Removed January 2021.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

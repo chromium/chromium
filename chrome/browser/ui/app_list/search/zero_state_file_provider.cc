@@ -60,10 +60,6 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
   auto* notifier =
       file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile_);
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "Apps.AppList.ZeroStateFileProvider.NotifierCreationSuccess",
-      notifier != nullptr);
-
   if (notifier) {
     file_tasks_observer_.Add(notifier);
 
