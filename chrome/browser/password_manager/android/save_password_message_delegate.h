@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/optional.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace content {
 class WebContents;
@@ -38,7 +40,7 @@ class SavePasswordMessageDelegate {
   void CreateMessage(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      bool is_saving_google_account);
+      base::Optional<AccountInfo> account_info);
 
   // Called in response to user clicking "Save" and "Never" buttons.
   void HandleSaveClick();

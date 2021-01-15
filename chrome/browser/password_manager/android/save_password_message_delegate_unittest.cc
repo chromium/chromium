@@ -31,6 +31,7 @@ namespace {
 constexpr char kDefaultUrl[] = "http://example.com";
 constexpr char kUsername[] = "username";
 constexpr char kPassword[] = "password";
+constexpr char kAccountEmail[] = "account@example.com";
 constexpr char kDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 }  // namespace
@@ -47,7 +48,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   void SetUsernameAndPassword(base::string16 username, base::string16 password);
 
   void CreateMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
-                     bool is_saving_google_account);
+                     bool user_signed_in);
   void TriggerActionClick();
   void TriggerBlocklistClick();
   void TriggerMessageDismissedCallback();
@@ -101,9 +102,14 @@ void SavePasswordMessageDelegateTest::SetUsernameAndPassword(
 
 void SavePasswordMessageDelegateTest::CreateMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
-    bool is_saving_google_account) {
+    bool user_signed_in) {
+  base::Optional<AccountInfo> account_info;
+  if (user_signed_in) {
+    account_info = AccountInfo();
+    account_info.value().email = kAccountEmail;
+  }
   delegate_.CreateMessage(web_contents(), std::move(form_to_save),
-                          is_saving_google_account);
+                          account_info);
 }
 
 void SavePasswordMessageDelegateTest::TriggerActionClick() {
@@ -153,7 +159,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
                          base::ASCIIToUTF16(kPassword));
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
-  CreateMessage(std::move(form_manager), false /*is_saving_google_account*/);
+  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
             GetMessageWrapper()->GetTitle());
@@ -161,6 +167,8 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
                                       base::ASCIIToUTF16(kUsername)));
   EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kPassword)));
+  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kAccountEmail)));
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
@@ -175,14 +183,19 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   TriggerMessageDismissedCallback();
 }
 
-// Tests that the title is set correctly when the user is syncing passwords to
-// their Google Account.
-TEST_F(SavePasswordMessageDelegateTest, SaveToGoogleTitle) {
+// Tests that the description is set correctly when the user is signed.
+TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
+  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
+                         base::ASCIIToUTF16(kPassword));
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
-  CreateMessage(std::move(form_manager), true /*is_saving_google_account*/);
+  CreateMessage(std::move(form_manager), true /*user_signed_in*/);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_TO_GOOGLE),
-            GetMessageWrapper()->GetTitle());
+  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kUsername)));
+  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kPassword)));
+  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+                                      base::ASCIIToUTF16(kAccountEmail)));
 
   TriggerMessageDismissedCallback();
 }
@@ -195,7 +208,7 @@ TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
 
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EXPECT_CALL(*form_manager, Save());
-  CreateMessage(std::move(form_manager), false /*is_saving_google_account*/);
+  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
   EXPECT_NE(nullptr, GetMessageWrapper());
@@ -218,7 +231,7 @@ TEST_F(SavePasswordMessageDelegateTest, DontSaveOnDismiss) {
 
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EXPECT_CALL(*form_manager, Save()).Times(0);
-  CreateMessage(std::move(form_manager), false /*is_saving_google_account*/);
+  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerMessageDismissedCallback();
   EXPECT_EQ(nullptr, GetMessageWrapper());

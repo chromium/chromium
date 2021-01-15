@@ -45,4 +45,19 @@ base::Optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
   return should_show_account_footer ? account_info : base::nullopt;
 }
 
+base::Optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
+                                                              bool is_syncing) {
+  DCHECK(profile);
+  if (!is_syncing)
+    return base::nullopt;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+  return identity_manager
+      ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
+          account_id);
+}
+
 }  // namespace password_manager

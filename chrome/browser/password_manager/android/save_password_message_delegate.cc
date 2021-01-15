@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,18 +32,21 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   DismissSavePasswordPrompt();
   DCHECK(message_ == nullptr);
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // is_saving_google_account indicates whether the user is syncing
   // passwords to their Google Account.
   const bool is_saving_google_account =
       password_bubble_experiment::IsSmartLockUser(
-          ProfileSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+          ProfileSyncServiceFactory::GetForProfile(profile));
 
+  base::Optional<AccountInfo> account_info =
+      password_manager::GetAccountInfoForPasswordMessages(
+          profile, is_saving_google_account);
   // All the DisplaySavePasswordPrompt parameters are passed to CreateMessage to
   // avoid a call to MessageDispatcherBridge::EnqueueMessage from test while
   // still providing decent test coverage.
-  CreateMessage(web_contents, std::move(form_to_save),
-                is_saving_google_account);
+  CreateMessage(web_contents, std::move(form_to_save), account_info);
 
   messages::MessageDispatcherBridge::EnqueueMessage(message_.get(),
                                                     web_contents_);
@@ -58,7 +62,7 @@ void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
 void SavePasswordMessageDelegate::CreateMessage(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    bool is_saving_google_account) {
+    base::Optional<AccountInfo> account_info) {
   ui_dismissal_reason_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
   web_contents_ = web_contents;
   form_to_save_ = std::move(form_to_save);
@@ -75,20 +79,26 @@ void SavePasswordMessageDelegate::CreateMessage(
   const password_manager::PasswordForm& pending_credentials =
       form_to_save_->GetPendingCredentials();
 
-  int title_message_id = 0;
-  if (!pending_credentials.federation_origin.opaque()) {
-    title_message_id = is_saving_google_account ? IDS_SAVE_ACCOUNT_TO_GOOGLE
-                                                : IDS_SAVE_ACCOUNT;
-  } else {
-    title_message_id = is_saving_google_account ? IDS_SAVE_PASSWORD_TO_GOOGLE
-                                                : IDS_SAVE_PASSWORD;
-  }
+  int title_message_id = pending_credentials.federation_origin.opaque()
+                             ? IDS_SAVE_PASSWORD
+                             : IDS_SAVE_ACCOUNT;
 
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
-  base::string16 description = pending_credentials.username_value;
-  description.append(base::ASCIIToUTF16(" "))
-      .append(pending_credentials.password_value.size(), L'•');
+  const base::string16 masked_password =
+      base::string16(pending_credentials.password_value.size(), L'•');
+  base::string16 description;
+  if (account_info.has_value()) {
+    description = l10n_util::GetStringFUTF16(
+        IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
+        pending_credentials.username_value, masked_password,
+        base::UTF8ToUTF16(account_info.value().email));
+  } else {
+    description.append(pending_credentials.username_value)
+        .append(base::ASCIIToUTF16(" "))
+        .append(masked_password);
+  }
+
   message_->SetDescription(description);
 
   message_->SetPrimaryButtonText(
