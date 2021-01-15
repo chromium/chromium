@@ -35,7 +35,7 @@
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
-#include "android_webview/common/render_view_messages.h"
+#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/locale_utils.h"
 #include "base/base_paths_android.h"
@@ -64,6 +64,7 @@
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -128,17 +129,24 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
+const uint32_t kAwContentsMessageFilteredClasses[] = {FrameMsgStart};
+
 // TODO(sgurun) move this to its own file.
-// This class filters out incoming aw_contents related IPC messages for the
-// renderer process on the IPC thread.
-class AwContentsMessageFilter : public content::BrowserMessageFilter {
+// This class handles android_webview.mojom.RenderMessageFilter Mojo interface's
+// methods on IO thread.
+class AwContentsMessageFilter
+    : public content::BrowserMessageFilter,
+      public content::BrowserAssociatedInterface<mojom::RenderMessageFilter>,
+      public mojom::RenderMessageFilter {
  public:
   explicit AwContentsMessageFilter(int process_id);
 
   // BrowserMessageFilter methods.
   bool OnMessageReceived(const IPC::Message& message) override;
 
-  void OnSubFrameCreated(int parent_render_frame_id, int child_render_frame_id);
+  // mojom::RenderMessageFilter overrides:
+  void SubFrameCreated(int parent_render_frame_id,
+                       int child_render_frame_id) override;
 
  private:
   ~AwContentsMessageFilter() override;
@@ -149,21 +157,22 @@ class AwContentsMessageFilter : public content::BrowserMessageFilter {
 };
 
 AwContentsMessageFilter::AwContentsMessageFilter(int process_id)
-    : BrowserMessageFilter(AndroidWebViewMsgStart), process_id_(process_id) {}
+    : content::BrowserMessageFilter(
+          kAwContentsMessageFilteredClasses,
+          base::size(kAwContentsMessageFilteredClasses)),
+      content::BrowserAssociatedInterface<mojom::RenderMessageFilter>(this,
+                                                                      this),
+      process_id_(process_id) {}
 
 AwContentsMessageFilter::~AwContentsMessageFilter() = default;
 
 bool AwContentsMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AwContentsMessageFilter, message)
-    IPC_MESSAGE_HANDLER(AwViewHostMsg_SubFrameCreated, OnSubFrameCreated)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  return false;
 }
 
-void AwContentsMessageFilter::OnSubFrameCreated(int parent_render_frame_id,
-                                                int child_render_frame_id) {
+void AwContentsMessageFilter::SubFrameCreated(int parent_render_frame_id,
+                                              int child_render_frame_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_render_frame_id,
                                             child_render_frame_id);
 }

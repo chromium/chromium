@@ -58,7 +58,6 @@ static bool check_msgtable() {
 #if !defined(OS_ANDROID)
   exemptions.push_back(EncryptedMediaMsgStart);
   exemptions.push_back(GinJavaBridgeMsgStart);
-  exemptions.push_back(AndroidWebViewMsgStart);
   exemptions.push_back(ExtensionWorkerMsgStart);
 #endif  // !defined(OS_ANDROID)
 

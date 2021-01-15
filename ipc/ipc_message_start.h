@@ -24,7 +24,6 @@ enum IPCMessageStart {
   PrintMsgStart,
   ExtensionMsgStart,
   ChromotingMsgStart,
-  AndroidWebViewMsgStart,
   NaClHostMsgStart,
   EncryptedMediaMsgStart,
   GinJavaBridgeMsgStart,

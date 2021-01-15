@@ -56,9 +56,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ChromotingMsgStart:
       message_class = ChromeLegacyIpc::CLASS_CHROMOTING;
       break;
-    case AndroidWebViewMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_ANDROID_WEB_VIEW;
-      break;
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
       break;

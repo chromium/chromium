@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "android_webview/common/mojom/frame.mojom.h"
+#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/renderer/aw_render_thread_observer.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
@@ -72,11 +72,15 @@ class AwContentRendererClient : public content::ContentRendererClient,
   void GetInterface(const std::string& name,
                     mojo::ScopedMessagePipeHandle request_handle) override;
 
+  mojom::RenderMessageFilter* GetRenderMessageFilter();
+
   std::unique_ptr<AwRenderThreadObserver> aw_render_thread_observer_;
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_reader_;
 
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
+
+  mojo::AssociatedRemote<mojom::RenderMessageFilter> render_message_filter_;
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;
