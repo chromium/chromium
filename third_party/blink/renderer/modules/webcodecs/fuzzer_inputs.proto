@@ -143,3 +143,63 @@ message VideoEncoderApiInvocation {
 message VideoEncoderApiInvocationSequence {
   repeated VideoEncoderApiInvocation invocations = 1;
 }
+
+message DecodeImage {
+  optional uint32 frame_index = 1;
+  optional bool complete_frames_only = 2;
+}
+
+message DecodeMetadata {}
+
+message SelectTrack {
+  required uint32 track_id = 1;
+}
+
+message ImageDecoderApiInvocation {
+  oneof Api {
+    DecodeImage decode_image = 1;
+    DecodeMetadata decode_metadata = 2;
+    SelectTrack select_track = 3;
+  }
+}
+
+message ImageBitmapOptions {
+  enum ImageOrientation {
+    ORIENTATION_NONE = 0;
+    FLIPY = 1;
+  }
+  enum PremultiplyAlpha {
+    PREMULTIPLY_NONE = 0;
+    PREMULTIPLY = 1;
+    PREMULTIPLY_DEFAULT = 2;
+  }
+  enum ColorSpaceConversion {
+    CS_NONE = 0;
+    CS_DEFAULT = 1;
+  }
+  enum ResizeQuality {
+    PIXELATED = 0;
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+  }
+
+  optional ImageOrientation image_orientation = 1;
+  optional PremultiplyAlpha premultiply_alpha = 2;
+  optional ColorSpaceConversion color_space_conversion = 3;
+  optional uint32 resize_width = 4;
+  optional uint32 resize_height = 5;
+  optional ResizeQuality resize_quality = 6;
+}
+
+message ConfigureImageDecoder {
+  required bytes data = 1;
+  required string type = 2;
+  optional ImageBitmapOptions options = 3;
+  optional bool prefer_animation = 4;
+}
+
+message ImageDecoderApiInvocationSequence {
+  required ConfigureImageDecoder config = 1;
+  repeated ImageDecoderApiInvocation invocations = 2;
+}

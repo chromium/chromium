@@ -113,5 +113,6 @@ source_set("unit_tests") {
 }
 
 fuzzable_proto_library("fuzzer_protos") {
+  generate_python = true
   sources = [ "fuzzer_inputs.proto" ]
 }

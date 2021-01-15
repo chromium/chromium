@@ -32,7 +32,9 @@ template("fuzzable_proto_library") {
 
       # The plugin will generate cc, so don't ask for it to be done by protoc.
       generate_cc = false
-      generate_python = false
+      if (!defined(invoker.generate_python)) {
+        generate_python = false
+      }
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
     }
 

@@ -611,6 +611,59 @@ if (use_libfuzzer) {
     ]
   }
 
+  image_decoder_fuzzer_seed_corpus_dir =
+      "$target_gen_dir/webcodecs/image_fuzzer_seed_corpus"
+
+  action("generate_image_decoder_fuzzer_corpus") {
+    script = "webcodecs/fuzzer_seed_corpus/generate_image_corpus.py"
+    sources = [ "webcodecs/image_decoder_base.textproto" ]
+
+    data = [ "//third_party/blink/web_tests/images/resources/" ]
+
+    deps = [
+      "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
+      "//third_party/protobuf:py_proto",
+    ]
+
+    pyproto_path = "$root_out_dir/pyproto"
+
+    args = [ "-i" ]
+    args += rebase_path(sources, root_build_dir)
+    args += [
+      "-o",
+      "ignored",
+      "-d",
+      rebase_path(image_decoder_fuzzer_seed_corpus_dir, root_build_dir),
+      "-p",
+      rebase_path(pyproto_path, root_build_dir),
+      "-p",
+      rebase_path("$pyproto_path/third_party/blink/renderer/modules/webcodecs/",
+                  root_build_dir),
+    ]
+
+    outputs = [ image_decoder_fuzzer_seed_corpus_dir ]
+  }
+
+  fuzzer_test("webcodecs_image_decoder_fuzzer") {
+    sources = [
+      "webcodecs/fuzzer_utils.cc",
+      "webcodecs/fuzzer_utils.h",
+      "webcodecs/image_decoder_fuzzer.cc",
+    ]
+
+    seed_corpus = image_decoder_fuzzer_seed_corpus_dir
+    seed_corpus_deps = [ ":generate_image_decoder_fuzzer_corpus" ]
+
+    deps = [
+      ":modules",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+
   fuzzer_test("webcodecs_audio_decoder_fuzzer") {
     sources = [
       "webcodecs/audio_decoder_fuzzer.cc",
