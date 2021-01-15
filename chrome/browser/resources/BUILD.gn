@@ -63,8 +63,8 @@ group("resources") {
 
   if (enable_extensions) {
     public_deps += [
-      ":sync_file_system_internals_resources",
       "extensions:extensions_resources",
+      "sync_file_system_internals:resources",
     ]
   }
 
@@ -238,19 +238,6 @@ if (is_chromeos_ash) {
       "grit/bluetooth_pairing_dialog_resources_map.cc",
       "grit/bluetooth_pairing_dialog_resources_map.h",
       "bluetooth_pairing_dialog_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
-if (enable_extensions) {
-  grit("sync_file_system_internals_resources") {
-    source =
-        "sync_file_system_internals/sync_file_system_internals_resources.grd"
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/sync_file_system_internals_resources.h",
-      "sync_file_system_internals_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

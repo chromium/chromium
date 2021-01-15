@@ -263,8 +263,8 @@ template("chrome_extra_paks") {
         "$root_gen_dir/extensions/extensions_resources.pak",
       ]
       deps += [
-        "//chrome/browser/resources:sync_file_system_internals_resources",
         "//chrome/browser/resources/extensions:extensions_resources",
+        "//chrome/browser/resources/sync_file_system_internals:resources",
         "//extensions:extensions_resources",
       ]
     }

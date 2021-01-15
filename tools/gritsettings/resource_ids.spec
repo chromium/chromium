@@ -261,7 +261,8 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [2160],
   },
-  "chrome/browser/resources/sync_file_system_internals/sync_file_system_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/sync_file_system_internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [2180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/usb_internals/resources.grd": {
