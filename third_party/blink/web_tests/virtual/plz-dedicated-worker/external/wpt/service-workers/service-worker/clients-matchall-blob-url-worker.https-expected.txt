@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Test Clients.matchAll() with a blob URL worker client.
+PASS Test Clients.matchAll() with an uncontrolled blob URL worker client.
+Harness: the test ran to completion.
+
