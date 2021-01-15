@@ -4368,6 +4368,7 @@ test("unit_tests") {
       "../browser/autofill/address_accessory_controller_impl_unittest.cc",
       "../browser/autofill/autofill_credit_card_filling_infobar_delegate_mobile_unittest.cc",
       "../browser/autofill/autofill_keyboard_accessory_adapter_unittest.cc",
+      "../browser/autofill/autofill_offer_notification_infobar_delegate_mobile_unittest.cc",
       "../browser/autofill/autofill_save_card_infobar_delegate_mobile_unittest.cc",
       "../browser/autofill/credit_card_accessory_controller_impl_unittest.cc",
       "../browser/autofill/manual_filling_controller_impl_unittest.cc",

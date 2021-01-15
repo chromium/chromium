@@ -505,5 +505,16 @@
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
     Cashback linked
   </message>
-
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the infobar shown on the merchant website when an offer is available to use.">
+    Don't forget your Google Pay offer
+  </message>
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the infobar shown on the merchant website when an offer is available to use.">
+    Got it
+  </message>
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Label for the positive button for the infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
+    Check out with
+  </message>
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
+    See details.
+  </message>
 </grit-part>

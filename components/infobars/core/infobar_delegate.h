@@ -172,6 +172,7 @@ class InfoBarDelegate {
     EXPERIMENTAL_INFOBAR_DELEGATE_LACROS = 102,
     ROSETTA_REQUIRED_INFOBAR_DELEGATE = 103,
     WEBID_PERMISSION_INFOBAR_DELEGATE = 104,
+    AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE = 105,
   };
 
   // Describes navigation events, used to decide whether infobars should be

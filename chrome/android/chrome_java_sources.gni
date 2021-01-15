@@ -688,6 +688,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/incognito/IncognitoTabSnapshotController.java",
   "java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillCreditCardFillingInfoBar.java",
+  "java/src/org/chromium/chrome/browser/infobar/AutofillOfferNotificationInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/CardDetail.java",
   "java/src/org/chromium/chrome/browser/infobar/DataReductionPromoInfoBar.java",

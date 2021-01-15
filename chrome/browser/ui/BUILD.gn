@@ -675,6 +675,8 @@ static_library("ui") {
       "android/external_protocol_dialog_android.cc",
       "android/infobars/autofill_credit_card_filling_infobar.cc",
       "android/infobars/autofill_credit_card_filling_infobar.h",
+      "android/infobars/autofill_offer_notification_infobar.cc",
+      "android/infobars/autofill_offer_notification_infobar.h",
       "android/infobars/autofill_save_card_infobar.cc",
       "android/infobars/autofill_save_card_infobar.h",
       "android/infobars/chrome_confirm_infobar.cc",
