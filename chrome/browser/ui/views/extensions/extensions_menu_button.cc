@@ -16,9 +16,8 @@
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
-
-const char ExtensionsMenuButton::kClassName[] = "ExtensionsMenuButton";
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
@@ -43,10 +42,6 @@ ExtensionsMenuButton::ExtensionsMenuButton(
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
-
-const char* ExtensionsMenuButton::GetClassName() const {
-  return kClassName;
-}
 
 SkColor ExtensionsMenuButton::GetInkDropBaseColor() const {
   return HoverButton::GetInkDropColor(this);
@@ -105,3 +100,6 @@ void ExtensionsMenuButton::ButtonPressed() {
   controller_->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
+
+BEGIN_METADATA(ExtensionsMenuButton, views::LabelButton)
+END_METADATA

@@ -19,6 +19,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
@@ -81,10 +82,6 @@ void ExtensionsToolbarButton::OnBoundsChanged(
   SetLayoutInsets(new_insets);
 }
 
-const char* ExtensionsToolbarButton::GetClassName() const {
-  return "ExtensionsToolbarButton";
-}
-
 void ExtensionsToolbarButton::UpdateIcon() {
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
@@ -111,7 +108,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
       ->AddObserver(this);
 }
 
-bool ExtensionsToolbarButton::IsExtensionsMenuShowing() const {
+bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {
   return pressed_lock_.get();
 }
 
@@ -120,3 +117,8 @@ int ExtensionsToolbarButton::GetIconSize() const {
   return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
                                                    : kDefaultIconSize;
 }
+
+BEGIN_METADATA(ExtensionsToolbarButton, ToolbarButton)
+ADD_READONLY_PROPERTY_METADATA(bool, ExtensionsMenuShowing)
+ADD_READONLY_PROPERTY_METADATA(int, IconSize)
+END_METADATA

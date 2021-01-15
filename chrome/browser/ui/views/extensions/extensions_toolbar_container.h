@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -40,6 +41,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver {
  public:
+  METADATA_HEADER(ExtensionsToolbarContainer);
+
   using ToolbarIcons =
       std::map<ToolbarActionsModel::ActionId, ToolbarActionView*>;
 
@@ -116,7 +119,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   int OnPerformDrop(const ui::DropTargetEvent& event) override;
-  const char* GetClassName() const override;
 
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(

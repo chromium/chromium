@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -40,7 +41,6 @@ constexpr int EXTENSION_PINNING = 14;
 
 // static
 constexpr gfx::Size ExtensionsMenuItemView::kIconSize;
-constexpr char ExtensionsMenuItemView::kClassName[];
 
 ExtensionsMenuItemView::ExtensionsMenuItemView(
     Browser* browser,
@@ -100,10 +100,6 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
 }
 
 ExtensionsMenuItemView::~ExtensionsMenuItemView() = default;
-
-const char* ExtensionsMenuItemView::GetClassName() const {
-  return kClassName;
-}
 
 void ExtensionsMenuItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
@@ -186,3 +182,6 @@ SkColor ExtensionsMenuItemView::GetAdjustedIconColor(SkColor icon_color) const {
   }
   return icon_color;
 }
+
+BEGIN_METADATA(ExtensionsMenuItemView, views::View)
+END_METADATA

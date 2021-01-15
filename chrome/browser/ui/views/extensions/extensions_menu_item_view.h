@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -26,9 +27,10 @@ class ImageButton;
 // associated context menu.
 class ExtensionsMenuItemView : public views::View {
  public:
+  METADATA_HEADER(ExtensionsMenuItemView);
+
   static constexpr int kMenuItemHeightDp = 40;
   static constexpr gfx::Size kIconSize{28, 28};
-  static constexpr const char kClassName[] = "ExtensionsMenuItemView";
 
   ExtensionsMenuItemView(
       Browser* browser,
@@ -39,7 +41,6 @@ class ExtensionsMenuItemView : public views::View {
   ~ExtensionsMenuItemView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   void UpdatePinButton();

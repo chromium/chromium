@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class ExtensionsMenuItemView;
 
@@ -26,6 +27,7 @@ class Button;
 class ExtensionsMenuButton : public views::LabelButton,
                              public ToolbarActionViewDelegateViews {
  public:
+  METADATA_HEADER(ExtensionsMenuButton);
   ExtensionsMenuButton(Browser* browser,
                        ExtensionsMenuItemView* parent,
                        ToolbarActionViewController* controller,
@@ -33,8 +35,6 @@ class ExtensionsMenuButton : public views::LabelButton,
   ExtensionsMenuButton(const ExtensionsMenuButton&) = delete;
   ExtensionsMenuButton& operator=(const ExtensionsMenuButton&) = delete;
   ~ExtensionsMenuButton() override;
-
-  static const char kClassName[];
 
   SkColor GetInkDropBaseColor() const override;
   bool CanShowIconInToolbar() const override;
@@ -44,9 +44,6 @@ class ExtensionsMenuButton : public views::LabelButton,
   }
 
  private:
-  // views::LabelButton:
-  const char* GetClassName() const override;
-
   // ToolbarActionViewDelegateViews:
   views::View* GetAsView() override;
   views::FocusManager* GetFocusManagerForAccelerator() override;

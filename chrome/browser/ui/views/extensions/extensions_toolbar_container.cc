@@ -21,6 +21,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -654,10 +655,6 @@ int ExtensionsToolbarContainer::OnPerformDrop(
   return ui::DragDropTypes::DRAG_MOVE;
 }
 
-const char* ExtensionsToolbarContainer::GetClassName() const {
-  return "ExtensionsToolbarContainer";
-}
-
 void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
   auto iter = std::find_if(
       anchored_widgets_.begin(), anchored_widgets_.end(),
@@ -731,7 +728,7 @@ bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
     return true;
 
   // Is menu showing.
-  if (extensions_button_->IsExtensionsMenuShowing())
+  if (extensions_button_->GetExtensionsMenuShowing())
     return true;
 
   // Is extension pop out is showing.
@@ -758,3 +755,6 @@ void ExtensionsToolbarContainer::OnMenuOpening() {
 void ExtensionsToolbarContainer::OnMenuClosed() {
   UpdateContainerVisibility();
 }
+
+BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)
+END_METADATA
