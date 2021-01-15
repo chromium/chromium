@@ -78,14 +78,6 @@ ChromeSubresourceFilterClient* ChromeSubresourceFilterClient::FromWebContents(
       throttle_manager->client());
 }
 
-void ChromeSubresourceFilterClient::OnReloadRequested() {
-  // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
-  // about ProfileInteractionManager, this method can move entirely into
-  // ContentSubresourceFilterThrottleManager::OnReloadRequested() and
-  // SubresourceFilterClient::OnReloadRequested() can be eliminated.
-  profile_interaction_manager_->OnReloadRequested();
-}
-
 void ChromeSubresourceFilterClient::ShowNotification() {
   const GURL& top_level_url = web_contents_->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(

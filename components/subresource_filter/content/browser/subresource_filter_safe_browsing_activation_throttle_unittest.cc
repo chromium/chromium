@@ -120,7 +120,6 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
       const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>());
   MOCK_METHOD0(GetProfileInteractionManager,
                subresource_filter::ProfileInteractionManager*());
-  MOCK_METHOD0(OnReloadRequested, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockSubresourceFilterClient);

@@ -492,7 +492,9 @@ ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
 }
 
 void ContentSubresourceFilterThrottleManager::OnReloadRequested() {
-  client_->OnReloadRequested();
+  if (auto* profile_interaction_manager =
+          client_->GetProfileInteractionManager())
+    profile_interaction_manager->OnReloadRequested();
 }
 
 // static

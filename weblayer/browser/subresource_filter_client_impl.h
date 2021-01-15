@@ -50,7 +50,6 @@ class SubresourceFilterClientImpl
   GetSafeBrowsingDatabaseManager() override;
   subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
       override;
-  void OnReloadRequested() override;
 
   // Sets the SafeBrowsingDatabaseManager instance used to |database_manager|.
   void set_database_manager_for_testing(

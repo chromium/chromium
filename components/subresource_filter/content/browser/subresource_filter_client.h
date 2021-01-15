@@ -42,10 +42,6 @@ class SubresourceFilterClient {
   // longer calls into it, replacing this method with a getter for
   // SubresourceFilterProfileContext.
   virtual ProfileInteractionManager* GetProfileInteractionManager() = 0;
-
-  // Invoked when the user has requested a reload of a page with blocked ads
-  // (e.g., via an infobar).
-  virtual void OnReloadRequested() = 0;
 };
 
 }  // namespace subresource_filter

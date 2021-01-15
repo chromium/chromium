@@ -13,6 +13,8 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/browser/browser_process.h"
@@ -85,6 +87,10 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
       delete;
 
   void SetUpOnMainThread() override {
+    // This test suite does "cross-site" navigations to various domains that
+    // must all resolve to localhost.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -423,5 +429,81 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
   infobar_service->RemoveObserver(&infobar_observer);
 }
 #endif
+
+// Flaky on Windows. See https://crbug.com/1152429
+#if defined(OS_WIN)
+#define MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate \
+  DISABLED_ContentSettingsAllowlistViaReload_DoNotActivate
+#else
+#define MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate \
+  ContentSettingsAllowlistViaReload_DoNotActivate
+#endif
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+                       MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate) {
+  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
+  GURL test_url(
+      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
+
+  NavigateAndWaitForCompletion(test_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  // Allowlist via a reload.
+  content::TestNavigationObserver navigation_observer(web_contents, 1);
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents)
+      ->OnReloadRequested();
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+}
+
+// Flaky on Windows. See https://crbug.com/1152429
+#if defined(OS_WIN)
+#define MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain \
+  DISABLED_ContentSettingsAllowlistViaReload_AllowlistIsByDomain
+#else
+#define MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain \
+  ContentSettingsAllowlistViaReload_AllowlistIsByDomain
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SubresourceFilterBrowserTest,
+    MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain) {
+  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
+  GURL test_url(
+      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
+
+  NavigateAndWaitForCompletion(test_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  // Allowlist via a reload.
+  content::TestNavigationObserver navigation_observer(web_contents, 1);
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents)
+      ->OnReloadRequested();
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  // Another navigation to the same domain should be allowed too.
+  NavigateAndWaitForCompletion(
+      embedded_test_server()->GetURL("/frame_with_included_script.html?query"),
+      shell());
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  // A cross site blocklisted navigation should stay activated, however.
+  GURL a_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_with_included_script.html"));
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);
+  NavigateAndWaitForCompletion(a_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+}
 
 }  // namespace weblayer

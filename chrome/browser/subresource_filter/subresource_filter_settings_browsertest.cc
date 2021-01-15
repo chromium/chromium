@@ -183,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  ChromeSubresourceFilterClient::FromWebContents(web_contents())
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents())
       ->OnReloadRequested();
   navigation_observer.Wait();
 
@@ -202,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  ChromeSubresourceFilterClient::FromWebContents(web_contents())
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents())
       ->OnReloadRequested();
   navigation_observer.Wait();
 

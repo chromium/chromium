@@ -52,7 +52,6 @@ class ChromeSubresourceFilterClient
   GetSafeBrowsingDatabaseManager() override;
   subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
       override;
-  void OnReloadRequested() override;
 
  private:
   void ShowUI(const GURL& url);

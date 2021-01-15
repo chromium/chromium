@@ -78,12 +78,6 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
           std::make_unique<SubresourceFilterClientImpl>(web_contents), dealer);
 }
 
-void SubresourceFilterClientImpl::OnReloadRequested() {
-  // TODO(crbug.com/1116095): Bring up this flow on Android when user requests
-  // it via the infobar.
-  NOTIMPLEMENTED();
-}
-
 void SubresourceFilterClientImpl::ShowNotification() {
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1116095): Move ChromeSubresourceFilterClient::ShowUI()'s
