@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,6 +49,8 @@ namespace {
 
 constexpr char kProfileCreationInterceptionDeclinedPref[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
+constexpr char kProfileSwitchInterceptionDeclinedPref[] =
+    "signin.ProfileSwitchInterceptionDeclinedPref";
 
 void RecordSigninInterceptionHeuristicOutcome(
     SigninInterceptionHeuristicOutcome outcome) {
@@ -148,6 +151,7 @@ DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
 void DiceWebSigninInterceptor::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kProfileCreationInterceptionDeclinedPref);
+  registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
   registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
 }
 
@@ -176,6 +180,10 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       email,
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   if (switch_to_entry) {
+    if (HasUserDeclinedProfileSwitch(email)) {
+      return SigninInterceptionHeuristicOutcome::
+          kAbortUserDeclinedProfileForAccount;
+    }
     if (entry)
       *entry = switch_to_entry;
     return SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch;
@@ -275,7 +283,8 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
       interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
           web_contents, bubble_parameters,
           base::BindOnce(&DiceWebSigninInterceptor::OnProfileSwitchChoice,
-                         base::Unretained(this), entry->GetPath()));
+                         base::Unretained(this), account_info->email,
+                         entry->GetPath()));
       was_interception_ui_displayed_ = true;
     } else {
       // Interception is aborted.
@@ -484,9 +493,12 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
 }
 
 void DiceWebSigninInterceptor::OnProfileSwitchChoice(
+    const std::string& email,
     const base::FilePath& profile_path,
     SigninInterceptionResult switch_profile) {
   if (switch_profile != SigninInterceptionResult::kAccepted) {
+    if (switch_profile == SigninInterceptionResult::kDeclined)
+      RecordProfileSwitchDeclined(email);
     Reset();
     return;
   }
@@ -570,8 +582,7 @@ void DiceWebSigninInterceptor::RecordProfileCreationDeclined(
                               kProfileCreationInterceptionDeclinedPref);
   std::string key = GetPersistentEmailHash(email);
   base::Optional<int> declined_count = update->FindIntKey(key);
-  update->SetIntKey(
-      key, declined_count.has_value() ? declined_count.value() + 1 : 1);
+  update->SetIntKey(key, declined_count.value_or(0) + 1);
 }
 
 bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
@@ -584,4 +595,32 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
   constexpr int kMaxProfileCreationDeclinedCount = 2;
   return declined_count &&
          declined_count.value() >= kMaxProfileCreationDeclinedCount;
+}
+
+void DiceWebSigninInterceptor::RecordProfileSwitchDeclined(
+    const std::string& email) {
+  DictionaryPrefUpdate update(profile_->GetPrefs(),
+                              kProfileSwitchInterceptionDeclinedPref);
+  std::string key = GetPersistentEmailHash(email);
+  base::Optional<int> declined_count = update->FindIntKey(key);
+  update->SetIntKey(key, declined_count.value_or(0) + 1);
+}
+
+bool DiceWebSigninInterceptor::HasUserDeclinedProfileSwitch(
+    const std::string& email) const {
+  const base::DictionaryValue* pref_data = profile_->GetPrefs()->GetDictionary(
+      kProfileSwitchInterceptionDeclinedPref);
+  base::Optional<int> declined_count =
+      pref_data->FindIntKey(GetPersistentEmailHash(email));
+
+  // The limit is controlled by an experiment. Zero value completely turns off
+  // the profile switch bubble. Negative values mean there is no limit. By
+  // default, there is no limit.
+  int max_profile_switch_declined_count =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kDiceWebSigninInterceptionFeature,
+          "max_profile_switch_declined_count", -1);
+
+  return max_profile_switch_declined_count >= 0 &&
+         declined_count.value_or(0) >= max_profile_switch_declined_count;
 }
