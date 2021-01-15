@@ -47,12 +47,6 @@ class CollectedCookiesViews
   // Use BrowserWindow::ShowCollectedCookiesDialog to show.
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
-  // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  void DeleteDelegate() override;
-
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
@@ -69,6 +63,9 @@ class CollectedCookiesViews
   explicit CollectedCookiesViews(content::WebContents* web_contents);
 
   void OnDialogClosed();
+
+  // DialogDelegateView:
+  void DeleteDelegate() override;
 
   std::unique_ptr<views::View> CreateAllowedPane();
   std::unique_ptr<views::View> CreateBlockedPane();

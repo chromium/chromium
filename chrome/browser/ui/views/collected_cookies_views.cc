@@ -273,30 +273,6 @@ void CollectedCookiesViews::CreateAndShowForWebContents(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CollectedCookiesViews, views::DialogDelegate implementation:
-
-base::string16 CollectedCookiesViews::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_DIALOG_TITLE);
-}
-
-ui::ModalType CollectedCookiesViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-bool CollectedCookiesViews::ShouldShowCloseButton() const {
-  return false;
-}
-
-void CollectedCookiesViews::DeleteDelegate() {
-  if (!destroying_) {
-    // The associated Widget is being destroyed before the owning WebContents.
-    // Tell the owner to delete |this|.
-    destroying_ = true;
-    web_contents_->RemoveUserData(UserDataKey());
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // CollectedCookiesViews, views::TabbedPaneListener implementation:
 
 void CollectedCookiesViews::TabSelectedAt(int index) {
@@ -331,6 +307,9 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
     : web_contents_(web_contents) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  SetTitle(IDS_COLLECTED_COOKIES_DIALOG_TITLE);
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -397,6 +376,15 @@ void CollectedCookiesViews::OnDialogClosed() {
   if (status_changed_ && !web_contents_->IsBeingDestroyed()) {
     CollectedCookiesInfoBarDelegate::Create(
         InfoBarService::FromWebContents(web_contents_));
+  }
+}
+
+void CollectedCookiesViews::DeleteDelegate() {
+  if (!destroying_) {
+    // The associated Widget is being destroyed before the owning WebContents.
+    // Tell the owner to delete |this|.
+    destroying_ = true;
+    web_contents_->RemoveUserData(UserDataKey());
   }
 }
 
