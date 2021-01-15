@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -80,102 +81,6 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
   // Child user is adding/reauthenticating a secondary account.
   return kCrosAddAccountEduFlow;
 }
-
-// A helper class for completing the inline login flow. Primarily, it is
-// responsible for exchanging the auth code, obtained after a successful user
-// sign in, for OAuth tokens and subsequently populating Chrome OS
-// AccountManager with these tokens.
-// This object is supposed to be used in a one-shot fashion and it deletes
-// itself after its work is complete.
-class SigninHelper : public GaiaAuthConsumer {
- public:
-  SigninHelper(
-      chromeos::AccountManager* account_manager,
-      const base::RepeatingClosure& close_dialog_closure,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& gaia_id,
-      const std::string& email,
-      const std::string& auth_code,
-      const std::string& signin_scoped_device_id)
-      : account_manager_(account_manager),
-        close_dialog_closure_(close_dialog_closure),
-        email_(email),
-        url_loader_factory_(url_loader_factory),
-        gaia_auth_fetcher_(this,
-                           gaia::GaiaSource::kChrome,
-                           url_loader_factory) {
-    account_key_ = ::account_manager::AccountKey{
-        gaia_id, account_manager::AccountType::kGaia};
-
-    DCHECK(!signin_scoped_device_id.empty());
-    gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
-        auth_code, signin_scoped_device_id);
-  }
-
-  ~SigninHelper() override = default;
-
- protected:
-  // GaiaAuthConsumer overrides.
-  void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
-    // Flow of control after this call:
-    // |AccountManager::UpsertAccount| updates / inserts the account and calls
-    // its |Observer|s, one of which is
-    // |ProfileOAuth2TokenServiceDelegateChromeOS|.
-    // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted| seeds the
-    // Gaia id and email id for this account in |AccountTrackerService| and
-    // invokes |FireRefreshTokenAvailable|. This causes the account to propagate
-    // throughout the Identity Service chain, including in
-    // |AccountFetcherService|. |AccountFetcherService::OnRefreshTokenAvailable|
-    // invokes |AccountTrackerService::StartTrackingAccount|, triggers a fetch
-    // for the account information from Gaia and updates this information into
-    // |AccountTrackerService|. At this point the account will be fully added to
-    // the system.
-    UpsertAccount(result.refresh_token);
-
-    CloseDialogAndExit();
-  }
-
-  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override {
-    // TODO(sinhak): Display an error.
-    CloseDialogAndExit();
-  }
-
-  void UpsertAccount(const std::string& refresh_token) {
-    account_manager_->UpsertAccount(account_key_, email_, refresh_token);
-  }
-
-  void CloseDialogAndExit() {
-    close_dialog_closure_.Run();
-    Exit();
-  }
-
-  void Exit() {
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-  }
-
-  chromeos::AccountManager* GetAccountManager() { return account_manager_; }
-
-  const std::string GetEmail() { return email_; }
-
-  const scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() {
-    return url_loader_factory_;
-  }
-
- private:
-  // A non-owning pointer to Chrome OS AccountManager.
-  chromeos::AccountManager* const account_manager_;
-  // A closure to close the hosting dialog window.
-  base::RepeatingClosure close_dialog_closure_;
-  // The user's AccountKey for which |this| object has been created.
-  ::account_manager::AccountKey account_key_;
-  // The user's email for which |this| object has been created.
-  const std::string email_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  // Used for exchanging auth code for OAuth tokens.
-  GaiaAuthFetcher gaia_auth_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninHelper);
-};
 
 // A version of SigninHelper for child users. After obtaining OAuth token it
 // logs the parental consent with provided parent id and rapt. After successful
