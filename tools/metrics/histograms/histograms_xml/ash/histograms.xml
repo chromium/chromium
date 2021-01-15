@@ -475,6 +475,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
+    expires_after="2021-09-01">
+  <owner>gzadina@google.com</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The time between a user pressing control and V when pasting via keyboard.
+    Recorded in AcceleratorHistory when a V is pressed. Only recorded for the
+    first pressed V in a sequence, for example: User holds control, waits 200ms,
+    presses V (histogram logged), presses V again without releasing control (no
+    histogram logged). This metric is used to set a baseline for an experimental
+    keyboard combination where a user holds control, then presses V after a
+    delay to show multipaste.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.ImageModelRequest.Lifetime" units="ms"
     expires_after="2021-12-11">
   <owner>newcomer@chromium.org</owner>

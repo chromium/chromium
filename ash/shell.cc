@@ -26,6 +26,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/control_v_histogram_recorder.h"
 #include "ash/dbus/ash_dbus_services.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_notification_controller.h"
@@ -629,6 +630,7 @@ Shell::~Shell() {
   RemovePreTargetHandler(overlay_filter_.get());
   overlay_filter_.reset();
 
+  RemovePreTargetHandler(control_v_histogram_recorder_.get());
   RemovePreTargetHandler(accelerator_filter_.get());
   RemovePreTargetHandler(event_transformation_handler_.get());
   if (back_gesture_event_handler_)
@@ -1058,9 +1060,12 @@ void Shell::Init(
   overlay_filter_.reset(new OverlayEventFilter);
   AddPreTargetHandler(overlay_filter_.get());
 
-  accelerator_filter_.reset(new ::wm::AcceleratorFilter(
+  control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
+  AddPreTargetHandler(control_v_histogram_recorder_.get());
+
+  accelerator_filter_ = std::make_unique<::wm::AcceleratorFilter>(
       std::make_unique<PreTargetAcceleratorHandler>(),
-      accelerator_controller_->accelerator_history()));
+      accelerator_controller_->accelerator_history());
   AddPreTargetHandler(accelerator_filter_.get());
 
   event_transformation_handler_.reset(new EventTransformationHandler);

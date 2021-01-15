@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -41,10 +43,22 @@ class ClipboardHistoryTest : public AshTestBase {
     AshTestBase::SetUp();
     clipboard_history_ = const_cast<ClipboardHistory*>(
         Shell::Get()->clipboard_history_controller()->history());
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        ash::Shell::GetPrimaryRootWindow());
   }
 
   const std::list<ClipboardHistoryItem>& GetClipboardHistoryItems() {
     return clipboard_history_->GetItems();
+  }
+
+  ui::test::EventGenerator* GetEventGenerator() {
+    return event_generator_.get();
+  }
+
+  // Simulates pressing and releasing `key_code`.
+  void PressAndRelease(ui::KeyboardCode key_code, int flags) {
+    event_generator_->PressKey(key_code, flags);
+    event_generator_->ReleaseKey(key_code, flags);
   }
 
   // Writes |input_strings| to the clipboard buffer and ensures that
@@ -134,6 +148,7 @@ class ClipboardHistoryTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
   ClipboardHistory* clipboard_history_ = nullptr;
 };
@@ -347,6 +362,46 @@ TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
 
   EXPECT_EQ(ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml,
             ClipboardHistoryUtil::CalculateDisplayFormat(data));
+}
+
+// Tests that Ash.ClipboardHistory.ControlToVDelay is only recorded if
+// ui::VKEY_V is pressed with only ui::VKEY_CONTROL pressed.
+TEST_F(ClipboardHistoryTest, RecordControlV) {
+  base::HistogramTester histogram_tester;
+  auto* event_generator = GetEventGenerator();
+
+  // Press Ctrl + V, a histogram should be emitted.
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  PressAndRelease(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ControlToVDelay", 1u);
+
+  // Press and release V again, no additional histograms should be emitted.
+  PressAndRelease(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ControlToVDelay", 1u);
+
+  // Release Control to return to no keys pressed.
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ControlToVDelay", 1u);
+
+  // Hold shift while pressing ctrl + V, no histogram should be recorded.
+  event_generator->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_SHIFT_DOWN);
+  PressAndRelease(ui::VKEY_V, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_SHIFT_DOWN);
+  event_generator->ReleaseKey(ui::VKEY_SHIFT, ui::EF_NONE);
+
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ControlToVDelay", 1u);
+
+  // Press Ctrl, then press and release a random key, then press V. A histogram
+  // should be recorded.
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  PressAndRelease(ui::VKEY_X, ui::EF_CONTROL_DOWN);
+  PressAndRelease(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ControlToVDelay", 2u);
 }
 
 }  // namespace ash
