@@ -312,6 +312,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     // this. The Default profile is skipped when getting the sync settings from
     // user profile(s).
     testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    // Also add two non-regular profiles that might appear on ChromeOS. They
+    // always disable sync and are skipped when getting sync settings.
+    testing_profile_manager_->CreateTestingProfile(
+        chrome::kLockScreenAppProfile);
+    testing_profile_manager_->CreateTestingProfile(chrome::kLockScreenProfile);
     metric_provider_ = std::make_unique<TestMetricProvider>(
         std::make_unique<TestMetricCollector>(test_params),
         testing_profile_manager_->profile_manager());

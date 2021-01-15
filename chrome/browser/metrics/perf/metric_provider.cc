@@ -230,10 +230,10 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
   int user_profile_count = 0;
 
   for (Profile* profile : profiles) {
-    // The Default profile on Chrome OS is used when the user has not logged in
-    // and this profile always disables sync. We skip this profile and look at
-    // sync settings of user profiles.
-    if (chromeos::ProfileHelper::IsSigninProfile(profile))
+    // The Default profile, lock screen app profile and lock screen profile are
+    // all not regular user profiles on Chrome OS. They always disable sync and
+    // we would skip them.
+    if (!chromeos::ProfileHelper::IsRegularProfile(profile))
       continue;
     auto app_sync_state = AppSyncStateForUserProfile(profile);
     if (app_sync_state != RecordAttemptStatus::kAppSyncEnabled)

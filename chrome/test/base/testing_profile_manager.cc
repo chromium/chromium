@@ -88,6 +88,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   base::FilePath profile_path(profiles_path_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_name != chrome::kInitialProfile &&
+      profile_name != chrome::kLockScreenProfile &&
       profile_name != chromeos::ProfileHelper::GetLockScreenAppProfileName()) {
     profile_path =
         profile_path.Append(chromeos::ProfileHelper::Get()->GetUserProfileDir(
