@@ -42,6 +42,12 @@ public final class LaunchCauseMetricsTest {
 
     @Before
     public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            if (!ApplicationStatus.isInitialized()) {
+                ApplicationStatus.initialize(BaseJUnit4ClassRunner.getApplication());
+            }
+            ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+        });
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
@@ -57,9 +63,24 @@ public final class LaunchCauseMetricsTest {
     }
 
     private static class TestLaunchCauseMetrics extends LaunchCauseMetrics {
+        private boolean mDisplayOff;
+
+        public TestLaunchCauseMetrics(Activity activity) {
+            super(activity);
+        }
+
         @Override
         protected @LaunchCause int computeLaunchCause() {
             return LaunchCause.OTHER;
+        }
+
+        @Override
+        protected boolean isDisplayOff(Activity activity) {
+            return mDisplayOff;
+        }
+
+        public void setDisplayOff(boolean off) {
+            mDisplayOff = off;
         }
     }
 
@@ -68,12 +89,12 @@ public final class LaunchCauseMetricsTest {
     @UiThreadTest
     public void testRecordsOncePerLaunch() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
-        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics();
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
 
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         metrics.recordLaunchCause();
@@ -84,6 +105,7 @@ public final class LaunchCauseMetricsTest {
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+        metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
@@ -94,11 +116,83 @@ public final class LaunchCauseMetricsTest {
     @UiThreadTest
     public void testRecordsOnceWithMultipleInstances() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
-        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics();
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
-        new TestLaunchCauseMetrics().recordLaunchCause();
+        new TestLaunchCauseMetrics(mActivity).recordLaunchCause();
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testLaunchedFromRecents() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onLaunchFromRecents();
+        metrics.recordLaunchCause();
+        count++;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
+        LaunchCauseMetrics.resetForTests();
+
+        metrics.onLaunchFromRecents();
+        metrics.onUserLeaveHint();
+        metrics.recordLaunchCause();
+        count++;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testResumedFromRecents() throws Throwable {
+        int recentsCount = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
+        int backCount = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS_OR_BACK);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        metrics.recordLaunchCause();
+        recentsCount++;
+        Assert.assertEquals(
+                recentsCount, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
+
+        metrics.onUserLeaveHint();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+        metrics.recordLaunchCause();
+        backCount++;
+        Assert.assertEquals(
+                backCount, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS_OR_BACK));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testResumedFromScreenOn() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+
+        metrics.setDisplayOff(true);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        metrics.recordLaunchCause();
+        count++;
+        Assert.assertEquals(count,
+                histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
+
+        metrics.setDisplayOff(false);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        metrics.recordLaunchCause();
+        Assert.assertEquals(count,
+                histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
     }
 }

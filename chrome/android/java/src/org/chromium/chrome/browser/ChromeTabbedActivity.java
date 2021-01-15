@@ -1684,7 +1684,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
-        return new TabbedActivityLaunchCauseMetrics();
+        return new TabbedActivityLaunchCauseMetrics(this);
     }
 
     @Override

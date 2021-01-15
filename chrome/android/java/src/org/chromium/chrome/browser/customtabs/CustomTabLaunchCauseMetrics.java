@@ -14,6 +14,7 @@ public class CustomTabLaunchCauseMetrics extends LaunchCauseMetrics {
     private final CustomTabActivity mActivity;
 
     public CustomTabLaunchCauseMetrics(CustomTabActivity activity) {
+        super(activity);
         mActivity = activity;
     }
 

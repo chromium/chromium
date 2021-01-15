@@ -41247,6 +41247,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Other"/>
   <int value="1" label="Chrome Custom Tab"/>
   <int value="2" label="Trusted Web Activity"/>
+  <int value="3" label="Recents (aka App Overview)"/>
+  <int value="4" label="Recents or Back"/>
+  <int value="5" label="Foreground when Locked (Power Button)"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

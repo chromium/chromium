@@ -466,8 +466,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             super.performPostInflationStartup();
 
             Intent intent = getIntent();
-            if (intent != null && getSavedInstanceState() == null) {
+            if (getSavedInstanceState() == null) {
                 VrModuleProvider.getDelegate().maybeHandleVrIntentPreNative(this, intent);
+            }
+            if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
+                getLaunchCauseMetrics().onLaunchFromRecents();
+            } else {
+                getLaunchCauseMetrics().onReceivedIntent();
             }
 
             BottomContainer bottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
@@ -979,6 +984,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onUserLeaveHint() {
         super.onUserLeaveHint();
 
+        getLaunchCauseMetrics().onUserLeaveHint();
+
         // Can be in finishing state. No need to attempt PIP.
         if (isActivityFinishingOrDestroyed()) return;
 
@@ -1035,6 +1042,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         super.onNewIntentWithNative(intent);
+        getLaunchCauseMetrics().onReceivedIntent();
         if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false)) return;
 
         // We send this intent so that we can enter WebVr presentation mode if needed. This

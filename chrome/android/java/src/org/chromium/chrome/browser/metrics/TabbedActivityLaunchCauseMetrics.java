@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import android.app.Activity;
+
 /**
  * LaunchCauseMetrics for ChromeTabbedActivity.
  */
 public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
+    public TabbedActivityLaunchCauseMetrics(Activity activity) {
+        super(activity);
+    }
+
     @Override
     public @LaunchCause int computeLaunchCause() {
         // TODO(https://crbug.com/1163961): Implement ChromeTabbedActivity launch cause metrics.
