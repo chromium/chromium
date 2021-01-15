@@ -2,10 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertArrayEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.m.js';
+import {CommandHandler, CommandUtil} from './file_manager_commands.m.js';
+import {FileTasks} from './file_tasks.m.js';
+
 /**
  * Checks that a correct sharing action source is extracted from an event.
  */
-function testGetSharingActionSource() {
+export function testGetSharingActionSource() {
   const testData = [
     {
       event: {target: {id: CommandUtil.SharingActionElementId.CONTEXT_MENU}},
@@ -34,10 +43,10 @@ function testGetSharingActionSource() {
  * Checks that the `toggle-holding-space` command is appropriately enabled/
  * disabled given the current selection state and executes as expected.
  */
-function testToggleHoldingSpaceCommand() {
+export function testToggleHoldingSpaceCommand() {
   // Verify `toggle-holding-space` command exists.
   const command = CommandHandler.getCommand('toggle-holding-space');
-  assertNotEqual(command, undefined);
+  assertNotEquals(command, undefined);
 
   // Enable the holding space feature and provide strings.
   loadTimeData.data = {
@@ -46,10 +55,18 @@ function testToggleHoldingSpaceCommand() {
     HOLDING_SPACE_UNPIN_TO_SHELF_COMMAND_LABEL: 'Unpin to shelf',
   };
 
-  // Mock private API.
-  chrome.fileManagerPrivate.getHoldingSpaceState = (callback) => {
-    callback({itemUrls: []});
+  /**
+   * Mock chrome APIs.
+   * @type {Object}
+   */
+  const mockChrome = {
+    fileManagerPrivate: {
+      getHoldingSpaceState: (callback) => {
+        callback({itemUrls: []});
+      },
+    },
   };
+  installMockChrome(mockChrome);
 
   // Mock volume manager.
   const volumeManager = new MockVolumeManager();

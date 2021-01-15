@@ -7,7 +7,7 @@
 // #import {VolumeInfo} from '../../../externs/volume_info.m.js';
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 // #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {Command as CrUiCommand} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';

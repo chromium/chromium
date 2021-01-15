@@ -3,10 +3,46 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {TrashEntry} from '../../common/js/trash.m.js';
+// #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {SuggestAppsDialog} from './ui/suggest_apps_dialog.m.js';
+// #import {constants} from './constants.m.js';
+// #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+// #import {ActionsModel} from './actions_model.m.js';
+// #import {PathComponent} from './path_component.m.js';
+// #import {HoldingSpaceUtil} from './holding_space_util.m.js';
+// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
+// #import {EntryList} from '../../common/js/files_app_entry_types.m.js';
+// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {DialogType} from './dialog_type.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {FileTasks} from './file_tasks.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {Command as CrUiCommand} from 'chrome://resources/js/cr/ui/command.m.js';
+// clang-format on
+
+
+/**
  * A command.
  * @abstract
  */
-class Command {
+/* #export */ class Command {
   /**
    * Handles the execute event.
    * @param {!Event} event Command event.
@@ -409,7 +445,7 @@ CommandUtil.getEventEntry = (event, fileManager) => {
 /**
  * Handle of the command events.
  */
-class CommandHandler {
+/* #export */ class CommandHandler {
   /**
    * @param {!CommandHandlerDeps} fileManager Classes |CommandHalder| depends.
    * @param {!FileSelectionHandler} selectionHandler
@@ -433,7 +469,9 @@ class CommandHandler {
     // Decorate command tags in the document.
     const commands = fileManager.document.querySelectorAll('command');
     for (let i = 0; i < commands.length; i++) {
-      cr.ui.Command.decorate(commands[i]);
+      if (cr.ui.Command.decorate) {
+        cr.ui.Command.decorate(commands[i]);
+      }
       this.commands_[commands[i].id] = commands[i];
     }
 
@@ -1500,6 +1538,7 @@ CommandHandler.COMMANDS_['rename'] = new class extends Command {
           const removable =
               location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
           event.canExecute = removable && writable &&
+              volumeInfo.diskFileSystemType &&
               CommandHandler.RENAME_DISK_FILE_SYSTEM_SUPPORT_.indexOf(
                   volumeInfo.diskFileSystemType) > -1;
           event.command.setHidden(!removable);
@@ -2915,3 +2954,6 @@ CommandHandler.COMMANDS_['new-service'] = new class extends Command {
          !chrome.extension.inIncognitoContext);
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {CommandUtil};

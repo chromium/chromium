@@ -12,7 +12,7 @@
 // #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {Command as CrUiCommand} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // clang-format on

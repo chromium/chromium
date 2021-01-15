@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileListSelectionModelTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerCommandsTest) {
-  RunTestURL("foreground/js/file_manager_commands_unittest_gen.html");
+  RunTestURL("foreground/js/file_manager_commands_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerDialogBaseTest) {

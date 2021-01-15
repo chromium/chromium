@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// clang-format off
+// #import {Command as CrUiCommand} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
+// clang-format on
 
 /**
  * Sets 'hidden' property of a cr.ui.Command instance and dispatches
