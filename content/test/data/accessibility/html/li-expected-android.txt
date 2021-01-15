@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused scrollable
 ++android.widget.ListView collection item_count=3 row_count=3
-++++android.view.View collection_item
+++++android.view.View collection_item name='Custom name'
 ++++++android.view.View name='• '
 ++++++android.widget.TextView name='Item 1'
 ++++android.view.View collection_item item_index=1 row_index=1

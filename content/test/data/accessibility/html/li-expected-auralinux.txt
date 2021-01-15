@@ -1,6 +1,6 @@
 [document web]
 ++[list] display:block setsize:3
-++++[list item] display:list-item posinset:1 setsize:3
+++++[list item] name='Custom name' display:list-item posinset:1 setsize:3
 ++++++[panel] display:inline-block
 ++++++++[static] name='• '
 ++++++[static] name='Item 1' display:list-item
