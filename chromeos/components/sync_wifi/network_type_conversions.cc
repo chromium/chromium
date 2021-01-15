@@ -276,17 +276,8 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
           ? 1
           : 0);
 
-  if (specifics.has_metered() &&
-      specifics.metered() !=
-          sync_pb::
-              WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_UNSPECIFIED &&
-      specifics.metered() !=
-          sync_pb::
-              WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_AUTO) {
-    config->metered = network_config::mojom::MeteredConfig::New(
-        specifics.metered() ==
-        sync_pb::WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_YES);
-  }
+  // TODO(crbug/1128692): Restore support for the metered property when mojo
+  // networks track the "Automatic" state.
 
   // For backwards compatibility, any available custom nameservers are still
   // applied when the dns_option is not set.
