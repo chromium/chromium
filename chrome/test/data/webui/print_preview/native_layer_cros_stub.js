@@ -153,4 +153,9 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
     this.methodCalled('getPrintServersConfig');
     return Promise.resolve(this.printServersConfig_);
   }
+
+  /** @param {!PrintServersConfig} printServersConfig */
+  setPrintServersConfig(printServersConfig) {
+    this.printServersConfig_ = printServersConfig;
+  }
 }

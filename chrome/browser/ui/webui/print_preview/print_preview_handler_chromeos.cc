@@ -105,7 +105,18 @@ class PrintPreviewHandlerChromeOS::AccessTokenService
 
 PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {}
 
-PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() {}
+PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    return;
+  }
+  Profile* profile = Profile::FromWebUI(web_ui());
+  auto* cups_manager =
+      CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  if (cups_manager) {
+    auto* print_servers_manager = cups_manager->GetPrintServersManager();
+    print_servers_manager->RemoveObserver(this);
+  }
+}
 
 void PrintPreviewHandlerChromeOS::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

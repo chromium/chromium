@@ -17,6 +17,7 @@ print_server_store_test.suiteName = 'PrintServerStoreTest';
 /** @enum {string} */
 print_server_store_test.TestNames = {
   PrintServersChanged: 'print servers changed',
+  GetPrintServersConfig: 'get print servers config',
   ServerPrintersLoading: 'server printers loading',
   ChoosePrintServers: 'choose print servers',
 };
@@ -97,6 +98,33 @@ suite(print_server_store_test.suiteName, function() {
             ['Print Server 1', 'Print Server 2'],
             printServersChangedEvent.detail.printServerNames);
         assertTrue(printServersChangedEvent.detail.isSingleServerFetchingMode);
+      });
+
+  // Tests that print servers and fetching mode are updated when
+  // getPrintServersConfig is called and an update to the print servers config
+  // occurs.
+  test(
+      assert(print_server_store_test.TestNames.GetPrintServersConfig),
+      async () => {
+        const printServers = [
+          {id: 'server1', name: 'Print Server 1'},
+          {id: 'server2', name: 'Print Server 2'},
+        ];
+
+        const expectedPrintServersConfig = {
+          printServers: printServers,
+          isSingleServerFetchingMode: true
+        };
+        nativeLayerCros.setPrintServersConfig(expectedPrintServersConfig);
+        const actualPrintServersConfig =
+            await printServerStore.getPrintServersConfig();
+
+        const pendingPrintServerIds =
+            nativeLayerCros.whenCalled('choosePrintServers');
+        printServerStore.choosePrintServers('Print Server 1');
+        assertDeepEquals(['server1'], await pendingPrintServerIds);
+        assertDeepEquals(printServers, actualPrintServersConfig.printServers);
+        assertTrue(actualPrintServersConfig.isSingleServerFetchingMode);
       });
 
   // Tests that an event is dispatched are updated when SERVER_PRINTERS_LOADING
