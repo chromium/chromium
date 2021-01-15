@@ -134,23 +134,28 @@ export const SAConstants = {
       PRIMARY: 'primary',
       // The ID for the ring showing a preview of the next focus, if the user
       // selects the current element.
-      PREVIEW: 'preview',
-      // The ID for the area where text is being input.
-      TEXT: 'text'
+      PREVIEW: 'preview'
     },
 
     /**
-     * The inner color of the focus rings.
+     * The inner color of the primary focus ring.
      * @type {string}
      * @const
      */
-    PRIMARY_COLOR: '#8AB4F8',
+    PRIMARY_COLOR: '#8AB4F8',  // Google Blue 300
+
+    /**
+     * The inner color of the preview focus ring
+     * @type {string}
+     * @const
+     */
+    PREVIEW_COLOR: '#8AB4F880',  // Google Blue 300, 50% opacity
 
     /**
      * The outer color of the focus rings.
      * @type {string}
      * @const
      */
-    SECONDARY_COLOR: '#000',
+    OUTER_COLOR: '#174EA6',  // Google Blue 900
   },
 };

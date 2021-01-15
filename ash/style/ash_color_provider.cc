@@ -234,7 +234,6 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kButtonLabelColorBlue:
     case ContentLayerType::kSliderColorActive:
     case ContentLayerType::kRadioColorActive:
-    case ContentLayerType::kSwitchAccessInnerStrokeColor:
     case ContentLayerType::kSwitchKnobColorActive:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kSwitchTrackColorActive:
@@ -249,8 +248,10 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
           GetContentLayerColor(ContentLayerType::kAppStateIndicatorColor));
     case ContentLayerType::kCurrentDeskColor:
       return is_dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
+    case ContentLayerType::kSwitchAccessInnerStrokeColor:
+      return gfx::kGoogleBlue300;
     case ContentLayerType::kSwitchAccessOuterStrokeColor:
-      return is_dark_mode ? SK_ColorBLACK : SK_ColorWHITE;
+      return gfx::kGoogleBlue900;
     default:
       return ResolveColor(type, is_dark_mode);
   }
