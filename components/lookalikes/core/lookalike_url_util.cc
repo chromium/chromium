@@ -28,6 +28,7 @@
 #include "components/lookalikes/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/features.h"
+#include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "components/url_formatter/url_formatter.h"
@@ -57,18 +58,15 @@ const size_t kMinE2LDLengthForTargetEmbedding = 4;
 
 // This list will be added to the static list of common words so common words
 // could be added to the list using a flag if needed.
-const base::FeatureParam<std::string> kAdditionalCommonWords{
+const base::FeatureParam<std::string> kRemoveAdditionalCommonWords{
     &lookalikes::features::kDetectTargetEmbeddingLookalikes,
     "additional_common_words", ""};
 
 // We might not protect a domain whose e2LD is a common word in target embedding
-// based on the TLD that is paired with it.
-const char* kCommonWords[] = {
-    "shop",      "jobs",      "live",       "info",    "study",   "asahi",
-    "weather",   "health",    "forum",      "radio",   "ideal",   "research",
-    "france",    "free",      "mobile",     "sky",     "ask",     "booking",
-    "canada",    "dating",    "dictionary", "express", "hoteles", "hotels",
-    "investing", "jharkhand", "nifty"};
+// based on the TLD that is paired with it. This list supplements words from
+// url_formatter::common_words::IsCommonWord().
+const char* kLocalAdditionalCommonWords[] = {"asahi", "hoteles", "jharkhand",
+                                             "nifty"};
 
 // These domains are plausible lookalike targets, but they also use common words
 // in their names. Selectively prevent flagging embeddings where the embedder
@@ -272,17 +270,33 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
 // weather.com, ask.com). Target embeddings of these domains are often false
 // positives (e.g. "super-best-fancy-hotels.com" isn't spoofing "hotels.com").
 bool UsesCommonWord(const DomainInfo& domain) {
-  std::vector<std::string> additional_common_words =
-      base::SplitString(kAdditionalCommonWords.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (base::Contains(additional_common_words, domain.domain_without_registry)) {
+  // kDomainsPermittedInEndEmbeddings are based on domains with common words,
+  // but they should not be excluded here (and instead are checked later).
+  for (auto* permitted_ending : kDomainsPermittedInEndEmbeddings) {
+    if (domain.domain_and_registry == permitted_ending) {
+      return false;
+    }
+  }
+
+  // Search for words in the big common word list.
+  if (url_formatter::common_words::IsCommonWord(
+          domain.domain_without_registry)) {
     return true;
   }
-  for (auto* common_word : kCommonWords) {
+
+  // Also check the local lists.
+  for (auto* common_word : kLocalAdditionalCommonWords) {
     if (domain.domain_without_registry == common_word) {
       return true;
     }
   }
+  std::vector<std::string> additional_common_words =
+      base::SplitString(kRemoveAdditionalCommonWords.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (base::Contains(additional_common_words, domain.domain_without_registry)) {
+    return true;
+  }
+
   return false;
 }
 
