@@ -69,7 +69,8 @@ class SafeBrowsingTabHelperTest
       ui::PageTransition transition =
           ui::PageTransition::PAGE_TRANSITION_FIRST) {
     web::WebStatePolicyDecider::RequestInfo request_info(
-        transition, for_main_frame, /*has_user_gesture=*/false);
+        transition, for_main_frame, /*target_frame_is_cross_origin=*/false,
+        /*has_user_gesture=*/false);
     return web_state_.ShouldAllowRequest(
         [NSURLRequest requestWithURL:net::NSURLWithGURL(url)], request_info);
   }

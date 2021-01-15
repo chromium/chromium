@@ -712,6 +712,8 @@ MATCHER_P(RequestInfoMatch, expected_request_info, /*description=*/"") {
       << PageTransitionGetCoreTransitionString(arg.transition_type);
   EXPECT_EQ(expected_request_info.target_frame_is_main,
             arg.target_frame_is_main);
+  EXPECT_EQ(expected_request_info.target_frame_is_cross_origin,
+            arg.target_frame_is_cross_origin);
   EXPECT_EQ(expected_request_info.has_user_gesture, arg.has_user_gesture);
 
   return transition_type_match &&
@@ -822,7 +824,8 @@ TEST_F(WebStateObserverTest, NewPageNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -869,7 +872,8 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
 
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -940,7 +944,8 @@ TEST_F(WebStateObserverTest, EnableWebUsageTwice) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -976,7 +981,8 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1033,7 +1039,8 @@ TEST_F(WebStateObserverTest, UrlWithSpecialSuffixNavigation) {
     // Starting from iOS 13 WebKit, does not rewrite URL.
     WebStatePolicyDecider::RequestInfo expected_request_info(
         ui::PageTransition::PAGE_TRANSITION_TYPED,
-        /*target_main_frame=*/true, /*has_user_gesture=*/false);
+        /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+        /*has_user_gesture=*/false);
     EXPECT_CALL(*decider_,
                 ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
         .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1071,7 +1078,8 @@ TEST_F(WebStateObserverTest, UrlWithSpecialSuffixNavigation) {
         // iOS 13, because context is matched by URL, which is rewritten by
         // WebKit.
         ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-        /*target_main_frame=*/true, /*has_user_gesture=*/false);
+        /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+        /*has_user_gesture=*/false);
     EXPECT_CALL(*decider_,
                 ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
         .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1111,7 +1119,8 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1159,7 +1168,8 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1206,7 +1216,8 @@ TEST_F(WebStateObserverTest, WebStateUnsupportedSchemeNavigation) {
   // this unsupported URL scheme.
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1227,7 +1238,8 @@ TEST_F(WebStateObserverTest, WebPageReloadNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1252,6 +1264,7 @@ TEST_F(WebStateObserverTest, WebPageReloadNavigation) {
   WebStatePolicyDecider::RequestInfo reload_request_info(
       ui::PageTransition::PAGE_TRANSITION_RELOAD,
       /*target_main_frame=*/true,
+      /*target_frame_is_cross_origin=*/false,
       /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(reload_request_info)))
@@ -1287,7 +1300,8 @@ TEST_F(WebStateObserverTest, DISABLED_ReloadWithUserAgentType) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1309,7 +1323,8 @@ TEST_F(WebStateObserverTest, DISABLED_ReloadWithUserAgentType) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_reload_request_info(
       ui::PageTransition::PAGE_TRANSITION_RELOAD,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_, ShouldAllowRequest(
                              _, RequestInfoMatch(expected_reload_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1343,7 +1358,8 @@ TEST_F(WebStateObserverTest, UserInitiatedHashChangeNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1371,7 +1387,8 @@ TEST_F(WebStateObserverTest, UserInitiatedHashChangeNavigation) {
   const GURL hash_url = test_server_->GetURL("/echoall#1");
   WebStatePolicyDecider::RequestInfo hash_url_expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
 
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   EXPECT_CALL(
@@ -1438,7 +1455,8 @@ TEST_F(WebStateObserverTest, RendererInitiatedHashChangeNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1466,7 +1484,8 @@ TEST_F(WebStateObserverTest, RendererInitiatedHashChangeNavigation) {
   const GURL hash_url = test_server_->GetURL("/echoall#1");
   WebStatePolicyDecider::RequestInfo expected_hash_request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_, ShouldAllowRequest(
                              _, RequestInfoMatch(expected_hash_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1499,7 +1518,8 @@ TEST_F(WebStateObserverTest, StateNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1567,7 +1587,8 @@ TEST_F(WebStateObserverTest, UserInitiatedPostNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_GENERATED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1606,7 +1627,8 @@ TEST_F(WebStateObserverTest, RendererInitiatedPostNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1630,7 +1652,8 @@ TEST_F(WebStateObserverTest, RendererInitiatedPostNavigation) {
   int32_t nav_id = 0;
   WebStatePolicyDecider::RequestInfo form_request_info(
       ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(form_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1668,7 +1691,8 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1689,7 +1713,8 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   // Submit the form using JavaScript.
   WebStatePolicyDecider::RequestInfo form_request_info(
       ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(form_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1718,7 +1743,8 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
 
   WebStatePolicyDecider::RequestInfo form_reload_request_info(
       ui::PageTransition::PAGE_TRANSITION_RELOAD,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(form_reload_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1761,7 +1787,8 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1782,7 +1809,8 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   // Submit the form using JavaScript.
   WebStatePolicyDecider::RequestInfo form_request_info(
       ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(form_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1807,7 +1835,8 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
       static_cast<ui::PageTransition>(
           ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK |
           ui::PageTransition::PAGE_TRANSITION_TYPED),
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state())).Times(2);
   EXPECT_CALL(*decider_,
@@ -1830,7 +1859,8 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
       static_cast<ui::PageTransition>(
           ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT |
           ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK),
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   NavigationContext* context = nullptr;
   int32_t nav_id = 0;
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
@@ -1881,7 +1911,8 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1893,7 +1924,8 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
   // 5 calls on ShouldAllowRequest and DidRedirectNavigation for redirections.
   WebStatePolicyDecider::RequestInfo expected_redirect_request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(
       *decider_,
       ShouldAllowRequest(_, RequestInfoMatch(expected_redirect_request_info)))
@@ -1947,7 +1979,8 @@ TEST_F(WebStateObserverTest, DownloadNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -1977,7 +2010,8 @@ TEST_F(WebStateObserverTest, FLAKY_FailedLoad) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2029,7 +2063,8 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_, ShouldAllowRequest(_, RequestInfoMatch(request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
@@ -2063,7 +2098,8 @@ TEST_F(WebStateObserverTest, DisallowRequest) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Cancel()));
@@ -2085,7 +2121,8 @@ TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
 
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   NSError* error = [NSError errorWithDomain:net::kNSErrorDomain
                                        code:net::ERR_BLOCKED_BY_ADMINISTRATOR
                                    userInfo:nil];
@@ -2123,7 +2160,8 @@ TEST_F(WebStateObserverTest, AsyncAllowResponse) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2169,7 +2207,8 @@ TEST_F(WebStateObserverTest, DisallowResponse) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2201,7 +2240,8 @@ TEST_F(WebStateObserverTest, AsyncDisallowResponse) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2236,7 +2276,8 @@ TEST_F(WebStateObserverTest, ImmediatelyStopNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2265,7 +2306,8 @@ TEST_F(WebStateObserverTest, StopNavigationAfterPolicyDeciderCallback) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(ReturnAllowRequestAndStopNavigation(web_state()));
@@ -2297,7 +2339,8 @@ TEST_F(WebStateObserverTest, StopFinishedNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2342,7 +2385,8 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2356,7 +2400,8 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   // Callbacks due to initial loading of iframe.
   WebStatePolicyDecider::RequestInfo iframe_request_info(
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-      /*target_main_frame=*/false, /*has_user_gesture=*/false);
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(iframe_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2373,7 +2418,8 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   // Trigger different-document load in iframe.
   WebStatePolicyDecider::RequestInfo link_clicked_request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK,
-      /*target_main_frame=*/false, /*has_user_gesture=*/true);
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/true);
   EXPECT_CALL(*decider_, ShouldAllowRequest(
                              _, RequestInfoMatch(link_clicked_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2398,7 +2444,8 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo forward_back_request_info(
       ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK,
-      /*target_main_frame=*/false, /*has_user_gesture=*/true);
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/true);
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()))
       .Times(2);  // called once each for canGoBack and canGoForward
   EXPECT_CALL(*decider_, ShouldAllowRequest(
@@ -2432,6 +2479,90 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
     return web_state()->GetNavigationManager()->CanGoBack();
   }));
   EXPECT_FALSE(web_state()->GetNavigationManager()->CanGoForward());
+}
+
+// Tests that cross-origin iframe navigation is correctly identified in
+// WebStatePolicyDecider::RequestInfo.
+TEST_F(WebStateObserverTest, CrossOriginIframeNavigation) {
+  EmbeddedTestServer cross_origin_server;
+  RegisterDefaultHandlers(&cross_origin_server);
+  ASSERT_TRUE(cross_origin_server.Start());
+
+  GURL url = test_server_->GetURL("/iframe_host.html");
+
+  // Callbacks due to loading of the main frame.
+  EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  WebStatePolicyDecider::RequestInfo expected_request_info(
+      ui::PageTransition::PAGE_TRANSITION_TYPED,
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(*decider_,
+              ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/true, _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
+  EXPECT_CALL(observer_, TitleWasSet(web_state()));
+
+  // Callbacks due to initial loading of iframe.
+  WebStatePolicyDecider::RequestInfo iframe_request_info(
+      ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(*decider_,
+              ShouldAllowRequest(_, RequestInfoMatch(iframe_request_info)))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/false, _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  EXPECT_CALL(observer_,
+              PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
+
+  test::LoadUrl(web_state(), url);
+  ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
+
+  // Load a cross-origin URL in the iframe. In this case, the target frame is
+  // same-origin since the currently-loaded URL in the iframe is same-origin
+  // with respect to the main frame.
+  GURL cross_origin_url = cross_origin_server.GetURL("/echo");
+  WebStatePolicyDecider::RequestInfo iframe_request_info2(
+      ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(*decider_,
+              ShouldAllowRequest(_, RequestInfoMatch(iframe_request_info2)))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/false, _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()));
+  ExecuteJavaScript(
+      [NSString stringWithFormat:@"window.frames[0].location.href='%s';",
+                                 cross_origin_url.spec().c_str()]);
+  ASSERT_TRUE(test::WaitForWebViewContainingTextInFrame(web_state(), "Echo"));
+  ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
+
+  // Now load another URL in the iframe. The iframe (that is, the target frame)
+  // is now cross-origin with respect to the main frame.
+  GURL url2 = test_server_->GetURL("/pony.html");
+  WebStatePolicyDecider::RequestInfo iframe_request_info3(
+      ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+      /*target_main_frame=*/false, /*target_frame_is_cross_origin=*/true,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(*decider_,
+              ShouldAllowRequest(_, RequestInfoMatch(iframe_request_info3)))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/false, _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  ExecuteJavaScript(
+      [NSString stringWithFormat:@"window.frames[0].location.href='%s';",
+                                 url2.spec().c_str()]);
+  ASSERT_TRUE(test::WaitForWebViewContainingTextInFrame(web_state(), "pony"));
+  ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 }
 
 // Tests that new page load calls NavigationItemsPruned callback if there were
@@ -2682,7 +2813,8 @@ TEST_F(WebStateObserverTest, PdfFileUrlNavigation) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2715,7 +2847,8 @@ TEST_F(WebStateObserverTest, LoadData) {
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*has_user_gesture=*/false);
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_,
               ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
       .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));

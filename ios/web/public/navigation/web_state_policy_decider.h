@@ -84,15 +84,20 @@ class WebStatePolicyDecider {
   struct RequestInfo {
     RequestInfo(ui::PageTransition transition_type,
                 bool target_frame_is_main,
+                bool target_frame_is_cross_origin,
                 bool has_user_gesture)
         : transition_type(transition_type),
           target_frame_is_main(target_frame_is_main),
+          target_frame_is_cross_origin(target_frame_is_cross_origin),
           has_user_gesture(has_user_gesture) {}
     // The navigation page transition type.
     ui::PageTransition transition_type =
         ui::PageTransition::PAGE_TRANSITION_FIRST;
     // Indicates whether the navigation target frame is the main frame.
     bool target_frame_is_main = false;
+    // Indicates whether the navigation target frame is cross-origin with
+    // respect to the the navigation source frame.
+    bool target_frame_is_cross_origin = false;
     // Indicates if there was a recent user interaction with the request frame.
     bool has_user_gesture = false;
   };

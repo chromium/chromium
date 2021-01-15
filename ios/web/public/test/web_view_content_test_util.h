@@ -46,6 +46,14 @@ bool WaitForWebViewNotContainingText(
     NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout)
     WARN_UNUSED_RESULT;
 
+// Waits for the given web state to have a frame that contains |text|. If the
+// condition is not met within |timeout| false is returned.
+bool WaitForWebViewContainingTextInFrame(
+    web::WebState* web_state,
+    std::string text,
+    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout)
+    WARN_UNUSED_RESULT;
+
 // Waits for a web view with the corresponding |image_id| and |image_state|, in
 // the given |web_state|.
 bool WaitForWebViewContainingImage(std::string image_id,

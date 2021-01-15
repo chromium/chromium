@@ -40,6 +40,7 @@
 #import "ios/web/web_state/web_state_impl.h"
 #include "ios/web/web_view/content_type_util.h"
 #import "ios/web/web_view/error_translation_util.h"
+#import "ios/web/web_view/wk_security_origin_util.h"
 #import "ios/web/web_view/wk_web_view_util.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
@@ -391,8 +392,19 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         self.userInteractionState->HasUserTappedRecently(webView) &&
         net::GURLWithNSURL(action.request.mainDocumentURL) ==
             self.userInteractionState->LastUserInteraction()->main_document_url;
+    BOOL isCrossOriginTargetFrame = NO;
+    if (action.sourceFrame && action.targetFrame &&
+        action.sourceFrame != action.targetFrame) {
+      url::Origin sourceOrigin =
+          url::Origin::Create(web::GURLOriginWithWKSecurityOrigin(
+              action.sourceFrame.securityOrigin));
+      url::Origin targetOrigin =
+          url::Origin::Create(web::GURLOriginWithWKSecurityOrigin(
+              action.targetFrame.securityOrigin));
+      isCrossOriginTargetFrame = !sourceOrigin.IsSameOriginWith(targetOrigin);
+    }
     web::WebStatePolicyDecider::RequestInfo requestInfo(
-        transition, isMainFrameNavigationAction,
+        transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
         userInteractedWithRequestMainFrame);
 
     policyDecision =

@@ -184,6 +184,12 @@ AppLauncherTabHelper::ShouldAllowRequest(
     }
   }
 
+  // Disallow navigations to tel: URLs from cross-origin frames.
+  if (request_url.SchemeIs(url::kTelScheme) &&
+      request_info.target_frame_is_cross_origin) {
+    return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  }
+
   ExternalURLRequestStatus request_status =
       ExternalURLRequestStatus::kMainFrameRequestAllowed;
   // TODO(crbug.com/852489): Check if the source frame should also be

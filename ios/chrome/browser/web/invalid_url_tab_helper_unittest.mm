@@ -30,9 +30,11 @@ class InvalidUrlTabHelperTest : public PlatformTest {
       ui::PageTransition transition) {
     NSURL* url = [NSURL URLWithString:spec];
     NSURLRequest* request = [[NSURLRequest alloc] initWithURL:url];
-    web::WebStatePolicyDecider::RequestInfo info(transition,
-                                                 /*target_frame_is_main=*/true,
-                                                 /*has_user_gesture=*/false);
+    web::WebStatePolicyDecider::RequestInfo info(
+        transition,
+        /*target_frame_is_main=*/true,
+        /*target_frame_is_cross_origin=*/false,
+        /*has_user_gesture=*/false);
     return web_state_.ShouldAllowRequest(request, info);
   }
 

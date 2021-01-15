@@ -148,6 +148,15 @@ bool WaitForWebViewNotContainingText(web::WebState* web_state,
   });
 }
 
+bool WaitForWebViewContainingTextInFrame(web::WebState* web_state,
+                                         std::string text,
+                                         NSTimeInterval timeout) {
+  return WaitUntilConditionOrTimeout(timeout, ^{
+    base::RunLoop().RunUntilIdle();
+    return IsWebViewContainingTextInFrame(web_state, text);
+  });
+}
+
 bool WaitForWebViewContainingImage(std::string image_id,
                                    web::WebState* web_state,
                                    ImageStateElement image_state) {
