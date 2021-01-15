@@ -130,7 +130,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   PowerMessageWindow power_message_window_;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   PowerObserver::DeviceThermalState current_thermal_state_ =
       PowerObserver::DeviceThermalState::kUnknown;
 #endif
