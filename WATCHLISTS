@@ -1245,12 +1245,6 @@
     'media_controls': {
       'filepath': 'third_party/blink/renderer/modules/media_controls/'
     },
-    'media_feeds': {
-      'filepath': 'chrome/browser/media/feeds/'\
-                  '|chrome/renderer/media/media_feeds*'\
-                  '|components/schema_org/'\
-                  '|third_party/schema_org/',
-    },
     'media_galleries': {
       'filepath': 'chrome/browser/extensions/api/media_galleries/'\
                   '|chrome/browser/media_galleries/'\
@@ -1273,9 +1267,6 @@
     },
     'media_gpu_win': {
       'filepath': 'media/gpu/windows/'
-    },
-    'media_history': {
-      'filepath': 'chrome/browser/media/history/'
     },
     'media_mojo': {
       'filepath': 'media/mojo/'
@@ -2613,17 +2604,14 @@
                  'webappwatch@microsoft.com'],
     'media': ['feature-media-reviews@chromium.org'],
     'media_capture_from_element': ['emircan+watch+capturefromdom@chromium.org'],
-    'media_controls': ['beccahughes+watch@chromium.org',
-                       'steimel+watch-mediacontrols@chromium.org',
+    'media_controls': ['steimel+watch-mediacontrols@chromium.org',
                        'shihken@microsoft.com'],
-    'media_feeds': ['beccahughes+watch@chromium.org'],
     'media_galleries': ['thestig@chromium.org',
                         'tommycli@chromium.org'],
     'media_gpu': ['hiroh+watch@chromium.org'],
     'media_gpu_cros': ['media-cros-reviews@chromium.org'],
     'media_gpu_vaapi': ['vaapi-reviews@chromium.org'],
     'media_gpu_win': ['media-win-reviews@chromium.org'],
-    'media_history': ['beccahughes+watch@chromium.org'],
     'media_mojo': ['alokp+watch@chromium.org',
                    'xhwang+watch@chromium.org'],
     'media_recorder': ['emircan+watch+mediarecorder@chromium.org',
