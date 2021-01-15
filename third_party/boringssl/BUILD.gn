@@ -100,6 +100,8 @@ if (is_win && !is_msan && current_cpu != "arm64") {
         # TODO(davidben): Rename all the file lists, etc., upstream from mac
         # and ios to apple.
         sources += crypto_sources_ios_aarch64
+      } else if (is_win) {
+        sources += crypto_sources_win_aarch64
       } else {
         public_configs = [ ":no_asm_config" ]
       }
