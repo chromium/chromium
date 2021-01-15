@@ -22,7 +22,7 @@ per-file *mac*=kbr@chromium.org
 per-file *mac*=ccameron@chromium.org
 
 # Android platform code.
-per-file *android*=khushalsagar@chromium.org
+per-file *android*=boliu@chromium.org
 
 # WebSQL.
 per-file web_database_*=jsbell@chromium.org
