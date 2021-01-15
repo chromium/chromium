@@ -40,6 +40,9 @@ class ClientUsageTracker;
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
+  // TODO(crbug.com/1163009): Switch the map key type in `client_types` to
+  //                          mojom::QuotaClient* after all QuotaClients have
+  //                          been mojofied.
   UsageTracker(
       const base::flat_map<QuotaClient*, QuotaClientType>& client_types,
       blink::mojom::StorageType type,

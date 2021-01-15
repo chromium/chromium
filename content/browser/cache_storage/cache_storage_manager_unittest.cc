@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -176,6 +177,13 @@ class MockCacheStorageQuotaManagerProxy
       : MockQuotaManagerProxy(quota_manager, task_runner) {}
 
   void RegisterClient(
+      mojo::PendingRemote<storage::mojom::QuotaClient> client,
+      storage::QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types) override {
+    NOTREACHED();
+  }
+
+  void RegisterLegacyClient(
       scoped_refptr<storage::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {

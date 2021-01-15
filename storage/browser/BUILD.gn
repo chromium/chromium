@@ -182,6 +182,8 @@ component("browser") {
     "file_system/watcher_manager.h",
     "quota/client_usage_tracker.cc",
     "quota/client_usage_tracker.h",
+    "quota/mojo_quota_client_wrapper.cc",
+    "quota/mojo_quota_client_wrapper.h",
     "quota/padding_key.cc",
     "quota/padding_key.h",
     "quota/quota_callbacks.h",

@@ -142,7 +142,9 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       clock_(clock),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
   IDB_TRACE("init");
-  quota_manager_proxy_->RegisterClient(
+
+  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+  quota_manager_proxy_->RegisterLegacyClient(
       base::MakeRefCounted<IndexedDBQuotaClient>(this),
       storage::QuotaClientType::kIndexedDatabase,
       {blink::mojom::StorageType::kTemporary});

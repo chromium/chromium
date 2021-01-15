@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -101,12 +102,19 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   TestQuotaManagerProxy()
       : QuotaManagerProxy(nullptr, nullptr), registered_client_(nullptr) {}
 
-  void RegisterClient(
+  void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {
     EXPECT_FALSE(registered_client_);
     registered_client_ = client;
+  }
+
+  void RegisterClient(
+      mojo::PendingRemote<mojom::QuotaClient> client,
+      QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types) override {
+    NOTREACHED();
   }
 
   void NotifyStorageAccessed(const url::Origin& origin,

@@ -8,12 +8,14 @@
 
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -32,6 +34,10 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
   // Ignore quota client, it is irrelevant for these tests.
   void RegisterClient(
+      mojo::PendingRemote<storage::mojom::QuotaClient> client,
+      storage::QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types) override {}
+  void RegisterLegacyClient(
       scoped_refptr<storage::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {}

@@ -778,9 +778,13 @@ class StoragePartitionImplTest : public testing::Test {
           browser_context_->IsOffTheRecord(), browser_context_->GetPath(),
           GetIOThreadTaskRunner({}).get(),
           browser_context_->GetSpecialStoragePolicy());
-      auto quota_client = base::MakeRefCounted<storage::MockQuotaClient>(
-          quota_manager_->proxy(), base::span<const storage::MockOriginData>(),
-          storage::QuotaClientType::kFileSystem);
+      mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<storage::MockQuotaClient>(
+              quota_manager_->proxy(),
+              base::span<const storage::MockOriginData>(),
+              storage::QuotaClientType::kFileSystem),
+          quota_client.InitWithNewPipeAndPassReceiver());
       quota_manager_->proxy()->RegisterClient(
           std::move(quota_client), storage::QuotaClientType::kFileSystem,
           {blink::mojom::StorageType::kTemporary,

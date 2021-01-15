@@ -309,12 +309,16 @@ void CacheStorageContextImpl::CreateQuotaClientsOnIOThread(
   scoped_refptr<CacheStorageManager> manager = CacheManager();
   if (!manager)
     return;
-  quota_manager_proxy->RegisterClient(
+
+  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+  quota_manager_proxy->RegisterLegacyClient(
       base::MakeRefCounted<CacheStorageQuotaClient>(
           manager, storage::mojom::CacheStorageOwner::kCacheAPI),
       storage::QuotaClientType::kServiceWorkerCache,
       {blink::mojom::StorageType::kTemporary});
-  quota_manager_proxy->RegisterClient(
+
+  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+  quota_manager_proxy->RegisterLegacyClient(
       base::MakeRefCounted<CacheStorageQuotaClient>(
           manager, storage::mojom::CacheStorageOwner::kBackgroundFetch),
       storage::QuotaClientType::kBackgroundFetch,

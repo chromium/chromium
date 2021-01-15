@@ -15,6 +15,8 @@
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -40,8 +42,28 @@ void DidGetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
 
 }  // namespace
 
-void QuotaManagerProxy::RegisterClient(
+void QuotaManagerProxy::RegisterLegacyClient(
     scoped_refptr<QuotaClient> client,
+    QuotaClientType client_type,
+    const std::vector<blink::mojom::StorageType>& storage_types) {
+  if (!io_thread_->BelongsToCurrentThread()) {
+    io_thread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::RegisterLegacyClient, this,
+                       std::move(client), client_type, storage_types));
+    return;
+  }
+
+  if (manager_) {
+    manager_->RegisterLegacyClient(std::move(client), client_type,
+                                   storage_types);
+  } else {
+    client->OnQuotaManagerDestroyed();
+  }
+}
+
+void QuotaManagerProxy::RegisterClient(
+    mojo::PendingRemote<mojom::QuotaClient> client,
     QuotaClientType client_type,
     const std::vector<blink::mojom::StorageType>& storage_types) {
   if (!io_thread_->BelongsToCurrentThread()) {
@@ -54,8 +76,6 @@ void QuotaManagerProxy::RegisterClient(
 
   if (manager_) {
     manager_->RegisterClient(std::move(client), client_type, storage_types);
-  } else {
-    client->OnQuotaManagerDestroyed();
   }
 }
 

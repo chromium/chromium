@@ -249,7 +249,8 @@ void ServiceWorkerContextWrapper::InitInternal(
           browser_context);
 
   if (quota_manager_proxy) {
-    quota_manager_proxy->RegisterClient(
+    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+    quota_manager_proxy->RegisterLegacyClient(
         base::MakeRefCounted<ServiceWorkerQuotaClient>(this),
         storage::QuotaClientType::kServiceWorker,
         {blink::mojom::StorageType::kTemporary});

@@ -17,6 +17,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -41,8 +43,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
  public:
   using UsageAndQuotaCallback = QuotaManager::UsageAndQuotaCallback;
 
-  virtual void RegisterClient(
+  // TODO(crbug.com/1163009): Remove this method after all QuotaClients have
+  //                          been mojofied.
+  virtual void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
+      QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types);
+
+  virtual void RegisterClient(
+      mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
   virtual void NotifyStorageAccessed(const url::Origin& origin,

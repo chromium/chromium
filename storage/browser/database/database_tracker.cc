@@ -101,7 +101,8 @@ DatabaseTracker::DatabaseTracker(const base::FilePath& profile_path,
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   if (quota_manager_proxy) {
-    quota_manager_proxy->RegisterClient(
+    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+    quota_manager_proxy->RegisterLegacyClient(
         base::MakeRefCounted<DatabaseQuotaClient>(this),
         QuotaClientType::kDatabase, {blink::mojom::StorageType::kTemporary});
   }

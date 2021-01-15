@@ -28,6 +28,9 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -383,7 +386,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // Lazily called on the IO thread when the first quota manager API is called.
   //
   // Initialize() must be called after all quota clients are added to the
-  // manager by RegisterClient.
+  // manager by RegisterClient().
   void LazyInitialize();
   void FinishLazyInitialize(bool is_database_bootstraped);
   void BootstrapDatabaseForEviction(GetOriginCallback did_get_origin_callback,
@@ -395,6 +398,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // Called by clients via proxy.
   // Registers a quota client to the manager.
   void RegisterClient(
+      mojo::PendingRemote<mojom::QuotaClient> client,
+      QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types);
+
+  // Legacy overload for QuotaClients that have not been mojofied yet.
+  //
+  // TODO(crbug.com/1163009): Remove this overload after all QuotaClients have
+  //                          been mojofied.
+  void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
@@ -537,15 +549,29 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   std::map<url::Origin, QuotaOverride> devtools_overrides_;
   int next_override_handle_id_ = 0;
 
-  // Owns the QuotaClient instances registered via RegisterClient().
+  // Owns the QuotaClient remotes registered via RegisterClient().
   //
   // Iterating over this list is almost always incorrect. Most algorithms should
   // iterate over an entry in |client_types_|.
-  std::vector<scoped_refptr<QuotaClient>> clients_for_ownership_;
+  //
+  // TODO(crbug.com/1016065): Handle Storage Service crashes. Will likely entail
+  //                          using a mojo::RemoteSet here.
+  std::vector<mojo::Remote<mojom::QuotaClient>> clients_for_ownership_;
+
+  // Owns the QuotaClient instances registered by RegisterLegacyClient() and
+  // their wrappers.
+  //
+  // TODO(crbug.com/1163009): Remove this member after all QuotaClients have
+  //                          been mojofied.
+  std::vector<scoped_refptr<QuotaClient>> legacy_clients_for_ownership_;
+
   // Maps QuotaClient instances to client types.
   //
   // The QuotaClient instances pointed to by the map keys are guaranteed to be
-  // alive, because they are owned by |clients_for_ownership_|.
+  // alive, because they are owned by `legacy_clients_for_ownership_`.
+  //
+  // TODO(crbug.com/1163009): Replace the map key with mojom::QuotaClient* after
+  //                          all QuotaClients have been mojofied.
   base::flat_map<blink::mojom::StorageType,
                  base::flat_map<QuotaClient*, QuotaClientType>>
       client_types_;

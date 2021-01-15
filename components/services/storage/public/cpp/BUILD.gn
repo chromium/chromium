@@ -5,13 +5,20 @@
 component("cpp") {
   output_name = "storage_service_public"
 
-  public = [ "constants.h" ]
+  public = [
+    "constants.h",
+    "quota_client_callback_wrapper.h",
+  ]
 
-  sources = [ "constants.cc" ]
+  sources = [
+    "constants.cc",
+    "quota_client_callback_wrapper.cc",
+  ]
 
   public_deps = [
     "//base",
     "//components/services/storage/public/cpp/filesystem",
+    "//components/services/storage/public/mojom",
   ]
 
   defines = [ "IS_STORAGE_SERVICE_PUBLIC_IMPL" ]

@@ -8,6 +8,9 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -27,10 +30,16 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
                         base::SingleThreadTaskRunner* task_runner);
 
   void RegisterClient(
+      mojo::PendingRemote<mojom::QuotaClient> client,
+      QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types) override;
+  void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
 
+  // TODO(crbug.com/1163009): Remove this method after all QuotaClients have
+  //                          been mojofied.
   virtual void SimulateQuotaManagerDestroyed();
 
   // We don't mock them.
@@ -83,7 +92,11 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   blink::mojom::StorageType last_notified_type_;
   int64_t last_notified_delta_;
 
-  scoped_refptr<QuotaClient> registered_client_;
+  mojo::Remote<mojom::QuotaClient> registered_client_;
+
+  // TODO(crbug.com/1163009): Remove this member after all QuotaClients have
+  //                          been mojofied.
+  scoped_refptr<QuotaClient> registered_legacy_client_;
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerProxy);
 };

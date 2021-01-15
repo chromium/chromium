@@ -19,7 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "storage/browser/quota/quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -35,11 +35,13 @@ struct MockOriginData {
 };
 
 // Mock QuotaClient implementation for testing.
-class MockQuotaClient : public QuotaClient {
+class MockQuotaClient : public mojom::QuotaClient {
  public:
   MockQuotaClient(scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
                   base::span<const MockOriginData> mock_data,
                   QuotaClientType client_type);
+
+  ~MockQuotaClient() override;
 
   // To add or modify mock data in this client.
   void AddOriginAndNotify(const url::Origin& origin,
@@ -56,7 +58,6 @@ class MockQuotaClient : public QuotaClient {
   base::Time IncrementMockTime();
 
   // QuotaClient.
-  void OnQuotaManagerDestroyed() override;
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;
@@ -72,8 +73,6 @@ class MockQuotaClient : public QuotaClient {
                              PerformStorageCleanupCallback callback) override;
 
  private:
-  ~MockQuotaClient() override;
-
   void RunGetOriginUsage(const url::Origin& origin,
                          blink::mojom::StorageType type,
                          GetOriginUsageCallback callback);

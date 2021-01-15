@@ -36,7 +36,8 @@ NativeIOManager::NativeIOManager(
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)) {
   if (quota_manager_proxy_) {
-    quota_manager_proxy_->RegisterClient(
+    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+    quota_manager_proxy_->RegisterLegacyClient(
         base::MakeRefCounted<NativeIOQuotaClient>(),
         storage::QuotaClientType::kNativeIO,
         {blink::mojom::StorageType::kTemporary});

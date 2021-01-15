@@ -1,0 +1,41 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "third_party/blink/public/mojom/quota/quota_types.mojom";
+import "url/mojom/origin.mojom";
+
+// Interface between each storage API and the quota manager.
+//
+// Each storage API must register an implementation of this interface with
+// the quota manager, by calling QuotaManager::RegisterClient().
+//
+// Storage APIs may implement this interface in the browser process or in the
+// Storage Service process. The interface is consumed by QuotaManager, which
+// currently lives in the browser process, and will eventually move to the
+// Storage Service process.
+interface QuotaClient {
+  // Returns the amount of data stored in the storage specified by `origin` and
+  // `type`.
+  GetOriginUsage(url.mojom.Origin origin, blink.mojom.StorageType type)
+      => (int64 usage);
+
+  // Returns a list of origins that have data in the `type` storage.
+  GetOriginsForType(blink.mojom.StorageType type)
+      => (array<url.mojom.Origin> origins);
+
+  // Returns a list of origins that match the `host` and have data in the `type`
+  // storage.
+  GetOriginsForHost(blink.mojom.StorageType type, string host)
+      => (array<url.mojom.Origin> origins);
+
+  // Returns after all data belonging to `origin` in the `type` storage has been
+  // deleted.
+  DeleteOriginData(url.mojom.Origin origin, blink.mojom.StorageType type)
+      => (blink.mojom.QuotaStatusCode status);
+
+  // An opportunity to perform a cleanup step after major deletions.
+  PerformStorageCleanup(blink.mojom.StorageType type) => ();
+};

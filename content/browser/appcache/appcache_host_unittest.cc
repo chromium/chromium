@@ -115,7 +115,7 @@ class AppCacheHostTest : public testing::Test {
     MockQuotaManagerProxy() : QuotaManagerProxy(nullptr, nullptr) {}
 
     // Not needed for our tests.
-    void RegisterClient(
+    void RegisterLegacyClient(
         scoped_refptr<storage::QuotaClient> client,
         storage::QuotaClientType client_type,
         const std::vector<blink::mojom::StorageType>& storage_types) override {}

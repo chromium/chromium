@@ -79,8 +79,6 @@ base::Time MockQuotaClient::IncrementMockTime() {
   return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
 }
 
-void MockQuotaClient::OnQuotaManagerDestroyed() {}
-
 void MockQuotaClient::GetOriginUsage(const url::Origin& origin,
                                      blink::mojom::StorageType type,
                                      GetOriginUsageCallback callback) {

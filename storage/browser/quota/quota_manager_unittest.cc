@@ -30,6 +30,10 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "storage/browser/quota/mojo_quota_client_wrapper.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
 #include "storage/browser/quota/quota_features.h"
@@ -119,15 +123,39 @@ class QuotaManagerTest : public testing::Test {
     additional_callback_count_ = 0;
   }
 
-  scoped_refptr<MockQuotaClient> CreateAndRegisterClient(
+  MockQuotaClient* CreateAndRegisterClient(
       base::span<const MockOriginData> mock_data,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType> storage_types) {
-    scoped_refptr<MockQuotaClient> client =
-        base::MakeRefCounted<MockQuotaClient>(quota_manager_->proxy(),
-                                              mock_data, client_type);
-    quota_manager_->proxy()->RegisterClient(client, client_type, storage_types);
-    return client;
+    auto mock_quota_client = std::make_unique<storage::MockQuotaClient>(
+        quota_manager_->proxy(), mock_data, client_type);
+    MockQuotaClient* mock_quota_client_ptr = mock_quota_client.get();
+
+    mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
+    mojo::MakeSelfOwnedReceiver(std::move(mock_quota_client),
+                                quota_client.InitWithNewPipeAndPassReceiver());
+    quota_manager_->proxy()->RegisterClient(std::move(quota_client),
+                                            client_type, storage_types);
+    return mock_quota_client_ptr;
+  }
+
+  // TODO(crbug.com/1163009): Remove this method and replace all calls with
+  //                          CreateAndRegisterClient() after all QuotaClients
+  //                          have been mojofied
+  MockQuotaClient* CreateAndRegisterLegacyClient(
+      base::span<const MockOriginData> mock_data,
+      QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType> storage_types) {
+    auto mock_quota_client = std::make_unique<storage::MockQuotaClient>(
+        quota_manager_->proxy(), mock_data, client_type);
+    MockQuotaClient* mock_quota_client_ptr = mock_quota_client.get();
+    legacy_clients_.push_back(std::move(mock_quota_client));
+
+    scoped_refptr<QuotaClient> legacy_client =
+        base::MakeRefCounted<MojoQuotaClientWrapper>(mock_quota_client_ptr);
+    quota_manager_->proxy()->RegisterLegacyClient(std::move(legacy_client),
+                                                  client_type, storage_types);
+    return mock_quota_client_ptr;
   }
 
   void GetUsageInfo() {
@@ -230,7 +258,7 @@ class QuotaManagerTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void DeleteClientOriginData(QuotaClient* client,
+  void DeleteClientOriginData(mojom::QuotaClient* client,
                               const url::Origin& origin,
                               StorageType type) {
     DCHECK(client);
@@ -533,6 +561,10 @@ class QuotaManagerTest : public testing::Test {
 
   int mock_time_counter_;
 
+  // TODO(crbug.com/1163009): Remove this member after all QuotaClients have
+  //                          been mojofied.
+  std::vector<std::unique_ptr<MockQuotaClient>> legacy_clients_;
+
   base::WeakPtrFactory<QuotaManagerTest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuotaManagerTest);
@@ -551,12 +583,12 @@ TEST_F(QuotaManagerTest, GetUsageInfo) {
     { "http://bar.com/",       kPerm,  40 },
     { "http://example.com/",   kPerm,  40 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData2, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
 
   GetUsageInfo();
   task_environment_.RunUntilIdle();
@@ -638,10 +670,10 @@ TEST_F(QuotaManagerTest, GetUsage_NoClient) {
 }
 
 TEST_F(QuotaManagerTest, GetUsage_EmptyClient) {
-  CreateAndRegisterClient(base::span<MockOriginData>(),
-                          QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(base::span<MockOriginData>(),
+                                QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kTemp);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -722,9 +754,9 @@ TEST_F(QuotaManagerTest, GetUsage_MultipleClients) {
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData2, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
 
   const int64_t kPoolSize = GetAvailableDiskSpaceForTest();
   const int64_t kPerHostQuota = kPoolSize / 5;
@@ -779,9 +811,9 @@ TEST_F(QuotaManagerTest, GetUsageWithBreakdown_Simple) {
   static const MockOriginData kData3[] = {
       {"http://foo.com/", kTemp, 8},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData3, QuotaClientType::kAppcache,
@@ -884,9 +916,9 @@ TEST_F(QuotaManagerTest, GetUsageWithBreakdown_MultipleClients) {
       {"http://unlimited/", kTemp, 512},
   };
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -929,7 +961,7 @@ void QuotaManagerTest::GetUsage_WithModifyTestBody(const StorageType type) {
     { "http://foo.com/",   type,  10 },
     { "http://foo.com:1/", type,  20 },
   };
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(data, QuotaClientType::kFileSystem, {type});
 
   GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), type);
@@ -1007,6 +1039,36 @@ TEST_F(QuotaManagerTest, GetTemporaryUsageAndQuota_NukeManager) {
   CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
+  const int kPoolSize = 100;
+  const int kPerHostQuota = 20;
+  SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
+
+  set_additional_callback_count(0);
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kTemp);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://foo.com/"), kTemp);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://bar.com/"), kTemp);
+
+  DeleteOriginData(ToOrigin("http://foo.com/"), kTemp, AllQuotaClientTypes());
+  DeleteOriginData(ToOrigin("http://bar.com/"), kTemp, AllQuotaClientTypes());
+
+  // Nuke before waiting for callbacks.
+  set_quota_manager(nullptr);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kErrorAbort, status());
+}
+
+// TODO(crbug.com/1163009): Remove this test after all QuotaClients have been
+//                          mojofied
+TEST_F(QuotaManagerTest, GetTemporaryUsageAndQuota_NukeManager_Legacy) {
+  static const MockOriginData kData[] = {
+      {"http://foo.com/", kTemp, 10},
+      {"http://foo.com:8080/", kTemp, 20},
+      {"http://bar.com/", kTemp, 13},
+      {"http://foo.com/", kPerm, 40},
+  };
+  CreateAndRegisterLegacyClient(kData, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   const int kPoolSize = 100;
   const int kPerHostQuota = 20;
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
@@ -1363,6 +1425,39 @@ TEST_F(QuotaManagerTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
   EXPECT_EQ(2, additional_callback_count());
 }
 
+// TODO(crbug.com/1163009): Remove this test after all QuotaClients have been
+//                          mojofied
+TEST_F(QuotaManagerTest,
+       GetPersistentUsageAndQuota_WithAdditionalTasks_Legacy) {
+  static const MockOriginData kData[] = {
+      {"http://foo.com/", kPerm, 10},
+      {"http://foo.com:8080/", kPerm, 20},
+      {"http://bar.com/", kPerm, 13},
+      {"http://foo.com/", kTemp, 40},
+  };
+  CreateAndRegisterLegacyClient(kData, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
+  SetPersistentHostQuota("foo.com", 100);
+
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kPerm);
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kPerm);
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kPerm);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(10 + 20, usage());
+  EXPECT_EQ(100, quota());
+
+  set_additional_callback_count(0);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://foo.com/"), kPerm);
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kPerm);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://bar.com/"), kPerm);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(10 + 20, usage());
+  EXPECT_EQ(2, additional_callback_count());
+}
+
 TEST_F(QuotaManagerTest, GetPersistentUsageAndQuota_NukeManager) {
   static const MockOriginData kData[] = {
     { "http://foo.com/",        kPerm,  10 },
@@ -1373,6 +1468,31 @@ TEST_F(QuotaManagerTest, GetPersistentUsageAndQuota_NukeManager) {
   CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
+  SetPersistentHostQuota("foo.com", 100);
+
+  set_additional_callback_count(0);
+  GetUsageAndQuotaForWebApps(ToOrigin("http://foo.com/"), kPerm);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://foo.com/"), kPerm);
+  RunAdditionalUsageAndQuotaTask(ToOrigin("http://bar.com/"), kPerm);
+
+  // Nuke before waiting for callbacks.
+  set_quota_manager(nullptr);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kErrorAbort, status());
+}
+
+// TODO(crbug.com/1163009): Remove this test after all QuotaClients have been
+//                          mojofied
+TEST_F(QuotaManagerTest, GetPersistentUsageAndQuota_NukeManager_Legacy) {
+  static const MockOriginData kData[] = {
+      {"http://foo.com/", kPerm, 10},
+      {"http://foo.com:8080/", kPerm, 20},
+      {"http://bar.com/", kPerm, 13},
+      {"http://foo.com/", kTemp, 40},
+  };
+  CreateAndRegisterLegacyClient(kData, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   SetPersistentHostQuota("foo.com", 100);
 
   set_additional_callback_count(0);
@@ -1430,7 +1550,7 @@ TEST_F(QuotaManagerTest, GetUsage_WithModification) {
     { "http://foo.com/",   kTemp, 7000000 },
   };
 
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                               {blink::mojom::StorageType::kTemporary,
                                blink::mojom::StorageType::kPersistent});
@@ -1477,7 +1597,7 @@ TEST_F(QuotaManagerTest, GetUsage_WithDeleteOrigin) {
     { "http://foo.com/",   kPerm,   300 },
     { "http://bar.com/",   kTemp,  4000 },
   };
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                               {blink::mojom::StorageType::kTemporary,
                                blink::mojom::StorageType::kPersistent});
@@ -1494,7 +1614,7 @@ TEST_F(QuotaManagerTest, GetUsage_WithDeleteOrigin) {
   task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
-  DeleteClientOriginData(client.get(), ToOrigin("http://foo.com/"), kTemp);
+  DeleteClientOriginData(client, ToOrigin("http://foo.com/"), kTemp);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 
@@ -1532,9 +1652,9 @@ TEST_F(QuotaManagerTest, EvictOriginData) {
     { "https://foo.com/",  kTemp,    80 },
     { "http://bar.com/",   kTemp,     9 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -1592,7 +1712,7 @@ TEST_F(QuotaManagerTest, EvictOriginDataHistogram) {
   };
 
   base::HistogramTester histograms;
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                               {blink::mojom::StorageType::kTemporary});
 
@@ -1658,7 +1778,7 @@ TEST_F(QuotaManagerTest, EvictOriginDataWithDeletionError) {
     { "http://bar.com/",   kTemp,    4000 },
   };
   static const int kNumberOfTemporaryOrigins = 3;
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                               {blink::mojom::StorageType::kTemporary,
                                blink::mojom::StorageType::kPersistent});
@@ -1829,9 +1949,9 @@ TEST_F(QuotaManagerTest, DeleteHostDataMultiple) {
     { "https://foo.com/",  kTemp,    80 },
     { "http://bar.com/",   kTemp,     9 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -1912,9 +2032,9 @@ TEST_F(QuotaManagerTest, DeleteHostDataMultipleClientsDifferentTypes) {
       {"https://foo.com/", kTemp, 1000000},
       {"http://bar.com/", kTemp, 10000000},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
 
@@ -2010,9 +2130,9 @@ TEST_F(QuotaManagerTest, DeleteOriginDataMultiple) {
     { "https://foo.com/",  kTemp,    80 },
     { "http://bar.com/",   kTemp,     9 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -2100,9 +2220,9 @@ TEST_F(QuotaManagerTest, DeleteOriginDataMultipleClientsDifferentTypes) {
       {"https://foo.com/", kTemp, 1000000},
       {"http://bar.com/", kTemp, 10000000},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary,
+                                 blink::mojom::StorageType::kPersistent});
   CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
                           {blink::mojom::StorageType::kTemporary});
 
@@ -2331,7 +2451,7 @@ TEST_F(QuotaManagerTest, GetOriginsModifiedBetween) {
     { "http://b.com/",   kPerm,  0 },  // persistent
     { "http://c.com/",   kTemp,  0 },
   };
-  scoped_refptr<MockQuotaClient> client =
+  MockQuotaClient* client =
       CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
                               {blink::mojom::StorageType::kTemporary,
                                blink::mojom::StorageType::kPersistent});
@@ -2459,12 +2579,12 @@ TEST_F(QuotaManagerTest, DeleteSpecificClientTypeSingleOrigin) {
   static const MockOriginData kData4[] = {
     { "http://foo.com/",   kTemp, 8 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData3, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
                           {blink::mojom::StorageType::kTemporary});
 
@@ -2514,12 +2634,12 @@ TEST_F(QuotaManagerTest, DeleteSpecificClientTypeSingleHost) {
   static const MockOriginData kData4[] = {
     { "http://foo.com:4444/",   kTemp, 8 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData3, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
                           {blink::mojom::StorageType::kTemporary});
 
@@ -2565,12 +2685,12 @@ TEST_F(QuotaManagerTest, DeleteMultipleClientTypesSingleOrigin) {
   static const MockOriginData kData4[] = {
     { "http://foo.com/",   kTemp, 8 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData3, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
                           {blink::mojom::StorageType::kTemporary});
 
@@ -2607,12 +2727,12 @@ TEST_F(QuotaManagerTest, DeleteMultipleClientTypesSingleHost) {
   static const MockOriginData kData4[] = {
     { "http://foo.com:4444/",   kTemp, 8 },
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData1, QuotaClientType::kFileSystem,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
                           {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  CreateAndRegisterLegacyClient(kData3, QuotaClientType::kDatabase,
+                                {blink::mojom::StorageType::kTemporary});
   CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
                           {blink::mojom::StorageType::kTemporary});
 

@@ -191,7 +191,8 @@ FileSystemContext::FileSystemContext(
 
   if (quota_manager_proxy) {
     // Quota client assumes all backends have registered.
-    quota_manager_proxy->RegisterClient(
+    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+    quota_manager_proxy->RegisterLegacyClient(
         base::MakeRefCounted<FileSystemQuotaClient>(this),
         QuotaClientType::kFileSystem, QuotaManagedStorageTypes());
   }

@@ -456,9 +456,10 @@ void AppCacheServiceImpl::QuotaClientHolder::InitializeOnIOThread(
 
   quota_client_ =
       base::MakeRefCounted<AppCacheQuotaClient>(std::move(appcache_service));
-  quota_manager_proxy->RegisterClient(quota_client_,
-                                      storage::QuotaClientType::kAppcache,
-                                      {blink::mojom::StorageType::kTemporary});
+  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+  quota_manager_proxy->RegisterLegacyClient(
+      quota_client_, storage::QuotaClientType::kAppcache,
+      {blink::mojom::StorageType::kTemporary});
 }
 
 void AppCacheServiceImpl::QuotaClientHolder::NotifyStorageReadyOnIOThread() {
