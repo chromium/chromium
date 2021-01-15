@@ -82,8 +82,8 @@ uint64_t GetReservedMemoryKB() {
 }
 
 bool SupportsPSI() {
-  static bool supports_psi =
-      base::PathExists(base::FilePath("/proc/pressure/"));
+  // Checking path existence in procfs is fast.
+  static bool supports_psi = access("/proc/pressure/", F_OK) == 0;
   return supports_psi;
 }
 
