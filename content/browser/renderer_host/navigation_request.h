@@ -245,17 +245,17 @@ class CONTENT_EXPORT NavigationRequest
   // origin-isolation.
   bool IsOptInIsolationRequested();
 
-  // The origin isolation end result is determined early in the lifecycle of a
-  // NavigationRequest, but used late. In particular, we want to trigger use
+  // The Origin-Agent-Cluster end result is determined early in the lifecycle of
+  // a NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.
-  enum class OptInOriginIsolationEndResult {
-    kNotRequestedAndNotIsolated,
-    kNotRequestedButIsolated,
-    kRequestedButNotIsolated,
-    kRequestedAndIsolated
+  enum class OriginAgentClusterEndResult {
+    kNotRequestedAndNotOriginKeyed,
+    kNotRequestedButOriginKeyed,
+    kRequestedButNotOriginKeyed,
+    kRequestedAndOriginKeyed
   };
-  void DetermineOriginIsolationEndResult(bool is_requested);
-  void ProcessOriginIsolationEndResult();
+  void DetermineOriginAgentClusterEndResult(bool is_requested);
+  void ProcessOriginAgentClusterEndResult();
 
   // NavigationHandle implementation:
   int64_t GetNavigationId() override;
@@ -823,9 +823,8 @@ class CONTENT_EXPORT NavigationRequest
       int initiator_process_id,
       bool was_opener_suppressed);
 
-  // Checks if the response requests an isolated origin (using either origin
-  // policy or the Origin-Isolation header), and if so opts in the origin to be
-  // isolated.
+  // Checks if the response requests an isolated origin via the
+  // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
 
   // NavigationURLLoaderDelegate implementation.
@@ -1549,8 +1548,8 @@ class CONTENT_EXPORT NavigationRequest
   // The sandbox flags of the document to be loaded.
   base::Optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
 
-  OptInOriginIsolationEndResult origin_isolation_end_result_ =
-      OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
+  OriginAgentClusterEndResult origin_agent_cluster_end_result_ =
+      OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
 
   net::IsolationInfo isolation_info_for_subresources_;
 

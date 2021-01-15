@@ -640,7 +640,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "The page did not request origin isolation, but was isolated anyway*");
+      "The page did not request an origin-keyed agent cluster, but was put in "
+      "one anyway*");
 
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));
@@ -693,7 +694,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "The page requested origin isolation, but could not be isolated*");
+      "The page requested an origin-keyed agent cluster using the "
+      "Origin-Agent-Cluster header, but could not be origin-keyed*");
 
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));

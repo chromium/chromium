@@ -1357,7 +1357,7 @@ NavigationRequest::~NavigationRequest() {
 
   if (IsNavigationStarted()) {
     GetDelegate()->DidFinishNavigation(this);
-    ProcessOriginIsolationEndResult();
+    ProcessOriginAgentClusterEndResult();
     if (IsInMainFrame()) {
       TRACE_EVENT_NESTABLE_ASYNC_END2(
           "navigation", "Navigation StartToCommit",
@@ -2105,7 +2105,8 @@ bool NavigationRequest::IsOptInIsolationRequested() {
   return false;
 }
 
-void NavigationRequest::DetermineOriginIsolationEndResult(bool is_requested) {
+void NavigationRequest::DetermineOriginAgentClusterEndResult(
+    bool is_requested) {
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2116,14 +2117,14 @@ void NavigationRequest::DetermineOriginIsolationEndResult(bool is_requested) {
       isolation_context, origin, is_requested);
 
   if (is_requested) {
-    origin_isolation_end_result_ =
-        got_isolated ? OptInOriginIsolationEndResult::kRequestedAndIsolated
-                     : OptInOriginIsolationEndResult::kRequestedButNotIsolated;
+    origin_agent_cluster_end_result_ =
+        got_isolated ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
+                     : OriginAgentClusterEndResult::kRequestedButNotOriginKeyed;
   } else {
-    origin_isolation_end_result_ =
+    origin_agent_cluster_end_result_ =
         got_isolated
-            ? OptInOriginIsolationEndResult::kNotRequestedButIsolated
-            : OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
+            ? OriginAgentClusterEndResult::kNotRequestedButOriginKeyed
+            : OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
   }
 
   // This needs to be computed separately from origin.opaque() because, per
@@ -2135,50 +2136,52 @@ void NavigationRequest::DetermineOriginIsolationEndResult(bool is_requested) {
 
   // The origin_agent_cluster navigation commit parameter communicates to the
   // renderer about origin-keying, so it should be true for opaque origin
-  // cases (e.g., for data: URLs). origin_isolation_end_result_ shouldn't be
+  // cases (e.g., for data: URLs). origin_agent_cluster_end_result_ shouldn't be
   // modified since it's used for warnings and use counters, i.e. things that
   // don't apply to this sort of "automatic" origin-keying.
   commit_params_->origin_agent_cluster =
       is_opaque_origin_because_sandbox || origin.opaque() ||
-      origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedAndIsolated ||
-      origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kNotRequestedButIsolated;
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kRequestedAndOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kNotRequestedButOriginKeyed;
 }
 
-void NavigationRequest::ProcessOriginIsolationEndResult() {
+void NavigationRequest::ProcessOriginAgentClusterEndResult() {
   if (!HasCommitted() || IsErrorPage() || IsSameDocument())
     return;
 
-  if (origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedAndIsolated ||
-      origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedButNotIsolated)
+  if (origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kRequestedAndOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kRequestedButNotOriginKeyed)
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         render_frame_host_, blink::mojom::WebFeature::kOriginIsolationHeader);
 
   const url::Origin origin = url::Origin::Create(GetURL());
 
-  if (origin_isolation_end_result_ ==
-      OptInOriginIsolationEndResult::kRequestedButNotIsolated)
+  if (origin_agent_cluster_end_result_ ==
+      OriginAgentClusterEndResult::kRequestedButNotOriginKeyed)
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
-            "The page requested origin isolation, but could not be isolated "
-            "since the origin '%s' had previously been seen with no "
-            "isolation. Update your headers to uniformly isolate all pages "
-            "on the origin.",
+            "The page requested an origin-keyed agent cluster using the "
+            "Origin-Agent-Cluster header, but could not be origin-keyed since "
+            "the origin '%s' had previously been placed in a site-keyed agent "
+            "cluster. Update your headers to uniformly request origin-keying "
+            "for all pages on the origin.",
             origin.Serialize().c_str()));
 
-  if (origin_isolation_end_result_ ==
-      OptInOriginIsolationEndResult::kNotRequestedButIsolated)
+  if (origin_agent_cluster_end_result_ ==
+      OriginAgentClusterEndResult::kNotRequestedButOriginKeyed)
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("The page did not request origin isolation, but "
-                           "was isolated anyway because the origin '%s' had "
-                           "previously been isolated. Update your headers to "
-                           "uniformly isolate all pages on the origin.",
-                           origin.Serialize().c_str()));
+        base::StringPrintf(
+            "The page did not request an origin-keyed agent cluster, but was "
+            "put in one anyway because the origin '%s' had previously been "
+            "placed in an origin-keyed agent cluster. Update your headers to "
+            "uniformly request origin-keying for all pages on the origin.",
+            origin.Serialize().c_str()));
 }
 
 UrlInfo NavigationRequest::GetUrlInfo() {
@@ -2431,7 +2434,7 @@ void NavigationRequest::OnResponseStarted(
     DCHECK(!response_should_be_rendered_);
 
   if (render_frame_host_)
-    DetermineOriginIsolationEndResult(IsOptInIsolationRequested());
+    DetermineOriginAgentClusterEndResult(IsOptInIsolationRequested());
 
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 

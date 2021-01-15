@@ -23,15 +23,15 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-// General browsertests for the origin isolation feature can be found in
+// General browsertests for the Origin-Agent-Cluster header can be found in
 // content/browser/isolated_origin_browsertest.cc. However testing use counters
 // is best done from chrome/; thus, this file exists.
 
-class OriginIsolationBrowserTest : public InProcessBrowserTest {
+class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
  public:
-  OriginIsolationBrowserTest()
+  OriginAgentClusterBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-  ~OriginIsolationBrowserTest() override = default;
+  ~OriginAgentClusterBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -43,8 +43,9 @@ class OriginIsolationBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
-    https_server()->RegisterRequestHandler(base::BindRepeating(
-        &OriginIsolationBrowserTest::HandleResponse, base::Unretained(this)));
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&OriginAgentClusterBrowserTest::HandleResponse,
+                            base::Unretained(this)));
 
     ASSERT_TRUE(https_server()->Start());
 
@@ -61,12 +62,12 @@ class OriginIsolationBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url == "/isolate_origin") {
+    if (request.relative_url == "/origin_key_me") {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
       response->AddCustomHeader("Origin-Agent-Cluster", "?1");
-      response->set_content("isolate me!");
+      response->set_content("I like origin keys!");
       return std::move(response);
     }
 
@@ -76,13 +77,13 @@ class OriginIsolationBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(OriginAgentClusterBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(OriginIsolationBrowserTest, Navigations) {
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
   GURL start_url(https_server()->GetURL("foo.com", "/iframe.html"));
-  GURL isolated_url(
-      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  GURL origin_keyed_url(
+      https_server()->GetURL("origin-keyed.foo.com", "/origin_key_me"));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationBrowserTest, Navigations) {
   EXPECT_FALSE(web_feature_waiter->DidObserveWebFeature(
       blink::mojom::WebFeature::kOriginIsolationHeader));
 
-  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", isolated_url));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", origin_keyed_url));
 
   web_feature_waiter->Wait();
 }
