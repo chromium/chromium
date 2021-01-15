@@ -65104,6 +65104,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="RESOLVE_SPECULATIVE_ABORT"/>
 </enum>
 
+<enum name="ResolutionComparison">
+  <int value="0" label="Requested width larger than capture"/>
+  <int value="1" label="Requested width smaller than capture"/>
+  <int value="2" label="Requested height larger than capture"/>
+  <int value="3" label="Requested height smaller than capture"/>
+  <int value="4" label="Requested resolution equals capture"/>
+  <int value="5" label="Requested width and height larger than capture"/>
+  <int value="6"
+      label="Requested width smaller, and height larger than capture"/>
+  <int value="7"
+      label="Requested width larger and height smaller than capture"/>
+  <int value="8" label="Requested width and height smaller than capture"/>
+</enum>
+
 <enum name="ResolutionUnspecWasteCategory">
   <int value="0" label="AF_WASTE_IPV4_ONLY">
     Running in a IPv4-only configuration. No waste.

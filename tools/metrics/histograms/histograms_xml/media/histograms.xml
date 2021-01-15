@@ -3877,6 +3877,51 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Mac.Device.CapturedIOSurface"
+    enum="Boolean" expires_after="M92">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    A count of how often the capture device delivers an IOSurface to the capture
+    pipeline. This is recorded once per opening of the camera, when the first
+    video frame is captured.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.VideoCapture.Mac.Device.CapturedWithRequestedPixelFormat"
+    enum="Boolean" expires_after="M92">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    A boolean count of how often the requested pixel format is the one that was
+    actually captured. This is recorded once per opening of the camera, when the
+    first video frame is captured.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Mac.Device.CapturedWithRequestedResolution"
+    enum="ResolutionComparison" expires_after="M92">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    An enumeration count of whether or not the requested resolution equals the
+    captured resolution, detailing which dimensions differ in the enum. This is
+    recorded once per opening of the camera, when the first video frame is
+    captured.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Mac.Device.RequestedPixelFormat"
+    enum="VideoResolutionDesignation" expires_after="M92">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Counts the pixel formats requested by the VideoCaptureDevice on Mac. This is
+    recorded when the first video frame is captured.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.MacBook.AttemptCountWhenNoCamera"
     units="attempts" expires_after="2020-03-15">
   <owner>chfremer@chromium.org</owner>

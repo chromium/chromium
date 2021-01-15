@@ -53,6 +53,7 @@ CAPTURE_EXPORT
   base::Lock _lock;
   media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
       GUARDED_BY(_lock);  // weak.
+  bool _capturedFirstFrame GUARDED_BY(_lock);
 
   base::scoped_nsobject<AVCaptureSession> _captureSession;
 

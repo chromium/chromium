@@ -190,6 +190,8 @@ component("capture_lib") {
       "video/mac/video_capture_device_factory_mac.mm",
       "video/mac/video_capture_device_mac.h",
       "video/mac/video_capture_device_mac.mm",
+      "video/mac/video_capture_metrics_mac.h",
+      "video/mac/video_capture_metrics_mac.mm",
     ]
     deps += [
       "//services/video_capture/public/uma",
@@ -493,6 +495,7 @@ test("capture_unittests") {
       "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
       "video/mac/video_capture_device_factory_mac_unittest.mm",
       "video/mac/video_capture_device_mac_unittest.mm",
+      "video/mac/video_capture_metrics_mac_unittest.mm",
     ]
     frameworks = [
       "AVFoundation.framework",
@@ -500,6 +503,7 @@ test("capture_unittests") {
       "CoreVideo.framework",
       "IOSurface.framework",
     ]
+    deps += [ "//third_party/ocmock" ]
   }
 
   if (is_win) {

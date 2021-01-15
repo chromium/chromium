@@ -23,6 +23,7 @@
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
+#import "media/capture/video/mac/video_capture_metrics_mac.h"
 #include "media/capture/video_capture_types.h"
 #include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "ui/gfx/geometry/size.h"
@@ -162,6 +163,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                               DISPATCH_QUEUE_SERIAL),
         base::scoped_policy::ASSUME);
     DCHECK(frameReceiver);
+    _capturedFirstFrame = false;
     _weakPtrFactoryForTakePhoto =
         std::make_unique<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>(
             self);
@@ -350,6 +352,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
   }
 
+  base::AutoLock lock(_lock);
+  _capturedFirstFrame = false;
   return YES;
 }
 
@@ -692,6 +696,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     return;
 
   const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+  bool logUma = !std::exchange(_capturedFirstFrame, true);
+  if (logUma) {
+    media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);
+  }
 
   // The SampleBufferTransformer CHECK-crashes if the sample buffer is not MJPEG
   // and does not have a pixel buffer (https://crbug.com/1160647) so we fall
