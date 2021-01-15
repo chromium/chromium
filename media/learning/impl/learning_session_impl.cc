@@ -92,6 +92,8 @@ class WeakLearningTaskController : public LearningTaskController {
 
   void PredictDistribution(const FeatureVector& features,
                            PredictionCB callback) override {
+    if (!weak_session_)
+      return;
     controller_->AsyncCall(&LearningTaskController::PredictDistribution)
         .WithArgs(features, std::move(callback));
   }
