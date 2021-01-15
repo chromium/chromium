@@ -288,23 +288,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentFilesCount"
-    units="counts" expires_after="M87">
+    units="counts" expires_after="M89">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The number of the unsent files at the time the stability recorded.
+    The number of unsent files. Emitted when the stability is recorded.
   </summary>
 </histogram>
 
 <histogram
     name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentSamplesCount"
-    units="samples" expires_after="M87">
+    units="samples" expires_after="M89">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
-    isn't enabled since the previous stability recorded. This is different than
-    the previous browser run because one file was just uploaded before the
+    hasn't been enabled since the previous stability recorded. This is different
+    than the previous browser run because one file was just uploaded before the
     stability is recorded.
   </summary>
 </histogram>
