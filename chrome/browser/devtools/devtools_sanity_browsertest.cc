@@ -1863,7 +1863,13 @@ class DevToolsAutoOpenerTest : public DevToolsSanityTest {
   std::unique_ptr<DevToolsWindowCreationObserver> observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, TestAutoOpenForTabs) {
+// TODO(https://crbug.com/1167158): Flaky on debug builds.
+#if defined(NDEBUG)
+#define MAYBE_TestAutoOpenForTabs DISABLED_TestAutoOpenForTabs
+#else
+#define MAYBE_TestAutoOpenForTabs TestAutoOpenForTabs
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
   {
     DevToolsWindowCreationObserver observer;
     AddTabAtIndexToBrowser(browser(), 0, GURL("about:blank"),
