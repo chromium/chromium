@@ -34,7 +34,7 @@ const char kOs[] =
     "android";
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "cros";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "linux";
 #elif defined(OS_FUCHSIA)
     "fuchsia";

@@ -83,6 +83,7 @@ static_library("core") {
     ":error_strings",
     ":method_strings",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//components/link_header_util",

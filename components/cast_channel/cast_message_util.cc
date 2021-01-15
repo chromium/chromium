@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/cast_channel/cast_auth_util.h"
 #include "components/cast_channel/enum_table.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
@@ -165,9 +166,9 @@ int GetVirtualConnectPlatformValue() {
   return 3;
 #elif defined(OS_APPLE)
   return 4;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return 5;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return 6;
 #else
   return 0;

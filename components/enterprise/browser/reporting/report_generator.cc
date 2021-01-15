@@ -59,7 +59,7 @@ void ReportGenerator::CreateBasicRequest(
 #if defined(OS_IOS)
     basic_request->set_device_model(policy::GetDeviceModel());
 #endif  // defined(OS_IOS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   browser_report_generator_.Generate(

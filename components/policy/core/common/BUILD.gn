@@ -189,7 +189,7 @@ source_set("internal") {
     "//url",
   ]
 
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_lacros) {
     sources += [
       "policy_loader_lacros.cc",
       "policy_loader_lacros.h",

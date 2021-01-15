@@ -246,6 +246,7 @@ static_library("browser") {
   deps = [
     ":proto",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
