@@ -17,6 +17,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -161,6 +162,17 @@ class DriveFsHost::MountState : public DriveFsSession,
       ConnectToExtensionCallback callback) override {
     std::move(callback).Run(host_->delegate_->ConnectToExtension(
         std::move(params), std::move(port), std::move(host)));
+  }
+
+  void DisplayConfirmDialog(mojom::DialogReasonPtr error,
+                            DisplayConfirmDialogCallback callback) override {
+    if (!IsKnownEnumValue(error->type) || !host_->dialog_handler_) {
+      std::move(callback).Run(mojom::DialogResult::kNotDisplayed);
+      return;
+    }
+    host_->dialog_handler_.Run(
+        *error, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    std::move(callback), mojom::DialogResult::kNotDisplayed));
   }
 
   // DriveNotificationObserver overrides:

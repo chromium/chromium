@@ -268,6 +268,8 @@ class DriveFsSessionForTest : public DriveFsSession {
       mojo::PendingReceiver<mojom::NativeMessagingPort> port,
       mojo::PendingRemote<mojom::NativeMessagingHost> host,
       ConnectToExtensionCallback callback) override {}
+  void DisplayConfirmDialog(mojom::DialogReasonPtr error,
+                            DisplayConfirmDialogCallback callback) override {}
   DISALLOW_COPY_AND_ASSIGN(DriveFsSessionForTest);
 };
 
