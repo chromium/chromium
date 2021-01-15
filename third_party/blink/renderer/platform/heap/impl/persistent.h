@@ -39,19 +39,11 @@ class PersistentLocation final {
   base::Location location_;
 };
 
-#if !BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS) && \
-    BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-#if !BUILDFLAG(ENABLE_LOCATION_SOURCE)
-#define PERSISTENT_FROM_HERE \
-  PersistentLocation(::base::Location::CreateFromHere(__FILE__))
-#else
-#define PERSISTENT_FROM_HERE \
-  PersistentLocation(        \
-      ::base::Location::CreateFromHere(__func__, __FILE__, __LINE__))
-#endif
-#else
+#if BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+#define PERSISTENT_FROM_HERE PersistentLocation(base::Location::Current())
+#else  // !RAW_HEAP_SNAPSHOTS
 #define PERSISTENT_FROM_HERE PersistentLocation()
-#endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+#endif  // !RAW_HEAP_SNAPSHOTS
 
 template <typename T,
           WeaknessPersistentConfiguration weaknessConfiguration,
