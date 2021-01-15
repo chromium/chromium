@@ -236,7 +236,7 @@ class SafeBrowsingPrivateEventRouter
   std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
       const std::string& dm_token);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
       const std::string& dm_token);
 #endif

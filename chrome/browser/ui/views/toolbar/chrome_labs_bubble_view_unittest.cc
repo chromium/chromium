@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -154,7 +155,7 @@ class ChromeLabsFeatureTest : public ChromeLabsBubbleTest,
 
 // TODO(elainechien): Some logic is still needed for ChromeOS and tests may not
 // behave as expected yet.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This test checks that selecting an option through the combobox on a lab will
 // enable the corresponding option on the feature.
@@ -232,4 +233,4 @@ TEST_F(ChromeLabsBubbleTest, SelectDefaultTwiceNoRestart) {
   EXPECT_FALSE(bubble_view->IsRestartPromptVisibleForTesting());
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

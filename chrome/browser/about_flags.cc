@@ -7007,12 +7007,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeLabsDescription, kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(features::kChromeLabs)},
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"launcher-search-normalization",
      flag_descriptions::kEnableLauncherSearchNormalizationName,
      flag_descriptions::kEnableLauncherSearchNormalizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableLauncherSearchNormalization)},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,

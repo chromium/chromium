@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -25,7 +26,7 @@
 #include "chrome/browser/spellchecker/spelling_request.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -139,7 +140,7 @@ void SpellCheckHostChromeImpl::CallSpellingServiceDone(
       base::UTF16ToUTF8(text), *spellcheck->GetCustomDictionary(),
       service_results);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(chromeos::features::kOnDeviceGrammarCheck) &&
       results.empty()) {
     auto* host = content::RenderProcessHost::FromID(render_process_id_);
@@ -158,7 +159,7 @@ void SpellCheckHostChromeImpl::CallSpellingServiceDone(
   std::move(callback).Run(success, results);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SpellCheckHostChromeImpl::CallGrammarServiceDone(
     CallSpellingServiceCallback callback,
     bool success,

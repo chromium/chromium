@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -42,7 +43,7 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   }
 ])";
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFakeProfileDMToken[] = "fake-profile-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
@@ -80,7 +81,7 @@ class ConnectorsServiceProfileBrowserTest
       ManagementStatus management_status)
       : management_status_(management_status) {
     if (management_status_ != ManagementStatus::UNMANAGED) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       policy::SetDMTokenForTesting(
           policy::DMToken::CreateValidTokenForTesting(kFakeBrowserDMToken));
 #else
@@ -101,7 +102,7 @@ class ConnectorsServiceProfileBrowserTest
         {kEnterpriseConnectorsEnabled, kPerProfileConnectorsEnabled}, {});
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpOnMainThread() override {
     safe_browsing::DeepScanningBrowserTestBase::SetUpOnMainThread();
 
@@ -141,7 +142,7 @@ class ConnectorsServiceProfileBrowserTest
   }
 #endif
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetPrefs(const char* pref,
                 const char* scope_pref,
@@ -189,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetReportingSettings(connector());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -348,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
     auto settings =
         ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetAnalysisSettings(GURL(kTestUrl), connector);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (management_status() == ManagementStatus::UNMANAGED) {
       ASSERT_FALSE(settings.has_value());
     } else {
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {

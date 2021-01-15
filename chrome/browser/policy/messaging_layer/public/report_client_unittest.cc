@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
@@ -23,11 +24,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace reporting {
 namespace {
@@ -74,7 +75,7 @@ class TestEvent {
 class ReportClientTest : public testing::Test {
  public:
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set up fake primary profile.
     auto mock_user_manager =
         std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
@@ -89,7 +90,7 @@ class ReportClientTest : public testing::Test {
                                     /*is_child=*/false);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Provide a mock cloud policy client.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken(
@@ -102,19 +103,19 @@ class ReportClientTest : public testing::Test {
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_.reset();
     profile_.reset();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  protected:
   content::BrowserTaskEnvironment task_envrionment_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   const DMToken dm_token_ = DMToken::CreateValidTokenForTesting("TOKEN");
   const Destination destination_ = Destination::UPLOAD_EVENTS;

@@ -8,6 +8,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -55,7 +56,7 @@ const std::string kExpectationsFilename = "TestExpectations";
 const std::string kPlatformName =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "ChromeOS";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "Linux";
 #elif defined(OS_MAC)
     "Mac";

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,11 +23,11 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/affiliation.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -37,7 +38,7 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
     return nullptr;
 
   auto* manager =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       profile->GetUserCloudPolicyManagerChromeOS();
 #else
       profile->GetUserCloudPolicyManager();
@@ -69,7 +70,7 @@ std::string GetUserDmToken(Profile* profile) {
   return policy->request_token();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A callback which fetches device dm_token based on user affiliation.
 using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
     const std::vector<std::string>& user_affiliation_ids)>;
@@ -103,7 +104,7 @@ std::string GetDeviceDmToken(Profile* profile) {
   return device_dm_token_callback.Run(user_affiliation_ids);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -132,7 +133,7 @@ base::Value GetContext(Profile* profile) {
     if (policy->has_device_id())
       context.SetStringPath("profile.clientId", policy->device_id());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     std::string device_dm_token = GetDeviceDmToken(profile);
     if (!device_dm_token.empty())
       context.SetStringPath("device.dmToken", device_dm_token);

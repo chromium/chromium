@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/spellcheck/browser/spell_check_host_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,7 +17,7 @@
 #include "components/spellcheck/browser/spelling_service_client.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
 #endif
 
@@ -131,7 +132,7 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
   SpellingServiceClient client_;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked when the on-device grammar service has finished checking the
   // text of a CallSpellingService request.
   void CallGrammarServiceDone(

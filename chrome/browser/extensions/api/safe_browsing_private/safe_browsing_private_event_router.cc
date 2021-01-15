@@ -859,7 +859,7 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient(
 
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto desc_and_client = InitBrowserReportingClient(settings.dm_token);
 #else
   auto desc_and_client = settings.per_profile
@@ -884,7 +884,7 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
       g_browser_process->browser_policy_connector()
           ->device_management_service();
   std::string policy_client_desc;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy_client_desc = kPolicyClientDescription;
 #else
   policy_client_desc = kChromeBrowserCloudManagementClientDescription;
@@ -897,7 +897,7 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
 
   policy::CloudPolicyClient* client = nullptr;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* user = GetChromeOSUser();
   if (user) {
     auto* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
@@ -944,7 +944,7 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
   return {policy_client_desc, client};
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::pair<std::string, policy::CloudPolicyClient*>
 SafeBrowsingPrivateEventRouter::InitProfileReportingClient(
     const std::string& dm_token) {
@@ -972,7 +972,7 @@ SafeBrowsingPrivateEventRouter::InitProfileReportingClient(
 
   return {kProfilePolicyClientDescription, client};
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SafeBrowsingPrivateEventRouter::OnCloudPolicyClientAvailable(
     const std::string& policy_client_desc,

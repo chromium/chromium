@@ -7,6 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -218,7 +219,7 @@ ConnectorsService::DmToken::~DmToken() = default;
 
 base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS, the device must be affiliated to use the DM token for
   // scanning/reporting so we always use the browser DM token.
   return GetBrowserDmToken();
@@ -240,7 +241,7 @@ ConnectorsService::GetBrowserDmToken() const {
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 base::Optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
   if (!base::FeatureList::IsEnabled(kPerProfileConnectorsEnabled))
@@ -285,7 +286,7 @@ bool ConnectorsService::CanUseProfileDmToken() const {
   return chrome::enterprise_util::IsProfileAffiliated(*profile_policy,
                                                       *browser_policy);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::PolicyScope ConnectorsService::GetPolicyScope(
     const char* scope_pref) const {
