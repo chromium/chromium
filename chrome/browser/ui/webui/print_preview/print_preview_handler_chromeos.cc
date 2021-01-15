@@ -132,9 +132,9 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
           base::Unretained(this)));
   if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
     web_ui()->RegisterMessageCallback(
-        "choosePrintServer",
+        "choosePrintServers",
         base::BindRepeating(
-            &PrintPreviewHandlerChromeOS::HandleChoosePrintServer,
+            &PrintPreviewHandlerChromeOS::HandleChoosePrintServers,
             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         "getPrintServersConfig",
@@ -321,7 +321,7 @@ void PrintPreviewHandlerChromeOS::OnPrinterStatusUpdated(
   ResolveJavascriptCallback(base::Value(callback_id), cups_printer_status);
 }
 
-void PrintPreviewHandlerChromeOS::HandleChoosePrintServer(
+void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
 

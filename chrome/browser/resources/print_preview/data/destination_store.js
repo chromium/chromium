@@ -596,6 +596,14 @@ export class DestinationStore extends EventTarget {
       }
     });
   }
+
+  /**
+   * Reloads all local printers.
+   * @return {!Promise}
+   */
+  reloadLocalPrinters() {
+    return this.nativeLayer_.getPrinters(PrinterType.LOCAL_PRINTER);
+  }
   // </if>
 
   /**

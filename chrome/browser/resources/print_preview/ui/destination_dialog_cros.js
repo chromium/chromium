@@ -184,6 +184,9 @@ Polymer({
           config.printServers.map(printServer => printServer.name);
       this.isSingleServerFetchingMode_ = config.isSingleServerFetchingMode;
     });
+    if (this.destinationStore) {
+      this.printServerStore_.setDestinationStore(this.destinationStore);
+    }
   },
 
   /**
@@ -211,6 +214,9 @@ Polymer({
         destinationStore, DestinationStore.EventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
+    if (this.printServerStore_) {
+      this.printServerStore_.setDestinationStore(this.destinationStore);
+    }
   },
 
   /** @private */
