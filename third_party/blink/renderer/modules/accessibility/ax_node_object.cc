@@ -1661,6 +1661,9 @@ String AXNodeObject::AutoComplete() const {
   return String();
 }
 
+// TODO(nektar): Consider removing this method in favor of
+// AXInlineTextBox::GetDocumentMarkers, or add document markers to the tree data
+// instead of nodes objects.
 void AXNodeObject::GetDocumentMarkers(
     Vector<DocumentMarker::MarkerType>* marker_types,
     Vector<AXRange>* marker_ranges) const {

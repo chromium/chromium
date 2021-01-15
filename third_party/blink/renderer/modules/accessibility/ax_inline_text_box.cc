@@ -223,6 +223,15 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
 void AXInlineTextBox::GetDocumentMarkers(
     Vector<DocumentMarker::MarkerType>* marker_types,
     Vector<AXRange>* marker_ranges) const {
+  // TODO(nektar) Address 20% performance degredation and restore code.
+  // It may be necessary to add document markers as part of tree data instead
+  // of computing for every node. To measure current performance, create a
+  // release build without DCHECKs, and then run command similar to:
+  // tools/perf/run_benchmark blink_perf.accessibility   --browser=exact \
+  //   --browser-executable=path/to/chrome --story-filter="accessibility.*"
+  //   --results-label="[my-branch-name]"
+  // Pay attention only to rows with  ProcessDeferredAccessibilityEvents
+  // and RenderAccessibilityImpl::SendPendingAccessibilityEvents.
   if (!RuntimeEnabledFeatures::
           AccessibilityUseAXPositionForDocumentMarkersEnabled())
     return;
@@ -261,6 +270,14 @@ void AXInlineTextBox::GetDocumentMarkers(
   if (dom_range_start.IsNull() || dom_range_end.IsNull())
     return;
 
+  // TODO(nektar) Figure out why the start > end sometimes.
+  // To see error, comment out below early return and run command similar to:
+  // run_web_tests.py --driver-logging -t linux-debug
+  //   --additional-driver-flag=--force-renderer-accessibility
+  //   external/wpt/css/css-ui/text-overflow-006.html
+  if (dom_range_start > dom_range_end)
+    return;  // Temporary until above TODO is resolved.
+  DCHECK_LE(dom_range_start, dom_range_end);
   const EphemeralRangeInFlatTree dom_range(
       ToPositionInFlatTree(dom_range_start),
       ToPositionInFlatTree(dom_range_end));
