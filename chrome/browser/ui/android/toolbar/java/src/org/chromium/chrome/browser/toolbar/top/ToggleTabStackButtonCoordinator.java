@@ -14,14 +14,14 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.FeatureParamUtils;
-import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -50,7 +50,7 @@ public class ToggleTabStackButtonCoordinator {
     private final ToggleTabStackButton mToggleTabStackButton;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoSupplier;
-    private final OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
+    private final OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final Callback<Boolean> mSetNewTabButtonHighlightCallback;
     private final CurrentTabObserver mPageLoadObserver;
@@ -75,7 +75,7 @@ public class ToggleTabStackButtonCoordinator {
     public ToggleTabStackButtonCoordinator(Context context,
             ToggleTabStackButton toggleTabStackButton, UserEducationHelper userEducationHelper,
             BooleanSupplier isIncognitoSupplier,
-            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
+            OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             Callback<Boolean> setNewTabButtonHighlightCallback,
@@ -148,7 +148,7 @@ public class ToggleTabStackButtonCoordinator {
         if (mIsIncognitoSupplier.getAsBoolean()) return;
         if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
 
-        IntentMetadata intentMetadata = mIntentMetadataOneshotSupplier.get();
+        ToolbarIntentMetadata intentMetadata = mIntentMetadataOneshotSupplier.get();
         if (intentMetadata == null) return;
         if (FeatureParamUtils.paramExistsAndDoesNotMatch(
                     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,

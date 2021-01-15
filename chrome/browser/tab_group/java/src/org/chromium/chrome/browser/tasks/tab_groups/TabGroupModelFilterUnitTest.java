@@ -38,7 +38,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -92,19 +91,19 @@ public class TabGroupModelFilterUnitTest {
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
-    private TabImpl mTab3;
-    private TabImpl mTab4;
-    private TabImpl mTab5;
-    private TabImpl mTab6;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
+    private Tab mTab4;
+    private Tab mTab5;
+    private Tab mTab6;
     private List<Tab> mTabs = new ArrayList<>();
 
     private TabGroupModelFilter mTabGroupModelFilter;
     private InOrder mTabModelInOrder;
 
-    private TabImpl prepareTab(int tabId, int rootId, int parentTabId) {
-        TabImpl tab = mock(TabImpl.class);
+    private Tab prepareTab(int tabId, int rootId, int parentTabId) {
+        Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isInitialized();
         CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.build(tab);
         UserDataHost userDataHost = new UserDataHost();
@@ -173,11 +172,11 @@ public class TabGroupModelFilterUnitTest {
         mTabModelInOrder = inOrder(mTabModel);
     }
 
-    private TabImpl addTabToTabModel() {
+    private Tab addTabToTabModel() {
         return addTabToTabModel(-1, null);
     }
 
-    private TabImpl addTabToTabModel(int index, @Nullable TabImpl tab) {
+    private Tab addTabToTabModel(int index, @Nullable Tab tab) {
         if (tab == null) tab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, Tab.INVALID_TAB_ID);
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
@@ -257,20 +256,20 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void addTab_ToExistingGroup() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
 
         addTabToTabModel(POSITION1 + 1, newTab);
 
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
-        assertThat(mTabGroupModelFilter.indexOf(newTab),
-                equalTo(mTabGroupModelFilter.indexOf(mTab1)));
+        assertThat(
+                mTabGroupModelFilter.indexOf(newTab), equalTo(mTabGroupModelFilter.indexOf(mTab1)));
     }
 
     @Test
     public void addTab_ToNewGroup() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, Tab.INVALID_TAB_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, Tab.INVALID_TAB_ID);
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         assertThat(mTabGroupModelFilter.getCount(), equalTo(4));
@@ -284,7 +283,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void addTab_SetRootId() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
 
         addTabToTabModel(POSITION1 + 1, newTab);
@@ -296,7 +295,7 @@ public class TabGroupModelFilterUnitTest {
     public void addTab_DuringRestore() {
         setupTabGroupModelFilter(false, false);
         assertFalse(mTabGroupModelFilter.isTabModelRestored());
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
         doReturn(TabLaunchType.FROM_RESTORE).when(newTab).getLaunchType();
 
         addTabToTabModel(POSITION1 + 1, newTab);
@@ -309,7 +308,7 @@ public class TabGroupModelFilterUnitTest {
         // When tab is added due to theme change reparenting, their launch type remains unchanged.
         setupTabGroupModelFilter(false, false);
         assertFalse(mTabGroupModelFilter.isTabModelRestored());
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND).when(newTab).getLaunchType();
 
         addTabToTabModel(POSITION1 + 1, newTab);
@@ -325,7 +324,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test(expected = IllegalStateException.class)
     public void addTab_ToWrongModel() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, Tab.INVALID_TAB_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, NEW_TAB_ID, Tab.INVALID_TAB_ID);
         addTabToTabModel(-1, newTab);
         doReturn(false).when(mTabModel).isIncognito();
         doReturn(true).when(newTab).isIncognito();
@@ -410,7 +409,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void moveTabOutOfGroup_NonRootTab_NotFirstTab_UpdateTabModel() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, TAB2_ROOT_ID, TAB2_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, TAB2_ROOT_ID, TAB2_ID);
         List<Tab> expectedTabModelBeforeUngroup =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, newTab, mTab4, mTab5, mTab6));
         List<Tab> expectedTabModelAfterUngroup =
@@ -459,7 +458,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void moveTabOutOfGroup_RootTab_NotFirstTab_UpdateTabModel() {
-        TabImpl newTab = prepareTab(NEW_TAB_ID, TAB2_ROOT_ID, TAB2_ID);
+        Tab newTab = prepareTab(NEW_TAB_ID, TAB2_ROOT_ID, TAB2_ID);
         List<Tab> expectedTabModelBeforeUngroup =
                 new ArrayList<>(Arrays.asList(mTab1, newTab, mTab2, mTab3, mTab4, mTab5, mTab6));
         List<Tab> expectedTabModelAfterUngroup =
@@ -662,7 +661,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeListOfTabsToGroup_AllForward() {
-        TabImpl newTab = addTabToTabModel();
+        Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab4, newTab));
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab4, newTab, mTab2, mTab3, mTab5, mTab6));
@@ -680,7 +679,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeListOfTabsToGroup_AnyDirection() {
-        TabImpl newTab = addTabToTabModel();
+        Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, newTab));
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab4, mTab1, newTab, mTab5, mTab6));
@@ -900,26 +899,26 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void getNonGroupedTab() {
-        Tab[] expectedNonGroupedTabs = new Tab[]{mTab1, mTab4};
+        Tab[] expectedNonGroupedTabs = new Tab[] {mTab1, mTab4};
         List<Tab> nonGroupedTabs = mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
         assertArrayEquals(expectedNonGroupedTabs, nonGroupedTabs.toArray());
 
         // Group mTab4 with mTab2 and mTab3
         mTabGroupModelFilter.mergeTabsToGroup(mTab4.getId(), mTab2.getId());
 
-        Tab[] expectedNonGroupedTabs_AfterGrouping = new Tab[]{mTab1};
+        Tab[] expectedNonGroupedTabs_AfterGrouping = new Tab[] {mTab1};
         List<Tab> nonGroupedTabs_AfterGrouping =
                 mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
-        assertArrayEquals(expectedNonGroupedTabs_AfterGrouping,
-                nonGroupedTabs_AfterGrouping.toArray());
+        assertArrayEquals(
+                expectedNonGroupedTabs_AfterGrouping, nonGroupedTabs_AfterGrouping.toArray());
 
         // UnGroup mTab3 for its group.
         mTabGroupModelFilter.moveTabOutOfGroup(TAB3_ID);
-        Tab[] expectedNonGroupedTabs_AfterUnGrouping = new Tab[]{mTab1, mTab3};
+        Tab[] expectedNonGroupedTabs_AfterUnGrouping = new Tab[] {mTab1, mTab3};
         List<Tab> nonGroupedTabs_AfterUnGrouping =
                 mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
-        assertArrayEquals(expectedNonGroupedTabs_AfterUnGrouping,
-                nonGroupedTabs_AfterUnGrouping.toArray());
+        assertArrayEquals(
+                expectedNonGroupedTabs_AfterUnGrouping, nonGroupedTabs_AfterUnGrouping.toArray());
     }
 
     @Test

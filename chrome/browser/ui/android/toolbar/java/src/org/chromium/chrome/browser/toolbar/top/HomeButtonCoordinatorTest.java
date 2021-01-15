@@ -33,11 +33,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -51,9 +49,7 @@ import java.util.Map;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {HomeButtonCoordinatorTest.ShadowHomepageManager.class,
-                HomeButtonCoordinatorTest.ShadowFeedFeatures.class,
-                HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
+@Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
 public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -63,28 +59,8 @@ public class HomeButtonCoordinatorTest {
             R.string.iph_ntp_with_feed_accessibility_text, "feed_a11y",
             R.string.iph_ntp_without_feed_accessibility_text, "no_feed_ally");
 
-    private static final IntentMetadata DEFAULT_INTENT_METADATA =
-            new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
-
-    @Implements(HomepageManager.class)
-    static class ShadowHomepageManager {
-        static boolean sIsHomepageNonNtp;
-
-        @Implementation
-        public static boolean isHomepageNonNtp() {
-            return sIsHomepageNonNtp;
-        }
-    }
-
-    @Implements(FeedFeatures.class)
-    static class ShadowFeedFeatures {
-        static boolean sIsFeedEnabled;
-
-        @Implementation
-        public static boolean isFeedEnabled() {
-            return sIsFeedEnabled;
-        }
-    }
+    private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
+            new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
 
     @Implements(ChromeFeatureList.class)
     static class ShadowChromeFeatureList {
@@ -113,10 +89,12 @@ public class HomeButtonCoordinatorTest {
     private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
     private boolean mIsIncognito;
-    private final OneshotSupplierImpl<IntentMetadata> mIntentMetadataOneshotSupplier =
+    private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
+    private boolean mIsFeedEnabled;
+    private boolean mIsHomepageNonNtp;
 
     @Before
     public void setUp() {
@@ -128,8 +106,8 @@ public class HomeButtonCoordinatorTest {
         // Defaults most test cases expect, can be overridden by each test though.
         when(mHomeButton.isShown()).thenReturn(true);
         ShadowChromeFeatureList.sParamMap = new HashMap<>();
-        ShadowFeedFeatures.sIsFeedEnabled = true;
-        ShadowHomepageManager.sIsHomepageNonNtp = false;
+        mIsFeedEnabled = true;
+        mIsHomepageNonNtp = false;
         mIsIncognito = false;
         FeatureList.setTestFeatures(
                 Collections.singletonMap(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, true));
@@ -144,7 +122,8 @@ public class HomeButtonCoordinatorTest {
         // clang-format off
         return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
                 mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                HomepageManager::isHomepageNonNtp, new ObservableSupplierImpl<>(), mTracker);
+                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>(),
+                mTracker);
         // clang-format on
     }
 
@@ -204,7 +183,7 @@ public class HomeButtonCoordinatorTest {
     public void testIphWithoutFeed() {
         HomeButtonCoordinator homeButtonCoordinator =
                 newHomeButtonCoordinator(/*view*/ mHomeButton);
-        ShadowFeedFeatures.sIsFeedEnabled = false;
+        mIsFeedEnabled = false;
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -227,7 +206,7 @@ public class HomeButtonCoordinatorTest {
     public void testIphHomepageNotNtp() {
         HomeButtonCoordinator homeButtonCoordinator =
                 newHomeButtonCoordinator(/*view*/ mHomeButton);
-        ShadowHomepageManager.sIsHomepageNonNtp = true;
+        mIsHomepageNonNtp = true;
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -285,7 +264,7 @@ public class HomeButtonCoordinatorTest {
         HomeButtonCoordinator homeButtonCoordinator =
                 newHomeButtonCoordinator(/*view*/ mHomeButton);
         mIntentMetadataOneshotSupplier.set(
-                new IntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
+                new ToolbarIntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
         mPromoShownOneshotSupplier.set(false);
 
         ShadowChromeFeatureList.sParamMap.put(
@@ -309,7 +288,7 @@ public class HomeButtonCoordinatorTest {
         HomeButtonCoordinator homeButtonCoordinator =
                 newHomeButtonCoordinator(/*view*/ mHomeButton);
         mIntentMetadataOneshotSupplier.set(
-                new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
+                new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
         mPromoShownOneshotSupplier.set(false);
 
         ShadowChromeFeatureList.sParamMap.put(

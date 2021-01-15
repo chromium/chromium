@@ -4,6 +4,9 @@
      found in the LICENSE file. -->
 
 <resources>
+    <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
+    <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>
+
     <!-- Tab Strip Dimensions -->
     <dimen name="tab_strip_height">0dp</dimen>
 

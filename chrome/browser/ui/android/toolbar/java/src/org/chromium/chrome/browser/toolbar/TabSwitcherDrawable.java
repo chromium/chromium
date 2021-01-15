@@ -16,7 +16,6 @@ import android.text.TextPaint;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 

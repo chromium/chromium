@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -118,8 +118,7 @@ public class ToggleTabStackButton
         if (mTabSwitcherLongClickListener != null && isLongClickable()) {
             return mTabSwitcherLongClickListener.onLongClick(v);
         } else {
-            CharSequence description =
-                    getResources().getString(org.chromium.chrome.R.string.open_tabs);
+            CharSequence description = getResources().getString(R.string.open_tabs);
             return Toast.showAnchoredToast(getContext(), v, description);
         }
     }

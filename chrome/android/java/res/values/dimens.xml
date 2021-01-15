@@ -186,8 +186,6 @@
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- Toolbar dimensions -->
-    <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
-    <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>
     <dimen name="toolbar_height_no_shadow">56dp</dimen>
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
     <dimen name="toolbar_button_width">48dp</dimen>

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.intent;
+package org.chromium.chrome.browser.toolbar;
 
 /** Simple collection of information about the original intent. */
-public class IntentMetadata {
+public class ToolbarIntentMetadata {
     private final boolean mIsMainIntentFromLauncher;
     private final boolean mIsIntentWithEffect;
 
@@ -14,7 +14,7 @@ public class IntentMetadata {
      *         icon.
      * @param isIntentWithEffect If the intent caused a special action or effect to apply on launch.
      */
-    public IntentMetadata(boolean isMainIntentFromLauncher, boolean isIntentWithEffect) {
+    public ToolbarIntentMetadata(boolean isMainIntentFromLauncher, boolean isIntentWithEffect) {
         mIsMainIntentFromLauncher = isMainIntentFromLauncher;
         mIsIntentWithEffect = isIntentWithEffect;
     }

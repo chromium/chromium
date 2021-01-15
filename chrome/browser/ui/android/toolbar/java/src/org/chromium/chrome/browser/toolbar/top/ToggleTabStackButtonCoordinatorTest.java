@@ -33,9 +33,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -53,8 +53,8 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ToggleTabStackButtonCoordinatorTest.ShadowChromeFeatureList.class})
 public class ToggleTabStackButtonCoordinatorTest {
-    private static final IntentMetadata DEFAULT_INTENT_METADATA =
-            new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
+    private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
+            new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
 
     @Implements(ChromeFeatureList.class)
     static class ShadowChromeFeatureList {
@@ -88,7 +88,7 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private boolean mIsIncognito;
     private boolean mOverviewOpen;
-    private final OneshotSupplierImpl<IntentMetadata> mIntentMetadataOneshotSupplier =
+    private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -398,7 +398,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(
-                new IntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
+                new ToolbarIntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
         mPromoShownOneshotSupplier.set(false);
 
         ShadowChromeFeatureList.sParamMap.put(
@@ -423,7 +423,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(
-                new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
+                new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
         mPromoShownOneshotSupplier.set(false);
 
         ShadowChromeFeatureList.sParamMap.put(

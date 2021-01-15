@@ -109,8 +109,7 @@ public class TabGroupModelFilter extends TabModelFilter {
          * @param tabOriginalIndex The original tab index for each modified tab.
          * @param isSameGroup Whether the given list is in a group already.
          */
-        void didCreateGroup(
-                List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup);
+        void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup);
     }
 
     /**
