@@ -66,8 +66,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     // Forward button should now be enabled.
     assertTrue(
-        eSimPage.buttonState.forward ===
-        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+        eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
 
     eSimPage.navigateForward();
     return confirmationCodeInput;
@@ -96,8 +95,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Forward button should now be enabled.
       assertTrue(
-          eSimPage.buttonState.forward ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
     });
 
     test('Invalid activation code', async function() {
@@ -285,7 +283,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Simulate pressing 'Skip'.
       assertTrue(
           eSimPage.buttonState.skipDiscovery ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+          cellularSetup.ButtonState.ENABLED);
       eSimPage.navigateForward();
       Polymer.dom.flush();
 
@@ -298,8 +296,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Simulate pressing 'Forward'.
       assertTrue(
-          eSimPage.buttonState.forward ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
       eSimPage.navigateForward();
       await flushAsync();
 
@@ -315,11 +312,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // The 'Forward' button should now be enabled.
       assertTrue(
-          eSimPage.buttonState.forward ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-      assertTrue(
-          eSimPage.buttonState.skipDiscovery ===
-          cellularSetup.ButtonState.HIDDEN);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
+      assertFalse(!!eSimPage.buttonState.skipDiscovery);
 
       // Simulate pressing 'Forward'.
       eSimPage.navigateForward();
@@ -344,11 +338,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // The 'Forward' button should now be enabled.
       assertTrue(
-          eSimPage.buttonState.forward ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-      assertTrue(
-          eSimPage.buttonState.skipDiscovery ===
-          cellularSetup.ButtonState.HIDDEN);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
+      assertFalse(!!eSimPage.buttonState.skipDiscovery);
 
       // Simulate pressing 'Forward'.
       eSimPage.navigateForward();
@@ -364,8 +355,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Forward button should now be enabled.
       assertTrue(
-          eSimPage.buttonState.forward ===
-          cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
 
       eSimPage.navigateForward();
 

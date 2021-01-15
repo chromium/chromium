@@ -64,7 +64,7 @@ suite('CellularSetupButtonBarTest', function() {
   }
 
   test('individual buttons appear if enabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#tryAgain')));
@@ -74,7 +74,7 @@ suite('CellularSetupButtonBarTest', function() {
   });
 
   test('individual buttons appear but are diabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+    setStateForAllButtons(cellularSetup.ButtonState.DISABLED);
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#tryAgain')));
@@ -84,7 +84,7 @@ suite('CellularSetupButtonBarTest', function() {
   });
 
   test('individual buttons are hidden', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.HIDDEN);
+    setStateForAllButtons(undefined);
     assertTrue(isButtonHidden(buttonBar.$$('#backward')));
     assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
     assertTrue(isButtonHidden(buttonBar.$$('#tryAgain')));

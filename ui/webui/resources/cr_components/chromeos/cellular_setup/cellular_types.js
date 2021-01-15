@@ -15,9 +15,8 @@ cr.define('cellularSetup', function() {
 
   /** @enum {number} */
   /* #export */ const ButtonState = {
-    HIDDEN: 1,
-    SHOWN_AND_ENABLED: 2,
-    SHOWN_BUT_DISABLED: 3,
+    ENABLED: 1,
+    DISABLED: 2,
   };
 
   /** @enum {number} */

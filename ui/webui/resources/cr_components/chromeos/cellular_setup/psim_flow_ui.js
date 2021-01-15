@@ -207,35 +207,24 @@ cr.define('cellularSetup', function() {
         case PSimUIState.TIMEOUT_PORTAL_LOAD:
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
           buttonState = {
-            backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            done: cellularSetup.ButtonState.HIDDEN,
-            forward: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
-            tryAgain: cellularSetup.ButtonState.HIDDEN,
-            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
         case PSimUIState.ACTIVATION_SUCCESS:
         case PSimUIState.ALREADY_ACTIVATED:
         case PSimUIState.ACTIVATION_FAILURE:
           buttonState = {
-            backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            done: cellularSetup.ButtonState.HIDDEN,
-            forward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            tryAgain: cellularSetup.ButtonState.HIDDEN,
-            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
           buttonState = {
-            backward: cellularSetup.ButtonState.HIDDEN,
-            cancel: cellularSetup.ButtonState.HIDDEN,
-            done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-            forward: cellularSetup.ButtonState.HIDDEN,
-            tryAgain: cellularSetup.ButtonState.HIDDEN,
-            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+            done: cellularSetup.ButtonState.ENABLED,
           };
           break;
         default:

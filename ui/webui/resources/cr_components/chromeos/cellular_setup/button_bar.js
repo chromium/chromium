@@ -32,8 +32,7 @@ Polymer({
    * @private
    */
   isButtonHidden_(buttonName) {
-    const state = this.getButtonBarState_(buttonName);
-    return state === cellularSetup.ButtonState.HIDDEN;
+    return !this.getButtonBarState_(buttonName);
   },
 
   /**
@@ -43,7 +42,7 @@ Polymer({
    */
   isButtonDisabled_(buttonName) {
     const state = this.getButtonBarState_(buttonName);
-    return state === cellularSetup.ButtonState.SHOWN_BUT_DISABLED;
+    return state === cellularSetup.ButtonState.DISABLED;
   },
 
   /** @private */
@@ -93,7 +92,7 @@ Polymer({
         return this.buttonState.skipDiscovery;
       default:
         assertNotReached();
-        return cellularSetup.ButtonState.SHOWN_AND_ENABLED;
+        return cellularSetup.ButtonState.ENABLED;
     }
   }
 });

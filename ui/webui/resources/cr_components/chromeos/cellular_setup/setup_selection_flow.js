@@ -44,19 +44,13 @@ Polymer({
    */
   updateButtonState_(selectedPage) {
     this.buttonState = {
-      backward: cellularSetup.ButtonState.HIDDEN,
-      cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-      done: cellularSetup.ButtonState.HIDDEN,
-      tryAgain: cellularSetup.ButtonState.HIDDEN,
-      skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+      cancel: cellularSetup.ButtonState.ENABLED,
     };
     if (selectedPage === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI ||
         selectedPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI) {
-      this.set(
-          'buttonState.forward', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+      this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
     } else {
-      this.set(
-          'buttonState.forward', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+      this.set('buttonState.forward', cellularSetup.ButtonState.DISABLED);
     }
   }
 });
