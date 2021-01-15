@@ -289,6 +289,11 @@ void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
 void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {
   script_injection_manager_->OnRenderFrameCreated(render_frame);
   content_watcher_->OnRenderFrameCreated(render_frame);
+
+  // The RenderFrame comes with the initial empty document already created.
+  DidCreateDocumentElement(render_frame->GetWebFrame());
+  // We run scripts on the empty document.
+  RunScriptsAtDocumentStart(render_frame);
 }
 
 bool Dispatcher::IsExtensionActive(const std::string& extension_id) const {

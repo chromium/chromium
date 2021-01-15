@@ -2069,9 +2069,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   // We delay calling this until we have the WebFrame so that any observer or
   // embedder can call GetWebFrame on any RenderFrame.
   GetContentClient()->renderer()->RenderFrameCreated(this);
-  // Dispatch events for the initial empty document after all frame observers
-  // have been created.
-  RunScriptsAtDocumentElementAvailable();
 
   // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
   auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();

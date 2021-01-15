@@ -205,15 +205,7 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
   js_injection::JsCommunication* communication =
       js_injection::JsCommunication::Get(render_frame);
-  // We will get RunScriptsAtDocumentStart() event even before we received
-  // RenderFrameCreated() for that |render_frame|. This is because Blink code
-  // does initialization work on the main frame, which is not related to any
-  // real navigation. If the communication is nullptr, it means we haven't
-  // received RenderFrameCreated() yet, we simply ignore this event for
-  // JsCommunication since that is not the right time to run the script and
-  // the script may not reach renderer from browser yet.
-  if (communication)
-    communication->RunScriptsAtDocumentStart();
+  communication->RunScriptsAtDocumentStart();
 }
 
 void AwContentRendererClient::AddSupportedKeySystems(

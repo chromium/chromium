@@ -118,9 +118,6 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
     // Manages its own lifetime.
     new AutomationApiHelper(render_frame);
   }
-  // The RenderFrame comes with the initial empty document already created, and
-  // we want to act on it in the same way as a new document.
-  DidCreateDocumentElement();
 }
 
 ExtensionFrameHelper::~ExtensionFrameHelper() {

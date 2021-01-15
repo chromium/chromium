@@ -174,10 +174,12 @@ class ExtensionFrameHelper
 
   Dispatcher* extension_dispatcher_;
 
-  // Whether or not the current document element has been created.
+  // Whether or not the current document element has been created. This starts
+  // true as the initial empty document is already created when this class is
+  // instantiated.
   // TODO(danakj): Does this still need to be tracked? We now have consisitent
   // notifications for initial empty documents on all frames.
-  bool did_create_current_document_element_ = false;
+  bool did_create_current_document_element_ = true;
 
   // Callbacks to be run at the next RunScriptsAtDocumentStart notification.
   std::vector<base::OnceClosure> document_element_created_callbacks_;
