@@ -231,9 +231,6 @@ TEST_F(SecurityOriginTest, IsSecure) {
     bool is_secure;
     const char* url;
   } inputs[] = {
-      // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure be aligned
-      // with network::IsURLPotentiallyTrustworthy?
-      // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
       {false, "blob:ftp://evil:99/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {false, "blob:http://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {false, "file:///etc/passwd"},
@@ -245,14 +242,14 @@ TEST_F(SecurityOriginTest, IsSecure) {
       {true, "wss://example.com/"},
       {true, "about:blank"},
       {true, "about:srcdoc"},
-      {true, "about:about"},
+      {false, "about:about"},
       {true, "data:text/html,Hello"},
       {false,
        "filesystem:http://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {true,
        "filesystem:https://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
-      {true, "blob:data:text/html,Hello"},
-      {true, "blob:about:blank"},
+      {false, "blob:data:text/html,Hello"},
+      {false, "blob:about:blank"},
       {false, "filesystem:data:text/html,Hello"},
       {false, "filesystem:about:blank"},
       {false,
@@ -289,9 +286,7 @@ TEST_F(SecurityOriginTest, CustomScheme) {
   {
     url::ScopedSchemeRegistryForTests scoped_registry;
     url::AddSecureScheme(custom_scheme);
-    // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure always consider
-    // non-standard schemes as insecure?
-    EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+    EXPECT_FALSE(SecurityOrigin::IsSecure(url));
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromString(custom_scheme_example);
     EXPECT_FALSE(origin->IsPotentiallyTrustworthy());
