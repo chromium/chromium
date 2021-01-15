@@ -8,10 +8,13 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace aura {
 class Window;
@@ -33,18 +36,26 @@ class WindowCycleList;
 // until the cycling ends.  Thus we maintain the state of the windows
 // at the beginning of the gesture so you can cycle through in a consistent
 // order.
-class ASH_EXPORT WindowCycleController {
+class ASH_EXPORT WindowCycleController : public SessionObserver {
  public:
   using WindowList = std::vector<aura::Window*>;
 
   enum Direction { FORWARD, BACKWARD };
 
   WindowCycleController();
-  virtual ~WindowCycleController();
+  ~WindowCycleController() override;
 
   // Returns true if cycling through windows is enabled. This is false at
   // certain times, such as when the lock screen is visible.
   static bool CanCycle();
+
+  // Registers alt-tab related profile prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Returns the WindowCycleList.
+  const WindowCycleList* window_cycle_list() const {
+    return window_cycle_list_.get();
+  }
 
   // Cycles between windows in the given |direction|. This moves the focus ring
   // to the window in the given |direction| and also scrolls the list.
@@ -82,22 +93,14 @@ class ASH_EXPORT WindowCycleController {
   // Returns whether or not the window cycle view is visible.
   bool IsWindowListVisible();
 
-  // Returns the WindowCycleList.
-  const WindowCycleList* window_cycle_list() const {
-    return window_cycle_list_.get();
-  }
-
-  // Sets alt-tab mode to all desks (default) or active desk.
-  void SetAltTabMode(DesksMruType alt_tab_mode_);
-
   // Checks if switching between alt-tab mode via the tab slider is allowed.
   // Returns true if Bento flag is enabled and users have multiple desks.
   bool IsInteractiveAltTabModeAllowed();
 
   // Checks if alt-tab should be per active desk. If
   // `IsInteractiveAltTabModeAllowed()`, alt-tab mode depends on users'
-  // |alt_tab_mode_| selection. Otherwise, it'll default to all desk unless
-  // LimitAltTabToActiveDesk flag is explicitly enabled.
+  // |prefs::kAltTabPerDesk| selection. Otherwise, it'll default to all desk
+  // unless LimitAltTabToActiveDesk flag is explicitly enabled.
   bool IsAltTabPerActiveDesk();
 
   // Returns true while switching the alt-tab mode and Bento flag is enabled.
@@ -105,6 +108,9 @@ class ASH_EXPORT WindowCycleController {
   // switching mode, so they refresh |current_index_| and the highlighted
   // window correctly.
   bool IsSwitchingMode();
+
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
  private:
   // Gets a list of windows from the currently open windows, removing windows
@@ -122,6 +128,12 @@ class ASH_EXPORT WindowCycleController {
 
   void StopCycling();
 
+  void InitFromUserPrefs();
+
+  // Triggers alt-tab UI updates when the alt-tab mode is updated in the active
+  // user prefs.
+  void OnAltTabModePrefChanged();
+
   std::unique_ptr<WindowCycleList> window_cycle_list_;
 
   // Tracks the ID of the active desk container before window cycling starts. It
@@ -135,14 +147,15 @@ class ASH_EXPORT WindowCycleController {
   // Non-null while actively cycling.
   std::unique_ptr<WindowCycleEventFilter> event_filter_;
 
-  // Tracks alt-tab mode to display all windows from all desks by default.
-  // An alternative mode is active desk where only windows from the current desk
-  // are shown in alt-tab.
-  // TODO(crbug.com/1157105): Store per-desk mode in primary user pref.
-  DesksMruType alt_tab_mode_ = DesksMruType::kAllDesks;
-
   // Tracks whether alt-tab mode is currently switching or not.
   bool is_switching_mode_ = false;
+
+  // The pref service of the currently active user. Can be null in
+  // ash_unittests.
+  PrefService* active_user_pref_service_ = nullptr;
+
+  // The pref change registrar to observe changes in prefs value.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };

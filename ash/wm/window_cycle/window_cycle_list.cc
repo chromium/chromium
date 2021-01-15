@@ -580,6 +580,11 @@ class WindowCycleView : public views::WidgetDelegateView,
     return target_window_;
   }
 
+  void OnModePrefsChanged() {
+    if (tab_slider_container_)
+      tab_slider_container_->OnModePrefsChanged();
+  }
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
     occlusion_tracker_pauser_.reset();
@@ -590,7 +595,7 @@ class WindowCycleView : public views::WidgetDelegateView,
   views::View* mirror_container_ = nullptr;
 
   // Tab slider and no recent items are only used when Bento is enabled.
-  views::View* tab_slider_container_ = nullptr;
+  WindowCycleTabSlider* tab_slider_container_ = nullptr;
   views::Label* no_recent_items_label_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
@@ -739,6 +744,11 @@ bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
 
 bool WindowCycleList::ShouldShowUi() {
   return windows_.size() > 1u;
+}
+
+void WindowCycleList::OnModePrefsChanged() {
+  if (cycle_view_)
+    cycle_view_->OnModePrefsChanged();
 }
 
 // static

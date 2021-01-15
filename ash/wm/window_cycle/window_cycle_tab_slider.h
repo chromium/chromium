@@ -22,12 +22,15 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   WindowCycleTabSlider& operator=(const WindowCycleTabSlider&) = delete;
   ~WindowCycleTabSlider() override = default;
 
+  // Updates user prefs when users switch the button.
   void OnModeChanged(bool per_desk);
+
+  // Updates UI when user prefs change.
+  void OnModePrefsChanged();
 
   // TODO(crbug.com/1157087): Add tab slider animation.
 
  private:
-  bool per_desk_mode_ = false;
 
   WindowCycleTabSliderButton* all_desks_tab_slider_button_;
   WindowCycleTabSliderButton* current_desk_tab_slider_button_;

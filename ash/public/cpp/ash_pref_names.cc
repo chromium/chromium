@@ -145,6 +145,10 @@ const char kLiveCaptionEnabled[] =
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";
 
+// A boolean pref which determines whether alt-tab should show only windows in
+// the current desk or all windows.
+const char kAltTabPerDesk[] = "ash.alttab.per_desk";
+
 // A dictionary storing the number of times and most recent time all contextual
 // tooltips have been shown.
 const char kContextualTooltips[] = "settings.contextual_tooltip.shown_info";

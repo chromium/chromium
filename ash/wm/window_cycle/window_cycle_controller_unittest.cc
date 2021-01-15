@@ -12,8 +12,12 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/home_screen/home_screen_controller.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -2077,6 +2081,384 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   SwitchPerDeskAltTabMode(false);
   EXPECT_EQ(5u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win0.get(), GetTargetWindow());
+  cycle_controller->CompleteCycling();
+}
+
+namespace {
+
+constexpr char kUser1Email[] = "user1@alttab";
+constexpr char kUser2Email[] = "user2@alttab";
+
+}  // namespace
+
+class MultiUserWindowCycleControllerTest
+    : public NoSessionAshTestBase,
+      public MultiUserWindowManagerDelegate {
+ public:
+  MultiUserWindowCycleControllerTest() = default;
+  MultiUserWindowCycleControllerTest(
+      const MultiUserWindowCycleControllerTest&) = delete;
+  MultiUserWindowCycleControllerTest& operator=(
+      const MultiUserWindowCycleControllerTest&) = delete;
+  ~MultiUserWindowCycleControllerTest() override = default;
+
+  MultiUserWindowManager* multi_user_window_manager() {
+    return multi_user_window_manager_.get();
+  }
+  TestingPrefServiceSimple* user_1_prefs() { return user_1_prefs_; }
+  TestingPrefServiceSimple* user_2_prefs() { return user_2_prefs_; }
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kBento);
+    NoSessionAshTestBase::SetUp();
+
+    WindowCycleList::DisableInitialDelayForTesting();
+    shelf_view_test_.reset(
+        new ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting()));
+    shelf_view_test_->SetAnimationDuration(
+        base::TimeDelta::FromMilliseconds(1));
+
+    generator_ = GetEventGenerator();
+
+    TestSessionControllerClient* session_controller =
+        GetSessionControllerClient();
+    session_controller->Reset();
+
+    // Inject our own PrefServices for each user which enables us to setup the
+    // desks restore data before the user signs in.
+    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
+    user_1_prefs_ = user_1_prefs.get();
+    RegisterUserProfilePrefs(user_1_prefs_->registry(), /*for_test=*/true);
+    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
+    user_2_prefs_ = user_2_prefs.get();
+    RegisterUserProfilePrefs(user_2_prefs_->registry(), /*for_test=*/true);
+    session_controller->AddUserSession(kUser1Email,
+                                       user_manager::USER_TYPE_REGULAR,
+                                       /*provide_pref_service=*/false);
+    session_controller->SetUserPrefService(GetUser1AccountId(),
+                                           std::move(user_1_prefs));
+    session_controller->AddUserSession(kUser2Email,
+                                       user_manager::USER_TYPE_REGULAR,
+                                       /*provide_pref_service=*/false);
+    session_controller->SetUserPrefService(GetUser2AccountId(),
+                                           std::move(user_2_prefs));
+  }
+
+  void TearDown() override {
+    multi_user_window_manager_.reset();
+    NoSessionAshTestBase::TearDown();
+  }
+
+  // MultiUserWindowManagerDelegate:
+  void OnWindowOwnerEntryChanged(aura::Window* window,
+                                 const AccountId& account_id,
+                                 bool was_minimized,
+                                 bool teleported) override {}
+  void OnTransitionUserShelfToNewAccount() override {}
+
+  void SwitchPerDeskAltTabModeFromUIAndCheckPrefs(bool per_desk_mode) {
+    auto* cycle_controller = Shell::Get()->window_cycle_controller();
+    EXPECT_TRUE(cycle_controller->IsCycling());
+    gfx::Point button_center =
+        GetWindowCycleTabSliderViews()[per_desk_mode ? 1 : 0]
+            ->GetBoundsInScreen()
+            .CenterPoint();
+    generator_->MoveMouseTo(button_center);
+    generator_->ClickLeftButton();
+    // Check that alt-tab mode in UI and user prefs are updated.
+    EXPECT_EQ(per_desk_mode, cycle_controller->IsAltTabPerActiveDesk());
+    EXPECT_EQ(per_desk_mode, IsActivePrefsPerDeskMode());
+    EXPECT_TRUE(cycle_controller->IsCycling());
+  }
+
+  AccountId GetUser1AccountId() const {
+    return AccountId::FromUserEmail(kUser1Email);
+  }
+
+  AccountId GetUser2AccountId() const {
+    return AccountId::FromUserEmail(kUser2Email);
+  }
+
+  bool IsActivePrefsPerDeskMode() {
+    PrefService* active_user_prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    DCHECK(active_user_prefs);
+    return active_user_prefs->GetBoolean(prefs::kAltTabPerDesk);
+  }
+
+  void SetActivePrefsPerDeskMode(bool per_desk) {
+    PrefService* active_user_prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    DCHECK(active_user_prefs);
+    active_user_prefs->SetBoolean(prefs::kAltTabPerDesk, per_desk);
+  }
+
+  PrefService* GetUserPrefsService(bool primary) {
+    return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+        primary ? GetUser1AccountId() : GetUser2AccountId());
+  }
+
+  void SwitchActiveUser(const AccountId& account_id) {
+    GetSessionControllerClient()->SwitchActiveUser(account_id);
+  }
+
+  void SimulateUserLogin(const AccountId& account_id) {
+    SwitchActiveUser(account_id);
+    multi_user_window_manager_ =
+        MultiUserWindowManager::Create(this, account_id);
+    MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+        MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+    GetSessionControllerClient()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
+  }
+
+  const aura::Window::Windows GetWindows(WindowCycleController* controller) {
+    return controller->window_cycle_list()->windows();
+  }
+
+  const views::View::Views& GetWindowCycleItemViews() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetWindowCycleItemViewsForTesting();
+  }
+
+  const views::View::Views& GetWindowCycleTabSliderViews() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetWindowCycleTabSliderViewsForTesting();
+  }
+
+  const aura::Window* GetTargetWindow() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetTargetWindowForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::test::EventGenerator* generator_;
+
+  std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
+
+  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
+
+  TestingPrefServiceSimple* user_1_prefs_ = nullptr;
+  TestingPrefServiceSimple* user_2_prefs_ = nullptr;
+};
+
+// Tests that when the active user prefs' |prefs::kAltTabPerDesk| is updated,
+// the tab slider UI and the window cycle list are refreshed.
+TEST_F(MultiUserWindowCycleControllerTest, AltTabModePrefsUpdateUI) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  auto* desks_controller = DesksController::Get();
+  // Login with user_1 and create two desks and three windows where two windows
+  // are in the current desk to avoid failure to enter alt-tab.
+  SimulateUserLogin(GetUser1AccountId());
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  multi_user_window_manager()->SetWindowOwner(win0.get(), GetUser1AccountId());
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  // Activate desk2 and create two windows.
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  multi_user_window_manager()->SetWindowOwner(win1.get(), GetUser1AccountId());
+  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  multi_user_window_manager()->SetWindowOwner(win2.get(), GetUser1AccountId());
+
+  // user_1 prefs and alt-tab mode should default to the all-desk mode.
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_FALSE(IsActivePrefsPerDeskMode());
+
+  // Setting alt-tab mode prefs to current-desk should update the alt-tab UI to
+  // current-desk mode.
+  bool per_desk = true;
+  SetActivePrefsPerDeskMode(per_desk);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+
+  // Setting alt-tab mode prefs to all-desks should update the alt-tab UI to
+  // all-desks mode.
+  per_desk = false;
+  SetActivePrefsPerDeskMode(per_desk);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+
+  // Switch to the secondary user_2 and setup the profile with four windows.
+  SwitchActiveUser(GetUser2AccountId());
+  const Desk* desk_1 = desks_controller->desks()[0].get();
+  EXPECT_TRUE(desk_1->is_active());
+  auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win3.get(), GetUser2AccountId());
+  auto win4 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win4.get(), GetUser2AccountId());
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win5 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  multi_user_window_manager()->SetWindowOwner(win5.get(), GetUser2AccountId());
+  auto win6 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  multi_user_window_manager()->SetWindowOwner(win6.get(), GetUser2AccountId());
+
+  // user_2 prefs and alt-tab mode should default to the all-desk mode.
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(4u, GetWindowCycleItemViews().size());
+  EXPECT_FALSE(IsActivePrefsPerDeskMode());
+
+  // Setting alt-tab mode prefs to current-desk should update the alt-tab UI to
+  // current-desk mode.
+  per_desk = true;
+  SetActivePrefsPerDeskMode(per_desk);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+
+  // Setting alt-tab mode prefs to all-desks should update the alt-tab UI to
+  // all-desks mode.
+  per_desk = false;
+  SetActivePrefsPerDeskMode(per_desk);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(4u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+}
+
+// Tests that switching between users restores each user's alt-tab mode
+// correctly. In addition, pressing a tab slider button to switch the mode,
+// `SwitchPerDeskAltTabModeFromUIAndCheckPrefs()` checks that alt-tab
+// successfully switches the mode and updates the user prefs.
+TEST_F(MultiUserWindowCycleControllerTest,
+       AltTabModeUserSwitchAndUIUpdatesPref) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Setup user_1 with two windows out of three in the current desk and
+  // set the mode to non-default current-desk for test preparation.
+  SimulateUserLogin(GetUser1AccountId());
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  multi_user_window_manager()->SetWindowOwner(win0.get(), GetUser1AccountId());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  multi_user_window_manager()->SetWindowOwner(win1.get(), GetUser1AccountId());
+  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  multi_user_window_manager()->SetWindowOwner(win2.get(), GetUser1AccountId());
+
+  // In preparation for multi-user alt-tab mode switching, start alt-tab with
+  // user_1 prefs set to current-desk mode.
+  bool per_desk = true;
+  SetActivePrefsPerDeskMode(per_desk);
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+
+  // Switch to user_2 and open up two windows out of four in the current desk.
+  SwitchActiveUser(GetUser2AccountId());
+  const Desk* desk_1 = desks_controller->desks()[0].get();
+  EXPECT_TRUE(desk_1->is_active());
+  auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win3.get(), GetUser2AccountId());
+  auto win4 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win4.get(), GetUser2AccountId());
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win5 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win5.get(), GetUser2AccountId());
+  auto win6 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
+  multi_user_window_manager()->SetWindowOwner(win6.get(), GetUser2AccountId());
+
+  // In preparation for multi-user alt-tab mode switching, start alt-tab with
+  // user_2 prefs set to current-desk mode.
+  SetActivePrefsPerDeskMode(per_desk);
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+
+  // Test that the primary user_1's mode is loaded correctly after switch
+  // from secondary user_2, who just changes the mode to the opposite.
+
+  // Currently, both users choose the current-desk mode, so we try change
+  // user_2 to all-desks mode from the tab slider UI to see if user_1's mode
+  // remains correctly unaffected.
+  SwitchPerDeskAltTabModeFromUIAndCheckPrefs(false);
+  EXPECT_EQ(4u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+
+  // Switch back to user_1. Make sure that user_1 prefs remains unaffected
+  // and the alt-tab enter with the correct current-desk mode.
+  SwitchActiveUser(GetUser1AccountId());
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_TRUE(IsActivePrefsPerDeskMode());
+  EXPECT_EQ(IsActivePrefsPerDeskMode(),
+            cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+
+  // In preparation for the next test, change user_2 back the current-desk mode
+  // to make sure both users start at the same mode selection.
+  SwitchActiveUser(GetUser2AccountId());
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  SwitchPerDeskAltTabModeFromUIAndCheckPrefs(true);
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+
+  // Test that the secondary user_2's mode is loaded correctly after switching
+  // from primary user_1, who just changes the mode to the opposite.
+
+  // Currently, both users choose the current-desk mode, so we try change
+  // user_1 to all-desks mode to see if user_2's mode will change.
+  SwitchActiveUser(GetUser1AccountId());
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  SwitchPerDeskAltTabModeFromUIAndCheckPrefs(false);
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  DeskSwitchAnimationWaiter waiter;
+  cycle_controller->CompleteCycling();
+  waiter.Wait();
+
+  // Switch back to user_2 and make sure that the mode is restored
+  // to the current-desk mode correctly.
+  SwitchActiveUser(GetUser2AccountId());
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
   cycle_controller->CompleteCycling();
 }
 

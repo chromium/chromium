@@ -65,12 +65,16 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
 
+  // Updates window cycle tab slider when the mode prefs is updated.
+  void OnModePrefsChanged();
+
   void set_user_did_accept(bool user_did_accept) {
     user_did_accept_ = user_did_accept;
   }
 
  private:
   friend class WindowCycleControllerTest;
+  friend class MultiUserWindowCycleControllerTest;
   friend class InteractiveWindowCycleListGestureHandlerTest;
 
   static void DisableInitialDelayForTesting();
