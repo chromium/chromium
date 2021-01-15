@@ -25,9 +25,11 @@
 #include "media/audio/audio_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/installer/util/google_update_settings.h"
-#else
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -89,7 +91,7 @@ void ChromeBrowserMainPartsLinux::PostProfileInit() {
     // true all the time isn't useful, we overload the meaning of the breakpad
     // registration metric to mean "is crash reporting enabled", since that's
     // what breakpad registration effectively meant in the days before crashpad.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     breakpad_registered = GoogleUpdateSettings::GetCollectStatsConsent();
 #else
     breakpad_registered = crash_reporter::GetUploadsEnabled();

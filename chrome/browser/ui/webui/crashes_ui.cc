@@ -177,7 +177,7 @@ void CrashesDOMHandler::UpdateUI() {
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 
   bool system_crash_reporter = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Chrome OS has a system crash reporter.
   system_crash_reporter = true;
 #endif
