@@ -7,20 +7,26 @@
   }
 
   #moduleContent {
-    box-sizing: border-box;
     display: flex;
-    flex-direction: row;
-    float: left;
     height: 100%;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
-    width: 100%;
+    position: relative;
+  }
+
+  #moduleContent:hover .side-scroll-button {
+    visibility: visible;
+  }
+
+  #cartCarousel {
+    display: inline-block;
+    overflow-x: hidden;
+    white-space: nowrap;
+    z-index: 0;
   }
 
   .cart-item {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     height: 160px;
     margin: 0 4px;
@@ -113,7 +119,7 @@
     right: unset;
   }
 
-  cr-icon-button {
+  .cart-item cr-icon-button {
     --cr-icon-button-fill-color: var(--ntp-icon-button-color);
     --cr-icon-button-size: 16px;
     --cr-icon-button-transition: none;
@@ -125,8 +131,64 @@
     transition: opacity 100ms ease-in-out;
   }
 
-  cr-icon-button:hover {
+  .cart-item cr-icon-button:hover {
     --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
+  }
+
+  .side-scroll-shadow {
+    background-color: var(--ntp-background-override-color);
+    display: flex;
+    height: 160px;
+    opacity: 0.38;
+    pointer-events: none;
+    position: absolute;
+    width: 24px;
+    z-index: 1;
+  }
+
+  #leftScrollShadow {
+    left: 0;
+  }
+
+  #rightScrollShadow {
+    right: 0;
+  }
+
+  .side-scroll-button {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-image: url(icons/chevron.svg);
+    background-color: var(--ntp-theme-shortcut-background-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    visibility: hidden;
+    z-index: 2;
+  }
+
+  .side-scroll-button:hover {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
+    background-color: var( --ntp-active-background-color);
+  }
+
+  #leftScrollButton {
+    --cr-icon-image-transform: rotate(90deg);
+    left: 0;
+    margin-inline-start: 4px;
+  }
+
+  #rightScrollButton {
+    --cr-icon-image-transform: rotate(270deg);
+    margin-inline-end: 4px;
+    right: 0;
+  }
+
+  .probe {
+    display: inline-flex;
+    width: 15px;
   }
 </style>
 <ntp-module-header
@@ -135,42 +197,58 @@
   $i18n{modulesCartTitle}
 </ntp-module-header>
 <div id="moduleContent">
-  <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
-    <a class="cart-item" title="[[item.merchant]]"
-        href="[[item.cartUrl.url]]">
-      <cr-icon-button class="icon-more-vert"
-          title="$i18n{moreActions}" on-click="onMenuButtonClick_">
-      </cr-icon-button>
-      <img class="favicon-image" is="ntp-img"
-          auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
-      <div class="cart-title">
-        <span class="merchant">[[item.merchant]]</span>
-        <template is="dom-if" if="[[item.productImageUrls.length]]">
-          <span class="item-count">
-            &nbsp•&nbsp[[item.productImageUrls.length]]
-          </span>
-        </template>
-      </div>
-      <div class="thumbnail-container">
-        <template is="dom-if"
-            if="[[item.productImageUrls.length]]">
-          <ul class="thumbnail-list">
-            <template is="dom-repeat"
-                items="[[getImagesToShow_(item.productImageUrls)]]">
-              <li>
-                <img class="thumbnail-img" is="ntp-img"
-                    auto-src="[[item.url]]"></img>
-              </li>
-            </template>
-          </ul>
-        </template>
-        <template id="thumbnailFallback" is="dom-if"
-            if="[[!item.productImageUrls.length]]">
-          <img class="thumbnail-fallback"
-              src="chrome://new-tab-page/icons/cart_fallback.svg">
-        </template>
-      </div>
-    </a>
+  <template is="dom-if" if="[[showLeftScrollButton_]]">
+    <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+    <cr-icon-button id="leftScrollButton"
+        class="side-scroll-button" on-click="onLeftScrollClick_">
+    </cr-icon-button>
   </template>
+  <div id="cartCarousel">
+    <div id="leftProbe" class="probe"></div>
+    <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
+      <a class="cart-item" title="[[item.merchant]]"
+          href="[[item.cartUrl.url]]">
+        <cr-icon-button class="icon-more-vert"
+            title="$i18n{moreActions}" on-click="onMenuButtonClick_">
+        </cr-icon-button>
+        <img class="favicon-image" is="ntp-img"
+            auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+        <div class="cart-title">
+          <span class="merchant">[[item.merchant]]</span>
+          <template is="dom-if" if="[[item.productImageUrls.length]]">
+            <span class="item-count">
+              &nbsp•&nbsp[[item.productImageUrls.length]]
+            </span>
+          </template>
+        </div>
+        <div class="thumbnail-container">
+          <template is="dom-if"
+              if="[[item.productImageUrls.length]]">
+            <ul class="thumbnail-list">
+              <template is="dom-repeat"
+                  items="[[getImagesToShow_(item.productImageUrls)]]">
+                <li>
+                  <img class="thumbnail-img" is="ntp-img"
+                      auto-src="[[item.url]]"></img>
+                </li>
+              </template>
+            </ul>
+          </template>
+          <template id="thumbnailFallback" is="dom-if"
+              if="[[!item.productImageUrls.length]]">
+            <img class="thumbnail-fallback"
+                src="chrome://new-tab-page/icons/cart_fallback.svg">
+          </template>
+        </div>
+      </a>
+    </template>
+    <div id="rightProbe" class="probe"></div>
+  </div>
   <cr-action-menu id="actionMenu"></cr-action-menu>
+  <template is="dom-if" if="[[showRightScrollButton_]]">
+    <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+    <cr-icon-button id="rightScrollButton"
+        class="side-scroll-button" on-click="onRightScrollClick_">
+    </cr-icon-button>
+  </template>
 </div>

@@ -6,7 +6,7 @@ import {$$, chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/n
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {eventToPromise, isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
   /**
@@ -77,16 +77,15 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     moduleElement.$.cartItemRepeat.render();
 
     // Assert.
-    const cartItems =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.cart-item'));
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(4, cartItems.length);
 
     assertEquals('https://amazon.com/', cartItems[0].href);
     assertEquals('Amazon', cartItems[0].querySelector('.merchant').innerText);
     let itemCount = cartItems[0].querySelector('.item-count').innerText;
     assertEquals('3', itemCount.slice(-1));
-    let thumbnailList = Array.from(
-        cartItems[0].querySelector('.thumbnail-list').querySelectorAll('img'));
+    let thumbnailList =
+        cartItems[0].querySelector('.thumbnail-list').querySelectorAll('img');
     assertEquals(3, thumbnailList.length);
     assertEquals('https://image1.com', thumbnailList[0].autoSrc);
     assertEquals('https://image2.com', thumbnailList[1].autoSrc);
@@ -97,8 +96,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals('eBay', cartItems[1].querySelector('.merchant').innerText);
     itemCount = cartItems[1].querySelector('.item-count').innerText;
     assertEquals('2', itemCount.slice(-1));
-    thumbnailList = Array.from(
-        cartItems[1].querySelector('.thumbnail-list').querySelectorAll('img'));
+    thumbnailList =
+        cartItems[1].querySelector('.thumbnail-list').querySelectorAll('img');
     assertEquals(2, thumbnailList.length);
     assertEquals('https://image4.com', thumbnailList[0].autoSrc);
     assertEquals('https://image5.com', thumbnailList[1].autoSrc);
@@ -116,8 +115,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals('Walmart', cartItems[3].querySelector('.merchant').innerText);
     itemCount = cartItems[3].querySelector('.item-count').innerText;
     assertEquals('4', itemCount.slice(-1));
-    thumbnailList = Array.from(
-        cartItems[3].querySelector('.thumbnail-list').querySelectorAll('img'));
+    thumbnailList =
+        cartItems[3].querySelector('.thumbnail-list').querySelectorAll('img');
     assertEquals(3, thumbnailList.length);
     assertEquals('https://image6.com', thumbnailList[0].autoSrc);
     assertEquals('https://image7.com', thumbnailList[1].autoSrc);
@@ -146,8 +145,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     moduleElement.$.cartItemRepeat.render();
 
     // Assert.
-    const cartItems =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.cart-item'));
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(1, cartItems.length);
     const headerChip =
         moduleElement.shadowRoot.querySelector('ntp-module-header')
@@ -220,8 +218,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     moduleElement.$.cartItemRepeat.render();
 
     // Assert.
-    const cartItems =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.cart-item'));
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(1, cartItems.length);
     let menuButton = cartItems[0].querySelector('.icon-more-vert');
     assertStyle(menuButton, 'opacity', '0');
@@ -234,4 +231,275 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     assertTrue(actionMenu.open);
   });
+
+  test('scroll with full width module', async () => {
+    // Arrange.
+    const dummyMerchant = {
+      merchant: 'Dummy',
+      cartUrl: {url: 'https://dummy.com'},
+      productImageUrls: [],
+    };
+    const carts = [];
+    for (var i = 0; i < 10; i++) {
+      carts.push(dummyMerchant);
+    }
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Arrange.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+    const cartCarousel =
+        moduleElement.shadowRoot.querySelector('#cartCarousel');
+    moduleElement.scrollBehavior = 'auto';
+    const onScroll = () => {
+      moduleElement.dispatchEvent(new Event('scroll-finish'));
+    };
+    cartCarousel.addEventListener('scroll', onScroll, false);
+
+    // Assert.
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+    assertEquals(10, cartItems.length);
+
+    // Act.
+    let waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    let waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-show', moduleElement);
+    moduleElement.style.width = '560px';
+    await waitForLeftScrollVisibilityChange;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 3);
+
+    // Act.
+    waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-show', moduleElement);
+    let waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#rightScrollButton').click();
+    await waitForScrollFinished;
+    await waitForLeftScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 4, 7);
+
+    // Act.
+    waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-hide', moduleElement);
+    waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#rightScrollButton').click();
+    await waitForScrollFinished;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, false);
+    checkVisibleRange(moduleElement, 6, 9);
+
+    // Act.
+    waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-show', moduleElement);
+    waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#leftScrollButton').click();
+    await waitForScrollFinished;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 2, 5);
+
+    // Act.
+    waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#leftScrollButton').click();
+    await waitForScrollFinished;
+    await waitForLeftScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 3);
+
+    // Remove the observer.
+    cartCarousel.removeEventListener('scroll', onScroll);
+  });
+
+  test('scroll with cutted width module', async () => {
+    // Arrange.
+    const dummyMerchant = {
+      merchant: 'Dummy',
+      cartUrl: {url: 'https://dummy.com'},
+      productImageUrls: [],
+    };
+    const carts = [];
+    for (var i = 0; i < 10; i++) {
+      carts.push(dummyMerchant);
+    }
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Arrange.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+    const cartCarousel =
+        moduleElement.shadowRoot.querySelector('#cartCarousel');
+    moduleElement.scrollBehavior = 'auto';
+    const onScroll = () => {
+      moduleElement.dispatchEvent(new Event('scroll-finish'));
+    };
+    cartCarousel.addEventListener('scroll', onScroll, false);
+
+    // Assert.
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+    assertEquals(10, cartItems.length);
+
+    // Act.
+    let waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    let waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-show', moduleElement);
+    moduleElement.style.width = '480px';
+    await waitForLeftScrollVisibilityChange;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 2);
+
+    // Act.
+    waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-show', moduleElement);
+    let waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#rightScrollButton').click();
+    await waitForLeftScrollVisibilityChange;
+    await waitForScrollFinished;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 3, 5);
+
+    // Act.
+    moduleElement.style.width = '220px';
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 3, 3);
+
+    // Act.
+    waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot.querySelector('#rightScrollButton').click();
+    await waitForScrollFinished;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 4, 4);
+
+    // Remove the observer.
+    cartCarousel.removeEventListener('scroll', onScroll);
+  });
+
+  test('scroll button visibility changes with module width', async () => {
+    // Arrange.
+    const dummyMerchant = {
+      merchant: 'Dummy',
+      cartUrl: {url: 'https://dummy.com'},
+      productImageUrls: [],
+    };
+    const carts = [];
+    for (var i = 0; i < 4; i++) {
+      carts.push(dummyMerchant);
+    }
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Arrange.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+
+    // Assert.
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+    assertEquals(4, cartItems.length);
+
+    // Act.
+    let waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    let waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-hide', moduleElement);
+    moduleElement.style.width = '560px';
+    await waitForLeftScrollVisibilityChange;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, false);
+    checkVisibleRange(moduleElement, 0, 3);
+
+    // Act.
+    waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-show', moduleElement);
+    moduleElement.style.width = '480px';
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 2);
+
+    // Act.
+    waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-hide', moduleElement);
+    moduleElement.style.width = '560px';
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, false);
+    checkVisibleRange(moduleElement, 0, 3);
+  });
+
+  function checkScrollButtonVisibility(
+      moduleElement, isLeftVisible, isRightVisible) {
+    assertEquals(
+        isLeftVisible,
+        isVisible(moduleElement.shadowRoot.querySelector('#leftScrollShadow')));
+    assertEquals(
+        isLeftVisible,
+        isVisible(moduleElement.shadowRoot.querySelector('#leftScrollButton')));
+    assertEquals(
+        isRightVisible,
+        isVisible(
+            moduleElement.shadowRoot.querySelector('#rightScrollShadow')));
+    assertEquals(
+        isRightVisible,
+        isVisible(
+            moduleElement.shadowRoot.querySelector('#rightScrollButton')));
+  }
+
+  function checkVisibleRange(moduleElement, startIndex, endIndex) {
+    const carts = moduleElement.shadowRoot.querySelector('#cartCarousel')
+                      .querySelectorAll('.cart-item');
+    assertTrue(startIndex >= 0);
+    assertTrue(endIndex < carts.length);
+    for (let i = 0; i < carts.length; i++) {
+      if (i >= startIndex && i <= endIndex) {
+        assertTrue(getVisibilityForIndex(moduleElement, i));
+      } else {
+        assertFalse(getVisibilityForIndex(moduleElement, i));
+      }
+    }
+  }
+
+  function getVisibilityForIndex(moduleElement, index) {
+    const cartCarousel =
+        moduleElement.shadowRoot.querySelector('#cartCarousel');
+    const cart = cartCarousel.querySelectorAll('.cart-item')[index];
+    return (cart.offsetLeft > cartCarousel.scrollLeft) &&
+        (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
+        (cart.offsetLeft + cart.offsetWidth);
+  }
 });
