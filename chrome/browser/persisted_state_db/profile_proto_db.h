@@ -373,7 +373,6 @@ void ProfileProtoDB<T>::OnLoadContent(LoadCallback callback,
     for (const auto& proto : *content) {
       // TODO(crbug.com/1157881) relax requirement for proto to have a key field
       // and return key value pairs OnLoadContent.
-      DCHECK(proto.has_key());
       results.emplace_back(proto.key(), proto);
     }
   }
