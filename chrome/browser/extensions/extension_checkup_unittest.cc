@@ -78,7 +78,13 @@ class ExtensionCheckupTest : public ExtensionServiceTestBase,
 };
 
 // Checkup is not shown if no extensions are installed.
-TEST_P(ExtensionCheckupTest, NoInstalledExtensions) {
+// Flaky on TSAN: https://crbug.com/1163813
+#if defined(THREAD_SANITIZER)
+#define MAYBE_NoInstalledExtensions DISABLED_NoInstalledExtensions
+#else
+#define MAYBE_NoInstalledExtensions NoInstalledExtensions
+#endif
+TEST_P(ExtensionCheckupTest, MAYBE_NoInstalledExtensions) {
   VerifyNonExperimentCheckupDisabled();
   EXPECT_FALSE(ShouldShowExperimentCheckup());
 }
