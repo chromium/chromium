@@ -8,9 +8,7 @@
 namespace content {
 
 RenderProcessHostObserver::~RenderProcessHostObserver() {
-  // TODO(https://crbug.com/1153961): Instrumentation. When fixed, decide if
-  // this CHECK should be removed or turned into a DCHECK.
-  CHECK(!IsInObserverList());
+  DCHECK(!IsInObserverList());
 }
 
 }  // namespace content
