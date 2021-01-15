@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
 
 // TODO(iopopesc): Re-enable test when there is a resolution for
 // android-bfcache-rel builder producing different results.
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
 #else
 #define MAYBE_DarkModeTextSelection DarkModeTextSelection
