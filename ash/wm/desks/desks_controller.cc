@@ -378,6 +378,13 @@ void DesksController::RemoveDesk(const Desk* desk,
   RemoveDeskInternal(desk, source);
 }
 
+void DesksController::ReorderDesk(int old_index, int new_index) {
+  desks_util::ReorderItem(desks_, old_index, new_index);
+
+  for (auto& observer : observers_)
+    observer.OnDeskReordered(old_index, new_index);
+}
+
 void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   DCHECK(HasDesk(desk));
   DCHECK(!animation_);
@@ -632,6 +639,16 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
   MoveWindowFromActiveDeskTo(window, desks_[desk_index].get(),
                              window->GetRootWindow(),
                              DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+}
+
+void DesksController::UpdateDesksDefaultNames() {
+  size_t i = 0;
+  for (auto& desk : desks_) {
+    // Do not overwrite user-modified desks' names.
+    if (!desk->is_name_set_by_user())
+      desk->SetName(GetDeskDefaultName(i), /*set_by_user=*/false);
+    i++;
+  }
 }
 
 void DesksController::OnWindowActivating(ActivationReason reason,
@@ -1022,16 +1039,6 @@ void DesksController::ReportDesksCountHistogram() const {
   DCHECK_LE(desks_.size(), desks_util::GetMaxNumberOfDesks());
   UMA_HISTOGRAM_EXACT_LINEAR(kDesksCountHistogramName, desks_.size(),
                              desks_util::GetMaxNumberOfDesks());
-}
-
-void DesksController::UpdateDesksDefaultNames() {
-  size_t i = 0;
-  for (auto& desk : desks_) {
-    // Do not overwrite user-modified desks' names.
-    if (!desk->is_name_set_by_user())
-      desk->SetName(GetDeskDefaultName(i), /*set_by_user=*/false);
-    i++;
-  }
 }
 
 }  // namespace ash

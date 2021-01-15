@@ -95,6 +95,11 @@ DeskMiniView::~DeskMiniView() {
     desk_->RemoveObserver(this);
 }
 
+gfx::Rect DeskMiniView::GetPreviewBoundsInScreen() const {
+  DCHECK(desk_preview_);
+  return desk_preview_->GetBoundsInScreen();
+}
+
 aura::Window* DeskMiniView::GetDeskContainer() const {
   DCHECK(desk_);
   return desk_->GetDeskContainerForRoot(root_window_);
@@ -111,7 +116,7 @@ void DeskMiniView::UpdateCloseButtonVisibility() {
   // navigate to it.
   close_desk_button_->SetVisible(
       DesksController::Get()->CanRemoveDesks() &&
-      !owner_bar_->dragged_item_over_bar() &&
+      !owner_bar_->dragged_item_over_bar() && !owner_bar_->IsDraggingDesk() &&
       (IsMouseHovered() || force_show_close_button_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()));
 }

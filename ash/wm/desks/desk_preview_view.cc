@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -411,6 +412,59 @@ void DeskPreviewView::Layout() {
   desk_mirrored_contents_layer->SetTransform(transform);
 
   Button::Layout();
+}
+
+bool DeskPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
+  if (!features::IsBentoEnabled())
+    return Button::OnMouseDragged(event);
+
+  DesksBarView* owner_bar = mini_view_->owner_bar();
+
+  if (!owner_bar->IsDraggingDesk()) {
+    owner_bar->HandleStartDragEvent(mini_view_, event);
+    return true;
+  }
+
+  if (!owner_bar->HandleDragEvent(mini_view_, event))
+    return Button::OnMouseDragged(event);
+
+  return true;
+}
+
+void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!mini_view_->owner_bar()->HandleReleaseEvent(mini_view_, event))
+    Button::OnMouseReleased(event);
+}
+
+void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
+  if (!features::IsBentoEnabled()) {
+    Button::OnGestureEvent(event);
+    return;
+  }
+
+  DesksBarView* owner_bar = mini_view_->owner_bar();
+
+  switch (event->type()) {
+    case ui::ET_GESTURE_LONG_PRESS:
+      owner_bar->HandleStartDragEvent(mini_view_, *event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      FALLTHROUGH;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      if (owner_bar->HandleDragEvent(mini_view_, *event))
+        event->SetHandled();
+      break;
+    case ui::ET_GESTURE_END:
+      if (owner_bar->HandleReleaseEvent(mini_view_, *event))
+        event->SetHandled();
+      break;
+    default:
+      break;
+  }
+
+  if (!event->handled())
+    Button::OnGestureEvent(event);
 }
 
 }  // namespace ash

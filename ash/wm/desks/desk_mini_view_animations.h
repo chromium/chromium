@@ -77,6 +77,22 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
     DesksBarView* bar_view,
     std::vector<DeskMiniView*> removed_mini_views);
 
+// Performs the mini_view reorder animation. It moves the desks to make space at
+// |new_index| for the mini_view at |old_index|. Before reordering, if
+// |old_index| < |new_index|, the mini views from |old_index| + 1 to
+// |new_index| would move left; if |old_index| > |new_index|, the mini
+// views from |new_index| to |old_index| - 1 would move right.
+//
+// Note that the |mini_views| is the reordered list. Therefore, the range of the
+// mini views to be moved should be selected according to the current position.
+// If |old_index| < |new_index|, the range is from |old_index| to
+// |new_index| - 1; otherwise, the range is from |new_index| + 1 to
+// |old_index|.
+void PerformReorderDeskMiniViewAnimation(
+    int old_index,
+    int new_index,
+    const std::vector<DeskMiniView*>& mini_views);
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESK_MINI_VIEW_ANIMATIONS_H_

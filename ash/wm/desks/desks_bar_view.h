@@ -16,6 +16,7 @@
 namespace ash {
 
 class DeskBarHoverObserver;
+class DeskDragProxy;
 class DeskMiniView;
 class ExpandedStateNewDeskButton;
 class NewDeskButton;
@@ -103,6 +104,29 @@ class ASH_EXPORT DesksBarView : public views::View,
   // there's only a single desk available, in which case the bar is shown in a
   // minimized state.
   bool IsZeroState() const;
+  // Handle drag & drop events for each desk preview.
+  void HandleStartDragEvent(DeskMiniView* mini_view,
+                            const ui::LocatedEvent& event);
+  // Return true if the drag event is handled by drag & drop.
+  bool HandleDragEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  // Return true if the release event is handled by drag & drop.
+  bool HandleReleaseEvent(DeskMiniView* mini_view,
+                          const ui::LocatedEvent& event);
+
+  // Trigger drag & drop. Create a proxy for the dragged desk.
+  void StartDragDesk(DeskMiniView* mini_view,
+                     const gfx::PointF& location_in_screen);
+  // Reorder desks according to the drag proxy's location. Return true if the
+  // dragged desk is reordered.
+  bool ContinueDragDesk(DeskMiniView* mini_view,
+                        const gfx::PointF& location_in_screen);
+  // Snap back the drag proxy to the drag view's location. Return true if
+  // current drag is ended.
+  bool EndDragDesk(DeskMiniView* mini_view, bool end_by_user);
+  // Reset the drag view and the drag proxy.
+  void FinalizeDragDesk();
+  // If a desk is in a drag & drop cycle.
+  bool IsDraggingDesk() const;
 
   // views::View:
   const char* GetClassName() const override;
@@ -119,6 +143,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
   void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
@@ -195,6 +220,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_;
   ZeroStateNewDeskButton* zero_state_new_desk_button_;
   ExpandedStateNewDeskButton* expanded_state_new_desk_button_;
+  // Mini view whose preview is being dragged.
+  DeskMiniView* drag_view_ = nullptr;
+  // Drag proxy for the dragged desk.
+  std::unique_ptr<DeskDragProxy> drag_proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };
