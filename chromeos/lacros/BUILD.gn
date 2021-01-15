@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/rules.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/lacros/lacros_resource_sizes.gni")
@@ -29,4 +30,42 @@ component("lacros") {
 
 lacros_resource_sizes_test("resource_sizes_lacros_chrome") {
   data_deps = [ "//chrome:chrome" ]
+}
+
+# "cros_board" set in the GN args defines the board used to build lacros-chrome,
+# while the "override_board" here defines the board on which to test the built
+# binary, for more details, please refer to the "generate_runner_script"
+# template in //build/config/chromeos/rules.gni.
+template("lacros_tast_test_helper") {
+  forward_variables_from(invoker, [ "override_board" ])
+  assert(defined(override_board), "override_board is required")
+  lacros_tast_test(target_name) {
+    # TODO(crbug.com/1158590): use --attr-expr instead of hard-coding the tests.
+    tast_tests = [
+      "lacros.AudioPlay",
+      "lacros.AppLauncherLaunch",
+      "lacros.Basic",
+      "lacros.ShelfLaunch",
+    ]
+  }
+}
+
+# On Chromium CI, only a very limited number of boards are supported:
+# amd64-generic, eve, kevin etc, so just hard-coding them for simplicity.
+if (is_chromeos_device) {
+  _boards = string_split(cros_boards, ":") +
+            string_split(cros_boards_with_qemu_images, ":")
+  foreach(b, _boards) {
+    if (b == "amd64-generic") {
+      lacros_tast_test_helper("lacros_tast_tests_amd64_generic") {
+        override_board = "amd64-generic"
+      }
+    }
+
+    if (b == "eve") {
+      lacros_tast_test_helper("lacros_tast_tests_eve") {
+        override_board = "eve"
+      }
+    }
+  }
 }
