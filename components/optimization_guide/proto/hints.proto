@@ -245,14 +245,22 @@ message BloomFilter {
 }
 
 // A scalable filter for an optimization type.
+//
+// Next ID: 6
 message OptimizationFilter {
   // The type of optimization this filter applies to.
   optional OptimizationType optimization_type = 1;
   // The filter data represented as a Bloom filter.
   optional BloomFilter bloom_filter = 2;
   // Additional filters represented as regexps matched against the main page
-  // URL.
+  // URL. If matched, the URL will be considered as contained in the filter.
   repeated string regexps = 3;
+  // Additional filters represented as regexps matched against the main page
+  // URL. If matched, the URL will be considered as not contained in the filter.
+  //
+  // This set of regexps should be checked prior to any matching against the
+  // contained bloom_filter or regexps fields.
+  repeated string exclusion_regexps = 5;
   // Whether additional host suffixes (other than the host) should be checked
   // against the filter.
   optional bool skip_host_suffix_checking = 4;

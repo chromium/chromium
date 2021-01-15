@@ -19,16 +19,14 @@ namespace optimization_guide {
 typedef std::vector<std::unique_ptr<re2::RE2>> RegexpList;
 
 // OptimizationFilter represents a filter with two underlying implementations: a
-// Bloom filter and a set of regexps. This class has a 1:1 mapping with an
+// Bloom filter and sets of regexps. This class has a 1:1 mapping with an
 // OptimizationFilter protobuf message where this is the logical implementation
 // of the proto data.
-//
-// TODO(dougarnett): consider moving this and BloomFilter under
-// components/blacklist/.
 class OptimizationFilter {
  public:
   explicit OptimizationFilter(std::unique_ptr<BloomFilter> bloom_filter,
                               std::unique_ptr<RegexpList> regexps,
+                              std::unique_ptr<RegexpList> exclusion_regexps,
                               bool skip_host_suffix_checking);
 
   ~OptimizationFilter();
@@ -50,12 +48,11 @@ class OptimizationFilter {
   // This method will return true if any of those suffixes are present.
   bool ContainsHostSuffix(const GURL& url) const;
 
-  // Returns whether this filter contains a regexp that matches the given url.
-  bool MatchesRegexp(const GURL& url) const;
-
   std::unique_ptr<BloomFilter> bloom_filter_;
 
   std::unique_ptr<RegexpList> regexps_;
+
+  std::unique_ptr<RegexpList> exclusion_regexps_;
 
   bool skip_host_suffix_checking_ = false;
 

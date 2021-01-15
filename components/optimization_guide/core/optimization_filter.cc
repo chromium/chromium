@@ -10,18 +10,42 @@
 
 namespace optimization_guide {
 
+namespace {
+
 // Maximum number of suffixes to check per url.
 const int kMaxSuffixCount = 5;
 
 // Realistic minimum length of a host suffix.
 const int kMinHostSuffix = 6;  // eg., abc.tv
 
+bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
+  if (!url.is_valid())
+    return false;
+
+  std::string clean_url = base::ToLowerASCII(url.GetAsReferrer().spec());
+  for (auto& regexp : regexps) {
+    if (!regexp->ok()) {
+      continue;
+    }
+
+    if (re2::RE2::PartialMatch(clean_url, *regexp)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
+
 OptimizationFilter::OptimizationFilter(
     std::unique_ptr<BloomFilter> bloom_filter,
     std::unique_ptr<RegexpList> regexps,
+    std::unique_ptr<RegexpList> exclusion_regexps,
     bool skip_host_suffix_checking)
     : bloom_filter_(std::move(bloom_filter)),
       regexps_(std::move(regexps)),
+      exclusion_regexps_(std::move(exclusion_regexps)),
       skip_host_suffix_checking_(skip_host_suffix_checking) {
   // May be created on one thread but used on another. The first call to
   // CalledOnValidSequence() will re-bind it.
@@ -32,12 +56,12 @@ OptimizationFilter::~OptimizationFilter() = default;
 
 bool OptimizationFilter::Matches(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ContainsHostSuffix(url) || MatchesRegexp(url);
+  if (exclusion_regexps_ && MatchesRegexp(url, *exclusion_regexps_))
+    return false;
+  return ContainsHostSuffix(url) || (regexps_ && MatchesRegexp(url, *regexps_));
 }
 
 bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!bloom_filter_)
     return false;
 
@@ -64,28 +88,6 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
         return true;
     }
   }
-  return false;
-}
-
-bool OptimizationFilter::MatchesRegexp(const GURL& url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!regexps_)
-    return false;
-
-  if (!url.is_valid())
-    return false;
-
-  std::string clean_url = base::ToLowerASCII(url.GetAsReferrer().spec());
-  for (auto& regexp : *regexps_) {
-    if (!regexp->ok()) {
-      continue;
-    }
-
-    if (re2::RE2::PartialMatch(clean_url, *regexp)) {
-      return true;
-    }
-  }
-
   return false;
 }
 
