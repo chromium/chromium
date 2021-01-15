@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -29,6 +30,19 @@ using mojom::ServiceState;
 using ::testing::StrictMock;
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
+
+// Tests if the JSON string contains the given path with the given value
+#define EXPECT_HAS_PATH_WITH_VALUE(config_string, path, expected_value)    \
+  ({                                                                       \
+    base::Optional<base::Value> config =                                   \
+        base::JSONReader::Read(config_string);                             \
+    ASSERT_TRUE(config.has_value());                                       \
+    const base::Value* actual = config->FindPath(path);                    \
+    base::Value expected = base::Value(expected_value);                    \
+    ASSERT_NE(actual, nullptr)                                             \
+        << "Path '" << path << "' not found in config: " << config_string; \
+    EXPECT_EQ(*actual, expected);                                          \
+  })
 
 class StateObserverMock : public mojom::StateObserver {
  public:
@@ -111,8 +125,8 @@ class AssistantServiceControllerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void Initialize(const std::string& libassistant_config = std::string("")) {
-    service_controller().Initialize(libassistant_config);
+  void Initialize(mojom::BootupConfigPtr config = mojom::BootupConfig::New()) {
+    service_controller().Initialize(std::move(config));
   }
 
   void Start() {
@@ -347,11 +361,14 @@ TEST_F(AssistantServiceControllerTest,
 }
 
 TEST_F(AssistantServiceControllerTest,
-       ShouldPassLibassistantConfigToAssistantManager) {
-  Initialize(/*libassistant_config=*/"the-libassistant-config");
-  Start();
+       ShouldPassS3ServerUriOverrideToMojomService) {
+  auto bootup_config = mojom::BootupConfig::New();
+  bootup_config->s3_server_uri_override = "the-s3-server-uri-override";
+  Initialize(std::move(bootup_config));
 
-  EXPECT_EQ("the-libassistant-config", delegate().libassistant_config());
+  EXPECT_HAS_PATH_WITH_VALUE(delegate().libassistant_config(),
+                             "testing.s3_grpc_server_uri",
+                             "the-s3-server-uri-override");
 }
 
 TEST_F(AssistantServiceControllerTest,

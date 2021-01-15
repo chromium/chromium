@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-shared.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void SetInitializeCallback(InitializeCallback callback);
 
   // mojom::ServiceController implementation:
-  void Initialize(const std::string& libassistant_config) override;
+  void Initialize(mojom::BootupConfigPtr libassistant_config) override;
   void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(

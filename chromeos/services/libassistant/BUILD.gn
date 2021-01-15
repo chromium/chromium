@@ -39,11 +39,15 @@ source_set("internal") {
     "platform_api.h",
     "service_controller.cc",
     "service_controller.h",
+    "util.cc",
+    "util.h",
   ]
 
   deps = [
+    "//build/util:webkit_version",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal/proto/google3",
+    "//chromeos/dbus",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",

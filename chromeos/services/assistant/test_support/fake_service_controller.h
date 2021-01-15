@@ -50,7 +50,9 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   State state() const { return state_; }
 
   // Returns the Libassistant config that was passed to Initialize().
-  std::string libassistant_config() { return libassistant_config_; }
+  const libassistant::mojom::BootupConfig& libassistant_config() {
+    return libassistant_config_;
+  }
 
   void Bind(mojo::PendingReceiver<libassistant::mojom::ServiceController>
                 pending_receiver);
@@ -73,7 +75,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   std::string gaia_id();
 
   // mojom::ServiceController implementation:
-  void Initialize(const std::string& libassistant_config) override;
+  void Initialize(libassistant::mojom::BootupConfigPtr config) override;
   void Start() override;
   void Stop() override;
   void AddAndFireStateObserver(
@@ -91,7 +93,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   std::mutex start_mutex_;
 
   // Config passed to LibAssistant when it was started.
-  std::string libassistant_config_;
+  libassistant::mojom::BootupConfig libassistant_config_;
 
   // Authentication tokens passed to SetAuthenticationTokens().
   std::vector<libassistant::mojom::AuthenticationTokenPtr>

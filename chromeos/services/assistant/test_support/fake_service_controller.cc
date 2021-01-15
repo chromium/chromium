@@ -63,8 +63,9 @@ std::string FakeServiceController::gaia_id() {
     return kNoValue;
 }
 
-void FakeServiceController::Initialize(const std::string& libassistant_config) {
-  libassistant_config_ = libassistant_config;
+void FakeServiceController::Initialize(
+    libassistant::mojom::BootupConfigPtr config) {
+  libassistant_config_ = std::move(*config);
 }
 
 void FakeServiceController::Start() {

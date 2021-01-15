@@ -16,14 +16,13 @@ enum ServiceState {
 // Interface managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 interface ServiceController {
-
   // Initialize the service. This must be called before Start() and before
   // restarting the service (so between all Stop() and Start() calls).
   // Will be a noop if the service is started or running.
   // Note that calling Initialize() will not cause any change in the service
   // state, as the service will remain in state |kStopped| until Start() is
   // called.
-  Initialize(string libassistant_config);
+  Initialize(BootupConfig bootup_config);
 
   // Start the service. Can be called multiple times, and will be a noop if
   // the service is already started or running.
@@ -60,4 +59,16 @@ interface StateObserver {
 struct AuthenticationToken {
   string gaia_id;
   string access_token;
+};
+
+// Configuration settings that must be set to allow Libassistant to boot.
+struct BootupConfig {
+  // A custom URI for the S3 Server. Used to use a fake S3 server during
+  // unittests.
+  string? s3_server_uri_override;
+  // A custom device id. Used during unittests.
+  string? device_id_override;
+  // If true, Libassistant logs will appear in the user's home directory.
+  // If false, the logs will end up in /var/log/chrome/.
+  bool log_in_home_dir;
 };

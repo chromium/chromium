@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -153,6 +154,15 @@ const char* ToTriggerSource(AssistantEntryPoint entry_point) {
   }
 }
 
+bool ShouldPutLogsInHomeDirectory() {
+  // If this command line flag is specified, the logs should *not* be put in
+  // the home directory.
+  const bool redirect_logging =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kRedirectLibassistantLogging);
+  return !redirect_logging;
+}
+
 }  // namespace
 
 AssistantManagerServiceImpl::AssistantManagerServiceImpl(
@@ -174,8 +184,10 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       context_(context),
       delegate_(std::move(delegate)),
-      libassistant_config_(
-          CreateLibAssistantConfig(s3_server_uri_override, device_id_override)),
+      bootup_config_(ServiceControllerProxy::BootupConfig::New(
+          s3_server_uri_override,
+          device_id_override,
+          ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
   platform_api_ = delegate_->CreatePlatformApi(
       media_session_.get(),
@@ -1017,7 +1029,7 @@ void AssistantManagerServiceImpl::InitAssistant(
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
       /*device_state_listener=*/this,
-      /*event_observer=*/this, libassistant_config_, locale,
+      /*event_observer=*/this, std::move(bootup_config_), locale,
       GetLocaleOrDefault(assistant_state()->locale().value()),
       spoken_feedback_enabled_, ToAuthTokensOrEmpty(user),
       base::BindOnce(&AssistantManagerServiceImpl::PostInitAssistant,

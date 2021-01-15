@@ -11,6 +11,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
+#include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace chromeos {
@@ -28,6 +29,12 @@ std::vector<std::pair<std::string, std::string>> ToAuthTokens(
     result.emplace_back(token->gaia_id, token->access_token);
 
   return result;
+}
+
+std::string ToLibassistantConfig(const mojom::BootupConfig& bootup_config) {
+  return CreateLibAssistantConfig(bootup_config.s3_server_uri_override,
+                                  bootup_config.device_id_override,
+                                  bootup_config.log_in_home_dir);
 }
 
 }  // namespace
@@ -53,14 +60,14 @@ void ServiceController::SetInitializeCallback(InitializeCallback callback) {
   initialize_callback_ = std::move(callback);
 }
 
-void ServiceController::Initialize(const std::string& libassistant_config) {
+void ServiceController::Initialize(mojom::BootupConfigPtr config) {
   if (assistant_manager_ != nullptr) {
     LOG(ERROR) << "Initialize() should only be called once.";
     return;
   }
 
-  assistant_manager_ =
-      delegate_->CreateAssistantManager(platform_api_, libassistant_config);
+  assistant_manager_ = delegate_->CreateAssistantManager(
+      platform_api_, ToLibassistantConfig(*config));
   assistant_manager_internal_ =
       delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
 

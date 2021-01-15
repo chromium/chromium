@@ -205,7 +205,8 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   void CreateAssistantManagerServiceImpl(
-      base::Optional<std::string> s3_server_uri_override = base::nullopt) {
+      base::Optional<std::string> s3_server_uri_override = base::nullopt,
+      base::Optional<std::string> device_id_override = base::nullopt) {
     // We can not have 2 instances of |AssistantManagerServiceImpl| at the same
     // time, so we must destroy the old one before creating a new one.
     assistant_manager_service_.reset();
@@ -214,7 +215,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
         service_context_.get(),
         std::make_unique<FakeAssistantManagerServiceDelegate>(),
         shared_url_loader_factory_->Clone(), s3_server_uri_override,
-        /*device_id_override=*/base::nullopt,
+        device_id_override,
         std::make_unique<FakeLibassistantServiceHost>(&libassistant_service_));
   }
 
@@ -355,19 +356,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(AssistantManagerServiceImplTest);
 };
 
-// Tests if the JSON string contains the given path with the given value
-#define EXPECT_HAS_PATH_WITH_VALUE(config_string, path, expected_value)    \
-  ({                                                                       \
-    base::Optional<base::Value> config =                                   \
-        base::JSONReader::Read(config_string);                             \
-    ASSERT_TRUE(config.has_value());                                       \
-    const base::Value* actual = config->FindPath(path);                    \
-    base::Value expected = base::Value(expected_value);                    \
-    ASSERT_NE(actual, nullptr)                                             \
-        << "Path '" << path << "' not found in config: " << config_string; \
-    EXPECT_EQ(*actual, expected);                                          \
-  })
-
 }  // namespace
 
 TEST_F(AssistantManagerServiceImplTest, StateShouldStartAsStopped) {
@@ -479,14 +467,30 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       ShouldPassS3ServerUriOverrideToAssistantManager) {
+       ShouldPassS3ServerUriOverrideToMojomService) {
   CreateAssistantManagerServiceImpl("the-uri-override");
 
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
-  EXPECT_HAS_PATH_WITH_VALUE(mojom_service_controller().libassistant_config(),
-                             "testing.s3_grpc_server_uri", "the-uri-override");
+  EXPECT_EQ(mojom_service_controller()
+                .libassistant_config()
+                .s3_server_uri_override.value_or("<none>"),
+            "the-uri-override");
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldPassDeviceIdOverrideToMojomService) {
+  CreateAssistantManagerServiceImpl(
+      /*s3_server_uri_override=*/base::nullopt, "the-device-id-override");
+
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  EXPECT_EQ(mojom_service_controller()
+                .libassistant_config()
+                .device_id_override.value_or("<none>"),
+            "the-device-id-override");
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {

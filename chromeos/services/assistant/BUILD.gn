@@ -35,7 +35,6 @@ component("lib") {
 
   deps = [
     "//base",
-    "//build/util:webkit_version",
     "//chromeos/assistant:buildflags",
     "//chromeos/audio",
     "//chromeos/constants",

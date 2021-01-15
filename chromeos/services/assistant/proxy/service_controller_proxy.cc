@@ -16,6 +16,7 @@
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
+#include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 
@@ -129,7 +130,7 @@ void ServiceControllerProxy::Start(
     assistant_client::ConversationStateListener* conversation_state_listener,
     assistant_client::DeviceStateListener* device_state_listener,
     AssistantEventObserver* event_observer,
-    const std::string& libassistant_config,
+    BootupConfigPtr bootup_config,
     const std::string& locale,
     const std::string& locale_override,
     bool spoken_feedback_enabled,
@@ -144,7 +145,7 @@ void ServiceControllerProxy::Start(
       assistant::features::IsMediaSessionIntegrationEnabled());
 
   // The mojom service will create the |AssistantManager|.
-  service_controller_remote_->Initialize(libassistant_config);
+  service_controller_remote_->Initialize(std::move(bootup_config));
   service_controller_remote_->SetLocaleOverride(locale_override);
   UpdateInternalOptions(locale, spoken_feedback_enabled);
   SetAuthTokens(auth_tokens);

@@ -40,6 +40,8 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
  public:
   // Each authentication token exists of a [gaia_id, access_token] tuple.
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
+  using BootupConfig = libassistant::mojom::BootupConfig;
+  using BootupConfigPtr = libassistant::mojom::BootupConfigPtr;
 
   ServiceControllerProxy(
       LibassistantServiceHost* host,
@@ -68,7 +70,7 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
       assistant_client::ConversationStateListener* conversation_state_listener,
       assistant_client::DeviceStateListener* device_state_listener,
       AssistantEventObserver* event_observer,
-      const std::string& libassistant_config,
+      BootupConfigPtr bootup_config,
       const std::string& locale,
       const std::string& locale_override,
       bool spoken_feedback_enabled,

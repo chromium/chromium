@@ -27,6 +27,7 @@
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
+#include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -363,7 +364,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       base::UnguessableToken::Null();
 
   // Configuration passed to libassistant.
-  std::string libassistant_config_;
+  ServiceControllerProxy::BootupConfigPtr bootup_config_;
 
   base::TimeDelta stop_interactioin_delay_ =
       base::TimeDelta::FromMilliseconds(500);
