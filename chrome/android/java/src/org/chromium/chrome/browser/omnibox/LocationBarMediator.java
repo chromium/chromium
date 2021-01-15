@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -50,6 +51,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,8 +68,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final LocationBarLayout mLocationBarLayout;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     private final LocationBarDataProvider mLocationBarDataProvider;
-    private AssistantVoiceSearchService mAssistantVoiceSearchService;
-    private final OneshotSupplierImpl<AssistantVoiceSearchService> mAssistantVoiceSearchSupplier;
+    private final OneshotSupplierImpl<AssistantVoiceSearchService>
+            mAssistantVoiceSearchServiceSupplier = new OneshotSupplierImpl<>();
     private StatusCoordinator mStatusCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private OmniboxPrerender mOmniboxPrerender;
@@ -80,24 +82,26 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final List<Runnable> mDeferredNativeRunnables = new ArrayList<>();
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private TemplateUrl mSearchEngine;
+    private final Context mContext;
 
     private boolean mNativeInitialized;
 
-    /*package */ LocationBarMediator(@NonNull LocationBarLayout locationBarLayout,
+    /*package */ LocationBarMediator(@NonNull Context context,
+            @NonNull LocationBarLayout locationBarLayout,
             @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier) {
+        mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
         mLocationBarDataProvider.addObserver(this);
-        mAssistantVoiceSearchSupplier = assistantVoiceSearchSupplier;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mLocaleManager = localeManager;
-        mVoiceRecognitionHandler = new VoiceRecognitionHandler(this, mAssistantVoiceSearchSupplier);
+        mVoiceRecognitionHandler =
+                new VoiceRecognitionHandler(this, mAssistantVoiceSearchServiceSupplier);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
         mPrivacyPreferencesManager = privacyPreferencesManager;
@@ -120,9 +124,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /*package */ void destroy() {
-        if (mAssistantVoiceSearchService != null) {
-            mAssistantVoiceSearchService.destroy();
-            mAssistantVoiceSearchService = null;
+        if (mAssistantVoiceSearchServiceSupplier.get() != null) {
+            mAssistantVoiceSearchServiceSupplier.get().destroy();
         }
         mStatusCoordinator = null;
         mAutocompleteCoordinator = null;
@@ -140,19 +143,22 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
         mLocationBarLayout.onUrlFocusChange(hasFocus);
+        onPrimaryColorChanged();
+        mLocationBarLayout.updateStatusVisibility();
     }
 
     /*package */ void onFinishNativeInitialization() {
         mNativeInitialized = true;
         mTemplateUrlServiceSupplier.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mOmniboxPrerender = new OmniboxPrerender();
-        Context context = mLocationBarLayout.getContext();
-        mAssistantVoiceSearchService = new AssistantVoiceSearchService(context,
+        mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
-                GSAState.getInstance(context), this, SharedPreferencesManager.getInstance());
-        mAssistantVoiceSearchSupplier.set(mAssistantVoiceSearchService);
+                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance()));
+        onAssistantVoiceSearchServiceChanged();
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());
+        onPrimaryColorChanged();
+        mLocationBarLayout.updateStatusVisibility();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
             mLocationBarLayout.post(deferredRunnable);
@@ -174,8 +180,19 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mLocationBarLayout.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
+    /* package */ void setAssistantVoiceSearchServiceForTesting(
+            AssistantVoiceSearchService assistantVoiceSearchService) {
+        mAssistantVoiceSearchServiceSupplier.set(assistantVoiceSearchService);
+        onAssistantVoiceSearchServiceChanged();
+    }
+
+    /* package */ OneshotSupplier<AssistantVoiceSearchService>
+    getAssistantVoiceSearchServiceSupplierForTesting() {
+        return mAssistantVoiceSearchServiceSupplier;
+    }
+
     /*package */ void updateVisualsForState() {
-        mLocationBarLayout.onPrimaryColorChanged();
+        onPrimaryColorChanged();
     }
 
     /*package */ void setShowTitle(boolean showTitle) {
@@ -350,6 +367,54 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
     }
 
+    @VisibleForTesting
+    /* package */ void updateAssistantVoiceSearchDrawableAndColors() {
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        if (assistantVoiceSearchService == null) return;
+
+        mLocationBarLayout.setMicButtonTint(assistantVoiceSearchService.getMicButtonColorStateList(
+                getPrimaryBackgroundColor(), mContext));
+        mLocationBarLayout.setMicButtonDrawable(
+                assistantVoiceSearchService.getCurrentMicDrawable());
+    }
+
+    /**
+     * Update visuals to use a correct light or dark color scheme depending on the primary color.
+     */
+    @VisibleForTesting
+    /* package */ void updateUseDarkColors() {
+        // TODO(crbug.com/1114183): Unify light and dark color logic in chrome and make it clear
+        // whether the foreground or background color is dark.
+        final boolean useDarkColors =
+                !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryBackgroundColor());
+
+        mLocationBarLayout.setDeleteButtonTint(
+                ChromeColors.getPrimaryIconTint(mContext, !useDarkColors));
+        // If the URL changed colors and is not focused, update the URL to account for the new
+        // color scheme.
+        if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !isUrlBarFocused()) {
+            mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+        }
+        mStatusCoordinator.setUseDarkColors(useDarkColors);
+        if (mAutocompleteCoordinator != null) {
+            mAutocompleteCoordinator.updateVisualsForState(
+                    useDarkColors, mLocationBarDataProvider.isIncognito());
+        }
+    }
+
+    /** Returns the primary color based on the url focus, and incognito state. */
+    private int getPrimaryBackgroundColor() {
+        // If the url bar is focused, the toolbar background color is the default color regardless
+        // of whether it is branded or not.
+        if (isUrlBarFocused()) {
+            return ChromeColors.getDefaultThemeColor(
+                    mContext.getResources(), mLocationBarDataProvider.isIncognito());
+        } else {
+            return mLocationBarDataProvider.getPrimaryColor();
+        }
+    }
+
     // LocationBarData.Observer implementation
     // Using the default empty onSecurityStateChanged.
     // Using the default empty onTitleChanged.
@@ -366,7 +431,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void onPrimaryColorChanged() {
-        mLocationBarLayout.onPrimaryColorChanged();
+        updateAssistantVoiceSearchDrawableAndColors();
+        updateUseDarkColors();
+        mLocationBarLayout.updateStatusVisibility();
     }
 
     @Override
@@ -443,7 +510,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void onAssistantVoiceSearchServiceChanged() {
-        mLocationBarLayout.onAssistantVoiceSearchServiceChanged();
+        updateAssistantVoiceSearchDrawableAndColors();
     }
 
     // VoiceRecognitionHandler.Delegate implementation.

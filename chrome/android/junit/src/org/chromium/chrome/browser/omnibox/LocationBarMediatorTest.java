@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -13,17 +14,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -39,8 +40,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BuildConfig;
@@ -85,9 +88,7 @@ public class LocationBarMediatorTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    LocationBarLayout mLocationBarLayout;
-    @Mock
-    Context mContext;
+    private LocationBarLayout mLocationBarLayout;
     @Mock
     private TemplateUrlService mTemplateUrlService;
     @Mock
@@ -137,14 +138,14 @@ public class LocationBarMediatorTest {
 
     @Before
     public void setUp() {
-        doReturn(mContext).when(mLocationBarLayout).getContext();
         doReturn(mTemplateUrlService).when(mTemplateUrlServiceSupplier).get();
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
-        mMediator = new LocationBarMediator(mLocationBarLayout, mLocationBarDataProvider,
-                mAssistantVoiceSearchSupplier, mProfileSupplier, mPrivacyPreferencesManager,
-                mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier);
+        mMediator = new LocationBarMediator(/* context= */ RuntimeEnvironment.application,
+                mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
+                mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
+                mTemplateUrlServiceSupplier);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
     }
@@ -152,14 +153,14 @@ public class LocationBarMediatorTest {
     @Test
     public void testVoiceSearchService_initializedWithNative() {
         mMediator.onFinishNativeInitialization();
-        verify(mAssistantVoiceSearchSupplier).set(notNull());
+        assertNotNull(mMediator.getAssistantVoiceSearchServiceSupplierForTesting().get());
     }
 
     @Test
     @Features.DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
     public void testVoiceSearchService_initializedWithNative_featureDisabled() {
         mMediator.onFinishNativeInitialization();
-        verify(mAssistantVoiceSearchSupplier).set(notNull());
+        assertNotNull(mMediator.getAssistantVoiceSearchServiceSupplierForTesting().get());
     }
 
     @Test
@@ -540,6 +541,45 @@ public class LocationBarMediatorTest {
                 .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
                                                       mLocationBarDataProvider.isIncognito()),
                         false, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+    }
+
+    @Test
+    public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
+        AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
+        ColorStateList csl = Mockito.mock(ColorStateList.class);
+        doReturn(csl).when(avs).getMicButtonColorStateList(anyInt(), anyObject());
+        mMediator.setAssistantVoiceSearchServiceForTesting(avs);
+
+        verify(mLocationBarLayout).setMicButtonTint(csl);
+    }
+
+    @Test
+    public void testUpdateAssistantVoiceSearchDrawablesAndColors_serviceNull() {
+        mMediator.updateAssistantVoiceSearchDrawableAndColors();
+        // If the service is null, the update method bails out.
+        verify(mLocationBarLayout, Mockito.times(0)).setMicButtonTint(/* arbitrary value */ null);
+    }
+
+    @Test
+    public void testUpdateUseDarkColors() {
+        mMediator.updateUseDarkColors();
+        verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
+        verify(mStatusCoordinator).setUseDarkColors(false);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(/* useDarkColors= */ false, /* incognito= */ false);
+    }
+
+    @Test
+    public void testUpdateUseDarkColors_setUseDarkTextColors() {
+        doReturn("https://www.google.com").when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(true).when(mUrlCoordinator).setUseDarkTextColors(false);
+
+        mMediator.updateUseDarkColors();
+        verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
+        verify(mLocationBarLayout).setUrl("https://www.google.com");
+        verify(mStatusCoordinator).setUseDarkColors(false);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(/* useDarkColors= */ false, /* incognito= */ false);
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

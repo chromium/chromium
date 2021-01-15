@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -117,15 +116,12 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mAutocompleteAnchorView = autocompleteAnchorView;
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
-        OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
-                new OneshotSupplierImpl();
         // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
-        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
-                assistantVoiceSearchSupplier, profileObservableSupplier,
+        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
+                mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier);
-
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -155,7 +151,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, windowDelegate, windowAndroid,
-                mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
+                mLocationBarMediator.getVoiceRecognitionHandler());
 
         if (locationBarLayout instanceof LocationBarPhone) {
             mSubCoordinator = new LocationBarCoordinatorPhone(

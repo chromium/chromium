@@ -172,14 +172,6 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    public void onPrimaryColorChanged() {
-        super.onPrimaryColorChanged();
-        boolean isIncognito = mLocationBarDataProvider.isIncognito();
-        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
-        updateStatusVisibility();
-    }
-
-    @Override
     protected void onNtpStartedLoading() {
         super.onNtpStartedLoading();
         updateStatusVisibility();
@@ -219,8 +211,11 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     /** Update the status visibility according to the current state held in LocationBar. */
-    private void updateStatusVisibility() {
+    @Override
+    /* package */ void updateStatusVisibility() {
         boolean incognito = mLocationBarDataProvider.isIncognito();
+        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito));
+
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito)) {
             return;
         }

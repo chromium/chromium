@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -28,7 +30,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -37,15 +38,12 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,8 +88,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
-
-    private OneshotSupplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -158,17 +154,13 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
-            @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
         mWindowAndroid = windowAndroid;
         mLocationBarDataProvider = locationBarDataProvider;
         mVoiceRecognitionHandler = voiceRecognitionHandler;
-        mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchSupplier;
-        mAssistantVoiceSearchServiceSupplier.onAvailable(
-                (assistantVoiceSearchService) -> onAssistantVoiceSearchServiceChanged());
 
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
@@ -194,8 +186,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         }
         mDeferredNativeRunnables.clear();
 
-        onPrimaryColorChanged();
-
         updateMicButtonVisibility();
     }
 
@@ -209,6 +199,18 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     /* package */ void setIsUrlFocusedWithoutAnimations(boolean isUrlFocusedWithoutAnimations) {
         mUrlFocusedWithoutAnimations = isUrlFocusedWithoutAnimations;
+    }
+
+    /* package */ void setMicButtonDrawable(Drawable drawable) {
+        mMicButton.setImageDrawable(drawable);
+    }
+
+    /* package */ void setMicButtonTint(ColorStateList colorStateList) {
+        ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
+    }
+
+    /* package */ void setDeleteButtonTint(ColorStateList colorStateList) {
+        ApiCompatibilityUtils.setImageTintList(mDeleteButton, colorStateList);
     }
 
     /**
@@ -312,48 +314,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         if (visibility == View.VISIBLE) updateMicButtonState();
     }
 
-    /** Updates visuals after the primary color has changed. */
-    @CallSuper
-    public void onPrimaryColorChanged() {
-        updateAssistantVoiceSearchDrawableAndColors();
-        updateUseDarkColors();
-    }
-
-    /**
-     * Update visuals to use a correct light or dark color scheme depending on the primary color.
-     */
-    private void updateUseDarkColors() {
-        // TODO(crbug.com/1114183): Unify light and dark color logic in chrome and make it clear
-        // whether the foreground or background color is dark.
-        final boolean useDarkColors =
-                !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryBackgroundColor());
-
-        ApiCompatibilityUtils.setImageTintList(
-                mDeleteButton, ChromeColors.getPrimaryIconTint(getContext(), !useDarkColors));
-        // If the URL changed colors and is not focused, update the URL to account for the new
-        // color scheme.
-        if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !mUrlBar.hasFocus()) {
-            setUrl(mLocationBarDataProvider.getCurrentUrl());
-        }
-        mStatusCoordinator.setUseDarkColors(useDarkColors);
-        if (mAutocompleteCoordinator != null) {
-            mAutocompleteCoordinator.updateVisualsForState(
-                    useDarkColors, mLocationBarDataProvider.isIncognito());
-        }
-    }
-
-    /** Returns the primary color based on the url focus, and incognito state. */
-    private int getPrimaryBackgroundColor() {
-        // If the url bar is focused, the toolbar background color is the default color regardless
-        // of whether it is branded or not.
-        if (mUrlHasFocus) {
-            return ChromeColors.getDefaultThemeColor(
-                    getResources(), mLocationBarDataProvider.isIncognito());
-        } else {
-            return mLocationBarDataProvider.getPrimaryColor();
-        }
-    }
-
     protected void onNtpStartedLoading() {}
 
     public View getContainerView() {
@@ -366,21 +326,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     protected WindowAndroid getWindowAndroid() {
         return mWindowAndroid;
-    }
-
-    /* package */ void onAssistantVoiceSearchServiceChanged() {
-        updateAssistantVoiceSearchDrawableAndColors();
-    }
-
-    private void updateAssistantVoiceSearchDrawableAndColors() {
-        AssistantVoiceSearchService assistantVoiceSearchService =
-                mAssistantVoiceSearchServiceSupplier.get();
-        if (assistantVoiceSearchService == null) return;
-
-        ApiCompatibilityUtils.setImageTintList(mMicButton,
-                assistantVoiceSearchService.getMicButtonColorStateList(
-                        getPrimaryBackgroundColor(), getContext()));
-        mMicButton.setImageDrawable(assistantVoiceSearchService.getCurrentMicDrawable());
     }
 
     /**
@@ -498,7 +443,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mUrlHasFocus = hasFocus;
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
-        onPrimaryColorChanged();
 
         if (mUrlHasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
@@ -780,6 +724,9 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
     }
+
+    /** Update the status visibility according to the current state held in LocationBar. */
+    /* package */ void updateStatusVisibility() {}
 
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {

@@ -341,14 +341,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithGoogle(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
+        onView(withId(R.id.location_bar_status)).check(matches(not(isDisplayed())));
 
-        onView(withId(R.id.location_bar_status))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
-
-        // Focus the UrlBar and check that the status view is VISIBLE.
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -360,18 +356,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithGoogle(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ true);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals("Should be gone when unfocused", GONE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals("Should be gone when focused", GONE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -385,13 +373,10 @@ public class LocationBarLayoutTest {
         Tab tab = loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -402,20 +387,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithGoogle(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ false);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals(
-                                        "Status should be visible when unfocused on a site.",
-                                        VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals(
-                                        "Status should be visible when focused on a site.", VISIBLE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -427,14 +402,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithGoogle(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ true);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -448,32 +419,25 @@ public class LocationBarLayoutTest {
                 UrlConstants.CHROME_BLANK_URL, /* incognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntp_nonGoogle() {
+    public void testOmniboxSearchEngineLogo_ntp_nonGoogleg() {
         final LocationBarLayout locationBar = getLocationBar();
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithYahoo(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
+        onView(withId(R.id.location_bar_status)).check(matches(not(isDisplayed())));
 
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
-
-        // Focus the UrlBar and check that the status view is VISIBLE.
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -485,18 +449,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithYahoo(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ true);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals("Should be gone when unfocused", GONE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals("Should be gone when focused", GONE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -510,13 +466,10 @@ public class LocationBarLayoutTest {
         Tab tab = loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -527,20 +480,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithYahoo(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ false);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals(
-                                        "Status should be visible when unfocused on a site.",
-                                        VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e)
-                                -> Assert.assertEquals(
-                                        "Status should be visible when focused on a site.", VISIBLE,
-                                        statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -552,14 +495,10 @@ public class LocationBarLayoutTest {
         final View statusIconView = getStatusIconView();
         updateSearchEngineLogoWithYahoo(locationBar);
         loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ true);
-
-        // The status view should be hidden in both focused/unfocused while incognito.
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(GONE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -573,13 +512,10 @@ public class LocationBarLayoutTest {
                 UrlConstants.CHROME_BLANK_URL, /* incognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
 
         setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon))
-                .check((view, e) -> Assert.assertEquals(VISIBLE, statusIconView.getVisibility()));
+        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
     }
 
     @Test
