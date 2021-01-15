@@ -8,6 +8,12 @@ import("//build/config/sanitizers/sanitizers.gni")
 # Sanitizers replace the allocator, don't use our own.
 _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 
+# - Windows: shims don't work for component builds and debug CRT is not
+# compatible, see below.
+# - Android: symbol wrapping is not universal for component builds.
+_disable_partition_alloc = (is_win && (is_component_build || is_debug)) ||
+                           (is_android && is_component_build)
+
 # The debug CRT on Windows has some debug features that are incompatible with
 # the shim. NaCl in particular does seem to link some binaries statically
 # against the debug CRT with "is_nacl=false".
@@ -18,9 +24,8 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
   _default_use_allocator_shim = false
 }
 
-# TODO(https://crbug.com/1166748): android/x86 is temporarily disabled.
-if (_default_use_allocator_shim &&
-    (is_win || (is_android && target_cpu != "x86"))) {
+if (_default_use_allocator_shim && (is_win || is_android) &&
+    !_disable_partition_alloc) {
   _default_allocator = "partition"
 } else if (is_android || is_apple || _is_using_sanitizers || is_win ||
            is_fuchsia || ((is_linux || is_chromeos) && target_cpu == "arm64") ||
