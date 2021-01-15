@@ -263,7 +263,6 @@
 #include "content/browser/plugin_service_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
-#include "content/browser/renderer_host/render_frame_message_filter.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
 #endif
 
@@ -1926,10 +1925,6 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   AddFilter(render_message_filter.get());
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  AddFilter(new RenderFrameMessageFilter(
-      GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
-      storage_partition_impl_));
-
   AddFilter(new PepperRendererConnection(
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
       storage_partition_impl_));

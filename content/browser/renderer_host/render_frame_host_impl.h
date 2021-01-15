@@ -2186,6 +2186,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<mojom::PepperHungDetectorHost> hung_host,
       int32_t plugin_child_id,
       const base::FilePath& path) override;
+  void GetPluginInfo(const GURL& url,
+                     const url::Origin& main_frame_origin,
+                     const std::string& mime_type,
+                     GetPluginInfoCallback callback) override;
 
   // mojom::PepperHungDetectorHost overrides:
   void PluginHung(bool is_hung) override;

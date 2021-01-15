@@ -2399,8 +2399,6 @@ source_set("browser") {
       "renderer_host/pepper/quota_reservation.h",
       "renderer_host/plugin_registry_impl.cc",
       "renderer_host/plugin_registry_impl.h",
-      "renderer_host/render_frame_message_filter.cc",
-      "renderer_host/render_frame_message_filter.h",
     ]
     deps += [
       "//ppapi/host",

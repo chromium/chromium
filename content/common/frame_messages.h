@@ -234,22 +234,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Return information about a plugin for the given URL and MIME
-// type. If there is no matching plugin, |found| is false.
-// |actual_mime_type| is the actual mime type supported by the
-// found plugin.
-IPC_SYNC_MESSAGE_CONTROL4_3(FrameHostMsg_GetPluginInfo,
-                            int /* render_frame_id */,
-                            GURL /* url */,
-                            url::Origin /* main_frame_origin */,
-                            std::string /* mime_type */,
-                            bool /* found */,
-                            content::WebPluginInfo /* plugin info */,
-                            std::string /* actual_mime_type */)
-
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 // Used to tell the parent that the user right clicked on an area of the
 // content area, and a context menu should be shown for it. The params
 // object contains information about the node(s) that were selected when the

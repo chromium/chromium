@@ -266,6 +266,10 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/browser/plugin_service_impl.h"
+#endif
+
 namespace content {
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -10397,6 +10401,19 @@ void RenderFrameHostImpl::BindHungDetectorHost(
     const base::FilePath& path) {
   pepper_hung_detectors_.Add(this, std::move(hung_host),
                              {plugin_child_id, path});
+}
+
+void RenderFrameHostImpl::GetPluginInfo(const GURL& url,
+                                        const url::Origin& main_frame_origin,
+                                        const std::string& mime_type,
+                                        GetPluginInfoCallback callback) {
+  bool allow_wildcard = true;
+  WebPluginInfo info;
+  std::string actual_mime_type;
+  bool found = PluginServiceImpl::GetInstance()->GetPluginInfo(
+      GetProcess()->GetID(), routing_id_, url, main_frame_origin, mime_type,
+      allow_wildcard, nullptr, &info, &actual_mime_type);
+  std::move(callback).Run(found, info, actual_mime_type);
 }
 
 void RenderFrameHostImpl::PluginHung(bool is_hung) {

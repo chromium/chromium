@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "content/public/common/webplugininfo.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
 import "url/mojom/origin.mojom";
@@ -21,6 +22,18 @@ interface PepperHost {
   BindHungDetectorHost(pending_receiver<PepperHungDetectorHost> host,
              int32 plugin_child_id,
              mojo_base.mojom.FilePath plugin_path);
+
+  // Return information about a plugin for the given URL and MIME
+  // type. If there is no matching plugin, |found| is false.
+  // |actual_mime_type| is the actual mime type supported by the
+  // found plugin.
+  [Sync]
+  GetPluginInfo(url.mojom.Url url,
+                url.mojom.Origin main_frame_origin,
+                string mime_type) =>
+               (bool found,
+                content.mojom.WebPluginInfo plugin_info,
+                string actual_mime_type);
 };
 
 // Generic Pepper messages that run on the IO thread in the browser process.
@@ -49,13 +62,14 @@ interface PepperIOHost {
   // to the browser that assume the browser knows about the instance. We need to
   // make sure that the browser actually knows about the instance before we tell
   // the plugin to run.
-  [Sync] DidCreateOutOfProcessPepperInstance(int32 plugin_child_id,
-                                             int32 pp_instance,
-                                             bool is_external,
-                                             int32 frame_routing_id,
-                                             url.mojom.Url document_url,
-                                             url.mojom.Url plugin_url,
-                                             bool is_privileged_context) => ();
+  [Sync]
+  DidCreateOutOfProcessPepperInstance(int32 plugin_child_id,
+                                      int32 pp_instance,
+                                      bool is_external,
+                                      int32 frame_routing_id,
+                                      url.mojom.Url document_url,
+                                      url.mojom.Url plugin_url,
+                                      bool is_privileged_context) => ();
 
   // Notification that a plugin has destroyed an instance.
   DidDeleteOutOfProcessPepperInstance(int32 plugin_child_id,
@@ -79,12 +93,13 @@ interface PepperIOHost {
   // RenderFrameHostImpl::GetLastCommittedOrigin).
   //
   // On error null handles are returned.
-  [Sync] OpenChannelToPepperPlugin(url.mojom.Origin embedder_origin,
-                                   mojo_base.mojom.FilePath path,
-                                   url.mojom.Origin? origin_lock) =>
-                                   (handle<message_pipe>? handle_to_channel,
-                                    mojo_base.mojom.ProcessId plugin_pid,
-                                    int32 plugin_child_id);
+  [Sync]
+  OpenChannelToPepperPlugin(url.mojom.Origin embedder_origin,
+                            mojo_base.mojom.FilePath path,
+                            url.mojom.Origin? origin_lock) =>
+                           (handle<message_pipe>? handle_to_channel,
+                            mojo_base.mojom.ProcessId plugin_pid,
+                            int32 plugin_child_id);
 };
 
 // This interface is used on the renderer IO thread and is received on the
