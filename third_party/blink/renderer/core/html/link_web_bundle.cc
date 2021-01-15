@@ -209,7 +209,7 @@ void LinkWebBundle::OwnerRemoved() {
 bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
   if (!url.IsValid())
     return false;
-  if (!owner_ || !owner_->ValidResourceUrls().Contains(url))
+  if (!ResourcesOrScopesMatch(url))
     return false;
   if (url.Protocol() == "urn")
     return true;
@@ -230,6 +230,18 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
     return false;
   }
   return true;
+}
+
+bool LinkWebBundle::ResourcesOrScopesMatch(const KURL& url) const {
+  if (!owner_)
+    return false;
+  if (owner_->ValidResourceUrls().Contains(url))
+    return true;
+  for (const auto& scope : owner_->ValidScopeUrls()) {
+    if (url.GetString().StartsWith(scope.GetString()))
+      return true;
+  }
+  return false;
 }
 
 String LinkWebBundle::GetCacheIdentifier() const {

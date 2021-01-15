@@ -56,6 +56,8 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
   static KURL ParseResourceUrl(const AtomicString& str);
 
  private:
+  bool ResourcesOrScopesMatch(const KURL& url) const;
+
   Member<WebBundleLoader> bundle_loader_;
 };
 

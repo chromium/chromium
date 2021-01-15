@@ -3608,6 +3608,7 @@ interface HTMLLinkElement : HTMLElement
     getter relList
     getter resources
     getter rev
+    getter scopes
     getter sheet
     getter sizes
     getter target
@@ -3629,6 +3630,7 @@ interface HTMLLinkElement : HTMLElement
     setter relList
     setter resources
     setter rev
+    setter scopes
     setter sizes
     setter target
     setter type

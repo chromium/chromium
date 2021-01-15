@@ -59,4 +59,5 @@
     // https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md
     // crbug.com/1082020
     [RuntimeEnabled=SubresourceWebBundles, PutForwards=value] readonly attribute DOMTokenList resources;
+    [RuntimeEnabled=SubresourceWebBundles, PutForwards=value] readonly attribute DOMTokenList scopes;
 };

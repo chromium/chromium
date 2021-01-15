@@ -53,6 +53,23 @@
 
 namespace blink {
 
+namespace {
+
+void ParseUrlsListValue(const AtomicString& value, HashSet<KURL>& url_hash) {
+  // Parse the attribute value as a space-separated list of urls
+  SpaceSplitString urls(value);
+  url_hash.clear();
+  url_hash.ReserveCapacityForSize(SafeCast<wtf_size_t>(urls.size()));
+  for (wtf_size_t i = 0; i < urls.size(); ++i) {
+    KURL url = LinkWebBundle::ParseResourceUrl(urls[i]);
+    if (url.IsValid()) {
+      url_hash.insert(std::move(url));
+    }
+  }
+}
+
+}  // namespace
+
 HTMLLinkElement::HTMLLinkElement(Document& document,
                                  const CreateElementFlags flags)
     : HTMLElement(html_names::kLinkTag, document),
@@ -64,6 +81,8 @@ HTMLLinkElement::HTMLLinkElement(Document& document,
       resources_(
           MakeGarbageCollected<DOMTokenList>(*this,
                                              html_names::kResourcesAttr)),
+      scopes_(
+          MakeGarbageCollected<DOMTokenList>(*this, html_names::kScopesAttr)),
       created_by_parser_(flags.IsCreatedByParser()) {}
 
 HTMLLinkElement::~HTMLLinkElement() = default;
@@ -145,18 +164,13 @@ void HTMLLinkElement::ParseAttribute(
              RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
                  GetExecutionContext())) {
     resources_->DidUpdateAttributeValue(params.old_value, value);
-
-    // Parse the attribute value as a space-separated list of urls
-    SpaceSplitString urls(value);
-    valid_resource_urls_.clear();
-    valid_resource_urls_.ReserveCapacityForSize(
-        SafeCast<wtf_size_t>(urls.size()));
-    for (wtf_size_t i = 0; i < urls.size(); ++i) {
-      KURL url = LinkWebBundle::ParseResourceUrl(urls[i]);
-      if (url.IsValid()) {
-        valid_resource_urls_.insert(std::move(url));
-      }
-    }
+    ParseUrlsListValue(value, valid_resource_urls_);
+    Process();
+  } else if (name == html_names::kScopesAttr &&
+             RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
+                 GetExecutionContext())) {
+    scopes_->DidUpdateAttributeValue(params.old_value, value);
+    ParseUrlsListValue(value, valid_scope_urls_);
     Process();
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabled);
@@ -461,12 +475,17 @@ DOMTokenList* HTMLLinkElement::resources() const {
   return resources_.Get();
 }
 
+DOMTokenList* HTMLLinkElement::scopes() const {
+  return scopes_.Get();
+}
+
 void HTMLLinkElement::Trace(Visitor* visitor) const {
   visitor->Trace(link_);
   visitor->Trace(sizes_);
   visitor->Trace(link_loader_);
   visitor->Trace(rel_list_);
   visitor->Trace(resources_);
+  visitor->Trace(scopes_);
   HTMLElement::Trace(visitor);
   LinkLoaderClient::Trace(visitor);
 }

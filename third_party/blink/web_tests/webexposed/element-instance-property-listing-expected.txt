@@ -783,6 +783,7 @@ html element link
     property relList
     property resources
     property rev
+    property scopes
     property sheet
     property sizes
     property target
