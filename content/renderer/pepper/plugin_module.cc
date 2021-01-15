@@ -24,6 +24,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/host_dispatcher_wrapper.h"
 #include "content/renderer/pepper/host_globals.h"
+#include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -697,13 +698,19 @@ scoped_refptr<PluginModule> PluginModule::Create(
   }
 
   // Out of process: have the browser start the plugin process for us.
-  IPC::ChannelHandle channel_handle;
+  mojo::ScopedMessagePipeHandle channel_handle;
   base::ProcessId peer_pid = 0;
   int plugin_child_id = 0;
-  render_frame->Send(new FrameHostMsg_OpenChannelToPepperPlugin(
+  mojom::PepperIOHost* io_host =
+      PepperBrowserConnection::Get(render_frame)->GetIOHost();
+  if (!io_host) {
+    // Couldn't be initialized.
+    return scoped_refptr<PluginModule>();
+  }
+  io_host->OpenChannelToPepperPlugin(
       render_frame->GetWebFrame()->GetSecurityOrigin(), path, origin_lock,
-      &channel_handle, &peer_pid, &plugin_child_id));
-  if (!channel_handle.is_mojo_channel_handle()) {
+      &channel_handle, &peer_pid, &plugin_child_id);
+  if (!channel_handle.is_valid()) {
     // Couldn't be initialized.
     return scoped_refptr<PluginModule>();
   }
@@ -717,7 +724,7 @@ scoped_refptr<PluginModule> PluginModule::Create(
                                                      module.get());
 
   if (!module->CreateOutOfProcessModule(render_frame, path, permissions,
-                                        channel_handle, peer_pid,
+                                        channel_handle.release(), peer_pid,
                                         plugin_child_id, false,
                                         task_runner))  // is_external = false
     return scoped_refptr<PluginModule>();

@@ -248,31 +248,6 @@ IPC_SYNC_MESSAGE_CONTROL4_3(FrameHostMsg_GetPluginInfo,
                             content::WebPluginInfo /* plugin info */,
                             std::string /* actual_mime_type */)
 
-// A renderer sends this to the browser process when it wants to create a ppapi
-// plugin.  The browser will create the plugin process if necessary, and will
-// return a handle to the channel on success.
-//
-// The plugin_child_id is the ChildProcessHost ID assigned in the browser
-// process. This ID is valid only in the context of the browser process and is
-// used to identify the proper process when the renderer notifies it that the
-// plugin is hung.
-//
-// |embedder_origin| provides the origin of the frame that embeds the plugin
-// (i.e. the origin of the document that contains the <embed> html tag).
-// |embedder_origin| needs to be included in the message payload, because the
-// message is received and handled on the IO thread in the browser process
-// (where it is not possible to consult
-// RenderFrameHostImpl::GetLastCommittedOrigin).
-//
-// On error an empty string and null handles are returned.
-IPC_SYNC_MESSAGE_CONTROL3_3(FrameHostMsg_OpenChannelToPepperPlugin,
-                            url::Origin /* embedder_origin */,
-                            base::FilePath /* path */,
-                            base::Optional<url::Origin>, /* origin_lock */
-                            IPC::ChannelHandle /* handle to channel */,
-                            base::ProcessId /* plugin_pid */,
-                            int /* plugin_child_id */)
-
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // Used to tell the parent that the user right clicked on an area of the

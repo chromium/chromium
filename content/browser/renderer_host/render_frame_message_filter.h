@@ -60,8 +60,6 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
   friend class BrowserThread;
   friend class base::DeleteHelper<RenderFrameMessageFilter>;
 
-  class OpenChannelToPpapiPluginCallback;
-
   ~RenderFrameMessageFilter() override;
 
   void OnGetPluginInfo(int render_frame_id,
@@ -71,21 +69,8 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
                        bool* found,
                        WebPluginInfo* info,
                        std::string* actual_mime_type);
-  void OnOpenChannelToPepperPlugin(
-      const url::Origin& embedder_origin,
-      const base::FilePath& path,
-      const base::Optional<url::Origin>& origin_lock,
-      IPC::Message* reply_msg);
-  void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
 
   PluginServiceImpl* plugin_service_;
-  base::FilePath profile_data_directory_;
-
-  // Initialized to 0, accessed on FILE thread only.
-  base::TimeTicks last_plugin_refresh_time_;
-
-  // Whether this process is used for incognito contents.
-  const bool incognito_;
 
   const int render_process_id_;
 };

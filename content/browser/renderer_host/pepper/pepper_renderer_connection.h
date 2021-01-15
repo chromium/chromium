@@ -24,7 +24,10 @@ class ResourceMessageCallParams;
 
 namespace content {
 
+class BrowserContext;
 class BrowserPpapiHostImpl;
+class PluginServiceImpl;
+class StoragePartition;
 
 // This class represents a connection from the browser to the renderer for
 // sending/receiving pepper ResourceHost related messages. When the browser
@@ -34,7 +37,10 @@ class PepperRendererConnection
     : public BrowserMessageFilter,
       public BrowserAssociatedInterface<mojom::PepperIOHost> {
  public:
-  explicit PepperRendererConnection(int render_process_id);
+  PepperRendererConnection(int render_process_id,
+                           PluginServiceImpl* plugin_service,
+                           BrowserContext* browser_context,
+                           StoragePartition* storage_partition);
 
   // BrowserMessageFilter overrides.
   bool OnMessageReceived(const IPC::Message& msg) override;
@@ -42,6 +48,7 @@ class PepperRendererConnection
  private:
   ~PepperRendererConnection() override;
 
+  class OpenChannelToPpapiPluginCallback;
   // Returns the host for the child process for the given |child_process_id|.
   // If |child_process_id| is 0, returns the host owned by this
   // PepperRendererConnection, which serves as the host for in-process plugins.
@@ -72,14 +79,23 @@ class PepperRendererConnection
   void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
                                            int32_t pp_instance,
                                            bool is_external) override;
+  void OpenChannelToPepperPlugin(
+      const url::Origin& embedder_origin,
+      const base::FilePath& path,
+      const base::Optional<url::Origin>& origin_lock,
+      OpenChannelToPepperPluginCallback callback) override;
 
-  int render_process_id_;
+  const int render_process_id_;
+  const bool incognito_;
 
   // We have a single BrowserPpapiHost per-renderer for all in-process plugins
   // running. This is just a work-around allowing new style resources to work
   // with the browser when running in-process but it means that plugin-specific
   // information (like the plugin name) won't be available.
   std::unique_ptr<BrowserPpapiHostImpl> in_process_host_;
+
+  PluginServiceImpl* const plugin_service_;
+  const base::FilePath profile_data_directory_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperRendererConnection);
 };

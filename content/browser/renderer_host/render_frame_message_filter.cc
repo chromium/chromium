@@ -70,34 +70,6 @@ class RenderMessageCompletionCallback {
 
 }  // namespace
 
-class RenderFrameMessageFilter::OpenChannelToPpapiPluginCallback
-    : public RenderMessageCompletionCallback,
-      public PpapiPluginProcessHost::PluginClient {
- public:
-  OpenChannelToPpapiPluginCallback(RenderFrameMessageFilter* filter,
-                                   IPC::Message* reply_msg)
-      : RenderMessageCompletionCallback(filter, reply_msg) {}
-
-  void GetPpapiChannelInfo(base::ProcessHandle* renderer_handle,
-                           int* renderer_id) override {
-    // base::kNullProcessHandle indicates that the channel will be used by the
-    // browser itself. Make sure we never output that value here.
-    CHECK_NE(base::kNullProcessHandle, filter()->PeerHandle());
-    *renderer_handle = filter()->PeerHandle();
-    *renderer_id = filter()->render_process_id_;
-  }
-
-  void OnPpapiChannelOpened(const IPC::ChannelHandle& channel_handle,
-                            base::ProcessId plugin_pid,
-                            int plugin_child_id) override {
-    FrameHostMsg_OpenChannelToPepperPlugin::WriteReplyParams(
-        reply_msg(), channel_handle, plugin_pid, plugin_child_id);
-    SendReplyAndDeleteThis();
-  }
-
-  bool Incognito() override { return filter()->incognito_; }
-};
-
 RenderFrameMessageFilter::RenderFrameMessageFilter(
     int render_process_id,
     PluginServiceImpl* plugin_service,
@@ -105,8 +77,6 @@ RenderFrameMessageFilter::RenderFrameMessageFilter(
     StoragePartition* storage_partition)
     : BrowserMessageFilter(FrameMsgStart),
       plugin_service_(plugin_service),
-      profile_data_directory_(storage_partition->GetPath()),
-      incognito_(browser_context->IsOffTheRecord()),
       render_process_id_(render_process_id) {}
 
 RenderFrameMessageFilter::~RenderFrameMessageFilter() {
@@ -118,8 +88,6 @@ bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameMessageFilter, message)
     IPC_MESSAGE_HANDLER(FrameHostMsg_GetPluginInfo, OnGetPluginInfo)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(FrameHostMsg_OpenChannelToPepperPlugin,
-                                    OnOpenChannelToPepperPlugin)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -149,26 +117,6 @@ void RenderFrameMessageFilter::OnGetPluginInfo(
   *found = plugin_service_->GetPluginInfo(
       render_process_id_, render_frame_id, url, main_frame_origin, mime_type,
       allow_wildcard, nullptr, info, actual_mime_type);
-}
-
-void RenderFrameMessageFilter::OnOpenChannelToPepperPlugin(
-    const url::Origin& embedder_origin,
-    const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock,
-    IPC::Message* reply_msg) {
-  // Enforce that the sender of the IPC (i.e. |render_process_id_|) is actually
-  // able/allowed to host a frame with |embedder_origin|.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(render_process_id_, embedder_origin)) {
-    NOTREACHED() << embedder_origin;
-    bad_message::ReceivedBadMessage(
-        this, bad_message::RFMF_INVALID_PLUGIN_EMBEDDER_ORIGIN);
-    return;
-  }
-
-  plugin_service_->OpenChannelToPpapiPlugin(
-      render_process_id_, embedder_origin, path, profile_data_directory_,
-      origin_lock, new OpenChannelToPpapiPluginCallback(this, reply_msg));
 }
 
 }  // namespace content

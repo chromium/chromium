@@ -75,6 +75,9 @@ class PepperBrowserConnection
                                            int32_t pp_instance,
                                            bool is_external);
 
+  // Return a bound PepperIOHost. This may return null in unittests.
+  mojom::PepperIOHost* GetIOHost();
+
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;
@@ -83,9 +86,6 @@ class PepperBrowserConnection
   void OnMsgCreateResourceHostsFromHostReply(
       int32_t sequence_number,
       const std::vector<int>& pending_resource_host_ids);
-
-  // Return a bound PepperIOHost. This may return null in unittests.
-  mojom::PepperIOHost* GetIOHost();
 
   // Return the next sequence number.
   int32_t GetNextSequence();

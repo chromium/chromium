@@ -11,15 +11,20 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/stl_util.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/browser_child_process_host_impl.h"
+#include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/plugin_service_impl.h"
 #include "content/browser/ppapi_plugin_process_host.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 #include "content/common/frame_messages.h"
 #include "content/common/pepper_renderer_instance_data.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "ipc/ipc_message_macros.h"
 #include "ppapi/host/resource_host.h"
@@ -94,11 +99,49 @@ PendingHostCreator::~PendingHostCreator() {
 
 }  // namespace
 
-PepperRendererConnection::PepperRendererConnection(int render_process_id)
+class PepperRendererConnection::OpenChannelToPpapiPluginCallback
+    : public PpapiPluginProcessHost::PluginClient {
+ public:
+  OpenChannelToPpapiPluginCallback(PepperRendererConnection* filter,
+                                   OpenChannelToPepperPluginCallback callback)
+      : callback_(std::move(callback)), filter_(filter) {}
+
+  void GetPpapiChannelInfo(base::ProcessHandle* renderer_handle,
+                           int* renderer_id) override {
+    // base::kNullProcessHandle indicates that the channel will be used by the
+    // browser itself. Make sure we never output that value here.
+    CHECK_NE(base::kNullProcessHandle, filter_->PeerHandle());
+    *renderer_handle = filter_->PeerHandle();
+    *renderer_id = filter_->render_process_id_;
+  }
+
+  void OnPpapiChannelOpened(const IPC::ChannelHandle& channel_handle,
+                            base::ProcessId plugin_pid,
+                            int plugin_child_id) override {
+    std::move(callback_).Run(mojo::MakeScopedHandle(channel_handle.mojo_handle),
+                             plugin_pid, plugin_child_id);
+    delete this;
+  }
+
+  bool Incognito() override { return filter_->incognito_; }
+
+ private:
+  OpenChannelToPepperPluginCallback callback_;
+  scoped_refptr<PepperRendererConnection> filter_;
+};
+
+PepperRendererConnection::PepperRendererConnection(
+    int render_process_id,
+    PluginServiceImpl* plugin_service,
+    BrowserContext* browser_context,
+    StoragePartition* storage_partition)
     : BrowserMessageFilter(kPepperFilteredMessageClasses,
                            base::size(kPepperFilteredMessageClasses)),
       BrowserAssociatedInterface<mojom::PepperIOHost>(this),
-      render_process_id_(render_process_id) {
+      render_process_id_(render_process_id),
+      incognito_(browser_context->IsOffTheRecord()),
+      plugin_service_(plugin_service),
+      profile_data_directory_(storage_partition->GetPath()) {
   // Only give the renderer permission for stable APIs.
   in_process_host_.reset(new BrowserPpapiHostImpl(this,
                                                   ppapi::PpapiPermissions(),
@@ -292,6 +335,26 @@ void PepperRendererConnection::DidDeleteOutOfProcessPepperInstance(
     PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(plugin_child_id,
                                                           pp_instance);
   }
+}
+
+void PepperRendererConnection::OpenChannelToPepperPlugin(
+    const url::Origin& embedder_origin,
+    const base::FilePath& path,
+    const base::Optional<url::Origin>& origin_lock,
+    OpenChannelToPepperPluginCallback callback) {
+  // Enforce that the sender of the IPC (i.e. |render_process_id_|) is actually
+  // able/allowed to host a frame with |embedder_origin|.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (!policy->CanAccessDataForOrigin(render_process_id_, embedder_origin)) {
+    bad_message::ReceivedBadMessage(
+        this, bad_message::RFMF_INVALID_PLUGIN_EMBEDDER_ORIGIN);
+    return;
+  }
+
+  plugin_service_->OpenChannelToPpapiPlugin(
+      render_process_id_, embedder_origin, path, profile_data_directory_,
+      origin_lock,
+      new OpenChannelToPpapiPluginCallback(this, std::move(callback)));
 }
 
 }  // namespace content

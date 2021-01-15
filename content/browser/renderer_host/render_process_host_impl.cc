@@ -1930,7 +1930,9 @@ void RenderProcessHostImpl::CreateMessageFilters() {
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
       storage_partition_impl_));
 
-  AddFilter(new PepperRendererConnection(GetID()));
+  AddFilter(new PepperRendererConnection(
+      GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
+      storage_partition_impl_));
 #endif
 
   p2p_socket_dispatcher_host_ =
