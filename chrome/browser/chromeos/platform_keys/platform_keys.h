@@ -45,7 +45,9 @@ enum class TokenId { kUser, kSystem };
 enum class Status {
   kSuccess,
   kErrorAlgorithmNotSupported,
+  kErrorAlgorithmNotPermittedByCertificate,
   kErrorCertificateNotFound,
+  kErrorCertificateInvalid,
   kErrorInputTooLong,
   kErrorGrantKeyPermissionForExtension,
   kErrorInternal,
@@ -85,9 +87,9 @@ struct GetPublicKeyAndAlgorithmOutput {
   GetPublicKeyAndAlgorithmOutput(GetPublicKeyAndAlgorithmOutput&&);
   ~GetPublicKeyAndAlgorithmOutput();
 
-  std::string error;                // Only set on error.
-  std::vector<uint8_t> public_key;  // Only set on success.
-  base::DictionaryValue algorithm;  // Only set on success.
+  Status status = Status::kSuccess;
+  std::vector<uint8_t> public_key;  // Only set if status == kSuccess
+  base::DictionaryValue algorithm;  // Only set if status == kSuccess
 };
 
 // This is a convenient wrapper around GetPublicKey which also builds a

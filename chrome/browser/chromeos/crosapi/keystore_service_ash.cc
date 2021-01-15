@@ -32,8 +32,6 @@ const char kEnterprisePlatformErrorInvalidX509Cert[] =
     "Certificate is not a valid X.509 certificate.";
 const char kUnsupportedKeystoreType[] = "The token is not valid.";
 const char kUnsupportedAlgorithmType[] = "Algorithm type is not supported.";
-const char kErrorAlgorithmNotPermittedByCertificate[] =
-    "The requested Algorithm is not permitted by the certificate.";
 
 // Converts a binary blob to a certificate.
 scoped_refptr<net::X509Certificate> ParseCertificate(
@@ -183,7 +181,8 @@ void KeystoreServiceAsh::GenerateKey(
     }
     default: {
       std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
-          kUnsupportedAlgorithmType));
+          chromeos::platform_keys::StatusToString(
+              chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
       break;
     }
   }
@@ -243,7 +242,9 @@ void KeystoreServiceAsh::GetPublicKey(
       StringFromSigningAlgorithmName(algorithm_name);
   if (!name) {
     std::move(callback).Run(mojom::GetPublicKeyResult::NewErrorMessage(
-        kErrorAlgorithmNotPermittedByCertificate));
+        chromeos::platform_keys::StatusToString(
+            chromeos::platform_keys::Status::
+                kErrorAlgorithmNotPermittedByCertificate)));
     return;
   }
 
@@ -252,7 +253,7 @@ void KeystoreServiceAsh::GetPublicKey(
                                                         name.value());
 
   mojom::GetPublicKeyResultPtr result_ptr = mojom::GetPublicKeyResult::New();
-  if (output.error.empty()) {
+  if (output.status == chromeos::platform_keys::Status::kSuccess) {
     base::Optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
         signing_algorithm =
             crosapi::keystore_service_util::SigningAlgorithmFromDictionary(
@@ -268,7 +269,8 @@ void KeystoreServiceAsh::GetPublicKey(
       result_ptr->set_error_message(kUnsupportedAlgorithmType);
     }
   } else {
-    result_ptr->set_error_message(output.error);
+    result_ptr->set_error_message(
+        chromeos::platform_keys::StatusToString(output.status));
   }
   std::move(callback).Run(std::move(result_ptr));
 }

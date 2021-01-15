@@ -98,8 +98,9 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
   chromeos::platform_keys::GetPublicKeyAndAlgorithmOutput output =
       chromeos::platform_keys::GetPublicKeyAndAlgorithm(params->certificate,
                                                         params->algorithm_name);
-  if (!output.error.empty()) {
-    return RespondNow(Error(output.error));
+  if (output.status != chromeos::platform_keys::Status::kSuccess) {
+    return RespondNow(
+        Error(chromeos::platform_keys::StatusToString(output.status)));
   }
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
