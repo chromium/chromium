@@ -1240,6 +1240,28 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableMediaStoreMaintenance) {
                      "androidboot.disable_media_store_maintenance=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnablePaiGeneration) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.arc_generate_play_auto_install = true;
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arc_generate_pai=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_PaiGenerationDefaultDisabled) {
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  // No androidboot property should be generated.
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arc_generate_pai=1"));
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arc_generate_pai=0"));
+}
+
 // Tests that StartArcVm() is called with valid parameters.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmParams) {
   SetValidUserInfo();

@@ -111,11 +111,12 @@ const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 // default apps in order to be able to install them via adb.
 const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
 
-// Flag that forces ARC to cache icons for apps.
-const char kArcForceCacheAppIcons[] = "arc-force-cache-app-icons";
-
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
+
+// Flag that enables developer options needed to generate an ARC Play Auto
+// Install roster. Used manually by developers.
+const char kArcGeneratePlayAutoInstall[] = "arc-generate-play-auto-install";
 
 // Used in autotest to specifies how to handle packages cache. Can be
 // copy - copy resulting packages.xml to the temporary directory.

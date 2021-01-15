@@ -242,6 +242,9 @@ std::vector<std::string> GenerateKernelCmdline(
   if (start_params.disable_media_store_maintenance)
     result.push_back("androidboot.disable_media_store_maintenance=1");
 
+  if (start_params.arc_generate_play_auto_install)
+    result.push_back("androidboot.arc_generate_pai=1");
+
   // Conditionally sets some properties based on |start_params|.
   switch (start_params.play_store_auto_update) {
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:

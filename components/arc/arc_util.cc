@@ -298,7 +298,7 @@ void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state) {
 
 bool IsArcForceCacheAppIcon() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcForceCacheAppIcons);
+      chromeos::switches::kArcGeneratePlayAutoInstall);
 }
 
 bool IsArcDataCleanupOnStartRequested() {

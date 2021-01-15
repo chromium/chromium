@@ -63,6 +63,9 @@ struct StartParams {
   // This parameter is used only for starting ARCVM.
   uint32_t num_cores_disabled = 0;
 
+  // Enables developer options used to generate Play Auto Install rosters.
+  bool arc_generate_play_auto_install = false;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(StartParams);
 };

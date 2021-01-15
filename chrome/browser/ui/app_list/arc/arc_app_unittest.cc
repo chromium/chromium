@@ -1806,7 +1806,7 @@ TEST_P(ArcAppModelBuilderTest, ForceCacheIcons) {
 
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcForceCacheAppIcons);
+      chromeos::switches::kArcGeneratePlayAutoInstall);
 
   const std::string app_id = ArcAppTest::GetAppId(fake_apps()[0]);
 

@@ -469,6 +469,10 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   if (params.disable_media_store_maintenance)
     VLOG(1) << "MediaStore maintenance task(s) are disabled";
 
+  params.arc_generate_play_auto_install =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcGeneratePlayAutoInstall);
+
   VLOG(1) << "Starting ARC mini instance with lcd_density="
           << params.lcd_density
           << ", num_cores_disabled=" << params.num_cores_disabled;
