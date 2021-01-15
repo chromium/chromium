@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -160,7 +160,7 @@ class VIEWS_EXPORT ViewMaskLayer : public ui::LayerDelegate,
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
 
-  ScopedObserver<View, ViewObserver> observed_view_{this};
+  base::ScopedObservation<View, ViewObserver> observed_view_{this};
 
   SkPath path_;
   ui::Layer layer_;
@@ -171,7 +171,7 @@ ViewMaskLayer::ViewMaskLayer(const SkPath& path, View* observed_view)
   layer_.set_delegate(this);
   layer_.SetFillsBoundsOpaquely(false);
   layer_.SetName("ViewMaskLayer");
-  observed_view_.Add(observed_view);
+  observed_view_.Observe(observed_view);
   OnViewBoundsChanged(observed_view);
 }
 

@@ -1493,7 +1493,7 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
  public:
   explicit DesktopAuraTestValidPaintWidget(Widget::InitParams init_params)
       : Widget(std::move(init_params)) {
-    observer_.Add(this);
+    observation_.Observe(this);
   }
   ~DesktopAuraTestValidPaintWidget() override = default;
 
@@ -1536,7 +1536,7 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
   bool expect_paint_ = true;
   bool received_paint_while_hidden_ = false;
   base::OnceClosure quit_closure_;
-  ScopedObserver<Widget, WidgetObserver> observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopAuraTestValidPaintWidget);
 };

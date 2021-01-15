@@ -456,7 +456,7 @@ void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
       hwnd(), ui::WindowEventTarget::kWin32InputEventTarget,
       static_cast<ui::WindowEventTarget*>(this));
   DCHECK(delegate_->GetHWNDMessageDelegateInputMethod());
-  observer_.Add(delegate_->GetHWNDMessageDelegateInputMethod());
+  observation_.Observe(delegate_->GetHWNDMessageDelegateInputMethod());
 
   // The usual way for UI Automation to obtain a fragment root is through
   // WM_GETOBJECT. However, if there's a relation such as "Controller For"

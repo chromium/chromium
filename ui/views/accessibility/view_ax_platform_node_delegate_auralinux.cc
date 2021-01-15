@@ -10,7 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -87,11 +87,11 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
       return;
 
     widgets_.push_back(widget);
-    widget_observer_.Add(widget);
+    widget_observations_.AddObservation(widget);
 
     aura::Window* window = widget->GetNativeWindow();
     if (window)
-      window_observer_.Add(window);
+      window_observations_.AddObservation(window);
   }
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override {
@@ -103,11 +103,11 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   // WidgetObserver:
 
   void OnWidgetDestroying(Widget* widget) override {
-    widget_observer_.Remove(widget);
+    widget_observations_.RemoveObservation(widget);
 
     aura::Window* window = widget->GetNativeWindow();
-    if (window && window_observer_.IsObserving(window))
-      window_observer_.Remove(window);
+    if (window && window_observations_.IsObservingSource(window))
+      window_observations_.RemoveObservation(window);
 
     auto iter = std::find(widgets_.begin(), widgets_.end(), widget);
     if (iter != widgets_.end())
@@ -167,8 +167,10 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   ui::AXNodeData data_;
   ui::AXUniqueId unique_id_;
   std::vector<Widget*> widgets_;
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 };
 
 }  // namespace

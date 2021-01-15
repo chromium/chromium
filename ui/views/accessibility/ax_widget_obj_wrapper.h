@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/widget/widget.h"
@@ -52,7 +53,7 @@ class AXWidgetObjWrapper : public AXAuraObjWrapper,
 
   const ui::AXUniqueId unique_id_;
 
-  ScopedObserver<Widget, WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace views

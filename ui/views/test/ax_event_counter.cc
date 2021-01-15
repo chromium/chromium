@@ -7,9 +7,8 @@
 namespace views {
 namespace test {
 
-AXEventCounter::AXEventCounter(views::AXEventManager* event_manager)
-    : tree_observer_(this) {
-  tree_observer_.Add(event_manager);
+AXEventCounter::AXEventCounter(views::AXEventManager* event_manager) {
+  tree_observation_.Observe(event_manager);
 }
 
 AXEventCounter::~AXEventCounter() = default;

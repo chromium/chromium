@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -102,7 +102,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   // A watcher that keeps |bubble_| open if the user's mouse enters it.
   std::unique_ptr<MouseWatcher> mouse_watcher_;
 
-  ScopedObserver<Widget, WidgetObserver> observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

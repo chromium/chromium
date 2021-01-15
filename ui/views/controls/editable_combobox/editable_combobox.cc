@@ -136,7 +136,7 @@ class EditableCombobox::EditableComboboxMenuModel
         filter_on_edit_(filter_on_edit),
         show_on_empty_(show_on_empty) {
     UpdateItemsShown();
-    observer_.Add(combobox_model_);
+    observation_.Observe(combobox_model_);
   }
 
   ~EditableComboboxMenuModel() override = default;
@@ -252,7 +252,8 @@ class EditableCombobox::EditableComboboxMenuModel
   // When false, UpdateItemsShown doesn't do anything.
   bool update_items_shown_enabled_ = true;
 
-  ScopedObserver<ui::ComboboxModel, ui::ComboboxModelObserver> observer_{this};
+  base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EditableComboboxMenuModel);
 };
@@ -322,7 +323,7 @@ EditableCombobox::EditableCombobox(
       show_on_empty_(show_on_empty),
       showing_password_text_(type != Type::kPassword) {
   SetModel(std::move(combobox_model));
-  observer_.Add(textfield_);
+  observation_.Observe(textfield_);
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   textfield_->SetTextInputType((type == Type::kPassword)

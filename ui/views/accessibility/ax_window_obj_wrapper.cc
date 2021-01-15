@@ -81,7 +81,7 @@ AXWindowObjWrapper::AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache,
     : AXAuraObjWrapper(aura_obj_cache),
       window_(window),
       is_root_window_(window->IsRootWindow()) {
-  observer_.Add(window);
+  observation_.Observe(window);
 
   if (is_root_window_)
     aura_obj_cache_->OnRootWindowObjCreated(window);

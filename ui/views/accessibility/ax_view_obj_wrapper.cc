@@ -4,6 +4,7 @@
 
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 
+#include <string>
 #include <vector>
 
 #include "ui/accessibility/ax_action_data.h"
@@ -20,7 +21,7 @@ AXViewObjWrapper::AXViewObjWrapper(AXAuraObjCache* aura_obj_cache, View* view)
     : AXAuraObjWrapper(aura_obj_cache), view_(view) {
   if (view->GetWidget())
     aura_obj_cache_->GetOrCreate(view->GetWidget());
-  observer_.Add(view);
+  observation_.Observe(view);
 }
 
 AXViewObjWrapper::~AXViewObjWrapper() = default;
@@ -97,7 +98,7 @@ std::string AXViewObjWrapper::ToString() const {
 }
 
 void AXViewObjWrapper::OnViewIsDeleting(View* observed_view) {
-  observer_.RemoveAll();
+  observation_.Reset();
   view_ = nullptr;
 }
 

@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -1174,8 +1174,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Block the widget from closing.
   bool block_close_ = false;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver> observer_manager_{
-      this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 

@@ -18,7 +18,7 @@ namespace views {
 AXWidgetObjWrapper::AXWidgetObjWrapper(AXAuraObjCache* aura_obj_cache,
                                        Widget* widget)
     : AXAuraObjWrapper(aura_obj_cache), widget_(widget) {
-  widget_observer_.Add(widget);
+  widget_observation_.Observe(widget);
   widget->AddRemovalsObserver(this);
 }
 

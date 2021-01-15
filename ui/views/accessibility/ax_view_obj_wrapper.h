@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -43,7 +44,7 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
  private:
   View* view_;
 
-  ScopedObserver<View, ViewObserver> observer_{this};
+  base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
 }  // namespace views

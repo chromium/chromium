@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/views/views_export.h"
@@ -48,7 +48,7 @@ class VIEWS_EXPORT AccessibilityAlertWindow : public aura::EnvObserver {
   // The accessibility cache associated with |alert_window_|.
   views::AXAuraObjCache* cache_;
 
-  ScopedObserver<aura::Env, aura::EnvObserver> observer_{this};
+  base::ScopedObservation<aura::Env, aura::EnvObserver> observation_{this};
 };
 
 }  // namespace views

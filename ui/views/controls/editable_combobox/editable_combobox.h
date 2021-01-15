@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -187,7 +187,7 @@ class VIEWS_EXPORT EditableCombobox
 
   bool dropdown_blocked_for_animation_ = false;
 
-  ScopedObserver<View, ViewObserver> observer_{this};
+  base::ScopedObservation<View, ViewObserver> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EditableCombobox);
 };

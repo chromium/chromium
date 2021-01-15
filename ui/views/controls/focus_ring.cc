@@ -113,13 +113,13 @@ void FocusRing::ViewHierarchyChanged(
 
   if (details.is_add) {
     // Need to start observing the parent.
-    view_observer_.Add(details.parent);
+    view_observation_.Observe(details.parent);
     RefreshLayer();
-  } else if (view_observer_.IsObserving(details.parent)) {
+  } else if (view_observation_.IsObservingSource(details.parent)) {
     // This view is being removed from its parent. It needs to remove itself
     // from its parent's observer list in the case where the FocusView is
     // removed from its parent but not deleted.
-    view_observer_.Remove(details.parent);
+    view_observation_.Reset();
   }
 }
 

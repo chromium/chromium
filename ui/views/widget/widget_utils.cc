@@ -21,16 +21,16 @@ WidgetOpenTimer::~WidgetOpenTimer() = default;
 
 void WidgetOpenTimer::OnWidgetDestroying(Widget* widget) {
   DCHECK(open_timer_.has_value());
-  DCHECK(observed_widget_.IsObserving(widget));
+  DCHECK(observed_widget_.IsObservingSource(widget));
   callback_.Run(open_timer_->Elapsed());
   open_timer_.reset();
-  observed_widget_.Remove(widget);
+  observed_widget_.Reset();
 }
 
 void WidgetOpenTimer::Reset(Widget* widget) {
   DCHECK(!open_timer_.has_value());
-  DCHECK(!observed_widget_.IsObserving(widget));
-  observed_widget_.Add(widget);
+  DCHECK(!observed_widget_.IsObservingSource(widget));
+  observed_widget_.Observe(widget);
   open_timer_ = base::ElapsedTimer();
 }
 

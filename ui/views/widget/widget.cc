@@ -396,7 +396,7 @@ void Widget::Init(InitParams params) {
     SetInitialBoundsForFramelessWindow(bounds);
   }
 
-  observer_manager_.Add(GetNativeTheme());
+  observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();
 
@@ -1502,16 +1502,16 @@ View* Widget::GetFocusTraversableParentView() {
 void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   TRACE_EVENT0("ui", "Widget::OnNativeThemeUpdated");
 
-  DCHECK(observer_manager_.IsObserving(observed_theme));
+  DCHECK(observation_.IsObservingSource(observed_theme));
 
 #if defined(OS_APPLE) || defined(OS_WIN)
   ui::NativeTheme* current_native_theme = observed_theme;
 #else
   ui::NativeTheme* current_native_theme = GetNativeTheme();
 #endif
-  if (!observer_manager_.IsObserving(current_native_theme)) {
-    observer_manager_.RemoveAll();
-    observer_manager_.Add(current_native_theme);
+  if (!observation_.IsObservingSource(current_native_theme)) {
+    observation_.Reset();
+    observation_.Observe(current_native_theme);
   }
 
   PropagateNativeThemeChanged();

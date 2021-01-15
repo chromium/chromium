@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
@@ -33,7 +33,8 @@ class ExamplesViewsDelegateChromeOS : public DesktopTestViewsDelegate,
   // aura::WindowTreeHostObserver:
   void OnHostCloseRequested(aura::WindowTreeHost* host) override;
 
-  ScopedObserver<aura::WindowTreeHost, aura::WindowTreeHostObserver> observer_;
+  base::ScopedObservation<aura::WindowTreeHost, aura::WindowTreeHostObserver>
+      observation_{this};
   std::unique_ptr<wm::WMTestHelper> wm_helper_;
 };
 

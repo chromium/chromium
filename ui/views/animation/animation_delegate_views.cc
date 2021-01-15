@@ -14,7 +14,7 @@ namespace views {
 
 AnimationDelegateViews::AnimationDelegateViews(View* view) : view_(view) {
   if (view)
-    scoped_observer_.Add(view);
+    scoped_observation_.Observe(view);
 }
 
 AnimationDelegateViews::~AnimationDelegateViews() {
@@ -46,7 +46,8 @@ void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
 }
 
 void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
-  scoped_observer_.Remove(view_);
+  DCHECK(scoped_observation_.IsObservingSource(view_));
+  scoped_observation_.Reset();
   view_ = nullptr;
   UpdateAnimationRunner();
 }

@@ -309,14 +309,16 @@ void Combobox::SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model) {
 void Combobox::SetModel(ui::ComboboxModel* model) {
   DCHECK(model) << "After construction, the model must not be null.";
 
-  if (model_)
-    observer_.Remove(model_);
+  if (model_) {
+    DCHECK(observation_.IsObservingSource(model_));
+    observation_.Reset();
+  }
 
   model_ = model;
 
   if (model_) {
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
-    observer_.Add(model_);
+    observation_.Observe(model_);
     SetSelectedIndex(model_->GetDefaultIndex());
     OnComboboxModelChanged(model_);
   }

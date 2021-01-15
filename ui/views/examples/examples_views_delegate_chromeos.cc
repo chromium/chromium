@@ -14,8 +14,7 @@ namespace {
 constexpr gfx::Size kDefaultSize(1024, 768);
 }  // namespace
 
-ExamplesViewsDelegateChromeOS::ExamplesViewsDelegateChromeOS()
-    : observer_(this) {}
+ExamplesViewsDelegateChromeOS::ExamplesViewsDelegateChromeOS() = default;
 
 ExamplesViewsDelegateChromeOS::~ExamplesViewsDelegateChromeOS() = default;
 
@@ -28,7 +27,7 @@ void ExamplesViewsDelegateChromeOS::OnBeforeWidgetInit(
 
     wm_helper_ = std::make_unique<wm::WMTestHelper>(kDefaultSize);
     wm_helper_->host()->Show();
-    observer_.Add(wm_helper_->host());
+    observation_.Observe(wm_helper_->host());
     params->context = wm_helper_->host()->window();
   }
 }
@@ -37,7 +36,8 @@ void ExamplesViewsDelegateChromeOS::OnHostCloseRequested(
     aura::WindowTreeHost* host) {
   Widget* widget = GetExamplesWidget();
   if (widget) {
-    observer_.Remove(host);
+    DCHECK(observation_.IsObservingSource(host));
+    observation_.Reset();
     widget->Close();
   }
 }

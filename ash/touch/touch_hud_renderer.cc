@@ -4,6 +4,7 @@
 
 #include "ash/touch/touch_hud_renderer.h"
 
+#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/compositor/layer.h"

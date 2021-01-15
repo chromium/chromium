@@ -261,7 +261,7 @@ WidgetVisibleWaiter::~WidgetVisibleWaiter() = default;
 
 void WidgetVisibleWaiter::Wait() {
   if (!widget_->IsVisible()) {
-    widget_observer_.Add(widget_);
+    widget_observation_.Observe(widget_);
     run_loop_.Run();
   }
 }
@@ -270,7 +270,8 @@ void WidgetVisibleWaiter::OnWidgetVisibilityChanged(Widget* widget,
                                                     bool visible) {
   DCHECK_EQ(widget_, widget);
   if (visible) {
-    widget_observer_.Remove(widget);
+    DCHECK(widget_observation_.IsObservingSource(widget));
+    widget_observation_.Reset();
     run_loop_.Quit();
   }
 }
@@ -280,7 +281,8 @@ void WidgetVisibleWaiter::OnWidgetDestroying(Widget* widget) {
   ADD_FAILURE() << "Widget destroying before it became visible!";
   // Even though the test failed, be polite and remove the observer so we
   // don't crash with a UAF in the destructor.
-  widget_observer_.Remove(widget);
+  DCHECK(widget_observation_.IsObservingSource(widget));
+  widget_observation_.Reset();
 }
 
 }  // namespace test

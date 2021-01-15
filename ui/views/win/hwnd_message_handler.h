@@ -18,7 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
@@ -819,7 +819,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Populated if the cursor position is being mocked for testing purposes.
   base::Optional<gfx::Point> mock_cursor_position_;
 
-  ScopedObserver<ui::InputMethod, ui::InputMethodObserver> observer_{this};
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      observation_{this};
 
   // The WeakPtrFactories below (one inside the
   // CR_MSG_MAP_CLASS_DECLARATIONS macro and autohide_factory_) must

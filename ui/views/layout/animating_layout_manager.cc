@@ -146,8 +146,7 @@ class AnimatingLayoutManager::AnimationDelegate
     }
 
     void OnViewIsDeleting(View* observed_view) override {
-      if (animation_delegate_->scoped_observer_.IsObserving(observed_view))
-        animation_delegate_->scoped_observer_.Remove(observed_view);
+      animation_delegate_->scoped_observation_.Reset();
     }
 
    private:
@@ -165,7 +164,8 @@ class AnimatingLayoutManager::AnimationDelegate
   AnimatingLayoutManager* const target_layout_manager_;
   std::unique_ptr<gfx::SlideAnimation> animation_;
   ViewWidgetObserver view_widget_observer_{this};
-  ScopedObserver<View, ViewObserver> scoped_observer_{&view_widget_observer_};
+  base::ScopedObservation<View, ViewObserver> scoped_observation_{
+      &view_widget_observer_};
 };
 
 AnimatingLayoutManager::AnimationDelegate::AnimationDelegate(
@@ -179,7 +179,7 @@ AnimatingLayoutManager::AnimationDelegate::AnimationDelegate(
   if (host_view->GetWidget())
     MakeReadyForAnimation();
   else
-    scoped_observer_.Add(host_view);
+    scoped_observation_.Observe(host_view);
   UpdateAnimationParameters();
 }
 
@@ -205,8 +205,7 @@ void AnimatingLayoutManager::AnimationDelegate::MakeReadyForAnimation() {
   if (!ready_to_animate_) {
     target_layout_manager_->ResetLayout();
     ready_to_animate_ = true;
-    if (scoped_observer_.IsObserving(target_layout_manager_->host_view()))
-      scoped_observer_.Remove(target_layout_manager_->host_view());
+    scoped_observation_.Reset();
   }
 }
 
