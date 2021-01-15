@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
@@ -400,6 +401,7 @@ TEST(AXTreeTest, SerializeAXTreeUpdate) {
 }
 
 TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
+  base::HistogramTester histogram_tester;
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(3);
@@ -418,9 +420,13 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   update.nodes[0].id = 3;
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Nodes left pending by the update: 2", tree.error());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Reliability.Tree.UnserializeError",
+      AXTreeUnserializeError::kPendingNodes, 1);
 }
 
 TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
+  base::HistogramTester histogram_tester;
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
@@ -435,9 +441,13 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   update.nodes[0].child_ids.push_back(2);
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Nodes left pending by the update: 2", tree.error());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Reliability.Tree.UnserializeError",
+      AXTreeUnserializeError::kPendingNodes, 1);
 }
 
 TEST(AXTreeTest, DuplicateChildIdFails) {
+  base::HistogramTester histogram_tester;
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
@@ -453,9 +463,13 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   update.nodes[1].id = 2;
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Node 1 has duplicate child id 2", tree.error());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Reliability.Tree.UnserializeError",
+      AXTreeUnserializeError::kDuplicateChild, 1);
 }
 
 TEST(AXTreeTest, InvalidReparentingFails) {
+  base::HistogramTester histogram_tester;
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(3);
@@ -479,6 +493,9 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Node 3 is not marked for destruction, would be reparented to 1",
             tree.error());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Reliability.Tree.UnserializeError",
+      AXTreeUnserializeError::kReparent, 1);
 }
 
 TEST(AXTreeTest, NoReparentingOfRootIfNoNewRoot) {
@@ -4869,6 +4886,29 @@ TEST(AXTreeTest, UpdateFromOutOfSyncTree) {
   first_update.nodes = {root, div};
 
   EXPECT_TRUE(tree.Unserialize(first_update));
+}
+
+TEST(AXTreeTest, UnserializeErrors) {
+  base::HistogramTester histogram_tester;
+  ui::AXNodeData empty_document;
+  empty_document.id = 1;
+  empty_document.role = ax::mojom::Role::kRootWebArea;
+  ui::AXTreeUpdate tree_update;
+  tree_update.root_id = empty_document.id;
+  tree_update.nodes.push_back(empty_document);
+
+  AXTree tree;
+  EXPECT_TRUE(tree.Unserialize(tree_update));
+
+  ui::AXTreeUpdate tree_update_3;
+  tree_update_3.root_id = empty_document.id;
+  ui::AXNodeData disconnected_node;
+  disconnected_node.id = 2;
+  tree_update_3.nodes.push_back(disconnected_node);
+  EXPECT_FALSE(tree.Unserialize(tree_update_3));
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Reliability.Tree.UnserializeError",
+      AXTreeUnserializeError::kNotInTree, 1);
 }
 
 }  // namespace ui

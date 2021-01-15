@@ -190,6 +190,21 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="HTML"/>
 </enum>
 
+<enum name="AccessibilityTreeUnserializeError">
+  <summary>
+    Tracks the type of failure that occured when unserializing the accessibility
+    tree.
+  </summary>
+  <int value="0" label="No Root"/>
+  <int value="1" label="Not In Tree"/>
+  <int value="2" label="Creation Pending"/>
+  <int value="3" label="Duplicate Child"/>
+  <int value="4" label="Creation Pending For Child"/>
+  <int value="5" label="Reparent"/>
+  <int value="6" label="Pending Nodes"/>
+  <int value="7" label="Pending Changes"/>
+</enum>
+
 <enum name="AccessibilityWinAPIEnum">
   <summary>
     Track which Windows accessibility APIs are being called by clients.

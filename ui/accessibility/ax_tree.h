@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -28,6 +29,34 @@ class AXTableInfo;
 class AXTreeObserver;
 struct AXTreeUpdateState;
 class AXLanguageDetectionManager;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AXTreeUnserializeError {
+  // Tree has no root.
+  kNoRoot = 0,
+  // Node will not be in the tree and is not the new root.
+  kNotInTree = 1,
+  // Node is already pending for creation, cannot be the new root
+  kCreationPending = 2,
+  // Node has duplicate child.
+  kDuplicateChild = 3,
+  // Node is already pending for creation, cannot be a new child.
+  kCreationPendingForChild = 4,
+  // Node is not marked for destruction, would be reparented.
+  kReparent = 5,
+  // Nodes are left pending by the update.
+  kPendingNodes = 6,
+  // Changes left pending by the update;
+  kPendingChanges = 7,
+  // This must always be the last enum. It's okay for its value to
+  // increase, but none of the other enum values may change.
+  kMaxValue = kPendingChanges
+};
+
+#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
+  base::UmaHistogramEnumeration(                                   \
+      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be

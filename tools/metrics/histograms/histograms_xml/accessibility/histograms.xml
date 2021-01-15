@@ -848,6 +848,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Accessibility.Reliability.Tree.UnserializeError"
+    enum="AccessibilityTreeUnserializeError" expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the type of failure that occured when unserializing the accessibility
+    tree. When an error in unserialization occurs, this is emitted and
+    unserialization aborts. In the case of a tree with multiple issues, only the
+    first error is recorded. Refer to AXTree::Unserialize for details.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
     enum="BooleanEnabled" expires_after="2021-05-23">
   <owner>amraboelkher@chromium.org</owner>
