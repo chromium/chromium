@@ -521,12 +521,13 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.InvestigatedScenario" enum="SigninInvestigatedScenario"
-    expires_after="M90">
+    expires_after="M95">
   <owner>treib@chromium.org</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
-    Records the general type of signin that is occuring in relation to previous
-    signin and local data.
+    Recorded when Sync is turned on in a profile. Records whether this is the
+    first time Sync is turned on in this profile or, if not, whether Sync was
+    previously turned on for the same or for a different account.
   </summary>
 </histogram>
 
