@@ -21,6 +21,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
+    "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.privacy_sandbox"
 }

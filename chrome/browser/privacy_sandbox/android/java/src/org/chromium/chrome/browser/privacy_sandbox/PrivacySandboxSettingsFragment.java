@@ -13,11 +13,16 @@ import android.widget.LinearLayout;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
  * Settings fragment for privacy sandbox settings. This class represents a View in the MVC paradigm.
  */
 public class PrivacySandboxSettingsFragment extends PreferenceFragmentCompat {
+    public static final String TRIAL_DESCRIPTION_PREFERENCE = "privacy_sandbox_trial_description";
+
     /**
      * Initializes all the objects related to the preferences page.
      */
@@ -26,6 +31,12 @@ public class PrivacySandboxSettingsFragment extends PreferenceFragmentCompat {
         // Add all preferences and set the title.
         getActivity().setTitle(R.string.prefs_privacy_sandbox);
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
+        // Format the trial description, which has bullet points.
+        findPreference(TRIAL_DESCRIPTION_PREFERENCE)
+                .setSummary(SpanApplier.applySpans(
+                        getContext().getString(R.string.privacy_sandbox_trial_description),
+                        new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
+                        new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext()))));
     }
 
     @Override

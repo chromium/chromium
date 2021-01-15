@@ -778,21 +778,24 @@ For example, some websites may respond to this request by showing you ads that a
         Access payment methods
       </message>
 
-      <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy/settings. -->
+      <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
       <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy sandbox' page.">
         Privacy sandbox
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_TITLE" desc="Title for the Privacy Sandbox toggle.">
-        Web crowd and ad measurement
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="">
+        Privacy Sandbox is a set of new technologies that will eventually protect people from cross-site tracking mechanisms, like third-party cookies, while preserving web content and services that depend on those mechanisms today. Chrome is working with website developers, publishers, advertisers, and other browsers to develop this new technology.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_SUBTITLE" desc="Description for the privacy sandbox toggle.">
-        By joining a Web Crowd, you allow websites to make your web experience relevant without using personally identifiable information. Similar to a crowd in a concert, websites and advertisers can only know thousands of users share a similar interest.
+      <message name="IDS_PRIVACY_SANDBOX_TRIAL_TITLE" desc="">
+        Privacy Sandbox trial
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_BULLET_ONE" desc="First bullet point of the Privacy Sandbox description.">
-        Allow websites and apps to give you a more relevant experience using a non-identifiable alias.
+      <message name="IDS_PRIVACY_SANDBOX_TRIAL_DESCRIPTION" desc="">
+        Privacy Sandbox is not widely released yet. During this trial period:\n<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Website and app developers can try out the ability to create relevant experiences without accessing uniquely identifiable information about you<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>\n<ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Users can opt out of the trial using the controls on this page.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_BULLET_TWO" desc="Second bullet point of the Privacy Sandbox description">
-        Allow advertisers to study ad campaigns using non-identifiable information.
+      <message name="IDS_PRIVACY_SANDBOX_TOGGLE" desc="Title for the Privacy Sandbox toggle.">
+        Crowdmasking
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION" desc="">
+        When on, websites won’t be able to use information that personally identifies you to make their sites more relevant. Similar to a crowd in a concert, sites can only know that thousands of users share a similar interest.\n\nYour “crowd” is based on sites you’ve visited. Advertisers can only see what sites the whole crowd visits, not what sites you personally visit.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Explore the Privacy Sandbox
