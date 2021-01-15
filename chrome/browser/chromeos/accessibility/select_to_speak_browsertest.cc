@@ -69,10 +69,32 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     extension_load_waiter.Wait();
 
+    extensions::ExtensionHost* host =
+        extensions::ProcessManager::Get(browser()->profile())
+            ->GetBackgroundHostForExtension(
+                extension_misc::kSelectToSpeakExtensionId);
+    console_observer_ = std::make_unique<content::WebContentsConsoleObserver>(
+        host->host_contents());
+    // STS should not log warnings or errors: these should cause test failures.
+    auto filter =
+        [](const content::WebContentsConsoleObserver::Message& message) {
+          return message.log_level ==
+                     blink::mojom::ConsoleMessageLevel::kWarning ||
+                 message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+        };
+    console_observer_->SetFilter(base::BindRepeating(filter));
+
     aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
     generator_.reset(new ui::test::EventGenerator(root_window));
 
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  }
+
+  void TearDownOnMainThread() override {
+    // Check STS has not generated any errors.
+    EXPECT_EQ(0, console_observer_->messages().size())
+        << "Found console.log or console.warn with message: "
+        << console_observer_->GetMessageAt(0);
   }
 
   test::SpeechMonitor sm_;
@@ -149,6 +171,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
  private:
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
+  std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTest);
 };
