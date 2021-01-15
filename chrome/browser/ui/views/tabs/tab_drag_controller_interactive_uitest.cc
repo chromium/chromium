@@ -2459,8 +2459,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(model->IsGroupCollapsed(group));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Test is flaky on Mac and Linux: https://crbug.com/1167249
 #define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
   DISABLED_DragCollapsedGroupHeaderToSeparateWindow
 #else
