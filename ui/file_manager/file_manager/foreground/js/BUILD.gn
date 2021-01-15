@@ -33,6 +33,7 @@ js_type_check("closure_compile_jsmodules") {
     ":android_app_list_model.m",
     ":constants.m",
     ":crossover_search_utils.m",
+    ":crostini_controller.m",
     ":dialog_type.m",
     ":directory_contents.m",
     ":directory_model.m",
@@ -49,6 +50,7 @@ js_type_check("closure_compile_jsmodules") {
     ":file_type_filters_controller.m",
     ":file_watcher.m",
     ":folder_shortcuts_data_model.m",
+    ":gear_menu_controller.m",
     ":holding_space_util.m",
     ":import_controller.m",
     ":last_modified_controller.m",
@@ -443,6 +445,26 @@ js_library("crostini_controller") {
     "ui:directory_tree",
     "//ui/file_manager/file_manager/foreground/elements:files_message",
   ]
+}
+
+js_library("crostini_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/crostini_controller.m.js" ]
+  deps = [
+    ":constants.m",
+    ":directory_model.m",
+    ":file_manager_commands.m",
+    ":navigation_list_model.m",
+    "ui:directory_tree.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs/background:crostini.m",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("dialog_action_controller") {
@@ -1062,6 +1084,23 @@ js_library("gear_menu_controller") {
     "ui:gear_menu",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
+}
+
+js_library("gear_menu_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/gear_menu_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    ":file_manager_commands.m",
+    ":providers_model.m",
+    "ui:gear_menu.m",
+    "ui:multi_menu_button.m",
+    "ui:providers_menu.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:directory_change_event.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("holding_space_util") {
@@ -1802,6 +1841,8 @@ js_modulizer("modulize") {
     "thumbnail_loader.js",
     "web_store_utils.js",
     "webui_command_extender.js",
+    "crostini_controller.js",
+    "gear_menu_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites + [

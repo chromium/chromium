@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FilesToast} from '../elements/files_toast.m.js';
+// #import {DirectoryTree} from './ui/directory_tree.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {FilesMessage} from '../elements/files_message.m.js';
+// #import {Crostini} from '../../../externs/background/crostini.m.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+// #import {str, strf} from '../../common/js/util.m.js';
+// #import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.m.js';
+// #import {constants} from './constants.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * CrostiniController handles the foreground UI relating to crostini.
  */
-class CrostiniController {
+/* #export */ class CrostiniController {
   /**
    * @param {!Crostini} crostini Crostini background object.
    * @param {!FilesMessage} filesMessage FilesMessage.
