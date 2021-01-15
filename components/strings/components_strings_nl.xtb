@@ -1762,6 +1762,7 @@ Aanvullende informatie:
 <translation id="79859296434321399">Installeer ARCore om augmented reality-content te bekijken</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Inbinden</translation>
+<translation id="7992044431894087211">Scherm delen met <ph name="APPLICATION_TITLE" /> is hervat</translation>
 <translation id="7995512525968007366">Niet opgegeven</translation>
 <translation id="800218591365569300">Probeer andere tabbladen en programma's te sluiten om geheugen vrij te maken.</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -2033,6 +2034,7 @@ Aanvullende informatie:
 <translation id="9103872766612412690"><ph name="SITE" /> gebruikt gewoonlijk versleuteling om je gegevens te beschermen. Toen Chromium deze keer probeerde verbinding te maken met <ph name="SITE" />, retourneerde de website ongewone en onjuiste inloggegevens. Dit gebeurt wanneer een aanvaller probeert zich als <ph name="SITE" /> voor te doen of wanneer een wifi-inlogscherm de verbinding heeft verbroken. Je gegevens zijn nog steeds beveiligd omdat Chromium de verbinding heeft beëindigd voordat er gegevens konden worden uitgewisseld.</translation>
 <translation id="9106062320799175032">Factuuradres toevoegen</translation>
 <translation id="9107467864910557787">Je browser wordt beheerd door <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">Op basis van het beheerdersbeleid wordt scherm delen met <ph name="APPLICATION_TITLE" /> uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="9114524666733003316">Creditcard bevestigen...</translation>
 <translation id="9114581008513152754">Deze browser wordt niet beheerd door een bedrijf of andere organisatie. Activiteit op dit apparaat kan buiten Chrome worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Geüpload</translation>

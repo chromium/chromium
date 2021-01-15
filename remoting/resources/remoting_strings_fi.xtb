@@ -155,7 +155,6 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="8073845705237259513">Sinun on lisättävä laitteeseesi Google-tili, jotta voit käyttää Chrome-etäkäyttöä.</translation>
 <translation id="809687642899217504">Omat tietokoneet</translation>
 <translation id="8116630183974937060">Tapahtui verkkovirhe. Tarkista, että laite on yhdistetty verkkoon, ja yritä uudelleen.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8295077433896346116">Jos haluat, että <ph name="PRODUCT_NAME" /> on käytettävissä, sinun on myönnettävä Esteettömyys-käyttölupa, jotta etäkoneen syöte voidaan siirtää tälle Macille.
 
 Myönnä käyttölupa valitsemalla alta <ph name="BUTTON_NAME" />. Valitse avautuvasta esteettömyyden asetuspaneelista ruutu kohdasta <ph name="SERVICE_SCRIPT_NAME" />.

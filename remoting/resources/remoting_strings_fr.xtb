@@ -155,7 +155,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="8073845705237259513">Pour utiliser le bureau à distance Chrome, vous devez ajouter un compte Google à votre appareil.</translation>
 <translation id="809687642899217504">Mes ordinateurs</translation>
 <translation id="8116630183974937060">Une erreur réseau s'est produite. Veuillez vérifier que votre appareil est en ligne, puis réessayer.</translation>
-<translation id="8187079423890319756">Copyright des auteurs de Chromium 2013. Tous droits réservés.</translation>
 <translation id="8295077433896346116">Pour utiliser <ph name="PRODUCT_NAME" />, vous devez accorder l'autorisation "Accessibilité" afin que les données de l'appareil distant puissent être injectées sur ce Mac.
 
 Pour accorder cette autorisation, cliquez sur "<ph name="BUTTON_NAME" />" ci-dessous. Dans le volet des préférences "Accessibilité" qui s'ouvre, cochez la case "<ph name="SERVICE_SCRIPT_NAME" />".

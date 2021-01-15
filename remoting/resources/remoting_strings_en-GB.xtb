@@ -155,7 +155,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="8073845705237259513">To use Chrome Remote Desktop, you'll need to add a Google Account to your device.</translation>
 <translation id="809687642899217504">My Computers</translation>
 <translation id="8116630183974937060">A network error occurred. Please check that your device is on-line and try again.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="8295077433896346116">To use <ph name="PRODUCT_NAME" />, you need to grant the 'Accessibility' permission so that input from the remote machine can be injected on this Mac.
 
 To grant this permission, click '<ph name="BUTTON_NAME" />' below. In the 'Accessibility' preferences pane that opens, tick the box next to '<ph name="SERVICE_SCRIPT_NAME" />'.

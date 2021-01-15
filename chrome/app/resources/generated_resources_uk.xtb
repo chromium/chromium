@@ -341,6 +341,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Немає зламаних паролів}=1{1 зламаний пароль}one{{NUM_COMPROMISED} зламаний пароль}few{{NUM_COMPROMISED} зламані паролі}many{{NUM_COMPROMISED} зламаних паролів}other{{NUM_COMPROMISED} зламаного пароля}}</translation>
 <translation id="1380028686461971526">Автопідключення до мережі</translation>
 <translation id="1380436189840894976">Усе одно вийти з режиму анонімного перегляду?</translation>
+<translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383861834909034572">Відкривати, коли завершено</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1386791642444521222">Активувати фізичну SIM-карту</translation>
@@ -879,7 +880,6 @@
 <translation id="1954813140452229842">Помилка підключення спільного доступу. Перевірте облікові дані та повторіть спробу.</translation>
 <translation id="1956050014111002555">Файл містив декілька сертифікатів, жоден із яких не було імпортовано:</translation>
 <translation id="1956390763342388273">Буде завантажено всі файли з папки "<ph name="FOLDER_PATH" />". Робіть це, лише якщо вважаєте сайт надійним.</translation>
-<translation id="1960158217849594135">Зберегти ім'я користувача в обліковому записі Google?</translation>
 <translation id="196040970347962278">Спершу підключіться до Інтернету</translation>
 <translation id="1962233722219655970">На цій сторінці використовується програма Native Client, яка не працює на вашому комп’ютері.</translation>
 <translation id="1963227389609234879">Видалити всі</translation>
@@ -905,6 +905,7 @@
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1987317783729300807">Облікові записи</translation>
 <translation id="1989112275319619282">Переглянути</translation>
+<translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1990512225220753005">Не показувати ярлики на цій сторінці</translation>
 <translation id="1992397118740194946">Не налаштовано</translation>
 <translation id="1992924914582925289">Видалити з пристрою</translation>
@@ -1050,7 +1051,6 @@
 <translation id="2157474325782140681">Щоб отримати додаткові функції, використовуйте док-станцію Dell, розроблену для цього комп'ютера Chromebook.</translation>
 <translation id="215753907730220065">Вийти з повноекранного режиму</translation>
 <translation id="2157875535253991059">Ця сторінка зараз у повноекранному режимі.</translation>
-<translation id="2160589599612868242">Сповіщення з телефона надходитимуть на <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">Додати Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронізація почнеться, щойно ви вийдете з її налаштувань</translation>
 <translation id="2162838847352058695">Заборонити сайтам автоматично завантажувати кілька файлів</translation>
@@ -1268,6 +1268,7 @@
 <translation id="2399699884460174994">Сповіщення ввімкнено</translation>
 <translation id="2399939490305346086">Дані для входу для ключа безпеки</translation>
 <translation id="2400664245143453337">Потрібно негайно встановити оновлення</translation>
+<translation id="2406153734066939945">Видалити профіль і його дані?</translation>
 <translation id="2408018932941436077">Зберігання картки</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="241082044617551207">Невідомий плагін</translation>
@@ -1386,6 +1387,7 @@
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="2526619973349913024">Перевірити наявність оновлення</translation>
 <translation id="2527167509808613699">Будь-яке з’єднання</translation>
+<translation id="2530166226437958497">Вирішення проблем</translation>
 <translation id="2532589005999780174">Режим високого контрасту</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
 <translation id="2534460670861217804">Захищений проксі-сервер HTTP</translation>
@@ -1703,7 +1705,6 @@
 <translation id="2885729872133513017">Під час декодування відповіді сервера виникла проблема.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Відкрити посилання за допомогою...</translation>
-<translation id="2889481634493693121">Увімкніть сповіщення на телефоні</translation>
 <translation id="2889925978073739256">Продовжити блокувати плагіни з неізольованим програмним середовищем</translation>
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 тексту}one{# тексту}few{# текстів}many{# текстів}other{# тексту}}</translation>
@@ -2563,6 +2564,7 @@
 <translation id="3857807444929313943">Підніміть і знову торкніться</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
+<translation id="3861977424605124250">Показувати під час запуску</translation>
 <translation id="3862693525629180217">Підтвердити через вбудований датчик</translation>
 <translation id="3862788408946266506">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
@@ -2805,7 +2807,6 @@
 <translation id="412730574613779332">Культурист</translation>
 <translation id="4130199216115862831">Журнал пристрою</translation>
 <translation id="4130207949184424187">Це розширення змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
-<translation id="4130344535649650885">Зберегти пароль в обліковому записі Google?</translation>
 <translation id="4130750466177569591">Приймаю</translation>
 <translation id="413121957363593859">Компоненти</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
@@ -3204,6 +3205,7 @@
 <translation id="4627442949885028695">Продовжити на іншому пристрої</translation>
 <translation id="4628757576491864469">Пристрої</translation>
 <translation id="4628762811416793313">Налаштування контейнера Linux не завершено. Повторіть спробу.</translation>
+<translation id="4629521233550547305">Відкрити профіль "<ph name="PROFILE_NAME" />"</translation>
 <translation id="4633003931260532286"><ph name="IMPORT_NAME" /> з мінімальною версією <ph name="IMPORT_VERSION" /> – це обов’язковий компонент для роботи розширення, але встановлено версію <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Ця резервна копія містить дані додатків. Резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google вашої дитини.</translation>
 <translation id="4634575639321169635">Налаштуйте цей пристрій для особистого користування чи роботи</translation>
@@ -3932,7 +3934,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Імпортовано із Firefox</translation>
 <translation id="5502915260472117187">Дитина</translation>
-<translation id="5503858713116291452">Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено. Щоб завершити налаштування, виконайте вказівки на телефоні.</translation>
 <translation id="5503982651688210506">Надалі дозволяти сайту <ph name="HOST" /> використовувати й переміщувати камеру, а також використовувати мікрофон</translation>
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="5505307013568720083">Закінчилося чорнило</translation>
@@ -3993,6 +3994,7 @@
 <translation id="5565735124758917034">Активний клієнт</translation>
 <translation id="5567989639534621706">Кеші програми</translation>
 <translation id="5568069709869097550">Не вдалося ввійти</translation>
+<translation id="5571832155627049070">Налаштуйте свій профіль</translation>
 <translation id="5572851009514199876">Увійдіть в обліковий запис Chrome, щоб веб-переглядач міг перевірити, чи ви маєте дозвіл відвідувати цей сайт.</translation>
 <translation id="5575473780076478375">Розширення в режимі анонімного перегляду: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Виникла проблема з демо-запитом на реєстрацію.</translation>
@@ -5462,6 +5464,7 @@
 <translation id="7280649757394340890">Налаштування голосу для синтезу мовлення</translation>
 <translation id="7280877790564589615">Потрібен дозвіл</translation>
 <translation id="7282992757463864530">Інформаційна панель</translation>
+<translation id="7283555985781738399">Режим гостя</translation>
 <translation id="7284411326658527427">Кожен користувач може персоналізувати обліковий запис і захистити свої дані.</translation>
 <translation id="7287143125007575591">У доступі відмовлено.</translation>
 <translation id="7287411021188441799">Відновити фон за умовчанням</translation>
@@ -5841,6 +5844,7 @@
 <translation id="7716781361494605745">URL-адреса політики Центру сертифікації Netscape</translation>
 <translation id="7717014941119698257">Завантаження: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">Сайти можуть запитувати ваше місцезнаходження (рекомендовано)</translation>
+<translation id="771721654176725387">Дані веб-перегляду буде видалено з цього пристрою назавжди. Щоб відновити їх, увімкніть синхронізацію облікового запису</translation>
 <translation id="7717845620320228976">Перевірка наявності оновлень</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7719588063158526969">Назва пристрою задовга</translation>
@@ -5877,6 +5881,7 @@
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7765507180157272835">Потрібно ввімкнути Bluetooth і Wi-Fi</translation>
 <translation id="7766082757934713382">Допомагає зменшити використання мережевого трафіку, призупиняючи автоматичні оновлення додатків і системи</translation>
+<translation id="7766807826975222231">Ознайомитися</translation>
 <translation id="7766838926148951335">Прийняти дозволи</translation>
 <translation id="7768507955883790804">Коли ви відвідуєте сайти, вони автоматично дотримуються цього налаштування</translation>
 <translation id="7768770796815395237">Змінити</translation>
@@ -6121,6 +6126,7 @@
 <translation id="8017176852978888182">Спільні каталоги Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Ярлик змінено</translation>
+<translation id="8018298733481692628">Видалити цей профіль?</translation>
 <translation id="8018313076035239964">Налаштуйте, яку інформацію можуть використовувати веб-сайти та який вміст вони можуть показувати</translation>
 <translation id="8023801379949507775">Оновити розширення зараз</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
@@ -6291,7 +6297,6 @@
 <translation id="8211551284753798479">Недійсний PUK-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Триває завантаження}one{Тривають завантаження}few{Тривають завантаження}many{Тривають завантаження}other{Тривають завантаження}}</translation>
 <translation id="8213449224684199188">Увімкнено режим фото</translation>
-<translation id="8213866992824776555">Домен <ph name="DOMAIN" /> хоче отримати унікальний ідентифікатор вашого пристрою, щоб відтворювати захищені відео й аудіо в найвищій якості.</translation>
 <translation id="8214489666383623925">Відкрити файл...</translation>
 <translation id="8214962590150211830">Видалити цього користувача</translation>
 <translation id="8216351761227087153">Дивитися</translation>
@@ -6770,7 +6775,6 @@
 <translation id="8774379074441005279">Підтвердити відновлення</translation>
 <translation id="8774934320277480003">Верхнє поле</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
-<translation id="8775163630211761057">Користуйтеся найкращими функціями телефона Android на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> буде автоматично заблоковано через # секунду.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.}one{<ph name="DEVICE_TYPE" /> буде автоматично заблоковано через # секунду.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.}few{<ph name="DEVICE_TYPE" /> буде автоматично заблоковано через # секунди.
@@ -6962,6 +6966,7 @@
 <translation id="8973596347849323817">Ви можете налаштувати цей пристрій для своїх потреб. Ці спеціальні можливості можна пізніше змінити в налаштуваннях.</translation>
 <translation id="897414447285476047">Через проблеми підключення кінцевий файл неповний.</translation>
 <translation id="897525204902889653">Сервіс для карантину</translation>
+<translation id="8975396729541388937">Ви можете будь-коли скасувати підписку, натиснувши відповідне посилання в одному з отриманих листів.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і ще 1 вкладка}one{"<ph name="TAB_TITLE" />" і ще # вкладка}few{"<ph name="TAB_TITLE" />" і ще # вкладки}many{"<ph name="TAB_TITLE" />" і ще # вкладок}other{"<ph name="TAB_TITLE" />" і ще # вкладки}}</translation>
 <translation id="8977811652087512276">Неправильний пароль або пошкоджений файл</translation>
 <translation id="8978154919215542464">Увімкнено – синхронізувати все</translation>

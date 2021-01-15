@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="602807004951640891">Ao utilizar o Chromium, aceita os <ph name="BEGIN_LINK_TOS" />Termos de Utilização<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Para definir o Chromium como o navegador predefinido:
+1. Abra as Definições
+2. Toque em App de navegador predefinida
+3. Selecione o Chromium.</translation>
 <translation id="6268381023930128611">Pretende terminar sessão no Chromium?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6604711459180487467">Obtenha uma melhor experiência no Chromium com base na sua localização.</translation>

@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="840168496893712993">Unele suplimente determină blocarea browserului Chrome. Încearcă să le dezinstalezi.</translation>
 <translation id="8459495907675268833">Datele selectate au fost eliminate din Chrome și de pe dispozitivele sincronizate. Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi căutările și activitatea din alte servicii Google, la history.google.com.</translation>
+<translation id="850555388806794946">Pentru a seta Chrome ca browser prestabilit:
+  1. deschide Setările;
+  2. atinge Aplicația browser prestabilită;
+  3. selectează Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Dacă permiți accesul Chrome la locație, Chrome trimite informații privind locația la motorul de căutare prestabilit și la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 </translationbundle>

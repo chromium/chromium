@@ -155,7 +155,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="8073845705237259513">Hvis du vil bruke Chrome Eksternt skrivebord, må du legge til en Google-konto på enheten din.</translation>
 <translation id="809687642899217504">Mine datamaskiner</translation>
 <translation id="8116630183974937060">Det oppsto en nettverksfeil. Kontrollér at enheten er tilkoblet nettet, og prøv på nytt.</translation>
-<translation id="8187079423890319756">Copyright 2013 – The Chromium Authors. Med enerett.</translation>
 <translation id="8295077433896346116">For å bruke <ph name="PRODUCT_NAME" /> må du innvilge «Tilgjengelighet»-tillatelsen, slik at inndata fra den eksterne maskinen kan sendes til denne Macen.
 
 For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under. I innstillingsfeltet for «Tilgjengelighet» som åpnes, merker du av i boksen ved siden av «<ph name="SERVICE_SCRIPT_NAME" />».

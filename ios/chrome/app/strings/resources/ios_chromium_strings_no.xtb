@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
 <translation id="602807004951640891">Ved å bruke Chromium samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Slik velger du Chromium som standardnettleser:
+1. Åpne Innstillinger.
+2. Trykk på Standard nettleserapp.
+3. Velg Chromium.</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="6604711459180487467">Få en bedre Chromium-opplevelse basert på hvor du er.</translation>

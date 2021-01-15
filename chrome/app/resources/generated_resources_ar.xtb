@@ -342,6 +342,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة محتمَل تعرّضها للاختراق}two{كلمتا مرور ({NUM_COMPROMISED}) محتمَل تعرّضهما للاختراق}few{{NUM_COMPROMISED} كلمات مرور محتمَل تعرّضها للاختراق}many{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}other{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="1380028686461971526">الاتصال التلقائي بالشبكة</translation>
 <translation id="1380436189840894976">هل تريد الخروج من وضع التصفح المتخفي على أي حال؟</translation>
+<translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383861834909034572">فتح الملفّ عند انتهاء التحميل.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1386791642444521222">‏تفعيل بطاقة SIM</translation>
@@ -880,7 +881,6 @@
 <translation id="1954813140452229842">حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من بيانات الاعتماد وإعادة المحاولة.</translation>
 <translation id="1956050014111002555">احتوى الملف على شهادات متعددة، لم يتم استيراد أي منها:</translation>
 <translation id="1956390763342388273">سيؤدي ذلك إلى تحميل جميع الملفات من "<ph name="FOLDER_PATH" />"، يُرجى تجنُّب ذلك إذا لم تكن واثقًا من الموقع.</translation>
-<translation id="1960158217849594135">‏هل تريد حفظ اسم المستخدم في حسابك على Google؟</translation>
 <translation id="196040970347962278">يُرجى الاتصال بالإنترنت أولاً.</translation>
 <translation id="1962233722219655970">‏هذه الصفحة تستخدم تطبيق Native Client وهو لا يعمل على جهاز الكمبيوتر التابع لك.</translation>
 <translation id="1963227389609234879">إزالة كلمات المرور كلّها</translation>
@@ -906,6 +906,7 @@
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1987317783729300807">حسابات</translation>
 <translation id="1989112275319619282">تصفّح</translation>
+<translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
 <translation id="1990512225220753005">عدم إظهار الاختصارات في هذه الصفحة</translation>
 <translation id="1992397118740194946">لم يتم تعيينه</translation>
 <translation id="1992924914582925289">إزالة من الجهاز</translation>
@@ -1051,7 +1052,6 @@
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
 <translation id="2157875535253991059">هذه الصفحة في وضع ملء الشاشة الآن.</translation>
-<translation id="2160589599612868242">تلقّي الإشعارات من هاتفك على الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">‏إضافة Wi-Fi...</translation>
 <translation id="2162155940152307086">ستبدأ المزامنة بعد مغادرتك إعدادات المزامنة</translation>
 <translation id="2162838847352058695">منع المواقع الإلكترونية من تنزيل الملفات المتعدّدة تلقائيًا</translation>
@@ -1269,6 +1269,7 @@
 <translation id="2399699884460174994">تم تفعيل الإشعارات</translation>
 <translation id="2399939490305346086">بيانات تسجيل الدخول على مفتاح الأمان</translation>
 <translation id="2400664245143453337">مطلوب التحديث فورًا</translation>
+<translation id="2406153734066939945">هل تريد حذف هذا الملف الشخصي وكل بياناته؟</translation>
 <translation id="2408018932941436077">جارٍ حفظ البطاقة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="241082044617551207">مكوّن إضافي غير محدّد</translation>
@@ -1387,6 +1388,7 @@
 <translation id="2526590354069164005">سطح المكتب</translation>
 <translation id="2526619973349913024">التحقق من وجود تحديث</translation>
 <translation id="2527167509808613699">جميع أنواع الاتصالات</translation>
+<translation id="2530166226437958497">تحديد المشاكل وحلّها</translation>
 <translation id="2532589005999780174">وضع التباين العالي</translation>
 <translation id="253434972992662860">إي&amp;قاف مؤقت</translation>
 <translation id="2534460670861217804">‏خادم وكيل HTTP الآمن</translation>
@@ -1705,7 +1707,6 @@
 <translation id="2885729872133513017">حدثت مشكلة في فك رمز استجابة الخادم.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">فتح الرابط باستخدام...</translation>
-<translation id="2889481634493693121">تفعيل الإشعارات على هاتفك</translation>
 <translation id="2889925978073739256">متابعة حظر المكونات الإضافية غير المحمية</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
@@ -2566,6 +2567,7 @@
 <translation id="3857807444929313943">رفع الإصبع، ثم اللمس مرة أخرى</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: تم إيقاف المزامنة مؤقتًا</translation>
 <translation id="3861638017150647085">اسم المستخدم "<ph name="USERNAME" />" غير متوفر.</translation>
+<translation id="3861977424605124250">إظهار عند بدء التشغيل</translation>
 <translation id="3862693525629180217">التحقُّق عبر جهاز الاستشعار المضمَّن</translation>
 <translation id="3862788408946266506">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام تشغيل Chrome.</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
@@ -2805,7 +2807,6 @@
 <translation id="412730574613779332">إسباندكس</translation>
 <translation id="4130199216115862831">سجل الجهاز</translation>
 <translation id="4130207949184424187">غيّرت هذه الإضافة الصفحة التي تظهر عند البحث في المربع متعدد الاستخدامات.</translation>
-<translation id="4130344535649650885">‏هل تريد حفظ كلمة المرور في حسابك على Google؟</translation>
 <translation id="4130750466177569591">أوافق</translation>
 <translation id="413121957363593859">المكونات</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
@@ -3204,6 +3205,7 @@
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
 <translation id="4628757576491864469">الأجهزة</translation>
 <translation id="4628762811416793313">‏لم يكتمل إعداد حاوية نظام التشغيل Linux. يُرجى إعادة المحاولة.</translation>
+<translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
 <translation id="4633003931260532286">تتطلب الإضافة "<ph name="IMPORT_NAME" />" بإصدار لا يقل عن "<ph name="IMPORT_VERSION" />" لكن يتم تثبيت "<ph name="INSTALLED_VERSION" />" فقط.</translation>
 <translation id="4633757335284074492">‏يمكنك الاحتفاظ بنسخة احتياطية في Google Drive. ويمكنك استعادة البيانات أو تبديل الجهاز بسهولة وفي أي وقت. تتضمّن هذه النسخة الاحتياطية بيانات التطبيق. ويتم تحميل النسخ الاحتياطية إلى Google وترميزها باستخدام كلمة مرور حسابك الفرعي على Google.</translation>
 <translation id="4634575639321169635">يمكنك إعداد هذا الجهاز لاستخدامه في العمل أو للاستخدام الشخصي.</translation>
@@ -3933,7 +3935,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">تمّ الاستيراد من متصفّح فايرفوكس</translation>
 <translation id="5502915260472117187">طفل</translation>
-<translation id="5503858713116291452">‏يُرجى التأكُّد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه. ويُرجى اتّباع الخطوات الموضَّحة على هاتفك لإكمال الإعداد.</translation>
 <translation id="5503982651688210506">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها واستخدام الميكروفون</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
 <translation id="5505307013568720083">نفد الحبر</translation>
@@ -3994,6 +3995,7 @@
 <translation id="5565735124758917034">نشط</translation>
 <translation id="5567989639534621706">ذاكرة التخزين المؤقت للتطبيقات</translation>
 <translation id="5568069709869097550">تعذّر الدخول</translation>
+<translation id="5571832155627049070">تخصيص ملفك الشخصي</translation>
 <translation id="5572851009514199876">‏يُرجى البدء وتسجيل الدخول إلى Chrome لكي يتأكد Chrome مما إذا كان مسموحًا لك الوصول إلى الموقع الإلكتروني هذا أم لا.</translation>
 <translation id="5575473780076478375">إضافة وضع التصفح المتخفي: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">حدثت مشكلة في طلب التسجيل التجريبي.</translation>
@@ -5464,6 +5466,7 @@
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>
 <translation id="7282992757463864530">شريط المعلومات</translation>
+<translation id="7283555985781738399">وضع الضيف</translation>
 <translation id="7284411326658527427">يمكن لكل شخص تخصيص حسابه والحفاظ على خصوصية بياناته.</translation>
 <translation id="7287143125007575591">تم رفض الدخول</translation>
 <translation id="7287411021188441799">استعادة الخلفية التلقائية</translation>
@@ -5843,6 +5846,7 @@
 <translation id="7716781361494605745">‏عنوان URL لسياسة المرجع المصدق لـ Netscape</translation>
 <translation id="7717014941119698257">تنزيل: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">السماح للمواقع الإلكترونية بطلب موقعك الجغرافي (مُستحسَن)</translation>
+<translation id="771721654176725387">سيؤدي هذا الإجراء إلى حذف بيانات التصفُّح من هذا الجهاز نهائيًا. لاسترداد البيانات، يُرجى تفعيل المزامنة كـ</translation>
 <translation id="7717845620320228976">البحث عن تحديثات</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7719588063158526969">اسم الجهاز طويل جدًا.</translation>
@@ -5879,6 +5883,7 @@
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7765507180157272835">‏يجب تفعيل البلوتوث وشبكة Wi-Fi</translation>
 <translation id="7766082757934713382">تساعدك الشبكة التي تفرض تكلفة استخدام في تخفيض استخدام بيانات الشبكة من خلال إيقاف التحديثات التلقائية للنظام والتطبيقات بشكل مؤقت.</translation>
+<translation id="7766807826975222231">إجراء جولة</translation>
 <translation id="7766838926148951335">قبول الأذونات</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
 <translation id="7768770796815395237">تغيير</translation>
@@ -6123,6 +6128,7 @@
 <translation id="8017176852978888182">‏مجلدات Linux التي تمت مشاركتها</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
+<translation id="8018298733481692628">هل تريد حذف هذا الملف الشخصي؟</translation>
 <translation id="8018313076035239964">تتحكّم هذه الإعدادات في المعلومات التي يمكن أن تستخدمها المواقع الإلكترونية والمحتوى الذي يمكن أن تعرضه لك</translation>
 <translation id="8023801379949507775">تحديث الإضافات الآن</translation>
 <translation id="8026334261755873520">محو بيانات التصفُّح</translation>
@@ -6293,7 +6299,6 @@
 <translation id="8211551284753798479">‏رمز PUK غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
-<translation id="8213866992824776555">يريد <ph name="DOMAIN" /> تحديد هوية جهازك ليتمكّن من تشغيل الفيديوهات والملفات الصوتية المحمية بأعلى جودة ممكنة.</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
 <translation id="8214962590150211830">إزالة هذا الشخص</translation>
 <translation id="8216351761227087153">مشاهدة</translation>
@@ -6772,7 +6777,6 @@
 <translation id="8774379074441005279">تأكيد الاستعادة</translation>
 <translation id="8774934320277480003">الهامش العلوي</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
-<translation id="8775163630211761057">‏يمكنك الحصول على أفضل ما في هاتفك الذي يعمل بنظام التشغيل Android على الجهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8775653927968399786">{0,plural, =1{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانية واحدة.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثانية.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانيتَين.
@@ -6965,6 +6969,7 @@
 <translation id="8973596347849323817">يمكنك تخصيص هذا الجهاز للتوافق مع احتياجاتك. ويمكن تغيير ميزات إمكانية الوصول هذه لاحقًا من خلال الإعدادات.</translation>
 <translation id="897414447285476047">ملف الوجهة غير مكتمل بسبب حدوث مشكلة في الاتصال.</translation>
 <translation id="897525204902889653">خدمة وحدة العزل</translation>
+<translation id="8975396729541388937">يمكنك إلغاء الاشتراك في أي وقت من خلال النقر على الرابط المتوفّر في الرسائل الإلكترونية التي تتلقّاها.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى}two{"<ph name="TAB_TITLE" />" وعلامتا تبويب أخريان}few{"<ph name="TAB_TITLE" />" و# علامات تبويب أخرى}many{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}other{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}}</translation>
 <translation id="8977811652087512276">كلمة مرور غير صالحة أو ملف تالف</translation>
 <translation id="8978154919215542464">تشغيل - مزامنة كل شيء</translation>

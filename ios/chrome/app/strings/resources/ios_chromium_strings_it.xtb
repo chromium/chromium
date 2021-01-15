@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="602807004951640891">Se utilizzi Chromium, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Per impostare Chromium come browser predefinito:
+1. Apri le Impostazioni.
+2. Tocca App browser predefinita.
+3. Seleziona Chromium.</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="6424492062988593837">Chromium è stato migliorato. È disponibile una nuova versione.</translation>
 <translation id="6604711459180487467">Migliora la tua esperienza in Chromium tramite l'accesso alla tua posizione.</translation>

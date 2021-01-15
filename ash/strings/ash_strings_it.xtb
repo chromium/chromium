@@ -112,6 +112,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Imposta la lingua</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Blocco schermo</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ciao <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3090989381251959936">Attiva/disattiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Sposta il cursore</translation>
 <translation id="3098580329624789136">Ottieni la <ph name="INTENT" /> di "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
-<translation id="3147157020428159854">Registrazione dello schermo interrotta</translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3151786313568798007">Orientamento</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
@@ -367,7 +368,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
 <translation id="4302592941791324970">Non disponibile</translation>
 <translation id="4303223480529385476">Espandi area di stato</translation>
-<translation id="4315586716182276649">Estendi la connessione a Internet del telefono, controlla la modalità Non disturbare e localizza il tuo dispositivo. Visualizza le schede di Chrome attive sul telefono dal tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Hai premuto la scorciatoia da tastiera per l'alto contrasto. Vuoi attivarlo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -561,6 +561,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6054305421211936131">Accedi con la smart card</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
 <translation id="6062360702481658777">Verrai disconnesso automaticamente tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="607652042414456612">Il tuo computer è rilevabile per i dispositivi Bluetooth nelle vicinanze e verrà visualizzato come "<ph name="NAME" />" con l'indirizzo <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
@@ -726,7 +727,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7654687942625752712">Tieni premuti entrambi i tasti del volume per cinque secondi per disattivare la funzione di lettura vocale.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
-<translation id="7683326293741220026">Sembra che il Bluetooth sia disattivato sul telefono. Attiva il Bluetooth sul telefono per utilizzare Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
@@ -774,7 +774,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
 <translation id="8061464966246066292">Contrasto elevato</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Estendi la connessione a Internet del telefono, controlla la modalità Non disturbare e localizza il tuo telefono. Visualizza le schede di Chrome attive sul telefono dal tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">On, tutte</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Conferma</translation>
@@ -823,6 +822,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
+<translation id="8553395910833293175">Finestra già assegnata a tutte le scrivanie.</translation>
 <translation id="8563862697512465947">Impostazioni di notifica</translation>
 <translation id="857201607579416096">Menu spostato nell'angolo in basso a destra dello schermo.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -881,6 +881,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8990809378771970590">In uso: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
+<translation id="9024331582947483881">schermo intero</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Verrà eseguito il rollback del dispositivo</translation>
 <translation id="9065203028668620118">Modifica</translation>

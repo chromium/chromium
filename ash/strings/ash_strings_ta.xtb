@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">எனது மொழியை அமை</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">லாக் ஸ்கிரீன்</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ஹாய் <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> அம்சத்தை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">கர்சரை நகர்த்து</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" என்பதற்கான <ph name="INTENT" /> பெறுங்கள்</translation>
+<translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
 <translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
 <translation id="3139942575505304791">மேசை 1</translation>
-<translation id="3147157020428159854">ஸ்கிரீன் ரெக்கார்டிங் நிறுத்தப்பட்டது</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
 <translation id="3151786313568798007">திசையமைப்பு</translation>
 <translation id="3153444934357957346">பல உள்நுழைவில் <ph name="MULTI_PROFILE_USER_LIMIT" /> கணக்குகள் வரை மட்டுமே வைத்திருக்கலாம்.</translation>
@@ -366,7 +367,6 @@
 <translation id="4296136865091727875"><ph name="COUNT" /> அறிவிப்புகளையும் அழிக்கும்</translation>
 <translation id="4302592941791324970">இல்லை</translation>
 <translation id="4303223480529385476">நிலைப் பகுதியை விரிவாக்கும்</translation>
-<translation id="4315586716182276649">மொபைலின் இணைய இணைப்பை விரிவாக்கலாம், தொந்தரவு செய்ய வேண்டாம் அம்சத்தைக் கட்டுப்படுத்தலாம், உங்கள் சாதனம் இருக்குமிடத்தைக் கண்டறியலாம். மொபைலில் செயலில் இருக்கும் Chrome தாவல்களை உங்கள் <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +560,7 @@
 <translation id="6054305421211936131">ஸ்மார்ட் கார்டு மூலம் உள்நுழைக</translation>
 <translation id="6059276912018042191">சமீபத்திய Chrome தாவல்கள்</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
+<translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
 <translation id="607652042414456612">உங்கள் கம்ப்யூட்டர் அருகிலுள்ள Bluetooth சாதனங்களால் கண்டறியப்படும், மேலும் <ph name="ADDRESS" /> என்ற முகவரியுடன் "<ph name="NAME" />" என்ற பெயரில் தோன்றும்</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">கெஸ்ட் அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த இயலாது.</translation>
@@ -725,7 +726,6 @@
 <translation id="7654687942625752712">பேச்சுவடிவ கருத்தை முடக்க, ஐந்து வினாடிகளுக்கு இரண்டு ஒலியளவு விசைகளையும் அழுத்திப் பிடித்திருக்கவும்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7662283695561029522">உள்ளமைக்க, தட்டவும்</translation>
-<translation id="7683326293741220026">உங்கள் ஃபோனில் புளூடூத் முடக்கப்பட்டுள்ளதாகத் தெரிகிறது. ஃபோன் ஹப்பைப் பயன்படுத்த புளூடூத்தை இயக்கவும்.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 அறிவிப்பு}other{# அறிவிப்புகள்}}</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
@@ -773,7 +773,6 @@
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
 <translation id="8061464966246066292">உயர் மாறுபாடு</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
-<translation id="8108657971283652031">மொபைலின் இணைய இணைப்பை விரிவாக்கலாம், தொந்தரவு செய்ய வேண்டாம் அம்சத்தைக் கட்டுப்படுத்தலாம், உங்கள் மொபைல் இருக்குமிடத்தைக் கண்டறியலாம். மொபைலில் செயலில் இருக்கும் Chrome தாவல்களை உங்கள் <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்.</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
@@ -822,6 +821,7 @@
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" />க்கு மாற்றப்பட்டது. மாற்றங்களை உறுதிசெய்ய 'உறுதிப்படுத்து' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகளுக்கு மீட்டமைக்கப்படும்.</translation>
 <translation id="8513108775083588393">தானாகச் சுழற்று</translation>
 <translation id="8517041960877371778">இயக்கப்பட்டிருக்கும் போது உங்கள் <ph name="DEVICE_TYPE" /> இல் சார்ஜ் ஏறாது.</translation>
+<translation id="8553395910833293175">எல்லா டெஸ்க்குகளுக்கும் ஏற்கெனவே ஒதுக்கப்பட்டுள்ளது.</translation>
 <translation id="8563862697512465947">அறிவிப்பு  அமைப்புகள்</translation>
 <translation id="857201607579416096">திரையின் கீழ் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -880,6 +880,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>
 <translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆகத் திறக்கவும்</translation>
 <translation id="9017320285115481645">Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்.</translation>
+<translation id="9024331582947483881">முழுத்திரை</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும்</translation>
 <translation id="9056839673611986238">சாதனம் மீட்டமைக்கப்படும்</translation>
 <translation id="9065203028668620118">திருத்து</translation>

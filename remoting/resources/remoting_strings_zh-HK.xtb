@@ -155,7 +155,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="8073845705237259513">您必須在裝置上新增 Google 帳戶，才能使用 Chrome 遠端桌面。</translation>
 <translation id="809687642899217504">我的電腦</translation>
 <translation id="8116630183974937060">發生網絡錯誤。請確認您的裝置已連線至網絡，然後再試一次。</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. 保留所有權利。</translation>
 <translation id="8295077433896346116">如要使用「<ph name="PRODUCT_NAME" />」，您需要授予「無障礙功能」權限，才能將遠端電腦上的輸入內容加入這部 Mac。
 
 如要授予此權限，請按一下下方的「<ph name="BUTTON_NAME" />」。在開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁的方框。

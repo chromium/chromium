@@ -873,7 +873,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfen Sie Ihre Anmeldedaten und versuchen Sie es noch einmal.</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus "<ph name="FOLDER_PATH" />" hochgeladen. Tun Sie dies nur, wenn Sie die Website als vertrauenswürdig einstufen.</translation>
-<translation id="1960158217849594135">Nutzernamen in Ihrem Google-Konto speichern?</translation>
 <translation id="196040970347962278">Zuerst eine Verbindung zum Internet herstellen</translation>
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf Ihrem Computer nicht funktioniert.</translation>
 <translation id="1963227389609234879">Alle entfernen</translation>
@@ -1044,7 +1043,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2157474325782140681">Verwenden Sie eine für dieses Chromebook entwickelte Dockingstation von Dell, um zusätzliche Funktionen nutzen zu können.</translation>
 <translation id="215753907730220065">Vollbildmodus aus</translation>
 <translation id="2157875535253991059">Diese Seite wird nun im Vollbildmodus angezeigt.</translation>
-<translation id="2160589599612868242">Benachrichtigungen von Ihrem Smartphone auf Ihrem <ph name="DEVICE_TYPE" /> erhalten</translation>
 <translation id="216169395504480358">WLAN hinzufügen...</translation>
 <translation id="2162155940152307086">Die Synchronisierung wird gestartet, sobald Sie die Synchronisierungseinstellungen verlassen</translation>
 <translation id="2162838847352058695">Websites daran hindern, mehrere Dateien automatisch herunterzuladen</translation>
@@ -1367,7 +1365,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2510988373360790637">Bluetooth-Gerät entfernen</translation>
 <translation id="2513396635448525189">Anmeldebild</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">Suchen</translation>
+<translation id="2517472476991765520">Scannen</translation>
 <translation id="2518024842978892609">Clientzertifikate verwenden</translation>
 <translation id="2519517390894391510">Name des Zertifikats</translation>
 <translation id="2520644704042891903">Warten auf verfügbaren Socket...</translation>
@@ -1696,7 +1694,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2885729872133513017">Beim Decodieren der Serverantwort ist ein Problem aufgetreten.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Link öffnen mit...</translation>
-<translation id="2889481634493693121">Benachrichtigungen auf Ihrem Smartphone aktivieren</translation>
 <translation id="2889925978073739256">Plug-ins ohne Sandbox weiterhin blockieren</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 Text}other{# Texte}}</translation>
@@ -2798,7 +2795,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
 <translation id="4130207949184424187">Diese Erweiterung hat die Seite geändert, die bei der Suche über die Omnibox angezeigt wird.</translation>
-<translation id="4130344535649650885">Passwort in Ihrem Google-Konto speichern?</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
@@ -3925,7 +3921,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}other{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Aus Firefox importiert</translation>
 <translation id="5502915260472117187">Ein Kind</translation>
-<translation id="5503858713116291452">Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein. Führe die Schritte auf deinem Smartphone aus, um die Einrichtung abzuschließen.</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen sowie mein Mikrofon zu benutzen</translation>
 <translation id="5505264765875738116">Websites können nicht fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
 <translation id="5505307013568720083">Patrone leer</translation>
@@ -3986,6 +3981,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5567989639534621706">Caches</translation>
 <translation id="5568069709869097550">Anmeldung nicht möglich</translation>
+<translation id="5571832155627049070">Profil anpassen</translation>
 <translation id="5572851009514199876">Melden Sie sich zuerst in Chrome an, damit überprüft werden kann, ob Sie auf diese Website zugreifen dürfen.</translation>
 <translation id="5575473780076478375">Anonyme Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ein Problem mit der Demoregistrierungsanforderung ist aufgetreten.</translation>
@@ -5870,6 +5866,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7765507180157272835">Bluetooth und WLAN erforderlich</translation>
 <translation id="7766082757934713382">Trägt dazu bei, die Netzwerkdatennutzung durch Pausieren von automatischen App- und Systemupdates zu reduzieren</translation>
+<translation id="7766807826975222231">Tour starten</translation>
 <translation id="7766838926148951335">Berechtigungen akzeptieren</translation>
 <translation id="7768507955883790804">Wenn Sie Websites aufrufen, wird diese Einstellung automatisch angewandt</translation>
 <translation id="7768770796815395237">Ändern</translation>
@@ -6283,7 +6280,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8211551284753798479">Ungültiger PUK. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wird ausgeführt}other{Downloads werden ausgeführt}}</translation>
 <translation id="8213449224684199188">Fotomodus aktiviert</translation>
-<translation id="8213866992824776555">Für die Wiedergabe von geschützten Video- und Audioinhalten in hoher Qualität muss <ph name="DOMAIN" /> Ihr Gerät eindeutig identifizieren können.</translation>
 <translation id="8214489666383623925">Datei öffnen...</translation>
 <translation id="8214962590150211830">Diese Person entfernen</translation>
 <translation id="8216351761227087153">Ansehen</translation>
@@ -6762,7 +6758,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
-<translation id="8775163630211761057">Das Beste von Ihrem Android-Smartphone für Ihr <ph name="DEVICE_TYPE" /> freigeben</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunde gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}other{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunden gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}}</translation>

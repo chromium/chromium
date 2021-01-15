@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="840168496893712993">Beberapa add-on telah menyebabkan Chrome berhenti bekerja. Harap coba uninstal.</translation>
 <translation id="8459495907675268833">Data yang dipilih telah dihapus dari Chrome dan perangkat yang disinkronkan. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penelusuran dan aktivitas dari layanan Google lainnya di history.google.com.</translation>
+<translation id="850555388806794946">Untuk menjadikan Chrome sebagai default:
+  1. Buka Setelan
+  2. Ketuk Aplikasi Browser Default
+  3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Jika Anda mengizinkan Chrome mengetahui lokasi, Chrome akan mengirimkannya ke mesin telusur default dan situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 </translationbundle>

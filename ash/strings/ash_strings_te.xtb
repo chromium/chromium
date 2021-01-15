@@ -232,10 +232,10 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">కర్సర్‌ను జరపండి</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" <ph name="INTENT" /> పొందండి</translation>
+<translation id="3105917916468784889">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
 <translation id="3126069444801937830">అప్‌డేట్ చేయ‌డానికి పునఃప్రారంభించండి</translation>
 <translation id="3139942575505304791">డెస్క్ 1</translation>
-<translation id="3147157020428159854">స్క్రీన్ రికార్డింగ్ ఆపివేయబడింది</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3151786313568798007">దృగ్విన్యాసం</translation>
 <translation id="3153444934357957346">బహుళ సైన్-ఇన్‌లో గరిష్టంగా <ph name="MULTI_PROFILE_USER_LIMIT" /> ఖాతాలు మాత్రమే ఉండవచ్చు.</translation>
@@ -367,7 +367,6 @@
 <translation id="4296136865091727875">మొత్తం <ph name="COUNT" /> నోటిఫికేషన్‌లను క్లియర్ చేస్తుంది</translation>
 <translation id="4302592941791324970">అందుబాటులో లేదు</translation>
 <translation id="4303223480529385476">స్టేటస్ ప్రాంతాన్ని విస్తరించండి</translation>
-<translation id="4315586716182276649">మీ ఫోన్ ఇంటర్నెట్ కనెక్షన్‌ను పొడిగించండి, 'అంతరాయం కలిగించవద్దు'ను కంట్రోల్ చేయండి, అలాగే మీ పరికరాన్ని గుర్తించండి. మీ <ph name="DEVICE_TYPE" />లో మీ ఫోన్ నుండి యాక్టివ్ Chrome ట్యాబ్‌లను వీక్షించండి.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">మీరు అధిక కాంట్రాస్ట్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -561,6 +560,7 @@
 <translation id="6054305421211936131">స్మార్ట్ కార్డ్‌తో సైన్ ఇన్ చేయండి</translation>
 <translation id="6059276912018042191">ఇటీవలి Chrome ట్యాబ్‌లు</translation>
 <translation id="6062360702481658777">మీరు <ph name="LOGOUT_TIME_LEFT" />లో స్వయంచాలకంగా సైన్ అవుట్ చేయబడతారు.</translation>
+<translation id="6073451960410192870">రికార్డ్ చేయడం ఆపివేయి</translation>
 <translation id="607652042414456612">మీ కంప్యూటర్ సమీప బ్లూటూత్ పరికరాల్లో కనుగొనబడుతుంది మరియు చిరునామా <ph name="ADDRESS" />తో "<ph name="NAME" />" లాగా కనిపిస్తుంది</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google అసిస్టెంట్ పని చేయదు.</translation>
@@ -726,7 +726,6 @@
 <translation id="7654687942625752712">ప్రసంగ రూప ప్రతిస్పందనను నిలిపివేయడానికి ఒకేసారి రెండు వాల్యూమ్ కీలను ఐదు సెకన్ల పాటు నొక్కి, పట్టుకోండి.</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7662283695561029522">కాన్ఫిగర్ చేయడానికి నొక్కండి</translation>
-<translation id="7683326293741220026">మీ ఫోన్‌లో బ్లూటూత్ ఆఫ్ చేయబడి ఉన్నట్లుగా అనిపిస్తోంది. ఫోన్ హబ్‌ను ఉపయోగించడానికి దయచేసి మీ ఫోన్‌లో బ్లూటూత్‌ను ఆన్ చేయండి.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
 <translation id="7724603315864178912">కత్తిరించు</translation>
@@ -774,7 +773,6 @@
 <translation id="8054466585765276473">బ్యాటరీ సమయాన్ని లెక్కిస్తోంది.</translation>
 <translation id="8061464966246066292">అధిక కాంట్రాస్ట్</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />కి స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఆపివేయి</translation>
-<translation id="8108657971283652031">మీ ఫోన్ ఇంటర్నెట్ కనెక్షన్‌ను పొడిగించండి, 'అంతరాయం కలిగించవద్దు'ను కంట్రోల్ చేయండి, అలాగే మీ ఫోన్‌ను గుర్తించండి. మీ <ph name="DEVICE_TYPE" />లో మీ ఫోన్ నుండి యాక్టివ్ Chrome ట్యాబ్‌లను వీక్షించండి.</translation>
 <translation id="8113423164597455979">యాప్‌లన్నీ ఆన్</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
@@ -881,6 +879,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ఉపయోగిస్తోంది</translation>
 <translation id="899350903320462459">నోటిఫికేషన్ చర్యను నిర్వహించడానికి <ph name="LOGIN_ID" />గా పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="9017320285115481645">Family Link తల్లిదండ్రుల యాక్సెస్ కోడ్‌ను నమోదు చేయండి.</translation>
+<translation id="9024331582947483881">పూర్తి స్క్రీన్</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="9056839673611986238">పరికరం ఉపసంహరించబడుతుంది</translation>
 <translation id="9065203028668620118">సవరించు</translation>

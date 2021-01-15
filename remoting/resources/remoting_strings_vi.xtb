@@ -155,7 +155,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="8073845705237259513">Để sử dụng Chrome Remote Desktop, bạn cần thêm một tài khoản Google cho thiết bị của mình.</translation>
 <translation id="809687642899217504">Máy tính của tôi</translation>
 <translation id="8116630183974937060">Đã xảy ra lỗi mạng. Hãy kiểm tra xem thiết bị của bạn có trực tuyến hay không và thử lại.</translation>
-<translation id="8187079423890319756">Bản quyền 2012 Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8295077433896346116">Để sử dụng <ph name="PRODUCT_NAME" />, bạn cần cấp quyền 'Hỗ trợ tiếp cận' để máy Mac này có thể nhận nội dung từ máy từ xa.
 
 Để cấp quyền này, hãy nhấp vào nút '<ph name="BUTTON_NAME" />' bên dưới để mở ngăn tùy chọn 'Hỗ trợ tiếp cận' rồi đánh dấu vào hộp bên cạnh '<ph name="SERVICE_SCRIPT_NAME" />'.

@@ -81,7 +81,8 @@
 <translation id="1087707496788636333">L'elenco dei criteri di Chrome Enterprise è in fase di trasferimento. Aggiorna i tuoi preferiti con l'URL <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
-<translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
+<translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
+</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -2617,7 +2618,8 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se questo criterio non viene impostato o viene attivato, i controlli dell'intercettazione DNS vengono eseguiti. Se viene disattivato, i controlli non vengono eseguiti.</translation>
 <translation id="4700190441681139987">Non consentire a nessun sito di accedere ai sensori</translation>
 <translation id="4703402283970867140">Attiva il modello di oscuramento smart per ritardare l'oscuramento dello schermo</translation>
-<translation id="4722122254122249791">Attiva isolamento sito per origini specificate</translation>
+<translation id="4722122254122249791">Attiva isolamento dei siti per origini specificate
+</translation>
 <translation id="4723122879352880315">Questa impostazione consente agli utenti di eseguire l'autenticazione su un proxy gestito protetto tramite l'autenticazione NTLM usando le credenziali di accesso di <ph name="PRODUCT_OS_NAME" />.
 
       Se questo criterio viene impostato su Falso o se non viene configurato, non verranno usate le credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete.

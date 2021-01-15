@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
 <translation id="8459495907675268833">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
+<translation id="850555388806794946">Para establecer Chrome como navegador predeterminado, haz lo siguiente:
+  1. Abre Ajustes.
+  2. Presiona App de navegador predeterminada.
+  3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Si permites que Chrome conozca tu ubicación, la enviará a tu motor de búsqueda predeterminado y a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
 </translationbundle>

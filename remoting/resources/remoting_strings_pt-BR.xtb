@@ -65,7 +65,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4145029455188493639">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Alguns componentes obrigatórios não foram encontrados. Certifique-se de que você esteja executando a última versão do software e tente novamente.</translation>
 <translation id="4176825807642096119">Código de acesso</translation>
-<translation id="4227991223508142681">Utilitário de aprovisionamento de host</translation>
+<translation id="4227991223508142681">Utilitário de provisionamento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host do Chromoting</translation>
 <translation id="4277736576214464567">Código de acesso inválido. Tente novamente.</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
@@ -155,7 +155,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="8073845705237259513">Para usar a Área de trabalho remota do Google, adicione uma Conta do Google a seu dispositivo.</translation>
 <translation id="809687642899217504">Meus computadores</translation>
 <translation id="8116630183974937060">Ocorreu um erro de rede. Verifique se o dispositivo está on-line e tente novamente.</translation>
-<translation id="8187079423890319756">Copyright 2013 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8295077433896346116">Para usar a <ph name="PRODUCT_NAME" />, você precisa conceder a permissão "Acessibilidade". Assim, a entrada da máquina remota será injetada neste Mac.
 
 Clique em "<ph name="BUTTON_NAME" />" abaixo. No painel de preferências "Acessibilidade", marque a caixa ao lado de "<ph name="SERVICE_SCRIPT_NAME" />".

@@ -155,7 +155,6 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8073845705237259513">Wenn Sie Chrome Remote Desktop verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
 <translation id="809687642899217504">Meine Computer</translation>
 <translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie, ob das Gerät online ist, und versuchen Sie es erneut.</translation>
-<translation id="8187079423890319756">Copyright 2013 Die Chromium-Autoren. Alle Rechte vorbehalten</translation>
 <translation id="8295077433896346116">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
 
 Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.

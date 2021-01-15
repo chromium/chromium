@@ -1778,6 +1778,7 @@ Lisätietoja:
 <translation id="79859296434321399">Asenna ARCore, niin voit nähdä AR-sisältöä.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Sidonta</translation>
+<translation id="7992044431894087211">Näytön jakamista (<ph name="APPLICATION_TITLE" />) jatkettu</translation>
 <translation id="7995512525968007366">Ei määritetty</translation>
 <translation id="800218591365569300">Yritä vapauttaa muistia sulkemalla muita välilehtiä tai ohjelmia.</translation>
 <translation id="8004582292198964060">Selain</translation>
@@ -2052,6 +2053,7 @@ Lisätietoja:
 <translation id="9103872766612412690"><ph name="SITE" /> suojaa tietosi normaalisti salauksen avulla. Kun Chromium yritti tällä kertaa yhdistää sivustoon <ph name="SITE" />, sivusto palautti epätavalliset ja virheelliset kirjautumistiedot. Hyökkääjä saattaa yrittää esiintyä sivustona <ph name="SITE" />, tai Wi-Fi-kirjautumisruutu on keskeyttänyt yhteyden. Tietosi ovat edelleen turvassa, sillä Chromium katkaisi yhteyden, ennen kuin mitään tietoja vaihdettiin.</translation>
 <translation id="9106062320799175032">Lisää laskutusosoite</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> ylläpitää selaintasi</translation>
+<translation id="91108059142052966">Järjestelmänvalvojakäytäntö poistaa näytön jakamisen (<ph name="APPLICATION_TITLE" />) käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
 <translation id="9114524666733003316">Vahvistetaan korttia…</translation>
 <translation id="9114581008513152754">Yritys tai muu organisaatio ei ylläpidä selainta. Laitteen toimintaa saatetaan ylläpitää Chromen ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Lähetetty</translation>

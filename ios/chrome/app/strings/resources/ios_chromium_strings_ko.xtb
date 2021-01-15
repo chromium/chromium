@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="602807004951640891">Chromium을 사용하면 <ph name="BEGIN_LINK_TOS" />서비스 약관<ph name="END_LINK_TOS" />에 동의하게 됩니다.</translation>
+<translation id="6119647025869519954">Chromium을 기본 브라우저로 설정하려면 다음 단계를 따르세요.
+1. 설정을 엽니다.
+2. 기본 브라우저 앱을 탭합니다.
+3. Chromium을 선택합니다.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="6424492062988593837">한층 개선된 Chromium의 최신 버전이 출시되었습니다.</translation>
 <translation id="6604711459180487467">위치 정보를 기반으로 Chromium에서 더 나은 서비스를 이용할 수 있습니다.</translation>

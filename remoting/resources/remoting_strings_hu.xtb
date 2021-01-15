@@ -155,7 +155,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="8073845705237259513">A Chrome távoliasztal-szolgáltatás használatához adjon hozzá eszközéhez egy Google-fiókot.</translation>
 <translation id="809687642899217504">Saját számítógépek</translation>
 <translation id="8116630183974937060">Hálózati hiba történt. Ellenőrizze, hogy eszköze online állapotban van-e, majd próbálja újra.</translation>
-<translation id="8187079423890319756">Copyright 2013 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8295077433896346116">A <ph name="PRODUCT_NAME" /> használatához meg kell adnia a Kisegítő lehetőségek engedélyt, hogy a távoli gépről érkező bevitel megjelenhessen ezen a Mac típusú eszközön.
 
 Az engedély megadásához kattintson az alábbi „<ph name="BUTTON_NAME" />” gombra. Az ekkor megnyíló „Kisegítő lehetőségek” beállításait tartalmazó panelen jelölje be a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzetet.

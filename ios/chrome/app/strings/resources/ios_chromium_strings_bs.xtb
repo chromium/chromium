@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5945387852661427312">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad svojim podacima iz Chromiuma. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromiuma će se izbrisati vaši podaci s ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
 <translation id="602807004951640891">Korištenjem Chromiuma prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korištenja usluge<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Da postavite Chromium kao zadani preglednik:
+1. Otvorite Postavke
+2. Dodirnite Zadana aplikacija preglednika
+3. Odaberite Chromium.</translation>
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
 <translation id="6424492062988593837">Chromium je sada još bolji! Dostupna je nova verzija.</translation>
 <translation id="6604711459180487467">Ostvarite bolje iskustvo u Chromiumu prema vašoj lokaciji.</translation>

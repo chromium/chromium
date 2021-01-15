@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1957803754585243749">۰ درجه</translation>
 <translation id="1957958912175573503">تنظیم زبان</translation>
+<translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="1962969542251276847">صفحه قفل</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@
 <translation id="3090989381251959936">روشن/خاموش کردن <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">حرکت دادن نشانگر</translation>
 <translation id="3098580329624789136">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />»</translation>
+<translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3126069444801937830">راه‌اندازی مجدد برای به‌روزرسانی</translation>
 <translation id="3139942575505304791">میز ۱</translation>
-<translation id="3147157020428159854">ضبط صفحه‌نمایش متوقف شد</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
 <translation id="3151786313568798007">جهت‌‌</translation>
 <translation id="3153444934357957346">در ورود چندگانه به سیستم، می‌توانید حداکثر از <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب استفاده کنید.</translation>
@@ -366,7 +367,6 @@
 <translation id="4296136865091727875">پاک کردن همه <ph name="COUNT" /> اعلان</translation>
 <translation id="4302592941791324970">موجود نیست</translation>
 <translation id="4303223480529385476">بزرگ کردن ناحیه نشانگر وضعیت</translation>
-<translation id="4315586716182276649">‏اتصال اینترنت تلفنتان را گسترش دهید،‌ «مزاحم نشوید» را کنترل کنید، و دستگاهتان را پیدا کنید. برگه‌های فعال Chrome در تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید.</translation>
 <translation id="4321179778687042513">مهار</translation>
 <translation id="4321776623976362024">میان‌بر صفحه‌کلید مربوط به کنتراست بالا را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +560,7 @@
 <translation id="6054305421211936131">ورود به سیستم با کارت هوشمند</translation>
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
+<translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
@@ -725,7 +726,6 @@
 <translation id="7654687942625752712">برای غیرفعال کردن بازخورد گفتاری، هردو کلید تنظیم صدا را پنج ثانیه فشار دهید و نگه‌دارید.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
-<translation id="7683326293741220026">ظاهراً بلوتوث در تلفنتان خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را در تلفنتان روشن کنید.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7724603315864178912">برش</translation>
@@ -773,7 +773,6 @@
 <translation id="8054466585765276473">درحال محاسبه زمان شارژ باتری.</translation>
 <translation id="8061464966246066292">کنتراست بالا</translation>
 <translation id="8098591350844501178">توقف ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">‏اتصال اینترنت تلفن را گسترش دهید، «مزاحم نشوید» را کنترل کنید، و تلفنتان را پیدا کنید. برگه‌های فعال Chrome در تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید.</translation>
 <translation id="8113423164597455979">روشن، همه برنامه‌ها</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8131740175452115882">تأیید</translation>
@@ -822,6 +821,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="8513108775083588393">چرخش خودکار</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
+<translation id="8553395910833293175">قبلاً به همه میزکارها اختصاص داده شده است.</translation>
 <translation id="8563862697512465947">تنظیمات اعلام</translation>
 <translation id="857201607579416096">منو به گوشه چپ پایین صفحه منتقل شد.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -880,6 +880,7 @@
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>
 <translation id="9017320285115481645">‏کد دسترسی والدین Family Link را وارد کنید</translation>
+<translation id="9024331582947483881">تمام‌صفحه</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">دستگاه عقب‌گرد می‌کند</translation>
 <translation id="9065203028668620118">ویرایش</translation>

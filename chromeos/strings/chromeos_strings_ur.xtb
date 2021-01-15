@@ -135,6 +135,7 @@
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4835901797422965222">کوئی فعال نیٹ ورک نہیں</translation>
 <translation id="4848429997038228357">جاری ہے</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4891842000192098784">اسٹریس</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
@@ -166,6 +167,7 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5635169860413004179">رپورٹ دیکھیں</translation>
 <translation id="5670702108860320605">BSSID</translation>

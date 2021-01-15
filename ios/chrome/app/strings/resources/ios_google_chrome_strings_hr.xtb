@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Pokušajte ih deinstalirati.</translation>
 <translation id="8459495907675268833">Odabrani podaci uklonjeni su iz Chromea i sa sinkroniziranih uređaja. Na Google računu možda postoje drugi oblici povijesti pregledavanja, primjerice pretraživanja i aktivnosti s drugih Googleovih usluga, na stranici history.google.com.</translation>
+<translation id="850555388806794946">Da biste postavili Chrome kao zadani preglednik:
+  1. Otvorite postavke.
+  2. Dodirnite opciju Zadana aplikacija preglednika.
+  3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Ako dopustite Chromeu da sazna vašu lokaciju, Chrome će je poslati vašoj zadanoj tražilici i svim web-lokacijama koje dopustite. Web-lokacije mogu tražiti dopuštenje za vašu lokaciju kad vam žele prikazati lokalne informacije, primjerice trgovine u blizini ili vijesti.</translation>
 </translationbundle>

@@ -112,6 +112,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Angiv dit sprog</translation>
+<translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Skærmlås</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3090989381251959936">Slå <ph name="FEATURE_NAME" /> til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Flyttemarkør</translation>
 <translation id="3098580329624789136">Få <ph name="INTENT" /> til "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">Tag screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Genstart for at opdatere</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
-<translation id="3147157020428159854">Skærmoptagelsen er stoppet</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
@@ -366,7 +367,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4296136865091727875">Ryd alle <ph name="COUNT" /> notifikationer</translation>
 <translation id="4302592941791324970">Ikke tilgængelig</translation>
 <translation id="4303223480529385476">Udvid statusområde</translation>
-<translation id="4315586716182276649">Udvid din telefons internetforbindelse, administrer Forstyr ikke, og find din enhed. Se aktive Chrome-faner fra din telefon på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykkede på tastaturgenvejen for høj kontrast. Vil du aktivere indstillingen?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +560,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6054305421211936131">Log ind med chipkort</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="607652042414456612">Din computer kan registreres af Bluetooth-enheder i nærheden, og den vil blive vist som "<ph name="NAME" />" med adressen <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent er ikke tilgængelig i en gæstesession.</translation>
@@ -726,7 +727,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7654687942625752712">Tryk på begge lydstyrketaster, og hold dem nede i fem sekunder for at deaktivere oplæsning.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
-<translation id="7683326293741220026">Det ser ud til, at Bluetooth er deaktiveret på din telefon. Aktivér Bluetooth på din telefon for at bruge Telefonstyring.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>
 <translation id="7724603315864178912">Klip</translation>
@@ -774,7 +774,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8061464966246066292">Høj kontrast</translation>
 <translation id="8098591350844501178">Stop skærmcast til <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Udvid din telefons internetforbindelse, administrer Forstyr ikke, og find din telefon. Se aktive Chrome-faner fra din telefon på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Til, alle apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekræft</translation>
@@ -823,6 +822,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" />. Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autoroter</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> kan muligvis ikke oplades, mens den er tændt.</translation>
+<translation id="8553395910833293175">Allerede tildelt til alle skriveborde.</translation>
 <translation id="8563862697512465947">Indstillinger for notifikationer</translation>
 <translation id="857201607579416096">Menuen blev flyttet til nederste højre hjørne af skærmen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -881,6 +881,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8990809378771970590"><ph name="IME_NAME" /> anvendes</translation>
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>
+<translation id="9024331582947483881">fuld skærm</translation>
 <translation id="9047624247355796468">Åbn indstillingerne for <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">En tidligere version gendannes på enheden</translation>
 <translation id="9065203028668620118">Rediger</translation>

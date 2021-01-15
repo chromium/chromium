@@ -1768,6 +1768,7 @@ Ek ayrıntılar:
 <translation id="79859296434321399">Artırılmış gerçeklik içeriğini görüntülemek için ARCore'u yükleyin</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Bağlama</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ile ekran paylaşımı devam ettirildi</translation>
 <translation id="7995512525968007366">Belirtilmedi</translation>
 <translation id="800218591365569300">Bellekte yer açmak için diğer sekmeleri veya programları kapatmayı deneyin.</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
@@ -2042,6 +2043,7 @@ Ek ayrıntılar:
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9106062320799175032">Fatura Adresi Ekleyin</translation>
 <translation id="9107467864910557787">Tarayıcınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
+<translation id="91108059142052966">Yönetici politikası, gizli içerik görünür haldeyken <ph name="APPLICATION_TITLE" /> ile ekran paylaşımını devre dışı bırakır</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9114581008513152754">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Yüklendi</translation>

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="602807004951640891">Genom att använda Chromium godkänner du <ph name="BEGIN_LINK_TOS" />användarvillkoren<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Så här använder du Chromium som standard:
+1. Öppna inställningarna
+2. Tryck på Standardwebbläsarapp
+3. Välj Chromium.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6604711459180487467">Ange din plats och få en bättre upplevelse när du använder Chromium.</translation>

@@ -872,7 +872,6 @@
 <translation id="1954813140452229842">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। कृपया आफ्ना प्रमाणहरूको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1956050014111002555">फाइलमा बहुविध प्रमाणपत्रहरू समावेश गरिएको थियो, जस मध्ये कुनै पनि आयात गरिएका थिएनन्:</translation>
 <translation id="1956390763342388273">यस कार्यले "<ph name="FOLDER_PATH" />" मा रहेका सबै फाइलहरू अपलोड गर्ने छ। तपाईंलाई साइटमाथि विश्वास छ भने मात्र यो कार्य गर्नुहोस्‌।</translation>
-<translation id="1960158217849594135">यो युजरनेम तपाईंको Google खातामा सुरक्षित गर्ने हो?</translation>
 <translation id="196040970347962278">सर्वप्रथम इन्टरनेट जोड्नुहोस्</translation>
 <translation id="1962233722219655970">यस पृष्ठले एक सहज ग्राहक एप प्रयोग गर्छ जुन तपाइँको कम्प्युटरटमा चल्दैन।</translation>
 <translation id="1963227389609234879">सबै हटाउनुहोस्</translation>
@@ -1043,7 +1042,6 @@
 <translation id="2157474325782140681">अतिरिक्त सुविधाहरू प्राप्त गर्न यो Chromebook का लागि उपयुक्त हुने गरी डिजाइन गरिएको Dell डकिङ स्टेसन प्रयोग गर्नुहोस्।</translation>
 <translation id="215753907730220065">पूरा स्क्रिन मोडबाट निस्कनुहोस्</translation>
 <translation id="2157875535253991059">यो पृष्ठ अभ फुल स्क्रिन छ।</translation>
-<translation id="2160589599612868242">आफ्नो फोनका सूचनाहरू <ph name="DEVICE_TYPE" /> मा प्राप्त गर्नुहोस्</translation>
 <translation id="216169395504480358">Wi-Fi थप्नुहोस्...</translation>
 <translation id="2162155940152307086">तपाईंले सिंकसम्बन्धी सेटिङहरूको पृष्ठ छोडेपछि सिंक सुरु हुने छ</translation>
 <translation id="2162838847352058695">साइटहरूलाई एकभन्दा बढी फाइल स्वतः डाउनलोड गर्न नदिनुहोस्</translation>
@@ -1696,7 +1694,6 @@
 <translation id="2885729872133513017">सर्भरको जवाफ डिकोडिङ गर्ने क्रममा कुनै समस्या भयो।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">कृपया लिङ्क खोल्नुहोस्...</translation>
-<translation id="2889481634493693121">आफ्नो फोनमा सूचनाहरू अन गर्नुहोस्</translation>
 <translation id="2889925978073739256">स्यान्डबक्स हटाइएका प्लगइनहरू रोक्न जारी राख्नुहोस्</translation>
 <translation id="2893168226686371498">पूर्वनिर्धारित ब्राउजर</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{एउटा पाठ}other{# वटा पाठ}}</translation>
@@ -2798,7 +2795,6 @@
 <translation id="412730574613779332">स्प्यानडेक्स</translation>
 <translation id="4130199216115862831">उपकरण लग</translation>
 <translation id="4130207949184424187">यो विस्तारले तपाईँले ओम्निबक्सबाट खोज गर्दा देखाइएको पृष्ठलाई परिवर्तन गरेको छ।</translation>
-<translation id="4130344535649650885">यो पासवर्ड तपाईंको Google खातामा सुरक्षित गर्ने हो?</translation>
 <translation id="4130750466177569591">म सहमत गर्छु</translation>
 <translation id="413121957363593859">अनुभागहरू</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
@@ -3925,7 +3921,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}}</translation>
 <translation id="5502500733115278303">Firefox बाट आयात गरिएको</translation>
 <translation id="5502915260472117187">बच्चा</translation>
-<translation id="5503858713116291452">तपाईंको फोन नजिकै छ, अनलक गरिएको छ र त्यसको ब्लुटुथ र Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्। सेटअप प्रक्रिया पूरा गर्न आफ्नो फोनको स्क्रिनमा देखाइने चरणहरूको पालना गर्नुहोस्।</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> लाई तपाईंको यन्त्रको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने र माइक्रोफोन प्रयोग गर्ने अनुमति दिइराख्नुहोस्</translation>
 <translation id="5505264765875738116">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्दैनन्।</translation>
 <translation id="5505307013568720083">मसी सकियो</translation>
@@ -3986,6 +3981,7 @@
 <translation id="5565735124758917034">सक्रिय</translation>
 <translation id="5567989639534621706">एप क्यासहरू</translation>
 <translation id="5568069709869097550">साइन इन गर्न सक्दैन</translation>
+<translation id="5571832155627049070">आफ्नो प्रोफाइल आफ्नो रोजाइ अनुकूल पार्नुहोस्</translation>
 <translation id="5572851009514199876">Chrome ले तपाईंलाई यस साइटमाथि पहुँच राख्ने अनुमति छ वा छैन भनी जाँच्न सकोस् भन्नका लागि कृपया Chrome सुरु गरी साइन इन गर्नुहोस्।</translation>
 <translation id="5575473780076478375">इंकोग्निटो एक्स्टेन्शन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो दर्ताको अनुरोधसम्बन्धी कुनै समस्या भयो।</translation>
@@ -5868,6 +5864,7 @@
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7765507180157272835">ब्लुटुथ तथा Wi-Fi कनेक्सन आवश्यक पर्छ</translation>
 <translation id="7766082757934713382">यसले स्वचालित एप तथा सिस्टम अपडेट अस्थायी रूपमा बन्द गरेर डेटाको खपत कम गर्न मद्दत गर्छ</translation>
+<translation id="7766807826975222231">भ्रमण गर्नुहोस्</translation>
 <translation id="7766838926148951335">अनुमतिहरू स्वीकार गर्नुहोस्</translation>
 <translation id="7768507955883790804">तपाईं कुनै साइटमा जाँदा उक्त साइटमा स्वतः यो सेटिङ लागू हुन्छ</translation>
 <translation id="7768770796815395237">परिवर्तन गर्नुहोस्</translation>
@@ -6281,7 +6278,6 @@
 <translation id="8211551284753798479">PUK अवैध छ। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड हुँदैछ}other{डाउनलोड हुँदैछन्}}</translation>
 <translation id="8213449224684199188">तस्बिर मोडमा प्रवेश गरियो</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> ले संरक्षित भिडियो तथा अडियो उच्चतम गुणस्तरमा प्ले गर्ने प्रयोजनका लागि तपाईंको यन्त्र पहिचान गर्न चाहन्छ।</translation>
 <translation id="8214489666383623925">फाइल खोल्नुहोस्...</translation>
 <translation id="8214962590150211830">यो व्यक्तिलाई हटाउनुहोस्</translation>
 <translation id="8216351761227087153">हेर्नुहोस्</translation>
@@ -6760,7 +6756,6 @@
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
-<translation id="8775163630211761057">आफ्नो Android फोनका उत्कृष्ट एप, सामग्री तथा कनेक्टिभिटी सुविधाहरू <ph name="DEVICE_TYPE" /> मा प्रयोग गर्नुहोस्</translation>
 <translation id="8775653927968399786">{0,plural, =1{तपाईंको <ph name="DEVICE_TYPE" /> # सेकेन्डमा स्वतः लक हुने छ।
 <ph name="DOMAIN" /> मा तपाईंले आफ्नो स्मार्ट कार्ड इन्सर्ट गरिराख्नु पर्ने हुन्छ।}other{तपाईंको <ph name="DEVICE_TYPE" /> # सेकेन्डमा स्वतः लक हुने छ।
 <ph name="DOMAIN" /> मा तपाईंले आफ्नो स्मार्ट कार्ड इन्सर्ट गरिराख्नु पर्ने हुन्छ।}}</translation>

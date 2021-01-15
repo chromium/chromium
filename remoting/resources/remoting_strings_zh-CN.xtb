@@ -155,7 +155,6 @@
 <translation id="8073845705237259513">要使用Chrome远程桌面，您需要先为自己的设备添加一个Google帐号。</translation>
 <translation id="809687642899217504">我的计算机</translation>
 <translation id="8116630183974937060">发生网络错误。请确保您的设备已连接到网络，然后重试。</translation>
-<translation id="8187079423890319756">版权所有2013 The Chromium Authors。保留所有权利。</translation>
 <translation id="8295077433896346116">若想使用 <ph name="PRODUCT_NAME" />，您需要授予“无障碍”权限，以便将远程计算机上输入的内容注入到此 Mac 上。
 
 要授予此权限，请先点击下面的“<ph name="BUTTON_NAME" />”，然后在随即打开的“无障碍”偏好设置窗格中勾选“<ph name="SERVICE_SCRIPT_NAME" />”旁边的复选框。

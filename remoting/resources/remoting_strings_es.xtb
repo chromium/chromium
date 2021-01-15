@@ -155,7 +155,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8073845705237259513">Para utilizar la aplicación Escritorio Remoto de Chrome, debes añadir una cuenta de Google al dispositivo.</translation>
 <translation id="809687642899217504">Mis ordenadores</translation>
 <translation id="8116630183974937060">Se ha producido un error de red. Comprueba que tu dispositivo esté conectado y vuelve a intentarlo.</translation>
-<translation id="8187079423890319756">Copyright 2013 Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8295077433896346116">Para usar <ph name="PRODUCT_NAME" />, tienes que conceder el permiso de accesibilidad para que se pueda insertar la información del ordenador remoto en este Mac.
 
 Para conceder este permiso, haz clic en <ph name="BUTTON_NAME" /> más abajo. En el panel de preferencias Accesibilidad, marca la casilla situada junto a <ph name="SERVICE_SCRIPT_NAME" />.

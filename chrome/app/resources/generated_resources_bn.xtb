@@ -877,7 +877,6 @@
 <translation id="1954813140452229842">মাউন্টিং শেয়ারে সমস্যা। অনুগ্রহ করে আপনার ক্রেডেনশিয়াল যাচাই করে আবার চেষ্টা করুন।</translation>
 <translation id="1956050014111002555">ফাইলটিতে একাধিক শংসাপত্র রয়েছে, এর মধ্যে কোনওটিই আমদানি করা হয়নি:</translation>
 <translation id="1956390763342388273">এটি ''<ph name="FOLDER_PATH" />'' থেকে সমস্ত ফাইল আপলোড করবে। আপনি এই সাইটটি বিশ্বাস করে থাকলে তবেই এটি করুন।</translation>
-<translation id="1960158217849594135">আপনার Google অ্যাকাউন্টে ইউজারনেম সেভ করবেন?</translation>
 <translation id="196040970347962278">প্রথমে একটি ইন্টারনেট কানেকশন যোগ করুন</translation>
 <translation id="1962233722219655970">এই পৃষ্ঠাটি একটি নেটিভ ক্লায়েন্ট অ্যাপ্লিকেশন ব্যবহার করে যা আপনার কম্পিউটারে কাজ করে না৷</translation>
 <translation id="1963227389609234879">সকল সরান</translation>
@@ -1048,7 +1047,6 @@
 <translation id="2157474325782140681">অতিরিক্ত ফিচার পেতে, এই Chromebook-এর সাথে মানানসই একটি Dell-এর ডকিং স্টেশন ব্যবহার করুন।</translation>
 <translation id="215753907730220065">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="2157875535253991059">পৃষ্ঠাটি এখন পূর্ণ পর্দায় রয়েছে</translation>
-<translation id="2160589599612868242">আপনার ফোন থেকে <ph name="DEVICE_TYPE" />-এ বিজ্ঞপ্তি পান</translation>
 <translation id="216169395504480358">Wi-fi জুড়ুন ...</translation>
 <translation id="2162155940152307086">আপনি সিঙ্ক সেটিংস পৃষ্ঠাটি ছেড়ে গেলে সিঙ্ক করা শুরু হবে</translation>
 <translation id="2162838847352058695">একাধিক ফাইল অটোমেটিক ডাউনলোড করা আটকাতে সাইট ব্লক করুন</translation>
@@ -1700,7 +1698,6 @@
 <translation id="2885729872133513017">সার্ভারের উত্তর ডিকোড করার সময় সমস্যা হয়েছে।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">এর সাথে লিঙ্ক খুলুন...</translation>
-<translation id="2889481634493693121">আপনার ফোনে বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="2889925978073739256">আনস্যান্ডবক্সড প্লাগ ইনগুলি অবরুদ্ধ করা অবিরত রাখুন</translation>
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{১টি টেক্সট}one{#টি টেক্সট}other{#টি টেক্সট}}</translation>
@@ -2801,7 +2798,6 @@
 <translation id="412730574613779332">স্প্যানডেক্স</translation>
 <translation id="4130199216115862831">ডিভাইস লগ</translation>
 <translation id="4130207949184424187">আপনি ওমনিবক্স ক্ষেত্র থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তা এই এক্সটেনশনটি পরিবর্তন করেছে।</translation>
-<translation id="4130344535649650885">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="4130750466177569591">আমি সম্মত</translation>
 <translation id="413121957363593859">উপাদানগুলি</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
@@ -3928,7 +3924,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}}</translation>
 <translation id="5502500733115278303">Firefox থেকে আমদানি করা</translation>
 <translation id="5502915260472117187">বাচ্চার জন্য ডিভাইস সেট আপ করুন</translation>
-<translation id="5503858713116291452">আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে কিনা এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা দেখে নিন। সেট আপ সম্পূর্ণ করতে, আপনার ফোনে ধাপগুলি অনুসরণ করুন।</translation>
 <translation id="5503982651688210506">আপনার ক্যামেরা ব্যবহার করতে এবং সরাতে ও আপনার মাইক্রোফোন ব্যবহার করতে <ph name="HOST" />-কে অনুমতি দেওয়ার বিষয়টি চালিয়ে যান</translation>
 <translation id="5505264765875738116">সাইট আপনাকে বিজ্ঞপ্তি পাঠাতে পারবে না</translation>
 <translation id="5505307013568720083">কালি ফুরিয়ে গেছে</translation>
@@ -3989,6 +3984,7 @@
 <translation id="5565735124758917034">সক্রিয়</translation>
 <translation id="5567989639534621706">অ্যাপ্লিকেশন ক্যাশে</translation>
 <translation id="5568069709869097550">প্রবেশ করতে পারছেন না</translation>
+<translation id="5571832155627049070">আপনার প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="5572851009514199876">আপনার এই সাইটে অ্যাক্সেস আছে কিনা, তা দেখার জন্য Chrome চালু করে সাইন-ইন করুন।</translation>
 <translation id="5575473780076478375">ছদ্মবেশী এক্সটেনশন: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ডেমো রেজিস্টার করার অনুরোধ নিয়ে একটি সমস্যা হয়েছে।</translation>
@@ -5875,6 +5871,7 @@
 <translation id="7765158879357617694">সরান</translation>
 <translation id="7765507180157272835">ব্লুটুথ এবং ওয়াই-ফাই দরকার</translation>
 <translation id="7766082757934713382">অ্যাপ ও সিস্টেমের অটোমেটিক আপডেট পজ করে নেটওয়ার্ক ডেটার ব্যবহার কম করতে সাহায্য করে</translation>
+<translation id="7766807826975222231">একবার ঘুরে দেখুন</translation>
 <translation id="7766838926148951335">অনুমতিগুলি স্বীকার করুন</translation>
 <translation id="7768507955883790804">আপনি কোনও সাইট খুললে সেটি অটোমেটিক এই সেটিং মেনে কাজ করবে</translation>
 <translation id="7768770796815395237">পরিবর্তন করুন</translation>
@@ -6287,7 +6284,6 @@
 <translation id="8211551284753798479">ভুল PUK দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ডাউনলোড করা হচ্ছে}one{ডাউনলোডগুলি করা হচ্ছে}other{ডাউনলোডগুলি করা হচ্ছে}}</translation>
 <translation id="8213449224684199188">ফটো মোডটি চালু হয়েছে</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> আপনার ডিভাইস শনাক্ত করতে চায় যাতে ভিডিও ও অডিও প্লে করার সময় এটি সর্বোচ্চ কোয়ালিটির সুরক্ষা সুনিশ্চিত করতে পারে।</translation>
 <translation id="8214489666383623925">ফাইল খুলুন...</translation>
 <translation id="8214962590150211830">এই ব্যক্তিকে সরান</translation>
 <translation id="8216351761227087153">দেখুন</translation>
@@ -6766,7 +6762,6 @@
 <translation id="8774379074441005279">ফিরিয়ে আনতে কনফার্ম করুন</translation>
 <translation id="8774934320277480003">শীর্ষ মার্জিন</translation>
 <translation id="8775144690796719618">ভুল ইউআরএল</translation>
-<translation id="8775163630211761057">নিজের Android ফোনের সবচেয়ে ভাল অ্যাপ, কন্টেন্ট ও কানেক্টিভিটি <ph name="DEVICE_TYPE" />-এর জন্য ব্যবহার করুন</translation>
 <translation id="8775653927968399786">{0,plural, =1{# সেকেন্ডে আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক লক হয়ে যাবে।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।}one{# সেকেন্ডে আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক লক হয়ে যাবে।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।}other{# সেকেন্ডে আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক লক হয়ে যাবে।

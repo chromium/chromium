@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5945387852661427312">Prijavljate se z računom, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromiumu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chromiuma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="602807004951640891">Če uporabljate Chromium, se strinjate s <ph name="BEGIN_LINK_TOS" />pogoji storitve<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Chromium nastavite kot privzeti iskalnik tako:
+1. Odprite nastavitve.
+2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
+3. Izberite Chromium.</translation>
 <translation id="6268381023930128611">Se želite odjaviti iz Chromiuma?</translation>
 <translation id="6424492062988593837">Chromium je izboljšan! Na voljo je nova različica.</translation>
 <translation id="6604711459180487467">Zagotovite si boljšo izkušnjo uporabe Chromiuma na podlagi lokacije.</translation>

@@ -338,6 +338,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ningún contrasinal vulnerado}=1{1 contrasinal vulnerado}other{{NUM_COMPROMISED} contrasinais vulnerados}}</translation>
 <translation id="1380028686461971526">Conectarse á rede de forma automática</translation>
 <translation id="1380436189840894976">Queres saír do modo de incógnito de todas formas?</translation>
+<translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383861834909034572">Abrir unha vez completado</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1386791642444521222">Activar SIM física</translation>
@@ -875,7 +876,6 @@
 <translation id="1954813140452229842">Produciuse un erro ao montar a localización compartida. Comproba as túas credenciais e téntao outra vez.</translation>
 <translation id="1956050014111002555">O ficheiro contiña varios certificados e non se importou ningún deles:</translation>
 <translation id="1956390763342388273">Con esta acción cargaranse todos os ficheiros de "<ph name="FOLDER_PATH" />". Non continúes se non confías no sitio.</translation>
-<translation id="1960158217849594135">Queres gardar o nome do usuario na túa Conta de Google?</translation>
 <translation id="196040970347962278">Primeiro establece unha conexión a Internet</translation>
 <translation id="1962233722219655970">Esta páxina utiliza unha aplicación de cliente nativo que non funciona no teu ordenador.</translation>
 <translation id="1963227389609234879">Eliminar todas</translation>
@@ -901,6 +901,7 @@
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="1987317783729300807">Contas</translation>
 <translation id="1989112275319619282">Examinar</translation>
+<translation id="1990046457226896323">Descargáronse os ficheiros de voz</translation>
 <translation id="1990512225220753005">Non se mostran atallos nesta páxina</translation>
 <translation id="1992397118740194946">Sen configurar</translation>
 <translation id="1992924914582925289">Quitar do dispositivo</translation>
@@ -1046,7 +1047,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2157474325782140681">Para gozar de funcións adicionais, utiliza unha base de Dell deseñada para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
 <translation id="2157875535253991059">Esta páxina está agora en pantalla completa.</translation>
-<translation id="2160589599612868242">Recibe notificacións do teléfono no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="216169395504480358">Engadir wifi...</translation>
 <translation id="2162155940152307086">A sincronización comezará cando saias da configuración desta función</translation>
 <translation id="2162838847352058695">Impedir que os sitios descarguen automaticamente varios ficheiros</translation>
@@ -1264,6 +1264,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2399699884460174994">Activáronse as notificacións</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión da chave de seguranza</translation>
 <translation id="2400664245143453337">Requírese unha actualización de inmediato</translation>
+<translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
 <translation id="2408018932941436077">Gardando tarxeta</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="241082044617551207">Plugin descoñecido</translation>
@@ -1382,6 +1383,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="2526619973349913024">Buscar actualizacións</translation>
 <translation id="2527167509808613699">Calquera tipo de conexión</translation>
+<translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2532589005999780174">Modo de alto contraste</translation>
 <translation id="253434972992662860">&amp;Pausa</translation>
 <translation id="2534460670861217804">Proxy HTTP seguro</translation>
@@ -1699,7 +1701,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2885729872133513017">Produciuse un problema ao descodificar a resposta do servidor.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Abrir ligazón con...</translation>
-<translation id="2889481634493693121">Activar as notificacións no teléfono</translation>
 <translation id="2889925978073739256">Continuar bloqueando plugins de illamento de procesos</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 texto}other{# textos}}</translation>
@@ -2559,6 +2560,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3857807444929313943">Levanta o dedo e volve tocar o sensor</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: a sincronización está en pausa</translation>
 <translation id="3861638017150647085">O nome de usuario "<ph name="USERNAME" />" non está dispoñible</translation>
+<translation id="3861977424605124250">Mostrar ao inicio</translation>
 <translation id="3862693525629180217">Verificación mediante o sensor integrado</translation>
 <translation id="3862788408946266506">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS</translation>
 <translation id="3865414814144988605">Resolución</translation>
@@ -2801,7 +2803,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Rexistro do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión cambiou a páxina que se mostra ao buscar desde Omnibox.</translation>
-<translation id="4130344535649650885">Queres gardar o contrasinal na túa Conta de Google?</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="413121957363593859">Compoñentes</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
@@ -3200,6 +3201,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4627442949885028695">Continuar desde outro dispositivo</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4628762811416793313">A configuración do contedor de Linux non se completou. Téntao de novo.</translation>
+<translation id="4629521233550547305">Abrir perfil de <ph name="PROFILE_NAME" /></translation>
 <translation id="4633003931260532286">A extensión necesita "<ph name="IMPORT_NAME" />" coa versión "<ph name="IMPORT_VERSION" />" como mínimo, pero só está instalada a versión "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Facer copia de seguranza en Drive. Restaura os datos facilmente ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo.</translation>
 <translation id="4634575639321169635">Configura este dispositivo para uso laboral ou persoal</translation>
@@ -3928,7 +3930,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5501809658163361512">{COUNT,plural, =1{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importados desde Firefox</translation>
 <translation id="5502915260472117187">Un neno ou nena</translation>
-<translation id="5503858713116291452">Asegúrate de que o teu teléfono estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados. Para finalizar a configuración, sigue os pasos que aparecen no teléfono.</translation>
 <translation id="5503982651688210506">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara, e que use o teu micrófono</translation>
 <translation id="5505264765875738116">Os sitios non poden pedir permiso para enviar notificacións</translation>
 <translation id="5505307013568720083">Non hai tinta</translation>
@@ -3989,6 +3990,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5567989639534621706">Memorias caché das aplicacións</translation>
 <translation id="5568069709869097550">Non se pode iniciar sesión</translation>
+<translation id="5571832155627049070">Personaliza o teu perfil</translation>
 <translation id="5572851009514199876">Abre Chrome e inicia sesión para que o navegador poida comprobar se tes permiso para acceder a este sitio.</translation>
 <translation id="5575473780076478375">Extensión do modo de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Produciuse un problema coa solicitude de rexistro de demostración.</translation>
@@ -5457,6 +5459,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7280649757394340890">Configuración da síntese de voz</translation>
 <translation id="7280877790564589615">Solicitouse permiso</translation>
 <translation id="7282992757463864530">Barra de información</translation>
+<translation id="7283555985781738399">Modo de invitado</translation>
 <translation id="7284411326658527427">Cada unha delas pode personalizar a súa conta e protexer a privacidade dos seus datos.</translation>
 <translation id="7287143125007575591">Denegouse o acceso.</translation>
 <translation id="7287411021188441799">Restaurar fondo predeterminado</translation>
@@ -5836,6 +5839,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7716781361494605745">URL de política de autoridade de certificación de Netscape</translation>
 <translation id="7717014941119698257">Descargando: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">Os sitios poden consultar a túa localización (recomendado)</translation>
+<translation id="771721654176725387">Con esta acción eliminaranse permanentemente os teus datos de navegación deste dispositivo. Para recuperalos, activa a sincronización como</translation>
 <translation id="7717845620320228976">Buscar actualizacións</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="7719588063158526969">O nome do dispositivo é demasiado longo</translation>
@@ -5872,6 +5876,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7765507180157272835">É necesario dispoñer de Bluetooth e dunha wifi</translation>
 <translation id="7766082757934713382">Contribúe a reducir o uso de datos da rede ao poñer en pausa as actualizacións automáticas de aplicacións e do sistema</translation>
+<translation id="7766807826975222231">Realizar un percorrido</translation>
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7768507955883790804">Esta opción de configuración aplicarase automaticamente aos sitios cando os visites</translation>
 <translation id="7768770796815395237">Cambiar</translation>
@@ -6115,6 +6120,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8016266267177410919">Almacenamento temporal</translation>
 <translation id="8017176852978888182">Directorios compartidos de Linux</translation>
 <translation id="8017679124341497925">Editouse o atallo</translation>
+<translation id="8018298733481692628">Queres eliminar este perfil?</translation>
 <translation id="8018313076035239964">Controla a información que poden usar os sitios web e o contido que poden mostrarche</translation>
 <translation id="8023801379949507775">Actualizar extensións agora</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
@@ -6285,7 +6291,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8211551284753798479">O PUK non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> quere identificar o teu dispositivo para poder reproducir audio e vídeo protexido da maior calidade posible.</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
 <translation id="8214962590150211830">Eliminar esta persoa</translation>
 <translation id="8216351761227087153">Ver</translation>
@@ -6764,7 +6769,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Marxe superior</translation>
 <translation id="8775144690796719618">URL non válido</translation>
-<translation id="8775163630211761057">Utiliza as mellores funcións do teléfono Android no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8775653927968399786">{0,plural, =1{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente en # segundo.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente en # segundos.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>
@@ -6953,6 +6957,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8973596347849323817">Podes personalizar este dispositivo segundo as túas necesidades. Podes cambiar estas funcións de accesibilidade máis tarde en Configuración.</translation>
 <translation id="897414447285476047">O ficheiro de destino está incompleto debido a un problema de conexión.</translation>
 <translation id="897525204902889653">Servizo de corentena</translation>
+<translation id="8975396729541388937">Cancela a subscrición en calquera momento con só facer clic na ligazón que aparece nos correos electrónicos que recibas.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
 <translation id="8977811652087512276">O contrasinal é incorrecto ou o ficheiro está danado</translation>
 <translation id="8978154919215542464">Activado: sincronizar todo</translation>

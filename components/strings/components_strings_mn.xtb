@@ -1777,6 +1777,7 @@
 <translation id="79859296434321399">Өргөтгөсөн бодит орчны (АR) агуулга харахын тулд ARCore-г суулгана уу</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Үдэж хавтаслах</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />-тай дэлгэц хуваалцахыг үргэлжлүүлсэн</translation>
 <translation id="7995512525968007366">Зааж өгөөгүй</translation>
 <translation id="800218591365569300">Санах ойн багтаамжийг нэмэгдүүлэхийн тулд бусад таб, эсвэл программыг хаана уу.</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
@@ -2050,6 +2051,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> ихэвчлэн таны мэдээллийг хамгаалах зорилгоор шифр ашигладаг. Энэ удаад Chromium <ph name="SITE" />-тай холбогдохыг оролдоход тус веб сайтаас хэвийн бус, буруу өгөгдөл илгээлээ. Халдагч <ph name="SITE" /> юм шиг дүр үзүүлж байгаа, эсвэл Wi-Fi-д нэвтрэх дэлгэц холболтод саад учруулсан байж болзошгүй. Chromium ямар нэгэн өгөгдөл солилцохоос өмнө холболтыг зогсоосон тул таны мэдээлэл аюулгүй.</translation>
 <translation id="9106062320799175032">Тооцооны хаяг нэмэх</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> таны хөтчийг удирддаг</translation>
+<translation id="91108059142052966">Администраторын бодлого нь нууцлалтай контент харагдах үед <ph name="APPLICATION_TITLE" />-тай дэлгэц хуваалцахыг идэвхгүй болгоно</translation>
 <translation id="9114524666733003316">Картыг баталгаажуулж байна...</translation>
 <translation id="9114581008513152754">Энэ хөтчийг компани эсвэл бусад байгууллагаас удирддаггүй. Энэ төхөөрөмж дээрх үйл ажиллагааг Chrome-с гадуур удирддаг байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Байршуулсан</translation>

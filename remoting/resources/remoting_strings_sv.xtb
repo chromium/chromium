@@ -155,7 +155,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="8073845705237259513">Om du vill använda Chrome Remote Desktop måste du lägga till ett Google-konto på enheten.</translation>
 <translation id="809687642899217504">Mina datorer</translation>
 <translation id="8116630183974937060">Ett nätverksfel inträffade. Kontrollera att enheten är online och försök igen.</translation>
-<translation id="8187079423890319756">Upphovsrätt 2013 The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8295077433896346116">Om du vill använda <ph name="PRODUCT_NAME" /> måste du ge behörigheten Tillgänglighet så att indata från fjärrdatorn kan injiceras på denna Mac.
 
 Du beviljar behörigheten genom att klicka på <ph name="BUTTON_NAME" /> nedan så att inställningsrutan för Tillgänglighet öppnas. Sedan markerar du kryssrutan vid <ph name="SERVICE_SCRIPT_NAME" />.

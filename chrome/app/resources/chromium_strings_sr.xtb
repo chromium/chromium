@@ -71,6 +71,7 @@
 <translation id="328888136576916638">Недостају шифре за Google API. Неке функције Chromium-а ће бити онемогућене.</translation>
 <translation id="3296368748942286671">Настави са покретањем апликација у позадини када се Chromium затвори</translation>
 <translation id="331951419404882060">Chromium ОС не може да синхронизује податке због грешке при пријављивању.</translation>
+<translation id="3430503420100763906">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. Направите профиле за пријатеље и породицу или раздвојите посао и забаву.</translation>
 <translation id="347328004046849135">Chromium ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
 <translation id="3474745554856756813">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Затворите све Chromium прозоре и покушајте поново.</translation>
@@ -165,6 +166,7 @@
 <translation id="6373523479360886564">Јесте ли сигурни да желите да деинсталирате Chromium?</translation>
 <translation id="6403826409255603130">Chromium је веб прегледач који покреће веб-странице и апликације муњевитом брзином. Брз је, стабилан и једноставан за коришћење. Прегледајте Веб безбедније са заштитом од малвера и „пецања“ која је уграђена у Chromium.</translation>
 <translation id="6434250628340475518">Систем Chromium ОС</translation>
+<translation id="6455857529632101747">Добро дошли у Chromium профиле</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ће се рестартовати за 1 секунду}one{Chromium ће се рестартовати за # секунду}few{Chromium ће се рестартовати за # секунде}other{Chromium ће се рестартовати за # секунди}}</translation>
 <translation id="6475912303565314141">Контролише и страницу која се приказује када покренете Chromium.</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>

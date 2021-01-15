@@ -232,10 +232,10 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">कर्सर हलवा</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" साठी <ph name="INTENT" /> मिळवा</translation>
+<translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
-<translation id="3147157020428159854">स्क्रीन रेकॉर्डिंग थांबले</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3151786313568798007">अभिमुखता</translation>
 <translation id="3153444934357957346">मल्टिपल साइन इन मध्ये तुमच्याकडे जास्तीत जास्त फक्त <ph name="MULTI_PROFILE_USER_LIMIT" /> खाती असू शकतात.</translation>
@@ -365,7 +365,6 @@
 <translation id="4296136865091727875">सर्व <ph name="COUNT" /> सूचना साफ करा</translation>
 <translation id="4302592941791324970">उपलब्ध नाही</translation>
 <translation id="4303223480529385476">स्थिती क्षेत्राचा विस्तार करा</translation>
-<translation id="4315586716182276649">तुमच्या फोनच्या इंटरनेट कनेक्शनची रेंज वाढवा, व्यत्यय आणू नका हे नियंत्रित करा आणि तुमचे डिव्हाइस शोधा. तुमच्या फोनमधील अ‍ॅक्टिव्ह Chrome टॅब तुमच्या <ph name="DEVICE_TYPE" /> वर पाहा.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">तुम्ही उच्च कॉंट्रास्टसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -559,6 +558,7 @@
 <translation id="6054305421211936131">तुमचे स्मार्ट कार्ड वापरून साइन इन करा</translation>
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
 <translation id="6062360702481658777">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मधून स्वयंचलितपणे साइन आउट केले जाईल.</translation>
+<translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="607652042414456612">तुमचा कॉंप्युटर जवळपासच्या ब्लूटूथ डिव्हाइसवर शोधता येऊ शकतो आणि <ph name="ADDRESS" /> पत्त्यासह "<ph name="NAME" />" म्हणून दिसेल</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">अतिथी सत्रामध्ये Google असिस्टंट उपलब्ध नाही.</translation>
@@ -724,7 +724,6 @@
 <translation id="7654687942625752712">वाचिक फीडबॅक बंद करण्यासाठी दोन्ही व्हॉल्युम की पाच सेकंदांसाठी दाबा आणि धरून ठेवा.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
-<translation id="7683326293741220026">तुमच्या फोनचा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी तुमच्या फोनचा ब्लूटूथ सुरू करा.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{एक सूचना}other{# सूचना}}</translation>
 <translation id="7724603315864178912">कट करा</translation>
@@ -772,7 +771,6 @@
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>
 <translation id="8061464966246066292">उच्च रंगभेद</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करणे थांबवा</translation>
-<translation id="8108657971283652031">तुमच्या फोनच्या इंटरनेट कनेक्शनची रेंज वाढवा, व्यत्यय आणू नका हे नियंत्रित करा आणि तुमचा फोन शोधा. तुमच्या फोनमधील अ‍ॅक्टिव्ह Chrome टॅब तुमच्या <ph name="DEVICE_TYPE" /> वर पाहा.</translation>
 <translation id="8113423164597455979">सुरू, सर्व ॲप</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
@@ -879,6 +877,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>
+<translation id="9024331582947483881">फुल स्क्रीन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> साठी सेटिंग्ज उघडा</translation>
 <translation id="9056839673611986238">डिव्हाइस रोल बॅक केले जाईल</translation>
 <translation id="9065203028668620118">संपादन</translation>

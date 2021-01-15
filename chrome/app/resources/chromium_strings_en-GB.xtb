@@ -71,6 +71,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
 <translation id="331951419404882060">Chromium OS could not sync your data due to an error signing in.</translation>
+<translation id="3430503420100763906">With Chromium profiles you can separate all of your Chromium stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="347328004046849135">Chromium will notify you when you sign in with a compromised password</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Please close all Chromium windows and try again.</translation>
@@ -165,6 +166,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6434250628340475518">Chromium OS System</translation>
+<translation id="6455857529632101747">Welcome to Chromium profiles</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium will restart in 1 second}other{Chromium will restart in # seconds}}</translation>
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
 <translation id="6510925080656968729">Uninstall Chromium</translation>

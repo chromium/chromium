@@ -47,6 +47,9 @@
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chromium. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chromium, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="602807004951640891">En utilisant Chromium, vous acceptez les <ph name="BEGIN_LINK_TOS" />Conditions d'utilisation<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Pour définir Chromium comme votre navigateur par défaut, procédez comme suit :
+1. Accédez à "Réglages" Appuyez sur "Navigateur par défaut"
+3. Sélectionnez "Chromium".</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6424492062988593837">Chromium a été amélioré ! Une nouvelle version est désormais disponible.</translation>
 <translation id="6604711459180487467">Améliorez votre expérience dans Chromium grâce à votre position.</translation>

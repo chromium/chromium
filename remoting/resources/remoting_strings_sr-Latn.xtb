@@ -155,7 +155,6 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="8073845705237259513">Da biste koristili Chrome udaljeni računar, morate da dodate Google nalog na uređaj.</translation>
 <translation id="809687642899217504">Moji računari</translation>
 <translation id="8116630183974937060">Došlo je do greške na mreži. Uverite se da je uređaj onlajn i pokušajte ponovo.</translation>
-<translation id="8187079423890319756">Autorska prava 2013. Autori Chromium-a. Sva prava su zadržana.</translation>
 <translation id="8295077433896346116">Da biste koristili <ph name="PRODUCT_NAME" />, morate da date dozvolu za Pristupačnost da bi unos sa daljinskog uređaja mogao da se doda u ovaj Mac.
 
 Da biste dali ovu dozvolu, kliknite na <ph name="BUTTON_NAME" /> u nastavku. U oknu podešavanja za Pristupačnost koje se otvara označite polje pored stavke <ph name="SERVICE_SCRIPT_NAME" />.

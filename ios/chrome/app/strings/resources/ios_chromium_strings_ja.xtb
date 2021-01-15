@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> で管理されているアカウントでログインして、Chromium データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chromium からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
 <translation id="602807004951640891">Chromium を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
+<translation id="6119647025869519954">Chromium を既定のブラウザにするには:
+1. [設定] を開きます。
+2. [デフォルトのブラウザアプリ] をタップします。
+3. Chromium を選択します。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="6604711459180487467">ユーザーの場所に応じて Chromium を使いやすくします。</translation>

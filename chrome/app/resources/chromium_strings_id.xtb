@@ -69,6 +69,7 @@
 <translation id="328888136576916638">Kunci API Google tidak ada. Beberapa fungsi Chromium tidak akan berfungsi.</translation>
 <translation id="3296368748942286671">Lanjutkan aplikasi yang berjalan di latar belakang jika Chromium ditutup</translation>
 <translation id="331951419404882060">Chromium OS tidak dapat menyinkronkan data Anda karena kesalahan saat masuk.</translation>
+<translation id="3430503420100763906">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Tutup semua jendela Chromium dan coba lagi.</translation>
@@ -163,6 +164,7 @@
 <translation id="6373523479360886564">Anda yakin ingin meng-uninstal Chromium?</translation>
 <translation id="6403826409255603130">Chromium adalah browser web yang menjalankan halaman web dan aplikasi dengan kecepatan kilat. Browser ini cepat, stabil, dan mudah digunakan. Jelajahi web lebih aman dengan perlindungan dari software perusak dan phishing yang tertanam di dalam Chromium.</translation>
 <translation id="6434250628340475518">Sistem Chromium OS</translation>
+<translation id="6455857529632101747">Selamat datang di profil Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium akan dimulai ulang dalam 1 detik}other{Chromium akan dimulai ulang dalam # detik}}</translation>
 <translation id="6475912303565314141">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium.</translation>
 <translation id="6510925080656968729">Uninstal Chromium</translation>

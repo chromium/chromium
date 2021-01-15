@@ -1767,6 +1767,7 @@
 <translation id="79859296434321399">পৰিৱৰ্ধিত বাস্তৱিকতাৰ সমল চাবলৈ ARCore ইনষ্টল কৰক</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">সংযুক্ত কৰক</translation>
+<translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />ৰ সৈতে স্ক্ৰীন শ্বেয়াৰ কৰাৰ সুবিধাটো পুনৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট কৰা হোৱা নাই</translation>
 <translation id="800218591365569300">মেম’ৰী খালী কৰিবলৈ অন্য টেব বা প্র’গ্ৰেম বন্ধ কৰি চাওক।</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
@@ -2040,6 +2041,7 @@
 <translation id="9103872766612412690">আপোনাৰ তথ্য সুৰক্ষিত কৰিবলৈ <ph name="SITE" />এ সচৰাচৰতে এনক্ৰিপশ্বন ব্যৱহাৰ কৰে৷ Chromiumএ <ph name="SITE" />ৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰোঁতে ৱেবছাইটটোৱে সচৰাচৰতে ব্যৱহাৰ নোহোৱা আৰু অশুদ্ধ ক্ৰেডেনশ্বিয়েল পঠিয়াইছে৷ কোনো আক্ৰমণকাৰীয়ে <ph name="SITE" />ৰ ভেশ ধৰিলে বা কোনো ৱাই-ফাই ছাইন ইন স্ক্ৰীণে সংযোগত বাধা প্ৰদান কৰিলে এনে হ’ব পাৰে৷ আপোনাৰ ডেটা এতিয়াও সুৰক্ষিত হৈ আছে কিয়নো Chromiumএ কোনো ডেটা আদান-প্ৰদান হোৱাৰ পূৰ্বেই সংযোগ বন্ধ কৰিছে৷</translation>
 <translation id="9106062320799175032">বিলিঙৰ ঠিকনা যোগ কৰক</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" />এ আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
+<translation id="91108059142052966">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে <ph name="APPLICATION_TITLE" />ৰ সৈতে স্ক্ৰীন শ্বেয়াৰ কৰাৰ সুবিধাটো অক্ষম কৰে</translation>
 <translation id="9114524666733003316">কার্ড নিশ্চিত কৰি থকা হৈছে...</translation>
 <translation id="9114581008513152754">এই ব্ৰাউজাৰটো কোনো কোম্পানী অথবা অন্য প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত। এই ডিভাইচটোৰ কাৰ্যকলাপ Chromeৰ বাহিৰত পৰিচালনা কৰা হৈ থাকিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">আপল’ড কৰা হৈছে</translation>

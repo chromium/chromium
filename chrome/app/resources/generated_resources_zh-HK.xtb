@@ -338,6 +338,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有密碼被盜用}=1{1 個密碼被盜用}other{{NUM_COMPROMISED} 個密碼被盜用}}</translation>
 <translation id="1380028686461971526">自動連線至網絡</translation>
 <translation id="1380436189840894976">仍要離開無痕模式嗎？</translation>
+<translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1386791642444521222">啟用實體 SIM 卡</translation>
@@ -876,7 +877,6 @@
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
-<translation id="1960158217849594135">要將使用者名稱儲存至 Google 帳戶嗎？</translation>
 <translation id="196040970347962278">請先建立互聯網連線</translation>
 <translation id="1962233722219655970">這個網頁使用無法在您電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963227389609234879">全部移除</translation>
@@ -902,6 +902,7 @@
 <translation id="1984417487208496350">無保護功能 (不建議)</translation>
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1989112275319619282">瀏覽</translation>
+<translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1990512225220753005">不要在此頁面顯示捷徑</translation>
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1992924914582925289">從裝置中移除</translation>
@@ -1047,7 +1048,6 @@
 <translation id="2157474325782140681">如要取得其他功能，請使用此 Chromebook 的專用插座。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
-<translation id="2160589599612868242">在 <ph name="DEVICE_TYPE" /> 上接收手機的通知</translation>
 <translation id="216169395504480358">新增 Wi-Fi…</translation>
 <translation id="2162155940152307086">當您離開同步處理設定頁面後，系統就會啟用同步處理功能</translation>
 <translation id="2162838847352058695">禁止網站自動下載多個檔案</translation>
@@ -1265,6 +1265,7 @@
 <translation id="2399699884460174994">已開啟通知</translation>
 <translation id="2399939490305346086">安全密鑰登入資料</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
+<translation id="2406153734066939945">要刪除此設定檔和相關資料嗎？</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
@@ -1382,6 +1383,7 @@
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2526619973349913024">檢查更新</translation>
 <translation id="2527167509808613699">任何類型的連線</translation>
+<translation id="2530166226437958497">解決疑難</translation>
 <translation id="2532589005999780174">高對比度模式</translation>
 <translation id="253434972992662860">暫停(&amp;P)</translation>
 <translation id="2534460670861217804">安全的 HTTP Proxy</translation>
@@ -1699,7 +1701,6 @@
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
-<translation id="2889481634493693121">在手機上開啟通知功能</translation>
 <translation id="2889925978073739256">繼續封鎖無沙箱防護的外掛程式</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 則短訊}other{# 則短訊}}</translation>
@@ -2559,6 +2560,7 @@
 <translation id="3857807444929313943">提起手指，然後再次輕觸</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暫停同步處理</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
+<translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="3862693525629180217">透過內置感應器驗證</translation>
 <translation id="3862788408946266506">含有 "kiosk_only" 資訊清單屬性的應用程式只能在 ChromeOS Kiosk 模式中安裝</translation>
 <translation id="3865414814144988605">解像度</translation>
@@ -2801,7 +2803,6 @@
 <translation id="412730574613779332">彈力俠</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130207949184424187">擴充功能已變更您使用網址列搜尋時所顯示的頁面。</translation>
-<translation id="4130344535649650885">要將密碼儲存至 Google 帳戶嗎？</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="413121957363593859">組件</translation>
 <translation id="4131410914670010031">黑白</translation>
@@ -3200,6 +3201,7 @@
 <translation id="4627442949885028695">先前在其他裝置瀏覽的網頁</translation>
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4628762811416793313">未完成 Linux 容器設定。請再試一次。</translation>
+<translation id="4629521233550547305">開啟 <ph name="PROFILE_NAME" /> 設定檔</translation>
 <translation id="4633003931260532286">此擴充程式要求 <ph name="IMPORT_NAME" /> <ph name="IMPORT_VERSION" /> 或以上，但現有版本僅為 <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4634575639321169635">將此裝置設定為工作或個人使用</translation>
@@ -3928,7 +3930,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">從 Firefox 匯入的書籤</translation>
 <translation id="5502915260472117187">兒童</translation>
-<translation id="5503858713116291452">請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。按照手機顯示的步驟完成設定。</translation>
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用和移動相機，以及使用麥克風</translation>
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
 <translation id="5505307013568720083">墨水用完</translation>
@@ -3989,6 +3990,7 @@
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5567989639534621706">應用程式快取</translation>
 <translation id="5568069709869097550">無法登入</translation>
+<translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572851009514199876">請啟動 Chrome 並登入帳戶，讓 Chrome 確認您是否擁有此網站的存取權。</translation>
 <translation id="5575473780076478375">無痕模式擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
@@ -5458,6 +5460,7 @@
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7280877790564589615">已要求許可</translation>
 <translation id="7282992757463864530">資料列</translation>
+<translation id="7283555985781738399">訪客模式</translation>
 <translation id="7284411326658527427">每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
 <translation id="7287143125007575591">拒絕存取。</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
@@ -5837,6 +5840,7 @@
 <translation id="7716781361494605745">Netscape 憑證授權原則網址</translation>
 <translation id="7717014941119698257">正在下載：<ph name="STATUS" /></translation>
 <translation id="7717134585801378441">網站可要求取得您的位置 (建議)</translation>
+<translation id="771721654176725387">這會永久刪除此裝置上的瀏覽資料。如要復原資料，請開啟與以下帳戶同步的功能：</translation>
 <translation id="7717845620320228976">檢查更新</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7719588063158526969">裝置名稱過長</translation>
@@ -5873,6 +5877,7 @@
 <translation id="7765158879357617694">移動</translation>
 <translation id="7765507180157272835">需要藍牙和 Wi-Fi</translation>
 <translation id="7766082757934713382">暫停自動應用程式和系統更新，有助減少網絡數據用量</translation>
+<translation id="7766807826975222231">觀看導覽介紹</translation>
 <translation id="7766838926148951335">接受權限</translation>
 <translation id="7768507955883790804">網頁會在您瀏覽時自動採用此設定</translation>
 <translation id="7768770796815395237">變更</translation>
@@ -6117,6 +6122,7 @@
 <translation id="8017176852978888182">Linux 共用目錄</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">已編輯捷徑</translation>
+<translation id="8018298733481692628">要刪除此設定檔嗎？</translation>
 <translation id="8018313076035239964">控制網站可使用的資料，以及可向您顯示的內容</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
@@ -6286,7 +6292,6 @@
 <translation id="8211551284753798479">PUK 無效。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
 <translation id="8213449224684199188">進入咗相片模式</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> 需要識別您的裝置，才能讓該裝置以最高品質播放受保護的影片和音訊。</translation>
 <translation id="8214489666383623925">開啟檔案…</translation>
 <translation id="8214962590150211830">移除這個使用者</translation>
 <translation id="8216351761227087153">觀看</translation>
@@ -6764,7 +6769,6 @@
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
-<translation id="8775163630211761057">將 Android 手機的最佳功能延伸至 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}other{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}}</translation>
@@ -6953,6 +6957,7 @@
 <translation id="8973596347849323817">您可以根據個人需要自訂此裝置，日後也可以在「設定」中變更這些無障礙功能。</translation>
 <translation id="897414447285476047">由於發生連線問題，因此目標檔案並未下載完成。</translation>
 <translation id="897525204902889653">隔離服務</translation>
+<translation id="8975396729541388937">在收到的電郵中按一下連結，即可隨時取消訂閱。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個標籤}other{「<ph name="TAB_TITLE" />」和另外 # 個標籤}}</translation>
 <translation id="8977811652087512276">密碼不正確或檔案損毀</translation>
 <translation id="8978154919215542464">開啟 - 同步所有內容</translation>

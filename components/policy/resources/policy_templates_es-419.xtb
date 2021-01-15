@@ -410,6 +410,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1561424797596341174">Anulaciones de políticas en compilaciones de depuración del host de acceso remoto</translation>
 <translation id="1561967320164410511">U2F más extensiones para atestación individual</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1576684007051137182">Inhabilita la cámara, las funciones de análisis y de Web Store y la configuración del navegador y del SO</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de manera predeterminada</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1593245608325508847">Si estableces la política, se activará la función de acceso restringido de Chrome en G Suite, y los usuarios no podrán cambiar esta configuración. Los usuarios solo podrán acceder a las herramientas de Google mediante cuentas de dominios específicos (para permitir cuentas de gmail o googlemail, debes agregar consumer_accounts a la lista de dominios). Esta configuración no permite que los usuarios accedan ni agreguen una cuenta secundaria en un dispositivo administrado que requiera autenticación de Google, en caso de que esa cuenta no pertenezca a uno de los dominios permitidos de forma explícita.
@@ -2299,6 +2300,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4147818922357566987">Habilitar solo variaciones relacionadas con correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="415445772247959702">Web Store (compatible desde la versión 89)</translation>
 <translation id="4157003184375321727">Informar la versión de firmware y SO.</translation>
 <translation id="4157594634940419685">Permitir el acceso a las impresoras de CUPS nativas</translation>
 <translation id="4160962198980004898">Fuente de la dirección MAC del dispositivo cuando está conectado</translation>

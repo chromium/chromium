@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
 <translation id="5945387852661427312">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chromium datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chromium, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
 <translation id="602807004951640891">Izmantojot pārlūkprogrammu Chromium, jūs piekrītat <ph name="BEGIN_LINK_TOS" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Lai iestatītu Chromium kā noklusējuma pārlūku, veiciet tālāk norādītās darbības.
+1. Atveriet iestatījumus.
+2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.
+3. Atlasiet Chromium.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="6424492062988593837">Lietojumprogramma Chromium ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="6604711459180487467">Uzlabojiet savu pieredzi pārlūkā Chromium, sūtot informāciju par savu atrašanās vietu.</translation>

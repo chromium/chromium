@@ -71,6 +71,7 @@
 <translation id="328888136576916638">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Chromium.</translation>
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>
 <translation id="331951419404882060">Chromium OS non puido sincronizar os teus datos debido a un erro ao iniciar sesión.</translation>
+<translation id="3430503420100763906">Cos perfís de Chromium podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
 <translation id="347328004046849135">Chromium enviarache unha notificación cando inicies sesión cun contrasinal vulnerado</translation>
 <translation id="3474745554856756813">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">Pecha todas as ventás de Chromium e téntao de novo.</translation>
@@ -165,6 +166,7 @@
 <translation id="6373523479360886564">Estás seguro de que queres desinstalar Chromium?</translation>
 <translation id="6403826409255603130">Chromium é un navegador web que executa páxinas web e aplicacións a gran velocidade. É rápido, estable e fácil de utilizar. Chromium permíteche navegar na web de forma máis segura, xa que inclúe protección contra malware e phishing.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
+<translation id="6455857529632101747">Dámosche a benvida aos perfís de Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
 <translation id="6475912303565314141">Tamén controla a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>

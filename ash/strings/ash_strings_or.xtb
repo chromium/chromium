@@ -232,10 +232,10 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">କର୍ସର୍ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" ପାଇଁ <ph name="INTENT" /> ପାଆନ୍ତୁ</translation>
+<translation id="3105917916468784889">ସ୍କ୍ରିନ୍‍ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ବ୍ଲୁଟୁଥ୍)</translation>
 <translation id="3126069444801937830">ଅପ୍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3139942575505304791">ଡେସ୍କ 1</translation>
-<translation id="3147157020428159854">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
 <translation id="3151786313568798007">ଓରିଏଣ୍ଟେସନ୍‍</translation>
 <translation id="3153444934357957346">ଏକାଧିକ ସାଇନ୍‌-ଇନ୍‌ରେ ଆପଣଙ୍କ ପାଖରେ ଅଧିକରୁ ଅଧିକତର <ph name="MULTI_PROFILE_USER_LIMIT" /> ପର୍ଯ୍ୟନ୍ତ ଆକାଉଣ୍ଟ ହୋ‍ଇପାରେ।</translation>
@@ -366,7 +366,6 @@
 <translation id="4296136865091727875">ସମସ୍ତ <ph name="COUNT" />ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4302592941791324970">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4303223480529385476">ସ୍ଥିତି କ୍ଷେତ୍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
-<translation id="4315586716182276649">ଆପଣଙ୍କ ଫୋନର ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗର ବିସ୍ତାର କରନ୍ତୁ, 'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ'କୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଡିଭାଇସର ଅବସ୍ଥାନ ନିରୂପଣ କରନ୍ତୁ। ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କ ଫୋନରୁ ସକ୍ରିୟ ଥିବା Chrome ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +559,7 @@
 <translation id="6054305421211936131">ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
+<translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="607652042414456612">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ନିକଟସ୍ଥ ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଖୋଜିପାଇବାଯୋଗ୍ୟ ଅଟେ ଏବଂ ଠିକଣା <ph name="ADDRESS" /> ସହିତ " <ph name="NAME" />" ରୂପେ ଦେଖାଯିବ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ଏକ ଅତିଥି ସମୟ ଅବଧିରେ Google Assistant ଉପଲବ୍ଧ ନାହିଁ।</translation>
@@ -725,7 +725,6 @@
 <translation id="7654687942625752712">କୁହାଯାଇଥିବା ମତାମତ ଅକ୍ଷମ କରିବାକୁ ଉଭୟ ଭଲ୍ୟୁମ୍‍ କୀ ଦବାଇ ରଖନ୍ତୁ।</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
-<translation id="7683326293741220026">ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7724603315864178912">Cut</translation>
@@ -773,7 +772,6 @@
 <translation id="8054466585765276473">ବ୍ୟାଟେରୀ ସମୟ ହିସାବ କରାଯାଉଛି।</translation>
 <translation id="8061464966246066292">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />ରେ ସ୍କ୍ରିନ୍‍ କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="8108657971283652031">ଆପଣଙ୍କ ଫୋନର ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗର ବିସ୍ତାର କରନ୍ତୁ, 'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ'କୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫୋନର ଅବସ୍ଥାନ ନିରୂପଣ କରନ୍ତୁ। ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କ ଫୋନରୁ ସକ୍ରିୟ ଥିବା Chrome ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="8113423164597455979">ଚାଲୁ, ସବୁ ଆପ୍</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>

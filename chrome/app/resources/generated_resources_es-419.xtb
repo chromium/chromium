@@ -338,6 +338,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No tienes contraseñas hackeadas}=1{1 contraseña hackeada}other{{NUM_COMPROMISED} contraseñas hackeadas}}</translation>
 <translation id="1380028686461971526">Conectarse automáticamente a una red</translation>
 <translation id="1380436189840894976">¿Deseas salir del modo de navegación incógnito de todas formas?</translation>
+<translation id="1383597849754832576">No se pueden descargar los videos de Subtitulado instantáneo. Vuelve a intentarlo más tarde.</translation>
 <translation id="1383861834909034572">Abrir cuando haya finalizado</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1386791642444521222">Activar una SIM física</translation>
@@ -873,7 +874,6 @@
 <translation id="1954813140452229842">Se produjo un error al activar el recurso compartido. Revisa tus credenciales y vuelve a intentarlo.</translation>
 <translation id="1956050014111002555">El archivo contenía múltiples certificados. Ninguno fue importado:</translation>
 <translation id="1956390763342388273">Esta acción cargará todos los archivos de "<ph name="FOLDER_PATH" />". Hazlo únicamente si el sitio es de confianza.</translation>
-<translation id="1960158217849594135">¿Deseas guardar el nombre de usuario en tu Cuenta de Google?</translation>
 <translation id="196040970347962278">Primero establece una conexión a Internet</translation>
 <translation id="1962233722219655970">Esta página usa una aplicación con tecnología Native Client que no funciona en tu computadora.</translation>
 <translation id="1963227389609234879">Eliminar todo</translation>
@@ -899,6 +899,7 @@
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="1987317783729300807">Cuentas</translation>
 <translation id="1989112275319619282">Navegar</translation>
+<translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1990512225220753005">No se muestran accesos directos en esta página</translation>
 <translation id="1992397118740194946">No está configurada</translation>
 <translation id="1992924914582925289">Quitar del dispositivo</translation>
@@ -1044,7 +1045,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
 <translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
-<translation id="2160589599612868242">Recibe las notificaciones del teléfono en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="216169395504480358">Agregar Wi-Fi</translation>
 <translation id="2162155940152307086">La sincronización volverá a comenzar cuando salgas de la configuración</translation>
 <translation id="2162838847352058695">No permitir que los sitios descarguen múltiples archivos de forma automática</translation>
@@ -1262,6 +1262,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2399699884460174994">Se activaron las Notificaciones</translation>
 <translation id="2399939490305346086">Datos de acceso de la llave de seguridad</translation>
 <translation id="2400664245143453337">Se requiere una actualización inmediata</translation>
+<translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
@@ -1380,6 +1381,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2526619973349913024">Verificar actualización</translation>
 <translation id="2527167509808613699">Cualquier tipo de conexión</translation>
+<translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2532589005999780174">Modo de contraste alto</translation>
 <translation id="253434972992662860">Pausa</translation>
 <translation id="2534460670861217804">Proxy HTTP seguro</translation>
@@ -1697,7 +1699,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2885729872133513017">Hubo un problema cuando se intentó decodificar la respuesta del servidor.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Abrir el vínculo con...</translation>
-<translation id="2889481634493693121">Activa las notificaciones en el teléfono</translation>
 <translation id="2889925978073739256">Seguir bloqueando los complementos no incluidos en la zona de pruebas</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 texto}other{# textos}}</translation>
@@ -2557,6 +2558,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3857807444929313943">Levanta el dedo y vuelve a tocar</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Se pausó la sincronización</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
+<translation id="3861977424605124250">Mostrar al inicio</translation>
 <translation id="3862693525629180217">Verificar mediante el sensor incorporado</translation>
 <translation id="3862788408946266506">Se debe instalar la app con el atributo del manifiesto "kiosk_only" en el modo kiosco del Sistema operativo Chrome</translation>
 <translation id="3865414814144988605">Resolución</translation>
@@ -2799,7 +2801,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="412730574613779332">Elástico</translation>
 <translation id="4130199216115862831">Registro del dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión cambió la página que se muestra al realizar búsquedas desde el cuadro multifunción.</translation>
-<translation id="4130344535649650885">¿Deseas guardar la contraseña en tu Cuenta de Google?</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
@@ -3198,6 +3199,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4627442949885028695">Cómo continuar desde otro dispositivo</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
+<translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
 <translation id="4633003931260532286">La extensión requiere "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Crea una copia de seguridad en Google Drive. Restablece datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de las apps. Las copias de seguridad se encriptan con la contraseña de la Cuenta de Google de tu hijo y se suben a Google.</translation>
 <translation id="4634575639321169635">Configura este dispositivo para uso personal o laboral</translation>
@@ -3926,7 +3928,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5501809658163361512">{COUNT,plural, =1{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado desde Firefox</translation>
 <translation id="5502915260472117187">Un niño</translation>
-<translation id="5503858713116291452">Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas. Para completar la configuración, realiza los pasos que se muestran en el teléfono.</translation>
 <translation id="5503982651688210506">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara y use el micrófono</translation>
 <translation id="5505264765875738116">Los sitios no podrán preguntarte si quieres recibir notificaciones</translation>
 <translation id="5505307013568720083">Se agotó la tinta</translation>
@@ -3987,6 +3988,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5567989639534621706">Cachés de aplicación</translation>
 <translation id="5568069709869097550">No puedo acceder</translation>
+<translation id="5571832155627049070">Personaliza tu perfil</translation>
 <translation id="5572851009514199876">Abre Chrome y accede a tu cuenta para que el programa pueda comprobar si puedes acceder a este sitio.</translation>
 <translation id="5575473780076478375">Extensión de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Hubo un problema con la solicitud de registro de demostración.</translation>
@@ -5456,6 +5458,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7280649757394340890">Configuración de la voz en la función de texto a voz</translation>
 <translation id="7280877790564589615">Permiso solicitado</translation>
 <translation id="7282992757463864530">Barra de información</translation>
+<translation id="7283555985781738399">Modo de invitado</translation>
 <translation id="7284411326658527427">Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
 <translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Restablecer fondo predeterminado</translation>
@@ -5835,6 +5838,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7716781361494605745">URL de directivas de la autoridad de certificación de Netscape</translation>
 <translation id="7717014941119698257">Descargando: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">Permitir que los sitios soliciten tu ubicación (recomendado)</translation>
+<translation id="771721654176725387">Esta acción borrará permanentemente tus datos de navegación de este dispositivo. Para recuperar los datos, activa la sincronización como</translation>
 <translation id="7717845620320228976">Comprobar actualizaciones</translation>
 <translation id="7719367874908701697">Zoom de página</translation>
 <translation id="7719588063158526969">El nombre del dispositivo es demasiado largo</translation>
@@ -5871,6 +5875,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7765507180157272835">Necesitas Bluetooth y Wi-Fi</translation>
 <translation id="7766082757934713382">Ayuda a reducir el uso de datos de la red pausando las actualizaciones automáticas de apps y del sistema</translation>
+<translation id="7766807826975222231">Hacer un recorrido</translation>
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7768507955883790804">Los sitios siguen esta configuración de forma automática cuando los visitas.</translation>
 <translation id="7768770796815395237">Cambiar</translation>
@@ -6115,6 +6120,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8017176852978888182">Directorios compartidos de Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Se editó el acceso directo</translation>
+<translation id="8018298733481692628">¿Quieres borrar este perfil?</translation>
 <translation id="8018313076035239964">Controla qué contenido pueden mostrarte los sitios web y qué información pueden usar</translation>
 <translation id="8023801379949507775">Actualizar las extensiones ahora</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
@@ -6285,7 +6291,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8211551284753798479">La PUK no es válida. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Ingresaste al modo de foto</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> desea identificar tu dispositivo para que pueda reproducir audio y video protegidos de la más alta calidad.</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>
 <translation id="8214962590150211830">Eliminar a esta persona</translation>
 <translation id="8216351761227087153">Ver</translation>
@@ -6764,7 +6769,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8774379074441005279">Confirma que quieres restablecer</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">URL no válida</translation>
-<translation id="8775163630211761057">Disfruta de lo mejor del teléfono Android en tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8775653927968399786">{0,plural, =1{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente en # segundo.
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}other{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente en # segundos.
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}}</translation>
@@ -6953,6 +6957,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8973596347849323817">Puedes personalizar este dispositivo para que se adapte a tus necesidades. Estas funciones de accesibilidad pueden cambiarse más tarde en Configuración.</translation>
 <translation id="897414447285476047">El archivo de destino está incompleto debido a un problema de conexión.</translation>
 <translation id="897525204902889653">Servicio de cuarentena</translation>
+<translation id="8975396729541388937">Puedes anular la suscripción en cualquier momento haciendo clic en el vínculo que se incluye en los correos electrónicos que recibes.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="8977811652087512276">Contraseña incorrecta o archivo dañado</translation>
 <translation id="8978154919215542464">Activada: sincronizar todo</translation>

@@ -1777,6 +1777,7 @@ Thông tin chi tiết bổ sung:
 <translation id="79859296434321399">Để xem nội dung thực tế tăng cường, hãy cài đặt bộ công cụ ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Đóng gáy</translation>
+<translation id="7992044431894087211">Đã tiếp tục chia sẻ màn hình với <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Không chỉ định</translation>
 <translation id="800218591365569300">Thử đóng các thẻ hoặc chương trình khác để giải phóng bộ nhớ.</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
@@ -2051,6 +2052,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9103872766612412690"><ph name="SITE" /> thường sử dụng mã hóa để bảo vệ thông tin của bạn. Khi Chromium cố gắng kết nối với <ph name="SITE" /> tại thời điểm này, trang web đã gửi lại thông tin đăng nhập không chính xác và bất thường. Điều này có thể xảy ra khi kẻ tấn công đang cố gắng giả mạo là <ph name="SITE" /> hoặc màn hình đăng nhập Wi-Fi đã làm gián đoạn kết nối. Thông tin của bạn vẫn an toàn do Chromium đã ngừng kết nối trước khi bất kỳ dữ liệu nào được trao đổi.</translation>
 <translation id="9106062320799175032">Thêm địa chỉ thanh toán</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> quản lý trình duyệt của bạn</translation>
+<translation id="91108059142052966">Tính năng chia sẻ màn hình với <ph name="APPLICATION_TITLE" /> khi hiển thị nội dung bí mật bị vô hiệu hóa theo chính sách của quản trị viên</translation>
 <translation id="9114524666733003316">Đang xác nhận thẻ...</translation>
 <translation id="9114581008513152754">Không có công ty hay tổ chức nào quản lý trình duyệt này. Hoạt động trên thiết bị này có thể được quản lý ở bên ngoài Chrome. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Đã tải lên</translation>

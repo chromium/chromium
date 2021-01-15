@@ -71,6 +71,7 @@
 <translation id="328888136576916638">Google API કીઝ ખૂટે છે. Chromium ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
 <translation id="3296368748942286671">જ્યારે Chromium બંધ થાય ત્યારે પૃષ્ઠભૂમિ ઍપ્લિકેશનો ચલાવવાનું ચાલુ રાખો</translation>
 <translation id="331951419404882060">સાઇન ઇનમાં ભૂલ આવવાને કારણે Chromium તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
+<translation id="3430503420100763906">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
 <translation id="347328004046849135">જ્યારે તમે ચેડાં કરવામાં આવેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chromium તમને સૂચિત કરશે</translation>
 <translation id="3474745554856756813">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromium માં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3509308970982693815">કૃપા કરીને બધી Chromium વિંડોઝ બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
@@ -165,6 +166,7 @@
 <translation id="6373523479360886564">શું તમે ખરેખર તમે Chromium ને અનઇન્સ્ટૉલ કરવા માંગો છો?</translation>
 <translation id="6403826409255603130">Chromium એ એક એવું વેબ બ્રાઉઝર છે જે પ્રકાશની ગતિએ વેબપૃષ્ઠો અને એપ્લિકેશંસને ચલાવે છે. તે ઝડપી, સ્થિર અને ઉપયોગમાં સરળ છે. Google Chromium માં નિર્મિત મૉલવેર અને ફિશીંગ સુરક્ષા સાથે વેબને વધુ સુરક્ષિત રૂપે બ્રાઉઝ કરો.</translation>
 <translation id="6434250628340475518">Chromium OS સિસ્ટમ</translation>
+<translation id="6455857529632101747">Chromium પ્રોફાઇલમાં આપનું સ્વાગત છે</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 સેકન્ડમાં ફરી શરૂ થશે}one{Chromium # સેકન્ડમાં ફરી શરૂ થશે}other{Chromium # સેકન્ડમાં ફરી શરૂ થશે}}</translation>
 <translation id="6475912303565314141">જ્યારે તમે Chromium શરૂ કરો ત્યારે કયું પૃષ્ઠ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="6510925080656968729">Chromium ને અનઇન્સ્ટૉલ કરો</translation>

@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">アドオンが原因でChromeがクラッシュしました。アドオンをアンインストールしてみてください。</translation>
 <translation id="8459495907675268833">選択したデータが Chrome から削除され、同期されたデバイスからも削除されました。他の Google サービスでの検索や操作など、Google アカウントの他の形式の閲覧履歴が history.google.com に残ることがあります。</translation>
+<translation id="850555388806794946">Chrome を既定のブラウザにするには:
+  1. [設定] を開きます。
+  2. [デフォルトのブラウザアプリ] をタップします。
+  3. [Chrome] を選択します。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Chrome に位置情報の利用を許可した場合、その情報が Chrome から既定の検索エンジンや許可済みのサイトに送信されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 </translationbundle>

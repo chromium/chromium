@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="602807004951640891">Chromium'u kullanarak, <ph name="BEGIN_LINK_TOS" />Hizmet Şartları<ph name="END_LINK_TOS" />'nı kabul etmiş sayılırsınız.</translation>
+<translation id="6119647025869519954">Chromium'u varsayılan tarayıcınız yapmak için:
+1. Ayarlar'ı açın
+2. Varsayılan Tarayıcı Uygulaması'na dokunun
+3. Chromium'u seçin.</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6424492062988593837">Chromium daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="6604711459180487467">Chromium'da, konumunuza dayalı olarak daha iyi bir deneyim yaşayın.</translation>

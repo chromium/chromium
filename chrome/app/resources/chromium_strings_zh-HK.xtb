@@ -71,6 +71,7 @@
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
 <translation id="331951419404882060">登入時發生錯誤，因此 Chromium 作業系統無法同步處理您的數據。</translation>
+<translation id="3430503420100763906">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="347328004046849135">如果您使用被盜用的密碼登入帳戶，Chromium 會通知您</translation>
 <translation id="3474745554856756813">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="3509308970982693815">請關閉所有 Chromium 視窗，然後再試一次。</translation>
@@ -165,6 +166,7 @@
 <translation id="6373523479360886564">您確定要解除安裝 Chromium 嗎？</translation>
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
 <translation id="6434250628340475518">Chromium 作業系統</translation>
+<translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>

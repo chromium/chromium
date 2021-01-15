@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">ຕັ້ງຄ່າພາສາຂອງທ່ານ</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ຫນ້າຈໍລັອກ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ສະບາຍດີ, <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@
 <translation id="3090989381251959936">ສະຫຼັບ <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ຍ້າຍເຄີເຊີ</translation>
 <translation id="3098580329624789136">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />"</translation>
+<translation id="3105917916468784889">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">ເລີ່ມການອັບເດດໃໝ່</translation>
 <translation id="3139942575505304791">ໂຕະ 1</translation>
-<translation id="3147157020428159854">ຢຸດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3151786313568798007">ລວງເຈ້ຍ</translation>
 <translation id="3153444934357957346">ທ່ານສາມາດມີບັນຊີໄດ້ບໍ່ເກີນ <ph name="MULTI_PROFILE_USER_LIMIT" /> ບັນຊີເທົ່ານັ້ນໃນການເຂົ້າສູ່ລະບົບຫຼາຍບັນຊີ.</translation>
@@ -366,7 +367,6 @@
 <translation id="4296136865091727875">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="4302592941791324970">ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="4303223480529385476">ຂະຫຍາຍພື້ນທີ່ສະແດງສະຖານະ</translation>
-<translation id="4315586716182276649">ຂະຫຍາຍການເຊື່ອມຕໍ່ອິນເຕີເນັດໃນໂທລະສັບຂອງທ່ານ, ຄວບຄຸມໂໝດຫ້າມລົບກວນ ແລະ ຊອກຫາອຸປະກອນຂອງທ່ານ. ເບິ່ງແຖບທີ່ເປີດນຳໃຊ້ຢູ່ຂອງ Chrome ຈາກໂທລະສັບຂອງທ່ານໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບຄວາມຄົມຊັດສູງແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +560,7 @@
 <translation id="6054305421211936131">ເຂົ້າສູ່ລະບົບດ້ວຍບັດອັດສະລິຍະ</translation>
 <translation id="6059276912018042191">ແຖບ Chrome ຫຼ້າສຸດ</translation>
 <translation id="6062360702481658777">ທ່ານຈະຖືກອອກຈາກລະບົບໃນ <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
 <translation id="607652042414456612">ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານສາມາດໃຫ້ອຸປະກອນ Bluetooth ໃກ້ຄຽງຄົ້ນຫາໄດ້ ​ແລະ​ຈະ​ປະ​ກົດ​ເປັນ "<ph name="NAME" />"ພ້ອມທີ່​ຢູ່ <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນແຂກ.</translation>
@@ -725,7 +726,6 @@
 <translation id="7654687942625752712">ກົດປຸ່ມທັງສອງລະດັບສຽງເປັນເວລາຫ້າວິນາທີເພື່ອປິດນຳໃຊ້ການຕອບສະໜອງແບບສຽງເວົ້າ.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7662283695561029522">ແຕະເພື່ອກຳນົດຄ່າ</translation>
-<translation id="7683326293741220026">ປາກົດວ່າ Bluetooth ປິດຢູ່ໃນໂທລະສັບຂອງທ່ານ. ກະລຸນາເປີດ Bluetooth ໃນໂທລະສັບຂອງທ່ານເພື່ອໃຊ້ Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ການແຈ້ງເຕືອນ}other{# ການແຈ້ງເຕືອນ}}</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
@@ -773,7 +773,6 @@
 <translation id="8054466585765276473">ການ​ຄິດ​ໄລ່​ເວລາແບັດເຕີຣີ.</translation>
 <translation id="8061464966246066292">ຄວາມເຂັ້ມສູງ</translation>
 <translation id="8098591350844501178">ຢຸດການສົ່ງສັນຍານໜ້າຈໍຫາ <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">ຂະຫຍາຍການເຊື່ອມຕໍ່ອິນເຕີເນັດໃນໂທລະສັບຂອງທ່ານ, ຄວບຄຸມໂໝດຫ້າມລົບກວນ ແລະ ຊອກຫາໂທລະສັບຂອງທ່ານ. ເບິ່ງແຖບທີ່ເປີດນຳໃຊ້ຢູ່ຂອງ Chrome ຈາກໂທລະສັບຂອງທ່ານໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="8113423164597455979">ເປີດ, ທຸກແອັບ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
@@ -822,6 +821,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" />. ຄວາມລະອຽດໄດ້ປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ​ບໍ່ອາດ​ສາກ​ໄດ້ໃນ​ຂະ​ນະ​ທີ່​ມັນ​ເປີດ.</translation>
+<translation id="8553395910833293175">ມອບໝາຍໃຫ້ໂຕະທັງໝົດແລ້ວ.</translation>
 <translation id="8563862697512465947">ການຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="857201607579416096">ຍ້າຍເມນູໄປແຈລຸ່ມສຸດເບື້ອງຂວາຂອງໜ້າຈໍ.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -880,6 +880,7 @@
 <translation id="8990809378771970590">ກຳລັງໃຊ້ <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">ປົດລັອກອຸປະກອນເປັນ <ph name="LOGIN_ID" /> ເພື່ອເຮັດການດຳເນີນການແຈ້ງເຕືອນ</translation>
 <translation id="9017320285115481645">ປ້ອນລະຫັດເຂົ້າເຖິງ Family Link ຂອງພໍ່ແມ່.</translation>
+<translation id="9024331582947483881">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="9047624247355796468">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">ຈະຍ້ອນກັບອຸປະກອນ</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>

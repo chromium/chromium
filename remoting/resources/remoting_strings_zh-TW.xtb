@@ -155,7 +155,6 @@
 <translation id="8073845705237259513">你必須在裝置上新增 Google 帳戶，才能使用 Chrome 遠端桌面。</translation>
 <translation id="809687642899217504">我的電腦</translation>
 <translation id="8116630183974937060">發生網路錯誤。請確認你的裝置已連線至網路，然後再試一次。</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. 保留所有權利。</translation>
 <translation id="8295077433896346116">如要使用 <ph name="PRODUCT_NAME" />，你必須授予「無障礙功能」權限，才能將遠端電腦上的輸入內容插入這部 Mac。
 
 如要授予這項權限，請點擊下方的 [<ph name="BUTTON_NAME" />]，然後在隨即開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁邊的方塊。

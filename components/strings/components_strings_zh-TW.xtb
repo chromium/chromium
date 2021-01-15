@@ -1766,6 +1766,7 @@
 <translation id="79859296434321399">如要查看擴增實境內容，請安裝 ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">裝訂</translation>
+<translation id="7992044431894087211">已重新啟用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
 <translation id="7995512525968007366">未指定</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或程式，以釋出記憶體。</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
@@ -2039,6 +2040,7 @@
 <translation id="9103872766612412690"><ph name="SITE" /> 通常使用加密方式保護您的資訊。但 Chromium 這次嘗試連線到 <ph name="SITE" /> 時，該網站傳回了異常且錯誤的憑證。這可能是因為有攻擊者企圖偽裝成 <ph name="SITE" />，或是受到 Wi-Fi 登入畫面影響而造成連線中斷。不過請放心，Chromium 已及時停止連線，並未傳輸任何資料，因此您的資訊仍然安全無虞。</translation>
 <translation id="9106062320799175032">新增帳單地址</translation>
 <translation id="9107467864910557787">你的瀏覽器是由 <ph name="MANAGER" /> 管理</translation>
+<translation id="91108059142052966">當畫面上出現機密內容，系統管理員政策就會停用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
 <translation id="9114524666733003316">正在驗證信用卡...</translation>
 <translation id="9114581008513152754">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">已上傳</translation>

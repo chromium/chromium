@@ -69,6 +69,7 @@
 <translation id="328888136576916638">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Chromium จะถูกปิดใช้งาน</translation>
 <translation id="3296368748942286671">เรียกใช้แอปพลิเคชันพื้นหลังต่อไปเมื่อปิด Chromium</translation>
 <translation id="331951419404882060">Chromium OS ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
+<translation id="3430503420100763906">โปรไฟล์ Chromium ช่วยให้คุณแยกข้อมูลต่างๆ ใน Chromium ออกจากกัน สร้างโปรไฟล์สำหรับเพื่อนและครอบครัว หรือแยกการทำงานออกจากความบันเทิง</translation>
 <translation id="347328004046849135">Chromium จะแจ้งให้ทราบเมื่อคุณลงชื่อเข้าใช้ด้วยรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3474745554856756813">การดำเนินการนี้จะลบ <ph name="ITEMS_COUNT" /> รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chromium ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="3509308970982693815">โปรดปิดหน้าต่าง Chromium ทั้งหมดแล้วลองอีกครั้ง</translation>
@@ -163,6 +164,7 @@
 <translation id="6373523479360886564">คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง Chromium</translation>
 <translation id="6403826409255603130">Chromium เป็นเว็บเบราว์เซอร์ที่เรียกใช้หน้าเว็บและแอปพลิเคชันด้วยความเร็วสูง มีความรวดเร็ว เสถียร และง่ายในการใช้งาน เรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงที่สร้างอยู่ภายใน Chromium</translation>
 <translation id="6434250628340475518">ระบบ Chromium OS</translation>
+<translation id="6455857529632101747">ยินดีต้อนรับสู่โปรไฟล์ Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium จะรีสตาร์ทใน 1 วินาที}other{Chromium จะรีสตาร์ทใน # วินาที}}</translation>
 <translation id="6475912303565314141">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chromium ด้วย</translation>
 <translation id="6510925080656968729">ถอนการติดตั้ง Chromium</translation>

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="602807004951640891">Når du bruger Chromium, accepterer du <ph name="BEGIN_LINK_TOS" />servicevilkårene<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Sådan gør du Chromium til din standardbrowser:
+1. Åbn Indstillinger
+2. Tryk på Standardbrowserapp
+3. Vælg Chromium.</translation>
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
 <translation id="6424492062988593837">Chromium er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="6604711459180487467">Angiv din placering, og få en bedre oplevelse, når du bruger Chromium.</translation>

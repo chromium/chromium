@@ -71,6 +71,7 @@
 <translation id="328888136576916638">ລະຫັດ Google API ຫາຍໄປ. ການເຮັດໜ້າທີ່ບາງອັນຂອງ Chromium ຈະປິດໃຊ້ງານ.</translation>
 <translation id="3296368748942286671">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Chromium ປິດ</translation>
 <translation id="331951419404882060">Chromium OS ບໍ່ສາມາດຊິງຄ໌ຂໍ້ມູນຂອງທ່ານໄດ້ ເນື່ອງຈາກການລົງຊື່ເຂົ້າ​ໃຊ້ຜິດພາດ.</translation>
+<translation id="3430503420100763906">ດ້ວຍໂປຣໄຟລ໌ Chromium ທ່ານສາມາດແຍກເນື້ອຫາ Chromium ຂອງທ່ານທັງໝົດໄດ້. ສ້າງໂປຣໄຟລ໌ສຳລັບໝູ່ ແລະ ຄອບຄົວ ຫຼື ແຍກຈາກກັນລະຫວ່າງວຽກ ແລະ ຄວາມມ່ວນ.</translation>
 <translation id="347328004046849135">Chromium ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="3474745554856756813">ນີ້ຈະລຶບ <ph name="ITEMS_COUNT" /> ລາຍການອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">ກະລຸນາປິດທຸກໜ້າຕ່າງ Chromium ແລະລອງໃໝ່ອີກ.</translation>
@@ -165,6 +166,7 @@
 <translation id="6373523479360886564">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຖອນຕິດຕັ້ງ Chromium?</translation>
 <translation id="6403826409255603130">Chromium ແມ່ນບຣາວເຊີເວັບທີ່ແລ່ນໜ້າເວັບ ແລະແອັບພລິເຄຊັນດ້ວຍຄວາມໄວແບບສາຍຟ້າແມັບ. ມັນໄວ, ໝັ້ນຄົງ, ແລະໃຊ້ງ່າຍ. ທ່ອງເວັບໄດ້ປອດໄພກ່ວາດ້ວຍການປົກປ້ອງມາລແວ ແລະພິຊຊິງທີ່ສ້າງຢູ່ໃນຕົວ Chromium.</translation>
 <translation id="6434250628340475518">ລະບົບປະຕິບັດການຂອງ Chromium</translation>
+<translation id="6455857529632101747">ຍິນດີຕ້ອນຮັບສູ່ໂປຣໄຟລ໌ Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ຈະປິດແລ້ວເປີດໃໝ່ໃນ 1 ວິນາທີ}other{Chromium ຈະປິດແລ້ວເປີດໃໝ່ໃນ # ວິນາທີ}}</translation>
 <translation id="6475912303565314141">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chromium.</translation>
 <translation id="6510925080656968729">ຖອນ​ຕິດ​ຕັ້ງ Chromium</translation>

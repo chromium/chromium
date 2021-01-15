@@ -78,6 +78,10 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">일부 부가기능으로 Chrome이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>
 <translation id="8459495907675268833">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. history.google.com에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
+<translation id="850555388806794946">Chrome을 기본 브라우저로 설정하려면 다음 단계를 따르세요.
+  1. 설정을 엽니다.
+  2. 기본 브라우저 앱을 탭합니다.
+  3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
 <translation id="9135668017386497357">위치 정보 사용을 허용하면 Chrome이 기본 검색엔진 및 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
 </translationbundle>

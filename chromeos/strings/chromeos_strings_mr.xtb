@@ -135,6 +135,7 @@
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
 <translation id="4848429997038228357">रन होत आहे</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}other{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}}</translation>
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
@@ -167,6 +168,7 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} प्रयत्न शिल्लक}other{{0} प्रयत्न शिल्लक}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5635169860413004179">अहवाल पहा</translation>
 <translation id="5670702108860320605">BSSID</translation>

@@ -112,6 +112,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1951012854035635156">Aðstoðarmaður</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Veldu tungumál</translation>
+<translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Lásskjár</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hæ, <ph name="USERNAME" /></translation>
@@ -232,10 +233,10 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3090989381251959936">Kveikja/slökkva á <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Færa bendil</translation>
 <translation id="3098580329624789136">Sækja <ph name="INTENT" /> fyrir „<ph name="QUERY" />“</translation>
+<translation id="3105917916468784889">Taka skjámynd</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Endurræstu til að uppfæra</translation>
 <translation id="3139942575505304791">Skrifborð 1</translation>
-<translation id="3147157020428159854">Skjáupptaka stöðvuð</translation>
 <translation id="315116470104423982">Farsímagögn</translation>
 <translation id="3151786313568798007">Stefna</translation>
 <translation id="3153444934357957346">Þú getur aðeins verið með <ph name="MULTI_PROFILE_USER_LIMIT" /> reikninga í innskráningu á marga reikninga.</translation>
@@ -366,7 +367,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4296136865091727875">Hreinsa <ph name="COUNT" /> tilkynningar</translation>
 <translation id="4302592941791324970">Ekki tiltækt</translation>
 <translation id="4303223480529385476">Stækka stöðusvæði</translation>
-<translation id="4315586716182276649">Framlengdu nettengingu símans, stjórnaðu Ónáðið ekki og staðsettu tækið þitt. Skoðaðu virka Chrome flipa úr símanum í <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Þú ýttir á flýtilykilinn fyrir mikil birtuskil. Viltu kveikja á þeim?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -560,6 +560,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6054305421211936131">Skrá inn með snjallkorti</translation>
 <translation id="6059276912018042191">Nýlegir Chrome flipar</translation>
 <translation id="6062360702481658777">Þú verður skráð(ur) út sjálfkrafa eftir <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="607652042414456612">Nálæg Bluetooth-tæki geta fundið tölvuna þína og hún birtist sem „<ph name="NAME" />“ með vistfangið <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
@@ -725,7 +726,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7654687942625752712">Haltu báðum hljóðstyrkshnöppunum inni í fimm sekúndur til að slökkva á raddsvörun.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
-<translation id="7683326293741220026">Svo virðist sem slökkt sé á Bluetooth í símanum þínum. Kveiktu á Bluetooth í símanum til að nota Símstöð.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Ein tilkynning}one{# tilkynning}other{# tilkynningar}}</translation>
 <translation id="7724603315864178912">Klippa</translation>
@@ -773,7 +773,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8054466585765276473">Reiknar rafhlöðuendingu.</translation>
 <translation id="8061464966246066292">Mikil birtuskil</translation>
 <translation id="8098591350844501178">Hætta að senda skjáinn út í <ph name="RECEIVER_NAME" /></translation>
-<translation id="8108657971283652031">Framlengdu nettengingu símans, stjórnaðu Ónáðið ekki og staðsettu símann þinn. Skoðaðu virka Chrome flipa úr símanum í <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">Öll forrit</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
@@ -822,6 +821,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Snýst sjálft</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
+<translation id="8553395910833293175">Þegar úthlutað til allra skrifborða</translation>
 <translation id="8563862697512465947">Tilkynningastillingar</translation>
 <translation id="857201607579416096">Valmynd færð neðst í hægra horn skjásins.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -880,6 +880,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8990809378771970590">Notar <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Opnaðu tækið sem <ph name="LOGIN_ID" /> til að framkvæma aðgerð tilkynningarinnar</translation>
 <translation id="9017320285115481645">Færðu inn aðgangskóða foreldris fyrir Family Link.</translation>
+<translation id="9024331582947483881">allur skjárinn</translation>
 <translation id="9047624247355796468">Opna stillingar fyrir <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Tækið verður fært í eldri útgáfu</translation>
 <translation id="9065203028668620118">Breyta</translation>

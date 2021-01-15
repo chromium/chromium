@@ -5118,7 +5118,7 @@ Essas políticas devem ser usadas estritamente para configurar instâncias do <p
 
 Não é necessário definir essas configurações manualmente. Modelos fáceis de usar para Windows, Mac e Linux estão disponíveis para download em <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
-O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o aprovisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
+O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o provisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
 <translation id="8261874086461353268">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de fontes diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada fonte. A chave da fonte de maior prioridade tem precedência.
 
       Se uma política estiver na lista e houver um conflito entre fontes com:

@@ -47,6 +47,10 @@
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5945387852661427312">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chromiumi andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chromiumist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="602807004951640891">Chromiumi kasutamisel nõustute <ph name="BEGIN_LINK_TOS" />teenusetingimustega<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">Chromiumi vaikebrauseriks määramiseks tehke järgmist.
+1. Avage menüü Seaded.
+2. Puudutage valikut Vaikebrauserirakendus.
+3. Valige Chromium.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6604711459180487467">Täiustage Chromiumis oma kasutuskogemust asukohateabe abil.</translation>

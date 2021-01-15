@@ -112,6 +112,7 @@
 <translation id="1951012854035635156">助理</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">設定語言</translation>
+<translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">鎖定螢幕</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
@@ -232,10 +233,10 @@
 <translation id="3090989381251959936">切換<ph name="FEATURE_NAME" />功能。<ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">移動游標</translation>
 <translation id="3098580329624789136">取得「<ph name="QUERY" />」的<ph name="INTENT" /></translation>
+<translation id="3105917916468784889">擷取螢幕擷圖</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
-<translation id="3147157020428159854">已停止錄影螢幕畫面</translation>
 <translation id="315116470104423982">流動數據</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多重登入功能時，最多只能有 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
@@ -366,7 +367,6 @@
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
 <translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
-<translation id="4315586716182276649">延伸手機的互聯網連線、控制「請勿騷擾」功能，以及尋找裝置位置。在 <ph name="DEVICE_TYPE" /> 上查看正透過手機瀏覽的 Chrome 分頁。</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4331809312908958774">Chrome 作業系統</translation>
@@ -560,6 +560,7 @@
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
+<translation id="6073451960410192870">停止錄影</translation>
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
@@ -725,7 +726,6 @@
 <translation id="7654687942625752712">同時按住兩個音量鍵五秒，即可停用朗讀功能。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
-<translation id="7683326293741220026">手機上的藍牙似乎已關閉。請開啟手機的藍牙，才能使用 Phone Hub。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
@@ -773,7 +773,6 @@
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8061464966246066292">高對比模式</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
-<translation id="8108657971283652031">延伸手機的互聯網連線、控制「請勿騷擾」功能，以及尋找手機位置。在 <ph name="DEVICE_TYPE" /> 上查看正透過手機瀏覽的 Chrome 分頁。</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
@@ -822,6 +821,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
+<translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
@@ -880,6 +880,7 @@
 <translation id="8990809378771970590">正在使用<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
+<translation id="9024331582947483881">全螢幕</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9056839673611986238">系統將回復裝置</translation>
 <translation id="9065203028668620118">編輯</translation>

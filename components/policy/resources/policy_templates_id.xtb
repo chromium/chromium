@@ -409,6 +409,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
 <translation id="1575015449587326319">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1576684007051137182">Mengonfigurasi kamera, setelan browser, setelan OS, serta fitur pemindaian dan Web Store untuk dinonaktifkan</translation>
 <translation id="1583248206450240930">Gunakan <ph name="PRODUCT_FRAME_NAME" /> jika tidak diubah</translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
 <translation id="1593245608325508847">Jika kebijakan ditetapkan, fitur login terbatas Chrome di G Suite akan diaktifkan dan pengguna tidak dapat mengubah setelan ini. Pengguna hanya dapat mengakses alat Google menggunakan akun dari domain yang telah ditentukan (untuk mengizinkan akun gmail atau googlemail, tambahkan consumer_accounts ke daftar domain). Setelan ini mencegah pengguna untuk login dan menambahkan Akun Sekunder di perangkat terkelola yang memerlukan autentikasi Google, jika akun tersebut bukan milik salah satu domain yang diizinkan secara eksplisit.
@@ -2308,6 +2309,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4147818922357566987">Aktifkan variasi terkait perbaikan penting saja</translation>
 <translation id="4150201353443180367">Tampilan</translation>
+<translation id="415445772247959702">Web Store (didukung sejak versi 89)</translation>
 <translation id="4157003184375321727">Laporkan versi OS dan firmware</translation>
 <translation id="4157594634940419685">Izinkan akses ke printer CUPS native</translation>
 <translation id="4160962198980004898">Sumber alamat MAC perangkat saat dipasang di dok</translation>

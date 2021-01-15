@@ -1776,6 +1776,7 @@ Detalhes adicionais:
 <translation id="79859296434321399">Para ver conteúdo de realidade aumentada, instale o ARCore.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Encadernar</translation>
+<translation id="7992044431894087211">A partilha de ecrã com a aplicação <ph name="APPLICATION_TITLE" /> foi retomada.</translation>
 <translation id="7995512525968007366">Não especificado</translation>
 <translation id="800218591365569300">Experimente fechar outros separadores ou programas para libertar memória.</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -2050,6 +2051,7 @@ Detalhes adicionais:
 <translation id="9103872766612412690">Normalmente, o site <ph name="SITE" /> utiliza a encriptação para proteger as suas informações. Quando o Chromium tentou estabelecer ligação a <ph name="SITE" /> desta vez, o Website devolveu credenciais invulgares e incorretas. Isto pode acontecer quando um utilizador mal intencionado tenta simular ser <ph name="SITE" /> ou quando um ecrã de início de sessão Wi-Fi interrompe a ligação. As suas informações continuam seguras porque o Chromium interrompeu a ligação antes de qualquer troca de dados.</translation>
 <translation id="9106062320799175032">Adicionar endereço de faturação</translation>
 <translation id="9107467864910557787">O navegador é gerido por <ph name="MANAGER" /></translation>
+<translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Carregado</translation>

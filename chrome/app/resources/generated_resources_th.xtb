@@ -338,6 +338,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด {NUM_COMPROMISED} รายการ}}</translation>
 <translation id="1380028686461971526">เชื่อมต่อกับเครือข่ายโดยอัตโนมัติ</translation>
 <translation id="1380436189840894976">ต้องการออกจากโหมดไม่ระบุตัวตนไหม</translation>
+<translation id="1383597849754832576">ดาวน์โหลดไฟล์คำพูดไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1383861834909034572">เปิดไฟล์เมื่อดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1386791642444521222">เปิดใช้งานซิมจริง</translation>
@@ -876,7 +877,6 @@
 <translation id="1954813140452229842">เกิดข้อผิดพลาดขณะต่อเชื่อมพื้นที่แชร์ โปรดตรวจสอบข้อมูลรับรองแล้วลองอีกครั้ง</translation>
 <translation id="1956050014111002555">ไฟล์มีใบรับรองหลายใบ แต่ไม่มีการนำเข้าใบรับรอง:</translation>
 <translation id="1956390763342388273">การดำเนินการนี้จะอัปโหลดไฟล์ทั้งหมดจาก "<ph name="FOLDER_PATH" />" ดำเนินการนี้เฉพาะในกรณีที่คุณเชื่อถือเว็บไซต์ดังกล่าวเท่านั้น</translation>
-<translation id="1960158217849594135">บันทึกชื่อผู้ใช้ลงในบัญชี Google ใช่ไหม</translation>
 <translation id="196040970347962278">ทำการเชื่อมต่ออินเทอร์เน็ตก่อน</translation>
 <translation id="1962233722219655970">หน้าเว็บนี้ใช้แอปพลิเคชัน Native Client ซึ่งไม่สามารถทำงานบนคอมพิวเตอร์ของคุณ</translation>
 <translation id="1963227389609234879">นำออกทั้งหมด</translation>
@@ -902,6 +902,7 @@
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="1987317783729300807">บัญชี</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
+<translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
 <translation id="1990512225220753005">ไม่แสดงทางลัดในหน้านี้</translation>
 <translation id="1992397118740194946">ไม่ได้ตั้งค่า</translation>
 <translation id="1992924914582925289">นำออกจากอุปกรณ์</translation>
@@ -1047,7 +1048,6 @@
 <translation id="2157474325782140681">โปรดใช้แท่นชาร์จ Dell ที่ออกแบบมาให้ใช้งานกับ Chromebook นี้เพื่อใช้ฟีเจอร์เพิ่มเติม</translation>
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
 <translation id="2157875535253991059">หน้าเว็บนี้แสดงแบบเต็มหน้าจอแล้ว</translation>
-<translation id="2160589599612868242">รับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
 <translation id="2162838847352058695">บล็อกเว็บไซต์ไม่ให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
@@ -1265,6 +1265,7 @@
 <translation id="2399699884460174994">เปิดการแจ้งเตือนแล้ว</translation>
 <translation id="2399939490305346086">ข้อมูลการลงชื่อเข้าใช้ในคีย์ความปลอดภัย</translation>
 <translation id="2400664245143453337">ต้องอัปเดตทันที</translation>
+<translation id="2406153734066939945">ลบโปรไฟล์นี้และข้อมูลในโปรไฟล์ใช่ไหม</translation>
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="241082044617551207">ปลั๊กอินที่ไม่รู้จัก</translation>
@@ -1383,6 +1384,7 @@
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2526619973349913024">ตรวจหาอัปเดต</translation>
 <translation id="2527167509808613699">การเชื่อมต่อทุกประเภท</translation>
+<translation id="2530166226437958497">การแก้ปัญหา</translation>
 <translation id="2532589005999780174">โหมดคอนทราสต์สูง</translation>
 <translation id="253434972992662860">&amp;หยุดชั่วคราว</translation>
 <translation id="2534460670861217804">พร็อกซี HTTP ที่ปลอดภัย</translation>
@@ -1700,7 +1702,6 @@
 <translation id="2885729872133513017">เกิดปัญหาเมื่อถอดรหัสการตอบกลับของเซิร์ฟเวอร์</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">เปิดลิงก์ด้วย...</translation>
-<translation id="2889481634493693121">เปิดการแจ้งเตือนในโทรศัพท์</translation>
 <translation id="2889925978073739256">บล็อกปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ต่อไป</translation>
 <translation id="2893168226686371498">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 ข้อความ}other{# ข้อความ}}</translation>
@@ -2560,6 +2561,7 @@
 <translation id="3857807444929313943">ยกนิ้วขึ้นแล้วแตะอีกครั้ง</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: การซิงค์หยุดชั่วคราว</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
+<translation id="3861977424605124250">แสดงเมื่อเริ่มต้นใช้งาน</translation>
 <translation id="3862693525629180217">ยืนยันผ่านเซ็นเซอร์ในเครื่อง</translation>
 <translation id="3862788408946266506">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest ที่ชื่อ "kiosk_only" ในโหมดคีออสก์ของ Chrome OS</translation>
 <translation id="3865414814144988605">ความละเอียด</translation>
@@ -2802,7 +2804,6 @@
 <translation id="412730574613779332">สแปนเด็กซ์</translation>
 <translation id="4130199216115862831">บันทึกของอุปกรณ์</translation>
 <translation id="4130207949184424187">ส่วนขยายนี้ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณค้นหาจากแถบอเนกประสงค์</translation>
-<translation id="4130344535649650885">บันทึกรหัสผ่านลงในบัญชี Google ใช่ไหม</translation>
 <translation id="4130750466177569591">ฉันยอมรับ</translation>
 <translation id="413121957363593859">คอมโพเนนต์</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
@@ -3201,6 +3202,7 @@
 <translation id="4627442949885028695">ดำเนินการต่อจากอุปกรณ์อื่น</translation>
 <translation id="4628757576491864469">อุปกรณ์</translation>
 <translation id="4628762811416793313">ยังสร้างคอนเทนเนอร์ Linux ไม่สมบูรณ์ โปรดลองอีกครั้ง</translation>
+<translation id="4629521233550547305">เปิดโปรไฟล์ของ <ph name="PROFILE_NAME" /></translation>
 <translation id="4633003931260532286">ส่วนขยายต้องใช้ "<ph name="IMPORT_NAME" />" เวอร์ชัน "<ph name="IMPORT_VERSION" />" เป็นอย่างน้อย แต่ที่ติดตั้งอยู่เป็นเวอร์ชัน "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองนี้มีข้อมูลแอปอยู่ด้วย ข้อมูลสำรองจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของบุตรหลาน</translation>
 <translation id="4634575639321169635">ตั้งค่าอุปกรณ์นี้สำหรับการทำงานหรือใช้ส่วนตัว</translation>
@@ -3929,7 +3931,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{รับ <ph name="ATTACHMENTS" />จาก <ph name="DEVICE_NAME" /> ไม่สำเร็จ}other{รับ <ph name="ATTACHMENTS" />จาก <ph name="DEVICE_NAME" /> ไม่สำเร็จ}}</translation>
 <translation id="5502500733115278303">นำเข้าจาก Firefox</translation>
 <translation id="5502915260472117187">บุตรหลาน</translation>
-<translation id="5503858713116291452">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้ ทำตามขั้นตอนในโทรศัพท์เพื่อตั้งค่าให้เสร็จสมบูรณ์</translation>
 <translation id="5503982651688210506">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้อง รวมถึงใช้ไมโครโฟนของคุณต่อไป</translation>
 <translation id="5505264765875738116">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนไม่ได้</translation>
 <translation id="5505307013568720083">หมึกหมด</translation>
@@ -3990,6 +3991,7 @@
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
 <translation id="5567989639534621706">แคชของแอปพลิเคชัน</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
+<translation id="5571832155627049070">กำหนดค่าโปรไฟล์ของคุณ</translation>
 <translation id="5572851009514199876">โปรดเปิดและลงชื่อเข้าใช้ Chrome เพื่อให้ Chrome ตรวจสอบได้ว่าคุณได้รับอนุญาตให้เข้าถึงไซต์นี้หรือไม่</translation>
 <translation id="5575473780076478375">ส่วนขยายแบบไม่ระบุตัวตน: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">เกิดปัญหาเกี่ยวกับคำขอลงทะเบียนสาธิต</translation>
@@ -5459,6 +5461,7 @@
 <translation id="7280649757394340890">การตั้งค่าเสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="7280877790564589615">ขอสิทธิ์แล้ว</translation>
 <translation id="7282992757463864530">แถบข้อมูล</translation>
+<translation id="7283555985781738399">โหมดผู้มาเยือน</translation>
 <translation id="7284411326658527427">โดยแต่ละคนจะปรับเปลี่ยนการตั้งค่าบัญชีในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
 <translation id="7287143125007575591">ปฏิเสธการเข้าถึง</translation>
 <translation id="7287411021188441799">คืนค่าพื้นหลังเริ่มต้น</translation>
@@ -5838,6 +5841,7 @@
 <translation id="7716781361494605745">URL นโยบายของผู้ออกใบรับรองของ Netscape</translation>
 <translation id="7717014941119698257">กำลังดาวน์โหลด: <ph name="STATUS" /></translation>
 <translation id="7717134585801378441">เว็บไซต์ขอตำแหน่งของคุณได้ (แนะนำ)</translation>
+<translation id="771721654176725387">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร หากต้องการกู้ข้อมูลคืน ให้เปิดการซิงค์ในชื่อ</translation>
 <translation id="7717845620320228976">ตรวจสอบการอัปเดต</translation>
 <translation id="7719367874908701697">การซูมหน้า</translation>
 <translation id="7719588063158526969">ชื่ออุปกรณ์ยาวเกินไป</translation>
@@ -5874,6 +5878,7 @@
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7765507180157272835">ต้องใช้บลูทูธและ Wi-Fi</translation>
 <translation id="7766082757934713382">ช่วยลดปริมาณการใช้อินเทอร์เน็ตของเครือข่ายโดยหยุดการอัปเดตระบบกับแอปอัตโนมัติไว้ชั่วคราว</translation>
+<translation id="7766807826975222231">ทัวร์ชม</translation>
 <translation id="7766838926148951335">ยอมรับสิทธิ์</translation>
 <translation id="7768507955883790804">เว็บไซต์จะดำเนินการตามการตั้งค่านี้โดยอัตโนมัติเมื่อคุณเข้าชม</translation>
 <translation id="7768770796815395237">เปลี่ยน</translation>
@@ -6118,6 +6123,7 @@
 <translation id="8017176852978888182">ไดเรกทอรีที่แชร์ใน Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
+<translation id="8018298733481692628">ลบโปรไฟล์นี้ใช่ไหม</translation>
 <translation id="8018313076035239964">ควบคุมว่าจะให้เว็บไซต์ใช้ข้อมูลใดได้บ้าง และสามารถแสดงเนื้อหาใดให้กับคุณ</translation>
 <translation id="8023801379949507775">อัปเดตส่วนขยายทันที</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
@@ -6288,7 +6294,6 @@
 <translation id="8211551284753798479">PUK ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{อยู่ระหว่างการดาวน์โหลด}other{อยู่ระหว่างการดาวน์โหลด}}</translation>
 <translation id="8213449224684199188">เข้าสู่โหมดรูปภาพแล้ว</translation>
-<translation id="8213866992824776555"><ph name="DOMAIN" /> ต้องการระบุอุปกรณ์ของคุณเพื่อให้เล่นวิดีโอและเสียงที่มีการปกป้องเป็นคุณภาพสูงสุดได้</translation>
 <translation id="8214489666383623925">เปิดไฟล์...</translation>
 <translation id="8214962590150211830">นำบุคคลนี้ออก</translation>
 <translation id="8216351761227087153">ดู</translation>
@@ -6767,7 +6772,6 @@
 <translation id="8774379074441005279">ยืนยันการคืนค่า</translation>
 <translation id="8774934320277480003">ขอบบน</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
-<translation id="8775163630211761057">เพิ่มสิ่งที่ดีที่สุดจากโทรศัพท์ Android ของคุณไปยัง <ph name="DEVICE_TYPE" /></translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> ของคุณจะล็อกโดยอัตโนมัติใน # วินาที
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}other{<ph name="DEVICE_TYPE" /> ของคุณจะล็อกโดยอัตโนมัติใน # วินาที
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}}</translation>
@@ -6956,6 +6960,7 @@
 <translation id="8973596347849323817">คุณสามารถปรับแต่งอุปกรณ์นี้ให้ตรงกับความต้องการของคุณ และเปลี่ยนฟีเจอร์การเข้าถึงเหล่านี้ได้ภายหลังใน "การตั้งค่า"</translation>
 <translation id="897414447285476047">ไฟล์ปลายทางไม่สมบูรณ์เนื่องจากปัญหาการเชื่อมต่อ</translation>
 <translation id="897525204902889653">บริการเขตกักบริเวณ</translation>
+<translation id="8975396729541388937">ยกเลิกการสมัครได้ทุกเมื่อโดยคลิกลิงก์ในอีเมลที่ได้รับ</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก 1 แท็บ}other{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก # แท็บ}}</translation>
 <translation id="8977811652087512276">รหัสผ่านไม่ถูกต้องหรือไฟล์เสียหาย</translation>
 <translation id="8978154919215542464">เปิด - ซิงค์ทุกอย่าง</translation>
