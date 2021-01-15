@@ -81,25 +81,6 @@ class PersistentBase {
   operator T*() const { return Get(); }
   T* operator->() const { return Get(); }
 
-  // Register the persistent node as a 'static reference',
-  // belonging to the current thread and a persistent that must
-  // be cleared when the ThreadState itself is cleared out and
-  // destructed.
-  //
-  // Static singletons arrange for this to happen, either to ensure
-  // clean LSan leak reports or to register a thread-local persistent
-  // needing to be cleared out before the thread is terminated.
-  PersistentBase* RegisterAsStaticReference() {
-    static_assert(weaknessConfiguration == kNonWeakPersistentConfiguration,
-                  "Can only register non-weak Persistent references as static "
-                  "references.");
-    if (PersistentNode* node = persistent_node_.Get()) {
-      ThreadState::Current()->RegisterStaticPersistentNode(node);
-      LEAK_SANITIZER_IGNORE_OBJECT(this);
-    }
-    return this;
-  }
-
   NO_SANITIZE_ADDRESS
   void ClearWithLockHeld() {
     static_assert(

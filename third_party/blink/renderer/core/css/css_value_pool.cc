@@ -36,7 +36,7 @@ CSSValuePool& CssValuePool() {
   Persistent<CSSValuePool>& pool_handle = *thread_specific_pool;
   if (!pool_handle) {
     pool_handle = MakeGarbageCollected<CSSValuePool>();
-    pool_handle.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&pool_handle);
   }
   return *pool_handle;
 }

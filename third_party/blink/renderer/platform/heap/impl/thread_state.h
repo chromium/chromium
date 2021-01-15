@@ -65,7 +65,6 @@ class IncrementalMarkingScope;
 
 class MarkingVisitor;
 class MarkingSchedulingOracle;
-class PersistentNode;
 class PersistentRegion;
 class ThreadHeap;
 class ThreadState;
@@ -346,10 +345,6 @@ class PLATFORM_EXPORT ThreadState final {
   PersistentRegion* GetWeakPersistentRegion() const {
     return weak_persistent_region_.get();
   }
-
-  void RegisterStaticPersistentNode(PersistentNode*);
-  void ReleaseStaticPersistentNodes();
-  void FreePersistentNode(PersistentRegion*, PersistentNode*);
 
   v8::Isolate* GetIsolate() const { return isolate_; }
 
@@ -643,12 +638,6 @@ class PLATFORM_EXPORT ThreadState final {
 #endif
 
   HashSet<BlinkGCObserver*> observers_;
-
-  // PersistentNodes that are stored in static references;
-  // references that either have to be cleared upon the thread
-  // detaching from Oilpan and shutting down or references we
-  // have to clear before initiating LSan's leak detection.
-  HashSet<PersistentNode*> static_persistents_;
 
   int gc_age_ = 0;
 

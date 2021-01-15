@@ -101,8 +101,6 @@ namespace {
 
 constexpr double kMarkingScheduleRatioBeforeConcurrentPriorityIncrease = 0.5;
 
-constexpr size_t kMaxTerminationGCLoops = 20;
-
 // Helper function to convert a byte count to a KB count, capping at
 // INT_MAX if the number is larger than that.
 constexpr base::Histogram::Sample CappedSizeInKB(size_t size_in_bytes) {
@@ -258,54 +256,30 @@ void ThreadState::RunTerminationGC() {
                                     BlinkGC::kIncrementalAndConcurrentMarking,
                                     BlinkGC::kConcurrentAndLazySweeping,
                                     BlinkGC::GCReason::kThreadTerminationGC);
-
   // Finish sweeping.
   CompleteSweep();
 
-  ReleaseStaticPersistentNodes();
-
-  // PrepareForThreadStateTermination removes strong references so no need to
-  // call it on CrossThreadWeakPersistentRegion.
-  ProcessHeap::GetCrossThreadPersistentRegion()
-      .PrepareForThreadStateTermination(this);
-
-  // Do thread local GC's as long as the count of thread local Persistents
-  // changes and is above zero.
-  int old_count = -1;
-  int current_count = GetPersistentRegion()->NodesInUse();
-  DCHECK_GE(current_count, 0);
-  while (current_count != old_count) {
+  // The constant specifies how many rounds of GCs should at most be needed to
+  // clean up the heap. If we crash below this means that there's finalizers
+  // adding more objects and roots than the GC is able to clean up.
+  constexpr size_t kMaxTerminationGCsForHeapCleanup = 20;
+  size_t i = 0;
+  do {
+    CHECK_LT(i++, kMaxTerminationGCsForHeapCleanup);
+    // Remove strong cross-thread roots.
+    ProcessHeap::GetCrossThreadPersistentRegion()
+        .PrepareForThreadStateTermination(this);
+    // Remove regular roots.
+    GetPersistentRegion()->PrepareForThreadStateTermination(this);
+    CHECK_EQ(0, GetPersistentRegion()->NodesInUse());
     CollectGarbage(BlinkGC::CollectionType::kMajor,
                    BlinkGC::kNoHeapPointersOnStack, BlinkGC::kAtomicMarking,
                    BlinkGC::kEagerSweeping,
                    BlinkGC::GCReason::kThreadTerminationGC);
-    // Release the thread-local static persistents that were
-    // instantiated while running the termination GC.
-    ReleaseStaticPersistentNodes();
-    old_count = current_count;
-    current_count = GetPersistentRegion()->NodesInUse();
-  }
-
-  // We should not have any persistents left when getting to this point,
-  // if we have it is a bug, and we have a reference cycle or a missing
-  // RegisterAsStaticReference. Clearing out all the Persistents will avoid
-  // stale pointers and gets them reported as nullptr dereferences.
-  if (current_count) {
-    for (size_t i = 0;
-         i < kMaxTerminationGCLoops && GetPersistentRegion()->NodesInUse();
-         i++) {
-      GetPersistentRegion()->PrepareForThreadStateTermination(this);
-      CollectGarbage(BlinkGC::CollectionType::kMajor,
-                     BlinkGC::kNoHeapPointersOnStack, BlinkGC::kAtomicMarking,
-                     BlinkGC::kEagerSweeping,
-                     BlinkGC::GCReason::kThreadTerminationGC);
-    }
-  }
-
-  CHECK(!GetPersistentRegion()->NodesInUse());
+  } while (GetPersistentRegion()->NodesInUse() != 0);
 
   // All of pre-finalizers should be consumed.
-  DCHECK(ordered_pre_finalizers_.empty());
+  CHECK(ordered_pre_finalizers_.empty());
   CHECK_EQ(GetGCState(), kNoGCScheduled);
 
   Heap().RemoveAllPages();
@@ -1008,35 +982,6 @@ void ThreadState::EnterStaticReferenceRegistrationDisabledScope() {
 void ThreadState::LeaveStaticReferenceRegistrationDisabledScope() {
   DCHECK(static_persistent_registration_disabled_count_);
   static_persistent_registration_disabled_count_--;
-}
-
-void ThreadState::RegisterStaticPersistentNode(PersistentNode* node) {
-  if (static_persistent_registration_disabled_count_)
-    return;
-
-  DCHECK(!static_persistents_.Contains(node));
-  static_persistents_.insert(node);
-}
-
-void ThreadState::ReleaseStaticPersistentNodes() {
-  HashSet<PersistentNode*> static_persistents;
-  static_persistents.swap(static_persistents_);
-
-  PersistentRegion* persistent_region = GetPersistentRegion();
-  for (PersistentNode* it : static_persistents)
-    persistent_region->ReleaseNode(it);
-}
-
-void ThreadState::FreePersistentNode(PersistentRegion* persistent_region,
-                                     PersistentNode* persistent_node) {
-  persistent_region->FreeNode(persistent_node);
-  // Do not allow static persistents to be freed before
-  // they're all released in releaseStaticPersistentNodes().
-  //
-  // There's no fundamental reason why this couldn't be supported,
-  // but no known use for it.
-  if (persistent_region == GetPersistentRegion())
-    DCHECK(!static_persistents_.Contains(persistent_node));
 }
 
 void ThreadState::InvokePreFinalizers() {

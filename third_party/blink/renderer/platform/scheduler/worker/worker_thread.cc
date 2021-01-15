@@ -130,9 +130,6 @@ WorkerThread::GCSupport::GCSupport(WorkerThread* thread) {
 }
 
 WorkerThread::GCSupport::~GCSupport() {
-#if defined(LEAK_SANITIZER)
-  ThreadState::Current()->ReleaseStaticPersistentNodes();
-#endif
   // Ensure no posted tasks will run from this point on.
   gc_task_runner_.reset();
   blink_gc_memory_dump_provider_.reset();

@@ -215,7 +215,7 @@ const CSSParserContext* StrictCSSParserContext(
   if (!context) {
     context = MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
                                                      secure_context_mode);
-    context.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&context);
   }
 
   return context;

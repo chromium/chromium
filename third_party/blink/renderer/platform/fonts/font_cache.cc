@@ -416,7 +416,7 @@ void FontCache::AddClient(FontCacheClient* client) {
   if (!font_cache_clients_) {
     font_cache_clients_ =
         MakeGarbageCollected<HeapHashSet<WeakMember<FontCacheClient>>>();
-    font_cache_clients_.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&font_cache_clients_);
   }
   DCHECK(!font_cache_clients_->Contains(client));
   font_cache_clients_->insert(client);

@@ -154,7 +154,7 @@ WebGLRenderingContextBaseSet& ActiveContexts() {
   if (!active_contexts_persistent) {
     active_contexts_persistent =
         MakeGarbageCollected<WebGLRenderingContextBaseSet>();
-    active_contexts_persistent.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&active_contexts_persistent);
   }
   return *active_contexts_persistent;
 }
@@ -170,7 +170,7 @@ WebGLRenderingContextBaseMap& ForciblyEvictedContexts() {
   if (!forcibly_evicted_contexts_persistent) {
     forcibly_evicted_contexts_persistent =
         MakeGarbageCollected<WebGLRenderingContextBaseMap>();
-    forcibly_evicted_contexts_persistent.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&forcibly_evicted_contexts_persistent);
   }
   return *forcibly_evicted_contexts_persistent;
 }

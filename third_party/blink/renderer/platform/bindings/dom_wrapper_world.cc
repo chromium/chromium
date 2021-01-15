@@ -122,8 +122,13 @@ DOMWrapperWorld::~DOMWrapperWorld() {
 }
 
 void DOMWrapperWorld::Dispose() {
-  dom_data_store_->Dispose();
-  dom_data_store_.Clear();
+  if (dom_data_store_) {
+    // The data_store_ might be cleared on thread termination in the same
+    // garbage collection cycle which prohibits accessing the references from
+    // the dtor.
+    dom_data_store_->Dispose();
+    dom_data_store_.Clear();
+  }
   DCHECK(GetWorldMap().Contains(world_id_));
   GetWorldMap().erase(world_id_);
 }

@@ -5072,7 +5072,7 @@ class ThreadedClearOnShutdownTester : public ThreadedTesterBase {
     Persistent<IntWrapper>& handle = *int_wrapper;
     if (!handle) {
       handle = MakeGarbageCollected<IntWrapper>(42);
-      handle.RegisterAsStaticReference();
+      LEAK_SANITIZER_IGNORE_OBJECT(&handle);
     }
     return *handle;
   }
@@ -5111,7 +5111,7 @@ ThreadedClearOnShutdownTester::GetWeakHeapObjectSet() {
   Persistent<WeakHeapObjectSet>& singleton_persistent = *singleton;
   if (!singleton_persistent) {
     singleton_persistent = MakeGarbageCollected<WeakHeapObjectSet>();
-    singleton_persistent.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&singleton_persistent);
   }
   return *singleton_persistent;
 }
@@ -5123,7 +5123,7 @@ ThreadedClearOnShutdownTester::GetHeapObjectSet() {
   Persistent<HeapObjectSet>& singleton_persistent = *singleton;
   if (!singleton_persistent) {
     singleton_persistent = MakeGarbageCollected<HeapObjectSet>();
-    singleton_persistent.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&singleton_persistent);
   }
   return *singleton_persistent;
 }
