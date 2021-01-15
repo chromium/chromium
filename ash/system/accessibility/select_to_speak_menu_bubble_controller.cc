@@ -54,7 +54,6 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::TOP_LEFT);
     bubble_view_->SetCanActivate(true);
-    bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
 
     menu_view_ = new SelectToSpeakMenuView(this);
     menu_view_->SetBorder(

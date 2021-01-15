@@ -107,8 +107,11 @@ export class SelectToSpeak {
     /** @private {chrome.automation.AutomationNode} */
     this.desktop_;
 
-    /** @private {?chrome.automation.AutomationNode} */
-    this.panel_ = null;
+    /**
+     * Button in the floating panel, useful for restoring focus to the panel.
+     * @private {?chrome.automation.AutomationNode}
+     */
+    this.panelButton_ = null;
 
     /** @private {number|undefined} */
     this.intervalRef_;
@@ -376,7 +379,7 @@ export class SelectToSpeak {
         windowParent.children.length === 1 &&
         windowParent.children[0].className ===
             SELECT_TO_SPEAK_MENU_CLASS_NAME) {
-      this.panel_ = windowParent;
+      this.panelButton_ = focusedNode;
     }
   }
 
@@ -607,11 +610,13 @@ export class SelectToSpeak {
   focusPanel_() {
     // Used cached panel node if possible to avoid expensive desktop.find().
     // Note: Checking role attribute to see if node is still valid.
-    if (this.panel_ && this.panel_.role) {
-      this.panel_.focus();
+    if (this.panelButton_ && this.panelButton_.role) {
+      // The panel itself isn't focusable, so set focus to most recently
+      // focused panel button.
+      this.panelButton_.focus();
       return;
     }
-    this.panel_ = null;
+    this.panelButton_ = null;
 
     // Fallback to more expensive method of finding panel.
     const menuView = this.desktop_.find(
@@ -619,8 +624,8 @@ export class SelectToSpeak {
     if (menuView !== null && menuView.parent &&
         menuView.parent.className === TRAY_BUBBLE_VIEW_CLASS_NAME) {
       // The menu view's parent is the TrayBubbleView can can be assigned focus.
-      this.panel_ = menuView.parent;
-      this.panel_.focus();
+      this.panelButton_ = menuView.find({role: RoleType.TOGGLE_BUTTON});
+      this.panelButton_.focus();
     }
   }
 
@@ -1954,9 +1959,6 @@ export class SelectToSpeak {
   isPanel_(node) {
     if (!node) {
       return false;
-    }
-    if (node === this.panel_) {
-      return true;
     }
 
     // Determine if the node is part of the floating panel or the reading speed
