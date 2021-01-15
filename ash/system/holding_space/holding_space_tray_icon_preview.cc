@@ -168,9 +168,15 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   if (!NeedsLayer())
     return;
 
+  int pre_translate_y = -preview_size.height();
+  if (IsHorizontal(shelf_->alignment())) {
+    const gfx::Size& container_size = container_->size();
+    pre_translate_y = -container_size.height() +
+                      (container_size.height() - preview_size.height()) / 2;
+  }
+
   gfx::Transform pre_transform;
-  pre_transform.Translate(transform_.To2dTranslation().x(),
-                          -preview_size.height());
+  pre_transform.Translate(transform_.To2dTranslation().x(), pre_translate_y);
 
   CreateLayer(pre_transform);
 
