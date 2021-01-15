@@ -69,7 +69,10 @@ js_type_check("closure_compile_jsmodules") {
     ":navigation_uma.m",
     ":path_component.m",
     ":providers_model.m",
+    ":quick_view_controller.m",
     ":quick_view_model.m",
+    ":quick_view_uma.m",
+    ":scan_controller.m",
     ":selection_menu_controller.m",
     ":sort_menu_controller.m",
     ":spinner_controller.m",
@@ -1525,6 +1528,39 @@ js_library("quick_view_controller") {
   ]
 }
 
+js_library("quick_view_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_controller.m.js" ]
+  deps = [
+    ":constants.m",
+    ":dialog_type.m",
+    ":file_manager_commands.m",
+    ":file_selection.m",
+    ":file_tasks.m",
+    ":metadata_box_controller.m",
+    ":quick_view_model.m",
+    ":quick_view_uma.m",
+    ":task_controller.m",
+    ":thumbnail_loader.m",
+    "metadata:metadata_item.m",
+    "metadata:metadata_model.m",
+    "ui:file_list_selection_model.m",
+    "ui:files_confirm_dialog.m",
+    "ui:list_container.m",
+    "ui:multi_menu_button.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:command_handler_deps.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
+    "//ui/file_manager/image_loader:image_loader_client.m",
+    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("quick_view_model") {
   deps = [
     "//ui/webui/resources/js:cr",
@@ -1550,6 +1586,21 @@ js_library("quick_view_uma") {
   ]
 }
 
+js_library("quick_view_uma.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_uma.m.js" ]
+  deps = [
+    ":dialog_type.m",
+    ":file_tasks.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("scan_controller") {
   deps = [
     ":directory_model",
@@ -1558,6 +1609,19 @@ js_library("scan_controller") {
     ":spinner_controller",
     "ui:list_container",
   ]
+}
+
+js_library("scan_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/scan_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    ":file_manager_commands.m",
+    ":file_selection.m",
+    ":spinner_controller.m",
+    "ui:list_container.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("search_controller") {
@@ -1838,6 +1902,7 @@ js_modulizer("modulize") {
     "app_state_controller.js",
     "constants.js",
     "crossover_search_utils.js",
+    "crostini_controller.js",
     "dialog_type.js",
     "directory_contents.js",
     "directory_model.js",
@@ -1854,6 +1919,7 @@ js_modulizer("modulize") {
     "file_type_filters_controller.js",
     "file_watcher.js",
     "folder_shortcuts_data_model.js",
+    "gear_menu_controller.js",
     "holding_space_util.js",
     "import_controller.js",
     "last_modified_controller.js",
@@ -1873,7 +1939,10 @@ js_modulizer("modulize") {
     "navigation_uma.js",
     "path_component.js",
     "providers_model.js",
+    "quick_view_controller.js",
     "quick_view_model.js",
+    "quick_view_uma.js",
+    "scan_controller.js",
     "selection_menu_controller.js",
     "sort_menu_controller.js",
     "spinner_controller.js",
@@ -1883,8 +1952,6 @@ js_modulizer("modulize") {
     "toolbar_controller.js",
     "web_store_utils.js",
     "webui_command_extender.js",
-    "crostini_controller.js",
-    "gear_menu_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites + [
