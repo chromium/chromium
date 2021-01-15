@@ -54,10 +54,18 @@ public class SigninMetricsUtils {
                 "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
     }
 
+    /**
+     * Logs signin user action for a given {@link SigninAccessPoint}.
+     */
+    public static void logSigninUserActionForAccessPoint(@SigninAccessPoint int accessPoint) {
+        SigninMetricsUtilsJni.get().logSigninUserActionForAccessPoint(accessPoint);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
         void logProfileAccountManagementMenu(int metric, int gaiaServiceType);
+        void logSigninUserActionForAccessPoint(int accessPoint);
     }
 
     private SigninMetricsUtils() {}

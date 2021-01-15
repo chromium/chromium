@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -120,8 +119,8 @@ public class SigninFragment extends SigninFragmentBase {
                 getSigninArguments().getInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NONE);
 
         SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
+        SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
         recordSigninStartedHistogramAccountInfo();
-        recordSigninStartedUserAction();
     }
 
     @Override
@@ -240,30 +239,5 @@ public class SigninFragment extends SigninFragmentBase {
 
         RecordHistogram.recordEnumeratedHistogram(
                 histogram, mSigninAccessPoint, SigninAccessPoint.MAX);
-    }
-
-    private void recordSigninStartedUserAction() {
-        switch (mSigninAccessPoint) {
-            case SigninAccessPoint.AUTOFILL_DROPDOWN:
-                RecordUserAction.record("Signin_Signin_FromAutofillDropdown");
-                break;
-            case SigninAccessPoint.BOOKMARK_MANAGER:
-                RecordUserAction.record("Signin_Signin_FromBookmarkManager");
-                break;
-            case SigninAccessPoint.RECENT_TABS:
-                RecordUserAction.record("Signin_Signin_FromRecentTabs");
-                break;
-            case SigninAccessPoint.SETTINGS:
-                RecordUserAction.record("Signin_Signin_FromSettings");
-                break;
-            case SigninAccessPoint.SIGNIN_PROMO:
-                RecordUserAction.record("Signin_Signin_FromSigninPromo");
-                break;
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                RecordUserAction.record("Signin_Signin_FromNTPContentSuggestions");
-                break;
-            default:
-                assert false : "Invalid access point.";
-        }
     }
 }

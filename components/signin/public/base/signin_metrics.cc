@@ -133,11 +133,12 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
-                   << " is only used on Android, where"
-                   << " RecordSigninUserActionForAccessPoint is not used"
-                   << " for logging user actions.";
+                   << " is not supposed to log signin user actions.";
+      break;
+    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+      VLOG(1) << "Signin_Signin_From* user action is not recorded "
+              << "for access point " << static_cast<int>(access_point);
       break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();

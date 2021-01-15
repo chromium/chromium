@@ -51,8 +51,8 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
         RecordHistogram.recordCountHistogram(
                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(numAccounts, 2));
         RecordUserAction.record("MobileFre.SignInShown");
-        RecordUserAction.record("Signin_Signin_FromStartPage");
         SigninMetricsUtils.logSigninStartAccessPoint(SigninAccessPoint.START_PAGE);
+        SigninMetricsUtils.logSigninUserActionForAccessPoint(SigninAccessPoint.START_PAGE);
     }
 
     @Override
