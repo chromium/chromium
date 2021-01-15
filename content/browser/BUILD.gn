@@ -2273,7 +2273,11 @@ source_set("browser") {
       ]
     }
     if (is_mac) {
-      sources += [ "media/capture/mouse_cursor_overlay_controller_mac.mm" ]
+      sources += [
+        "media/capture/desktop_capture_device_mac.cc",
+        "media/capture/desktop_capture_device_mac.h",
+        "media/capture/mouse_cursor_overlay_controller_mac.mm",
+      ]
       deps += [
         "//sandbox/mac:seatbelt",
         "//sandbox/mac:seatbelt_extension",
@@ -2677,6 +2681,7 @@ source_set("browser") {
     ]
     frameworks += [
       "Carbon.framework",
+      "CoreGraphics.framework",
       "QuartzCore.framework",
       "IOSurface.framework",
     ]

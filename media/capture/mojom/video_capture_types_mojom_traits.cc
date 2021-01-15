@@ -704,6 +704,12 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient:
       return media::mojom::VideoCaptureError::
           kCrosHalV3DeviceContextDuplicatedClient;
+    case media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate:
+      return media::mojom::VideoCaptureError::
+          kDesktopCaptureDeviceMacFailedStreamCreate;
+    case media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart:
+      return media::mojom::VideoCaptureError::
+          kDesktopCaptureDeviceMacFailedStreamStart;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1250,6 +1256,16 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kCrosHalV3DeviceContextDuplicatedClient:
       *output =
           media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kDesktopCaptureDeviceMacFailedStreamCreate:
+      *output =
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kDesktopCaptureDeviceMacFailedStreamStart:
+      *output =
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart;
       return true;
   }
   NOTREACHED();

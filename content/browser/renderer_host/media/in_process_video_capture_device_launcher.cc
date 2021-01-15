@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/common/content_features.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
@@ -41,6 +43,9 @@
 #endif
 #include "content/browser/media/capture/desktop_capture_device.h"
 #endif  // defined(OS_ANDROID)
+#if defined(OS_MAC)
+#include "content/browser/media/capture/desktop_capture_device_mac.h"
+#endif
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -390,9 +395,13 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
 #if defined(OS_ANDROID)
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
+#if defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(features::kDesktopCaptureMacV2))
+    video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
+#endif
   if (!video_capture_device)
     video_capture_device = DesktopCaptureDevice::Create(desktop_id);
-#endif  // defined (OS_ANDROID)
+#endif
 
   if (video_capture_device)
     video_capture_device->AllocateAndStart(params, std::move(device_client));

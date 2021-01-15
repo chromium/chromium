@@ -1,0 +1,149 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/media/capture/desktop_capture_device_mac.h"
+
+#include <CoreGraphics/CoreGraphics.h>
+
+#include "base/threading/thread.h"
+#include "media/capture/video/video_capture_device.h"
+#include "ui/gfx/native_widget_types.h"
+
+namespace content {
+
+namespace {
+
+class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
+ public:
+  DesktopCaptureDeviceMac(CGDirectDisplayID display_id)
+      : display_id_(display_id), weak_factory_(this) {}
+
+  ~DesktopCaptureDeviceMac() override = default;
+
+  // media::VideoCaptureDevice:
+  void AllocateAndStart(const media::VideoCaptureParams& params,
+                        std::unique_ptr<Client> client) override {
+    DCHECK(client && !client_);
+    client_ = std::move(client);
+
+    requested_format_ = params.requested_format;
+    requested_format_.pixel_format = media::PIXEL_FORMAT_NV12;
+    DCHECK_GT(requested_format_.frame_size.GetArea(), 0);
+    DCHECK_GT(requested_format_.frame_rate, 0);
+
+    auto task_runner = base::SequencedTaskRunnerHandle::Get();
+    CGDisplayStreamFrameAvailableHandler handler = ^(
+        CGDisplayStreamFrameStatus status, uint64_t display_time,
+        IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
+      if (status == kCGDisplayStreamFrameStatusFrameComplete) {
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(&DesktopCaptureDeviceMac::OnReceivedIOSurface,
+                           weak_factory_.GetWeakPtr(),
+                           gfx::ScopedInUseIOSurface(
+                               frame_surface, base::scoped_policy::RETAIN)));
+      }
+    };
+
+    base::ScopedCFTypeRef<CFDictionaryRef> properties;
+    {
+      float max_frame_time = 1.f / requested_format_.frame_rate;
+      base::ScopedCFTypeRef<CFNumberRef> cf_max_frame_time(
+          CFNumberCreate(nullptr, kCFNumberFloat32Type, &max_frame_time));
+      base::ScopedCFTypeRef<CGColorSpaceRef> cg_color_space(
+          CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+
+      const size_t kNumKeys = 3;
+      const void* keys[kNumKeys] = {
+          kCGDisplayStreamShowCursor,
+          kCGDisplayStreamMinimumFrameTime,
+          kCGDisplayStreamColorSpace,
+      };
+      const void* values[kNumKeys] = {
+          kCFBooleanFalse,
+          cf_max_frame_time.get(),
+          cg_color_space.get(),
+      };
+      properties.reset(CFDictionaryCreate(
+          kCFAllocatorDefault, keys, values, kNumKeys,
+          &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    }
+
+    display_stream_.reset(CGDisplayStreamCreate(
+        display_id_, requested_format_.frame_size.width(),
+        requested_format_.frame_size.height(),
+        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, properties, handler));
+    if (!display_stream_) {
+      client_->OnError(
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate,
+          FROM_HERE, "CGDisplayStreamCreate failed");
+      return;
+    }
+    CGError error = CGDisplayStreamStart(display_stream_);
+    if (error != kCGErrorSuccess) {
+      client_->OnError(
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart,
+          FROM_HERE, "CGDisplayStreamStart failed");
+      return;
+    }
+    CFRunLoopAddSource(CFRunLoopGetCurrent(),
+                       CGDisplayStreamGetRunLoopSource(display_stream_),
+                       kCFRunLoopCommonModes);
+    client_->OnStarted();
+  }
+  void StopAndDeAllocate() override {
+    weak_factory_.InvalidateWeakPtrs();
+    if (display_stream_) {
+      CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
+                            CGDisplayStreamGetRunLoopSource(display_stream_),
+                            kCFRunLoopCommonModes);
+      CGDisplayStreamStop(display_stream_);
+    }
+    display_stream_.reset();
+  }
+
+ private:
+  void OnReceivedIOSurface(gfx::ScopedInUseIOSurface io_surface) {
+    // Package |io_surface| as a GpuMemoryBuffer.
+    gfx::GpuMemoryBufferHandle handle;
+    handle.id.id = -1;
+    handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
+    handle.io_surface.reset(io_surface, base::scoped_policy::RETAIN);
+
+    const auto now = base::TimeTicks::Now();
+    if (first_frame_time_.is_null())
+      first_frame_time_ = now;
+
+    client_->OnIncomingCapturedExternalBuffer(
+        std::move(handle), requested_format_, gfx::ColorSpace::CreateSRGB(),
+        now, now - first_frame_time_);
+  }
+
+  const CGDirectDisplayID display_id_;
+
+  std::unique_ptr<Client> client_;
+  base::ScopedCFTypeRef<CGDisplayStreamRef> display_stream_;
+  media::VideoCaptureFormat requested_format_;
+
+  // The time of the first call to OnReceivedIOSurface. Used to compute the
+  // timestamp of subsequent frames.
+  base::TimeTicks first_frame_time_;
+
+  base::WeakPtrFactory<DesktopCaptureDeviceMac> weak_factory_;
+  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureDeviceMac);
+};
+
+}  // namespace
+
+std::unique_ptr<media::VideoCaptureDevice> CreateDesktopCaptureDeviceMac(
+    const DesktopMediaID& source) {
+  CHECK_EQ(source.type, DesktopMediaID::TYPE_SCREEN);
+  IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
+  IncrementDesktopCaptureCounter(source.audio_share
+                                     ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
+                                     : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+  return std::make_unique<DesktopCaptureDeviceMac>(source.id);
+}
+
+}  // namespace content

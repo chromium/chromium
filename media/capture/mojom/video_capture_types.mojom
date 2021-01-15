@@ -230,6 +230,8 @@ enum VideoCaptureError {
   kFuchsiaUnsupportedPixelFormat,
   kFuchsiaFailedToMapSysmemBuffer,
   kCrosHalV3DeviceContextDuplicatedClient,
+  kDesktopCaptureDeviceMacFailedStreamCreate,
+  kDesktopCaptureDeviceMacFailedStreamStart,
 };
 
 enum VideoCaptureFrameDropReason {
