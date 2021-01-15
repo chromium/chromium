@@ -1,20 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/device/geolocation/public/interfaces/geolocation.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
 <script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
-description("Tests for a crash when clearWatch() is called with a zero ID.<br><br>We call clearWatch() with a request in progress then navigate the page. This accesses the watchers map during cleanup and triggers the crash. This page should not be visible when the test completes.");
-
-if (!window.testRunner)
-  debug('This test can not run without testRunner');
-
 document.body.onload = function() {
     let mock = geolocationMock;
     mock.setGeolocationPermission(true);
@@ -22,10 +19,12 @@ document.body.onload = function() {
 
     navigator.geolocation.watchPosition(function() {});
     navigator.geolocation.clearWatch(0);
-    location = "../resources/notify-success.html";
-}
 
-window.jsTestIsAsync = true;
+    // This triggers unload, exercising the regression path which could crash
+    // the renderer due to the invalid clearWatch invocation above. The test
+    // passes if it doesn't crash.
+    location = "resources/pass-test.html#no crash on unload after clearing invalid watch id";
+}
 </script>
 </body>
 </html>

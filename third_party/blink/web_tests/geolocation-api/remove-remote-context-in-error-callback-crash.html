@@ -1,8 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
 <script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
@@ -24,8 +26,6 @@ function onIframeReady() {
 var iframe = document.createElement('iframe');
 iframe.src = 'resources/remove-remote-context-in-error-callback-crash-inner.html';
 document.body.appendChild(iframe);
-
-window.jsTestIsAsync = true;
 </script>
 </body>
 </html>

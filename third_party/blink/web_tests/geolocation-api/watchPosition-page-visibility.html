@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="../resources/user-gesture-utils.js"></script>
 <script src="../resources/visibility.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
@@ -9,14 +10,11 @@
 <script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
 <script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
 description("Tests that watchPosition does not report position changes when the page is not visible.");
-window.jsTestIsAsync = true;
-
-if (!window.testRunner)
-    debug('This test can not run without testRunner');
 
 var position;
 var error;
@@ -25,19 +23,14 @@ var isPageVisible = true;
 let mock = geolocationMock;
 mock.setGeolocationPermission(true);
 
-debug("* Page is visible");
-
 var mockLatitude = 51.478;
 var mockLongitude = -0.166;
 var mockAccuracy = 100.0;
 
 function updatePosition() {
-    if (!window.testRunner)
-        return;
     ++mockLatitude;
     ++mockLongitude;
     mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
-    debug('device moved to (' + mockLatitude + ', ' + mockLongitude + ')');
 }
 
 updatePosition();
@@ -48,14 +41,11 @@ function checkPosition(p) {
     position = p;
     shouldBe('position.coords.latitude', '' + mockLatitude);
     shouldBe('position.coords.longitude', '' + mockLongitude);
-    debug('');
 }
 
 function showPageAndUpdatePosition() {
     shouldBeFalse('isPageVisible');
-    debug('');
     state++;
-    debug("*Showing page");
     setMainWindowHidden(false).then(() => {
         isPageVisible = true;
         updatePosition();
@@ -63,7 +53,6 @@ function showPageAndUpdatePosition() {
 }
 
 navigator.geolocation.watchPosition(function(p) {
-    debug("Page is notified of the position change");
     shouldBeTrue('isPageVisible');
     state++;
     checkPosition(p);
@@ -72,7 +61,6 @@ navigator.geolocation.watchPosition(function(p) {
             updatePosition();
             break;
         case 2: {
-            debug("* Hiding page");
             setMainWindowHidden(true).then(() => {
                 isPageVisible = false;
                 // This should not be received.

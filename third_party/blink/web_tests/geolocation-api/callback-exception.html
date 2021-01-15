@@ -1,15 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/device/geolocation/public/interfaces/geolocation.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
 <script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
+setup({allow_uncaught_exception: true});
+
 description("Tests that when an exception is thrown in the success callback, the error callback is not invoked. Note that this test throws an exception which is not caught.");
 
 var mockLatitude = 51.478;
@@ -18,6 +22,7 @@ var mockAccuracy = 100;
 
 var position;
 
+let gotError = false;
 let mock = geolocationMock;
 mock.setGeolocationPermission(true);
 mock.setGeolocationPosition(mockLatitude,
@@ -32,6 +37,7 @@ navigator.geolocation.getCurrentPosition(function(p) {
     // Yield to allow for the error callback to be invoked. The timer
     // must be started before the exception is thrown.
     window.setTimeout(assertWeGotException, 0);
+    window.onerror = () => { gotError = true; };
     expectError();
 
     throw new Error('Exception in success callback');
@@ -42,11 +48,9 @@ navigator.geolocation.getCurrentPosition(function(p) {
 
 function assertWeGotException()
 {
-    shouldHaveHadError();
+    assert_true(gotError);
     finishJSTest();
 }
-
-window.jsTestIsAsync = true;
 </script>
 </body>
 </html>

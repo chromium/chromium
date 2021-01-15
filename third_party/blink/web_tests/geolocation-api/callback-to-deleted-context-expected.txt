@@ -1,9 +1,0 @@
-Tests that when a Geolocation request is made from a remote frame, and that frame's script context goes away before the Geolocation callback is made, the callback is made as usual.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL No callbacks invoked
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

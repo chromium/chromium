@@ -1,17 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/device/geolocation/public/interfaces/geolocation.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
 <script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
 <script src="resources/geolocation-mock.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
 description("Test the attribute handling of the Coordinates interface");
-window.jsTestIsAsync = true;
 
 // Format: [Input], [Expected]
 // Input: latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed.
@@ -45,7 +46,6 @@ function verifyResults()
     shouldBe('globalCoordinates.altitudeAccuracy', 'testSet[currentTestIndex][1][4]');
     shouldBe('globalCoordinates.heading', 'testSet[currentTestIndex][1][5]');
     shouldBe('globalCoordinates.speed', 'testSet[currentTestIndex][1][6]');
-    debug('');
 }
 
 var watchId = navigator.geolocation.watchPosition(function(position) {
@@ -58,7 +58,7 @@ var watchId = navigator.geolocation.watchPosition(function(position) {
     }
     runNextTest();
 }, function(e) {
-    debug("Error!: the error callback was called.");
+    testFailed('the error callback was called unexpectedly');
     finishJSTest();
 });
 

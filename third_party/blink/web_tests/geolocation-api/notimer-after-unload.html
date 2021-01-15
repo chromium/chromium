@@ -1,34 +1,32 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/device/geolocation/public/interfaces/geolocation.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
-<script src="resources/geolocation-mock.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
-<script>
-description("Tests that no timers will trigger for navigator.geolocation object after onunload.");
+<script type="module">
+promise_test(_ => {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe');
 
-if (!window.testRunner)
-  debug('This test can not run without testRunner');
+    window.navigateToSecondPage = () => {
+      iframe.src = 'resources/notimer-after-unload-inner-after.html';
 
-geolocationMock.setGeolocationPermission(true);
+      // A little cheesy, but if the callback is realistically ever going to
+      // run, it would will almost certainly within 1 second of the request
+      // issued by the first page.
+      iframe.onload = () => setTimeout(resolve, 1000);
+    };
 
-location = "../fast/events/resources/onunload-single-alert-success.html";
+    window.onGeolocationResponse = x => {
+      reject('Geolocation callback invoked after page unload');
+    };
 
-document.body.onunload = function() {
-    navigator.geolocation.getCurrentPosition(
-        function(p) {alert('FAIL: Unexpected Geolocation success callback.');},
-        function(e) {alert('FAIL: Unexpected Geolocation error callback.' + e.code + e.message);},
-        {timeout: 0, maximumAge:0}
-    );
-    alert("unload-called");
-}
-
-window.jsTestIsAsync = true;
+    iframe.src = 'resources/notimer-after-unload-inner-before.html';
+    document.body.appendChild(iframe);
+  });
+}, 'geolocation callbacks are not invoked after page unload');
 </script>
 </body>
 </html>

@@ -1,7 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
@@ -20,7 +22,7 @@ shouldBeTrue("typeof navigator.geolocation == 'object'");
 shouldBeTrue("hasGeolocationProperty()");
 shouldBeTrue("'geolocation' in navigator");
 
-window.jsTestIsAsync = false;
+finishJSTest();
 </script>
 </body>
 </html>

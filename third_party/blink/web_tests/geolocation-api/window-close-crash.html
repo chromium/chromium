@@ -1,19 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
 description("Tests the assertion that the GeolocationClient should not be updating<br>" +
             "when the GeolocationController is destroyed.<br>" +
             "See https://bugs.webkit.org/show_bug.cgi?id=52216");
-
-if (!window.testRunner)
-  debug('This test can not run without testRunner');
-
-testRunner.waitUntilDone();
-testRunner.setCanOpenWindows();
 
 var otherWindow;
 
@@ -34,10 +30,7 @@ function waitForWindowToClose()
     finishJSTest();
 }
 
-debug("Main page opening resources/window-close-popup.html");
 otherWindow = window.open("resources/window-close-popup.html");
-
-window.jsTestIsAsync = true;
 </script>
 </body>
 </html>

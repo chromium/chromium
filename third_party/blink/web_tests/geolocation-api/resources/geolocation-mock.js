@@ -42,6 +42,12 @@ class GeolocationMock {
     this.permissionStatus_ = blink.mojom.PermissionStatus.ASK;
     this.rejectGeolocationServiceConnections_ = false;
 
+    /**
+     * Set by interceptQueryNextPosition() and used to resolve the promise
+     * returned by that call once the next incoming queryPosition() is received.
+     */
+    this.queryNextPositionIntercept_ = null;
+
     this.geolocationBindingSet_ = new mojo.BindingSet(
         device.mojom.Geolocation);
     this.geolocationServiceBindingSet_ = new mojo.BindingSet(
@@ -62,6 +68,26 @@ class GeolocationMock {
   }
 
   /**
+   * Waits for the next queryPosition() call, and returns a function which can
+   * be used to respond to it. This allows tests to have fine-grained control
+   * over exactly when and how the mock responds to a specific request.
+   */
+  async interceptQueryNextPosition() {
+    if (this.queryNextPositionIntercept_) {
+      throw new Error(
+          'interceptQueryNextPosition called twice in a row, with no interim ' +
+          'queryPosition');
+    }
+    return new Promise(resolve => {
+      this.queryNextPositionIntercept_ = resolver => {
+        resolve(geoposition => {
+          resolver({geoposition});
+        });
+      };
+    });
+  }
+
+  /**
    * A mock implementation of GeolocationService.queryNextPosition(). This
    * returns the position set by a call to setGeolocationPosition() or
    * setGeolocationPositionUnavailableError().
@@ -72,6 +98,12 @@ class GeolocationMock {
       // returned, the request will eventually time out.
       return new Promise((resolve, reject) => {});
     }
+    if (this.queryNextPositionIntercept_) {
+      return new Promise(resolve => {
+        this.queryNextPositionIntercept_(resolve);
+      });
+    }
+
     if (!this.geoposition_) {
       this.setGeolocationPositionUnavailableError(
           'Test error: position not set before call to queryNextPosition()');
@@ -81,22 +113,19 @@ class GeolocationMock {
     return Promise.resolve({geoposition});
   }
 
-  /**
-   * Sets the position to return to the next queryNextPosition() call. If any
-   * queryNextPosition() requests are outstanding, they will all receive the
-   * position set by this call.
-   */
-  setGeolocationPosition(latitude, longitude, accuracy, altitude,
-                         altitudeAccuracy, heading, speed) {
-    this.geoposition_ = new device.mojom.Geoposition();
-    this.geoposition_.latitude = latitude;
-    this.geoposition_.longitude = longitude;
-    this.geoposition_.accuracy = accuracy;
-    this.geoposition_.altitude = altitude;
-    this.geoposition_.altitudeAccuracy = altitudeAccuracy;
-    this.geoposition_.heading = heading;
-    this.geoposition_.speed = speed;
-    this.geoposition_.timestamp = new mojoBase.mojom.Time();
+  makeGeoposition(latitude, longitude, accuracy, altitude = undefined,
+                  altitudeAccuracy = undefined, heading = undefined,
+                  speed = undefined) {
+    const position = new device.mojom.Geoposition();
+    position.latitude = latitude;
+    position.longitude = longitude;
+    position.accuracy = accuracy;
+    position.altitude = altitude;
+    position.altitudeAccuracy = altitudeAccuracy;
+    position.heading = heading;
+    position.speed = speed;
+    position.timestamp = new mojoBase.mojom.Time();
+
     // The new Date().getTime() returns the number of milliseconds since the
     // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
     // device.mojom.Geoposition represents the value of microseconds since the
@@ -107,10 +136,22 @@ class GeolocationMock {
     // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
     const epochDeltaInMs = unixEpoch - windowsEpoch;
 
-    this.geoposition_.timestamp.internalValue =
+    position.timestamp.internalValue =
         (new Date().getTime() + epochDeltaInMs)  * 1000;
-    this.geoposition_.errorMessage = '';
-    this.geoposition_.valid = true;
+    position.errorMessage = '';
+    position.valid = true;
+    return position;
+  }
+
+  /**
+   * Sets the position to return to the next queryNextPosition() call. If any
+   * queryNextPosition() requests are outstanding, they will all receive the
+   * position set by this call.
+   */
+  setGeolocationPosition(latitude, longitude, accuracy, altitude,
+                         altitudeAccuracy, heading, speed) {
+    this.geoposition_ = this.makeGeoposition(latitude, longitude, accuracy,
+        altitude, altitudeAccuracy, heading, speed);
   }
 
   /**

@@ -1,7 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
 </head>
 <body>
 <script>
@@ -17,10 +19,22 @@ function shouldNotThrow(expression)
   }
 }
 
+function shouldThrow(expression, what) {
+  try {
+    eval(expression);
+    testFailed(expression + " should throw an exception but it did not");
+  } catch (e) {
+    if (what && e.toString() !== what) {
+      testFailed(expression + ` should throw with [${what}], but instead it threw with [${e.toString()}]"`);
+    }
+    testPassed();
+  };
+}
+
 function test(expression, expressionShouldThrow, expectedException) {
     if (expressionShouldThrow) {
         if (expectedException)
-            shouldThrow(expression, '(function() { return "' + expectedException + '"; })();');
+            shouldThrow(expression, expectedException);
         else
             shouldThrow(expression);
     } else {
@@ -121,8 +135,7 @@ test('navigator.geolocation.getCurrentPosition(emptyFunction, undefined, {timeou
 test('navigator.geolocation.getCurrentPosition(emptyFunction, undefined, {timeout:-Infinity})', false);
 test('navigator.geolocation.getCurrentPosition(emptyFunction, undefined, {timeout:"string"})', false);
 
-window.jsTestIsAsync = false;
-
+finishJSTest();
 </script>
 </body>
 </html>
