@@ -1115,19 +1115,25 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
 
   if (!frame_->IsNavigationAllowed())
-    return mojom::CommitResult::Aborted;
+    return mojom::blink::CommitResult::Aborted;
+
+  if (frame_->GetDocument()->IsFrameSet()) {
+    // Navigations in a frameset are always cross-document. Renderer-initiated
+    // navigations in a frameset will be deferred to the browser, and all
+    // renderer-initiated navigations are treated as cross-document. So this one
+    // must have been browser-initiated, where it was not aware that the
+    // document is a frameset. In that case we just restart the navigation,
+    // making it cross-document. This gives a consistent outcome for all
+    // navigations in a frameset.
+    return mojom::blink::CommitResult::RestartCrossDocument;
+  }
 
   if (!IsBackForwardLoadType(frame_load_type)) {
     // In the case of non-history navigations, check that this is a
-    // same-document navigation. If not, the navigation should restart as a
-    // cross-document navigation.
-    if (!url.HasFragmentIdentifier() ||
-        !EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url) ||
-        frame_->GetDocument()->IsFrameSet()) {
-      // TODO(danakj): Convert to a CHECK() and stop doing RestartCrossDocument.
-      NOTREACHED();
-      return mojom::CommitResult::RestartCrossDocument;
-    }
+    // same-document navigation. The browser should not send invalid
+    // same-document navigations.
+    CHECK(url.HasFragmentIdentifier());
+    CHECK(EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url));
   }
 
   // If the requesting document is cross-origin, perform the navigation

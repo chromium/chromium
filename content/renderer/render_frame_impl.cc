@@ -5224,19 +5224,15 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // If this is marked as a same document load but we haven't committed
     // anything, we can't proceed with the load. The browser shouldn't let this
     // happen.
-    if (GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
-      NOTREACHED();
-      return blink::mojom::CommitResult::RestartCrossDocument;
-    }
+    CHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
 
     // Additionally, if the current history item's document sequence number
     // doesn't match the one sent from the browser, it is possible that this
     // renderer has committed a different document. In such case, the navigation
-    // cannot be loaded as a same-document navigation.
-    if (GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber() !=
-        item_for_history_navigation->DocumentSequenceNumber()) {
-      return blink::mojom::CommitResult::RestartCrossDocument;
-    }
+    // cannot be loaded as a same-document navigation. The browser shouldn't let
+    // this happen.
+    CHECK_EQ(GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber(),
+             item_for_history_navigation->DocumentSequenceNumber());
   }
 
   // Note: we used to check that initial history navigation in the child frame
