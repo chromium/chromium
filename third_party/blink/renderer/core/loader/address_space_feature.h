@@ -66,7 +66,7 @@ base::Optional<mojom::blink::WebFeature> CORE_EXPORT AddressSpaceFeature(
     FetchType fetch_type,
     network::mojom::blink::IPAddressSpace client_address_space,
     bool client_is_secure_context,
-    network::mojom::blink::IPAddressSpace resource_address_space);
+    network::mojom::blink::IPAddressSpace response_address_space);
 
 // Increments the correct kAddressSpace* WebFeature UseCounter corresponding to
 // the given |client_frame| performing a fetch of type |fetch_type| and

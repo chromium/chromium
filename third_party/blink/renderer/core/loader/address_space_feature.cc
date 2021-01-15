@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/loader/address_space_feature.h"
 
+#include <tuple>
+
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -41,130 +43,104 @@ namespace blink {
 using AddressSpace = network::mojom::blink::IPAddressSpace;
 using Feature = mojom::blink::WebFeature;
 
-// Returns the kAddressSpaceLocal* WebFeature enum value corresponding to the
-// given client loading a resource from the local address space, if any.
-base::Optional<Feature> AddressSpaceLocalFeatureForSubresource(
-    AddressSpace client_address_space,
-    bool client_is_secure_context) {
-  switch (client_address_space) {
-    case AddressSpace::kUnknown:
-      return client_is_secure_context
-                 ? Feature::kAddressSpaceUnknownSecureContextEmbeddedLocal
-                 : Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal;
-    case AddressSpace::kPublic:
-      return client_is_secure_context
-                 ? Feature::kAddressSpacePublicSecureContextEmbeddedLocal
-                 : Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal;
-    case AddressSpace::kPrivate:
-      return client_is_secure_context
-                 ? Feature::kAddressSpacePrivateSecureContextEmbeddedLocal
-                 : Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal;
-    case AddressSpace::kLocal:
-      return base::nullopt;  // Local to local is fine, we do not track it.
-  }
+// A key in |kFeatureMap|.
+//
+// Mirrors the arguments to |AddressSpaceFeature()| except for |fetch_type|.
+struct FeatureKey {
+  AddressSpace client_address_space;
+  bool client_is_secure_context;
+  AddressSpace response_address_space;
+};
+
+// FeatureKey instances are comparable for equality.
+bool operator==(const FeatureKey& lhs, const FeatureKey& rhs) {
+  return std::tie(lhs.client_address_space, lhs.client_is_secure_context,
+                  lhs.response_address_space) ==
+         std::tie(rhs.client_address_space, rhs.client_is_secure_context,
+                  rhs.response_address_space);
 }
 
-// Returns the kAddressSpacePrivate* WebFeature enum value corresponding to the
-// given client loading a resource from the private address space, if any.
-base::Optional<Feature> AddressSpacePrivateFeatureForSubresource(
-    AddressSpace client_address_space,
-    bool client_is_secure_context) {
-  switch (client_address_space) {
-    case AddressSpace::kUnknown:
-      return client_is_secure_context
-                 ? Feature::kAddressSpaceUnknownSecureContextEmbeddedPrivate
-                 : Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate;
-    case AddressSpace::kPublic:
-      return client_is_secure_context
-                 ? Feature::kAddressSpacePublicSecureContextEmbeddedPrivate
-                 : Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate;
-    case AddressSpace::kPrivate:
-    case AddressSpace::kLocal:
-      // Private or local to local is fine, we do not track it.
-      return base::nullopt;
-  }
-}
+// An entry in |kFeatureMap|.
+//
+// A single key maps to features for all |fetch_type| values. We could instead
+// have two maps, one for subresources and one for navigations, but they would
+// have the exact same set of keys. Hence it is simpler to have a single map.
+struct FeatureEntry {
+  // The key to this entry.
+  FeatureKey key;
 
-base::Optional<Feature> AddressSpaceFeatureForSubresource(
-    AddressSpace client_address_space,
-    bool client_is_secure_context,
-    AddressSpace resource_address_space) {
-  switch (resource_address_space) {
-    case AddressSpace::kUnknown:
-    case AddressSpace::kPublic:
-      return base::nullopt;
-    case AddressSpace::kPrivate:
-      return AddressSpacePrivateFeatureForSubresource(client_address_space,
-                                                      client_is_secure_context);
-    case AddressSpace::kLocal:
-      return AddressSpaceLocalFeatureForSubresource(client_address_space,
-                                                    client_is_secure_context);
-  }
-}
+  // The corresponding feature for |kSubresource| fetch types.
+  Feature subresource_feature;
 
-// Returns the kAddressSpaceLocal* WebFeature enum value corresponding to the
-// given client loading a resource from the local address space, if any.
-base::Optional<Feature> AddressSpaceLocalFeatureForNavigation(
-    AddressSpace client_address_space,
-    bool is_secure_context) {
-  switch (client_address_space) {
-    case AddressSpace::kUnknown:
-      return is_secure_context
-                 ? Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal
-                 : Feature::
-                       kAddressSpaceUnknownNonSecureContextNavigatedToLocal;
-    case AddressSpace::kPublic:
-      return is_secure_context
-                 ? Feature::kAddressSpacePublicSecureContextNavigatedToLocal
-                 : Feature::kAddressSpacePublicNonSecureContextNavigatedToLocal;
-    case AddressSpace::kPrivate:
-      return is_secure_context
-                 ? Feature::kAddressSpacePrivateSecureContextNavigatedToLocal
-                 : Feature::
-                       kAddressSpacePrivateNonSecureContextNavigatedToLocal;
-    case AddressSpace::kLocal:
-      return base::nullopt;  // Local to local is fine, we do not track it.
-  }
-}
+  // The corresponding feature for |kNavigation| fetch types.
+  Feature navigation_feature;
+};
 
-// Returns the kAddressSpacePrivate* WebFeature enum value corresponding to the
-// given client loading a resource from the private address space, if any.
-base::Optional<Feature> AddressSpacePrivateFeatureForNavigation(
-    AddressSpace client_address_space,
-    bool is_secure_context) {
-  switch (client_address_space) {
-    case AddressSpace::kUnknown:
-      return is_secure_context
-                 ? Feature::kAddressSpaceUnknownSecureContextNavigatedToPrivate
-                 : Feature::
-                       kAddressSpaceUnknownNonSecureContextNavigatedToPrivate;
-    case AddressSpace::kPublic:
-      return is_secure_context
-                 ? Feature::kAddressSpacePublicSecureContextNavigatedToPrivate
-                 : Feature::
-                       kAddressSpacePublicNonSecureContextNavigatedToPrivate;
-    case AddressSpace::kPrivate:
-    case AddressSpace::kLocal:
-      // Private or local to local is fine, we do not track it.
-      return base::nullopt;
-  }
-}
+constexpr bool kNonSecureContext = false;
+constexpr bool kSecureContext = true;
 
-base::Optional<Feature> AddressSpaceFeatureForNavigation(
-    AddressSpace client_address_space,
-    bool is_secure_context,
-    AddressSpace response_address_space) {
-  switch (response_address_space) {
-    case AddressSpace::kUnknown:
-    case AddressSpace::kPublic:
-      return base::nullopt;
-    case AddressSpace::kPrivate:
-      return AddressSpacePrivateFeatureForNavigation(client_address_space,
-                                                     is_secure_context);
-    case AddressSpace::kLocal:
-      return AddressSpaceLocalFeatureForNavigation(client_address_space,
-                                                   is_secure_context);
+constexpr struct FeatureEntry kFeatureMap[]{
+    {
+        {AddressSpace::kPrivate, kNonSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
+        Feature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kPrivate, kSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpacePrivateSecureContextEmbeddedLocal,
+        Feature::kAddressSpacePrivateSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
+        Feature::kAddressSpacePublicNonSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kPublic, kSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpacePublicSecureContextEmbeddedLocal,
+        Feature::kAddressSpacePublicSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
+        Feature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
+    },
+    {
+        {AddressSpace::kPublic, kSecureContext, AddressSpace::kPrivate},
+        Feature::kAddressSpacePublicSecureContextEmbeddedPrivate,
+        Feature::kAddressSpacePublicSecureContextNavigatedToPrivate,
+    },
+    {
+        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
+        Feature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kLocal},
+        Feature::kAddressSpaceUnknownSecureContextEmbeddedLocal,
+        Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
+    },
+    {
+        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
+        Feature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
+    },
+    {
+        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kPrivate},
+        Feature::kAddressSpaceUnknownSecureContextEmbeddedPrivate,
+        Feature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
+    },
+};
+
+// Attempts to find an entry matching |key| in |kFeatureMap|.
+// Returns a pointer to the entry if successful, nullptr otherwise.
+const FeatureEntry* FindFeatureEntry(const FeatureKey& key) {
+  for (const FeatureEntry& entry : kFeatureMap) {
+    if (key == entry.key) {
+      return &entry;
+    }
   }
+  return nullptr;
 }
 
 base::Optional<Feature> AddressSpaceFeature(
@@ -172,15 +148,21 @@ base::Optional<Feature> AddressSpaceFeature(
     AddressSpace client_address_space,
     bool client_is_secure_context,
     AddressSpace response_address_space) {
+  FeatureKey key;
+  key.client_address_space = client_address_space;
+  key.client_is_secure_context = client_is_secure_context;
+  key.response_address_space = response_address_space;
+
+  const FeatureEntry* entry = FindFeatureEntry(key);
+  if (!entry) {
+    return base::nullopt;
+  }
+
   switch (fetch_type) {
     case FetchType::kSubresource:
-      return AddressSpaceFeatureForSubresource(client_address_space,
-                                               client_is_secure_context,
-                                               response_address_space);
+      return entry->subresource_feature;
     case FetchType::kNavigation:
-      return AddressSpaceFeatureForNavigation(client_address_space,
-                                              client_is_secure_context,
-                                              response_address_space);
+      return entry->navigation_feature;
   }
 }
 
