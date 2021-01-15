@@ -30,6 +30,10 @@
 namespace chromecast {
 namespace shell {
 
+namespace {
+constexpr char kCookieStoreFile[] = "Cookies";
+}  // namespace
+
 // SharedURLLoaderFactory backed by a CastNetworkContexts and its system
 // NetworkContext. Transparently handles crashes.
 class CastNetworkContexts::URLLoaderFactoryForSystem
@@ -192,6 +196,13 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
   network_context_params->user_agent = GetUserAgent();
   network_context_params->accept_language =
       CastHttpUserAgentSettings::AcceptLanguage();
+
+  auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
+  DCHECK(browser_context);
+  network_context_params->cookie_path =
+      browser_context->GetPath().Append(kCookieStoreFile);
+  network_context_params->restore_old_session_cookies = false;
+  network_context_params->persist_session_cookies = true;
 
   // Disable idle sockets close on memory pressure, if instructed by DCS. On
   // memory constrained devices:
