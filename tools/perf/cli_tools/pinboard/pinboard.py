@@ -40,6 +40,7 @@ MEASUREMENTS = set([
     'Optimize-Background:duration',
     'Optimize:duration',
     'RunsPerMinute',
+    'Score',
     'Total-Main-Thread:duration',
     'Total:duration',
     'V8-Only-Main-Thread:duration',
@@ -104,6 +105,9 @@ ACTIVE_STORIES = set([
 
     # Speedometer2.
     'Speedometer2',
+
+    # JetStream2.
+    'JetStream2',
 ])
 
 
