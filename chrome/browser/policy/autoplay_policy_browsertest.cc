@@ -224,7 +224,9 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedAllowedWithURL) {
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
-IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedGlobalAndURL) {
+// TODO(crbug.com/1167239): Flaky test.
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
+                       DISABLED_AutoplayAllowedGlobalAndURL) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
