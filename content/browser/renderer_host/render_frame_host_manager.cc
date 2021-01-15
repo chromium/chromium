@@ -678,9 +678,10 @@ bool RenderFrameHostManager::HasPendingCommitForCrossDocumentNavigation()
     const {
   if (render_frame_host_->HasPendingCommitForCrossDocumentNavigation())
     return true;
-  // All speculative RenderFrameHosts load a fresh document.
-  if (speculative_render_frame_host_)
-    return speculative_render_frame_host_->HasPendingCommitNavigation();
+  if (speculative_render_frame_host_) {
+    return speculative_render_frame_host_
+               ->HasPendingCommitForCrossDocumentNavigation();
+  }
   return false;
 }
 
