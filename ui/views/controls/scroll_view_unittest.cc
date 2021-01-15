@@ -25,7 +25,6 @@
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/controls/scrollbar/scroll_bar_views.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -77,16 +76,10 @@ class ScrollViewTestApi {
   View* corner_view() { return scroll_view_->corner_view_.get(); }
   View* contents_viewport() { return scroll_view_->contents_viewport_; }
 
-  Separator* more_content_left() {
-    return scroll_view_->more_content_left_.get();
-  }
-  Separator* more_content_top() {
-    return scroll_view_->more_content_top_.get();
-  }
-  Separator* more_content_right() {
-    return scroll_view_->more_content_right_.get();
-  }
-  Separator* more_content_bottom() {
+  View* more_content_left() { return scroll_view_->more_content_left_.get(); }
+  View* more_content_top() { return scroll_view_->more_content_top_.get(); }
+  View* more_content_right() { return scroll_view_->more_content_right_.get(); }
+  View* more_content_bottom() {
     return scroll_view_->more_content_bottom_.get();
   }
 
@@ -1738,6 +1731,73 @@ TEST_F(ScrollViewTest, VerticalWithHeaderOverflowIndicators) {
   // As above, no other overflow indicators should be visible.
   EXPECT_FALSE(test_api.more_content_left()->GetVisible());
   EXPECT_FALSE(test_api.more_content_right()->GetVisible());
+}
+
+TEST_F(ScrollViewTest, CustomOverflowIndicator) {
+  const int kWidth = 100;
+  const int kHeight = 100;
+
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with both horizontal and vertical scrolling.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth * 5, kHeight * 5));
+  scroll_view_->SetContents(std::move(contents));
+
+  // Hide both scrollbars so they don't interfere with indicator visibility.
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+
+  // Make sure the size is set so the ScrollView is smaller than its contents
+  // in both directions.
+  scroll_view_->SetSize(gfx::Size(kWidth, kHeight));
+
+  // The horizontal and vertical scroll bars should not be visible.
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, false);
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, false);
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::ScrollOffset(0, 0), test_api.CurrentOffset());
+
+  // Now scroll the view to someplace in the middle of the scrollable region.
+  int offset_x = kWidth * 2;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(HORIZONTAL), offset_x);
+  int offset_y = kHeight * 2;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset_y);
+  EXPECT_EQ(gfx::ScrollOffset(offset_x, offset_y), test_api.CurrentOffset());
+
+  // All overflow indicators should be visible.
+  ASSERT_TRUE(test_api.more_content_right()->GetVisible());
+  ASSERT_TRUE(test_api.more_content_bottom()->GetVisible());
+  ASSERT_TRUE(test_api.more_content_left()->GetVisible());
+  ASSERT_TRUE(test_api.more_content_top()->GetVisible());
+
+  // This should be similar to the default separator.
+  View* left_indicator = scroll_view_->SetCustomOverflowIndicator(
+      OverflowIndicatorAlignment::kLeft, std::make_unique<View>(), 1, true);
+  EXPECT_EQ(gfx::Rect(0, 0, 1, 100), left_indicator->bounds());
+  if (left_indicator->layer())
+    EXPECT_TRUE(left_indicator->layer()->fills_bounds_opaquely());
+
+  // A larger, but still reasonable, indicator that is not opaque.
+  View* top_indicator = scroll_view_->SetCustomOverflowIndicator(
+      OverflowIndicatorAlignment::kTop, std::make_unique<View>(), 20, false);
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 20), top_indicator->bounds());
+  if (top_indicator->layer())
+    EXPECT_FALSE(top_indicator->layer()->fills_bounds_opaquely());
+
+  // Negative thickness doesn't make sense. It should be treated like zero.
+  View* right_indicator = scroll_view_->SetCustomOverflowIndicator(
+      OverflowIndicatorAlignment::kRight, std::make_unique<View>(), -1, true);
+  EXPECT_EQ(gfx::Rect(100, 0, 0, 100), right_indicator->bounds());
+
+  // Thicker than the scrollview is strange, but works as you'd expect.
+  View* bottom_indicator = scroll_view_->SetCustomOverflowIndicator(
+      OverflowIndicatorAlignment::kBottom, std::make_unique<View>(), 1000,
+      true);
+  EXPECT_EQ(gfx::Rect(0, -900, 100, 1000), bottom_indicator->bounds());
 }
 
 // Ensure ScrollView::Layout succeeds if a disabled scrollbar's overlap style

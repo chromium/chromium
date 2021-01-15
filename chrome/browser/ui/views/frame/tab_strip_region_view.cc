@@ -58,6 +58,63 @@ class FrameGrabHandle : public views::View {
   }
 };
 
+// A customized overflow indicator that fades the tabs into the frame
+// background.
+class TabStripContainerOverflowIndicator : public views::View {
+ public:
+  TabStripContainerOverflowIndicator(TabStrip* tab_strip,
+                                     views::OverflowIndicatorAlignment side)
+      : tab_strip_(tab_strip), side_(side) {
+    DCHECK(side_ == views::OverflowIndicatorAlignment::kLeft ||
+           side_ == views::OverflowIndicatorAlignment::kRight);
+  }
+
+  // Making this smaller than the margin provided by the leftmost/rightmost
+  // tab's tail (TabStyle::kTabOverlap / 2) makes the transition in and out of
+  // the scroll state smoother.
+  static constexpr int kOpaqueWidth = 5;
+  static constexpr int kFadeWidth = 15;
+  static constexpr int kTotalWidth = kOpaqueWidth + kFadeWidth;
+
+  // views::View overrides:
+  void OnPaint(gfx::Canvas* canvas) override {
+    // TODO(tbergquist): Handle themes with titlebar background images.
+    SkColor frame_color = tab_strip_->controller()->GetFrameColor(
+        BrowserFrameActiveState::kUseCurrent);
+
+    SkPoint points[2];
+    points[0].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
+    points[1].iset(GetContentsBounds().right(), GetContentsBounds().y());
+
+    SkColor colors[3];
+    SkScalar color_positions[3];
+    if (side_ == views::OverflowIndicatorAlignment::kLeft) {
+      colors[0] = frame_color;
+      colors[1] = frame_color;
+      colors[2] = SkColorSetA(frame_color, SK_AlphaTRANSPARENT);
+      color_positions[0] = 0;
+      color_positions[1] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
+      color_positions[2] = 1;
+    } else {
+      colors[0] = SkColorSetA(frame_color, SK_AlphaTRANSPARENT);
+      colors[1] = frame_color;
+      colors[2] = frame_color;
+      color_positions[0] = 0;
+      color_positions[1] = static_cast<float>(kFadeWidth) / kTotalWidth;
+      color_positions[2] = 1;
+    }
+
+    cc::PaintFlags flags;
+    flags.setShader(cc::PaintShader::MakeLinearGradient(
+        points, colors, color_positions, 3, SkTileMode::kClamp));
+    canvas->DrawRect(GetContentsBounds(), flags);
+  }
+
+ private:
+  TabStrip* tab_strip_;
+  views::OverflowIndicatorAlignment side_;
+};
+
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
@@ -82,7 +139,19 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetTreatAllScrollEventsAsHorizontal(true);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
+
     tab_strip_scroll_container->SetDrawOverflowIndicator(true);
+    tab_strip_scroll_container->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kLeft,
+        std::make_unique<TabStripContainerOverflowIndicator>(
+            tab_strip_, views::OverflowIndicatorAlignment::kLeft),
+        TabStripContainerOverflowIndicator::kTotalWidth, false);
+    tab_strip_scroll_container->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kRight,
+        std::make_unique<TabStripContainerOverflowIndicator>(
+            tab_strip_, views::OverflowIndicatorAlignment::kRight),
+        TabStripContainerOverflowIndicator::kTotalWidth, false);
+
     // This base::Unretained is safe because the callback is called by the
     // layout manager, which is cleaned up before view children like
     // |tab_strip_scroll_container| (which owns |tab_strip_|).

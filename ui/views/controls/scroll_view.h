@@ -27,7 +27,7 @@ namespace test {
 class ScrollViewTestApi;
 }
 
-class Separator;
+enum class OverflowIndicatorAlignment { kLeft, kTop, kRight, kBottom };
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -139,6 +139,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   bool GetDrawOverflowIndicator() const { return draw_overflow_indicator_; }
   void SetDrawOverflowIndicator(bool draw_overflow_indicator);
+
+  View* SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
+                                   std::unique_ptr<View> indicator,
+                                   int thickness,
+                                   bool fills_opaquely);
 
   // Turns this scroll view into a bounded scroll view, with a fixed height.
   // By default, a ScrollView will stretch to fill its outer container.
@@ -282,12 +287,16 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   std::unique_ptr<View> corner_view_;
 
   // Hidden content indicators
-  std::unique_ptr<Separator> more_content_left_ = std::make_unique<Separator>();
-  std::unique_ptr<Separator> more_content_top_ = std::make_unique<Separator>();
-  std::unique_ptr<Separator> more_content_right_ =
-      std::make_unique<Separator>();
-  std::unique_ptr<Separator> more_content_bottom_ =
-      std::make_unique<Separator>();
+  // TODO(https://crbug.com/1166949): Use preferred width/height instead of
+  // thickness members.
+  std::unique_ptr<View> more_content_left_ = std::make_unique<Separator>();
+  int more_content_left_thickness_ = Separator::kThickness;
+  std::unique_ptr<View> more_content_top_ = std::make_unique<Separator>();
+  int more_content_top_thickness_ = Separator::kThickness;
+  std::unique_ptr<View> more_content_right_ = std::make_unique<Separator>();
+  int more_content_right_thickness_ = Separator::kThickness;
+  std::unique_ptr<View> more_content_bottom_ = std::make_unique<Separator>();
+  int more_content_bottom_thickness_ = Separator::kThickness;
 
   // The min and max height for the bounded scroll view. These are negative
   // values if the view is not bounded.
