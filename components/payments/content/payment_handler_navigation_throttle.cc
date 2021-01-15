@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/payment_handler_navigation_throttle.h"
+#include "components/payments/content/payment_handler_navigation_throttle.h"
 
 #include <cstddef>
 #include <string>
@@ -25,6 +25,15 @@ PaymentHandlerNavigationThrottle::~PaymentHandlerNavigationThrottle() = default;
 
 const char* PaymentHandlerNavigationThrottle::GetNameForLogging() {
   return "PaymentHandlerNavigationThrottle";
+}
+
+// static
+void PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents)
+    return;
+  web_contents->SetUserData(kPaymentHandlerWebContentsUserDataKey,
+                            std::make_unique<base::SupportsUserData::Data>());
 }
 
 // static

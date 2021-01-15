@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAYMENTS_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_PAYMENTS_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
 
 #include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 class NavigationHandle;
@@ -26,6 +27,10 @@ class PaymentHandlerNavigationThrottle : public content::NavigationThrottle {
   PaymentHandlerNavigationThrottle& operator=(
       const PaymentHandlerNavigationThrottle&) = delete;
 
+  // Marks the given WebContents as a PaymentHandler WebContents. Ignores null
+  // web_contents.
+  static void MarkPaymentHandlerWebContents(content::WebContents* web_contents);
+
   static std::unique_ptr<PaymentHandlerNavigationThrottle>
   MaybeCreateThrottleFor(content::NavigationHandle* handle);
 
@@ -35,4 +40,4 @@ class PaymentHandlerNavigationThrottle : public content::NavigationThrottle {
 };
 }  // namespace payments
 
-#endif  // CHROME_BROWSER_PAYMENTS_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_

@@ -90,17 +90,13 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#if !defined(OS_ANDROID)
-#include "chrome/browser/payments/payment_handler_navigation_throttle.h"
-#endif
 #include "chrome/browser/performance_manager/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/chrome_content_browser_client_performance_manager_part.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/plugins/plugin_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
@@ -246,6 +242,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_context_base.h"
@@ -281,6 +278,7 @@
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -4192,12 +4190,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         &throttles);
   }
 
-#if !defined(OS_ANDROID)
   MaybeAddThrottle(
       payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
           handle),
       &throttles);
-#endif
 
   return throttles;
 }
