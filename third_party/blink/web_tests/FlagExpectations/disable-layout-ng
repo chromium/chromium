@@ -670,7 +670,6 @@ crbug.com/1035582 paint/invalidation/clip/caret-ancestor-clip-change.html [ Fail
 crbug.com/1035582 paint/invalidation/invalidate-caret-before-text-node-update.html [ Failure ]
 crbug.com/1035582 paint/invalidation/outline/focus-continuations.html [ Failure ]
 crbug.com/1035582 paint/invalidation/outline/focus-enable-continuations.html [ Failure ]
-crbug.com/1035582 paint/invalidation/outline/focus-ring-on-child-move.html [ Failure ]
 crbug.com/1035582 paint/invalidation/outline/focus-ring-on-continuation-move.html [ Failure ]
 crbug.com/1035582 paint/invalidation/outline/focus-ring-on-inline-continuation-move.html [ Failure ]
 crbug.com/1035582 paint/invalidation/outline/outline-become-affected-by-descendant.html [ Failure ]
