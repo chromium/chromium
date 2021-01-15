@@ -2211,6 +2211,9 @@ extern const char kCdmFactoryDaemonDescription[];
 extern const char kCellularUseAttachApnName[];
 extern const char kCellularUseAttachApnDescription[];
 
+extern const char kCellularUseExternalEuiccName[];
+extern const char kCellularUseExternalEuiccDescription[];
+
 extern const char kConnectivityDiagnosticsWebUiName[];
 extern const char kConnectivityDiagnosticsWebUiDescription[];
 

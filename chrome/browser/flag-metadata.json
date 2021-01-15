@@ -488,6 +488,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "cellular-use-external-euicc",
+    "owners": [ "azeemarshad", "khorimoto", "cros-connectivity@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "change-password-affiliation",
     "owners": [ "vsemeniuk", "vasilii"],
     "expiry_milestone": 90

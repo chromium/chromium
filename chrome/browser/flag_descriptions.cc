@@ -3829,6 +3829,11 @@ const char kCellularUseAttachApnDescription[] =
     "for the LTE connections rather than letting the modem decide which "
     "attach APN to use or retrieve it from the network";
 
+const char kCellularUseExternalEuiccName[] = "Use external Euicc";
+const char kCellularUseExternalEuiccDescription[] =
+    "When enabled Cellular Setup and Settings UI will use the first available "
+    "external Euicc.";
+
 const char kConnectivityDiagnosticsWebUiName[] =
     "Connectivity Diagnostics WebUI";
 const char kConnectivityDiagnosticsWebUiDescription[] =

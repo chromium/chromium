@@ -46387,6 +46387,7 @@ from previous Chrome versions.
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
+  <int value="1611838284" label="CellularUseExternalEuicc:enabled"/>
   <int value="1612206633" label="CCTModuleCustomHeader:enabled"/>
   <int value="1612446645" label="enable-weak-memorycache"/>
   <int value="1612871297" label="WebPayments:disabled"/>
@@ -46580,6 +46581,7 @@ from previous Chrome versions.
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:enabled"/>
   <int value="1795186324" label="SyncPseudoUSSExtensionSettings:disabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
+  <int value="1797872070" label="CellularUseExternalEuicc:disabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>

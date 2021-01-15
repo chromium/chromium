@@ -177,6 +177,10 @@ const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, use external euicc in Cellular Setup and Settings.
+const base::Feature kCellularUseExternalEuicc{
+    "CellularUseExternalEuicc", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables entry point for child account sign in or creation.
 const base::Feature kChildSpecificSignin{"ChildSpecificSignin",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
