@@ -260,6 +260,30 @@ void DesksBarViewLayoutTestHelper(const DesksBarView* desks_bar_view,
   }
 }
 
+// Simulate pressing on a desk preview.
+void LongTapOnDeskPreview(const DeskMiniView* desk_mini_view,
+                          ui::test::EventGenerator* event_generator) {
+  DCHECK(desk_mini_view);
+
+  gfx::Point desk_preview_center =
+      desk_mini_view->GetPreviewBoundsInScreen().CenterPoint();
+
+  LongGestureTap(desk_preview_center, event_generator, /*release_touch=*/false);
+}
+
+// Simulate drag on a desk preview.
+void StartDragDeskPreview(const DeskMiniView* desk_mini_view,
+                          ui::test::EventGenerator* event_generator) {
+  DCHECK(desk_mini_view);
+
+  gfx::Point desk_preview_center =
+      desk_mini_view->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->set_current_screen_location(desk_preview_center);
+
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(0, 50);
+}
+
 // Defines an observer to test DesksController notifications.
 class TestObserver : public DesksController::Observer {
  public:
@@ -4205,6 +4229,149 @@ TEST_F(DesksBentoTest, NewDeskButton) {
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
   EXPECT_TRUE(controller->CanCreateDesks());
   EXPECT_TRUE(new_desk_button->GetEnabled());
+}
+
+TEST_F(DesksBentoTest, ReorderDesksByMouse) {
+  auto* desks_controller = DesksController::Get();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(root_window)->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Add two desks (Now we have three desks).
+  NewDesk();
+  NewDesk();
+
+  // Cache the mini view and corresponding desks.
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
+  DeskMiniView* mini_view_0 = mini_views[0];
+  Desk* desk_0 = mini_view_0->desk();
+  DeskMiniView* mini_view_1 = mini_views[1];
+  Desk* desk_1 = mini_view_1->desk();
+  DeskMiniView* mini_view_2 = mini_views[2];
+  Desk* desk_2 = mini_view_2->desk();
+
+  // Dragging the desk preview will trigger drag & drop.
+  StartDragDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  event_generator->ReleaseLeftButton();
+
+  // Reorder the second desk
+  StartDragDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  // Swap the positions of the second desk and the third desk.
+  gfx::Point desk_center_2 =
+      mini_view_2->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(desk_center_2);
+
+  // Now, the desks order should be [0, 2, 1]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+
+  // Swap the positions of the second desk and the first desk.
+  gfx::Point desk_center_0 =
+      mini_view_0->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(desk_center_0);
+
+  // Now, the desks order should be [1, 0, 2]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+
+  // If the cursor is outside the desk bar, the second desk will be moved to the
+  // end.
+  gfx::Point desk_bar_bottom_center = desks_bar_view->bounds().bottom_center();
+  views::View::ConvertPointToScreen(desks_bar_view->parent(),
+                                    &desk_bar_bottom_center);
+  event_generator->MoveMouseTo(desk_bar_bottom_center + gfx::Vector2d(0, 10));
+
+  // Now, the desks order should be [0, 2, 1]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+
+  event_generator->ReleaseLeftButton();
+}
+
+TEST_F(DesksBentoTest, ReorderDesksByGesture) {
+  auto* desks_controller = DesksController::Get();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(root_window)->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Add two desks (Now we have three desks).
+  NewDesk();
+  NewDesk();
+
+  // Cache the mini view and corresponding desks.
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
+  DeskMiniView* mini_view_0 = mini_views[0];
+  Desk* desk_0 = mini_view_0->desk();
+  DeskMiniView* mini_view_1 = mini_views[1];
+  Desk* desk_1 = mini_view_1->desk();
+  DeskMiniView* mini_view_2 = mini_views[2];
+  Desk* desk_2 = mini_view_2->desk();
+
+  // If long press on the second desk preview, drag & drop will be triggered.
+  // Perform by gesture:
+  LongTapOnDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  event_generator->ReleaseTouch();
+
+  // Reorder the second desk
+  LongTapOnDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  // Swap the positions of the second desk and the third desk.
+  gfx::Point desk_center_2 =
+      mini_view_2->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveTouch(desk_center_2);
+
+  // Now, the desks order should be [0, 2, 1]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+
+  // Swap the positions of the second desk and the first desk.
+  gfx::Point desk_center_0 =
+      mini_view_0->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveTouch(desk_center_0);
+
+  // Now, the desks order should be [1, 0, 2]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+
+  // If the touch point is outside the desk bar, the second desk will be moved
+  // to the end.
+  gfx::Point desk_bar_bottom_center = desks_bar_view->bounds().bottom_center();
+  views::View::ConvertPointToScreen(desks_bar_view->parent(),
+                                    &desk_bar_bottom_center);
+  event_generator->MoveTouch(desk_bar_bottom_center + gfx::Vector2d(0, 10));
+
+  // Now, the desks order should be [0, 2, 1]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+
+  event_generator->ReleaseTouch();
 }
 
 // TODO(afakhry): Add more tests:
