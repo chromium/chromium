@@ -642,6 +642,24 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertTrue(isVoiceSearchEnabled());
     }
 
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testIsVoiceSearchEnabled_UpdateAfterProfileLoads() {
+        setAudioCapturePref(true);
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setHasPermission(true);
+        Assert.assertFalse(mDelegate.updatedMicButtonState());
+        Assert.assertTrue(isVoiceSearchEnabled());
+
+        setAudioCapturePref(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mHandler.onProfileAdded(Profile.getLastUsedRegularProfile()); });
+        Assert.assertFalse(isVoiceSearchEnabled());
+        Assert.assertTrue(mDelegate.updatedMicButtonState());
+    }
+
     /** Calls isVoiceSearchEnabled(), ensuring it is run on the UI thread. */
     private boolean isVoiceSearchEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(

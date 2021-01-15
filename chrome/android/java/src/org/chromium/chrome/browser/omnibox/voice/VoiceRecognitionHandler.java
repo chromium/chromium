@@ -52,7 +52,7 @@ import java.util.List;
 /**
  * Class containing functionality related to voice search.
  */
-public class VoiceRecognitionHandler {
+public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private static final String TAG = "VoiceRecognition";
 
     // The minimum confidence threshold that will result in navigating directly to a voice search
@@ -207,7 +207,20 @@ public class VoiceRecognitionHandler {
             Supplier<AssistantVoiceSearchService> assistantVoiceSearchServiceSupplier) {
         mDelegate = delegate;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchServiceSupplier;
+        ProfileManager.addObserver(this);
     }
+
+    /**
+     * After profile is created and prefs loaded ensure that UI is updated and the mic shown/hidden
+     * as needed.
+     */
+    @Override
+    public void onProfileAdded(Profile profile) {
+        mDelegate.updateMicButtonState();
+    }
+
+    @Override
+    public void onProfileDestroyed(Profile profile) {}
 
     /**
      * Instantiated when a voice search is performed to monitor the web contents for a navigation
@@ -863,5 +876,10 @@ public class VoiceRecognitionHandler {
     /** Sets the start time for testing. */
     void setQueryStartTimeForTesting(Long queryStartTimeMs) {
         mQueryStartTimeMs = queryStartTimeMs;
+    }
+
+    /** Clean up. Creators must call this when the object is no longer needed. */
+    public void destroy() {
+        ProfileManager.removeObserver(this);
     }
 }

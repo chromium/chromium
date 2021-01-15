@@ -128,6 +128,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
         mPrivacyPreferencesManager = null;
+        mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();

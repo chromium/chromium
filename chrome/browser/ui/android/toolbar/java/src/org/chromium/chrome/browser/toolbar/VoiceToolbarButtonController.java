@@ -16,6 +16,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -30,7 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * assistant support.
  */
 public class VoiceToolbarButtonController
-        implements ButtonDataProvider, ConfigurationChangedObserver {
+        implements ButtonDataProvider, ConfigurationChangedObserver, ProfileManager.Observer {
     /**
      * Default minimum width to show the voice search button.
      */
@@ -64,6 +66,18 @@ public class VoiceToolbarButtonController
          */
         void startVoiceRecognition();
     }
+
+    /**
+     * After profile is created and prefs loaded ensure that UI is updated and
+     * the mic shown/hidden as needed.
+     */
+    @Override
+    public void onProfileAdded(Profile profile) {
+        updateMicButtonState();
+    }
+
+    @Override
+    public void onProfileDestroyed(Profile profile) {}
 
     /**
      * Creates a VoiceToolbarButtonController object.
@@ -112,6 +126,8 @@ public class VoiceToolbarButtonController
                 /*supportsTinting=*/true, /*iphCommandBuilder=*/null, /*isEnabled=*/true);
 
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
+
+        ProfileManager.addObserver(this);
     }
 
     @Override
@@ -124,11 +140,18 @@ public class VoiceToolbarButtonController
         notifyObservers(mButtonData.canShow);
     }
 
+    /** Triggers checking and possibly updating the mic visibility */
+    public void updateMicButtonState() {
+        mButtonData.canShow = shouldShowVoiceButton(mActiveTabSupplier.get());
+        notifyObservers(mButtonData.canShow);
+    }
+
     @Override
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(this);
         mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         mObservers.clear();
+        ProfileManager.removeObserver(this);
     }
 
     @Override
