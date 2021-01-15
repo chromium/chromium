@@ -85,6 +85,7 @@ class PaymentRequestPlatformBrowserTestBase
   void OnAppListReady() override;
   void OnCompleteCalled() override;
   void OnMinimalUIReady() override;
+  void OnUIDisplayed() override;
 
   // Resets the event waiter for a given |event| or |event_sequence|.
   void ResetEventWaiterForSingleEvent(TestEvent event);

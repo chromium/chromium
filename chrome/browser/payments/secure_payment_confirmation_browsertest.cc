@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
               std::move(credential_id), "relying-party.example",
               base::ASCIIToUTF16("Stub label"), std::move(icon)),
           /*consumer=*/this);
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
 
   // ExecJs starts executing JavaScript and immediately returns, not waiting for
   // any promise to return.
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   // Cross the origin boundary.
   NavigateTo("b.com", "/secure_payment_confirmation.html");
   test_controller()->SetHasAuthenticator(true);
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
 
   // ExecJs starts executing JavaScript and immediately returns, not waiting for
   // any promise to return.

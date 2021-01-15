@@ -40,6 +40,9 @@ std::ostream& operator<<(std::ostream& out, TestEvent event) {
     case TestEvent::kMinimalUIReady:
       out << "MinimalUIReady";
       break;
+    case TestEvent::kUIDisplayed:
+      out << "UIDisplayed";
+      break;
   }
   return out;
 }

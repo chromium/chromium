@@ -15,6 +15,7 @@
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
+#include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -56,7 +57,8 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
                                    bool valid_ssl,
                                    PrefService* prefs,
                                    const std::string& twa_package_name,
-                                   bool has_authenticator)
+                                   bool has_authenticator,
+                                   PaymentUIObserver* ui_observer_for_test)
       : ChromePaymentRequestDelegate(render_frame_host),
         frame_routing_id_(content::GlobalFrameRoutingId(
             render_frame_host->GetProcess()->GetID(),
@@ -65,7 +67,8 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
         valid_ssl_(valid_ssl),
         prefs_(prefs),
         twa_package_name_(twa_package_name),
-        has_authenticator_(has_authenticator) {}
+        has_authenticator_(has_authenticator),
+        ui_observer_for_test_(ui_observer_for_test) {}
 
   bool IsOffTheRecord() const override { return is_off_the_record_; }
   std::string GetInvalidSslCertificateErrorMessage() override {
@@ -81,6 +84,9 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
                                                      has_authenticator_)
                : nullptr;
   }
+  const PaymentUIObserver* GetPaymentUIObserver() const override {
+    return ui_observer_for_test_;
+  }
 
  private:
   content::GlobalFrameRoutingId frame_routing_id_;
@@ -89,16 +95,19 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   PrefService* const prefs_;
   const std::string twa_package_name_;
   const bool has_authenticator_;
+  const PaymentUIObserver* const ui_observer_for_test_;
 };
 
 }  // namespace
 
 class PaymentRequestTestController::ObserverConverter
-    : public PaymentRequest::ObserverForTest {
+    : public PaymentRequest::ObserverForTest,
+      public PaymentUIObserver {
  public:
   explicit ObserverConverter(PaymentRequestTestController* controller)
       : controller_(controller) {}
 
+  // PaymentRequest::ObserverForTest:
   void OnCanMakePaymentCalled() override {
     controller_->OnCanMakePaymentCalled();
   }
@@ -134,6 +143,9 @@ class PaymentRequestTestController::ObserverConverter
   }
   void OnAbortCalled() override { controller_->OnAbortCalled(); }
   void OnCompleteCalled() override { controller_->OnCompleteCalled(); }
+
+  // PaymentUIObserver:
+  void OnUIDisplayed() const override { controller_->OnUIDisplayed(); }
 
  private:
   PaymentRequestTestController* const controller_;
@@ -240,8 +252,8 @@ void PaymentRequestTestController::SetTwaPaymentApp(
 
 void PaymentRequestTestController::UpdateDelegateFactory() {
   SetPaymentRequestFactoryForTesting(base::BindRepeating(
-      [](PaymentRequest::ObserverForTest* observer_for_test,
-         bool is_off_the_record, bool valid_ssl, PrefService* prefs,
+      [](ObserverConverter* observer_for_test, bool is_off_the_record,
+         bool valid_ssl, PrefService* prefs,
          const std::string& twa_package_name, bool has_authenticator,
          const std::string& twa_payment_app_method_name,
          const std::string& twa_payment_app_response,
@@ -252,7 +264,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
         DCHECK(render_frame_host->IsCurrent());
         auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
             render_frame_host, is_off_the_record, valid_ssl, prefs,
-            twa_package_name, has_authenticator);
+            twa_package_name, has_authenticator, observer_for_test);
         *delegate_weakptr = delegate->GetContentWeakPtr();
         PaymentRequestWebContentsManager* manager =
             PaymentRequestWebContentsManager::GetOrCreateForWebContents(
@@ -304,6 +316,12 @@ void PaymentRequestTestController::OnCompleteCalled() {
 
 void PaymentRequestTestController::OnMinimalUIReady() {
   NOTREACHED();
+}
+
+void PaymentRequestTestController::OnUIDisplayed() {
+  if (observer_) {
+    observer_->OnUIDisplayed();
+  }
 }
 
 void PaymentRequestTestController::OnNotSupportedError() {

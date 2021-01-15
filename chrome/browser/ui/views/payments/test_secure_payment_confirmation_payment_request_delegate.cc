@@ -20,8 +20,10 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())),
       model_(model),
-      dialog_view_(
-          (new SecurePaymentConfirmationDialogView(observer))->GetWeakPtr()) {}
+      dialog_view_((new SecurePaymentConfirmationDialogView(
+                        observer,
+                        /*ui_observer_for_test=*/nullptr))
+                       ->GetWeakPtr()) {}
 
 TestSecurePaymentConfirmationPaymentRequestDelegate::
     ~TestSecurePaymentConfirmationPaymentRequestDelegate() = default;

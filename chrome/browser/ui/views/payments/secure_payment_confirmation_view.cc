@@ -10,9 +10,10 @@ namespace payments {
 
 // static
 base::WeakPtr<SecurePaymentConfirmationView>
-SecurePaymentConfirmationView::Create() {
+SecurePaymentConfirmationView::Create(
+    const PaymentUIObserver* payment_ui_observer) {
   return (new SecurePaymentConfirmationDialogView(
-              /*observer_for_test=*/nullptr))
+              /*observer_for_test=*/nullptr, payment_ui_observer))
       ->GetWeakPtr();
 }
 

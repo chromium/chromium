@@ -24,6 +24,7 @@ namespace payments {
 class PaymentManifestWebDataService;
 class PaymentRequestDialog;
 class PaymentRequestDisplayManager;
+class PaymentUIObserver;
 
 // The delegate for PaymentRequest that can use content.
 class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
@@ -73,6 +74,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   virtual std::string GetTwaPackageName() const = 0;
 
   virtual PaymentRequestDialog* GetDialogForTesting() = 0;
+
+  virtual const PaymentUIObserver* GetPaymentUIObserver() const = 0;
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();

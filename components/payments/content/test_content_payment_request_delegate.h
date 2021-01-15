@@ -21,6 +21,8 @@ class SingleThreadTaskExecutor;
 
 namespace payments {
 
+class PaymentUIObserver;
+
 class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
   TestContentPaymentRequestDelegate(
@@ -65,6 +67,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   autofill::TestAddressNormalizer* test_address_normalizer();
   void DelayFullCardRequestCompletion();
   void CompleteFullCardRequest();
+  const PaymentUIObserver* GetPaymentUIObserver() const override;
 
  private:
   TestPaymentRequestDelegate core_delegate_;

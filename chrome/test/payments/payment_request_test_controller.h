@@ -46,6 +46,7 @@ class PaymentRequestTestObserver {
   virtual void OnAbortCalled() {}
   virtual void OnCompleteCalled() {}
   virtual void OnMinimalUIReady() {}
+  virtual void OnUIDisplayed() {}
 
  protected:
   virtual ~PaymentRequestTestObserver() = default;
@@ -127,6 +128,7 @@ class PaymentRequestTestController {
   void OnAbortCalled();
   void OnCompleteCalled();
   void OnMinimalUIReady();
+  void OnUIDisplayed();
 
   PaymentRequestTestObserver* observer_ = nullptr;
 

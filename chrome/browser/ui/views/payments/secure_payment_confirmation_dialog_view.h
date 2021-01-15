@@ -20,6 +20,8 @@ class ProgressBar;
 
 namespace payments {
 
+class PaymentUIObserver;
+
 // Draws the user interface in the secure payment confirmation flow. Owned by
 // the SecurePaymentConfirmationController.
 class SecurePaymentConfirmationDialogView
@@ -51,7 +53,8 @@ class SecurePaymentConfirmationDialogView
   };
 
   explicit SecurePaymentConfirmationDialogView(
-      ObserverForTest* observer_for_test);
+      ObserverForTest* observer_for_test,
+      const PaymentUIObserver* ui_observer_for_test);
   ~SecurePaymentConfirmationDialogView() override;
 
   // SecurePaymentConfirmationView:
@@ -95,6 +98,7 @@ class SecurePaymentConfirmationDialogView
 
   // May be null.
   ObserverForTest* observer_for_test_ = nullptr;
+  const PaymentUIObserver* ui_observer_for_test_ = nullptr;
 
   VerifyCallback verify_callback_;
   CancelCallback cancel_callback_;

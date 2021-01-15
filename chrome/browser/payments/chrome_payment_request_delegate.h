@@ -21,6 +21,7 @@ class BrowserContext;
 namespace payments {
 
 class PaymentRequestDialog;
+class PaymentUIObserver;
 
 class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
@@ -63,6 +64,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
+  const PaymentUIObserver* GetPaymentUIObserver() const override;
 
  protected:
   // Reference to the dialog so that we can satisfy calls to CloseDialog(). This

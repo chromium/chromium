@@ -301,4 +301,9 @@ content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
   return rfh ? rfh->GetBrowserContext() : nullptr;
 }
 
+const PaymentUIObserver* ChromePaymentRequestDelegate::GetPaymentUIObserver()
+    const {
+  return nullptr;
+}
+
 }  // namespace payments

@@ -14,6 +14,7 @@ class WebContents;
 
 namespace payments {
 
+class PaymentUIObserver;
 class SecurePaymentConfirmationModel;
 
 // Draws the user interface in the secure payment confirmation flow. Owned by
@@ -23,7 +24,8 @@ class SecurePaymentConfirmationView {
   using VerifyCallback = base::OnceCallback<void()>;
   using CancelCallback = base::OnceCallback<void()>;
 
-  static base::WeakPtr<SecurePaymentConfirmationView> Create();
+  static base::WeakPtr<SecurePaymentConfirmationView> Create(
+      const PaymentUIObserver* payment_ui_observer);
 
   virtual ~SecurePaymentConfirmationView() = 0;
 

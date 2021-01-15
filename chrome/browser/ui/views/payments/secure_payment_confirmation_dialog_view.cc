@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -49,8 +50,10 @@ constexpr int kRowHeight = 48;
 }  // namespace
 
 SecurePaymentConfirmationDialogView::SecurePaymentConfirmationDialogView(
-    ObserverForTest* observer_for_test)
-    : observer_for_test_(observer_for_test) {}
+    ObserverForTest* observer_for_test,
+    const PaymentUIObserver* ui_observer_for_test)
+    : observer_for_test_(observer_for_test),
+      ui_observer_for_test_(ui_observer_for_test) {}
 SecurePaymentConfirmationDialogView::~SecurePaymentConfirmationDialogView() =
     default;
 
@@ -81,8 +84,13 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   constrained_window::ShowWebModalDialogViews(this, web_contents);
 
+  // observer_for_test_ is used in views browsertests.
   if (observer_for_test_)
     observer_for_test_->OnDialogOpened();
+
+  // ui_observer_for_test_ is used in platform browsertests.
+  if (ui_observer_for_test_)
+    ui_observer_for_test_->OnUIDisplayed();
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogAccepted() {

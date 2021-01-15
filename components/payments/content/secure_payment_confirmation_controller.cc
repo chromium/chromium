@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/method_strings.h"
@@ -107,7 +108,8 @@ void SecurePaymentConfirmationController::
                          request_->state()->GetApplicationLocale())
            .Format(total->amount->value)}));
 
-  view_ = SecurePaymentConfirmationView::Create();
+  view_ = SecurePaymentConfirmationView::Create(
+      request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
   view_->ShowDialog(
       request_->web_contents(), model_.GetWeakPtr(),
       base::BindOnce(&SecurePaymentConfirmationController::OnConfirm,
