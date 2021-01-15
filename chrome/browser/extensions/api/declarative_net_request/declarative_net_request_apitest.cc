@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/features/feature_channel.h"
@@ -73,7 +74,13 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyAPItest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, DynamicRules) {
+// Flaky on MSAN: https://crbug.com/1167168
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DynamicRules DISABLED_DynamicRules
+#else
+#define MAYBE_DynamicRules DynamicRules
+#endif
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, MAYBE_DynamicRules) {
   ASSERT_TRUE(RunTest("dynamic_rules")) << message_;
 }
 
