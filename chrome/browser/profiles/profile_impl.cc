@@ -479,7 +479,7 @@ ProfileImpl::ProfileImpl(
       delegate_(delegate),
       shared_cors_origin_access_list_(
           content::SharedCorsOriginAccessList::Create()) {
-  TRACE_EVENT0("browser,startup", "ProfileImpl::ctor")
+  TRACE_EVENT0("browser,startup", "ProfileImpl::ctor");
   DCHECK(!path.empty()) << "Using an empty path will attempt to write "
                         << "profile files to the root directory!";
 
@@ -652,7 +652,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 }
 
 void ProfileImpl::DoFinalInit() {
-  TRACE_EVENT0("browser", "ProfileImpl::DoFinalInit")
+  TRACE_EVENT0("browser", "ProfileImpl::DoFinalInit");
 
   PrefService* prefs = GetPrefs();
 
@@ -1033,7 +1033,7 @@ bool ProfileImpl::AllowsBrowserWindows() const {
 ExtensionSpecialStoragePolicy* ProfileImpl::GetExtensionSpecialStoragePolicy() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!extension_special_storage_policy_.get()) {
-    TRACE_EVENT0("browser", "ProfileImpl::GetExtensionSpecialStoragePolicy")
+    TRACE_EVENT0("browser", "ProfileImpl::GetExtensionSpecialStoragePolicy");
     extension_special_storage_policy_ = new ExtensionSpecialStoragePolicy(
         CookieSettingsFactory::GetForProfile(this).get());
   }

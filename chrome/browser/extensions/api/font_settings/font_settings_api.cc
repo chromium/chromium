@@ -98,7 +98,7 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 
 FontSettingsEventRouter::FontSettingsEventRouter(Profile* profile)
     : profile_(profile) {
-  TRACE_EVENT0("browser,startup", "FontSettingsEventRouter::ctor")
+  TRACE_EVENT0("browser,startup", "FontSettingsEventRouter::ctor");
 
   registrar_.Init(profile_->GetPrefs());
 

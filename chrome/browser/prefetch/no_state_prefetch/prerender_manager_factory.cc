@@ -25,7 +25,7 @@ namespace prerender {
 // static
 PrerenderManager* PrerenderManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  TRACE_EVENT0("browser", "PrerenderManagerFactory::GetForProfile")
+  TRACE_EVENT0("browser", "PrerenderManagerFactory::GetForProfile");
   return static_cast<PrerenderManager*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }

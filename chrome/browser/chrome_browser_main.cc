@@ -348,7 +348,7 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
                               const base::FilePath& user_data_dir,
                               const base::FilePath& cur_dir,
                               const base::CommandLine& parsed_command_line) {
-  TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile")
+  TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile");
   base::Time start = base::Time::Now();
 
   bool last_used_profile_set = false;
@@ -856,7 +856,7 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 }
 
 int ChromeBrowserMainParts::PreCreateThreadsImpl() {
-  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl")
+  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl");
   run_message_loop_ = false;
 
   if (browser_process_->GetApplicationLocale().empty()) {

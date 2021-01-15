@@ -37,7 +37,7 @@ ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
 }
 
 int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
-  TRACE_EVENT0("startup", "ChromeBrowserMainPartsAndroid::PreCreateThreads")
+  TRACE_EVENT0("startup", "ChromeBrowserMainPartsAndroid::PreCreateThreads");
 
   int result_code = ChromeBrowserMainParts::PreCreateThreads();
 
@@ -74,7 +74,7 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit() {
 
 int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
   TRACE_EVENT0("startup",
-    "ChromeBrowserMainPartsAndroid::PreEarlyInitialization")
+               "ChromeBrowserMainPartsAndroid::PreEarlyInitialization");
   content::Compositor::Initialize();
 
   CHECK(base::CurrentThread::IsSet());
