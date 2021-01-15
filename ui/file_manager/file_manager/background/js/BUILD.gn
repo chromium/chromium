@@ -853,6 +853,9 @@ js_library("mock_media_scanner.m") {
     "//ui/file_manager/externs/background:media_scanner.m",
     "//ui/file_manager/file_manager/common/js:importer_common.m",
   ]
+  visibility += [
+    "//ui/file_manager/file_manager/foreground/js:import_controller_unittest.m",
+  ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -873,6 +876,9 @@ js_library("media_scanner.m") {
     "//ui/file_manager/externs/background:media_scanner.m",
     "//ui/file_manager/file_manager/common/js:importer_common.m",
     "//ui/webui/resources/js:assert.m",
+  ]
+  visibility += [
+    "//ui/file_manager/file_manager/foreground/js:import_controller_unittest.m",
   ]
 
   extra_deps = [ ":modulize" ]

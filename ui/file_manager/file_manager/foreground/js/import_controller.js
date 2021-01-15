@@ -2,9 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {mediaImportInterfaces} from '../../../externs/background/media_import_handler.m.js';
+// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {util, strf, str} from '../../common/js/util.m.js';
+// #import {queryRequiredElement, getRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
+
 // Namespace
 // eslint-disable-next-line
-var importer = importer || {};
+/* #ignore */ var importer = importer || {};
 
 /** @private @enum {string} */
 importer.ActivityState = {
@@ -1302,3 +1325,6 @@ importer.RuntimeControllerEnvironment = class {
         .catch(importer.getLogger().catcher('import-destination-reveal'));
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importer};
