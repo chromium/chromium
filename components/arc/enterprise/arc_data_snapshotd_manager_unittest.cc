@@ -147,11 +147,16 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     upstart_client_ = std::make_unique<TestUpstartClient>();
 
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kFirstExecAfterBoot);
   }
 
   void SetUp() override { SetDBusClientAvailability(true /* is_available */); }
 
   void TearDown() override {
+    ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(
+        false /* enabled */);
     manager_.reset();
     apps_tracker_ = nullptr;
     delegate_ = nullptr;
@@ -689,6 +694,69 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotSessionFailedTake) {
                  false /* expected_blocked_ui_mode */);
 }
 
+// Test that if the snapshot update interval is not started (end time is null),
+// the device is not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeNullFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test that if snapshot feature is not enabled, the device is not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest,
+       OnSnapshotUpdateEndTimeDisabledFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test that if both snapshots exist and no need to update them, the device is
+// not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeExistsFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test the end time changed twice in a raw scenario.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeChanged) {
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  // Request reboot in blocked UI mode.
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 true /* expected_blocked_ui_mode */);
+
+  // The reboot is requested above.
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 true /* expected_blocked_ui_mode */);
+
+  // Stop requesting a reboot if not inside the snapshot update interval.
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
 // Test that no one state should lead to any changes except when MGS is expected
 // to be launched.
 TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotSessionStarted) {
@@ -772,6 +840,35 @@ TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotsDisabled) {
   }
   CheckSnapshots(0 /* expected_snapshots_number */,
                  false /* expected_blocked_ui_mode */);
+}
+
+TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotUpdateEndTimeChanged) {
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->set_state_for_testing(expected_state());
+  manager->OnSnapshotUpdateEndTimeChanged();
+
+  switch (expected_state()) {
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kLoading:
+    case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
+      EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+      CheckSnapshots(0 /* expected_snapshots_number */,
+                     true /* expected_blocked_ui_mode */);
+      break;
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case ArcDataSnapshotdManager::State::kStopping:
+      EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+      CheckSnapshots(0 /* expected_snapshots_number */,
+                     false /* expected_blocked_ui_mode */);
+      break;
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

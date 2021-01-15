@@ -52,10 +52,31 @@ bool IsRestoredSession() {
          !command_line->HasSwitch(chromeos::switches::kLoginManager);
 }
 
+// Returns true if it is the first Chrome start up after reboot.
+bool IsFirstExecAfterBoot() {
+  return user_manager::UserManager::Get() &&
+         user_manager::UserManager::Get()->IsFirstExecAfterBoot();
+}
+
 // Enables ozone platform headless via command line.
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
+}
+
+// Returns non-empty account ID string if a MGS is active.
+// Otherwise returns an empty string.
+std::string GetMgsCryptohomeAccountId() {
+  // Take snapshots only for MGSs.
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
+      user_manager::UserManager::Get()->GetActiveUser()) {
+    return cryptohome::Identification(user_manager::UserManager::Get()
+                                          ->GetActiveUser()
+                                          ->GetAccountId())
+        .id();
+  }
+  return std::string();
 }
 
 }  // namespace
@@ -287,7 +308,8 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
   if (IsRestoredSession()) {
     state_ = State::kRestored;
   } else {
-    if (snapshot_.is_blocked_ui_mode() && IsSnapshotEnabled()) {
+    if (snapshot_.is_blocked_ui_mode() && IsSnapshotEnabled() &&
+        IsFirstExecAfterBoot()) {
       state_ = State::kBlockedUi;
       EnableHeadlessMode();
     }
@@ -334,7 +356,7 @@ void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
-  std::string account_id = GetCryptohomeAccountId();
+  std::string account_id = GetMgsCryptohomeAccountId();
   if (!account_id.empty() && IsSnapshotEnabled() &&
       (snapshot_.last() || snapshot_.previous())) {
     state_ = State::kLoading;
@@ -439,9 +461,11 @@ void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
     case State::kMgsLaunched:
     case State::kMgsToLaunch:
       state_ = State::kStopping;
+      snapshot_.set_blocked_ui_mode(false);
       if (session_controller_)
         session_controller_->RemoveObserver(this);
       session_controller_.reset();
+      reboot_controller_.reset();
       break;
     // Otherwise, stop all flows, clear snapshots and do not restart browser.
     case State::kNone:
@@ -454,11 +478,48 @@ void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
 }
 
 void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
-  if (policy_service_.snapshot_update_end_time().is_null())
+  if (policy_service_.snapshot_update_end_time().is_null()) {
+    // Process the end of the snapshot update interval.
+    if (reboot_controller_) {
+      // Stop the reboot process if already requested.
+      snapshot_.set_blocked_ui_mode(false);
+      snapshot_.Sync();
+    }
+    reboot_controller_.reset();
     return;
+  }
   if (!IsSnapshotEnabled())
     return;
-  // TODO(pbond): may be start a reboot process to update a snapshot.
+  // Snapshot can be updated if necessary. Inside the snapshot update interval.
+  // Do not request the reboot of device if already requested.
+  if (reboot_controller_)
+    return;
+  // Do not reboot if last and previous snapshots exist and should not be
+  // updated.
+  if (snapshot_.last() && !snapshot_.last()->updated() &&
+      snapshot_.previous() && !snapshot_.previous()->updated()) {
+    return;
+  }
+
+  switch (state_) {
+    case State::kNone:
+    case State::kLoading:
+    case State::kRestored:
+    case State::kRunning:
+      snapshot_.set_blocked_ui_mode(true);
+      snapshot_.Sync();
+
+      // Request  device to be reboot in a blocked UI mode.
+      reboot_controller_ = std::make_unique<SnapshotRebootController>();
+      return;
+    case State::kBlockedUi:
+    case State::kMgsToLaunch:
+    case State::kMgsLaunched:
+    case State::kStopping:
+      // Do not reboot the device if in blocked UI mode or in process of
+      // disabling the feature.
+      return;
+  }
 }
 
 bool ArcDataSnapshotdManager::IsSnapshotEnabled() {
@@ -663,7 +724,7 @@ void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
     OnSnapshotTaken(false /* success */);
     return;
   }
-  std::string account_id = GetCryptohomeAccountId();
+  std::string account_id = GetMgsCryptohomeAccountId();
   if (account_id.empty() || state_ != State::kMgsLaunched) {
     LOG(ERROR) << "Cryptohome account ID is empty.";
     OnSnapshotTaken(false /* success */);
@@ -736,19 +797,6 @@ void ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested() {
 void ArcDataSnapshotdManager::OnUiUpdated(bool success) {
   if (!success)
     LOG(ERROR) << "Failed to update UI progress bar.";
-}
-
-std::string ArcDataSnapshotdManager::GetCryptohomeAccountId() {
-  // Take snapshots only for MGSs.
-  if (user_manager::UserManager::Get() &&
-      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
-      user_manager::UserManager::Get()->GetActiveUser()) {
-    return cryptohome::Identification(user_manager::UserManager::Get()
-                                          ->GetActiveUser()
-                                          ->GetAccountId())
-        .id();
-  }
-  return "";
 }
 
 }  // namespace data_snapshotd

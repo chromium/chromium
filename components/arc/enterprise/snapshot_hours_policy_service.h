@@ -69,6 +69,10 @@ class SnapshotHoursPolicyService {
   }
   const util::WallClockTimer* get_timer_for_testing() const { return &timer_; }
 
+  void set_snapshot_update_end_time_for_testing(base::Time time) {
+    snapshot_update_end_time_ = time;
+  }
+
  private:
   // Processes the policy update: either ArcEnabled and
   // DeviceArcDataSnapshotHours.

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
+#include "components/arc/enterprise/snapshot_reboot_controller.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -106,6 +107,8 @@ class ArcDataSnapshotdManager final
     bool is_verified() const { return verified_; }
 
     bool is_last() const { return is_last_; }
+
+    bool updated() const { return updated_; }
 
    private:
     SnapshotInfo(const std::string& os_version,
@@ -255,6 +258,10 @@ class ArcDataSnapshotdManager final
     session_controller_ = std::move(session_controller);
   }
 
+  SnapshotRebootController* get_reboot_controller_for_testing() const {
+    return reboot_controller_.get();
+  }
+
  private:
   // Attempts to arc-data-snapshotd daemon regardless of state of the class.
   // Runs |callback| once finished.
@@ -307,10 +314,6 @@ class ArcDataSnapshotdManager final
   // Called once a progress bar is updated.
   void OnUiUpdated(bool success);
 
-  // Returns non-empty account ID string if a MGS is active.
-  // Otherwise returns an empty string.
-  std::string GetCryptohomeAccountId();
-
   static bool is_snapshot_enabled_for_testing_;
 
   SnapshotHoursPolicyService policy_service_;
@@ -332,6 +335,9 @@ class ArcDataSnapshotdManager final
   // Initialized only when needed to observe and call back on a user session
   // events.
   std::unique_ptr<SnapshotSessionController> session_controller_;
+
+  // Initialized only when the device reboot is requested.
+  std::unique_ptr<SnapshotRebootController> reboot_controller_;
 
   // Used for cancelling previously posted tasks to daemon.
   base::WeakPtrFactory<ArcDataSnapshotdManager> daemon_weak_ptr_factory_{this};

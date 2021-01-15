@@ -13,6 +13,8 @@ static_library("enterprise") {
     "arc_data_snapshotd_manager.h",
     "snapshot_hours_policy_service.cc",
     "snapshot_hours_policy_service.h",
+    "snapshot_reboot_controller.cc",
+    "snapshot_reboot_controller.h",
     "snapshot_session_controller.cc",
     "snapshot_session_controller.h",
   ]
@@ -23,6 +25,7 @@ static_library("enterprise") {
     "//chromeos/cryptohome",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/arc:arc",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/upstart:upstart",
     "//components/arc:prefs",
     "//components/prefs",
