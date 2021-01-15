@@ -130,7 +130,7 @@ StorageFrontend::StorageFrontend(scoped_refptr<ValueStoreFactory> factory,
 }
 
 void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
-  TRACE_EVENT0("browser,startup", "StorageFrontend::Init")
+  TRACE_EVENT0("browser,startup", "StorageFrontend::Init");
 
   observers_ = new SettingsObserverList();
   browser_context_observer_.reset(new DefaultObserver(browser_context_));

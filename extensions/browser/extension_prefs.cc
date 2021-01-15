@@ -1993,7 +1993,7 @@ void ExtensionPrefs::RemoveObserver(ExtensionPrefsObserver* observer) {
 }
 
 void ExtensionPrefs::InitPrefStore() {
-  TRACE_EVENT0("browser,startup", "ExtensionPrefs::InitPrefStore")
+  TRACE_EVENT0("browser,startup", "ExtensionPrefs::InitPrefStore");
 
   // When this is called, the PrefService is initialized and provides access
   // to the user preferences stored in a JSON file.
@@ -2476,7 +2476,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
 void ExtensionPrefs::InitExtensionControlledPrefs(
     const ExtensionsInfo& extensions_info) {
   TRACE_EVENT0("browser,startup",
-               "ExtensionPrefs::InitExtensionControlledPrefs")
+               "ExtensionPrefs::InitExtensionControlledPrefs");
 
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info->extension_id;
