@@ -1103,7 +1103,8 @@ extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #endif
 
 #if !defined(OS_ANDROID)
-extern const char kCartModuleDismissed[];
+extern const char kCartModuleHidden[];
+extern const char kCartModuleRemoved[];
 #endif
 
 }  // namespace prefs

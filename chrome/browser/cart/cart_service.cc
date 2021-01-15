@@ -12,17 +12,30 @@ CartService::CartService(Profile* profile)
 CartService::~CartService() = default;
 
 void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kCartModuleDismissed, false);
+  registry->RegisterBooleanPref(prefs::kCartModuleHidden, false);
+  registry->RegisterBooleanPref(prefs::kCartModuleRemoved, false);
 }
 
-void CartService::Dismiss() {
-  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleDismissed, true);
+void CartService::Hide() {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleHidden, true);
 }
 
-void CartService::Restore() {
-  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleDismissed, false);
+void CartService::RestoreHidden() {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleHidden, false);
 }
 
-bool CartService::IsDismissed() {
-  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleDismissed);
+bool CartService::IsHidden() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
+}
+
+void CartService::Remove() {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleRemoved, true);
+}
+
+void CartService::RestoreRemoved() {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleRemoved, false);
+}
+
+bool CartService::IsRemoved() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleRemoved);
 }
