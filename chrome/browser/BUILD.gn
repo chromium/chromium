@@ -2468,7 +2468,7 @@ static_library("browser") {
       "tflite_experiment/tflite_experiment_switches.h",
     ]
 
-    deps += [ "//chrome/services/machine_learning" ]
+    public_deps += [ "//chrome/services/machine_learning" ]
   }
 
   # Platforms that have a network diagnostics dialog. All others fall through

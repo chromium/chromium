@@ -27,6 +27,8 @@ source_set("machine_learning") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "chrome_tflite_op_resolver.cc",
+      "chrome_tflite_op_resolver.h",
       "in_process_tflite_predictor.cc",
       "in_process_tflite_predictor.h",
     ]
@@ -64,6 +66,8 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [ "in_process_tflite_predictor_unittest.cc" ]
   }
+
+  data = [ "//chrome/test/data/" ]
 
   deps = [
     ":machine_learning",

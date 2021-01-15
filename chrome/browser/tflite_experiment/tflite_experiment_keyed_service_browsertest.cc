@@ -5,6 +5,7 @@
 #include "chrome/browser/tflite_experiment/tflite_experiment_keyed_service.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
@@ -25,9 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-constexpr char kTFLiteModelName[] = "simple_test.tflite";
 constexpr char kNavigationURL[] = "https://google.com";
-constexpr char kTFLiteExperimentLogName[] = "tflite_experiment.log";
 
 namespace {
 // Fetch and calculate the total number of samples from all the bins for
@@ -90,16 +89,6 @@ IN_PROC_BROWSER_TEST_F(TFLiteExperimentKeyedServiceDisabledBrowserTest,
   EXPECT_FALSE(tflite_experiment_keyed_service->tflite_predictor());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TFLiteExperimentKeyedServiceDisabledBrowserTest,
-    TFLiteExperimentEnabledButTFLitePredictorDisabledOnNavigation) {
-  GURL navigation_url(kNavigationURL);
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
-  WaitForTFLiteObserverToCallNullTFLitePredictor();
-  histogram_tester()->ExpectUniqueSample(
-      "TFLiteExperiment.Observer.TFLitePredictor.Null", true, 1);
-}
-
 class TFLiteExperimentKeyedServiceBrowserTest : public InProcessBrowserTest {
  public:
   TFLiteExperimentKeyedServiceBrowserTest() = default;
@@ -112,21 +101,21 @@ class TFLiteExperimentKeyedServiceBrowserTest : public InProcessBrowserTest {
     // Set TFLite model path.
     base::PathService::Get(chrome::DIR_TEST_DATA, &g_test_data_directory);
     g_test_data_directory =
-        g_test_data_directory.Append(FILE_PATH_LITERAL(kTFLiteModelName));
+        g_test_data_directory.Append(FILE_PATH_LITERAL("simple_test.tflite"));
     cmd->AppendSwitchASCII(tflite_experiment::switches::kTFLiteModelPath,
-                           g_test_data_directory.value());
+                           g_test_data_directory.MaybeAsASCII());
 
     // Set TFLite experiment log path.
     cmd->AppendSwitchASCII(
         tflite_experiment::switches::kTFLiteExperimentLogPath,
-        GetTFLiteExperimentLogPath().value());
+        GetTFLiteExperimentLogPath().MaybeAsASCII());
   }
 
   base::FilePath GetTFLiteExperimentLogPath() {
     base::FilePath g_test_data_directory;
     base::PathService::Get(chrome::DIR_TEST_DATA, &g_test_data_directory);
-    g_test_data_directory =
-        g_test_data_directory.Append(kTFLiteExperimentLogName);
+    g_test_data_directory = g_test_data_directory.Append(
+        FILE_PATH_LITERAL("tflite_experiment.log"));
     return g_test_data_directory;
   }
 
