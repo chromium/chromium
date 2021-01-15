@@ -331,6 +331,7 @@ bool IsValidUpdate(const UpdateResponseData& update) {
     return false;
   }
   if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
+                               update_entity.client_tag_hash,
                                update_entity.originator_cache_guid,
                                update_entity.originator_client_item_id)) {
     // Ignore updates with an unexpected GUID.

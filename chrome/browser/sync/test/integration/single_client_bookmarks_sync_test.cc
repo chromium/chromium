@@ -18,6 +18,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine_impl/bookmark_update_preprocessing.h"
 #include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
@@ -154,6 +155,15 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
   SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks() {
     feature_list_.InitWithFeatureState(
         switches::kSyncReuploadBookmarkFullTitles, !content::IsPreTest());
+  }
+};
+
+class SingleClientBookmarksSyncTestWithEnabledClientTags : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledClientTags()
+      : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndEnableFeature(
+        switches::kSyncUseClientTagForBookmarkCommits);
   }
 };
 
@@ -1497,6 +1507,31 @@ IN_PROC_BROWSER_TEST_F(
                   {{kBookmarkTitle, GURL(kBookmarkPageUrl)}},
                   /*cryptographer=*/nullptr)
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledClientTags,
+                       CommitLocalCreationWithClientTag) {
+  ASSERT_TRUE(SetupSync());
+
+  const std::string kTitle = "Title";
+  const BookmarkNode* folder = AddFolder(
+      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, kTitle);
+
+  // Wait until the local bookmark gets committed.
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  {{kTitle, /*url=*/GURL()}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+
+  // Verify the client tag hash was committed to the server.
+  std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+  ASSERT_EQ(1u, server_bookmarks.size());
+  EXPECT_EQ(server_bookmarks[0].client_defined_unique_tag(),
+            syncer::ClientTagHash::FromUnhashed(
+                syncer::BOOKMARKS, folder->guid().AsLowercaseString())
+                .value());
 }
 
 }  // namespace

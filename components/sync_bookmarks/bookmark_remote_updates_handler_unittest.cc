@@ -1004,6 +1004,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
   data.is_folder = false;
+  data.originator_client_item_id = bookmark_specifics->guid();
+
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
@@ -1055,6 +1057,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_icon_url(kIconUrl.spec());
   bookmark_specifics->set_favicon("PNG");
   data.is_folder = false;
+  data.originator_client_item_id = bookmark_specifics->guid();
+
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
@@ -1093,6 +1097,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
   data.is_folder = false;
+  data.originator_client_item_id = bookmark_specifics->guid();
+
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
@@ -1111,7 +1117,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 // server but the commit respone isn't received for some reason. Further updates
 // to that entity should update the sync id in the tracker.
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldUpdateSyncIdWhenRecevingAnUpdateForNewlyCreatedLocalNode) {
+       ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNode) {
   const std::string kCacheGuid = "generated_id";
   const std::string kOriginatorClientItemId =
       base::GUID::GenerateRandomV4().AsLowercaseString();
@@ -1121,7 +1127,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                                      base::TimeDelta::FromSeconds(1));
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_cache_guid(kCacheGuid);
   model_type_state.set_initial_sync_done(true);
 
   const sync_pb::UniquePosition unique_position;
@@ -1147,7 +1152,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseDataList updates;
   syncer::EntityData data;
   data.id = kSyncId;
-  data.originator_cache_guid = kCacheGuid;
   data.originator_client_item_id = kOriginatorClientItemId;
   // Set the other required fields.
   data.unique_position = syncer::UniquePosition::InitialPosition(
@@ -1168,6 +1172,71 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
   // The sync id in the tracker should have been updated.
   EXPECT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId), IsNull());
+  EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
+  EXPECT_THAT(entity->metadata()->server_id(), Eq(kSyncId));
+  EXPECT_THAT(entity->bookmark_node(), Eq(&node));
+}
+
+// Same as above for bookmarks created with client tags.
+TEST_F(
+    BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+    ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNodeWithClientTag) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      switches::kSyncUseClientTagForBookmarkCommits);
+
+  const std::string kBookmarkGuid =
+      base::GUID::GenerateRandomV4().AsLowercaseString();
+  const std::string kSyncId = "server_id";
+  const int64_t kServerVersion = 1000;
+  const base::Time kModificationTime(base::Time::Now() -
+                                     base::TimeDelta::FromSeconds(1));
+
+  sync_pb::ModelTypeState model_type_state;
+  model_type_state.set_initial_sync_done(true);
+
+  const sync_pb::UniquePosition unique_position;
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
+  bookmark_specifics->set_guid(kBookmarkGuid);
+  bookmark_specifics->set_legacy_canonicalized_title("Title");
+  bookmarks::BookmarkNode node(
+      /*id=*/1, base::GUID::ParseLowercase(kBookmarkGuid), GURL());
+  // Track a sync entity (similar to what happens after a local creation). The
+  // |originator_client_item_id| is used a temp sync id and mark the entity that
+  // it needs to be committed..
+  const SyncedBookmarkTracker::Entity* entity =
+      tracker()->Add(&node, /*sync_id=*/kBookmarkGuid, kServerVersion,
+                     kModificationTime, unique_position, specifics);
+  tracker()->IncrementSequenceNumber(entity);
+
+  ASSERT_THAT(tracker()->GetEntityForSyncId(kBookmarkGuid), Eq(entity));
+
+  // Now receive an update with the actual server id.
+  syncer::UpdateResponseDataList updates;
+  syncer::EntityData data;
+  data.id = kSyncId;
+  data.client_tag_hash =
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, kBookmarkGuid);
+  // Set the other required fields.
+  data.unique_position = syncer::UniquePosition::InitialPosition(
+                             syncer::UniquePosition::RandomSuffix())
+                             .ToProto();
+  data.specifics = specifics;
+  data.specifics.mutable_bookmark()->set_guid(kBookmarkGuid);
+  data.is_folder = true;
+
+  syncer::UpdateResponseData response_data;
+  response_data.entity = std::move(data);
+  // Similar to what's done in the loopback_server.
+  response_data.response_version = 0;
+  updates.push_back(std::move(response_data));
+
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  // The sync id in the tracker should have been updated.
+  EXPECT_THAT(tracker()->GetEntityForSyncId(kBookmarkGuid), IsNull());
   EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
   EXPECT_THAT(entity->metadata()->server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(&node));

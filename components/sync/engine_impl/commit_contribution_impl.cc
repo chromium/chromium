@@ -197,7 +197,12 @@ void CommitContributionImpl::PopulateCommitProto(
   commit_proto->set_id_string(entity_data.id);
   // Populate client_defined_unique_tag only for non-bookmark and non-Nigori
   // data types.
-  if (type != BOOKMARKS && type != NIGORI) {
+  if (type == NIGORI) {
+    // Client tags are irrelevant for NIGORI (it uses the root node).
+  } else if (type != BOOKMARKS ||
+             !entity_data.client_tag_hash.value().empty()) {
+    // The client tag is mandatory for all datatypes except bookmarks, and
+    // experimental for bookmarks (behind feature toggle).
     commit_proto->set_client_defined_unique_tag(
         entity_data.client_tag_hash.value());
   }

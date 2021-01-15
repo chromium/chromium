@@ -17,6 +17,7 @@ extern const base::Feature kSyncReuploadBookmarkFullTitles;
 extern const base::Feature kSyncDeduplicateAllBookmarksWithSameGUID;
 // TODO(crbug.com/1075709): remove after launch.
 extern const base::Feature kSyncIgnoreChangesInTouchIcons;
+extern const base::Feature kSyncUseClientTagForBookmarkCommits;
 
 }  // namespace switches
 

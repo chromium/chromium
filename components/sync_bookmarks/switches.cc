@@ -19,4 +19,7 @@ const base::Feature kSyncDeduplicateAllBookmarksWithSameGUID{
 const base::Feature kSyncIgnoreChangesInTouchIcons{
     "SyncIgnoreChangesInTouchIcons", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSyncUseClientTagForBookmarkCommits{
+    "SyncUseClientTagForBookmarkCommits", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

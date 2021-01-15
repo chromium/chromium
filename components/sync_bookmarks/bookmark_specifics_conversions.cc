@@ -394,14 +394,14 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
 }
 
 bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
+                             const syncer::ClientTagHash& client_tag_hash,
                              const std::string& originator_cache_guid,
                              const std::string& originator_client_item_id) {
   DCHECK(base::GUID::ParseLowercase(specifics.guid()).is_valid());
 
-  if (originator_client_item_id.empty()) {
-    // This could be a future bookmark with a client tag instead of an
-    // originator client item ID.
-    NOTIMPLEMENTED();
+  // If the client tag hash matches, that should already be good enough.
+  if (syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, specifics.guid()) == client_tag_hash) {
     return true;
   }
 

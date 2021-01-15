@@ -301,6 +301,10 @@ class SyncedBookmarkTracker {
   // reuploaded.
   bool ReuploadBookmarksOnLoadIfNeeded();
 
+  // Returns whether bookmark commits sent to the server (most importantly
+  // creations) should populate client tags.
+  bool bookmark_client_tags_in_protocol_enabled() const;
+
  private:
   // Enumeration of possible reasons why persisted metadata are considered
   // corrupted and don't match the bookmark model. Used in UMA metrics. Do not
@@ -383,6 +387,12 @@ class SyncedBookmarkTracker {
   // TODO(crbug.com/1032052): Remove this code once all local sync metadata is
   // required to populate the client tag (and be considered invalid otherwise).
   base::Time last_sync_time_;
+
+  // Represents whether bookmark commits sent to the server (most importantly
+  // creations) populate client tags.
+  // TODO(crbug.com/1032052): remove this code when the logic is enabled by
+  // default and enforced to true upon startup.
+  bool bookmark_client_tags_in_protocol_enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedBookmarkTracker);
 };

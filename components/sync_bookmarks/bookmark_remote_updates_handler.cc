@@ -240,6 +240,7 @@ void BookmarkRemoteUpdatesHandler::Process(
         continue;
       }
       if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
+                                   update_entity.client_tag_hash,
                                    update_entity.originator_cache_guid,
                                    update_entity.originator_client_item_id)) {
         // Ignore updates with an unexpected GUID.
@@ -292,13 +293,25 @@ void BookmarkRemoteUpdatesHandler::Process(
     // assume that it was never committed. The server will track the client that
     // sent up the original commit and return this in a get updates response. We
     // need to check if we have an entry that didn't get its server id updated
-    // correctly. The server sends down a |originator_cache_guid| and an
-    // |original_client_item_id|. If we have a entry by that description, we
-    // should update the |sync_id| in |bookmark_tracker_|. The rest of code will
-    // handle this a conflict and adjust the model if needed.
+    // correctly. The server sends down |original_client_item_id| (regular case)
+    // or |client_provided_unique_tag| (experimental). If the tracker contains
+    // a matching entry, it should be treated as update.
     const SyncedBookmarkTracker::Entity* old_tracked_entity =
         bookmark_tracker_->GetEntityForSyncId(
             update_entity.originator_client_item_id);
+    if (!old_tracked_entity && !update_entity.client_tag_hash.value().empty()) {
+      // There's currently no way to perform a lookup by client tag hash. As an
+      // approximation, the bookmark node's GUID can be used, which is the same
+      // as the temporary sync ID assigned upon local creation (just like
+      // originator client ID). This doesn't work for remote deletions, which
+      // don't include a GUID in specifics, but the existing UMA data for
+      // DuplicateBookmarkEntityOnRemoteUpdateCondition::kServerIdTombstone
+      // indicates that users don't in practice run into this.
+      // TODO(crbug.com/1143246): Adopt proper lookups by client tag hash once
+      // the tracker supports this.
+      old_tracked_entity = bookmark_tracker_->GetEntityForSyncId(
+          remote_guid.AsLowercaseString());
+    }
     if (old_tracked_entity) {
       if (tracked_entity) {
         DCHECK_NE(tracked_entity, old_tracked_entity);
