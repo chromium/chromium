@@ -1147,7 +1147,7 @@ void OverviewSession::OnSplitViewDividerPositionChanged() {
 
 void OverviewSession::Move(bool reverse) {
   // Do not allow moving the highlight while in the middle of a drag.
-  if (window_util::IsAnyWindowDragged())
+  if (window_util::IsAnyWindowDragged() || desks_util::IsDraggingAnyDesk())
     return;
 
   highlight_controller_->MoveHighlight(reverse);
