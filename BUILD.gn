@@ -353,6 +353,7 @@ group("gn_all") {
       "//services:services_junit_tests",
       "//testing/android/junit:junit_unit_tests",
       "//third_party/catapult/devil",
+      "//third_party/r8:custom_d8_java",
       "//third_party/smhasher:murmurhash3",
       "//tools/android:android_tools",
       "//tools/android:memconsumer",

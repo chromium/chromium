@@ -70,6 +70,11 @@ def _ParseArgs(args):
                       action='store_true',
                       help='Allow numerous dex files within output.')
   parser.add_argument('--r8-jar-path', required=True, help='Path to R8 jar.')
+  parser.add_argument('--custom-d8-jar-path',
+                      required=True,
+                      help='Path to our customized d8 jar.')
+  parser.add_argument('--desugar-dependencies',
+                      help='Path to store desugar dependencies.')
   parser.add_argument('--desugar', action='store_true')
   parser.add_argument(
       '--bootclasspath',
@@ -371,6 +376,7 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
 
     tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
     os.mkdir(tmp_dex_dir)
+
     _RunD8(dex_cmd, d8_inputs, tmp_dex_dir,
            (not options or options.warnings_as_errors),
            (options and options.show_desugar_default_interface_warnings))
@@ -498,6 +504,7 @@ def main(args):
   if options.multi_dex and options.main_dex_list_path:
     input_paths.append(options.main_dex_list_path)
   input_paths.append(options.r8_jar_path)
+  input_paths.append(options.custom_d8_jar_path)
 
   depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
@@ -515,8 +522,8 @@ def main(args):
 
   dex_cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
       '-cp',
-      options.r8_jar_path,
-      'com.android.tools.r8.D8',
+      '{}:{}'.format(options.r8_jar_path, options.custom_d8_jar_path),
+      'org.chromium.build.CustomD8',
   ]
   if options.release:
     dex_cmd += ['--release']
@@ -526,16 +533,29 @@ def main(args):
   if not options.desugar:
     dex_cmd += ['--no-desugaring']
   elif options.classpath:
-    # Don't pass classpath when Desugar.jar is doing interface desugaring.
+    # The classpath is used by D8 to for interface desugaring.
+    classpath_paths = options.classpath
+    if options.desugar_dependencies:
+      dex_cmd += ['--desugar-dependencies', options.desugar_dependencies]
+      if os.path.exists(options.desugar_dependencies):
+        with open(options.desugar_dependencies, 'r') as f:
+          lines = [line.strip() for line in f.readlines()]
+          # Use a set to deduplicate entries.
+          desugar_dependencies = set(dep for dep in lines if dep)
+        # Desugar dependencies are a subset of classpath.
+        classpath_paths = list(desugar_dependencies)
+    depfile_deps += classpath_paths
+    input_paths += classpath_paths
     dex_cmd += ['--lib', build_utils.JAVA_HOME]
     for path in options.bootclasspath:
       dex_cmd += ['--lib', path]
+    # Still pass the entire classpath in case a new dependency is needed by
+    # desugar, so that desugar_dependencies will be updated for the next build.
     for path in options.classpath:
       dex_cmd += ['--classpath', path]
-    depfile_deps += options.classpath
     depfile_deps += options.bootclasspath
-    input_paths += options.classpath
     input_paths += options.bootclasspath
+
 
   if options.desugar_jdk_libs_json:
     dex_cmd += ['--desugared-lib', options.desugar_jdk_libs_json]

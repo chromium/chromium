@@ -82,6 +82,7 @@ _java_library_patterns = [
 java_target_patterns = _java_library_patterns + _java_resource_patterns
 
 _r8_path = "//third_party/r8/lib/r8.jar"
+_custom_d8_path = "//third_party/r8/custom_d8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
 _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.0.10.jar"
 _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.0.10.jar"
@@ -1666,7 +1667,10 @@ if (enable_java_templates) {
         deps = _deps
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
-        inputs = [ _r8_path ]
+        inputs = [
+          _r8_path,
+          _custom_d8_path,
+        ]
 
         if (!_is_library) {
           # http://crbug.com/725224. Fix for bots running out of memory.
@@ -1685,6 +1689,8 @@ if (enable_java_templates) {
           "--min-api=$_min_sdk_version",
           "--r8-jar-path",
           rebase_path(_r8_path, root_build_dir),
+          "--custom-d8-jar-path",
+          rebase_path(_custom_d8_path, root_build_dir),
         ]
         if (treat_warnings_as_errors) {
           args += [ "--warnings-as-errors" ]
@@ -1773,8 +1779,15 @@ if (enable_java_templates) {
           }
         }
         if (_desugar_needs_classpath) {
+          _desugar_dependencies_path =
+              "$target_gen_dir/$target_name.desugardeps"
           args += [
+            "--desugar-dependencies",
+            rebase_path(_desugar_dependencies_path, root_build_dir),
             "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
+
+            # Pass the full classpath to find new dependencies that are not in
+            # the .desugardeps file.
             "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
           ]
           if (defined(invoker.desugar_jars_paths)) {

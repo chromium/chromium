@@ -23,8 +23,14 @@ Local Modifications:
   * Plus: https://r8-review.googlesource.com/c/r8/+/56708
 * Added "playground" directory for quick "how does this optimize" tests.
 * Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
+* Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
+  * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
 Update Instructions:
+# For the custom d8 jar (required only when CustomD8.java changes):
+autoninja -C out/Debug third_party/r8:custom_d8_java
+cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
+
 # Download R8:
 git clone https://r8.googlesource.com/r8
 cd r8
