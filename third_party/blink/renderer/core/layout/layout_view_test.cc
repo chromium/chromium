@@ -149,6 +149,15 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
     GetFrame().GetSettings()->SetEditingBehaviorType(
         GetParam().editing_behavior);
   }
+
+  PositionWithAffinity HitTest(const PhysicalOffset offset) {
+    const HitTestRequest hit_request(HitTestRequest::kActive);
+    const HitTestLocation hit_location(offset);
+    HitTestResult hit_result(hit_request, hit_location);
+    if (!GetLayoutView().HitTest(hit_location, hit_result))
+      return PositionWithAffinity();
+    return hit_result.GetPosition();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -612,6 +621,55 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
           ? PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream)
           : PositionWithAffinity(Position(text, 5), TextAffinity::kDownstream),
       result.GetPosition());
+}
+
+// http://crbug.com/1164974
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlock) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/15px Ahem; }"
+      "p::after { content: 'XY' }");
+  SetBodyInnerHTML("<div><p id=target>ab</p></div>");
+  const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
+  // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
+  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  const auto expected = PositionWithAffinity(
+      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
+                                          : Position(text_ab, 0),
+      LayoutNG() && IsAndroidOrWindowsEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
+
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(20, 5))) << "after ab";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(25, 5))) << "at X";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(35, 5))) << "at Y";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(40, 5))) << "after Y";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(50, 5))) << "after XY";
+}
+
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/15px Ahem; }"
+      "p::after { content: 'XY'; margin-left: 10px;}");
+  SetBodyInnerHTML("<div><p id=target>ab</p></div>");
+  const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
+  // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
+  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  const auto expected = PositionWithAffinity(
+      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
+                                          : Position(text_ab, 0),
+      LayoutNG() && IsAndroidOrWindowsEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
+
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(20, 5))) << "after ab";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(25, 5))) << "at margin-left";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(30, 5))) << "before X";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(35, 5))) << "at X";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(45, 5))) << "at Y";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(50, 5))) << "after Y";
+  EXPECT_EQ(expected, HitTest(PhysicalOffset(55, 5))) << "after XY";
 }
 
 }  // namespace blink

@@ -68,6 +68,31 @@ bool IsLastBRInPage(const LayoutObject& layout_object) {
   return layout_object.IsBR() && !layout_object.NextInPreOrder();
 }
 
+bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
+  switch (item.Type()) {
+    case NGFragmentItem::kBox:
+      if (item.BoxFragment()) {
+        // Skip pseudo element ::before/::after
+        // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
+        return !item.GetLayoutObject()->NonPseudoNode();
+      }
+      // Skip virtually "culled" inline box, e.g. <span>foo</span>
+      // "editing/selection/shift-click.html" reaches here.
+      DCHECK(item.GetLayoutObject()->IsLayoutInline()) << item;
+      return true;
+    case NGFragmentItem::kGeneratedText:
+      return true;
+    case NGFragmentItem::kText:
+      // Returns true when |item.GetLayoutObject().IsStyleGenerated()|.
+      // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
+      return item.IsGeneratedText();
+    case NGFragmentItem::kLine:
+      NOTREACHED();
+      break;
+  }
+  return false;
+}
+
 }  // namespace
 
 inline void NGInlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
@@ -620,13 +645,8 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
   for (; descendants; descendants.MoveToNext()) {
     const NGFragmentItem* child_item = descendants.CurrentItem();
     DCHECK(child_item);
-    if (child_item->Type() == NGFragmentItem::kBox &&
-        !child_item->BoxFragment()) {
-      // Skip virtually "culled" inline box, e.g. <span>foo</span>
-      // "editing/selection/shift-click.html" reaches here.
-      DCHECK(child_item->GetLayoutObject()->IsLayoutInline()) << child_item;
+    if (ShouldIgnoreForPositionForPoint(*child_item))
       continue;
-    }
     const LayoutUnit child_inline_offset =
         child_item->OffsetInContainerFragment()
             .ConvertToLogical(writing_direction, container_size,
