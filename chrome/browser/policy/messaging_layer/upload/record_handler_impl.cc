@@ -356,18 +356,35 @@ RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
       GetPriorityProtoFromSequencingInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
-  uint64_t seq_id;
-  uint64_t gen_id;
-  if (!sequencing_id || sequencing_id->empty() ||
-      !base::StringToUint64(*sequencing_id, &seq_id) || !generation_id ||
-      generation_id->empty() ||
-      !base::StringToUint64(*generation_id, &gen_id) || gen_id == 0 ||
-      !priority_result.has_value() ||
+  int64_t seq_id;
+  int64_t gen_id;
+  if (!sequencing_id || generation_id->empty() || !generation_id ||
+      generation_id->empty() || !priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return Status(error::INVALID_ARGUMENT,
-                  base::StrCat({"Provided value did not conform to a valid "
+                  base::StrCat({"Provided value lacks some fields required by "
                                 "SequencingInformation proto: ",
                                 value.DebugString()}));
+  }
+
+  if (!base::StringToInt64(*sequencing_id, &seq_id) ||
+      !base::StringToInt64(*generation_id, &gen_id) || gen_id == 0) {
+    // For backwards compatibility accept unsigned values if signed are not
+    // parsed.
+    // TODO(b/177677467): Remove this duplication once server is fully
+    // transitioned.
+    uint64_t unsigned_seq_id;
+    uint64_t unsigned_gen_id;
+    if (!base::StringToUint64(*sequencing_id, &unsigned_seq_id) ||
+        !base::StringToUint64(*generation_id, &unsigned_gen_id) ||
+        unsigned_gen_id == 0) {
+      return Status(error::INVALID_ARGUMENT,
+                    base::StrCat({"Provided value did not conform to a valid "
+                                  "SequencingInformation proto: ",
+                                  value.DebugString()}));
+    }
+    seq_id = static_cast<int64_t>(unsigned_seq_id);
+    gen_id = static_cast<int64_t>(unsigned_gen_id);
   }
 
   SequencingInformation proto;

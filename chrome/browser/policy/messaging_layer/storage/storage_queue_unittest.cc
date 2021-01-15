@@ -85,9 +85,9 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
   // should have that digest already recorded. Only the first record in a
   // generation is uploaded without last record digest. "Optional" is set to
   // no-value if there was a gap record instead of a real one.
-  using LastRecordDigestMap = std::map<
-      std::pair<uint64_t /*generation id */, uint64_t /*sequencing id*/>,
-      base::Optional<std::string /*digest*/>>;
+  using LastRecordDigestMap =
+      std::map<std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
+               base::Optional<std::string /*digest*/>>;
 
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {}
@@ -195,9 +195,9 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     UploadComplete(need_encryption_key, status);
   }
 
-  MOCK_METHOD(bool, UploadRecord, (uint64_t, base::StringPiece), (const));
-  MOCK_METHOD(bool, UploadRecordFailure, (uint64_t, Status), (const));
-  MOCK_METHOD(bool, UploadGap, (uint64_t, uint64_t), (const));
+  MOCK_METHOD(bool, UploadRecord, (int64_t, base::StringPiece), (const));
+  MOCK_METHOD(bool, UploadRecordFailure, (int64_t, Status), (const));
+  MOCK_METHOD(bool, UploadGap, (int64_t, uint64_t), (const));
   MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
@@ -211,7 +211,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
           .InSequence(client_->test_upload_sequence_);
     }
 
-    SetUp& Required(uint64_t sequence_number, base::StringPiece value) {
+    SetUp& Required(int64_t sequence_number, base::StringPiece value) {
       EXPECT_CALL(*client_,
                   UploadRecord(Eq(sequence_number), StrEq(std::string(value))))
           .InSequence(client_->test_upload_sequence_)
@@ -219,7 +219,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       return *this;
     }
 
-    SetUp& Possible(uint64_t sequence_number, base::StringPiece value) {
+    SetUp& Possible(int64_t sequence_number, base::StringPiece value) {
       EXPECT_CALL(*client_,
                   UploadRecord(Eq(sequence_number), StrEq(std::string(value))))
           .Times(Between(0, 1))
@@ -228,14 +228,14 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       return *this;
     }
 
-    SetUp& RequiredGap(uint64_t sequence_number, uint64_t count) {
+    SetUp& RequiredGap(int64_t sequence_number, uint64_t count) {
       EXPECT_CALL(*client_, UploadGap(Eq(sequence_number), Eq(count)))
           .InSequence(client_->test_upload_sequence_)
           .WillOnce(Return(true));
       return *this;
     }
 
-    SetUp& PossibleGap(uint64_t sequence_number, uint64_t count) {
+    SetUp& PossibleGap(int64_t sequence_number, uint64_t count) {
       EXPECT_CALL(*client_, UploadGap(Eq(sequence_number), Eq(count)))
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
@@ -243,7 +243,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       return *this;
     }
 
-    SetUp& Failure(uint64_t sequence_number, Status error) {
+    SetUp& Failure(int64_t sequence_number, Status error) {
       EXPECT_CALL(*client_, UploadRecordFailure(Eq(sequence_number), Eq(error)))
           .InSequence(client_->test_upload_sequence_)
           .WillOnce(Return(true));
@@ -255,7 +255,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
   };
 
  private:
-  base::Optional<uint64_t> generation_id_;
+  base::Optional<int64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
 
   Sequence test_upload_sequence_;
@@ -290,7 +290,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     storage_queue_.reset();
   }
 
-  void InjectFailures(std::initializer_list<uint64_t> seq_numbers) {
+  void InjectFailures(std::initializer_list<int64_t> seq_numbers) {
     storage_queue_->TestInjectBlockReadErrors(seq_numbers);
   }
 
@@ -333,7 +333,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(write_result) << write_result;
   }
 
-  void ConfirmOrDie(std::uint64_t seq_number) {
+  void ConfirmOrDie(std::int64_t seq_number) {
     TestEvent<Status> c;
     storage_queue_->Confirm(seq_number, c.cb());
     const Status c_result = c.result();

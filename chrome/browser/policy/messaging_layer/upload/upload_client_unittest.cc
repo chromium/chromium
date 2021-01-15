@@ -144,9 +144,13 @@ base::Value ValueFromSucceededSequencingInfo(
   EXPECT_FALSE(encrypted_record_list->GetList().empty());
 
   // Retrieve and process sequencing information
-  const base::Value* seq_info =
+  const base::Value* unsigned_seq_info =
       encrypted_record_list->GetList().rbegin()->FindDictKey(
           "sequencingInformation");
+  EXPECT_TRUE(unsigned_seq_info != nullptr);
+  const base::Value* seq_info =
+      encrypted_record_list->GetList().rbegin()->FindDictKey(
+          "sequenceInformation");
   EXPECT_TRUE(seq_info != nullptr);
   response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
 
@@ -213,8 +217,8 @@ class UploadClientTest : public ::testing::TestWithParam<bool> {
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
-  const int kExpectedCallTimes = 10;
-  const uint64_t kGenerationId = 1234;
+  static constexpr int64_t kExpectedCallTimes = 10;
+  static constexpr int64_t kGenerationId = 1234;
 
   base::Value data{base::Value::Type::DICTIONARY};
   data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));
@@ -231,18 +235,17 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   wrapped_record.SerializeToString(&serialized_record);
   std::unique_ptr<std::vector<EncryptedRecord>> records =
       std::make_unique<std::vector<EncryptedRecord>>();
-  for (int i = 0; i < kExpectedCallTimes; i++) {
+  for (int64_t i = 0; i < kExpectedCallTimes; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
 
     SequencingInformation* sequencing_information =
         encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(i);
+    sequencing_information->set_sequencing_id(static_cast<int64_t>(i));
     sequencing_information->set_generation_id(kGenerationId);
     sequencing_information->set_priority(Priority::IMMEDIATE);
     records->push_back(encrypted_record);
   }
-
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(

@@ -107,9 +107,9 @@ void DmServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status process_status;
 
-  const uint64_t expected_generation_id =
+  const int64_t expected_generation_id =
       encrypted_records_->front().sequencing_information().generation_id();
-  uint64_t expected_sequencing_id =
+  int64_t expected_sequencing_id =
       encrypted_records_->front().sequencing_information().sequencing_id();
 
   // Will stop processing records on the first record that fails to pass.
@@ -151,8 +151,8 @@ void DmServerUploader::Complete(CompletionResponse completion_response) {
 
 Status DmServerUploader::IsRecordValid(
     const EncryptedRecord& encrypted_record,
-    const uint64_t expected_generation_id,
-    const uint64_t expected_sequencing_id) const {
+    const int64_t expected_generation_id,
+    const int64_t expected_sequencing_id) const {
   // Test to ensure all records are in the same generation.
   if (encrypted_record.sequencing_information().generation_id() !=
       expected_generation_id) {

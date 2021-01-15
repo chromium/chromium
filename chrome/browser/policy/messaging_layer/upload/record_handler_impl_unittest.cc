@@ -105,12 +105,21 @@ void RetrieveFinalSequencingInformation(const base::Value& request,
       request.FindListKey("encryptedRecord");
   ASSERT_TRUE(encrypted_record_list != nullptr);
   ASSERT_FALSE(encrypted_record_list->GetList().empty());
-  const auto* seq_info = encrypted_record_list->GetList().rbegin()->FindDictKey(
-      "sequencingInformation");
+  const auto* const seq_info =
+      encrypted_record_list->GetList().rbegin()->FindDictKey(
+          "sequenceInformation");
   ASSERT_TRUE(seq_info != nullptr);
   ASSERT_TRUE(!seq_info->FindStringKey("sequencingId")->empty());
   ASSERT_TRUE(!seq_info->FindStringKey("generationId")->empty());
   ASSERT_TRUE(seq_info->FindIntKey("priority"));
+  // For backwards compatibility, we must also have unsigned sequencing info.
+  const auto* const unsigned_seq_info =
+      encrypted_record_list->GetList().rbegin()->FindDictKey(
+          "sequencingInformation");
+  ASSERT_TRUE(unsigned_seq_info != nullptr);
+  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("sequencingId")->empty());
+  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("generationId")->empty());
+  ASSERT_TRUE(unsigned_seq_info->FindIntKey("priority"));
 
   sequencing_info.MergeDictionary(seq_info);
   // Set half of sequencing information to return a string instead of an int for
@@ -176,9 +185,9 @@ void FailedResponseFromRequest(const base::Value& request,
   // The lastSucceedUploadedRecord should be the record before the one indicated
   // in seq_info. |seq_info| has been built by
   // RetrieveFinalSequencingInforamation and is guaranteed to have this key.
-  uint64_t sequencing_id;
-  ASSERT_TRUE(base::StringToUint64(*seq_info.FindStringKey("sequencingId"),
-                                   &sequencing_id));
+  int64_t sequencing_id;
+  ASSERT_TRUE(base::StringToInt64(*seq_info.FindStringKey("sequencingId"),
+                                  &sequencing_id));
   // The lastSucceedUploadedRecord should be the record before the one
   // indicated in seq_info.
   response.SetStringPath("lastSucceedUploadedRecord.sequencingId",
@@ -215,12 +224,12 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
 };
 
 std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
-    size_t number_of_test_records,
-    uint64_t generation_id) {
+    int64_t number_of_test_records,
+    int64_t generation_id) {
   std::unique_ptr<std::vector<EncryptedRecord>> test_records =
       std::make_unique<std::vector<EncryptedRecord>>();
   test_records->reserve(number_of_test_records);
-  for (size_t i = 0; i < number_of_test_records; i++) {
+  for (int64_t i = 0; i < number_of_test_records; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));
@@ -235,8 +244,8 @@ std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
 }
 
 TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
-  constexpr size_t kNumTestRecords = 10;
-  constexpr uint64_t kGenerationId = 1234;
+  static constexpr int64_t kNumTestRecords = 10;
+  static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiter client_waiter;
@@ -285,8 +294,8 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
 }
 
 TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
-  uint64_t kNumTestRecords = 10;
-  uint64_t kGenerationId = 1234;
+  static constexpr int64_t kNumTestRecords = 10;
+  static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiter client_waiter;
@@ -323,8 +332,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 }
 
 TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
-  uint64_t kNumTestRecords = 10;
-  uint64_t kGenerationId = 1234;
+  static constexpr int64_t kNumTestRecords = 10;
+  static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   // Once for failure, and once for gap.
@@ -388,8 +397,8 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
 // expected response, clients shouldn't crash in these instances, but simply
 // report an internal error.
 TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
-  constexpr size_t kNumTestRecords = 10;
-  constexpr uint64_t kGenerationId = 1234;
+  static constexpr int64_t kNumTestRecords = 10;
+  static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiter client_waiter;

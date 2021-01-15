@@ -202,10 +202,10 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
 }
 
 TEST_P(DmServerUploaderTest, ProcessesRecords) {
-  uint64_t kNumberOfRecords = 10;
-  uint64_t kGenerationId = 1234;
+  const int64_t kNumberOfRecords = 10;
+  const int64_t kGenerationId = 1234;
 
-  for (uint64_t i = 0; i < kNumberOfRecords; i++) {
+  for (int64_t i = 0; i < kNumberOfRecords; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));

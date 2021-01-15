@@ -587,7 +587,7 @@ void Storage::Write(Priority priority,
 }
 
 void Storage::Confirm(Priority priority,
-                      uint64_t seq_number,
+                      int64_t seq_number,
                       base::OnceCallback<void(Status)> completion_cb) {
   // Note: queues_ never change after initialization is finished, so there is
   // no need to protect or serialize access to it.
