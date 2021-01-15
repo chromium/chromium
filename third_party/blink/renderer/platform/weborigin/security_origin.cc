@@ -315,8 +315,10 @@ bool SecurityOrigin::IsSecure(const KURL& url) {
                      ExtractInnerURL(url).Protocol().Ascii()))
     return true;
 
-  return SecurityPolicy::IsOriginTrustworthySafelisted(
-      *SecurityOrigin::Create(url).get());
+  scoped_refptr<SecurityOrigin> origin = SecurityOrigin::Create(url);
+  return !origin->IsOpaque() &&
+         network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
+             origin->ToUrlOrigin());
 }
 
 base::Optional<base::UnguessableToken>
@@ -472,7 +474,8 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   // 8. If origin has been configured as a trustworthy origin, return
   //    "Potentially Trustworthy".
   //    Note: See §7.2 Development Environments for detail here.
-  if (SecurityPolicy::IsOriginTrustworthySafelisted(*this))
+  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
+          ToUrlOrigin()))
     return true;
 
   // 9. Return "Not Trustworthy".

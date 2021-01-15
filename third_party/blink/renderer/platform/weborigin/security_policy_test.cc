@@ -30,7 +30,10 @@
 
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -358,8 +361,17 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromString(url);
     EXPECT_FALSE(origin->IsPotentiallyTrustworthy());
-    SecurityPolicy::AddOriginToTrustworthySafelist(origin->ToString());
-    EXPECT_TRUE(origin->IsPotentiallyTrustworthy());
+
+    {
+      base::test::ScopedCommandLine scoped_command_line;
+      base::CommandLine* command_line =
+          scoped_command_line.GetProcessCommandLine();
+      command_line->AppendSwitchASCII(
+          network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+          origin->ToString().Latin1());
+      network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+      EXPECT_TRUE(origin->IsPotentiallyTrustworthy());
+    }
   }
 
   // Tests that adding URLs that have inner-urls to the safelist
@@ -385,9 +397,17 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
 
     EXPECT_FALSE(origin1->IsPotentiallyTrustworthy());
     EXPECT_FALSE(origin2->IsPotentiallyTrustworthy());
-    SecurityPolicy::AddOriginToTrustworthySafelist(origin1->ToString());
-    EXPECT_TRUE(origin1->IsPotentiallyTrustworthy());
-    EXPECT_TRUE(origin2->IsPotentiallyTrustworthy());
+    {
+      base::test::ScopedCommandLine scoped_command_line;
+      base::CommandLine* command_line =
+          scoped_command_line.GetProcessCommandLine();
+      command_line->AppendSwitchASCII(
+          network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+          origin1->ToString().Latin1());
+      network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+      EXPECT_TRUE(origin1->IsPotentiallyTrustworthy());
+      EXPECT_TRUE(origin2->IsPotentiallyTrustworthy());
+    }
   }
 }
 

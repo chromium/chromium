@@ -101,11 +101,6 @@ class WebSecurityPolicy {
       const WebURL& source_origin);
   BLINK_EXPORT static void ClearOriginAccessList();
 
-  // Adds an origin or hostname pattern that is always considered trustworthy.
-  // This method does not perform canonicalization; the caller is responsible
-  // for canonicalizing the input.
-  BLINK_EXPORT static void AddOriginToTrustworthySafelist(const WebString&);
-
   // Add a scheme that is always considered a secure context. The caller is
   // responsible for canonicalizing the input.
   BLINK_EXPORT static void AddSchemeToSecureContextSafelist(const WebString&);

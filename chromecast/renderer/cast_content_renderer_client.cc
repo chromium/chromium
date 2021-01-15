@@ -156,12 +156,6 @@ void CastContentRendererClient::RenderThreadStarted() {
       std::make_unique<extensions::ExtensionsGuestViewContainerDispatcher>();
   thread->AddObserver(guest_view_container_dispatcher_.get());
 #endif
-
-  for (auto& origin_or_hostname_pattern :
-       network::SecureOriginAllowlist::GetInstance().GetCurrentAllowlist()) {
-    blink::WebSecurityPolicy::AddOriginToTrustworthySafelist(
-        blink::WebString::FromUTF8(origin_or_hostname_pattern));
-  }
 }
 
 void CastContentRendererClient::RenderViewCreated(

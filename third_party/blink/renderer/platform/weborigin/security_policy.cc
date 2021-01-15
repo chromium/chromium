@@ -62,17 +62,6 @@ static network::cors::OriginAccessList& GetOriginAccessList() {
   return origin_access_list;
 }
 
-using OriginSet = HashSet<String>;
-
-static OriginSet& TrustworthyOriginSafelist() {
-  DEFINE_STATIC_LOCAL(OriginSet, safelist, ());
-  return safelist;
-}
-
-void SecurityPolicy::Init() {
-  TrustworthyOriginSafelist();
-}
-
 bool SecurityPolicy::ShouldHideReferrer(const KURL& url, const KURL& referrer) {
   bool referrer_is_secure_url = referrer.ProtocolIs("https");
   bool scheme_is_allowed =
@@ -164,42 +153,6 @@ Referrer SecurityPolicy::GenerateReferrer(
   return Referrer(ShouldHideReferrer(url, referrer_url) ? Referrer::NoReferrer()
                                                         : referrer_url,
                   referrer_policy_no_default);
-}
-
-void SecurityPolicy::AddOriginToTrustworthySafelist(
-    const String& origin_or_pattern) {
-#if DCHECK_IS_ON()
-  // Must be called before we start other threads.
-  DCHECK(WTF::IsBeforeThreadCreated());
-#endif
-  // Origins and hostname patterns must be canonicalized (including
-  // canonicalization to 8-bit strings) before being inserted into
-  // TrustworthyOriginSafelist().
-  CHECK(origin_or_pattern.Is8Bit());
-  TrustworthyOriginSafelist().insert(origin_or_pattern);
-}
-
-bool SecurityPolicy::IsOriginTrustworthySafelisted(
-    const SecurityOrigin& origin) {
-  // Early return if |origin| cannot possibly be matched.
-  if (origin.IsOpaque() || TrustworthyOriginSafelist().IsEmpty())
-    return false;
-
-  if (TrustworthyOriginSafelist().Contains(origin.ToRawString()))
-    return true;
-
-  // KURL and SecurityOrigin hosts should be canonicalized to 8-bit strings.
-  CHECK(origin.Host().Is8Bit());
-  StringUTF8Adaptor host_adaptor(origin.Host());
-  for (const auto& origin_or_pattern : TrustworthyOriginSafelist()) {
-    StringUTF8Adaptor origin_or_pattern_adaptor(origin_or_pattern);
-    if (base::MatchPattern(host_adaptor.AsStringPiece(),
-                           origin_or_pattern_adaptor.AsStringPiece())) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 bool SecurityPolicy::IsOriginAccessAllowed(

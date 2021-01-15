@@ -112,11 +112,6 @@ void WebSecurityPolicy::ClearOriginAccessList() {
   SecurityPolicy::ClearOriginAccessList();
 }
 
-void WebSecurityPolicy::AddOriginToTrustworthySafelist(
-    const WebString& origin) {
-  SecurityPolicy::AddOriginToTrustworthySafelist(origin);
-}
-
 void WebSecurityPolicy::AddSchemeToSecureContextSafelist(
     const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(scheme);

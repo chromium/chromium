@@ -142,8 +142,6 @@ void CoreInitializer::Initialize() {
 
   style_change_extra_data::Init();
 
-  SecurityPolicy::Init();
-
   RegisterEventFactory();
 
   StringImpl::FreezeStaticStrings();

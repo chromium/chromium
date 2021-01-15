@@ -33,7 +33,10 @@
 #include <stdint.h>
 
 #include "base/stl_util.h"
+#include "base/test/scoped_command_line.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -323,16 +326,26 @@ TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
   for (const char* test : urls) {
     KURL url(test);
     EXPECT_FALSE(SecurityOrigin::IsSecure(url));
-    SecurityPolicy::AddOriginToTrustworthySafelist(
-        SecurityOrigin::CreateFromString(url)->ToRawString());
-    EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+    {
+      base::test::ScopedCommandLine scoped_command_line;
+      base::CommandLine* command_line =
+          scoped_command_line.GetProcessCommandLine();
+      command_line->AppendSwitchASCII(
+          network::switches::kUnsafelyTreatInsecureOriginAsSecure, test);
+      network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+      EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+    }
   }
 }
 
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthyHostnamePattern) {
   KURL url("http://bar.foo.com");
   EXPECT_FALSE(SecurityOrigin::IsSecure(url));
-  SecurityPolicy::AddOriginToTrustworthySafelist("*.foo.com");
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure, "*.foo.com");
+  network::SecureOriginAllowlist::GetInstance().ResetForTesting();
   EXPECT_TRUE(SecurityOrigin::IsSecure(url));
 }
 
@@ -340,7 +353,11 @@ TEST_F(SecurityOriginTest, IsSecureViaTrustworthyHostnamePattern) {
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthyHostnamePatternEmptyHostname) {
   KURL url("file://foo");
   EXPECT_FALSE(SecurityOrigin::IsSecure(url));
-  SecurityPolicy::AddOriginToTrustworthySafelist("*.foo.com");
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure, "*.foo.com");
+  network::SecureOriginAllowlist::GetInstance().ResetForTesting();
   EXPECT_FALSE(SecurityOrigin::IsSecure(url));
 }
 
