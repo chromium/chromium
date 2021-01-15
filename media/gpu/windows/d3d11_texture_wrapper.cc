@@ -118,8 +118,7 @@ Status DefaultTexture2DWrapper::ProcessTexture(
   // from some previous operation.
   // TODO(liberato): Return the error.
   if (received_error_)
-    return Status(StatusCode::kProcessTextureFailed)
-        .AddCause(std::move(*received_error_));
+    return Status(StatusCode::kProcessTextureFailed);
 
   // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
   // case we don't use all the planes.
