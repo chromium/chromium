@@ -5873,15 +5873,10 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
-  if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
-      dom_window_->GetAgent()->IsOriginKeyed()) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "document.domain mutation is ignored because the surrounding agent "
-        "cluster is origin-keyed."));
-    return;
-  }
+  // We technically only need to IsOriginKeyed(), as IsCrossOriginIsolated()
+  // implies IsOriginKeyed(). (The spec only checks "is origin-keyed".) But,
+  // we'll check both, in order to give warning messages that are more specific
+  // about the cause. Note: this means the order of the checks is important.
 
   if (RuntimeEnabledFeatures::CrossOriginIsolationEnabled() &&
       Agent::IsCrossOriginIsolated()) {
@@ -5890,6 +5885,16 @@ void Document::setDomain(const String& raw_domain,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "document.domain mutation is ignored because the surrounding agent "
         "cluster is cross-origin isolated."));
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
+      dom_window_->GetAgent()->IsOriginKeyed()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "document.domain mutation is ignored because the surrounding agent "
+        "cluster is origin-keyed."));
     return;
   }
 

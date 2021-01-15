@@ -1802,7 +1802,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // architecture.
     if (!Document::ShouldInheritSecurityOriginFromOwner(Url()) &&
         commit_reason_ != CommitReason::kJavascriptUrl) {
-      agent->SetIsOriginKeyed(origin_agent_cluster_);
+      agent->SetIsExplicitlyOriginKeyed(origin_agent_cluster_);
     }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
