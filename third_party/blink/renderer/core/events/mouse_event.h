@@ -24,6 +24,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_MOUSE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_MOUSE_EVENT_H_
 
+#include <cmath>
+
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
@@ -135,21 +137,13 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   // Note that these values are adjusted to counter the effects of zoom, so that
   // values exposed via DOM APIs are invariant under zooming.
-  virtual double screenX() const {
-    return static_cast<int>(screen_location_.X());
-  }
+  virtual double screenX() const { return std::trunc(screen_location_.X()); }
 
-  virtual double screenY() const {
-    return static_cast<int>(screen_location_.Y());
-  }
+  virtual double screenY() const { return std::trunc(screen_location_.Y()); }
 
-  virtual double clientX() const {
-    return static_cast<int>(client_location_.X());
-  }
+  virtual double clientX() const { return std::trunc(client_location_.X()); }
 
-  virtual double clientY() const {
-    return static_cast<int>(client_location_.Y());
-  }
+  virtual double clientY() const { return std::trunc(client_location_.Y()); }
 
   int movementX() const { return movement_delta_.X(); }
   int movementY() const { return movement_delta_.Y(); }
@@ -160,9 +154,9 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   virtual double offsetX() const;
   virtual double offsetY() const;
 
-  virtual double pageX() const { return static_cast<int>(page_location_.X()); }
+  virtual double pageX() const { return std::trunc(page_location_.X()); }
 
-  virtual double pageY() const { return static_cast<int>(page_location_.Y()); }
+  virtual double pageY() const { return std::trunc(page_location_.Y()); }
 
   double x() const { return clientX(); }
   double y() const { return clientY(); }
