@@ -55,9 +55,10 @@
   }
 
   .profiles-container {
-    --grid-gutter: 16px;
+    --grid-gutter: 8px;
     align-items: center;
     display: grid;
+    /* Actual gap: --grid-gutter + 2 * --profile-item-margin = 16px */
     grid-column-gap: var(--grid-gutter);
     grid-row-gap: var(--grid-gutter);
     grid-template-columns: repeat(auto-fit, calc(var(--profile-item-width) +
@@ -74,7 +75,8 @@
 
   .profile-item {
     align-items: center;
-    border-radius: 12px;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     height: var(--profile-item-height);
@@ -83,9 +85,13 @@
     width: var(--profile-item-width);
   }
 
-  #addProfile {
-    border: 1px dashed;
-    border-color: var(--google-grey-400);
+  .profile-item:focus-within,
+  .profile-item:hover {
+    background-color: var(--profile-card-hover-color);
+  }
+
+  #addProfile.profile-item {
+    border: 1px dashed var(--google-grey-300);
     position: relative;
   }
 
@@ -130,9 +136,9 @@
       background: url(images/dark_mode_right_banner_image.svg);
     }
 
-    #addProfile {
+    .profile-item,
+    #addProfile.profile-item {
       border-color: var(--google-grey-refresh-700);
-      position: relative;
     }
 
     cr-icon-button[iron-icon='profiles:add'] {
