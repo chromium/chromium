@@ -410,6 +410,9 @@
 #include "chrome/browser/media/feeds/media_feeds_service.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/session_service_log.h"
+#endif
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -907,6 +910,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   omnibox::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  RegisterSessionServiceLogProfilePrefs(registry);
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionWebUI::RegisterProfilePrefs(registry);

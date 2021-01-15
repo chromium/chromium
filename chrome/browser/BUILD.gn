@@ -6158,6 +6158,8 @@ static_library("browser") {
       "sessions/session_service.h",
       "sessions/session_service_factory.cc",
       "sessions/session_service_factory.h",
+      "sessions/session_service_log.cc",
+      "sessions/session_service_log.h",
       "sessions/session_service_utils.cc",
       "sessions/session_service_utils.h",
       "sessions/tab_loader.cc",
