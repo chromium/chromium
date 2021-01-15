@@ -995,6 +995,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   OverlayInfo overlay_info_;
 
+  // TODO(crbug.com/1141533): Convert to base::CancelableOnceClosure. Previous
+  // attempts to do so have led to test flakiness.
   base::CancelableClosure update_background_status_cb_;
 
   mojo::Remote<mojom::MediaMetricsProvider> media_metrics_provider_;

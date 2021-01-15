@@ -327,11 +327,14 @@ ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
       cdm_host_proxy_(new CdmHostProxyImpl<HostInterface>(host)),
       cdm_(new ClearKeyPersistentSessionCdm(
           cdm_host_proxy_.get(),
-          base::Bind(&ClearKeyCdm::OnSessionMessage, base::Unretained(this)),
-          base::Bind(&ClearKeyCdm::OnSessionClosed, base::Unretained(this)),
-          base::Bind(&ClearKeyCdm::OnSessionKeysChange, base::Unretained(this)),
-          base::Bind(&ClearKeyCdm::OnSessionExpirationUpdate,
-                     base::Unretained(this)))),
+          base::BindRepeating(&ClearKeyCdm::OnSessionMessage,
+                              base::Unretained(this)),
+          base::BindRepeating(&ClearKeyCdm::OnSessionClosed,
+                              base::Unretained(this)),
+          base::BindRepeating(&ClearKeyCdm::OnSessionKeysChange,
+                              base::Unretained(this)),
+          base::BindRepeating(&ClearKeyCdm::OnSessionExpirationUpdate,
+                              base::Unretained(this)))),
       key_system_(key_system) {
   DCHECK(g_is_cdm_module_initialized);
 }

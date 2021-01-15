@@ -252,14 +252,15 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   void SetUp() override {
     if (GetParam() == TestType::kAesDecryptor) {
       OnCdmCreated(
-          new AesDecryptor(base::Bind(&MockCdmClient::OnSessionMessage,
-                                      base::Unretained(&cdm_client_)),
-                           base::Bind(&MockCdmClient::OnSessionClosed,
-                                      base::Unretained(&cdm_client_)),
-                           base::Bind(&MockCdmClient::OnSessionKeysChange,
-                                      base::Unretained(&cdm_client_)),
-                           base::Bind(&MockCdmClient::OnSessionExpirationUpdate,
-                                      base::Unretained(&cdm_client_))),
+          new AesDecryptor(
+              base::BindRepeating(&MockCdmClient::OnSessionMessage,
+                                  base::Unretained(&cdm_client_)),
+              base::BindRepeating(&MockCdmClient::OnSessionClosed,
+                                  base::Unretained(&cdm_client_)),
+              base::BindRepeating(&MockCdmClient::OnSessionKeysChange,
+                                  base::Unretained(&cdm_client_)),
+              base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
+                                  base::Unretained(&cdm_client_))),
           std::string());
     } else if (GetParam() == TestType::kCdmAdapter) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -283,18 +284,19 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
       std::unique_ptr<CdmAllocator> allocator(new SimpleCdmAllocator());
       std::unique_ptr<CdmAuxiliaryHelper> cdm_helper(
           new MockCdmAuxiliaryHelper(std::move(allocator)));
-      CdmAdapter::Create(helper_->KeySystemName(),
-                         cdm_config, create_cdm_func, std::move(cdm_helper),
-                         base::Bind(&MockCdmClient::OnSessionMessage,
-                                    base::Unretained(&cdm_client_)),
-                         base::Bind(&MockCdmClient::OnSessionClosed,
-                                    base::Unretained(&cdm_client_)),
-                         base::Bind(&MockCdmClient::OnSessionKeysChange,
-                                    base::Unretained(&cdm_client_)),
-                         base::Bind(&MockCdmClient::OnSessionExpirationUpdate,
-                                    base::Unretained(&cdm_client_)),
-                         base::BindOnce(&AesDecryptorTest::OnCdmCreated,
-                                        base::Unretained(this)));
+      CdmAdapter::Create(
+          helper_->KeySystemName(), cdm_config, create_cdm_func,
+          std::move(cdm_helper),
+          base::BindRepeating(&MockCdmClient::OnSessionMessage,
+                              base::Unretained(&cdm_client_)),
+          base::BindRepeating(&MockCdmClient::OnSessionClosed,
+                              base::Unretained(&cdm_client_)),
+          base::BindRepeating(&MockCdmClient::OnSessionKeysChange,
+                              base::Unretained(&cdm_client_)),
+          base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
+                              base::Unretained(&cdm_client_)),
+          base::BindOnce(&AesDecryptorTest::OnCdmCreated,
+                         base::Unretained(this)));
 
       base::RunLoop().RunUntilIdle();
 #else
