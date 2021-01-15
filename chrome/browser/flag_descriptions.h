@@ -407,6 +407,9 @@ extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[];
 extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[];
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[];
 
+extern const char kDesktopPWAsRemoveStatusBarName[];
+extern const char kDesktopPWAsRemoveStatusBarDescription[];
+
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 

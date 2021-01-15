@@ -660,6 +660,10 @@ extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] =
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
     "Enable for notifications only";
 
+const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
+const char kDesktopPWAsRemoveStatusBarDescription[] =
+    "Hides the status bar popup in Desktop PWA app windows.";
+
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";
 const char kDesktopPWAsElidedExtensionsMenuDescription[] =
