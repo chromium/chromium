@@ -2219,6 +2219,7 @@ static_library("browser") {
     "//components/services/unzip/public/cpp",
     "//components/services/unzip/public/mojom",
     "//components/sessions",
+    "//components/shared_highlighting/core/common",
     "//components/signin/core/browser",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",

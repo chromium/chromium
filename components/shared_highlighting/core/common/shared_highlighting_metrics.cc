@@ -72,6 +72,10 @@ void LogGenerateErrorIFrame() {
   LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
 }
 
+void LogGenerateErrorBlockList() {
+  LogLinkGenerationErrorReason(LinkGenerationError::kBlockList);
+}
+
 void LogGenerateSuccessLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("SharedHighlights.LinkGenerated.TimeToGenerate",
                           latency);

@@ -75,8 +75,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void requestSelector() {
+        if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mVisibleUrl))) {
+            LinkToTextBridge.logGenerateErrorBlockList();
+            onSelectorReady(INVALID_SELECTOR);
+            return;
+        }
+
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
-            LinkToTextMetricsBridge.logGenerateErrorIFrame();
+            LinkToTextBridge.logGenerateErrorIFrame();
             onSelectorReady(INVALID_SELECTOR);
             return;
         }
@@ -104,21 +110,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     // Discard results if tab is not on foreground anymore.
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
-        LinkToTextMetricsBridge.logGenerateErrorTabHidden();
+        LinkToTextBridge.logGenerateErrorTabHidden();
         cleanup();
     }
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
     public void onUpdateUrl(Tab tab, GURL url) {
-        LinkToTextMetricsBridge.logGenerateErrorOmniboxNavigation();
+        LinkToTextBridge.logGenerateErrorOmniboxNavigation();
         cleanup();
     }
 
     // Discard results if tab content crashes.
     @Override
     public void onCrash(Tab tab) {
-        LinkToTextMetricsBridge.logGenerateErrorTabCrash();
+        LinkToTextBridge.logGenerateErrorTabCrash();
         cleanup();
     }
 
