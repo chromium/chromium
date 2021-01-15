@@ -122,6 +122,9 @@ feedwire::Request CreateFeedQueryRequest(
   feed_request.add_client_capability(feedwire::Capability::CARD_MENU);
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
+  if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
+    feed_request.add_client_capability(feedwire::Capability::HEART);
+  }
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();

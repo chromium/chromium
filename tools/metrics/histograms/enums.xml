@@ -42468,6 +42468,7 @@ from previous Chrome versions.
       label="AllowDownloadResumptionWithoutStrongValidators:disabled"/>
   <int value="-2058656447" label="ContextualSearchUrlActions:enabled"/>
   <int value="-2056351013" label="AutofillUpdatedCardUnmaskPromptUi:enabled"/>
+  <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
@@ -46590,6 +46591,7 @@ from previous Chrome versions.
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
+  <int value="1811744551" label="InterestFeedV2Hearts:enabled"/>
   <int value="1812368073" label="enable-new-app-list-mixer"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>

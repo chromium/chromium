@@ -2874,6 +2874,9 @@ const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "
     "new Feed Component.";
 
+const char kInterestFeedV2HeartsName[] = "Interest Feed v2 Hearts";
+const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
+
 const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[] =
     "Interest Feed V1 clicks/views conditional upload";
 const char kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[] =

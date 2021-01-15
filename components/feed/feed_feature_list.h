@@ -14,6 +14,7 @@ namespace feed {
 
 extern const base::Feature kInterestFeedContentSuggestions;
 extern const base::Feature kInterestFeedV2;
+extern const base::Feature kInterestFeedV2Hearts;
 
 bool IsV1Enabled();
 bool IsV2Enabled();

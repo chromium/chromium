@@ -2633,6 +2633,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "feed-v2-hearts",
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "file-handling-api",
     "owners": [ "huangdarwin", "mgiuca", "cmp" ],
     "expiry_milestone": 94
