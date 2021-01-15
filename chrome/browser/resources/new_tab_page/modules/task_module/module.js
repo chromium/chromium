@@ -47,6 +47,22 @@ class TaskModuleElement extends PolymerElement {
     this.intersectionObserver_ = null;
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isRecipe_() {
+    return this.taskModuleType === taskModule.mojom.TaskModuleType.kRecipe;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isShopping_() {
+    return this.taskModuleType === taskModule.mojom.TaskModuleType.kShopping;
+  }
+
   /** @private */
   onTaskModuleTypeChange_() {
     switch (this.taskModuleType) {
@@ -148,7 +164,7 @@ async function createModule(taskModuleType) {
 /** @type {!ModuleDescriptor} */
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
-    /*heightPx=*/ 260,
+    /*heightPx=*/ 300,
     createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
 
 /** @type {!ModuleDescriptor} */

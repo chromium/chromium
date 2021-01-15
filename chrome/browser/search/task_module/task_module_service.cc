@@ -267,6 +267,7 @@ void TaskModuleService::OnJsonParsed(
       auto* image_url = task_item.FindStringPath("image_url");
       auto* price = task_item.FindStringPath("price");
       auto* info = task_item.FindStringPath("info");
+      auto* site_name = task_item.FindStringPath("site_name");
       auto* target_url = task_item.FindStringPath("target_url");
       if (!name || !image_url || !info || !target_url) {
         continue;
@@ -279,6 +280,10 @@ void TaskModuleService::OnJsonParsed(
       mojom_task_item->name = *name;
       mojom_task_item->image_url = GURL(*image_url);
       mojom_task_item->info = *info;
+      if (task_module_type == task_module::mojom::TaskModuleType::kRecipe &&
+          site_name) {
+        mojom_task_item->site_name = *site_name;
+      }
       mojom_task_item->target_url = GURL(*target_url);
       if (task_module_type == task_module::mojom::TaskModuleType::kShopping) {
         mojom_task_item->price = *price;

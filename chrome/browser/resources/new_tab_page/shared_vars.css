@@ -10,7 +10,9 @@
 html {
   /* Colors: */
   --ntp-active-background-color: rgba(var(--google-grey-900-rgb), .16);
-  --ntp-background-override-color: white;
+  --ntp-background-override-color-rgb: 255, 255, 255;
+  --ntp-background-override-color:
+      rgba(var(--ntp-background-override-color-rgb));
   --ntp-border-color: var(--google-grey-refresh-300);
   --ntp-focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
   --ntp-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
@@ -33,7 +35,7 @@ html {
   html {
     /* Colors: */
     --ntp-active-background-color: rgba(var(--google-grey-200-rgb), .16);
-    --ntp-background-override-color: var(--google-grey-900);
+    --ntp-background-override-color-rgb: var(--google-grey-900-rgb);
     --ntp-border-color: var(--google-grey-refresh-700);
     --ntp-focus-shadow-color: rgba(var(--google-blue-refresh-300-rgb), .5);
     --ntp-hover-background-color: rgba(var(--google-grey-200-rgb), .1);
