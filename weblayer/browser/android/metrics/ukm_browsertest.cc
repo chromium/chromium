@@ -59,9 +59,13 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EnabledThenDisable) {
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  uint64_t original_client_id = ukm_test_helper.GetClientId();
+  EXPECT_NE(0U, original_client_id);
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, false);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+  // Client ID should have been reset.
+  EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
 }
 
 // Make sure that UKM is disabled while an incognito profile is alive.
