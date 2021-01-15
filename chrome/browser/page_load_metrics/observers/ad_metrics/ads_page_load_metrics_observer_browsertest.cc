@@ -494,15 +494,11 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
 // Creates a frame with display:none styling and verifies that it has an
 // empty intersection with the main frame.
-#if defined(OS_WIN)
-#define MAYBE_PageAdDensityIgnoreDisplayNoneFrame \
-  DISABLED_PageAdDensityIgnoreDisplayNoneFrame
-#else
-#define MAYBE_PageAdDensityIgnoreDisplayNoneFrame \
-  PageAdDensityIgnoreDisplayNoneFrame
-#endif
+//
+// TODO(crbug.com/1121444): This test is disabled due to flaky failures on
+// multiple platforms.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_PageAdDensityIgnoreDisplayNoneFrame) {
+                       DISABLED_PageAdDensityIgnoreDisplayNoneFrame) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
