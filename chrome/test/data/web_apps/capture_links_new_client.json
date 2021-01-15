@@ -1,0 +1,6 @@
+{
+  "name": "\"capture_links\": \"new-client\"",
+  "start_url": "capture_links_new_client.html",
+  "display": "standalone",
+  "capture_links": "new-client"
+}

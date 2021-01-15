@@ -69,8 +69,7 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
  private:
   // Returns whether navigation to |url| was captured by a web app and what to
   // do next if so.
-  base::Optional<ThrottleCheckResult>
-  CaptureExperimentalTabStripWebAppScopeNavigations(
+  base::Optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
       content::WebContents* web_contents,
       content::NavigationHandle* handle) const;
 
