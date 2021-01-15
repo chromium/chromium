@@ -26,6 +26,8 @@
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/find_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -291,8 +293,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
 
   // Bound the given scroll offset to the document.
-  pp::FloatPoint BoundScrollOffsetToDocument(
-      const pp::FloatPoint& scroll_offset);
+  gfx::PointF BoundScrollOffsetToDocument(const gfx::PointF& scroll_offset);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -344,7 +345,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
 
   // The scroll offset in CSS pixels.
-  pp::Point scroll_offset_;
+  gfx::Point scroll_offset_;
 
   // Enumeration of pinch states.
   // This should match PinchPhase enum in
@@ -361,7 +362,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool needs_reraster_ = true;
   // The scroll position for the last raster, before any transformations are
   // applied.
-  pp::FloatPoint scroll_offset_at_last_raster_;
+  gfx::PointF scroll_offset_at_last_raster_;
   // True if last bitmap was smaller than screen.
   bool last_bitmap_smaller_ = false;
   // True if the plugin is full-page.

@@ -68,6 +68,7 @@
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -854,7 +855,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   }
 
   if (!stop_scrolling_) {
-    scroll_offset_ = view.GetScrollOffset();
+    scroll_offset_ = PointFromPPPoint(view.GetScrollOffset());
     UpdateScroll();
   }
 }
@@ -866,7 +867,7 @@ void OutOfProcessInstance::UpdateScroll() {
   // are 0-based (i.e. they do not correspond to the viewport's coordinates in
   // JS), so we need to subtract the toolbar height to convert them into
   // viewport coordinates.
-  pp::FloatPoint scroll_offset_float(
+  gfx::PointF scroll_offset_float(
       scroll_offset_.x(),
       scroll_offset_.y() - top_toolbar_height_in_viewport_coords());
   scroll_offset_float = BoundScrollOffsetToDocument(scroll_offset_float);
@@ -1971,7 +1972,7 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
 
   int x = dict.Get(pp::Var(kJSUpdateScrollX)).AsInt();
   int y = dict.Get(pp::Var(kJSUpdateScrollY)).AsInt();
-  scroll_offset_ = pp::Point(x, y);
+  scroll_offset_ = gfx::Point(x, y);
   UpdateScroll();
 }
 
@@ -2000,8 +2001,8 @@ void OutOfProcessInstance::HandleViewportMessage(
   double new_zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
   double zoom_ratio = new_zoom / zoom();
 
-  pp::FloatPoint scroll_offset(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
-                               dict.Get(pp::Var(kJSYOffset)).AsDouble());
+  gfx::PointF scroll_offset(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
+                            dict.Get(pp::Var(kJSYOffset)).AsDouble());
 
   if (pinch_phase == PINCH_START) {
     scroll_offset_at_last_raster_ = scroll_offset;
@@ -2492,8 +2493,8 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
 }
 
-pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
-    const pp::FloatPoint& scroll_offset) {
+gfx::PointF OutOfProcessInstance::BoundScrollOffsetToDocument(
+    const gfx::PointF& scroll_offset) {
   float max_x = std::max(
       document_size().width() * float{zoom()} - plugin_dip_size().width(),
       0.0f);
@@ -2503,7 +2504,7 @@ pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
       document_size().height() * float{zoom()} - plugin_dip_size().height(),
       min_y);
   float y = base::ClampToRange(scroll_offset.y(), min_y, max_y);
-  return pp::FloatPoint(x, y);
+  return gfx::PointF(x, y);
 }
 
 bool OutOfProcessInstance::SendInputEventToEngine(const pp::InputEvent& event) {
