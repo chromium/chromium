@@ -933,7 +933,7 @@ void HistoryService::Cleanup() {
 bool HistoryService::Init(
     bool no_db,
     const HistoryDatabaseParams& history_database_params) {
-  TRACE_EVENT0("browser,startup", "HistoryService::Init")
+  TRACE_EVENT0("browser,startup", "HistoryService::Init");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Unit tests can inject |backend_task_runner_| before this is called.
