@@ -1,7 +1,7 @@
 AXWebArea
-++AXGroup
-++AXGroup AXOrientation='AXHorizontalOrientation'
-++AXGroup AXOrientation='AXVerticalOrientation'
+++AXComboBox
+++AXComboBox AXOrientation='AXHorizontalOrientation'
+++AXComboBox AXOrientation='AXVerticalOrientation'
 ++AXList AXOrientation='AXVerticalOrientation'
 ++AXList AXOrientation='AXHorizontalOrientation'
 ++AXList AXOrientation='AXVerticalOrientation'

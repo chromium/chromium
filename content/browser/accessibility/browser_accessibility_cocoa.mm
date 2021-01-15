@@ -1980,7 +1980,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     cocoa_role = NSAccessibilityGroupRole;
   } else if ((_owner->IsPlainTextField() &&
               _owner->HasState(ax::mojom::State::kMultiline)) ||
-             _owner->IsRichTextField()) {
+             (_owner->IsRichTextField() && !ui::IsComboBox(role))) {
     cocoa_role = NSAccessibilityTextAreaRole;
   } else if (role == ax::mojom::Role::kImage &&
              _owner->HasExplicitlyEmptyName()) {

@@ -723,6 +723,17 @@ bool IsText(ax::mojom::Role role) {
   }
 }
 
+bool IsComboBox(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kTextFieldWithComboBox:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kArticle:

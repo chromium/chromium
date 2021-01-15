@@ -179,6 +179,9 @@ AX_BASE_EXPORT bool IsTableRow(ax::mojom::Role role);
 // break, or inline text box.
 AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
 
+// Returns true if the provided role is any of the combobox-related roles.
+AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
+
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(
     const ax::mojom::Role role);
