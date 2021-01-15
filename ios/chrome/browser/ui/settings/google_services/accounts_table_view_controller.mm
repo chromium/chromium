@@ -399,8 +399,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Authentication operations
 
 - (void)showAddAccount {
-  if ([_alertCoordinator isVisible])
-    return;
+  DCHECK(!_alertCoordinator);
   _authenticationOperationInProgress = YES;
 
   __weak __typeof(self) weakSelf = self;
@@ -425,10 +424,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)showAccountDetails:(ChromeIdentity*)identity
                   itemView:(UIView*)itemView {
-  if (_alertCoordinator.isVisible) {
-    return;
-  }
-
+  DCHECK(!_alertCoordinator);
   _alertCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
@@ -436,63 +432,87 @@ typedef NS_ENUM(NSInteger, ItemType) {
                          message:identity.userEmail
                             rect:itemView.frame
                             view:itemView];
-
+  __weak __typeof(self) weakSelf = self;
   [_alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
                 action:^{
-                  _dimissAccountDetailsViewControllerBlock =
-                      ios::GetChromeBrowserProvider()
-                          ->GetChromeIdentityService()
-                          ->PresentAccountDetailsController(identity, self,
-                                                            /*animated=*/YES);
+                  [weakSelf handleManageGoogleAccountWithIdentity:identity];
                 }
                  style:UIAlertActionStyleDefault];
-
-  self.removeAccountCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:_browser
-                           title:l10n_util::GetNSStringF(
-                                     IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE,
-                                     base::SysNSStringToUTF16(
-                                         identity.userEmail))
-                         message:
-                             l10n_util::GetNSString(
-                                 IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE)];
-
-  __weak AccountsTableViewController* weakSelf = self;
   [_alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
-                  [weakSelf.removeAccountCoordinator
-                      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                action:nil
-                                 style:UIAlertActionStyleCancel];
-                  [weakSelf.removeAccountCoordinator
-                      addItemWithTitle:l10n_util::GetNSString(
-                                           IDS_IOS_REMOVE_ACCOUNT_LABEL)
-                                action:^{
-                                  weakSelf.uiDisabled = YES;
-                                  ios::GetChromeBrowserProvider()
-                                      ->GetChromeIdentityService()
-                                      ->ForgetIdentity(
-                                          identity, ^(NSError* error) {
-                                            weakSelf.uiDisabled = NO;
-                                          });
-                                }
-                                 style:UIAlertActionStyleDestructive];
-
-                  [weakSelf.removeAccountCoordinator start];
+                  [weakSelf handleRemoveSecondaryAccountWithIdentity:identity];
                 }
                  style:UIAlertActionStyleDestructive];
-
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^() {
+                                 [weakSelf handleAlertCoordinatorCancel];
+                               }
+                                style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
+}
+
+// Handles the manage Google account action from |_alertCoordinator|.
+// Action sheet created in |showAccountDetails:itemView:|
+- (void)handleManageGoogleAccountWithIdentity:(ChromeIdentity*)identity {
+  DCHECK(_alertCoordinator);
+  // |_alertCoordinator| should not be stopped, since the coordinator has been
+  // confirmed.
+  _alertCoordinator = nil;
+  _dimissAccountDetailsViewControllerBlock =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->PresentAccountDetailsController(identity, self,
+                                            /*animated=*/YES);
+}
+
+// Handles the secondary account remove action from |_alertCoordinator|.
+// Action sheet created in |showAccountDetails:itemView:|
+- (void)handleRemoveSecondaryAccountWithIdentity:(ChromeIdentity*)identity {
+  DCHECK(_alertCoordinator);
+  // |_alertCoordinator| should not be stopped, since the coordinator has been
+  // confirmed.
+  _alertCoordinator = nil;
+  DCHECK(!self.removeAccountCoordinator);
+  NSString* title =
+      l10n_util::GetNSStringF(IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE,
+                              base::SysNSStringToUTF16(identity.userEmail));
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE);
+  self.removeAccountCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:self
+                                                   browser:_browser
+                                                     title:title
+                                                   message:message];
+  [self.removeAccountCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:nil
+                 style:UIAlertActionStyleCancel];
+  __weak __typeof(self) weakSelf = self;
+  [self.removeAccountCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
+                action:^{
+                  [weakSelf removeSecondaryIdentity:identity];
+                }
+                 style:UIAlertActionStyleDestructive];
+  [self.removeAccountCoordinator start];
+}
+
+- (void)removeSecondaryIdentity:(ChromeIdentity*)identity {
+  self.uiDisabled = YES;
+  ios::GetChromeBrowserProvider()->GetChromeIdentityService()->ForgetIdentity(
+      identity, ^(NSError* error) {
+        self.uiDisabled = NO;
+      });
 }
 
 - (void)showSignOutWithClearData:(BOOL)forceClearData
                         itemView:(UIView*)itemView {
-  if (_authenticationOperationInProgress || [_alertCoordinator isVisible] ||
+  DCHECK(!_alertCoordinator);
+  if (_authenticationOperationInProgress ||
       self != [self.navigationController topViewController]) {
     // An action is already in progress, ignore user's request.
     return;
@@ -532,12 +552,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 }
                  style:actionStyle];
   [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:nil
+                               action:^() {
+                                 [weakSelf handleAlertCoordinatorCancel];
+                               }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
 }
 
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
+  DCHECK(_alertCoordinator);
+  // |_alertCoordinator| should not be stopped, since the coordinator has been
+  // confirmed.
+  _alertCoordinator = nil;
   AuthenticationService* authService = [self authService];
   if (authService->IsAuthenticated()) {
     _authenticationOperationInProgress = YES;
@@ -561,6 +587,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::UserMetricsAction("Signin_Signout_FromAccountListSettings"));
     }
   }
+}
+
+// Handles the cancel action for |_alertCoordinator|.
+- (void)handleAlertCoordinatorCancel {
+  DCHECK(_alertCoordinator);
+  // |_alertCoordinator| should not be stopped, since the coordinator has been
+  // cancelled.
+  _alertCoordinator = nil;
 }
 
 // Sets |_authenticationOperationInProgress| to NO and pops this accounts
