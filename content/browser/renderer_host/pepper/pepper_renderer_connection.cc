@@ -245,4 +245,53 @@ void PepperRendererConnection::DidDeleteInProcessInstance(int32_t instance) {
   in_process_host_->DeleteInstance(instance);
 }
 
+void PepperRendererConnection::DidCreateOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external,
+    int32_t render_frame_id,
+    const GURL& document_url,
+    const GURL& plugin_url,
+    bool is_privileged_context,
+    DidCreateOutOfProcessPepperInstanceCallback callback) {
+  // It's important that we supply the render process ID ourselves based on the
+  // channel the message arrived on. We use the
+  //   PP_Instance -> (process id, frame id)
+  // mapping to decide how to handle messages received from the (untrusted)
+  // plugin. An exploited renderer must not be able to insert fake mappings
+  // that may allow it access to other render processes.
+  PepperRendererInstanceData instance_data{render_process_id_, render_frame_id,
+                                           document_url, plugin_url,
+                                           is_privileged_context};
+  if (is_external) {
+    // We provide the BrowserPpapiHost to the embedder, so it's safe to cast.
+    BrowserPpapiHostImpl* host = static_cast<BrowserPpapiHostImpl*>(
+        GetContentClient()->browser()->GetExternalBrowserPpapiHost(
+            plugin_child_id));
+    if (host)
+      host->AddInstance(pp_instance, instance_data);
+  } else {
+    PpapiPluginProcessHost::DidCreateOutOfProcessInstance(
+        plugin_child_id, pp_instance, instance_data);
+  }
+  std::move(callback).Run();
+}
+
+void PepperRendererConnection::DidDeleteOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external) {
+  if (is_external) {
+    // We provide the BrowserPpapiHost to the embedder, so it's safe to cast.
+    BrowserPpapiHostImpl* host = static_cast<BrowserPpapiHostImpl*>(
+        GetContentClient()->browser()->GetExternalBrowserPpapiHost(
+            plugin_child_id));
+    if (host)
+      host->DeleteInstance(pp_instance);
+  } else {
+    PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(plugin_child_id,
+                                                          pp_instance);
+  }
+}
+
 }  // namespace content

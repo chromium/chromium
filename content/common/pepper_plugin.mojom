@@ -32,6 +32,34 @@ interface PepperIOHost {
 
   // Notification that an in-process instance has been destroyed.
   DidDeleteInProcessInstance(int32 instance_id);
+
+  // Notification that a plugin has created a new plugin instance. The
+  // parameters indicate:
+  //  - The plugin process ID that we're creating the instance for.
+  //  - The instance ID of the instance being created.
+  //  - A PepperRendererInstanceData struct which contains properties from the
+  //    renderer which are associated with the plugin instance. This includes
+  //    the routing ID of the associated RenderFrame and the URL of plugin.
+  //  - Whether the plugin we're creating an instance for is external or
+  //    internal.
+  //
+  // This message must be sync even though it returns no parameters to avoid
+  // a race condition with the plugin process. The plugin process sends messages
+  // to the browser that assume the browser knows about the instance. We need to
+  // make sure that the browser actually knows about the instance before we tell
+  // the plugin to run.
+  [Sync] DidCreateOutOfProcessPepperInstance(int32 plugin_child_id,
+                                             int32 pp_instance,
+                                             bool is_external,
+                                             int32 frame_routing_id,
+                                             url.mojom.Url document_url,
+                                             url.mojom.Url plugin_url,
+                                             bool is_privileged_context) => ();
+
+  // Notification that a plugin has destroyed an instance.
+  DidDeleteOutOfProcessPepperInstance(int32 plugin_child_id,
+                                      int32 pp_instance,
+                                      bool is_external);
 };
 
 // This interface is used on the renderer IO thread and is received on the

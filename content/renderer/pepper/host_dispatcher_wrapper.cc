@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "content/common/frame_messages.h"
+#include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/pepper_proxy_channel_delegate_impl.h"
@@ -87,13 +88,11 @@ void HostDispatcherWrapper::AddInstance(PP_Instance instance) {
     bool is_privileged_context =
         plugin_instance->GetContainer()->GetDocument().IsSecureContext() &&
         network::IsUrlPotentiallyTrustworthy(plugin_instance->GetPluginURL());
-    render_frame->Send(new FrameHostMsg_DidCreateOutOfProcessPepperInstance(
-        plugin_child_id_, instance,
-        PepperRendererInstanceData(
-            0,  // The render process id will be supplied in the browser.
+    PepperBrowserConnection::Get(render_frame)
+        ->DidCreateOutOfProcessPepperInstance(
+            plugin_child_id_, instance, is_external_,
             render_frame->GetRoutingID(), host->GetDocumentURL(instance),
-            plugin_instance->GetPluginURL(), is_privileged_context),
-        is_external_));
+            plugin_instance->GetPluginURL(), is_privileged_context);
   }
 }
 
@@ -106,8 +105,9 @@ void HostDispatcherWrapper::RemoveInstance(PP_Instance instance) {
   if (host) {
     RenderFrame* render_frame = host->GetRenderFrameForInstance(instance);
     if (render_frame) {
-      render_frame->Send(new FrameHostMsg_DidDeleteOutOfProcessPepperInstance(
-          plugin_child_id_, instance, is_external_));
+      PepperBrowserConnection::Get(render_frame)
+          ->DidDeleteOutOfProcessPepperInstance(plugin_child_id_, instance,
+                                                is_external_);
     }
   }
 }

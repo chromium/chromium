@@ -43,15 +43,41 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
     int render_frame_id,
     const GURL& document_url,
     const GURL& plugin_url) {
-  if (auto* io_host = GetIOHost()) {
-    io_host->DidCreateInProcessInstance(instance, render_frame_id, document_url,
-                                        plugin_url);
-  }
+  if (!GetIOHost())
+    return;
+  GetIOHost()->DidCreateInProcessInstance(instance, render_frame_id,
+                                          document_url, plugin_url);
 }
 
 void PepperBrowserConnection::DidDeleteInProcessInstance(PP_Instance instance) {
-  if (auto* io_host = GetIOHost())
-    io_host->DidDeleteInProcessInstance(instance);
+  if (!GetIOHost())
+    return;
+  GetIOHost()->DidDeleteInProcessInstance(instance);
+}
+
+void PepperBrowserConnection::DidCreateOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external,
+    int32_t render_frame_id,
+    const GURL& document_url,
+    const GURL& plugin_url,
+    bool is_priviledged_context) {
+  if (!GetIOHost())
+    return;
+  GetIOHost()->DidCreateOutOfProcessPepperInstance(
+      plugin_child_id, pp_instance, is_external, render_frame_id, document_url,
+      plugin_url, is_priviledged_context);
+}
+
+void PepperBrowserConnection::DidDeleteOutOfProcessPepperInstance(
+    int32_t plugin_child_id,
+    int32_t pp_instance,
+    bool is_external) {
+  if (!GetIOHost())
+    return;
+  GetIOHost()->DidDeleteOutOfProcessPepperInstance(plugin_child_id, pp_instance,
+                                                   is_external);
 }
 
 void PepperBrowserConnection::SendBrowserCreate(

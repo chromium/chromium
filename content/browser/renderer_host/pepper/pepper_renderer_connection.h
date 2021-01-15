@@ -60,6 +60,18 @@ class PepperRendererConnection
                                   const GURL& document_url,
                                   const GURL& plugin_url) override;
   void DidDeleteInProcessInstance(int32_t instance) override;
+  void DidCreateOutOfProcessPepperInstance(
+      int32_t plugin_child_id,
+      int32_t pp_instance,
+      bool is_external,
+      int32_t render_frame_id,
+      const GURL& document_url,
+      const GURL& plugin_url,
+      bool is_priviledged_context,
+      DidCreateOutOfProcessPepperInstanceCallback callback) override;
+  void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external) override;
 
   int render_process_id_;
 

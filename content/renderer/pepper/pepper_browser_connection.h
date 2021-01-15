@@ -61,6 +61,20 @@ class PepperBrowserConnection
   // Called when the renderer deletes an in-process instance.
   void DidDeleteInProcessInstance(PP_Instance instance);
 
+  // Called when the renderer creates an out of process instance.
+  void DidCreateOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external,
+                                           int32_t render_frame_id,
+                                           const GURL& document_url,
+                                           const GURL& plugin_url,
+                                           bool is_priviledged_context);
+
+  // Called when the renderer deletes an out of process instance.
+  void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external);
+
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;

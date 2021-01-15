@@ -76,14 +76,6 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
       const base::FilePath& path,
       const base::Optional<url::Origin>& origin_lock,
       IPC::Message* reply_msg);
-  void OnDidCreateOutOfProcessPepperInstance(
-      int plugin_child_id,
-      int32_t pp_instance,
-      PepperRendererInstanceData instance_data,
-      bool is_external);
-  void OnDidDeleteOutOfProcessPepperInstance(int plugin_child_id,
-                                             int32_t pp_instance,
-                                             bool is_external);
   void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
 
   PluginServiceImpl* plugin_service_;
