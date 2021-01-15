@@ -215,7 +215,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 20),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 21),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -256,6 +256,10 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE},
       {extensions::disable_reason::DISABLE_REINSTALL,
        ExtensionInstallProto::REINSTALL},
+      // TODO(jeffcyr): Uncomment when ExtensionInstallProto is updated in third
+      // party.
+      // {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
+      //  ExtensionInstallProto::NOT_ALLOWLISTED},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);

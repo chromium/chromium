@@ -512,6 +512,8 @@ static_library("extensions") {
     "extension_action_runner.h",
     "extension_action_storage_manager.cc",
     "extension_action_storage_manager.h",
+    "extension_allowlist.cc",
+    "extension_allowlist.h",
     "extension_assets_manager.cc",
     "extension_assets_manager.h",
     "extension_browser_window_helper.cc",

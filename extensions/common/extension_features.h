@@ -10,6 +10,7 @@
 namespace extensions_features {
 
 extern const base::Feature kDisableMalwareExtensionsRemotely;
+extern const base::Feature kEnforceSafeBrowsingExtensionAllowlist;
 
 // Extension check up related features.
 extern const base::Feature kExtensionsCheckup;

@@ -108,6 +108,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_prefs.h"
@@ -127,6 +128,7 @@
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_urls.h"
@@ -3428,6 +3430,10 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
 // re-enabled if it's not present in the Safe Browsing blocklist.
 // Regression test for https://crbug.com/1107040.
 TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kDisableMalwareExtensionsRemotely);
+
   TestBlocklist test_blocklist;
   // A profile with 3 extensions installed: good0, good1, and good2.
   // We really only care about good0 for this test since the other
@@ -4790,8 +4796,13 @@ TEST_F(ExtensionServiceTest, DisableExtension) {
   EXPECT_EQ(0u, registry()->blocklisted_extensions().size());
 }
 
-// Tests performing actions on extension Omaha attributes.
-TEST_F(ExtensionServiceTest, PerformActionBasedOnOmahaAttributes) {
+// Tests the malware Omaha attributes to remotely disable an extension for
+// malware.
+TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kDisableMalwareExtensionsRemotely);
+
   InitializeEmptyExtensionService();
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
@@ -4817,6 +4828,10 @@ TEST_F(ExtensionServiceTest, PerformActionBasedOnOmahaAttributes) {
 // Tests not re-enabling previously remotely disabled extension if it's not the
 // only reason but the disable reasons should be gone.
 TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kDisableMalwareExtensionsRemotely);
+
   InitializeEmptyExtensionService();
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
