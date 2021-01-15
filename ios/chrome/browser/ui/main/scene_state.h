@@ -76,7 +76,8 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 @property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
     interfaceProvider;
 
-// The persistent identifier for the scene session.
+// The persistent identifier for the scene session. This should be used instead
+// of -[UISceneSession persistentIdentifier].
 @property(nonatomic, readonly) NSString* sceneSessionID;
 
 // True if First Run UI (terms of service & sync sign-in) is being presented

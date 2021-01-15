@@ -130,7 +130,9 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 - (NSString*)sceneSessionID {
   NSString* sessionID = nil;
   if (@available(ios 13, *)) {
-    sessionID = _scene.session.persistentIdentifier;
+    if (IsMultiwindowSupported()) {
+      sessionID = _scene.session.persistentIdentifier;
+    }
   }
   return sessionID;
 }

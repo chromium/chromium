@@ -348,7 +348,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         // Add the scene to the list of connected scene, to restore in case of
         // crashes.
         [[PreviousSessionInfo sharedInstance]
-            addSceneSessionID:sceneState.scene.session.persistentIdentifier];
+            addSceneSessionID:sceneState.sceneSessionID];
       }
     }
   }
@@ -396,8 +396,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
           // If Multiple scenes are not supported, the session shouldn't be
           // removed as it can be used for normal restoration.
           [[PreviousSessionInfo sharedInstance]
-              removeSceneSessionID:sceneState.scene.session
-                                       .persistentIdentifier];
+              removeSceneSessionID:sceneState.sceneSessionID];
         }
       }
     }
