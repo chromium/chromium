@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/views_export.h"
 
@@ -33,7 +34,7 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuBase
   bool SupportsCommand(int command_id) const override;
 
  protected:
-#if defined(OS_APPLE) || defined(OS_CHROMEOS)
+#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
   Textfield* client() { return client_; }
   const Textfield* client() const { return client_; }
 #endif

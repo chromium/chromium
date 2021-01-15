@@ -96,7 +96,7 @@
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #endif
@@ -1943,7 +1943,7 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kTextField);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* input_method_manager =
         chromeos::input_method::InputMethodManager::Get();
     if (input_method_manager &&
