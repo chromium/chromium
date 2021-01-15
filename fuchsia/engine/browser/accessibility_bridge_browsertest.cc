@@ -616,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TreeModificationsAreForwarded) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
+// TODO(crbug.com/1167266): Flaky test.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_OutOfProcessIframe) {
   constexpr int64_t kBindingsId = 1234;
 
   // Start a different embedded test server, and load a page on it. The URL for
