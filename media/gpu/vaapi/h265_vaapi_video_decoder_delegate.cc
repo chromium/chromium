@@ -73,6 +73,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 
   VAPictureParameterBufferHEVC pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
+  memset(&crypto_params_, 0, sizeof(crypto_params_));
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
@@ -297,11 +298,9 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
     return DecodeStatus::kFail;
   }
 
-  bool uses_crypto = false;
-  VAEncryptionParameters crypto_params = {};
   if (IsEncryptedSession()) {
     const ProtectedSessionState state =
-        SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params,
+        SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params_,
                            &encryption_segment_info_, subsamples);
     if (state == ProtectedSessionState::kFailed) {
       LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
@@ -310,7 +309,6 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
     } else if (state != ProtectedSessionState::kCreated) {
       return DecodeStatus::kTryAgain;
     }
-    uses_crypto = true;
   }
   memset(&slice_param_, 0, sizeof(slice_param_));
 
@@ -438,11 +436,6 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
 
   last_slice_data_ = data;
   last_slice_size_ = size;
-  if (uses_crypto &&
-      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
-                                    sizeof(crypto_params), &crypto_params)) {
-    return DecodeStatus::kFail;
-  }
   return DecodeStatus::kOk;
 }
 
@@ -455,6 +448,11 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
+  if (IsEncryptedSession() &&
+      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
+                                    sizeof(crypto_params_), &crypto_params_)) {
+    return DecodeStatus::kFail;
+  }
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       pic->AsVaapiH265Picture()->va_surface()->id());
   ref_pic_list_pocs_.clear();

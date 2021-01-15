@@ -88,6 +88,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
                "H264VaapiVideoDecoderDelegate::SubmitFrameMetadata");
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
+  memset(&crypto_params_, 0, sizeof(crypto_params_));
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
 #define FROM_SPS_TO_PP2(a, b) pic_param.b = sps->a
@@ -366,11 +367,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
                : DecodeStatus::kFail;
   }
 
-  bool uses_crypto = false;
-  VAEncryptionParameters crypto_params = {};
   if (IsEncryptedSession()) {
     const ProtectedSessionState state = SetupDecryptDecode(
-        /*full_sample=*/false, size, &crypto_params, &encryption_segment_info_,
+        /*full_sample=*/false, size, &crypto_params_, &encryption_segment_info_,
         subsamples);
     if (state == ProtectedSessionState::kFailed) {
       LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
@@ -379,7 +378,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     } else if (state != ProtectedSessionState::kCreated) {
       return DecodeStatus::kTryAgain;
     }
-    uses_crypto = true;
   }
   VASliceParameterBufferH264 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
@@ -469,11 +467,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
 
-  if (uses_crypto &&
-      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
-                                    sizeof(crypto_params), &crypto_params)) {
-    return DecodeStatus::kFail;
-  }
   return vaapi_wrapper_->SubmitBuffers(
              {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},
               {VASliceDataBufferType, size, data}})
@@ -486,6 +479,11 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
 
+  if (IsEncryptedSession() &&
+      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
+                                    sizeof(crypto_params_), &crypto_params_)) {
+    return DecodeStatus::kFail;
+  }
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       pic->AsVaapiH264Picture()->va_surface()->id());
   encryption_segment_info_.clear();

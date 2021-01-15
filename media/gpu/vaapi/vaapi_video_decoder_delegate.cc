@@ -111,15 +111,22 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
         full_sample ? VA_ENCRYPTION_TYPE_CENC_CBC : VA_ENCRYPTION_TYPE_CBC;
   }
 
+  // For multi-slice we may already have segment information in here, so
+  // calculate the current offset.
+  size_t offset = 0;
+  for (const auto& segment : *segments)
+    offset += segment.segment_length;
+
   if (subsamples.empty() ||
       (subsamples.size() == 1 && subsamples[0].cypher_bytes == 0)) {
     // We still need to specify the crypto params to the driver for some reason
     // and indicate the entire content is clear.
     VAEncryptionSegmentInfo segment_info = {};
+    segment_info.segment_start_offset = offset;
     segment_info.segment_length = segment_info.init_byte_length = size;
     segments->emplace_back(std::move(segment_info));
-    crypto_params->num_segments = 1;
-    crypto_params->segment_info = &segments->back();
+    crypto_params->num_segments++;
+    crypto_params->segment_info = &segments->front();
     return protected_session_state_;
   }
 
@@ -138,9 +145,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     return ProtectedSessionState::kInProcess;
   }
 
-  crypto_params->num_segments = subsamples.size();
-  // For multi-slice, we may already have segment info in the vector.
-  const size_t segment_vec_offset = segments->size();
+  crypto_params->num_segments += subsamples.size();
   if (decrypt_config_->HasPattern()) {
     if (subsamples.size() != 1) {
       LOG(ERROR) << "Need single subsample for encryption pattern";
@@ -152,6 +157,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     crypto_params->blocks_stripe_clear =
         decrypt_config_->encryption_pattern()->skip_byte_block();
     VAEncryptionSegmentInfo segment_info = {};
+    segment_info.segment_start_offset = offset;
     segment_info.init_byte_length = subsamples[0].clear_bytes;
     segment_info.segment_length =
         subsamples[0].clear_bytes + subsamples[0].cypher_bytes;
@@ -159,7 +165,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
            DecryptConfig::kDecryptionKeySize);
     segments->emplace_back(std::move(segment_info));
   } else {
-    size_t offset = 0;
     for (const auto& entry : subsamples) {
       VAEncryptionSegmentInfo segment_info = {};
       segment_info.segment_start_offset = offset;
@@ -176,7 +181,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   memcpy(crypto_params->wrapped_decrypt_blob,
          hw_key_data_map_[decrypt_config_->key_id()].data(),
          DecryptConfig::kDecryptionKeySize);
-  crypto_params->segment_info = &segments->at(segment_vec_offset);
+  crypto_params->segment_info = &segments->front();
 #else  // if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_session_state_ = ProtectedSessionState::kFailed;
 #endif

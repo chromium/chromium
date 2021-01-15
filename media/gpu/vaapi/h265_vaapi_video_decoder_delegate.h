@@ -92,6 +92,10 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // mapped buffer in libva across calls. It is filled in SubmitSlice() and
   // stays alive until SubmitDecode() or Reset().
   std::vector<VAEncryptionSegmentInfo> encryption_segment_info_;
+
+  // We need to retain this for the multi-slice case since that will aggregate
+  // the encryption details across all the slices.
+  VAEncryptionParameters crypto_params_;
 };
 
 }  // namespace media
