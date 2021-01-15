@@ -4,4 +4,4 @@ PRODUCT_FULLNAME=Chrome Cleanup Tool
 PRODUCT_SHORTNAME=Chrome Cleanup Tool
 PRODUCT_INSTALLER_FULLNAME=Chrome Cleanup Tool Installer
 PRODUCT_INSTALLER_SHORTNAME=Chrome Cleanup Tool Installer
-COPYRIGHT=Copyright 2018 The Chromium Authors. All rights reserved.
+COPYRIGHT=Copyright 2021 The Chromium Authors. All rights reserved.
