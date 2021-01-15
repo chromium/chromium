@@ -363,6 +363,7 @@ source_set("weblayer_lib_base") {
     "//base",
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//cc",
     "//components/autofill/content/browser",
     "//components/autofill/content/renderer",
