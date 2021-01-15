@@ -44,6 +44,11 @@
 -WidgetCaptureTest.SystemModalWindowReleasesCapture
 -WidgetInputMethodInteractiveTest*
 
+# TODO(https://crbug.com/991596): Setup guest profiles correctly for tests.
+# Lacros has restrictions on the main profile (it must match the device account
+# profile) so this test doesn't pass.
+-AllGuestProfileTypes/GuestToolbarViewWithExtensionsToolbarMenuTest.*
+
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -BrowserCommandControllerInteractiveTest.ShortcutsShouldTakeEffectInBrowserFullscreen
