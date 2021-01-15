@@ -10,14 +10,18 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
+#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -28,7 +32,7 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Size kBarSize{328, 64};
+constexpr gfx::Size kBarSize{376, 64};
 
 constexpr gfx::Insets kBarPadding{/*vertical=*/14, /*horizontal=*/16};
 
@@ -51,6 +55,10 @@ CaptureModeBarView::CaptureModeBarView()
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
       separator_2_(AddChildView(std::make_unique<views::Separator>())),
+      settings_button_(AddChildView(std::make_unique<CaptureModeToggleButton>(
+          base::BindRepeating(&CaptureModeBarView::OnSettingsButtonPressed,
+                              base::Unretained(this)),
+          kCaptureModeSettingsIcon))),
       close_button_(AddChildView(std::make_unique<CaptureModeButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
@@ -70,6 +78,9 @@ CaptureModeBarView::CaptureModeBarView()
       capture_mode::kBetweenChildSpacing));
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  settings_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS));
 
   const SkColor separator_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
@@ -113,6 +124,15 @@ void CaptureModeBarView::OnCaptureSourceChanged(CaptureModeSource new_source) {
 void CaptureModeBarView::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_type_view_->OnCaptureTypeChanged(new_type);
   capture_source_view_->OnCaptureTypeChanged(new_type);
+}
+
+void CaptureModeBarView::SetSettingsMenuShown(bool shown) {
+  settings_button_->SetToggled(shown);
+}
+
+void CaptureModeBarView::OnSettingsButtonPressed() {
+  CaptureModeController::Get()->capture_mode_session()->SetSettingsMenuShown(
+      !settings_button_->GetToggled());
 }
 
 void CaptureModeBarView::OnCloseButtonPressed() {

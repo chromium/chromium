@@ -8,6 +8,8 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_settings_view.h"
+#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/display/mouse_cursor_event_filter.h"
@@ -515,6 +517,8 @@ CaptureModeSession::~CaptureModeSession() {
     capture_label_widget_->CloseNow();
   if (dimensions_label_widget_)
     dimensions_label_widget_->CloseNow();
+  if (capture_mode_settings_widget_)
+    capture_mode_settings_widget_->CloseNow();
   DCHECK(capture_mode_bar_widget_);
   capture_mode_bar_widget_->CloseNow();
 
@@ -561,6 +565,34 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
       new_type == CaptureModeType::kImage
           ? IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE
           : IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_VIDEO);
+}
+
+void CaptureModeSession::SetSettingsMenuShown(bool shown) {
+  capture_mode_bar_view_->SetSettingsMenuShown(shown);
+
+  if (!shown) {
+    capture_mode_settings_widget_.reset();
+    capture_mode_settings_view_ = nullptr;
+    return;
+  }
+
+  if (!capture_mode_settings_widget_) {
+    auto* parent = GetParentContainer(current_root_);
+    capture_mode_settings_widget_ = std::make_unique<views::Widget>();
+    capture_mode_settings_widget_->Init(CreateWidgetParams(
+        parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
+        "CaptureModeSettingsWidget"));
+    capture_mode_settings_view_ =
+        capture_mode_settings_widget_->SetContentsView(
+            std::make_unique<CaptureModeSettingsView>());
+    parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());
+    capture_mode_settings_widget_->Show();
+  }
+}
+
+void CaptureModeSession::OnMicrophoneChanged(bool microphone_enabled) {
+  DCHECK(capture_mode_settings_view_);
+  capture_mode_settings_view_->OnMicrophoneChanged(microphone_enabled);
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
@@ -734,7 +766,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
     return;
   }
 
-  EndSelection(/*is_event_on_capture_bar=*/false,
+  EndSelection(/*is_event_on_capture_bar_or_menu=*/false,
                /*region_intersects_capture_bar=*/false);
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
@@ -918,23 +950,36 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
   }
 
+  const bool is_event_on_settings_menu =
+      IsEventOnSettingsWidget(screen_location);
+
+  // Hide the settings menu if the user presses anywhere outside of the menu.
+  // Skip if the event is on the settings button, since the button will handle
+  // toggling the menu separately.
+  if (is_press_event && !is_event_on_settings_menu &&
+      !capture_mode_bar_view_->settings_button()->GetBoundsInScreen().Contains(
+          screen_location)) {
+    SetSettingsMenuShown(/*shown=*/false);
+  }
+
   // Let the capture button handle any events it can handle first.
   if (ShouldCaptureLabelHandleEvent(event_target)) {
     UpdateCursor(screen_location, is_touch);
     return;
   }
 
-  const bool is_event_on_capture_bar =
+  const bool is_event_on_capture_bar_or_menu =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
-          screen_location);
+          screen_location) ||
+      is_event_on_settings_menu;
 
   const CaptureModeSource capture_source = controller_->source();
   const bool is_capture_fullscreen =
       capture_source == CaptureModeSource::kFullscreen;
   const bool is_capture_window = capture_source == CaptureModeSource::kWindow;
   if (is_capture_fullscreen || is_capture_window) {
-    // Do not handle any event located on the capture mode bar.
-    if (is_event_on_capture_bar) {
+    // Do not handle any event located on the capture mode bar or settings menu.
+    if (is_event_on_capture_bar_or_menu) {
       UpdateCursor(screen_location, is_touch);
       return;
     }
@@ -973,9 +1018,9 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   DCHECK_EQ(CaptureModeSource::kRegion, capture_source);
   DCHECK(cursor_setter_);
-  // Allow events that are located on the capture mode bar to pass through so we
-  // can click the buttons.
-  if (!is_event_on_capture_bar) {
+  // Allow events that are located on the capture mode bar or settings menu to
+  // pass through so we can click the buttons.
+  if (!is_event_on_capture_bar_or_menu) {
     event->SetHandled();
     event->StopPropagation();
   }
@@ -998,7 +1043,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_TOUCH_PRESSED:
       old_mouse_warp_status_ = SetMouseWarpEnabled(false);
       OnLocatedEventPressed(location_in_root, is_touch,
-                            is_event_on_capture_bar);
+                            is_event_on_capture_bar_or_menu);
       break;
     case ui::ET_MOUSE_DRAGGED:
     case ui::ET_TOUCH_MOVED:
@@ -1010,14 +1055,13 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       if (old_mouse_warp_status_)
         SetMouseWarpEnabled(*old_mouse_warp_status_);
       old_mouse_warp_status_.reset();
-
-      OnLocatedEventReleased(is_event_on_capture_bar,
+      OnLocatedEventReleased(is_event_on_capture_bar_or_menu,
                              region_intersects_capture_bar);
       break;
     case ui::ET_MOUSE_MOVED:
-      if (region_intersects_capture_bar) {
+      if (!capture_mode_settings_widget_ && region_intersects_capture_bar) {
         UpdateCaptureBarWidgetOpacity(
-            is_event_on_capture_bar ? 1.f : kCaptureBarOverlapOpacity,
+            is_event_on_capture_bar_or_menu ? 1.f : kCaptureBarOverlapOpacity,
             /*on_release=*/false);
       }
       break;
@@ -1062,7 +1106,7 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
 void CaptureModeSession::OnLocatedEventPressed(
     const gfx::Point& location_in_root,
     bool is_touch,
-    bool is_event_on_capture_bar) {
+    bool is_event_on_capture_bar_or_menu) {
   initial_location_in_root_ = location_in_root;
   previous_location_in_root_ = location_in_root;
 
@@ -1071,7 +1115,7 @@ void CaptureModeSession::OnLocatedEventPressed(
   is_drag_in_progress_ = true;
   Shell::Get()->UpdateCursorCompositingEnabled();
 
-  if (!is_event_on_capture_bar)
+  if (!is_event_on_capture_bar_or_menu)
     UpdateCaptureBarWidgetOpacity(0.f, /*on_release=*/false);
 
   if (is_selecting_region_)
@@ -1080,9 +1124,9 @@ void CaptureModeSession::OnLocatedEventPressed(
   fine_tune_position_ = GetFineTunePosition(location_in_root, is_touch);
 
   if (fine_tune_position_ == FineTunePosition::kNone &&
-      !is_event_on_capture_bar) {
-    // If the point is outside the capture region and not on the capture bar,
-    // restart to the select phase.
+      !is_event_on_capture_bar_or_menu) {
+    // If the point is outside the capture region and not on the capture bar or
+    // settings menu, restart to the select phase.
     is_selecting_region_ = true;
     UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true);
     num_capture_region_adjusted_ = 0;
@@ -1162,9 +1206,9 @@ void CaptureModeSession::OnLocatedEventDragged(
 }
 
 void CaptureModeSession::OnLocatedEventReleased(
-    bool is_event_on_capture_bar,
+    bool is_event_on_capture_bar_or_menu,
     bool region_intersects_capture_bar) {
-  EndSelection(is_event_on_capture_bar, region_intersects_capture_bar);
+  EndSelection(is_event_on_capture_bar_or_menu, region_intersects_capture_bar);
 
   // Do a repaint to show the affordance circles.
   RepaintRegion();
@@ -1535,11 +1579,13 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
-  // If the current mouse is on capture bar, use the pointer mouse cursor.
-  const bool is_event_on_capture_bar =
+  // If the current mouse is on capture bar or settings menu, use the pointer
+  // mouse cursor.
+  const bool is_event_on_capture_bar_or_menu =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
-          location_in_screen);
-  if (is_event_on_capture_bar) {
+          location_in_screen) ||
+      IsEventOnSettingsWidget(location_in_screen);
+  if (is_event_on_capture_bar_or_menu) {
     cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
   }
@@ -1621,7 +1667,7 @@ void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
   controller_->SetUserCaptureRegion(new_capture_region, /*by_user=*/false);
 }
 
-void CaptureModeSession::EndSelection(bool is_event_on_capture_bar,
+void CaptureModeSession::EndSelection(bool is_event_on_capture_bar_or_menu,
                                       bool region_intersects_capture_bar) {
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
@@ -1631,7 +1677,7 @@ void CaptureModeSession::EndSelection(bool is_event_on_capture_bar,
 
   // TODO(richui): Update this for tablet mode.
   UpdateCaptureBarWidgetOpacity(
-      region_intersects_capture_bar && !is_event_on_capture_bar
+      region_intersects_capture_bar && !is_event_on_capture_bar_or_menu
           ? kCaptureBarOverlapOpacity
           : 1.f,
       /*on_release=*/true);
@@ -1736,6 +1782,13 @@ void CaptureModeSession::UpdateRegionVertically(bool up, bool is_shift_down) {
 
   UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
                       /*by_user=*/true);
+}
+
+bool CaptureModeSession::IsEventOnSettingsWidget(
+    const gfx::Point& location_in_screen) {
+  return capture_mode_settings_widget_ &&
+         capture_mode_settings_widget_->GetWindowBoundsInScreen().Contains(
+             location_in_screen);
 }
 
 }  // namespace ash
