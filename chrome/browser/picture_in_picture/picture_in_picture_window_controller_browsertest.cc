@@ -1953,8 +1953,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that a Next Track button is displayed in the Picture-in-Picture window
 // when Media Session Action "nexttrack" is handled by the website.
+// TODO(crbug.com/1167236): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_NextTrackButtonVisibility DISABLED_NextTrackButtonVisibility
+#else
+#define MAYBE_NextTrackButtonVisibility NextTrackButtonVisibility
+#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       NextTrackButtonVisibility) {
+                       MAYBE_NextTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
