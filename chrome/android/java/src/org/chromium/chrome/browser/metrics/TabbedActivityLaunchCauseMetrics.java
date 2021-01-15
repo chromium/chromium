@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.IntentHandler;
 
 /**
  * LaunchCauseMetrics for ChromeTabbedActivity.
@@ -27,6 +28,12 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
 
         if (IntentUtils.isMainIntentFromLauncher(launchIntent)) {
             return LaunchCause.MAIN_LAUNCHER_ICON;
+        }
+
+        if (IntentUtils.safeGetBooleanExtra(
+                    launchIntent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false)
+                && IntentHandler.wasIntentSenderChrome(launchIntent)) {
+            return LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT;
         }
 
         // TODO(https://crbug.com/1163961): Implement remaining ChromeTabbedActivity launch cause

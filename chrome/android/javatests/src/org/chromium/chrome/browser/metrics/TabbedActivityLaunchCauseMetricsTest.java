@@ -17,12 +17,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -97,5 +99,21 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         Assert.assertEquals(mainCount,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON));
         ApplicationStatus.unregisterActivityStateListener(listener);
+    }
+
+    @Test
+    @MediumTest
+    public void testLauncherShortcutMetrics() throws Throwable {
+        Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB);
+        intent.setClass(ContextUtils.getApplicationContext(), LauncherShortcutActivity.class);
+        final int count = 1
+                + histogramCountForValue(
+                        LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
+        mActivityTestRule.startMainActivityFromIntent(intent, null);
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(histogramCountForValue(
+                                       LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT),
+                    Matchers.is(count));
+        });
     }
 }
