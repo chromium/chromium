@@ -53,6 +53,13 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       recorder_(recorder),
       clock_(base::DefaultTickClock::GetInstance()),
       event_name_("Blink.UpdateTime") {
+  // All of these are assumed to have one entry per sub-metric.
+  DCHECK_EQ(base::size(absolute_metric_records_), metrics_data().size());
+  DCHECK_EQ(base::size(current_sample_.sub_metrics_durations),
+            metrics_data().size());
+  DCHECK_EQ(base::size(current_sample_.sub_main_frame_durations),
+            metrics_data().size());
+
   // Record average and worst case for the primary metric.
   primary_metric_.reset();
 
@@ -72,13 +79,13 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
   const char* const uma_pre_fcp_aggregated_postscript = ".AggregatedPreFCP";
 
   // Populate all the sub-metrics.
-  absolute_metric_records_.ReserveInitialCapacity(kCount);
+  size_t metric_index = 0;
   for (const MetricInitializationData& metric_data : metrics_data()) {
     // Absolute records report the absolute time for each metric per frame.
     // They also aggregate the time spent in each stage between navigation
     // (LocalFrameView resets) and First Contentful Paint.
     // They have an associated UMA too that we own and allocate here.
-    auto& absolute_record = absolute_metric_records_.emplace_back();
+    auto& absolute_record = absolute_metric_records_[metric_index];
     absolute_record.reset();
     absolute_record.pre_fcp_aggregate = base::TimeDelta();
     if (metric_data.has_uma) {
@@ -102,12 +109,9 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       absolute_record.uma_aggregate_counter.reset(new CustomCountHistogram(
           aggregated_uma_name.ToString().Utf8().c_str(), 0, 10000000, 50));
     }
-  }
 
-  // Make space in the current sample.
-  current_sample_.sub_metrics_durations.Grow(static_cast<wtf_size_t>(kCount));
-  current_sample_.sub_main_frame_durations.Grow(
-      static_cast<wtf_size_t>(kCount));
+    metric_index++;
+  }
 }
 
 LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
@@ -198,7 +202,7 @@ void LocalFrameUkmAggregator::RecordSample(size_t metric_index,
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
   // Accumulate for UKM and record the UMA
-  DCHECK_LT(metric_index, absolute_metric_records_.size());
+  DCHECK_LT(metric_index, base::size(absolute_metric_records_));
   auto& record = absolute_metric_records_[metric_index];
   record.interval_duration += duration;
   if (in_main_frame_update_)
@@ -421,7 +425,7 @@ void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
 void LocalFrameUkmAggregator::UpdateSample(
     cc::ActiveFrameSequenceTrackers trackers) {
   current_sample_.primary_metric_duration = primary_metric_.interval_duration;
-  for (unsigned i = 0; i < static_cast<unsigned>(kCount); ++i) {
+  for (size_t i = 0; i < metrics_data().size(); ++i) {
     current_sample_.sub_metrics_durations[i] =
         absolute_metric_records_[i].interval_duration;
     current_sample_.sub_main_frame_durations[i] =
@@ -440,7 +444,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
   builder.SetMainFrame(primary_metric_.pre_fcp_aggregate.InMicroseconds());
   primary_metric_.uma_aggregate_counter->CountMicroseconds(
       primary_metric_.pre_fcp_aggregate);
-  for (unsigned i = 0; i < static_cast<unsigned>(kCount); ++i) {
+  for (size_t i = 0; i < metrics_data().size(); ++i) {
     auto& absolute_record = absolute_metric_records_[i];
     if (absolute_record.uma_aggregate_counter) {
       absolute_record.uma_aggregate_counter->CountMicroseconds(
@@ -502,7 +506,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       current_sample_.primary_metric_duration.InMicroseconds());
   builder.SetMainFrameIsBeforeFCP(fcp_state_ != kHavePassedFCP);
   builder.SetMainFrameReasons(current_sample_.trackers);
-  for (unsigned i = 0; i < static_cast<unsigned>(kCount); ++i) {
+  for (size_t i = 0; i < metrics_data().size(); ++i) {
     switch (static_cast<MetricId>(i)) {
       CASE_FOR_ID(CompositingAssignments, i);
       CASE_FOR_ID(CompositingCommit, i);
@@ -549,13 +553,13 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
 }
 
 bool LocalFrameUkmAggregator::AllMetricsAreZero() {
-  if (primary_metric_.interval_duration.InMicroseconds())
+  if (!primary_metric_.interval_duration.is_zero())
     return false;
   for (auto& record : absolute_metric_records_) {
-    if (record.interval_duration.InMicroseconds()) {
+    if (!record.interval_duration.is_zero()) {
       return false;
     }
-    if (record.main_frame_duration.InMicroseconds()) {
+    if (!record.main_frame_duration.is_zero()) {
       return false;
     }
   }

@@ -299,8 +299,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   struct SampleToRecord {
     base::TimeDelta primary_metric_duration;
-    Vector<base::TimeDelta> sub_metrics_durations;
-    Vector<base::TimeDelta> sub_main_frame_durations;
+    std::array<base::TimeDelta, kCount> sub_metrics_durations;
+    std::array<base::TimeDelta, kCount> sub_main_frame_durations;
     cc::ActiveFrameSequenceTrackers trackers;
   };
 
@@ -338,7 +338,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Event and metric data
   const char* const event_name_;
   AbsoluteMetricRecord primary_metric_;
-  Vector<AbsoluteMetricRecord> absolute_metric_records_;
+  std::array<AbsoluteMetricRecord, kCount> absolute_metric_records_;
 
   // The current sample to report. When RecordEvent() is called we
   // check for uniform_random[0,1) < 1 / n where n is the number of frames
