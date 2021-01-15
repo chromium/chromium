@@ -1928,6 +1928,9 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 extern const char kMuteNotificationsDuringScreenShareName[];
 extern const char kMuteNotificationsDuringScreenShareDescription[];
 
+extern const char kNtpCacheOneGoogleBarName[];
+extern const char kNtpCacheOneGoogleBarDescription[];
+
 extern const char kNtpIframeOneGoogleBarName[];
 extern const char kNtpIframeOneGoogleBarDescription[];
 

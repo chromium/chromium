@@ -117,7 +117,8 @@ void UntrustedSource::StartDataRequest(
         one_google_bar_service_->SetAdditionalQueryParams(query_params);
     one_google_bar_callbacks_.push_back(std::move(callback));
     if (one_google_bar_service_->one_google_bar_data().has_value() &&
-        !wait_for_refresh) {
+        !wait_for_refresh &&
+        base::FeatureList::IsEnabled(ntp_features::kCacheOneGoogleBar)) {
       OnOneGoogleBarDataUpdated();
     }
     one_google_bar_load_start_time_ = base::TimeTicks::Now();

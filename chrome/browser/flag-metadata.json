@@ -3438,6 +3438,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "ntp-cache-one-google-bar",
+    "owners": [ "aee", "mahmadi", "tiborg" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
     "expiry_milestone": 91

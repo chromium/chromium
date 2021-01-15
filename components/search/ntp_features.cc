@@ -16,6 +16,10 @@ namespace ntp_features {
 const base::Feature kConfirmSuggestionRemovals{
     "ConfirmNtpSuggestionRemovals", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the OneGooleBar cached response is sent back to NTP.
+const base::Feature kCacheOneGoogleBar{"CacheOneGoogleBar",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
 const base::Feature kDismissPromos{"DismissNtpPromos",

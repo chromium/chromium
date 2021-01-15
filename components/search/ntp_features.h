@@ -17,6 +17,7 @@ namespace ntp_features {
 // the .cc file.
 
 extern const base::Feature kConfirmSuggestionRemovals;
+extern const base::Feature kCacheOneGoogleBar;
 extern const base::Feature kDismissPromos;
 extern const base::Feature kIframeOneGoogleBar;
 extern const base::Feature kNtpRepeatableQueries;
