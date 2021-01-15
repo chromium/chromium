@@ -567,11 +567,6 @@
              "--disable-features=CookiesWithoutSameSiteMustBeSecure"]
   },
   {
-    "prefix": "forced-colors",
-    "bases": ["external/wpt/css/css-forced-color-adjust"],
-    "args": ["--enable-blink-features=ForcedColors"]
-  },
-  {
     "prefix": "forced-high-contrast-colors",
     "bases": ["external/wpt/forced-colors-mode",
               "html/details_summary/color-scheme-validation"],

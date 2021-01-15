@@ -164,7 +164,7 @@ const base::Feature kDirectManipulationStylus = {
 
 // Enables forced colors mode for web content.
 const base::Feature kForcedColors{"ForcedColors",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsForcedColorsEnabled() {
   static const bool forced_colors_enabled =
