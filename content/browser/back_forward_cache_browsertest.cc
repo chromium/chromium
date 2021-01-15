@@ -171,7 +171,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "WakeLock");
     ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
