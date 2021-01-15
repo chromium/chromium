@@ -26,6 +26,7 @@ aggregate_vector_icons("ksv_vector_icons") {
     "ksv_search_close.icon",
     "ksv_search_no_result.icon",
     "ksv_separator_plus.icon",
+    "ksv_snapshot.icon",
     "ksv_volume_down.icon",
     "ksv_volume_up.icon",
   ]

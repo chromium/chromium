@@ -4,6 +4,7 @@
 
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
@@ -81,6 +82,9 @@ base::Optional<base::string16> GetSpecialStringForKeyboardCode(
       break;
     case ui::VKEY_MEDIA_LAUNCH_APP2:
       msg_id = IDS_KSV_KEY_FULLSCREEN;
+      break;
+    case ui::VKEY_SNAPSHOT:
+      msg_id = IDS_KSV_KEY_SNAPSHOT;
       break;
     case ui::VKEY_UNKNOWN:
       // TODO(wutao): make this reliable.
@@ -203,6 +207,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &kKsvArrowRightIcon;
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
       return &kKsvPrivacyScreenToggleIcon;
+    case ui::VKEY_SNAPSHOT:
+      return &kKsvSnapshotIcon;
     default:
       return nullptr;
   }
@@ -632,6 +638,13 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
       {// |categories|
        {ShortcutCategory::kPopular},
        IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_SNAPSHOT, ui::EF_NONE}}},
+
+      {// |categories|
+       {ShortcutCategory::kPopular},
+       IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT,
        {},
        // |accelerator_ids|
        {{ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN}}},
@@ -1441,6 +1454,26 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
   if (!is_initialized) {
     is_initialized = true;
     for (auto& item : *item_list) {
+      // Capture mode is an improved screenshot and video recording tool, and
+      // the shortuct messages reflect the differences. If capture mode is
+      // disabled, we will swap the strings.
+      // TODO(sammiequon): Remove the strings suffixed with _OLD once capture
+      // mode can no longer be disabled.
+      if (!ash::features::IsCaptureModeEnabled()) {
+        static base::flat_map<int, int> new_to_old_message_id_map = {
+            {IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT,
+             IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT_OLD},
+            {IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT,
+             IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD},
+            {IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT,
+             IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD},
+            {IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT,
+             IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT_OLD}};
+        const int id = item.description_message_id;
+        if (new_to_old_message_id_map.contains(id))
+          item.description_message_id = new_to_old_message_id_map[id];
+      }
+
       if (item.shortcut_key_codes.empty() && !item.accelerator_ids.empty()) {
         // Only use the first |accelerator_id| because the modifiers are the
         // same even if it is a grouped accelerators.

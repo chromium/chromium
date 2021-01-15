@@ -1933,6 +1933,16 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
     EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
     controller->Stop();
 
+    // Snapshot key opens capture mode with the last type, and closes it if it
+    // is already open.
+    EXPECT_TRUE(
+        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
+    EXPECT_TRUE(controller->IsActive());
+    EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+    EXPECT_TRUE(
+        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
+    ASSERT_FALSE(controller->IsActive());
+
     // Control + F5 takes a screenshot of all displays without opening capture
     // mode. The loop will timeout if a screenshot was not successfully taken
     // and saved.

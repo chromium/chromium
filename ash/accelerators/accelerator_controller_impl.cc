@@ -793,12 +793,24 @@ void HandleTakePartialScreenshot() {
       /*draw_overlay_immediately=*/true);
 }
 
-void HandleTakeScreenshot() {
+void HandleTakeScreenshot(ui::KeyboardCode key_code) {
   base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
-  if (!features::IsCaptureModeEnabled())
+  if (!features::IsCaptureModeEnabled()) {
     Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
-  else
-    CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
+    return;
+  }
+
+  // If it is the snip key, toggle capture mode.
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (key_code == ui::VKEY_SNAPSHOT) {
+    if (capture_mode_controller->IsActive())
+      capture_mode_controller->Stop();
+    else
+      capture_mode_controller->Start(CaptureModeEntryType::kSnipKey);
+    return;
+  }
+
+  capture_mode_controller->CaptureScreenshotsOfAllDisplays();
 }
 
 void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
@@ -1824,6 +1836,7 @@ void AcceleratorControllerImpl::Init() {
     actions_allowed_in_pinned_mode_.insert(
         kActionsAllowedInAppModeOrPinnedMode[i]);
   }
+
   for (size_t i = 0; i < kActionsAllowedInPinnedModeLength; ++i)
     actions_allowed_in_pinned_mode_.insert(kActionsAllowedInPinnedMode[i]);
   for (size_t i = 0; i < kActionsAllowedInAppModeLength; ++i)
@@ -2357,7 +2370,7 @@ void AcceleratorControllerImpl::PerformAction(
       HandleTakePartialScreenshot();
       break;
     case TAKE_SCREENSHOT:
-      HandleTakeScreenshot();
+      HandleTakeScreenshot(accelerator.key_code());
       break;
     case TAKE_WINDOW_SCREENSHOT:
       HandleTakeWindowScreenshot();
