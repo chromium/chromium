@@ -1,5 +1,4 @@
 evliu@google.com
-beccahughes@chromium.org
 steimel@chromium.org
 
 per-file *.mojom=set noparent
