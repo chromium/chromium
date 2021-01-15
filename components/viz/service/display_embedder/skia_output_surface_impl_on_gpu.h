@@ -343,6 +343,8 @@ class SkiaOutputSurfaceImplOnGpu
   // Micro-optimization to get to issuing GPU SwapBuffers as soon as possible.
   std::vector<sk_sp<SkDeferredDisplayList>> destroy_after_swap_;
 
+  bool waiting_for_full_damage_ = false;
+
   int num_readbacks_pending_ = 0;
   bool readback_poll_pending_ = false;
 

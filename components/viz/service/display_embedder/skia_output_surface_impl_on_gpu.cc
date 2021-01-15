@@ -1450,6 +1450,20 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   scoped_output_device_paint_.reset();
 
   if (frame) {
+    if (waiting_for_full_damage_) {
+      // If we're using partial swap, we need to check whether the sub-buffer
+      // rect is actually the entire screen, but otherwise, the damage is
+      // always the full surface.
+      if (frame->sub_buffer_rect &&
+          capabilities().supports_post_sub_buffer &&
+          frame->sub_buffer_rect->size() != size_) {
+        output_surface_plane_.reset();
+        destroy_after_swap_.clear();
+        return;
+      }
+      waiting_for_full_damage_ = false;
+    }
+
     if (output_surface_plane_)
       DCHECK(output_device_->IsPrimaryPlaneOverlay());
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
@@ -1540,6 +1554,16 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
       // Mark the context lost if not already lost.
       MarkContextLost(ContextLostReason::CONTEXT_LOST_SWAP_FAILED);
     }
+  } else if (params.swap_response.result ==
+             gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+    // We shouldn't present newly reallocated buffers until we have fully
+    // initialized their contents. SWAP_NAK_RECREAETE_BUFFERS should trigger a
+    // full-screen damage in DirectRenderer, but there is no guarantee that it
+    // will happen immediately since the SwapBuffersComplete task gets posted
+    // back to the Viz thread and will race with the next invocation of
+    // DrawFrame. To ensure we do not display uninitialized memory, we hold
+    // off on submitting new frames until we have received a full damage.
+    waiting_for_full_damage_ = true;
   }
 
 #if defined(OS_APPLE)

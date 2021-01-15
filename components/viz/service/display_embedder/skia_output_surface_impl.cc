@@ -901,6 +901,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
   // Reset |damage_of_buffers_|, if buffers are new created.
   if (params.swap_response.result ==
       gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+    client_->SetNeedsRedrawRect(gfx::Rect(size_));
     for (auto& damage : damage_of_buffers_)
       damage = gfx::Rect(size_);
   }
