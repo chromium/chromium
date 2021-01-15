@@ -29,6 +29,7 @@
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
+#include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -124,6 +125,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           std::make_unique<UnifiedSliderBubbleController>(this)),
       privacy_screen_toast_controller_(
           std::make_unique<PrivacyScreenToastController>(this)),
+      notification_icons_controller_(
+          std::make_unique<NotificationIconsController>(this)),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
@@ -139,6 +142,12 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
+
+  if (features::IsScalableStatusAreaEnabled()) {
+    notification_icons_controller_->AddNotificationTrayItems(tray_container());
+    for (TrayItemView* tray_item : notification_icons_controller_->tray_items())
+      tray_items_.push_back(tray_item);
+  }
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);
   AddTrayItemToContainer(managed_device_view_);
@@ -494,4 +503,5 @@ void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {
   tray_items_.push_back(tray_item);
   tray_container()->AddChildView(tray_item);
 }
+
 }  // namespace ash
