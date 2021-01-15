@@ -373,15 +373,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
 // occurs *during* crash handling, leaving the frame in an invalid state and
 // leading to a crash when it subsequently unloaded.
 // This is fixed by deferring it to a PostTask.
-// Flaky on Mac. TODO(https://crbug.com/1160608): Enabled this test.
-#if defined(OS_MAC)
-#define MAYBE_DontReloadInRenderProcessExit \
-  DISABLED_DontReloadInRenderProcessExit
-#else
-#define MAYBE_DontReloadInRenderProcessExit DontReloadInRenderProcessExit
-#endif
-IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
-                       MAYBE_DontReloadInRenderProcessExit) {
+IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   // In the FileSystem variant of this test, blocking needs to be permitted to
   // allow cleanup to work during the crash.
   base::ScopedAllowBlockingForTesting scope;
