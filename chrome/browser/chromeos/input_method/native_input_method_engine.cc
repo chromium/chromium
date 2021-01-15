@@ -17,6 +17,10 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/urename.h"
+#include "third_party/icu/source/common/unicode/ustring.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -167,7 +171,10 @@ void NativeInputMethodEngine::OnAutocorrect(std::string typed_word,
                                             std::string corrected_word,
                                             int start_index) {
   autocorrect_manager_->HandleAutocorrect(
-      gfx::Range(start_index, start_index + corrected_word.length()),
+      gfx::Range(
+          start_index,
+          start_index +
+              icu::UnicodeString::fromUTF8(corrected_word).countChar32()),
       typed_word);
 }
 
