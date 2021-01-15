@@ -79,7 +79,7 @@ void MemoryUsageMonitor::TimerFired() {
   MemoryUsage usage = GetCurrentMemoryUsage();
   for (auto& observer : observers_)
     observer.OnMemoryPing(usage);
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     StopMonitoring();
 }
 
