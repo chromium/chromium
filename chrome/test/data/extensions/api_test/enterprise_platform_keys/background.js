@@ -444,7 +444,7 @@ function verifyRsaKeySign(
   const SIGN_PARAMS = {name: 'RSASSA-PKCS1-v1_5'};
   token.subtleCrypto.sign(SIGN_PARAMS, keyPair.privateKey, DATA)
       .then(
-          function(signature) {
+          callbackPass(function(signature) {
             var importParams = {
               name: algorithm.name,
               // RsaHashedImportParams
@@ -458,12 +458,12 @@ function verifyRsaKeySign(
             cachedSignature = signature;
             return window.crypto.subtle.importKey(
                 'spki', spki, importParams, false, ['verify']);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Sign failed: ' + error);
           })
       .then(
-          function(webCryptoPublicKey) {
+          callbackPass(function(webCryptoPublicKey) {
             assertTrue(!!webCryptoPublicKey);
             assertEq(
                 algorithm.modulusLength,
@@ -473,15 +473,15 @@ function verifyRsaKeySign(
                 webCryptoPublicKey.algorithm.publicExponent);
             return window.crypto.subtle.verify(
                 algorithm, webCryptoPublicKey, cachedSignature, DATA);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Import failed: ' + error);
           })
       .then(
-          function(success) {
+          callbackPass(function(success) {
             assertEq(true, success, debugMessage + ': Signature invalid.');
             callback(keyPair, spki);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Verification failed: ' + error);
           });
@@ -494,31 +494,31 @@ function verifyEcKeySign(token, params, keyPair, spki, debugMessage, callback) {
   var cachedSignature;
   token.subtleCrypto.sign(params.sign, keyPair.privateKey, DATA)
       .then(
-          function(signature) {
+          callbackPass(function(signature) {
             assertTrue(!!signature, debugMessage + ': No signature.');
             assertTrue(
                 signature.length != 0, debugMessage + ': Signature is empty.');
             cachedSignature = signature;
             return window.crypto.subtle.importKey(
                 'spki', spki, params.importKey, false, ['verify']);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Sign failed: ' + error);
           })
       .then(
-          function(webCryptoPublicKey) {
+          callbackPass(function(webCryptoPublicKey) {
             assertTrue(!!webCryptoPublicKey);
             return window.crypto.subtle.verify(
                 params.verify, webCryptoPublicKey, cachedSignature, DATA);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Import failed: ' + error);
           })
       .then(
-          function(success) {
+          callbackPass(function(success) {
             assertEq(true, success, debugMessage + ': Signature invalid.');
             callback(keyPair, spki);
-          },
+          }),
           function(error) {
             fail(debugMessage + ': Verification failed: ' + error);
           });
@@ -562,7 +562,8 @@ function generateRsaKeyAndVerify(token, algorithm, callback) {
 
             verifyRsaKeySign(
                 token, algorithm, cachedKeyPair, publicKeySpki,
-                /*debugMessage=*/ 'First signing attempt', callback);
+                /*debugMessage=*/ 'First signing attempt',
+                callbackPass(callback));
           }),
           function(error) {
             fail('Export failed: ' + error);
@@ -573,16 +574,16 @@ function generateEcKeyAndVerify(token, params, callback) {
   var cachedKeyPair;
   token.subtleCrypto.generateKey(params.generateKey, false, ['sign'])
       .then(
-          function(keyPair) {
+          callbackPass(function(keyPair) {
             assertTrue(!!keyPair, 'No key pair.');
             cachedKeyPair = keyPair;
             return token.subtleCrypto.exportKey('spki', keyPair.publicKey);
-          },
+          }),
           function(error) {
             fail('GenerateKey failed: ' + error);
           })
       .then(
-          function(publicKeySpki) {
+          callbackPass(function(publicKeySpki) {
             // Ensure that the returned key pair has the expected format.
             // Some parameter independent checks:
             checkEcKeyPairCommonFormat(cachedKeyPair);
@@ -594,10 +595,11 @@ function generateEcKeyAndVerify(token, params, callback) {
             var publicKey = cachedKeyPair.publicKey;
             assertEq([], publicKey.usages);
 
-            return verifyEcKeySign(
+            verifyEcKeySign(
                 token, params, cachedKeyPair, publicKeySpki,
-                /*debugMessage=*/ 'First signing attempt', callback);
-          },
+                /*debugMessage=*/ 'First signing attempt',
+                callbackPass(callback));
+          }),
           function(error) {
             fail('Export failed: ' + error);
           });
@@ -647,7 +649,6 @@ function testGenerateRsaKeyAndSignAllowedOnce(token) {
                     assertEq(
                         'The operation failed for an operation-specific reason',
                         error.message);
-                    succeed();
                   }));
       }));
 }
@@ -655,15 +656,15 @@ function testGenerateRsaKeyAndSignAllowedOnce(token) {
 // Generates an RSA key pair and signs some data with it. Verifies the signature
 // using WebCrypto. Verifies also that a second sign operation succeeds.
 function testGenerateRsaKeyAndSignAllowedMultipleTimes(token) {
-  generateRsaKeyAndVerify(token, RSA_ALGORITHM, function(keyPair, spki) {
-    // Try to sign data with the same key a second time, which
-    // must succeed.
-    verifyRsaKeySign(
-        token, RSA_ALGORITHM, keyPair, spki,
-        /*debugMessage=*/ 'Second signing attempt', function(keyPair, spki) {
-          succeed();
-        });
-  });
+  generateRsaKeyAndVerify(
+      token, RSA_ALGORITHM, callbackPass(function(keyPair, spki) {
+        // Try to sign data with the same key a second time, which
+        // must succeed.
+        verifyRsaKeySign(
+            token, RSA_ALGORITHM, keyPair, spki,
+            /*debugMessage=*/ 'Second signing attempt',
+            callbackPass(function(keyPair, spki) {}));
+      }));
 }
 
 // Web Crypto ECDSA Operation Params.
@@ -707,7 +708,6 @@ function testGenerateEcKeyAndSignAllowedOnce(token) {
                     assertEq(
                         'The operation failed for an operation-specific reason',
                         error.message);
-                    succeed();
                   }));
       }));
 }
@@ -716,13 +716,13 @@ function testGenerateEcKeyAndSignAllowedOnce(token) {
 // Verifies the signature using WebCrypto. Verifies also that a second sign
 // operation succeeds.
 function testGenerateEcKeyAndSignAllowedMultipleTimes(token) {
-  generateEcKeyAndVerify(token, ALL_ECDSA_PARAMS, function(keyPair, spki) {
-    verifyEcKeySign(
-        token, ALL_ECDSA_PARAMS, keyPair, spki,
-        /*debugMessage=*/ 'Second signing attempt', function(keyPair, spki) {
-          succeed();
-        });
-  });
+  generateEcKeyAndVerify(
+      token, ALL_ECDSA_PARAMS, callbackPass(function(keyPair, spki) {
+        verifyEcKeySign(
+            token, ALL_ECDSA_PARAMS, keyPair, spki,
+            /*debugMessage=*/ 'Second signing attempt',
+            callbackPass(function(keyPair, spki) {}));
+      }));
 }
 
 // Generates a key and signs some data with other parameters. Verifies the
@@ -739,9 +739,8 @@ function testGenerateKeyAndSignOtherParameters(token) {
     }
   };
 
-  generateRsaKeyAndVerify(token, algorithm, function(keyPair, spki) {
-    succeed();
-  });
+  generateRsaKeyAndVerify(
+      token, algorithm, callbackPass(function(keyPair, spki) {}));
 }
 
 // Call generate key with invalid algorithm parameter, missing
