@@ -42,12 +42,12 @@ class WebRtcSignalingMessenger
                                   bool success);
   void OnMessageReceived(const std::string& message);
 
+  mojo::Remote<sharing::mojom::IncomingMessagesListener>
+      incoming_messages_listener_;
+
   TokenFetcher token_fetcher_;
   SendMessageExpress send_message_express_;
   ReceiveMessagesExpress receive_messages_express_;
-
-  mojo::Remote<sharing::mojom::IncomingMessagesListener>
-      incoming_messages_listener_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_WEBRTC_SIGNALING_MESSENGER_H_
