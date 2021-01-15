@@ -29,6 +29,7 @@ class CrosPlatformApi;
 namespace chromeos {
 namespace libassistant {
 
+class AudioInputController;
 class ConversationController;
 class PlatformApi;
 class ServiceController;
@@ -67,6 +68,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   std::unique_ptr<PlatformApi> platform_api_;
   std::unique_ptr<ServiceController> service_controller_;
   std::unique_ptr<ConversationController> conversation_controller_;
+  std::unique_ptr<AudioInputController> audio_input_controller_;
 };
 
 }  // namespace libassistant

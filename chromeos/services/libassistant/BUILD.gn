@@ -33,6 +33,14 @@ source_set("internal") {
 
   sources = [
     "assistant_manager_observer.h",
+    "audio/audio_input_impl.cc",
+    "audio/audio_input_impl.h",
+    "audio/audio_input_provider_impl.cc",
+    "audio/audio_input_provider_impl.h",
+    "audio/audio_input_stream.cc",
+    "audio/audio_input_stream.h",
+    "audio_input_controller.cc",
+    "audio_input_controller.h",
     "conversation_controller.cc",
     "conversation_controller.h",
     "platform_api.cc",
@@ -52,7 +60,12 @@ source_set("internal") {
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/internal_api:fuchsia_api_helper",
+    "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
     "//libassistant/shared/public",
+    "//libassistant/shared/public:export",
+    "//media",
+    "//services/audio/public/cpp",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -60,7 +73,10 @@ source_set("internal") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "service_controller_unittest.cc" ]
+  sources = [
+    "audio_input_controller_unittest.cc",
+    "service_controller_unittest.cc",
+  ]
 
   deps = [
     ":internal",
@@ -73,6 +89,7 @@ source_set("unit_tests") {
     "//chromeos/services/assistant/public/cpp/migration:test_support",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//services/audio/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

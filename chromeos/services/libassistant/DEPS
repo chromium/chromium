@@ -1,3 +1,6 @@
 include_rules = [
   "+libassistant",
+  "+media/audio",
+  "+media/base",
+  "+services/audio/public",
 ]
