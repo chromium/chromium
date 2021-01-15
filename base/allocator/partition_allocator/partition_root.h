@@ -803,6 +803,24 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   if (UNLIKELY(!ptr))
     return;
 
+    // On Android, malloc() interception is more fragile than on other
+    // platforms, as we use wrapped symbols. However, the GigaCage allows us to
+    // quickly tell that a pointer was allocated with PartitionAlloc. GigaCage
+    // is unfortunately not used for the aligned partition when BackupRefPtr is
+    // enabled, yielding the set of conditions below.
+    //
+    // This is a crash to detect imperfect symbol interception. However, we can
+    // forward allocations we don't own to the system malloc() implementation in
+    // these rare cases, assuming that some remain.
+    //
+    // TODO(lizeb): Make this a PA_CHECK() at least temporarily to detect
+    // potential issues in the wild as well.
+#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
+            IsManagedByPartitionAllocDirectMap(ptr));
+#endif
+
   // No check as the pointer hasn't been adjusted yet.
   SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
   // TODO(palmer): See if we can afford to make this a CHECK.
