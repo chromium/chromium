@@ -456,7 +456,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
 
-  if (frame->HasTextures()) {
+  if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
     frame = ReadbackTextureBackedFrameToMemory(std::move(frame));
     if (!frame) {
       auto status = media::Status(media::StatusCode::kEncoderFailedEncode,
