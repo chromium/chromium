@@ -81,6 +81,8 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback) override;
 
+  void SetStopCallback(base::OnceClosure stop_callback) override;
+
   // views::WidgetDelegateView:
   void DeleteDelegate() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
@@ -225,6 +227,11 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->SetVisibleOnAllWorkspaces(true);
 
   return 0;
+}
+
+void ScreenCaptureNotificationUIViews::SetStopCallback(
+    base::OnceClosure stop_callback) {
+  stop_callback_ = std::move(stop_callback);
 }
 
 void ScreenCaptureNotificationUIViews::DeleteDelegate() {

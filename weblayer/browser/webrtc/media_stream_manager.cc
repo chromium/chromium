@@ -69,6 +69,9 @@ class MediaStreamManager::StreamUi : public content::MediaStreamUI {
   }
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {}
+  void SetStopCallback(base::OnceClosure stop) override {
+    stop_ = std::move(stop);
+  }
 
   bool streaming_audio() const { return streaming_audio_; }
 

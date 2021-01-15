@@ -79,6 +79,7 @@ class MockMediaStreamUI : public MediaStreamUI {
   MOCK_METHOD2(MockOnStarted,
                gfx::NativeViewId(base::RepeatingClosure stop,
                                  MediaStreamUI::SourceCallback source));
+  MOCK_METHOD1(SetStopCallback, void(base::OnceClosure));
 };
 
 class MockStopStreamHandler {
