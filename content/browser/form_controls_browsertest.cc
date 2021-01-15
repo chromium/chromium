@@ -17,6 +17,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_switches.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -38,7 +39,9 @@ namespace content {
 class FormControlsBrowserTest : public ContentBrowserTest {
  public:
   FormControlsBrowserTest() {
-    feature_list_.InitWithFeatures({features::kFormControlsRefresh}, {});
+    feature_list_.InitWithFeatures(
+        {features::kFormControlsRefresh, features::kCSSColorSchemeUARendering},
+        {});
   }
 
   void SetUp() override {
@@ -52,6 +55,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // The --disable-lcd-text flag helps text render more similarly on
     // different bots and platform.
     command_line->AppendSwitch(switches::kDisableLCDText);
+
+    // This is required to allow dark mode to be used on some platforms.
+    command_line->AppendSwitch(switches::kForceDarkMode);
   }
 
   void RunTest(const std::string& screenshot_filename,
@@ -61,6 +67,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     ASSERT_TRUE(features::IsFormControlsRefreshEnabled());
+    ASSERT_TRUE(features::IsCSSColorSchemeUARenderingEnabled());
 
     std::string platform_suffix;
 #if defined(OS_MAC)
@@ -90,9 +97,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
       golden_filepath = golden_filepath_platform;
     }
 
-    ASSERT_TRUE(NavigateToURL(
-        shell()->web_contents(),
-        GURL("data:text/html,<!DOCTYPE html><body>" + body_html + "</body>")));
+    ASSERT_TRUE(
+        NavigateToURL(shell()->web_contents(),
+                      GURL("data:text/html,<!DOCTYPE html>" + body_html)));
 
 #if defined(OS_MAC)
     // This fuzzy pixel comparator handles several mac behaviors:
@@ -155,6 +162,29 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           "  document.getElementById('indeterminate').indeterminate = true"
           "</script>",
           /* screenshot_width */ 140,
+          /* screenshot_height */ 40);
+}
+
+// TODO(iopopesc): Re-enable test when there is a resolution for
+// android-bfcache-rel builder producing different results.
+#if defined(OS_ANDROID)
+#define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
+#else
+#define MAYBE_DarkModeTextSelection DarkModeTextSelection
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
+  RunTest("form_controls_browsertest_dark_mode_text_selection",
+          "<meta name=\"color-scheme\" content=\"dark\">"
+          "<div id=\"target\">This is some basic text that we are going to "
+          "select.</div>"
+          "<script>"
+          "  let container = document.getElementById('target');"
+          "  container.focus();"
+          "  let targetText = container.firstChild;"
+          "  let selectionRange = window.getSelection();"
+          "  selectionRange.setBaseAndExtent(targetText, 5, targetText, 35);"
+          "</script>",
+          /* screenshot_width */ 400,
           /* screenshot_height */ 40);
 }
 
