@@ -1,3 +1,11 @@
+# This file lists a limited set of web tests that are run on platforms where
+# executing all web tests is infeasible (usually due to performance or resource
+# constraints). As of Q1 2021, only Fuchsia uses this file by default (of
+# platforms that run web tests).
+#
+# Further documentation:
+# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+
 accessibility/aria-labelledby-on-input.html
 accessibility/aria-link-supports-press.html
 accessibility/insert-adjacent-html-causes-crash.xhtml
