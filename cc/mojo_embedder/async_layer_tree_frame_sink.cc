@@ -275,9 +275,10 @@ void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
   if (needs_begin_frames_ != needs_begin_frames) {
     if (needs_begin_frames_) {
-      TRACE_EVENT_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
     } else {
-      TRACE_EVENT_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
+                                        this);
     }
   }
   needs_begin_frames_ = needs_begin_frames;
