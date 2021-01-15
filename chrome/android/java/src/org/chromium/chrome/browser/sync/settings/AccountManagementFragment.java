@@ -21,7 +21,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -449,11 +448,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
      * Open the account management UI.
      * @param serviceType A signin::GAIAServiceType that triggered the dialog.
      */
-    public static void openAccountManagementScreen(@GAIAServiceType int serviceType) {
+    public static void openAccountManagementScreen(
+            Context context, @GAIAServiceType int serviceType) {
         Bundle arguments = new Bundle();
         arguments.putInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, serviceType);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
-                ContextUtils.getApplicationContext(), AccountManagementFragment.class, arguments);
+                context, AccountManagementFragment.class, arguments);
     }
 }

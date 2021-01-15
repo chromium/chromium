@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
@@ -25,13 +24,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -69,13 +66,9 @@ public class SigninUtils {
         return IntentUtils.safeStartActivity(activity, new Intent(Settings.ACTION_SYNC_SETTINGS));
     }
 
-    @CalledByNative
-    private static void openAccountManagementScreen(WindowAndroid windowAndroid,
-            @GAIAServiceType int gaiaServiceType, @Nullable String email) {
-        ThreadUtils.assertOnUiThread();
-        AccountManagementFragment.openAccountManagementScreen(gaiaServiceType);
-    }
-
+    /**
+     * TODO(crbug/1165772): Move this method to SigninBridge.
+     */
     @CalledByNative
     @VisibleForTesting
     static void openAccountPickerBottomSheet(WindowAndroid windowAndroid, String continueUrl) {

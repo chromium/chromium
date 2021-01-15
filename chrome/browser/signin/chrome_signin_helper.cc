@@ -49,7 +49,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/signin/signin_utils.h"
+#include "chrome/browser/android/signin/signin_bridge.h"
 #include "ui/android/view_android.h"
 #else
 #include "chrome/browser/ui/browser_commands.h"
@@ -303,7 +303,7 @@ void ProcessMirrorHeader(
       // See https://crbug.com/1145031#c5 for details.
       return;
     }
-    SigninUtils::OpenAccountPickerBottomSheet(
+    SigninBridge::OpenAccountPickerBottomSheet(
         window, manage_accounts_params.continue_url.empty()
                     ? chrome::kChromeUINativeNewTabURL
                     : manage_accounts_params.continue_url);
@@ -322,8 +322,7 @@ void ProcessMirrorHeader(
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
     if (!window)
       return;
-    SigninUtils::OpenAccountManagementScreen(window, service_type,
-                                             manage_accounts_params.email);
+    SigninBridge::OpenAccountManagementScreen(window, service_type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
