@@ -1122,4 +1122,41 @@ TEST_F(StyleResolverTest, DependsOnContainerQueries) {
   EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
 }
 
+// Verify that the ComputedStyle::DependsOnContainerQuery flag does
+// not end up in the MatchedPropertiesCache (MPC).
+TEST_F(StyleResolverTest, DependsOnContainerQueriesMPC) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @container (min-width: 9999999px) {
+        #a { color: green; }
+      }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+  )HTML");
+
+  // In the above example, both <div id=a> and <div id=b> match the same
+  // rules (i.e. whatever is provided by UA style). The selector inside
+  // the @container rule does ultimately _not_ match <div id=a> (because the
+  // container query evaluates to 'false'), however, it _does_ cause the
+  // ComputedStyle::DependsOnContainerQuery flag to be set on #a.
+  //
+  // We must ensure that we don't add the DependsOnContainerQuery-flagged
+  // style to the MPC, otherwise the subsequent cache hit for #b would result
+  // in the flag being (incorrectly) set for that element.
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* b = GetDocument().getElementById("b");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(b->ComputedStyleRef().DependsOnContainerQueries());
+}
+
 }  // namespace blink

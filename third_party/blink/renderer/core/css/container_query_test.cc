@@ -114,24 +114,44 @@ TEST_F(ContainerQueryTest, RuleCopy) {
 }
 
 TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
-  // TODO(crbug.com/1145970): This test relies on the temporary fixed container
-  // size in ElementRuleCollector::CollectMatchingRulesForList.
   SetBodyInnerHTML(R"HTML(
     <style>
+      #container {
+        contain: size layout;
+        width: 500px;
+        height: 500px;
+      }
+      #container.adjust {
+        width: 600px;
+      }
+
       div { z-index:1; }
       /* Should apply: */
       @container (min-width: 500px) {
         div { z-index:2; }
       }
-      /* Should not apply: */
+      /* Should initially not apply: */
       @container (min-width: 600px) {
         div { z-index:3; }
       }
     </style>
-    <div id=div></div>
+    <div id=container>
+      <div id=div></div>
+    </div>
   )HTML");
   Element* div = GetDocument().getElementById("div");
   ASSERT_TRUE(div);
+  EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
+
+  // Check that dependent elements are responsive to changes:
+  Element* container = GetDocument().getElementById("container");
+  ASSERT_TRUE(container);
+  container->setAttribute(html_names::kClassAttr, "adjust");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(3, div->ComputedStyleRef().ZIndex());
+
+  container->setAttribute(html_names::kClassAttr, "");
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
 }
 

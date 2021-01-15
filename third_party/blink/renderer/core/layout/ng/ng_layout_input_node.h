@@ -237,6 +237,10 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->ShouldApplySizeContainment();
   }
 
+  bool IsContainerForContainerQueries() const {
+    return box_->IsContainerForContainerQueries();
+  }
+
   // CSS defines certain cases to synthesize inline block baselines from box.
   // See comments in UseLogicalBottomMarginEdgeForInlineBlockBaseline().
   bool UseBlockEndMarginEdgeForInlineBlockBaseline() const {

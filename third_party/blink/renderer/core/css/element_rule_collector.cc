@@ -206,12 +206,9 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     if (auto* container_query = rule_data->GetContainerQuery()) {
       result_.SetDependsOnContainerQueries();
 
-      // TODO(crbug.com/1145970): Propagate actual ContainerQueryEvaluator
-      // instance from the container.
-      // For now a fixed container size of 500x500 is used.
-      auto* eval = MakeGarbageCollected<ContainerQueryEvaluator>(500.0, 500.0);
+      auto* evaluator = style_recalc_context_.cq_evaluator;
 
-      if (!eval->Eval(*container_query)) {
+      if (!evaluator || !evaluator->Eval(*container_query)) {
         rejected++;
         continue;
       }

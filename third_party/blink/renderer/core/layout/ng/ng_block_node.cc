@@ -438,6 +438,17 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
         CalculateInitialFragmentGeometry(constraint_space, *this);
   }
 
+  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
+      IsContainerForContainerQueries()) {
+    if (auto* element = DynamicTo<Element>(GetDOMNode())) {
+      LogicalSize available_size = CalculateChildAvailableSize(
+          constraint_space, *this, fragment_geometry->border_box_size,
+          fragment_geometry->border + fragment_geometry->padding);
+      GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+          *element, available_size);
+    }
+  }
+
   TextAutosizer::NGLayoutScope text_autosizer_layout_scope(
       box_, fragment_geometry->border_box_size.inline_size);
 

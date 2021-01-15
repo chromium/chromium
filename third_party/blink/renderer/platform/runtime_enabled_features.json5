@@ -1068,7 +1068,7 @@
       // provides a convenient way for testing legacy layout code path in blink
       // unit tests.
       name: "LayoutNG",
-      implied_by: ["LayoutNGGrid", "BidiCaretAffinity"],
+      implied_by: ["LayoutNGGrid", "BidiCaretAffinity", "CSSContainerQueries"],
       status: "stable",
     },
     {

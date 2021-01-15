@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class ContainerQueryEvaluator;
 class Element;
 class Node;
 class PseudoElement;
@@ -107,6 +108,9 @@ class StyleRecalcChange {
 // TODO(crbug.com/1145970): Populate this class.
 class StyleRecalcContext {
   STACK_ALLOCATED();
+
+ public:
+  ContainerQueryEvaluator* cq_evaluator = nullptr;
 };
 
 }  // namespace blink

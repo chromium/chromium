@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -76,6 +77,8 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -1971,16 +1974,22 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
-void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
+void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
+    Element& container,
+    const LogicalSize& logical_size) {
   DCHECK(!style_recalc_root_.GetRootNode());
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
 
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
-  // TODO(crbug.com/1145970): Populate this context with a
-  // ContainerQueryEvaluator.
   StyleRecalcContext style_recalc_context;
+
+  PhysicalSize physical_size = ToPhysicalSize(
+      logical_size, container.ComputedStyleRef().GetWritingMode());
+  style_recalc_context.cq_evaluator =
+      MakeGarbageCollected<ContainerQueryEvaluator>(physical_size.width,
+                                                    physical_size.height);
 
   style_recalc_root_.Update(nullptr, &container);
   RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},

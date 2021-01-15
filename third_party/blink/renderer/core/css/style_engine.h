@@ -77,6 +77,7 @@ class StyleRuleUsageTracker;
 class StyleSheetContents;
 class StyleInitialData;
 class ViewportStyleResolver;
+struct LogicalSize;
 
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 
@@ -400,7 +401,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateViewportStyle();
   void UpdateStyleAndLayoutTree();
   // To be called from layout when container queries change for the container.
-  void UpdateStyleAndLayoutTreeForContainer(Element& container);
+  void UpdateStyleAndLayoutTreeForContainer(Element& container,
+                                            const LogicalSize&);
   void RecalcStyle() { RecalcStyle({}, StyleRecalcContext()); }
 
   void ClearEnsuredDescendantStyles(Element& element);

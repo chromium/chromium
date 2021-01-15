@@ -861,9 +861,6 @@ void StyleResolver::ApplyBaseStyle(
     MatchAllRules(state, collector,
                   matching_behavior != kMatchAllRulesExcludingSMIL);
 
-    if (collector.MatchedResult().DependsOnContainerQueries())
-      state.Style()->SetDependsOnContainerQueries(true);
-
     if (tracker_)
       AddMatchedRulesToTracker(collector);
 
@@ -882,6 +879,9 @@ void StyleResolver::ApplyBaseStyle(
       state.Style()->SetSelfOrAncestorHasDirAutoAttribute(true);
 
     CascadeAndApplyMatchedProperties(state, cascade);
+
+    if (collector.MatchedResult().DependsOnContainerQueries())
+      state.Style()->SetDependsOnContainerQueries(true);
 
     ApplyCallbackSelectors(state);
 
