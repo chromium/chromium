@@ -133,34 +133,43 @@ public class AutofillAssistantFacade {
                 }
 
                 if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
-                        == null) {
-                    // Opt-out users who don't have DFM installed.
-                    AutofillAssistantMetrics.recordLiteScriptStarted(
-                            tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                                == null
+                        && arguments.containsTriggerScript()
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS)) {
                     return;
                 }
             }
 
-            AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(
-                    tab, (moduleEntry) -> {
-                        if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
-                            AutofillAssistantMetrics.recordDropOut(
-                                    DropOutReason.DFM_INSTALL_FAILED);
-                            return;
+            if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() == null) {
+                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(tab, (moduleEntry) -> {
+                    if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
+                        AutofillAssistantMetrics.recordDropOut(DropOutReason.DFM_INSTALL_FAILED);
+                        if (arguments.containsTriggerScript()) {
+                            AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
+                                    LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
                         }
-
-                        moduleEntry.start(
-                                BottomSheetControllerProvider.from(activity.getWindowAndroid()),
-                                activity.getBrowserControlsManager(),
-                                activity.getCompositorViewHolder(), activity, tab.getWebContents(),
-                                activity.getWindowAndroid().getKeyboardDelegate(),
-                                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                                activity.getActivityTabProvider(),
-                                activity instanceof CustomTabActivity, arguments.getInitialUrl(),
-                                arguments.getParameters(), arguments.getExperimentIds(),
-                                arguments.getCallerAccount(), arguments.getUserName());
-                    });
+                        return;
+                    }
+                    start(activity, arguments, moduleEntry);
+                }, /* showUi = */ !arguments.containsTriggerScript());
+            } else {
+                start(activity, arguments,
+                        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled());
+            }
         });
+    }
+
+    private static void start(ChromeActivity activity, AutofillAssistantArguments arguments,
+            AutofillAssistantModuleEntry module) {
+        module.start(BottomSheetControllerProvider.from(activity.getWindowAndroid()),
+                activity.getBrowserControlsManager(), activity.getCompositorViewHolder(), activity,
+                activity.getCurrentWebContents(), activity.getWindowAndroid().getKeyboardDelegate(),
+                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                activity.getActivityTabProvider(), activity instanceof CustomTabActivity,
+                arguments.getInitialUrl(), arguments.getParameters(), arguments.getExperimentIds(),
+                arguments.getCallerAccount(), arguments.getUserName());
     }
 
     /**

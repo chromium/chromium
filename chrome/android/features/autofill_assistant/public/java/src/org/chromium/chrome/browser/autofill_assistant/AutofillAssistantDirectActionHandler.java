@@ -216,7 +216,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
         mModuleEntryProvider.getModuleEntry(tab, (entry) -> {
             mDelegate = createDelegate(entry);
             callback.onResult(mDelegate);
-        });
+        }, /* showUi = */ true);
     }
 
     /** Creates a delegate from the given {@link AutofillAssistantModuleEntry}, if possible. */

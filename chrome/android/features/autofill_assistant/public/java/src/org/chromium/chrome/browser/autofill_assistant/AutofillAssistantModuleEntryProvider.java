@@ -42,7 +42,7 @@ public class AutofillAssistantModuleEntryProvider {
 
     /** Gets the AA module entry, installing it if necessary. */
     /* package */
-    void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         AutofillAssistantModuleEntry entry = getModuleEntryIfInstalled();
         if (entry != null) {
             AutofillAssistantMetrics.recordFeatureModuleInstallation(
@@ -50,7 +50,7 @@ public class AutofillAssistantModuleEntryProvider {
             callback.onResult(entry);
             return;
         }
-        loadDynamicModuleWithUi(tab, callback);
+        loadDynamicModule(tab, callback, showUi);
     }
 
     /**
@@ -83,14 +83,14 @@ public class AutofillAssistantModuleEntryProvider {
         AutofillAssistantModule.installDeferred();
     }
 
-    private static void loadDynamicModuleWithUi(
-            Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    private static void loadDynamicModule(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         ModuleInstallUi ui = new ModuleInstallUi(tab, R.string.autofill_assistant_module_title,
                 new ModuleInstallUi.FailureUiListener() {
                     @Override
                     public void onFailureUiResponse(boolean retry) {
                         if (retry) {
-                            loadDynamicModuleWithUi(tab, callback);
+                            loadDynamicModule(tab, callback, showUi);
                         } else {
                             AutofillAssistantMetrics.recordFeatureModuleInstallation(
                                     FeatureModuleInstallation.DFM_FOREGROUND_INSTALLATION_FAILED);
@@ -98,8 +98,11 @@ public class AutofillAssistantModuleEntryProvider {
                         }
                     }
                 });
-        // Shows toast informing user about install start.
-        ui.showInstallStartUi();
+        if (showUi) {
+            // Shows toast informing user about install start.
+            ui.showInstallStartUi();
+        }
+
         AutofillAssistantModule.install((success) -> {
             if (success) {
                 // Don't show success UI from DFM, transition to Autofill Assistant UI directly.
@@ -107,9 +110,12 @@ public class AutofillAssistantModuleEntryProvider {
                         FeatureModuleInstallation.DFM_FOREGROUND_INSTALLATION_SUCCEEDED);
                 callback.onResult(AutofillAssistantModule.getImpl());
                 return;
+            } else if (showUi) {
+                // Show inforbar to ask user if they want to retry or cancel.
+                ui.showInstallFailureUi();
+            } else {
+                callback.onResult(null);
             }
-            // Show inforbar to ask user if they want to retry or cancel.
-            ui.showInstallFailureUi();
         });
     }
 }
