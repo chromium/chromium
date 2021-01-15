@@ -82,8 +82,8 @@ suite('ProfilePickerAppTest', function() {
         'profiles-list-changed', [browserProxy.profileSample]);
     flushTasks();
     assertEquals(
-        mainView.shadowRoot.querySelectorAll('profile-card').length, 1);
-    mainView.$$('#addProfile').querySelectorAll('cr-icon-button')[0].click();
+        mainView.$$('#wrapper').querySelectorAll('profile-card').length, 1);
+    mainView.$$('#addProfile').click();
     await waitForProfileCretionLoad();
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 2);
