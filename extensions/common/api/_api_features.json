@@ -25,7 +25,7 @@
     "contexts": ["blessed_extension"],
     "extension_types": ["extension"],
     "noparent": true,
-    "whitelist": [
+    "allowlist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
       "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // QO component extension
@@ -42,7 +42,7 @@
     "extension_types": ["extension"],
     "noparent": true,
     "component_extensions_auto_granted": false,
-    "whitelist": [
+    "allowlist": [
       "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // Google input tools
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Official xkb extension
       "F94EE6AB36D6C6588670B2B01EB65212D9C64E33"   // Open source xkb extension
@@ -319,9 +319,9 @@
     ]
   }],
   "metricsPrivate.getIsCrashReportingEnabled": {
-    "whitelist": [
+    "allowlist": [
       // This function inherits the extension restrictions of metricsPrivate,
-      // but also requires whitelisting. New uses of this function should get
+      // but also requires allowlisting. New uses of this function should get
       // /tools/metrics/OWNERS approval of the usage before adding entries
       // below. See crbug.com/374199.
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
@@ -360,7 +360,7 @@
     "contexts": ["blessed_extension"],
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",   // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA",   // Media Router Stable
       "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",   // Chrome Camera App Dev

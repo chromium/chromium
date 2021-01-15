@@ -13,11 +13,11 @@
     "contexts": ["blessed_extension"],
     "extension_types": ["extension", "platform_app"],
     "location": "component",
-    "whitelist": [
+    "allowlist": [
       "ABCDEF0123456789ABCDEF0123456789ABCDEF01",
       "10FEDCBA9876543210FEDCBA9876543210FEDCBA"
     ],
-    "blacklist": [
+    "blocklist": [
       "0123456789ABCDEF0123456789ABCDEF01234567",
       "76543210FEDCBA9876543210FEDCBA9876543210"
     ],
@@ -32,13 +32,13 @@
     "internal": true
   },
   "gamma.child": {
-    "whitelist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
+    "allowlist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "dependencies": [],
     "platforms": ["linux"]
   },
   "gamma.unparented": {
     "channel": "dev",
-    "blacklist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
+    "blocklist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "contexts": ["unblessed_extension"],
     "noparent": true
   },
@@ -66,7 +66,7 @@
     "channel": "beta",
     "contexts": ["blessed_extension"],
     "extension_types": ["extension"],
-    "whitelist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
+    "allowlist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "disallow_for_service_workers": false
   }, {
     "channel": "stable",

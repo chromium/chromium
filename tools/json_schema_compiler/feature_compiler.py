@@ -70,10 +70,6 @@ CC_FILE_END = """
 }  // namespace extensions
 """
 
-# Legacy keys for the allow and blocklists.
-LEGACY_ALLOWLIST_KEY = 'whitelist'
-LEGACY_BLOCKLIST_KEY = 'blacklist'
-
 def ToPosixPath(path):
   """Returns |path| with separator converted to POSIX style.
 
@@ -133,7 +129,16 @@ FEATURE_GRAMMAR = ({
         str: {},
         'shared': True
     },
-    LEGACY_BLOCKLIST_KEY: {
+    'allowlist': {
+        list: {
+            'subtype':
+            str,
+            'validators':
+            [(ListContainsOnlySha1Hashes,
+              'list should only have hex-encoded SHA1 hashes of extension ids')]
+        }
+    },
+    'blocklist': {
         list: {
             'subtype':
             str,
@@ -271,15 +276,6 @@ FEATURE_GRAMMAR = ({
         str: {},
         'shared': True
     },
-    LEGACY_ALLOWLIST_KEY: {
-        list: {
-            'subtype':
-            str,
-            'validators':
-            [(ListContainsOnlySha1Hashes,
-              'list should only have hex-encoded SHA1 hashes of extension ids')]
-        }
-    },
 })
 
 FEATURE_TYPES = ['APIFeature', 'BehaviorFeature',
@@ -351,7 +347,7 @@ def IsFeatureCrossReference(property_name, reverse_property_name, feature,
 # Verifies that a feature with an allowlist is not available to hosted apps,
 # returning true on success.
 def DoesNotHaveAllowlistForHostedApps(value):
-  if not LEGACY_ALLOWLIST_KEY in value:
+  if not 'allowlist' in value:
     return True
 
   # Hack Alert: |value| here has the code for the generated C++ feature. Since
@@ -394,7 +390,7 @@ def DoesNotHaveAllowlistForHostedApps(value):
       '2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4',
   ]
 
-  allowlist = cpp_list_to_list(value[LEGACY_ALLOWLIST_KEY])
+  allowlist = cpp_list_to_list(value['allowlist'])
   for entry in allowlist:
     if entry not in HOSTED_APP_EXCEPTIONS:
       return False
@@ -482,14 +478,7 @@ def GetCodeForFeatureValues(feature_values):
     if key in IGNORED_KEYS:
       continue;
 
-    # TODO(devlin): Remove this hack as part of 842387.
-    set_key = key
-    if key == LEGACY_ALLOWLIST_KEY:
-      set_key = 'allowlist'
-    elif key == LEGACY_BLOCKLIST_KEY:
-      set_key = 'blocklist'
-
-    c.Append('feature->set_%s(%s);' % (set_key, feature_values[key]))
+    c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c
 
 class Feature(object):

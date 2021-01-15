@@ -83,14 +83,14 @@ class SimpleFeature(object):
   - |unix_name| the unix_name of the feature
   - |channel| the channel where the feature is released
   - |extension_types| the types which can use the feature
-  - |whitelist| a list of extensions allowed to use the feature
+  - |allowlist| a list of extensions allowed to use the feature
   """
   def __init__(self, feature_name, feature_def):
     self.name = feature_name
     self.unix_name = UnixName(self.name)
     self.channel = feature_def['channel']
     self.extension_types = feature_def['extension_types']
-    self.whitelist = feature_def.get('whitelist')
+    self.allowlist = feature_def.get('allowlist')
 
 
 class Namespace(object):

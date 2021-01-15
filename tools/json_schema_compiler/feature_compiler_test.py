@@ -37,7 +37,7 @@ class FeatureCompilerTest(unittest.TestCase):
   def testFeature(self):
     # Test some basic feature parsing for a sanity check.
     f = self._parseFeature({
-      'blacklist': [
+      'blocklist': [
         'ABCDEF0123456789ABCDEF0123456789ABCDEF01',
         '10FEDCBA9876543210FEDCBA9876543210FEDCBA'
       ],
@@ -60,7 +60,7 @@ class FeatureCompilerTest(unittest.TestCase):
       'noparent': True,
       'platforms': ['mac', 'win'],
       'session_types': ['kiosk', 'regular'],
-      'whitelist': [
+      'allowlist': [
         '0123456789ABCDEF0123456789ABCDEF01234567',
         '76543210FEDCBA9876543210FEDCBA9876543210'
       ]
@@ -366,11 +366,11 @@ class FeatureCompilerTest(unittest.TestCase):
 
     with self.assertRaisesRegexp(AssertionError,
                                  'No default parent found for bookmarks'):
-      c._CompileFeature('bookmarks.export', { "whitelist": ["asdf"] })
+      c._CompileFeature('bookmarks.export', { "allowlist": ["asdf"] })
 
-  def testRealIdsDisallowedInWhitelist(self):
+  def testRealIdsDisallowedInAllowlist(self):
     fake_id = 'a' * 32;
-    f = self._parseFeature({'whitelist': [fake_id],
+    f = self._parseFeature({'allowlist': [fake_id],
                             'extension_types': ['extension'],
                             'channel': 'beta'})
     f.Validate('PermissionFeature', {})
@@ -380,7 +380,7 @@ class FeatureCompilerTest(unittest.TestCase):
   def testHostedAppsCantUseAllowlistedFeatures_SimpleFeature(self):
     f = self._parseFeature({
         'extension_types': ['extension', 'hosted_app'],
-        'whitelist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+        'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
         'channel': 'beta',
     })
     f.Validate('PermissionFeature', {})
@@ -396,13 +396,13 @@ class FeatureCompilerTest(unittest.TestCase):
         }, {
           'channel': 'beta',
           'extension_types': ['hosted_app'],
-          'whitelist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
         }])
     c._CompileFeature('valid_feature',
         [{
           'extension_types': ['extension'],
           'channel': 'beta',
-          'whitelist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
         }, {
           'channel': 'beta',
           'extension_types': ['hosted_app'],
@@ -429,7 +429,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
     c._CompileFeature('parent.child',
         {
-          'whitelist': ['0123456789ABCDEF0123456789ABCDEF01234567']
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567']
         })
     feature = c._features.get('parent.child')
     self.assertTrue(feature)
