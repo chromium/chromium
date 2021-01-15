@@ -63,6 +63,7 @@ js_type_check("closure_compile_module") {
     ":languages_browser_proxy.m",
     ":languages_metrics_proxy",
     ":languages_page",
+    ":languages_settings_metrics_proxy",
     ":languages_types",
   ]
 }
@@ -137,10 +138,16 @@ js_library("languages_metrics_proxy") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
+js_library("languages_settings_metrics_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
 js_library("languages_page") {
   deps = [
     ":languages.m",
     ":languages_metrics_proxy",
+    ":languages_settings_metrics_proxy",
     "..:lifetime_browser_proxy.m",
     "..:route",
     "..:router.m",

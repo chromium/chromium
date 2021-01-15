@@ -54,6 +54,8 @@ import {Route, Router} from '../router.m.js';
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 // </if>
 
+import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
+
 /**
  * @type {number} Millisecond delay that can be used when closing an action
  *      menu to keep it briefly on-screen.
@@ -169,12 +171,20 @@ Polymer({
   // <if expr="chromeos">
   /** @private {?LanguagesMetricsProxy} */
   languagesMetricsProxy_: null,
+  // </if>
+  /** @private {?LanguageSettingsMetricsProxy} */
+  languageSettingsMetricsProxy_: null,
 
   /** @override */
   created() {
+    // <if expr="chromeos">
     this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
+    // </if>
+    this.languageSettingsMetricsProxy_ =
+        LanguageSettingsMetricsProxyImpl.getInstance();
   },
 
+  // <if expr="chromeos">
   /** @private */
   onOpenChromeOSLanguagesSettingsClick_() {
     const chromeOSLanguagesSettingsPath =
@@ -223,6 +233,8 @@ Polymer({
     // <if expr="chromeos">
     this.languagesMetricsProxy_.recordAddLanguages();
     // </if>
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.CLICK_ON_ADD_LANGUAGE);
     this.showAddLanguagesDialog_ = true;
   },
 
@@ -351,18 +363,24 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onTranslateToggleChange_(e) {
-    this.languagesMetricsProxy_.recordToggleTranslate(e.target.checked);
+  onSpellcheckToggleChange_(e) {
+    this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
   },
+  // </if>
 
   /**
    * @param {!Event} e
    * @private
    */
-  onSpellcheckToggleChange_(e) {
-    this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
+  onTranslateToggleChange_(e) {
+    // <if expr="chromeos">
+    this.languagesMetricsProxy_.recordToggleTranslate(e.target.checked);
+    // </if>
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        e.target.checked ?
+            LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
+            LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY);
   },
-  // </if>
 
   // <if expr="chromeos or is_win">
   /**
@@ -527,9 +545,16 @@ Polymer({
     if (e.target.checked) {
       this.languageHelper.enableTranslateLanguage(
           this.detailLanguage_.language.code);
+
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
+
     } else {
       this.languageHelper.disableTranslateLanguage(
           this.detailLanguage_.language.code);
+
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
     }
     // <if expr="chromeos">
     this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
@@ -558,6 +583,8 @@ Polymer({
   onMoveToTopTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   },
 
   /**
@@ -568,6 +595,8 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, true /* upDirection */);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   },
 
   /**
@@ -578,6 +607,8 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, false /* upDirection */);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   },
 
   /**
@@ -587,6 +618,8 @@ Polymer({
   onRemoveLanguageTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
     this.languageHelper.disableLanguage(this.detailLanguage_.language.code);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_REMOVED);
   },
 
   // <if expr="not is_macosx">
