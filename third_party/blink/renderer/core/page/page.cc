@@ -333,6 +333,7 @@ void Page::SetMainFrame(Frame* main_frame) {
   main_frame_ = main_frame;
 
   page_scheduler_->SetIsMainFrameLocal(main_frame->IsLocalFrame());
+  visual_viewport_->Reset();
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
