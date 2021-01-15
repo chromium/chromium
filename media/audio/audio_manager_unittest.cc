@@ -60,7 +60,7 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
-#elif  defined(USE_CRAS) && defined(OS_LINUX)
+#elif defined(USE_CRAS) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 

@@ -4,6 +4,7 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_COMMON_H_
 #define MEDIA_GPU_VAAPI_VAAPI_COMMON_H_
 
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vp8_picture.h"

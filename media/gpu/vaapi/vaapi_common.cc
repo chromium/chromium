@@ -4,6 +4,8 @@
 
 #include "media/gpu/vaapi/vaapi_common.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace media {
 
 VaapiH264Picture::VaapiH264Picture(scoped_refptr<VASurface> va_surface)

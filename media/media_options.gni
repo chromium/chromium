@@ -158,8 +158,8 @@ declare_args() {
 # will be hosted in the mojo CDM service running in the CDM (utility) process.
 # On Fuchsia, this is only enabled to build libclearkeycdm.so, the mojo CDM
 # service is not used.
-enable_library_cdms = (is_linux && !is_chromecast) || is_chromeos || is_mac ||
-                      is_win || is_fuchsia
+enable_library_cdms = (is_linux && !is_chromecast) || is_chromeos_lacros ||
+                      is_chromeos_ash || is_mac || is_win || is_fuchsia
 
 declare_args() {
   # When enabled, this feature allows developers to use a runtime flag to
@@ -206,7 +206,8 @@ if (is_chromecast) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_chromeos_ash || is_mac || is_win || (is_linux && use_vaapi)) {
+} else if (is_chromeos_ash || is_mac || is_win ||
+           ((is_linux || is_chromeos_lacros) && use_vaapi)) {
   _default_mojo_media_services = [ "video_decoder" ]
   _default_mojo_media_host = "gpu"
 }

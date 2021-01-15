@@ -274,7 +274,7 @@ source_set("audio") {
         "cras/audio_manager_chromeos.h",
       ]
       deps += [ "//chromeos/audio" ]
-    } else if (is_linux) {
+    } else if (is_linux || is_chromeos_lacros) {
       sources += [
         "cras/audio_manager_cras.cc",
         "cras/audio_manager_cras.h",
