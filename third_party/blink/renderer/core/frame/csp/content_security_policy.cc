@@ -371,8 +371,10 @@ void ContentSecurityPolicy::AddPolicyFromHeaderValue(
     Member<CSPDirectiveList> policy =
         CSPDirectiveList::Create(this, begin, position, type, source);
 
-    if (policy->ShouldDisableEval() && disable_eval_error_message_.IsNull()) {
-      disable_eval_error_message_ = policy->EvalDisabledErrorMessage();
+    String disable_eval_message;
+    if (policy->ShouldDisableEval(disable_eval_message) &&
+        disable_eval_error_message_.IsNull()) {
+      disable_eval_error_message_ = disable_eval_message;
     }
 
     policies_.push_back(policy.Release());
@@ -584,8 +586,9 @@ bool ContentSecurityPolicy::AllowWasmEval(
 
 String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
   for (const auto& policy : policies_) {
-    if (policy->ShouldDisableEval())
-      return policy->EvalDisabledErrorMessage();
+    String message;
+    if (policy->ShouldDisableEval(message))
+      return message;
   }
   return String();
 }

@@ -216,23 +216,6 @@ void CSPDirectiveList::ApplyParsedDirectives() {
         break;
     }
   }
-
-  CSPOperativeDirective directive =
-      OperativeDirective(CSPDirectiveName::ScriptSrc);
-
-  if (!CheckEval(directive.source_list)) {
-    String message =
-        "Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
-        "not an allowed source of script in the following Content Security "
-        "Policy directive: \"" +
-        GetRawDirectiveForMessage(raw_directives_, directive.type) + "\".\n";
-    SetEvalDisabledErrorMessage(message);
-  } else if (RequiresTrustedTypes()) {
-    String message =
-        "Refused to evaluate a string as JavaScript because this document "
-        "requires 'Trusted Type' assignment.";
-    SetEvalDisabledErrorMessage(message);
-  }
 }
 
 void CSPDirectiveList::ReportViolation(
@@ -747,14 +730,23 @@ bool CSPDirectiveList::AllowWasmEval(
              OperativeDirective(CSPDirectiveName::ScriptSrc).source_list);
 }
 
-bool CSPDirectiveList::ShouldDisableEvalBecauseScriptSrc() const {
-  return !AllowEval(ReportingDisposition::kSuppressReporting,
-                    ContentSecurityPolicy::kWillNotThrowException,
-                    g_empty_string);
-}
-
-bool CSPDirectiveList::ShouldDisableEvalBecauseTrustedTypes() const {
-  return RequiresTrustedTypes();
+bool CSPDirectiveList::ShouldDisableEval(String& error_message) const {
+  CSPOperativeDirective directive =
+      OperativeDirective(CSPDirectiveName::ScriptSrc);
+  if (!CheckEval(directive.source_list)) {
+    error_message =
+        "Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
+        "not an allowed source of script in the following Content Security "
+        "Policy directive: \"" +
+        GetRawDirectiveForMessage(raw_directives_, directive.type) + "\".\n";
+    return true;
+  } else if (RequiresTrustedTypes()) {
+    error_message =
+        "Refused to evaluate a string as JavaScript because this document "
+        "requires 'Trusted Type' assignment.";
+    return true;
+  }
+  return false;
 }
 
 bool CSPDirectiveList::AllowPluginType(

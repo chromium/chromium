@@ -104,15 +104,7 @@ class CORE_EXPORT CSPDirectiveList final
   void ReportMixedContent(const KURL& blocked_url,
                           ResourceRequest::RedirectStatus) const;
 
-  bool ShouldDisableEval() const {
-    return ShouldDisableEvalBecauseScriptSrc() ||
-           ShouldDisableEvalBecauseTrustedTypes();
-  }
-  bool ShouldDisableEvalBecauseScriptSrc() const;
-  bool ShouldDisableEvalBecauseTrustedTypes() const;
-  const String& EvalDisabledErrorMessage() const {
-    return eval_disabled_error_message_;
-  }
+  bool ShouldDisableEval(String& error_message) const;
   bool IsReportOnly() const {
     return header_->type == network::mojom::ContentSecurityPolicyType::kReport;
   }
@@ -228,10 +220,6 @@ class CORE_EXPORT CSPDirectiveList final
                       const String& type,
                       const String& type_attribute) const;
 
-  void SetEvalDisabledErrorMessage(const String& error_message) {
-    eval_disabled_error_message_ = error_message;
-  }
-
   bool CheckEvalAndReportViolation(const String& console_message,
                                    ContentSecurityPolicy::ExceptionStatus,
                                    const String& script_content) const;
@@ -299,8 +287,6 @@ class CORE_EXPORT CSPDirectiveList final
   // - |use_reporting_api_| is false.
   Vector<String> report_endpoints_;
   bool use_reporting_api_;
-
-  String eval_disabled_error_message_;
 
   DISALLOW_COPY_AND_ASSIGN(CSPDirectiveList);
 };
