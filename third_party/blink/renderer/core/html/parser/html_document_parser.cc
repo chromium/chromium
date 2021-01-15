@@ -1249,7 +1249,12 @@ void HTMLDocumentParser::Append(const String& input_source) {
       return;
 
     preload_scanner_->AppendToEnd(source);
-    ScanAndPreload(preload_scanner_.get());
+    if (preloader_) {
+      // TODO(Richard.Townsend@arm.com): add test coverage of this branch.
+      // The crash in crbug.com/1166786 indicates that text documents are being
+      // speculatively prefetched.
+      ScanAndPreload(preload_scanner_.get());
+    }
 
     // Return after the preload scanner, do not actually parse the document.
     return;
