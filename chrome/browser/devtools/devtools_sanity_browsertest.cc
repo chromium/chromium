@@ -1864,7 +1864,7 @@ class DevToolsAutoOpenerTest : public DevToolsSanityTest {
 };
 
 // TODO(https://crbug.com/1167158): Flaky on debug builds.
-#if defined(NDEBUG)
+#if !defined(NDEBUG)
 #define MAYBE_TestAutoOpenForTabs DISABLED_TestAutoOpenForTabs
 #else
 #define MAYBE_TestAutoOpenForTabs TestAutoOpenForTabs
