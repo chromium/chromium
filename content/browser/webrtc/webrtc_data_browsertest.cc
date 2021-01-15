@@ -20,11 +20,8 @@
 
 namespace content {
 
-#if defined(OS_ANDROID)
-// Renderer crashes under Android ASAN (ADDRESS_SANITIZER):
-// https://crbug.com/408496.
-// Test fails on WebRTC Android FYI (even without ASAN):
-// https://crbug.com/1166107
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// Renderer crashes under Android ASAN: https://crbug.com/408496.
 #define MAYBE_WebRtcDataBrowserTest DISABLED_WebRtcDataBrowserTest
 #else
 #define MAYBE_WebRtcDataBrowserTest WebRtcDataBrowserTest
