@@ -153,7 +153,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void UpdateAppDisabledState(
       const base::ListValue* disabled_system_features_pref,
       int feature,
-      const std::string& app_id);
+      const std::string& app_id,
+      bool is_disabled_mode_changed);
 
   apps::InstanceRegistry* instance_registry_;
   ScopedObserver<extensions::AppWindowRegistry,
@@ -163,6 +164,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   PausedApps paused_apps_;
 
   std::set<std::string> disabled_apps_;
+
+  // Boolean signifying whether the preferred user experience mode of disabled
+  // apps is hidden (true) or blocked (false). The value comes from user pref
+  // and is set by updating SystemDisabledMode policy.
+  bool is_disabled_apps_mode_hidden_ = false;
 
   std::map<extensions::AppWindow*, aura::Window*> app_window_to_aura_window_;
 

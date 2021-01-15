@@ -173,6 +173,10 @@ void ExtensionAppsChromeOs::Initialize() {
         policy::policy_prefs::kSystemFeaturesDisableList,
         base::BindRepeating(&ExtensionAppsBase::OnSystemFeaturesPrefChanged,
                             GetWeakPtr()));
+    local_state_pref_change_registrar_.Add(
+        policy::policy_prefs::kSystemFeaturesDisableMode,
+        base::BindRepeating(&ExtensionAppsBase::OnSystemFeaturesPrefChanged,
+                            GetWeakPtr()));
     OnSystemFeaturesPrefChanged();
   }
 }
@@ -504,13 +508,21 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
     return;
   }
 
-  UpdateAppDisabledState(disabled_system_features_pref,
-                         policy::SystemFeature::kCamera,
-                         extension_misc::kCameraAppId);
+  const bool is_pref_disabled_mode_hidden =
+      local_state->GetString(
+          policy::policy_prefs::kSystemFeaturesDisableMode) ==
+      policy::kHiddenDisableMode;
+  const bool is_disabled_mode_changed =
+      (is_pref_disabled_mode_hidden != is_disabled_apps_mode_hidden_);
+  is_disabled_apps_mode_hidden_ = is_pref_disabled_mode_hidden;
+
+  UpdateAppDisabledState(
+      disabled_system_features_pref, policy::SystemFeature::kCamera,
+      extension_misc::kCameraAppId, is_disabled_mode_changed);
 
   UpdateAppDisabledState(disabled_system_features_pref,
                          policy::SystemFeature::kWebStore,
-                         extensions::kWebStoreAppId);
+                         extensions::kWebStoreAppId, is_disabled_mode_changed);
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
@@ -529,10 +541,10 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
 apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
     const extensions::Extension* extension,
     apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app =
-      ConvertImpl(extension, base::Contains(disabled_apps_, extension->id())
-                                 ? apps::mojom::Readiness::kDisabledByPolicy
-                                 : readiness);
+  const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
+  apps::mojom::AppPtr app = ConvertImpl(
+      extension,
+      is_app_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
   bool paused = paused_apps_.IsPaused(extension->id());
   app->icon_key =
       icon_key_factory().MakeIconKey(GetIconEffects(extension, paused));
@@ -542,6 +554,12 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
                        : apps::mojom::OptionalBool::kFalse;
   app->paused = paused ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
+
+  if (is_app_disabled && is_disabled_apps_mode_hidden_) {
+    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+  }
 
   return app;
 }
@@ -712,7 +730,8 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
 void ExtensionAppsChromeOs::UpdateAppDisabledState(
     const base::ListValue* disabled_system_features_pref,
     int feature,
-    const std::string& app_id) {
+    const std::string& app_id,
+    bool is_disabled_mode_changed) {
   const bool is_disabled =
       base::Contains(*disabled_system_features_pref, base::Value(feature));
   // Sometimes the policy is updated before the app is installed, so this way
@@ -720,7 +739,8 @@ void ExtensionAppsChromeOs::UpdateAppDisabledState(
   // and the app will be published with the correct readiness upon its
   // installation.
   const bool should_publish =
-      (base::Contains(disabled_apps_, app_id) != is_disabled);
+      (base::Contains(disabled_apps_, app_id) != is_disabled) ||
+      is_disabled_mode_changed;
 
   if (is_disabled) {
     disabled_apps_.insert(app_id);
