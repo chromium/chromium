@@ -587,10 +587,13 @@ void AuthenticatorRequestDialogModel::OnBioEnrollmentDone() {
 }
 
 void AuthenticatorRequestDialogModel::RequestAttestationPermission(
+    bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(current_step_ != Step::kClosed);
   attestation_callback_ = std::move(callback);
-  SetCurrentStep(Step::kAttestationPermissionRequest);
+  SetCurrentStep(is_enterprise_attestation
+                     ? Step::kEnterpriseAttestationPermissionRequest
+                     : Step::kAttestationPermissionRequest);
 }
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(

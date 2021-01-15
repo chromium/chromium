@@ -333,13 +333,6 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     return;
   }
 
-  if (is_enterprise_attestation) {
-    // This will require additional UI that is not yet ready. Therefore, at this
-    // stage, it is always rejected.
-    std::move(callback).Run(false);
-    return;
-  }
-
   // Cryptotoken displays its own attestation consent prompt.
   // AuthenticatorCommon does not invoke ShouldReturnAttestation() for those
   // requests.
@@ -359,7 +352,8 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
   }
 #endif  // defined(OS_WIN)
 
-  weak_dialog_model_->RequestAttestationPermission(std::move(callback));
+  weak_dialog_model_->RequestAttestationPermission(is_enterprise_attestation,
+                                                   std::move(callback));
 }
 
 bool ChromeAuthenticatorRequestDelegate::SupportsResidentKeys() {

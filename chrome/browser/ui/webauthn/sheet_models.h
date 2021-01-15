@@ -499,6 +499,18 @@ class AttestationPermissionRequestSheetModel
   base::string16 GetCancelButtonLabel() const override;
 };
 
+class EnterpriseAttestationPermissionRequestSheetModel
+    : public AttestationPermissionRequestSheetModel {
+ public:
+  explicit EnterpriseAttestationPermissionRequestSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  base::string16 GetStepTitle() const override;
+  base::string16 GetStepDescription() const override;
+};
+
 class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorQRSheetModel(

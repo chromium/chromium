@@ -102,8 +102,9 @@ class AuthenticatorRequestDialogModel {
     // Account selection,
     kSelectAccount,
 
-    // Attestation permission request.
+    // Attestation permission requests.
     kAttestationPermissionRequest,
+    kEnterpriseAttestationPermissionRequest,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels
@@ -384,7 +385,8 @@ class AuthenticatorRequestDialogModel {
 
   base::Optional<int> uv_attempts() const { return uv_attempts_; }
 
-  void RequestAttestationPermission(base::OnceCallback<void(bool)> callback);
+  void RequestAttestationPermission(bool is_enterprise_attestation,
+                                    base::OnceCallback<void(bool)> callback);
 
   const std::vector<device::AuthenticatorGetAssertionResponse>& responses() {
     return ephemeral_state_.responses_;

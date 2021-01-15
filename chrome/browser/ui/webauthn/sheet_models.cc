@@ -1149,6 +1149,26 @@ base::string16 AttestationPermissionRequestSheetModel::GetCancelButtonLabel()
   return l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
 }
 
+// EnterpriseAttestationPermissionRequestSheetModel ---------------------------
+
+EnterpriseAttestationPermissionRequestSheetModel::
+    EnterpriseAttestationPermissionRequestSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AttestationPermissionRequestSheetModel(dialog_model) {}
+
+base::string16 EnterpriseAttestationPermissionRequestSheetModel::GetStepTitle()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_TITLE);
+}
+
+base::string16
+EnterpriseAttestationPermissionRequestSheetModel::GetStepDescription() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_DESC,
+      GetRelyingPartyIdString(dialog_model()));
+}
+
 // AuthenticatorQRSheetModel --------------------------------------------------
 
 AuthenticatorQRSheetModel::AuthenticatorQRSheetModel(

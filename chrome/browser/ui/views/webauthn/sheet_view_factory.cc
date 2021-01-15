@@ -178,6 +178,11 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AttestationPermissionRequestSheetModel>(
               dialog_model));
       break;
+    case Step::kEnterpriseAttestationPermissionRequest:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<EnterpriseAttestationPermissionRequestSheetModel>(
+              dialog_model));
+      break;
     case Step::kNotStarted:
     case Step::kClosed:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
