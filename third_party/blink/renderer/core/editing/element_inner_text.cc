@@ -469,17 +469,15 @@ String Element::innerText() {
 
 // Used for callers that must ensure no document lifecycle rewind.
 String Element::GetInnerTextWithoutUpdate() {
-  // TODO(https:://crbug.com/1165850) Layout should always be clean here, but
-  // the lifecycle does not report the correctly updated value unless servicing
-  // animations. Fix the UpdateStyleAndLayout() to correctly advance the
-  // lifecycle, and then update the following DCHECK to always require clean
-  // layout in active documents.
-  DCHECK(!GetDocument().IsActive() || !GetDocument().GetPage() ||
-         !GetDocument().GetPage()->Animator().IsServicingAnimations() ||
-         GetDocument().Lifecycle().GetState() >=
-             DocumentLifecycle::kLayoutClean)
-      << "If GetInnerTextWithoutUpdate() is called while servicing animations, "
-         "then layout must be clean.";
+  // TODO(https:://crbug.com/1165850 https:://crbug.com/1166296) Layout should
+  // always be clean here, but the lifecycle does not report the correctly
+  // updated value unless servicing animations. Fix the UpdateStyleAndLayout()
+  // to correctly advance the lifecycle, and then update the following DCHECK to
+  // always require clean layout in active documents.
+  // DCHECK(!GetDocument().IsActive() || !GetDocument().GetPage() ||
+  //        GetDocument().Lifecycle().GetState() >=
+  //            DocumentLifecycle::kLayoutClean)
+  //     << "Layout must be clean when GetInnerTextWithoutUpdate() is called.";
   return ElementInnerTextCollector().RunOn(*this);
 }
 
