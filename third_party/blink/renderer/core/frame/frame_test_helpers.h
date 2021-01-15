@@ -452,6 +452,10 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
         is_for_child_local_root, is_for_nested_main_frame);
   }
 
+  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() {
+    return *agent_group_scheduler_;
+  }
+
  private:
   void InitializeWebView(TestWebViewClient*,
                          class WebView* opener);
