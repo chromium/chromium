@@ -170,7 +170,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
 };
 
 class MODULES_EXPORT RTCRtpSenderOnlyTransceiver
-    : public RTCRtpTransceiverPlatform {
+    : public RTCRtpPlanBTransceiverPlatform {
  public:
   explicit RTCRtpSenderOnlyTransceiver(
       std::unique_ptr<blink::RTCRtpSenderPlatform> sender);

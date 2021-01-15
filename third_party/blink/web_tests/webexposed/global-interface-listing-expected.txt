@@ -6535,12 +6535,15 @@ interface RTCRtpTransceiver
     attribute @@toStringTag
     getter currentDirection
     getter direction
+    getter headerExtensionsNegotiated
+    getter headerExtensionsToOffer
     getter mid
     getter receiver
     getter sender
     getter stopped
     method constructor
     method setCodecPreferences
+    method setOfferedRtpHeaderExtensions
     method stop
     setter direction
 interface RTCSctpTransport : EventTarget
