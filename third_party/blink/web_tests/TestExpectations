@@ -71,7 +71,6 @@ crbug.com/1132260 http/tests/devtools/console/console-bad-stacktrace.js [ Pass F
 crbug.com/1132260 http/tests/devtools/console/console-uncaught-promise.js [ Pass Failure ]
 crbug.com/1132260 http/tests/devtools/tracing/timeline-network/timeline-network-resource-details.js [ Pass Failure ]
 crbug.com/1132260 inspector-protocol/page/frameAttachedStacktrace.js [ Pass Failure ]
-crbug.com/1164469 inspector-protocol/performance-timeline/largest-contentful-paint.js [ Pass Failure ]
 
 # With --enable-display-compositor-pixel-dump enabled by default, these three
 # tests fail. See crbug.com/887140 for more info.

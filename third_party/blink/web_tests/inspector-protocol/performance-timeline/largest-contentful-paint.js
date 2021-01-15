@@ -3,11 +3,11 @@
   const unstableFields = ['frameId'];
 
   const events = [];
-  const startTime = Date.now();
-  await dp.PerformanceTimeline.enable({eventTypes: ['largest-contentful-paint']});
 
   const TestHelper = await testRunner.loadScript('resources/performance-timeline-test.js');
   const testHelper = new TestHelper(dp);
+
+  await dp.PerformanceTimeline.enable({eventTypes: ['largest-contentful-paint']});
 
   dp.PerformanceTimeline.onTimelineEventAdded(event => events.push(event.params.event));
   session.navigate(testRunner.url('resources/lcp.html'));
@@ -24,8 +24,8 @@
   const endTime = Date.now();
 
   for (const event of events) {
-    testHelper.patchTimes(startTime, endTime, event, ['time']);
-    testHelper.patchTimes(startTime, endTime, event.lcpDetails, ['renderTime', 'loadTime']);
+    testHelper.patchTimes(event, ['time']);
+    testHelper.patchTimes(event.lcpDetails, ['renderTime', 'loadTime']);
     await patchFields(event.lcpDetails);
   }
 

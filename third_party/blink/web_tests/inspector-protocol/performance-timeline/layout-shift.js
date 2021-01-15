@@ -3,12 +3,11 @@
   const unstableFields = ['frameId'];
 
   const events = [];
-  const startTime = Date.now();
-
-  await dp.PerformanceTimeline.enable({eventTypes: ['layout-shift']});
 
   const TestHelper = await testRunner.loadScript('resources/performance-timeline-test.js');
   const testHelper = new TestHelper(dp);
+
+  await dp.PerformanceTimeline.enable({eventTypes: ['layout-shift']});
 
   dp.PerformanceTimeline.onTimelineEventAdded(event => events.push(event.params.event));
   await session.navigate(testRunner.url('resources/layout-shift.html'));
@@ -25,11 +24,9 @@
 
   await dp.PerformanceTimeline.onceTimelineEventAdded();
 
-  const endTime = Date.now();
-
   for (const event of events) {
-    testHelper.patchTimes(startTime, endTime, event, ['time']);
-    testHelper.patchTimes(startTime, endTime, event.layoutShiftDetails, ['lastInputTime']);
+    testHelper.patchTimes(event, ['time']);
+    testHelper.patchTimes(event.layoutShiftDetails, ['lastInputTime']);
     await patchFields(event.layoutShiftDetails);
   }
 

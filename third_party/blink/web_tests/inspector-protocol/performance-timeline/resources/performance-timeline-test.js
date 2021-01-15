@@ -7,6 +7,7 @@
 class TestHelper {
   constructor(dp) {
     this._dp = dp;
+    this._startTicks = performance.now();
   }
 
   async describeNode(nodeId) {
@@ -15,16 +16,19 @@ class TestHelper {
         `<${response.result.object.description}>` : '<invalid id>';
   }
 
-  patchTimes(start, end, obj, fields) {
-    // Add some slack to defeat time clamping.
-    start -= 1;
-    end += 1;
+  async patchTimes(obj, fields) {
+    const startTime = (await this._dp.Runtime.evaluate({
+        expression: 'window.performance.timeOrigin',
+        returnByValue: true})).result.result.value;
+    const endTicks = performance.now();
+    // Ensure we're using monotonic time within the test duration.
+    const endTime = startTime + (endTicks - this._startTicks);
     for (const field of fields) {
       const time = obj[field] * 1000;
-      if (time && (start <= time && time <= end)) {
+      if (time && (startTime <= time && time <= endTime)) {
         obj[field] = `<${typeof time}>`;
       } else if (time) {
-        obj[field] = `FAIL: actual: ${time}, expected: ${start} <= time <= ${end}`
+        obj[field] = `FAIL: actual: ${time}, expected: ${startTime} <= time <= ${endTime}`;
       }
     }
   }
