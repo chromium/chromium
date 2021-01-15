@@ -110,4 +110,38 @@ SHIM_ALWAYS_EXPORT char* __wrap_getcwd(char* buffer, size_t size) {
   return __wrap_strdup(local_buffer);
 }
 
+// Override stdio.h
+
+// This is non-standard (_GNU_SOURCE only), but implemented by Bionic on
+// Android, and used by libc++.
+SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
+                                        const char* fmt,
+                                        va_list va_args) {
+  constexpr int kInitialSize = 128;
+  *strp = static_cast<char*>(
+      malloc(kInitialSize));  // Our malloc() doesn't return nullptr.
+
+  int actual_size = vsnprintf(*strp, kInitialSize, fmt, va_args);
+  *strp = static_cast<char*>(realloc(*strp, actual_size + 1));
+
+  // Now we know the size. This is not very efficient, but we cannot really do
+  // better without accessing internal libc functions, or reimplementing
+  // *printf().
+  //
+  // This is very lightly used in Chromium in practice, see crbug.com/116558 for
+  // details.
+  if (actual_size >= kInitialSize)
+    return vsnprintf(*strp, actual_size + 1, fmt, va_args);
+
+  return actual_size;
+}
+
+SHIM_ALWAYS_EXPORT int __wrap_asprintf(char** strp, const char* fmt, ...) {
+  va_list va_args;
+  va_start(va_args, fmt);
+  int retval = vasprintf(strp, fmt, va_args);
+  va_end(va_args);
+  return retval;
+}
+
 }  // extern "C"
