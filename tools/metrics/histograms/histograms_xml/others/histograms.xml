@@ -13587,17 +13587,18 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SendTabToSelf.AndroidShareSheet.ClickResult"
-    enum="SendTabToSelfClickResult" expires_after="M88">
+    enum="SendTabToSelfClickResult" expires_after="M97">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
+  <owner>chrome-sharing-core@google.com</owner>
   <summary>Tracks the user flow for sending a tab for SendTabToSelf.</summary>
 </histogram>
 
 <histogram base="true" name="SendTabToSelf.ClickResult"
-    enum="SendTabToSelfClickResult" expires_after="M88">
+    enum="SendTabToSelfClickResult" expires_after="M97">
   <owner>jeffreycohen@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
+  <owner>chrome-sharing-core@google.com</owner>
   <summary>
     Record whether the user has clicked the item when it is shown.
   </summary>

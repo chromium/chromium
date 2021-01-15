@@ -16605,8 +16605,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="SendTabToSelfEntryPoint" separator="."
     ordering="prefix">
   <owner>jeffreycohen@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
+  <owner>chrome-sharing-core@google.com</owner>
   <suffix name="ContentMenu" label="Option shown in the content context menu"/>
   <suffix name="LinkMenu" label="Option shown in the link context menu"/>
   <suffix name="OmniboxIcon" label="Icon shown in the omnibox"/>
@@ -16621,9 +16621,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     The affected histogram is obsolete (5/20).
   </obsolete>
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
-  <owner>tgupta@chromium.org</owner>
   <suffix name="ContentMenu"
       label="The count of devices shown in the content submenu"/>
   <suffix name="LinkMenu"
