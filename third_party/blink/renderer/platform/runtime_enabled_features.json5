@@ -1086,11 +1086,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNGFragmentItem",
-      implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFragmentTraversal", "EditingNG"],
-      status: "stable",
-    },
-    {
       // Traverse the fragment tree when painting and hit-testing, instead of
       // the layout object tree.
       name: "LayoutNGFragmentTraversal",
@@ -1107,7 +1102,7 @@
     },
     {
       name: "LayoutNGLayoutOverflow",
-      depends_on: ["LayoutNG", "LayoutNGFragmentItem"],
+      depends_on: ["LayoutNG"],
       status: "stable",
     },
     {

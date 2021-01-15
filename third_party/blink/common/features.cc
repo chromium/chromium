@@ -105,9 +105,6 @@ const base::Feature kLayoutNGFieldset{"LayoutNGFieldset",
 const base::Feature kLayoutNGTextControl{"LayoutNGTextControl",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kFragmentItem{"FragmentItem",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
