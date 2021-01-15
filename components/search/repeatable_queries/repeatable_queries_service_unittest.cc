@@ -440,15 +440,10 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_ErrorResponse) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn_DefaultSearchProviderChanged \
-  DISABLED_SignedIn_DefaultSearchProviderChanged
-#else
-#define MAYBE_SignedIn_DefaultSearchProviderChanged \
-  SignedIn_DefaultSearchProviderChanged
-#endif
+// TODO(crbug.com/1158533): This test is disabled because it has been failing
+// intermittently on all platforms.
 TEST_F(RepeatableQueriesServiceTest,
-       MAYBE_SignedIn_DefaultSearchProviderChanged) {
+       DISABLED_SignedIn_DefaultSearchProviderChanged) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
