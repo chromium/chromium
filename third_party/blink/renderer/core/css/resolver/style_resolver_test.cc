@@ -1082,4 +1082,44 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
       << "-webkit-mask-image is fetched";
 }
 
+TEST_F(StyleResolverTest, DependsOnContainerQueries) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #a { color: red; }
+      @container (min-width: 0px) {
+        #b { color: blue; }
+        span { color: green; }
+        #d { color: coral; }
+      }
+    </style>
+    <div id=a></div>
+    <span id=b></span>
+    <span id=c></span>
+    <div id=d></div>
+    <div id=e></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* b = GetDocument().getElementById("b");
+  auto* c = GetDocument().getElementById("c");
+  auto* d = GetDocument().getElementById("d");
+  auto* e = GetDocument().getElementById("e");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+  ASSERT_TRUE(d);
+  ASSERT_TRUE(e);
+
+  EXPECT_FALSE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(b->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(c->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(d->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
+}
+
 }  // namespace blink

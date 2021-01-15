@@ -144,6 +144,10 @@ class CORE_EXPORT MatchResult {
 
   void SetIsCacheable(bool cacheable) { is_cacheable_ = cacheable; }
   bool IsCacheable() const { return is_cacheable_; }
+  void SetDependsOnContainerQueries() { depends_on_container_queries_ = true; }
+  bool DependsOnContainerQueries() const {
+    return depends_on_container_queries_;
+  }
 
   MatchedExpansionsRange Expansions(const Document&, CascadeFilter) const;
 
@@ -164,6 +168,7 @@ class CORE_EXPORT MatchResult {
   MatchedPropertiesVector matched_properties_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   bool is_cacheable_{true};
+  bool depends_on_container_queries_{false};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};
 };

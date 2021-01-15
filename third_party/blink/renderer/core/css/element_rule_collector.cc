@@ -204,6 +204,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       continue;
     }
     if (auto* container_query = rule_data->GetContainerQuery()) {
+      result_.SetDependsOnContainerQueries();
+
       // TODO(crbug.com/1145970): Propagate actual ContainerQueryEvaluator
       // instance from the container.
       // For now a fixed container size of 500x500 is used.
