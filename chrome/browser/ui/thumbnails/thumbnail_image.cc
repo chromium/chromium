@@ -61,6 +61,8 @@ std::unique_ptr<ThumbnailImage::Subscription> ThumbnailImage::Subscribe() {
 
 void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap,
                                     base::Optional<uint64_t> frame_id) {
+  thumbnail_id_ = base::Token::CreateRandom();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
@@ -68,24 +70,29 @@ void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap,
       base::BindOnce(&ThumbnailImage::CompressBitmap, std::move(bitmap),
                      frame_id),
       base::BindOnce(&ThumbnailImage::AssignJPEGData,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     frame_id));
+                     weak_ptr_factory_.GetWeakPtr(), thumbnail_id_,
+                     base::TimeTicks::Now(), frame_id));
 }
 
 void ThumbnailImage::ClearData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1163121): Update this to notify the observers that the data
-  // has changed. It may be necessary to re-engineer them to accept
-  // empty/invalid data. crbug.com/1152894
-  if (!data_)
+  if (!data_ && thumbnail_id_.is_zero())
     return;
 
-  // TODO(crbug.com/1163121): Cancel existing thumbnail request. If
-  // called after ConvertJPEGDataToImageSkiaAndNotifyObservers() but
-  // before observers get notified, the observers will receive the stale
-  // thumbnail.
+  // If there was stored data we should notify observers that it was
+  // cleared. Otherwise, a bitmap was assigned but never compressed so
+  // the observers still think the thumbnail is blank.
+  const bool should_notify = !!data_;
+
   data_.reset();
+  thumbnail_id_ = base::Token();
+
+  // Notify observers of the new, blank thumbnail.
+  if (should_notify) {
+    NotifyCompressedDataObservers(data_);
+    NotifyUncompressedDataObservers(thumbnail_id_, gfx::ImageSkia());
+  }
 }
 
 void ThumbnailImage::RequestThumbnailImage() {
@@ -104,9 +111,18 @@ size_t ThumbnailImage::GetCompressedDataSizeInBytes() const {
   return data_->data.size();
 }
 
-void ThumbnailImage::AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
-                                    base::Optional<uint64_t> frame_id,
+void ThumbnailImage::AssignJPEGData(base::Token thumbnail_id,
+                                    base::TimeTicks assign_sk_bitmap_time,
+                                    base::Optional<uint64_t> frame_id_for_trace,
                                     std::vector<uint8_t> data) {
+  // If the image is stale (a new thumbnail was assigned or the
+  // thumbnail was cleared after AssignSkBitmap), ignore it.
+  if (thumbnail_id != thumbnail_id_) {
+    if (async_operation_finished_callback_)
+      async_operation_finished_callback_.Run();
+    return;
+  }
+
   data_ = base::MakeRefCounted<base::RefCountedData<std::vector<uint8_t>>>(
       std::move(data));
 
@@ -125,9 +141,9 @@ void ThumbnailImage::AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
     ConvertJPEGDataToImageSkiaAndNotifyObservers();
   };
 
-  if (frame_id) {
+  if (frame_id_for_trace) {
     TRACE_EVENT_WITH_FLOW0("ui", "Tab.Preview.JPEGReceivedOnUIThreadWithFlow",
-                           *frame_id, TRACE_EVENT_FLAG_FLOW_IN);
+                           *frame_id_for_trace, TRACE_EVENT_FLAG_FLOW_IN);
     notify();
   } else {
     TRACE_EVENT0("ui", "Tab.Preview.JPEGReceivedOnUIThread");
@@ -149,13 +165,19 @@ bool ThumbnailImage::ConvertJPEGDataToImageSkiaAndNotifyObservers() {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ThumbnailImage::UncompressImage, data_),
       base::BindOnce(&ThumbnailImage::NotifyUncompressedDataObservers,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), thumbnail_id_));
 }
 
-void ThumbnailImage::NotifyUncompressedDataObservers(gfx::ImageSkia image) {
+void ThumbnailImage::NotifyUncompressedDataObservers(base::Token thumbnail_id,
+                                                     gfx::ImageSkia image) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (async_operation_finished_callback_)
     async_operation_finished_callback_.Run();
+
+  // If the image is stale (a new thumbnail was assigned or the
+  // thumbnail was cleared after AssignSkBitmap), ignore it.
+  if (thumbnail_id != thumbnail_id_)
+    return;
 
   for (Subscription* subscription : subscribers_) {
     auto size_hint = subscription->size_hint_;

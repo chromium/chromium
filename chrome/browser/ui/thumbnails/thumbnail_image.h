@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/token.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -149,11 +150,13 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   virtual ~ThumbnailImage();
 
-  void AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
-                      base::Optional<uint64_t> frame_id,
+  void AssignJPEGData(base::Token thumbnail_id,
+                      base::TimeTicks assign_sk_bitmap_time,
+                      base::Optional<uint64_t> frame_id_for_trace,
                       std::vector<uint8_t> data);
   bool ConvertJPEGDataToImageSkiaAndNotifyObservers();
-  void NotifyUncompressedDataObservers(gfx::ImageSkia image);
+  void NotifyUncompressedDataObservers(base::Token thumbnail_id,
+                                       gfx::ImageSkia image);
   void NotifyCompressedDataObservers(CompressedThumbnailData data);
 
   static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap,
@@ -174,6 +177,10 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   // |data_| itself can be changed as this does not affect references to
   // the old data.
   CompressedThumbnailData data_;
+
+  // A randomly generated ID associated with each image assigned by
+  // AssignSkBitmap().
+  base::Token thumbnail_id_;
 
   // Subscriptions are inserted on |Subscribe()| calls and removed when
   // they are destroyed via callback. The order of subscriber
