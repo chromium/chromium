@@ -35,8 +35,7 @@ namespace extensions {
 // handled on the IO thread or the UI thread.
 class ExtensionsGuestViewMessageFilter
     : public guest_view::GuestViewMessageFilter,
-      public content::BrowserAssociatedInterface<mojom::GuestView>,
-      public mojom::GuestView {
+      public content::BrowserAssociatedInterface<mojom::GuestView> {
  public:
   ExtensionsGuestViewMessageFilter(int render_process_id,
                                    content::BrowserContext* context);

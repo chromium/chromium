@@ -136,8 +136,7 @@ const uint32_t kAwContentsMessageFilteredClasses[] = {FrameMsgStart};
 // methods on IO thread.
 class AwContentsMessageFilter
     : public content::BrowserMessageFilter,
-      public content::BrowserAssociatedInterface<mojom::RenderMessageFilter>,
-      public mojom::RenderMessageFilter {
+      public content::BrowserAssociatedInterface<mojom::RenderMessageFilter> {
  public:
   explicit AwContentsMessageFilter(int process_id);
 
@@ -160,8 +159,7 @@ AwContentsMessageFilter::AwContentsMessageFilter(int process_id)
     : content::BrowserMessageFilter(
           kAwContentsMessageFilteredClasses,
           base::size(kAwContentsMessageFilteredClasses)),
-      content::BrowserAssociatedInterface<mojom::RenderMessageFilter>(this,
-                                                                      this),
+      content::BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
       process_id_(process_id) {}
 
 AwContentsMessageFilter::~AwContentsMessageFilter() = default;

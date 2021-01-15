@@ -32,8 +32,7 @@ class BrowserPpapiHostImpl;
 // process ID to identify which plugin they are talking about.
 class PepperRendererConnection
     : public BrowserMessageFilter,
-      public BrowserAssociatedInterface<mojom::PepperIOHost>,
-      public mojom::PepperIOHost {
+      public BrowserAssociatedInterface<mojom::PepperIOHost> {
  public:
   explicit PepperRendererConnection(int render_process_id);
 
