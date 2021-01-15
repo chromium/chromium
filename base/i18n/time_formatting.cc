@@ -154,11 +154,22 @@ string16 TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
   return TimeFormat(formatter.get(), time);
 }
 
+#if defined(OS_CHROMEOS)
+string16 TimeFormatMonthAndYear(const Time& time,
+                                const icu::TimeZone* time_zone) {
+  icu::SimpleDateFormat formatter =
+      CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
+  if (time_zone)
+    formatter.setTimeZone(*time_zone);
+  return TimeFormat(&formatter, time);
+}
+#else
 string16 TimeFormatMonthAndYear(const Time& time) {
   icu::SimpleDateFormat formatter =
       CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
   return TimeFormat(&formatter, time);
 }
+#endif  // defined(OS_CHROMEOS)
 
 string16 TimeFormatFriendlyDateAndTime(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(

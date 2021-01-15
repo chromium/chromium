@@ -46,29 +46,6 @@ base::Time SecondWarningDate(const base::Time& eol_date) {
   return eol_date - base::TimeDelta::FromDays(kSecondWarningDaysInAdvance);
 }
 
-base::string16 FormatMonthAndYearWithOffset(base::Time eol_date) {
-  // TODO(crbug/998983): This is not the ideal way to correct months shifts.
-  // A follow up CL will modify base/i18n/time_formatting.h so that
-  // setting the time can be formatted based off UTC rather than only local.
-  //
-  // If the EOL date is on the first day of the month, then notifications with
-  // different month names may be shown to different users by
-  // base::TimeFormatMonthAndYear(), depending on their time zone.  There are
-  // devices in Goldeneye with EOL dates on the first and last day of the month.
-  // Since only the month is shown, the day is set to the 15th to prevent any
-  // forward or backward month shifts.
-  constexpr int kApproxMidPointDayInMonth = 15;
-
-  base::Time adjusted_date;
-  base::Time::Exploded exploded;
-  eol_date.UTCExplode(&exploded);
-  exploded.day_of_month = kApproxMidPointDayInMonth;
-  if (!base::Time::FromUTCExploded(exploded, &adjusted_date)) {
-    return base::TimeFormatMonthAndYear(eol_date);
-  }
-  return base::TimeFormatMonthAndYear(adjusted_date);
-}
-
 }  // namespace
 
 // static
@@ -150,8 +127,10 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     // Notifies user that updates will stop occurring at a month and year.
     notification = ash::CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
-        l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_TITLE,
-                                   FormatMonthAndYearWithOffset(eol_date)),
+        l10n_util::GetStringFUTF16(
+            IDS_PENDING_EOL_NOTIFICATION_TITLE,
+            TimeFormatMonthAndYear(eol_date,
+                                   /*time_zone=*/icu::TimeZone::getGMT())),
         l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                                    ui::GetChromeOSDeviceName()),
         base::string16() /* display_source */, GURL(kEolNotificationId),

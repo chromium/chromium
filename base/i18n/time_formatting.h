@@ -11,6 +11,11 @@
 #include "base/compiler_specific.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
+
+#if defined(OS_CHROMEOS)
+#include "third_party/icu/source/i18n/unicode/timezone.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace base {
 
@@ -72,8 +77,17 @@ BASE_I18N_EXPORT string16 TimeFormatShortDateNumeric(const Time& time);
 // Returns a numeric date and time such as "12/13/52 2:44:30 PM".
 BASE_I18N_EXPORT string16 TimeFormatShortDateAndTime(const Time& time);
 
+#if defined(OS_CHROMEOS)
+// Returns a month and year, e.g. "November 2007"
+// Note: If `time_zone` is non-null, the time will be formatted in the provided
+// time zone. Otherwise, it will default to local time.
+BASE_I18N_EXPORT string16
+TimeFormatMonthAndYear(const Time& time,
+                       const icu::TimeZone* time_zone = nullptr);
+#else
 // Returns a month and year, e.g. "November 2007"
 BASE_I18N_EXPORT string16 TimeFormatMonthAndYear(const Time& time);
+#endif  // defined(OS_CHROMEOS)
 
 // Returns a numeric date and time with time zone such as
 // "12/13/52 2:44:30 PM PST".

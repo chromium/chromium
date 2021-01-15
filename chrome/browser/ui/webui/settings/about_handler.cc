@@ -622,7 +622,9 @@ void AboutHandler::OnGetEndOfLifeInfo(
     response.SetStringKey(
         "aboutPageEndOfLifeMessage",
         l10n_util::GetStringFUTF16(
-            eol_string_id, base::TimeFormatMonthAndYear(eol_info.eol_date),
+            eol_string_id,
+            base::TimeFormatMonthAndYear(eol_info.eol_date,
+                                         /*time_zone=*/icu::TimeZone::getGMT()),
             base::ASCIIToUTF16(has_eol_passed ? chrome::kEolNotificationURL
                                               : chrome::kAutoUpdatePolicyURL)));
   } else {

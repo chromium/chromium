@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
@@ -202,6 +203,36 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
                                                  k12HourClock,
                                                  kDropAmPm));
 }
+
+#if defined(OS_CHROMEOS)
+TEST(TimeFormattingTest, TimeMonthYearInUTC) {
+  // See third_party/icu/source/data/locales/en.txt.
+  // The date patterns are "EEEE, MMMM d, y", "MMM d, y", and "M/d/yy".
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  i18n::SetICUDefaultLocale("en_US");
+  test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
+
+  Time time;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+  EXPECT_EQ(
+      ASCIIToUTF16("April 2011"),
+      TimeFormatMonthAndYear(time, /*time_zone=*/icu::TimeZone::getGMT()));
+  EXPECT_EQ(ASCIIToUTF16("April 2011"),
+            TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+
+  const Time::Exploded kDiffMonthsForDiffTzTime = {
+      2011, 4, 5, 1,  // Fri, Apr 1, 2011 UTC = Thurs, March 31, 2011 US PDT.
+      0,    0, 0, 0   // 00:00:00.000 UTC = 05:00:00 previous day US PDT.
+  };
+
+  EXPECT_TRUE(Time::FromUTCExploded(kDiffMonthsForDiffTzTime, &time));
+  EXPECT_EQ(
+      ASCIIToUTF16("April 2011"),
+      TimeFormatMonthAndYear(time, /*time_zone=*/icu::TimeZone::getGMT()));
+  EXPECT_EQ(ASCIIToUTF16("March 2011"),
+            TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+}
+#endif  // defined(OS_CHROMEOS)
 
 TEST(TimeFormattingTest, TimeFormatDateUS) {
   // See third_party/icu/source/data/locales/en.txt.
