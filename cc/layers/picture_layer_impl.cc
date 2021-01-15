@@ -1498,19 +1498,16 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
     float preserved_raster_contents_scale) {
   DCHECK(draw_properties().screen_space_transform_is_animating);
 
-  CombinedAnimationScale animation_scales =
-      layer_tree_impl()->property_trees()->GetAnimationScales(
-          transform_tree_index(), layer_tree_impl());
-  float maximum_scale = animation_scales.maximum_animation_scale;
-  float starting_scale = animation_scales.starting_animation_scale;
-  // Adjust raster scale only if the animation scale is known.
-  if (maximum_scale == kNotScaled && starting_scale == kNotScaled) {
+  float maximum_animation_scale =
+      layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
+          transform_tree_index());
+  if (maximum_animation_scale == kNotScaled) {
     // Use at least the native scale if the animation scale is unknown.
     raster_contents_scale_ = std::max(raster_contents_scale_,
                                       ideal_page_scale_ * ideal_device_scale_);
   } else {
     // We rasterize at the maximum scale that will occur during the animation.
-    raster_contents_scale_ = std::max(maximum_scale, starting_scale);
+    raster_contents_scale_ = maximum_animation_scale;
   }
   DCHECK_NE(raster_contents_scale_, kNotScaled);
 

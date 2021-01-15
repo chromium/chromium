@@ -138,13 +138,9 @@ bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
       layer->element_id(), layer->GetElementTypeForAnimation());
 }
 
-void GetAnimationScales(const MutatorHost& host,
-                        Layer* layer,
-                        float* maximum_scale,
-                        float* starting_scale) {
-  return host.GetAnimationScales(layer->element_id(),
-                                 layer->GetElementTypeForAnimation(),
-                                 maximum_scale, starting_scale);
+float MaximumAnimationScale(const MutatorHost& host, Layer* layer) {
+  return host.MaximumScale(layer->element_id(),
+                           layer->GetElementTypeForAnimation());
 }
 
 bool AnimationsPreserveAxisAlignment(const MutatorHost& host, Layer* layer) {
@@ -288,8 +284,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
 
   node->has_potential_animation = has_potentially_animated_transform;
   node->is_currently_animating = TransformIsAnimating(mutator_host_, layer);
-  GetAnimationScales(mutator_host_, layer, &node->maximum_animation_scale,
-                     &node->starting_animation_scale);
+  node->maximum_animation_scale = MaximumAnimationScale(mutator_host_, layer);
 
   node->scroll_offset = layer->scroll_offset();
 

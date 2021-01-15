@@ -59,9 +59,7 @@ ElementAnimations::ElementAnimations(AnimationHost* host, ElementId element_id)
       has_element_in_pending_list_(false),
       needs_push_properties_(false),
       active_maximum_scale_(kNotScaled),
-      active_starting_scale_(kNotScaled),
-      pending_maximum_scale_(kNotScaled),
-      pending_starting_scale_(kNotScaled) {
+      pending_maximum_scale_(kNotScaled) {
   InitAffectedElementTypes();
 }
 
@@ -190,25 +188,16 @@ bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-void ElementAnimations::GetAnimationScales(ElementListType list_type,
-                                           float* maximum_scale,
-                                           float* starting_scale) const {
-  *maximum_scale = kNotScaled;
-  *starting_scale = kNotScaled;
+float ElementAnimations::MaximumScale(ElementListType list_type) const {
+  float maximum_scale = kNotScaled;
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    float keyframe_effect_maximum_scale = kNotScaled;
-    float keyframe_effect_starting_scale = kNotScaled;
-    bool success = keyframe_effect.GetAnimationScales(
-        list_type, &keyframe_effect_maximum_scale,
-        &keyframe_effect_starting_scale);
-    if (!success) {
-      *maximum_scale = kNotScaled;
-      *starting_scale = kNotScaled;
-      return;
-    }
-    *maximum_scale = std::max(*maximum_scale, keyframe_effect_maximum_scale);
-    *starting_scale = std::max(*starting_scale, keyframe_effect_starting_scale);
+    float keyframe_effect_maximum_scale =
+        keyframe_effect.MaximumScale(list_type);
+    if (keyframe_effect_maximum_scale == kNotScaled)
+      return kNotScaled;
+    maximum_scale = std::max(maximum_scale, keyframe_effect_maximum_scale);
   }
+  return maximum_scale;
 }
 
 bool ElementAnimations::ScrollOffsetAnimationWasInterrupted() const {
@@ -355,19 +344,13 @@ void ElementAnimations::UpdateClientAnimationState() {
           element_id_map, ElementListType::ACTIVE, diff_active, active_state_);
     }
 
-    float maximum_scale = kNotScaled;
-    float starting_scale = kNotScaled;
-    if (transform_element_id) {
-      GetAnimationScales(ElementListType::ACTIVE, &maximum_scale,
-                         &starting_scale);
-    }
-    if (maximum_scale != active_maximum_scale_ ||
-        starting_scale != active_starting_scale_) {
-      animation_host_->mutator_host_client()->AnimationScalesChanged(
-          transform_element_id, ElementListType::ACTIVE, maximum_scale,
-          starting_scale);
+    float maximum_scale = transform_element_id
+                              ? MaximumScale(ElementListType::ACTIVE)
+                              : kNotScaled;
+    if (maximum_scale != active_maximum_scale_) {
+      animation_host_->mutator_host_client()->MaximumScaleChanged(
+          transform_element_id, ElementListType::ACTIVE, maximum_scale);
       active_maximum_scale_ = maximum_scale;
-      active_starting_scale_ = starting_scale;
     }
   }
 
@@ -379,19 +362,13 @@ void ElementAnimations::UpdateClientAnimationState() {
           pending_state_);
     }
 
-    float maximum_scale = kNotScaled;
-    float starting_scale = kNotScaled;
-    if (transform_element_id) {
-      GetAnimationScales(ElementListType::PENDING, &maximum_scale,
-                         &starting_scale);
-    }
-    if (maximum_scale != pending_maximum_scale_ ||
-        starting_scale != pending_starting_scale_) {
-      animation_host_->mutator_host_client()->AnimationScalesChanged(
-          transform_element_id, ElementListType::PENDING, maximum_scale,
-          starting_scale);
+    float maximum_scale = transform_element_id
+                              ? MaximumScale(ElementListType::PENDING)
+                              : kNotScaled;
+    if (maximum_scale != pending_maximum_scale_) {
+      animation_host_->mutator_host_client()->MaximumScaleChanged(
+          transform_element_id, ElementListType::PENDING, maximum_scale);
       pending_maximum_scale_ = maximum_scale;
-      pending_starting_scale_ = starting_scale;
     }
   }
 }

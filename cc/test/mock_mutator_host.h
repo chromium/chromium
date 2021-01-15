@@ -70,11 +70,8 @@ class MockMutatorHost : public MutatorHost {
                      bool(ElementId element_id, TargetProperty::Type property));
   MOCK_CONST_METHOD1(AnimationsPreserveAxisAlignment,
                      bool(ElementId element_id));
-  MOCK_CONST_METHOD4(GetAnimationScales,
-                     void(ElementId element_id,
-                          ElementListType list_type,
-                          float* maximum_scale,
-                          float* starting_scale));
+  MOCK_CONST_METHOD2(MaximumScale,
+                     float(ElementId element_id, ElementListType list_type));
   MOCK_CONST_METHOD1(IsElementAnimating, bool(ElementId element_id));
   MOCK_CONST_METHOD1(HasTickingKeyframeModelForTesting,
                      bool(ElementId element_id));

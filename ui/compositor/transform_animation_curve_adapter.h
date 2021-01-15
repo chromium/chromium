@@ -36,10 +36,7 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
   cc::TransformOperations GetValue(base::TimeDelta t) const override;
   bool IsTranslation() const override;
   bool PreservesAxisAlignment() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
  private:
   gfx::Tween::Type tween_type_;
@@ -68,10 +65,7 @@ class COMPOSITOR_EXPORT InverseTransformCurveAdapter
   cc::TransformOperations GetValue(base::TimeDelta t) const override;
   bool IsTranslation() const override;
   bool PreservesAxisAlignment() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
  private:
   TransformAnimationCurveAdapter base_curve_;

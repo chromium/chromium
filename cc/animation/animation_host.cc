@@ -646,17 +646,11 @@ bool AnimationHost::AnimationsPreserveAxisAlignment(
              : true;
 }
 
-void AnimationHost::GetAnimationScales(ElementId element_id,
-                                       ElementListType list_type,
-                                       float* maximum_scale,
-                                       float* starting_scale) const {
-  if (auto element_animations = GetElementAnimationsForElementId(element_id)) {
-    element_animations->GetAnimationScales(list_type, maximum_scale,
-                                           starting_scale);
-    return;
-  }
-  *maximum_scale = kNotScaled;
-  *starting_scale = kNotScaled;
+float AnimationHost::MaximumScale(ElementId element_id,
+                                  ElementListType list_type) const {
+  if (auto element_animations = GetElementAnimationsForElementId(element_id))
+    return element_animations->MaximumScale(list_type);
+  return kNotScaled;
 }
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {

@@ -205,14 +205,7 @@ bool FakeTransformTransition::PreservesAxisAlignment() const {
   return true;
 }
 
-bool FakeTransformTransition::AnimationStartScale(bool forward_direction,
-                                                  float* start_scale) const {
-  *start_scale = 1.f;
-  return true;
-}
-
-bool FakeTransformTransition::MaximumTargetScale(bool forward_direction,
-                                                 float* max_scale) const {
+bool FakeTransformTransition::MaximumScale(float* max_scale) const {
   *max_scale = 1.f;
   return true;
 }

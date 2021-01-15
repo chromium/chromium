@@ -122,10 +122,10 @@ struct CC_EXPORT TransformNode {
   // otherwise we may need it to undo the snapping next frame.
   gfx::Vector2dF snap_amount;
 
-  // See MutatorHost::GetAnimationScales() for their meanings. Updated by
-  // PropertyTrees::AnimationScalesChanged().
+  // From MutatorHost::GetMaximuimAnimationScale(). Updated by
+  // PropertyTrees::MaximumAnimationScaleChanged() and
+  // LayerTreeImpl::UpdateTransformAnimation().
   float maximum_animation_scale;
-  float starting_animation_scale;
 
   // Set to the element ID of containing document if this transform node is the
   // root of a visible frame subtree.

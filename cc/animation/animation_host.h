@@ -158,10 +158,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   bool AnimationsPreserveAxisAlignment(ElementId element_id) const override;
 
-  void GetAnimationScales(ElementId element_id,
-                          ElementListType list_type,
-                          float* maximum_scale,
-                          float* starting_scale) const override;
+  float MaximumScale(ElementId element_id,
+                     ElementListType list_type) const override;
 
   bool IsElementAnimating(ElementId element_id) const override;
   bool HasTickingKeyframeModelForTesting(ElementId element_id) const override;

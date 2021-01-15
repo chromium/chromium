@@ -2067,7 +2067,6 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
-  EXPECT_EQ(cc::kNotScaled, cc_transform->starting_animation_scale);
   EXPECT_EQ(cc::kNotScaled, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.
@@ -2102,7 +2101,6 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
-  EXPECT_EQ(2.f, cc_transform->starting_animation_scale);
   EXPECT_EQ(5.f, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.

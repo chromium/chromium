@@ -411,39 +411,14 @@ bool KeyframedTransformAnimationCurve::IsTranslation() const {
   return true;
 }
 
-bool KeyframedTransformAnimationCurve::AnimationStartScale(
-    bool forward_direction,
-    float* start_scale) const {
-  DCHECK_GE(keyframes_.size(), 2ul);
-  *start_scale = 0.f;
-  size_t start_location = 0;
-  if (!forward_direction) {
-    start_location = keyframes_.size() - 1;
-  }
-
-  return keyframes_[start_location]->Value().ScaleComponent(start_scale);
-}
-
-bool KeyframedTransformAnimationCurve::MaximumTargetScale(
-    bool forward_direction,
-    float* max_scale) const {
+bool KeyframedTransformAnimationCurve::MaximumScale(float* max_scale) const {
   DCHECK_GE(keyframes_.size(), 2ul);
   *max_scale = 0.f;
-
-  // If |forward_direction| is true, then skip the first frame, otherwise
-  // skip the last frame, since that is the original position in the animation.
-  size_t start = 1;
-  size_t end = keyframes_.size();
-  if (!forward_direction) {
-    --start;
-    --end;
-  }
-
-  for (size_t i = start; i < end; ++i) {
-    float target_scale_for_segment = 0.f;
-    if (!keyframes_[i]->Value().ScaleComponent(&target_scale_for_segment))
+  for (auto& keyframe : keyframes_) {
+    float keyframe_scale = 0.f;
+    if (!keyframe->Value().ScaleComponent(&keyframe_scale))
       return false;
-    *max_scale = fmax(*max_scale, target_scale_for_segment);
+    *max_scale = fmax(*max_scale, keyframe_scale);
   }
   return true;
 }

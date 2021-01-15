@@ -4,6 +4,8 @@
 
 #include "cc/test/animation_timelines_test_common.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_events.h"
@@ -167,10 +169,9 @@ void TestHostClient::ElementIsAnimatingChanged(
   }
 }
 
-void TestHostClient::AnimationScalesChanged(ElementId element_id,
-                                            ElementListType list_type,
-                                            float maximum_scale,
-                                            float starting_scale) {}
+void TestHostClient::MaximumScaleChanged(ElementId element_id,
+                                         ElementListType list_type,
+                                         float maximum_scale) {}
 
 void TestHostClient::SetScrollOffsetForAnimation(
     const gfx::ScrollOffset& scroll_offset) {

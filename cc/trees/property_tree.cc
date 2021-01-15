@@ -1954,13 +1954,11 @@ bool PropertyTrees::ElementIsAnimatingChanged(
   return updated_transform;
 }
 
-void PropertyTrees::AnimationScalesChanged(ElementId element_id,
-                                           float maximum_scale,
-                                           float starting_scale) {
+void PropertyTrees::MaximumAnimationScaleChanged(ElementId element_id,
+                                                 float maximum_scale) {
   if (TransformNode* transform_node =
           transform_tree.FindNodeFromElementId(element_id)) {
     transform_node->maximum_animation_scale = maximum_scale;
-    transform_node->starting_animation_scale = starting_scale;
     UpdateTransformTreeUpdateNumber();
   }
 }
@@ -2043,41 +2041,31 @@ std::string PropertyTrees::ToString() const {
   return value.ToFormattedJSON();
 }
 
-CombinedAnimationScale PropertyTrees::GetAnimationScales(
-    int transform_node_id,
-    LayerTreeImpl* layer_tree_impl) {
-  AnimationScaleData* animation_scales =
-      &cached_data_.animation_scales[transform_node_id];
-  if (animation_scales->update_number !=
+float PropertyTrees::MaximumAnimationToScreenScale(int transform_node_id) {
+  AnimationScaleData& animation_scale =
+      cached_data_.animation_scales[transform_node_id];
+  if (animation_scale.update_number !=
       cached_data_.transform_tree_update_number) {
     TransformNode* node = transform_tree.Node(transform_node_id);
     TransformNode* parent_node = transform_tree.parent(node);
     bool ancestor_is_animating_scale = false;
-    float ancestor_maximum_target_scale = kNotScaled;
-    float ancestor_starting_animation_scale = kNotScaled;
+    float ancestor_maximum_scale = kNotScaled;
     if (parent_node) {
-      CombinedAnimationScale combined_animation_scale =
-          GetAnimationScales(parent_node->id, layer_tree_impl);
-      ancestor_maximum_target_scale =
-          combined_animation_scale.maximum_animation_scale;
-      ancestor_starting_animation_scale =
-          combined_animation_scale.starting_animation_scale;
+      ancestor_maximum_scale = MaximumAnimationToScreenScale(parent_node->id);
       ancestor_is_animating_scale =
           cached_data_.animation_scales[parent_node->id]
               .to_screen_has_scale_animation;
     }
 
-    bool node_is_animating_scale =
-        node->maximum_animation_scale != kNotScaled &&
-        node->starting_animation_scale != kNotScaled;
+    bool node_is_animating_scale = node->maximum_animation_scale != kNotScaled;
 
-    animation_scales->to_screen_has_scale_animation =
+    animation_scale.to_screen_has_scale_animation =
         node_is_animating_scale || ancestor_is_animating_scale;
 
     // Once we've failed to compute a maximum animated scale at an ancestor, we
     // continue to fail.
-    bool failed_at_ancestor = ancestor_is_animating_scale &&
-                              ancestor_maximum_target_scale == kNotScaled;
+    bool failed_at_ancestor =
+        ancestor_is_animating_scale && ancestor_maximum_scale == kNotScaled;
 
     // Computing maximum animated scale in the presence of non-scale/translation
     // transforms isn't supported.
@@ -2096,21 +2084,17 @@ CombinedAnimationScale PropertyTrees::GetAnimationScales(
         failed_for_multiple_scale_animations) {
       // This ensures that descendants know we've failed to compute a maximum
       // animated scale.
-      animation_scales->to_screen_has_scale_animation = true;
-      animation_scales->combined_maximum_animation_target_scale = kNotScaled;
-      animation_scales->combined_starting_animation_scale = kNotScaled;
-    } else if (!animation_scales->to_screen_has_scale_animation) {
-      animation_scales->combined_maximum_animation_target_scale = kNotScaled;
-      animation_scales->combined_starting_animation_scale = kNotScaled;
+      animation_scale.to_screen_has_scale_animation = true;
+      animation_scale.maximum_to_screen_scale = kNotScaled;
+    } else if (!animation_scale.to_screen_has_scale_animation) {
+      animation_scale.maximum_to_screen_scale = kNotScaled;
     } else if (!node_is_animating_scale) {
       // An ancestor is animating scale.
       gfx::Vector2dF local_scales =
           MathUtil::ComputeTransform2dScaleComponents(node->local, kNotScaled);
       float max_local_scale = std::max(local_scales.x(), local_scales.y());
-      animation_scales->combined_maximum_animation_target_scale =
-          max_local_scale * ancestor_maximum_target_scale;
-      animation_scales->combined_starting_animation_scale =
-          max_local_scale * ancestor_starting_animation_scale;
+      animation_scale.maximum_to_screen_scale =
+          max_local_scale * ancestor_maximum_scale;
     } else {
       gfx::Vector2dF ancestor_scales =
           parent_node
@@ -2120,26 +2104,19 @@ CombinedAnimationScale PropertyTrees::GetAnimationScales(
 
       float max_ancestor_scale =
           std::max(ancestor_scales.x(), ancestor_scales.y());
-      animation_scales->combined_maximum_animation_target_scale =
+      animation_scale.maximum_to_screen_scale =
           max_ancestor_scale * node->maximum_animation_scale;
-      animation_scales->combined_starting_animation_scale =
-          max_ancestor_scale * node->starting_animation_scale;
     }
-    animation_scales->update_number = cached_data_.transform_tree_update_number;
+    animation_scale.update_number = cached_data_.transform_tree_update_number;
   }
-  return CombinedAnimationScale(
-      animation_scales->combined_maximum_animation_target_scale,
-      animation_scales->combined_starting_animation_scale);
+  return animation_scale.maximum_to_screen_scale;
 }
 
-void PropertyTrees::SetAnimationScalesForTesting(
+void PropertyTrees::SetMaximumAnimationToScreenScaleForTesting(
     int transform_id,
-    float maximum_animation_scale,
-    float starting_animation_scale) {
-  cached_data_.animation_scales[transform_id]
-      .combined_maximum_animation_target_scale = maximum_animation_scale;
-  cached_data_.animation_scales[transform_id]
-      .combined_starting_animation_scale = starting_animation_scale;
+    float maximum_scale) {
+  cached_data_.animation_scales[transform_id].maximum_to_screen_scale =
+      maximum_scale;
   cached_data_.animation_scales[transform_id].update_number =
       cached_data_.transform_tree_update_number;
 }

@@ -5,6 +5,8 @@
 #ifndef CC_ANIMATION_KEYFRAMED_ANIMATION_CURVE_H_
 #define CC_ANIMATION_KEYFRAMED_ANIMATION_CURVE_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
@@ -252,10 +254,7 @@ class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   TransformOperations GetValue(base::TimeDelta t) const override;
   bool PreservesAxisAlignment() const override;
   bool IsTranslation() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
  private:
   KeyframedTransformAnimationCurve();

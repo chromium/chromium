@@ -5,6 +5,8 @@
 #ifndef CC_TEST_ANIMATION_TEST_COMMON_H_
 #define CC_TEST_ANIMATION_TEST_COMMON_H_
 
+#include <memory>
+
 #include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
@@ -42,10 +44,7 @@ class FakeTransformTransition : public TransformAnimationCurve {
   TransformOperations GetValue(base::TimeDelta time) const override;
   bool IsTranslation() const override;
   bool PreservesAxisAlignment() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
   std::unique_ptr<AnimationCurve> Clone() const override;
 

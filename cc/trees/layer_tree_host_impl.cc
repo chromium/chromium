@@ -4733,15 +4733,14 @@ void LayerTreeHostImpl::ElementIsAnimatingChanged(
     tree->set_needs_update_draw_properties();
 }
 
-void LayerTreeHostImpl::AnimationScalesChanged(ElementId element_id,
-                                               ElementListType list_type,
-                                               float maximum_scale,
-                                               float starting_scale) {
+void LayerTreeHostImpl::MaximumScaleChanged(ElementId element_id,
+                                            ElementListType list_type,
+                                            float maximum_scale) {
   if (LayerTreeImpl* tree = list_type == ElementListType::ACTIVE
                                 ? active_tree()
                                 : pending_tree()) {
-    tree->property_trees()->AnimationScalesChanged(element_id, maximum_scale,
-                                                   starting_scale);
+    tree->property_trees()->MaximumAnimationScaleChanged(element_id,
+                                                         maximum_scale);
   }
 }
 

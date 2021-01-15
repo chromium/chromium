@@ -120,16 +120,11 @@ class MutatorHost {
 
   virtual bool AnimationsPreserveAxisAlignment(ElementId element_id) const = 0;
 
-  // Gets scales transform animations. On return, |maximum_scale| is the maximum
-  // scale along any dimension at any destination in active scale animations,
-  // and |starting_scale| is the maximum of starting animation scale along any
-  // dimension at any destination in active scale animations. They are set to
-  // kNotScaled if there is no active scale animation or the scales cannot be
-  // computed.
-  virtual void GetAnimationScales(ElementId element_id,
-                                  ElementListType list_type,
-                                  float* maximum_scale,
-                                  float* starting_scale) const = 0;
+  // Returns the maximum scale along any dimension at any destination in active
+  // scale animations, or kNotScaled if there is no active scale animation or
+  // the scales cannot be computed.
+  virtual float MaximumScale(ElementId element_id,
+                             ElementListType list_type) const = 0;
 
   virtual bool IsElementAnimating(ElementId element_id) const = 0;
   virtual bool HasTickingKeyframeModelForTesting(
