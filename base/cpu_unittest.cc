@@ -199,10 +199,8 @@ TEST(CPU, ARMImplementerAndPartNumber) {
 
   const std::string& cpu_brand = cpu.cpu_brand();
 
-  // Some CrOS CQ bots do not report a cpu_brand https://crbug.com/1166533.
-#if !defined(OS_CHROMEOS)
-  EXPECT_FALSE(cpu_brand.empty());
-#endif
+  // Some devices, including on the CQ, do not report a cpu_brand
+  // https://crbug.com/1166533 and https://crbug.com/1167123.
   EXPECT_EQ(cpu_brand, base::TrimWhitespaceASCII(cpu_brand, base::TRIM_ALL));
   EXPECT_GT(cpu.implementer(), 0u);
   EXPECT_GT(cpu.part_number(), 0u);
