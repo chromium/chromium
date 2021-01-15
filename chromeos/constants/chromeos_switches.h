@@ -25,9 +25,6 @@ namespace switches {
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kAggressiveCacheDiscardThreshold[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kAggressiveTabDiscardThreshold[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kAggressiveThreshold[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kAllowFailedPolicyFetchForTest[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kAllowRAInDevMode[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kAppAutoLaunched[];
@@ -60,7 +57,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcTosHostForTests[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kChildWallpaperSmall[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kConservativeThreshold[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kCrosRegion[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kCrosRegionsMode[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kCrosRegionsModeHide[];

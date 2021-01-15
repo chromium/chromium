@@ -33,10 +33,6 @@ const char kTestCrosGaiaIdMigrationStarted[] = "started";
 
 const char kAggressiveCacheDiscardThreshold[] = "aggressive-cache-discard";
 
-const char kAggressiveTabDiscardThreshold[] = "aggressive-tab-discard";
-
-const char kAggressiveThreshold[] = "aggressive";
-
 // If this flag is passed, failed policy fetches will not cause profile
 // initialization to fail. This is useful for tests because it means that
 // tests don't have to mock out the policy infrastructure.
@@ -161,8 +157,6 @@ const char kChildWallpaperLarge[] = "child-wallpaper-large";
 // Default small wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperSmall[] = "child-wallpaper-small";
-
-const char kConservativeThreshold[] = "conservative";
 
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
