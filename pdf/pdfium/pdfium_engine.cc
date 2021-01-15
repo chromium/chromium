@@ -1063,8 +1063,7 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
       FPDF_ANNOTATION last_focused_annot = nullptr;
       FPDF_BOOL ret = FORM_GetFocusedAnnot(form(), &last_focused_page_,
                                            &last_focused_annot);
-      DCHECK(ret);
-      if (PageIndexInBounds(last_focused_page_) && last_focused_annot) {
+      if (ret && PageIndexInBounds(last_focused_page_) && last_focused_annot) {
         last_focused_annot_index_ = FPDFPage_GetAnnotIndex(
             pages_[last_focused_page_]->GetPage(), last_focused_annot);
       } else {
