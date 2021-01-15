@@ -60,7 +60,8 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
   std::string GetPlatformTimeZone() {
     std::string timezone;
     TIME_ZONE_INFORMATION time_zone_information;
-    if (::GetTimeZoneInformation(&time_zone_information)) {
+    if (::GetTimeZoneInformation(&time_zone_information) !=
+        TIME_ZONE_ID_INVALID) {
       // StandardName field may be empty.
       timezone = base::WideToUTF8(time_zone_information.StandardName);
     }
