@@ -59,21 +59,15 @@ enum class ProtoDbType {
   LAST,
 };
 
-// List of databases that were introduced after shared db implementation was
-// created. These will be forced to use shared database implementation.
-constexpr ProtoDbType kWhitelistedDbForSharedImpl[]{
-    ProtoDbType::NOTIFICATION_SCHEDULER_ICON_STORE,
-    ProtoDbType::NOTIFICATION_SCHEDULER_IMPRESSION_STORE,
-    ProtoDbType::NOTIFICATION_SCHEDULER_NOTIFICATION_STORE,
-    ProtoDbType::PRINT_JOB_DATABASE,
-    ProtoDbType::FEED_STREAM_DATABASE,
-    ProtoDbType::PERSISTED_STATE_DATABASE,
-    ProtoDbType::UPBOARDING_QUERY_TILE_STORE,
-    ProtoDbType::NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE,
-    ProtoDbType::VIDEO_TUTORIALS_DATABASE,
-    ProtoDbType::FEED_KEY_VALUE_DATABASE,
-    ProtoDbType::CART_DATABASE,
-    ProtoDbType::LAST,  // Marks the end of list.
+// List of databases that need to keep using unique db instances. New databases
+// shouldn't be here unless they have a good reason.
+constexpr ProtoDbType kBlocklistedDbForSharedImpl[]{
+    // DB is not tied to a profile, will always be unique.
+    ProtoDbType::GCM_KEY_STORE,
+    // DB Used by shared database, will always be unique.
+    ProtoDbType::SHARED_DB_METADATA,
+    // Marks the end of list.
+    ProtoDbType::LAST,
 };
 
 // Add any obsolete databases in this list so that, if the data is no longer
