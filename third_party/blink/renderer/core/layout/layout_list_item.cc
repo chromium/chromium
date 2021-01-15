@@ -603,7 +603,7 @@ void LayoutListItem::UpdateOverflow() {
         layout_block_object->AddLayoutOverflow(marker_rect);
       }
 
-      if (object->HasNonVisibleOverflow())
+      if (object->ShouldClipOverflowAlongBothAxis())
         break;
 
       if (object->HasSelfPaintingLayer())
