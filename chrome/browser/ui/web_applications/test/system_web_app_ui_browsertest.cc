@@ -409,9 +409,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 }
 
 // TODO(crbug.com/1135863): Decide and formalize this behavior. This test is
-// disabled in DCHECK builds, because it hits a DCHECK in LaunchSystemWebApp. In
-// production builds, SWA is link captured to the original profile. The goal is
-// to behave reasonably, and not crashing.
+// disabled in DCHECK builds, because it hits a DCHECK in
+// LaunchSystemWebAppAsync. In production builds, SWA is link captured to the
+// original profile. The goal is to behave reasonably, and not crashing.
 #if DCHECK_IS_ON()
 #define MAYBE_IncognitoBrowserOmniboxLinkCapture \
   DISABLED_IncognitoBrowserOmniboxLinkCapture
@@ -507,14 +507,16 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     // WebContents e.g. launching an already opened SWA.
     navigation_observer.WatchExistingWebContents();
 
-    content::WebContents* web_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(launch_params));
+    LaunchSystemWebAppAsync(profile, installation_->GetType());
 
     navigation_observer.Wait();
 
-    return chrome::FindBrowserWithWebContents(web_contents);
+    Browser* swa_browser =
+        FindSystemWebAppBrowser(profile, installation_->GetType());
+    EXPECT_TRUE(swa_browser);
+    EXPECT_EQ(swa_browser, chrome::FindLastActive());
+
+    return swa_browser;
   }
 
  protected:
@@ -626,11 +628,12 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// The following tests are disabled in DCHECK builds. LaunchSystemWebApp DCHECKs
-// if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants) aren't
-// reliable in browsertests, so we don't test this. This is okay because these
-// tests are used to verify that in release builds, LaunchSystemWebApp doesn't
-// crash and behaves reasonably (pick an appropriate profile).
+// The following tests are disabled in DCHECK builds. LaunchSystemWebAppAsync
+// DCHECKs if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants)
+// aren't reliable in browsertests, so we don't test this. This is okay because
+// these tests are used to verify that in release builds,
+// LaunchSystemWebAppAsync doesn't crash and behaves reasonably (pick an
+// appropriate profile).
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
 
@@ -642,11 +645,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   WaitForTestSystemAppInstall();
   Profile* incognito_profile = startup_profile->GetPrimaryOTRProfile();
 
-  Browser* result_browser =
-      LaunchSystemWebApp(incognito_profile, GetMockAppType(),
-                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
-  EXPECT_EQ(startup_profile, result_browser->profile());
-  EXPECT_TRUE(result_browser->profile()->IsRegularProfile());
+  content::TestNavigationObserver observer(GetStartUrl());
+  observer.StartWatchingNewWebContents();
+  LaunchSystemWebAppAsync(incognito_profile, GetMockAppType());
+  observer.Wait();
+
+  EXPECT_FALSE(FindSystemWebAppBrowser(incognito_profile, GetMockAppType()));
+  EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
@@ -655,10 +660,19 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
 
   Profile* signin_profile = chromeos::ProfileHelper::GetSigninProfile();
 
-  Browser* result_browser =
-      LaunchSystemWebApp(signin_profile, GetMockAppType(),
-                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
-  EXPECT_EQ(nullptr, result_browser);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+
+  LaunchSystemWebAppAsync(signin_profile, GetMockAppType());
+
+  // Use RunUntilIdle() here, because this catches the scenario where
+  // LaunchSystemWebAppAsync mistakenly picks a profile to launch the app.
+  //
+  // RunUntilIdle() serves a catch-all solution, so we don't have to flush mojo
+  // calls on all existing profiles (and those potentially created during
+  // launch).
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }
 
 using SystemWebAppLaunchProfileGuestSessionBrowserTest =
@@ -674,16 +688,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
   WaitForTestSystemAppInstall();
 
   // We typically don't get the original profile as an argument, but it is a
-  // valid input to LaunchSystemWebApp.
+  // valid input to LaunchSystemWebAppAsync.
   Profile* original_profile = browser()->profile()->GetOriginalProfile();
 
-  Browser* result_browser =
-      LaunchSystemWebApp(original_profile, GetMockAppType(),
-                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+  content::TestNavigationObserver observer(GetStartUrl());
+  observer.StartWatchingNewWebContents();
+  LaunchSystemWebAppAsync(original_profile, GetMockAppType());
+  observer.Wait();
 
-  EXPECT_EQ(startup_profile, result_browser->profile());
-  EXPECT_TRUE(result_browser->profile()->IsGuestSession());
-  EXPECT_TRUE(result_browser->profile()->IsPrimaryOTRProfile());
+  EXPECT_FALSE(FindSystemWebAppBrowser(original_profile, GetMockAppType()));
+  EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
@@ -695,13 +709,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 
   WaitForTestSystemAppInstall();
 
-  Browser* result_browser =
-      LaunchSystemWebApp(startup_profile, GetMockAppType(),
-                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+  content::TestNavigationObserver observer(GetStartUrl());
+  observer.StartWatchingNewWebContents();
+  LaunchSystemWebAppAsync(startup_profile, GetMockAppType());
+  observer.Wait();
 
-  EXPECT_EQ(startup_profile, result_browser->profile());
-  EXPECT_TRUE(result_browser->profile()->IsGuestSession());
-  EXPECT_TRUE(result_browser->profile()->IsPrimaryOTRProfile());
+  EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 
