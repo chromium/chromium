@@ -156,8 +156,8 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
   static const base::StringPiece kAllowedArgs[] = {
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
-      cc::switches::kEnableGpuBenchmarking,
       cc::switches::kEnableClippedImageScaling,
+      cc::switches::kEnableGpuBenchmarking,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
       switches::kDisableMipmapGeneration,
@@ -171,10 +171,10 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kGoogleApiKey,
       switches::kMaxDecodedImageSizeMb,
       switches::kRendererProcessLimit,
-      switches::kWebglAntialiasingMode,
-      switches::kWebglMSAASampleCount,
       switches::kVulkanHeapMemoryLimitMb,
       switches::kVulkanSyncCpuMemoryLimitMb,
+      switches::kWebglAntialiasingMode,
+      switches::kWebglMSAASampleCount,
   };
 
   for (const auto& arg : args->DictItems()) {
