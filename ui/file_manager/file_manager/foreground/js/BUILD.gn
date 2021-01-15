@@ -32,10 +32,12 @@ js_type_check("closure_compile_jsmodules") {
     ":actions_model.m",
     ":android_app_list_model.m",
     ":app_state_controller.m",
+    ":column_visibility_controller.m",
     ":constants.m",
     ":crossover_search_utils.m",
     ":crostini_controller.m",
     ":deferred_elements.m",
+    ":dialog_action_controller.m",
     ":dialog_type.m",
     ":directory_contents.m",
     ":directory_model.m",
@@ -75,6 +77,7 @@ js_type_check("closure_compile_jsmodules") {
     ":quick_view_model.m",
     ":quick_view_uma.m",
     ":scan_controller.m",
+    ":search_controller.m",
     ":selection_menu_controller.m",
     ":sort_menu_controller.m",
     ":spinner_controller.m",
@@ -436,6 +439,19 @@ js_library("column_visibility_controller") {
   ]
 }
 
+js_library("column_visibility_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/column_visibility_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    "ui:file_manager_ui.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("constants") {
 }
 
@@ -502,6 +518,29 @@ js_library("dialog_action_controller") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/webui/resources/js/cr/ui:command",
   ]
+}
+
+js_library("dialog_action_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/dialog_action_controller.m.js" ]
+  deps = [
+    ":dialog_type.m",
+    ":directory_contents.m",
+    ":directory_model.m",
+    ":file_selection.m",
+    ":launch_param.m",
+    ":naming_controller.m",
+    "metadata:metadata_model.m",
+    "ui:dialog_footer.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("dialog_type") {
@@ -1656,6 +1695,23 @@ js_library("search_controller") {
   ]
 }
 
+js_library("search_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/search_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    ":task_controller.m",
+    "ui:file_manager_ui.m",
+    "ui:location_line.m",
+    "ui:search_box.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:entry_location.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("selection_menu_controller") {
   deps = [
     ":directory_model",
@@ -1926,6 +1982,8 @@ js_modulizer("modulize") {
     "constants.js",
     "crossover_search_utils.js",
     "crostini_controller.js",
+    "column_visibility_controller.js",
+    "dialog_action_controller.js",
     "dialog_type.js",
     "directory_contents.js",
     "directory_model.js",
@@ -1966,6 +2024,7 @@ js_modulizer("modulize") {
     "quick_view_model.js",
     "quick_view_uma.js",
     "scan_controller.js",
+    "search_controller.js",
     "selection_menu_controller.js",
     "sort_menu_controller.js",
     "spinner_controller.js",
