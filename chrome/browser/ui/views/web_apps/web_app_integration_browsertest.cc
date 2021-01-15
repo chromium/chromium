@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,6 +63,12 @@ const std::string kPlatformName =
     "Win";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Command-line switch that overrides test case input. Takes a comma
+// separated list of testing actions. This aids in development of tests
+// by allowing one to run a single test at a time, and avoid running every
+// test case in the suite.
+const char kWebAppIntegrationTestCase[] = "web-app-integration-test-case";
+
 std::string StripAllWhitespace(std::string line) {
   std::string output;
   output.reserve(line.size());
@@ -86,10 +91,24 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
   return file_path.AppendASCII(file_name);
 }
 
+std::string GetCommandLineTestOverride() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kWebAppIntegrationTestCase)) {
+    return command_line->GetSwitchValueASCII(kWebAppIntegrationTestCase);
+  }
+  return "";
+}
+
 std::vector<std::string> ReadTestInputFile(const std::string& file_name) {
+  std::vector<std::string> test_cases;
+  std::string command_line_test_case = GetCommandLineTestOverride();
+  if (!command_line_test_case.empty()) {
+    test_cases.push_back(StripAllWhitespace(command_line_test_case));
+    return test_cases;
+  }
+
   base::FilePath file = GetTestFilePath(file_name);
   std::string contents;
-  std::vector<std::string> test_cases;
   if (!base::ReadFileToString(file, &contents)) {
     return test_cases;
   }
