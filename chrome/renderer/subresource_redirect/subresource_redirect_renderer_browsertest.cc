@@ -105,10 +105,11 @@ class SubresourceRedirectLoggedInSitesBrowserTest
 #define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
 #endif
 
+// TODO(crbug.com/1166280): Enable the test after fixing the flake.
 // Verify that when image load gets canceled due to subsequent page load, the
 // subresource redirect for the image is canceled as well.
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(TestCancelBeforeImageLoad)) {
+                       DISABLED_TestCancelBeforeImageLoad) {
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
@@ -122,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
     base::RunLoop().RunUntilIdle();
   }
 
-  ui_test_utils::NavigateToURL(browser(), GetHttpsTestURL("/simple.html"));
+  ui_test_utils::NavigateToURL(browser(),
+                               GetHttpsTestURL("/load_image/simple.html"));
   FetchHistogramsFromChildProcesses();
 
   RetryForHistogramUntilCountReached(
@@ -141,11 +143,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
   image_compression_server_.VerifyRequestedImagePaths({});
 }
 
+// TODO(crbug.com/1166280): Enable the test after fixing the flake.
 // Verify that when image load gets canceled due to subsequent navigation to a
 // logged-in page, the subresource redirect for the image is disabled as well.
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectLoggedInSitesBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestCancelBeforeImageLoadForLoggedInSite)) {
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
+                       DISABLED_TestCancelBeforeImageLoadForLoggedInSite) {
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
@@ -160,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("loggedin.com", "/simple.html"));
+      browser(),
+      https_test_server_.GetURL("loggedin.com", "/load_image/simple.html"));
   FetchHistogramsFromChildProcesses();
   histogram_tester_.ExpectBucketCount(
       "Login.PageLoad.DetectionType",
