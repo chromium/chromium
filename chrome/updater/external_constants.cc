@@ -41,6 +41,10 @@ std::unique_ptr<ExternalConstants> CreateExternalConstants() {
       std::make_unique<DefaultExternalConstants>());
 }
 
+std::unique_ptr<ExternalConstants> CreateDefaultExternalConstantsForTesting() {
+  return std::make_unique<DefaultExternalConstants>();
+}
+
 DevOverrideProvider::DevOverrideProvider(
     std::unique_ptr<ExternalConstants> next_provider)
     : ExternalConstants(std::move(next_provider)) {}

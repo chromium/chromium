@@ -38,6 +38,10 @@ class ExternalConstants {
 // Sets up an external constants chain of responsibility. May block.
 std::unique_ptr<ExternalConstants> CreateExternalConstants();
 
+// Sets up an external constants provider yielding only default values.
+// Intended only for testing of other constants providers.
+std::unique_ptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
