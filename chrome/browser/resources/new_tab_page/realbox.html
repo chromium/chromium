@@ -6,6 +6,12 @@
     height: var(--ntp-realbox-height);
   }
 
+  @media (forced-colors: active) {
+    :host {
+      border: 1px solid ActiveBorder;
+    }
+  }
+
   :host([matches-are-visible]) {
     box-shadow: none;
   }
