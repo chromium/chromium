@@ -2,12 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {A11yAnnounce} from './ui/a11y_announce.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {LocationLine} from './ui/location_line.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// clang-format on
+
 /**
  * This class controls wires toolbar UI and selection model. When selection
  * status is changed, this class changes the view of toolbar. If cancel
  * selection button is pressed, this class clears the selection.
  */
-class ToolbarController {
+/* #export */ class ToolbarController {
   /**
    * @param {!HTMLElement} toolbar Toolbar element which contains controls.
    * @param {!HTMLElement} navigationList Navigation list on the left pane. The
@@ -329,9 +344,6 @@ class ToolbarController {
           /** @type {!FileListSelectionModel} */
           (this.directoryModel_.getFileListSelection()).getCheckSelectMode()) {
         bodyClassList.toggle('check-select');
-        // Some custom styles depend on |check-select| class. We need to
-        // re-evaluate the custom styles when the class value is changed.
-        Polymer.updateStyles();
       }
     }
   }

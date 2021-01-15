@@ -68,6 +68,7 @@ js_type_check("closure_compile_jsmodules") {
     ":task_controller.m",
     ":task_history.m",
     ":thumbnail_loader.m",
+    ":toolbar_controller.m",
     ":web_store_utils.m",
     ":webui_command_extender.m",
   ]
@@ -1562,6 +1563,27 @@ js_library("toolbar_controller") {
   ]
 }
 
+js_library("toolbar_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/toolbar_controller.m.js" ]
+  deps = [
+    ":directory_model.m",
+    ":file_selection.m",
+    "ui:a11y_announce.m",
+    "ui:file_list_selection_model.m",
+    "ui:list_container.m",
+    "ui:location_line.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("web_store_utils") {
   deps = [ ":constants" ]
 }
@@ -1672,6 +1694,7 @@ js_modulizer("modulize") {
     "selection_menu_controller.js",
     "file_tasks.js",
     "task_controller.js",
+    "toolbar_controller.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites + [

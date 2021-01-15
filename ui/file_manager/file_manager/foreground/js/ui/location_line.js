@@ -11,7 +11,7 @@
 // #import {PathComponent} from '../path_component.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {metrics} from '../../../common/js/metrics.m.js';
-// #import './breadcrumb.m.js';
+// #import {BreadCrumb} from './breadcrumb.m.js';
 // clang-format on
 
 /**
@@ -90,7 +90,8 @@
   updateNg_(components) {
     this.components_ = Array.from(components);
 
-    let breadcrumbs = document.querySelector('bread-crumb');
+    let breadcrumbs =
+        /** @type {!BreadCrumb} */ (document.querySelector('bread-crumb'));
     if (!breadcrumbs) {
       breadcrumbs = document.createElement('bread-crumb');
       breadcrumbs.id = 'breadcrumbs';
