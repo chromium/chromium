@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab.state;
 
 import android.content.Context;
+import android.os.StrictMode;
+import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
@@ -28,8 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Locale;
-
-import android.os.StrictMode;
 
 /**
  * {@link PersistedTabDataStorage} which uses a file for the storage
@@ -207,9 +207,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             FileOutputStream outputStream = null;
             boolean success = false;
             try {
+                long startTime = SystemClock.elapsedRealtime();
                 outputStream = new FileOutputStream(mFile);
                 outputStream.write(mData);
                 success = true;
+                RecordHistogram.recordTimesHistogram(
+                        String.format(Locale.US, "Tabs.PersistedTabData.Storage.SaveTime.%s",
+                                getUmaTag()),
+                        SystemClock.elapsedRealtime() - startTime);
             } catch (FileNotFoundException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
@@ -332,9 +337,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             boolean success = false;
             byte[] res = null;
             try {
+                long startTime = SystemClock.elapsedRealtime();
                 AtomicFile atomicFile = new AtomicFile(mFile);
                 res = atomicFile.readFully();
                 success = true;
+                RecordHistogram.recordTimesHistogram(
+                        String.format(Locale.US, "Tabs.PersistedTabData.Storage.LoadTime.%s",
+                                getUmaTag()),
+                        SystemClock.elapsedRealtime() - startTime);
             } catch (FileNotFoundException e) {
                 Log.e(TAG,
                         String.format(Locale.ENGLISH,
