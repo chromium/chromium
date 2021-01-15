@@ -31,6 +31,7 @@ js_type_check("closure_compile_jsmodules") {
     ":actions_controller.m",
     ":actions_model.m",
     ":android_app_list_model.m",
+    ":app_state_controller.m",
     ":constants.m",
     ":crossover_search_utils.m",
     ":crostini_controller.m",
@@ -56,6 +57,7 @@ js_type_check("closure_compile_jsmodules") {
     ":last_modified_controller.m",
     ":launch_param.m",
     ":list_thumbnail_loader.m",
+    ":main_window_component.m",
     ":metadata_box_controller.m",
     ":metadata_update_controller.m",
     ":mock_directory_model.m",
@@ -404,6 +406,21 @@ js_library("app_state_controller") {
     ":directory_model",
     "ui:file_manager_ui",
   ]
+}
+
+js_library("app_state_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/app_state_controller.m.js" ]
+  deps = [
+    ":dialog_type.m",
+    ":directory_model.m",
+    "ui:file_manager_ui.m",
+    "ui:list_container.m",
+    "//ui/file_manager/base/js:app_util.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("column_visibility_controller") {
@@ -1287,6 +1304,29 @@ js_library("main_window_component") {
   ]
 }
 
+js_library("main_window_component.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/main_window_component.m.js" ]
+  deps = [
+    ":app_state_controller.m",
+    ":dialog_type.m",
+    ":directory_contents.m",
+    ":directory_model.m",
+    ":file_selection.m",
+    ":naming_controller.m",
+    ":task_controller.m",
+    "ui:file_manager_ui.m",
+    "ui:file_tap_handler.m",
+    "ui:list_container.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:directory_change_event.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("metadata_box_controller") {
   deps = [
     ":quick_view_model",
@@ -1795,6 +1835,7 @@ js_modulizer("modulize") {
     "actions_controller.js",
     "actions_model.js",
     "android_app_list_model.js",
+    "app_state_controller.js",
     "constants.js",
     "crossover_search_utils.js",
     "dialog_type.js",
@@ -1818,6 +1859,7 @@ js_modulizer("modulize") {
     "last_modified_controller.js",
     "launch_param.js",
     "list_thumbnail_loader.js",
+    "main_window_component.js",
     "metadata_box_controller.js",
     "metadata_update_controller.js",
     "metrics_start.js",
@@ -1837,8 +1879,8 @@ js_modulizer("modulize") {
     "spinner_controller.js",
     "task_controller.js",
     "task_history.js",
-    "toolbar_controller.js",
     "thumbnail_loader.js",
+    "toolbar_controller.js",
     "web_store_utils.js",
     "webui_command_extender.js",
     "crostini_controller.js",

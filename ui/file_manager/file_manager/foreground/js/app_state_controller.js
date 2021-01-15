@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {DialogType} from './dialog_type.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {appUtil} from '../../../base/js/app_util.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
 
-class AppStateController {
+/* #export */ class AppStateController {
   /**
    * @param {DialogType} dialogType
    */
