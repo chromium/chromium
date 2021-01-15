@@ -145,13 +145,6 @@ const char kArcStartMode[] = "arc-start-mode";
 // Sets ARC Terms Of Service hostname url for testing.
 const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 
-// If this flag is present then the device had ARC M available and gets ARC N
-// when updating.
-// TODO(pmarko): Remove this when we assess that it's not necessary anymore:
-// crbug.com/761348.
-const char kArcTransitionMigrationRequired[] =
-    "arc-transition-migration-required";
-
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
 // their primary means of connecting to the internet.
