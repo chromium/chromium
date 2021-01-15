@@ -1017,7 +1017,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwns) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash) {
+// Flaky on CrOS MSAN: https://crbug.com/1167331
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_AccessibilityAriaOwnsCrash DISABLED_AccessibilityAriaOwnsCrash
+#else
+#define MAYBE_AccessibilityAriaOwnsCrash AccessibilityAriaOwnsCrash
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityAriaOwnsCrash) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-crash.html"));
 }
 
