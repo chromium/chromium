@@ -444,7 +444,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenRange&,
 CSSValue* ConsumeBorderWidth(CSSParserTokenRange&,
                              const CSSParserContext&,
                              UnitlessQuirk);
-CSSValue* ParsePaintStroke(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeSVGPaint(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenRange&, const CSSParserContext&);
 
 UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);

@@ -4845,8 +4845,8 @@ CSSValue* ParseSpacing(CSSParserTokenRange& range,
   return ConsumeLength(range, context, kValueRangeAll, UnitlessQuirk::kAllow);
 }
 
-CSSValue* ParsePaintStroke(CSSParserTokenRange& range,
-                           const CSSParserContext& context) {
+CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,
+                          const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return ConsumeIdent(range);
   cssvalue::CSSURIValue* url = ConsumeUrl(range, context);

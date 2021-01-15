@@ -2645,7 +2645,7 @@ const CSSValue* EmptyCells::CSSValueFromComputedStyleInternal(
 const CSSValue* Fill::ParseSingleValue(CSSParserTokenRange& range,
                                        const CSSParserContext& context,
                                        const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParsePaintStroke(range, context);
+  return css_parsing_utils::ConsumeSVGPaint(range, context);
 }
 
 const CSSValue* Fill::CSSValueFromComputedStyleInternal(
@@ -3787,7 +3787,7 @@ const CSSValue* InternalVisitedFill::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParsePaintStroke(range, context);
+  return css_parsing_utils::ConsumeSVGPaint(range, context);
 }
 
 const blink::Color InternalVisitedFill::ColorIncludingFallback(
@@ -3852,7 +3852,7 @@ const CSSValue* InternalVisitedStroke::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParsePaintStroke(range, context);
+  return css_parsing_utils::ConsumeSVGPaint(range, context);
 }
 
 const blink::Color InternalVisitedStroke::ColorIncludingFallback(
@@ -6513,7 +6513,7 @@ const CSSValue* StopOpacity::CSSValueFromComputedStyleInternal(
 const CSSValue* Stroke::ParseSingleValue(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParsePaintStroke(range, context);
+  return css_parsing_utils::ConsumeSVGPaint(range, context);
 }
 
 const CSSValue* Stroke::CSSValueFromComputedStyleInternal(
