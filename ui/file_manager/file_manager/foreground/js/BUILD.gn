@@ -54,6 +54,7 @@ js_type_check("closure_compile_jsmodules") {
     ":last_modified_controller.m",
     ":launch_param.m",
     ":list_thumbnail_loader.m",
+    ":metadata_box_controller.m",
     ":metadata_update_controller.m",
     ":mock_directory_model.m",
     ":mock_folder_shortcut_data_model.m",
@@ -1217,6 +1218,25 @@ js_library("metadata_box_controller") {
   ]
 }
 
+js_library("metadata_box_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata_box_controller.m.js" ]
+  deps = [
+    ":path_component.m",
+    ":quick_view_model.m",
+    "metadata:metadata_item.m",
+    "metadata:metadata_model.m",
+    "ui:file_metadata_formatter.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("metadata_update_controller") {
   deps = [
     ":directory_model",
@@ -1621,7 +1641,6 @@ js_library("toolbar_controller.m") {
     "ui:file_list_selection_model.m",
     "ui:list_container.m",
     "ui:location_line.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/base/js:volume_manager_types.m",
     "//ui/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/common/js:util.m",
@@ -1722,6 +1741,7 @@ js_modulizer("modulize") {
     "last_modified_controller.js",
     "launch_param.js",
     "list_thumbnail_loader.js",
+    "metadata_box_controller.js",
     "metadata_update_controller.js",
     "metrics_start.js",
     "mock_actions_model.js",
