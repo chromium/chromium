@@ -1085,8 +1085,8 @@ PP_PrivateAccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
       break;
     }
     case FocusElementType::kPage: {
-      int page_index;
-      FPDF_ANNOTATION focused_annot;
+      int page_index = -1;
+      FPDF_ANNOTATION focused_annot = nullptr;
       FPDF_BOOL ret = FORM_GetFocusedAnnot(form(), &page_index, &focused_annot);
       DCHECK(ret);
 
@@ -3573,7 +3573,8 @@ void PDFiumEngine::DeviceToPage(int page_index,
                                 const gfx::Point& device_point,
                                 double* page_x,
                                 double* page_y) {
-  *page_x = *page_y = 0;
+  *page_x = 0;
+  *page_y = 0;
   float device_x = device_point.x();
   float device_y = device_point.y();
   int temp_x = static_cast<int>((device_x + position_.x()) / current_zoom_ -

@@ -749,14 +749,15 @@ PDFiumPage::Area PDFiumPage::GetCharIndex(const gfx::Point& point,
                                           LinkTarget* target) {
   if (!available_)
     return NONSELECTABLE_AREA;
+
   gfx::Point device_point = point - rect_.OffsetFromOrigin();
   double new_x;
   double new_y;
-  FPDF_BOOL ret =
-      FPDF_DeviceToPage(GetPage(), 0, 0, rect_.width(), rect_.height(),
-                        ToPDFiumRotation(orientation), device_point.x(),
-                        device_point.y(), &new_x, &new_y);
-  DCHECK(ret);
+  if (!FPDF_DeviceToPage(GetPage(), 0, 0, rect_.width(), rect_.height(),
+                         ToPDFiumRotation(orientation), device_point.x(),
+                         device_point.y(), &new_x, &new_y)) {
+    return NONSELECTABLE_AREA;
+  }
 
   // hit detection tolerance, in points.
   constexpr double kTolerance = 20.0;
@@ -992,7 +993,8 @@ void PDFiumPage::PopulateWebLinks() {
       double top;
       double right;
       double bottom;
-      FPDFLink_GetRect(links.get(), i, j, &left, &top, &right, &bottom);
+      if (!FPDFLink_GetRect(links.get(), i, j, &left, &top, &right, &bottom))
+        continue;
       gfx::Rect rect = PageToScreen(gfx::Point(), 1.0, left, top, right, bottom,
                                     PageOrientation::kOriginal);
       if (rect.IsEmpty())
@@ -1075,9 +1077,9 @@ void PDFiumPage::CalculateImages() {
     float top;
     float right;
     float bottom;
-    FPDF_BOOL ret =
-        FPDFPageObj_GetBounds(page_object, &left, &bottom, &right, &top);
-    DCHECK(ret);
+    if (!FPDFPageObj_GetBounds(page_object, &left, &bottom, &right, &top))
+      continue;
+
     Image image;
     image.bounding_rect = PageToScreen(gfx::Point(), 1.0, left, top, right,
                                        bottom, PageOrientation::kOriginal);
