@@ -133,6 +133,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantIntentPageUrl,
+    &kAssistantIntentTranslateInfo,
     &kBentoOffline,
     &kCastDeviceFilter,
     &kCloseTabSuggestions,
@@ -350,6 +351,9 @@ const base::Feature kAndroidSearchEngineChoiceNotification{
 
 const base::Feature kAssistantIntentPageUrl{"AssistantIntentPageUrl",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAssistantIntentTranslateInfo{
+    "AssistantIntentTranslateInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kBackgroundTaskComponentUpdate{
     "BackgroundTaskComponentUpdate", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -228,6 +228,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "assistant-intent-translate-info",
+    "owners": [ "jds", "chrome-language" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "audio-player-js-modules",
     "owners": [ "lucmult", "jboulic", "simmonsjosh" ],
     "expiry_milestone": 91
