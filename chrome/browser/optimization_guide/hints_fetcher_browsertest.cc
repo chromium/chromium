@@ -792,6 +792,15 @@ IN_PROC_BROWSER_TEST_F(
       1, 1);
 }
 
+// TODO(crbug.com/1166906):
+// HintsFetcherBrowserTest.HintsFetcherClearFetchedHints is flaky on Windows and
+// Linux.
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_HintsFetcherClearFetchedHints \
+  DISABLED_HintsFetcherClearFetchedHints
+#else
+#define MAYBE_HintsFetcherClearFetchedHints HintsFetcherClearFetchedHints
+#endif  // defined(OS_WIN) || defined(OS_LINUX)
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
