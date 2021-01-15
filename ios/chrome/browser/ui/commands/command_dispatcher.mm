@@ -15,13 +15,48 @@
 #error "This file requires ARC support."
 #endif
 
+#pragma mark - SilentlyFailingObject
+
+// Object that responds to any selector and does nothing when its called.
+// Used as a "nice OCMock" equivalent for CommandDispatcher that's preparing for
+// shutdown.
+@interface SilentlyFailingObject : NSProxy
+@end
+@implementation SilentlyFailingObject
+
+- (instancetype)init {
+  return self;
+}
+
+- (void)forwardInvocation:(NSInvocation*)invocation {
+}
+
+- (NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+  // Return some method signature to silence errors.
+  // Here it's (void)(self, _cmd).
+  return [NSMethodSignature signatureWithObjCTypes:"v@:"];
+}
+
+@end
+
+#pragma mark - CommandDispatcher
+
 @implementation CommandDispatcher {
   // Stores which target to forward to for a given selector.
   std::unordered_map<SEL, __weak id> _forwardingTargets;
+
+  // Stores remembered targets while preparing for shutdown.
+  std::unordered_map<SEL, __weak id> _silentlyFailingTargets;
+
+  // Tracks if preparing for shutdown has been requested.
+  // This is an ivar, not a property, to avoid having synthesized getter/setter
+  // methods.
+  BOOL _preparingForShutdown;
 }
 
 - (void)startDispatchingToTarget:(id)target forSelector:(SEL)selector {
   DCHECK(![self targetForSelector:selector]);
+  DCHECK(![self shouldFailSilentlyForSelector:selector]);
 
   _forwardingTargets[selector] = target;
 }
@@ -40,6 +75,10 @@
 }
 
 - (void)stopDispatchingForSelector:(SEL)selector {
+  if (_preparingForShutdown) {
+    id target = _forwardingTargets[selector];
+    _silentlyFailingTargets[selector] = target;
+  }
   _forwardingTargets.erase(selector);
 }
 
@@ -85,7 +124,9 @@
   BOOL conforming = YES;
   for (unsigned int i = 0; i < methodCount; i++) {
     SEL selector = requiredInstanceMethods[i].name;
-    if (_forwardingTargets.find(selector) == _forwardingTargets.end()) {
+    BOOL targetFound =
+        _forwardingTargets.find(selector) != _forwardingTargets.end();
+    if (!targetFound && ![self shouldFailSilentlyForSelector:selector]) {
       conforming = NO;
       break;
     }
@@ -112,6 +153,10 @@
   CHECK([self dispatchingForProtocol:protocol])
       << "Dispatcher failed protocol conformance";
   return self;
+}
+
+- (void)prepareForShutdown {
+  _preparingForShutdown = YES;
 }
 
 #pragma mark - NSObject
@@ -149,9 +194,18 @@
 // Returns the target registered to receive messeages for |selector|.
 - (id)targetForSelector:(SEL)selector {
   auto target = _forwardingTargets.find(selector);
-  if (target == _forwardingTargets.end())
+  if (target == _forwardingTargets.end()) {
+    if ([self shouldFailSilentlyForSelector:selector]) {
+      return [[SilentlyFailingObject alloc] init];
+    }
     return nil;
+  }
   return target->second;
+}
+
+- (BOOL)shouldFailSilentlyForSelector:(SEL)selector {
+  return _preparingForShutdown && _silentlyFailingTargets.find(selector) !=
+                                      _silentlyFailingTargets.end();
 }
 
 @end

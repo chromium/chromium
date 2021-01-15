@@ -435,6 +435,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
   _appIsTerminating = YES;
 
+  [_appCommandDispatcher prepareForShutdown];
+
   // Cancel any in-flight distribution notifications.
   CHECK(ios::GetChromeBrowserProvider());
   ios::GetChromeBrowserProvider()

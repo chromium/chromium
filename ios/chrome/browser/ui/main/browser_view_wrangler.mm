@@ -312,6 +312,11 @@
   DCHECK(!_isShutdown);
   _isShutdown = YES;
 
+  [self.mainBrowser->GetCommandDispatcher() prepareForShutdown];
+  if ([self hasIncognitoInterface]) {
+    [self.otrBrowser->GetCommandDispatcher() prepareForShutdown];
+  }
+
   // At this stage, new BrowserCoordinators shouldn't be lazily constructed by
   // calling their property getters.
   [_mainBrowserCoordinator stop];
