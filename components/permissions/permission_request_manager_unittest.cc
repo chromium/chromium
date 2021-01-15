@@ -687,10 +687,12 @@ class MockNotificationPermissionUiSelector
  public:
   explicit MockNotificationPermissionUiSelector(
       base::Optional<QuietUiReason> quiet_ui_reason,
-      bool async) {
-    quiet_ui_reason_ = quiet_ui_reason;
-    async_ = async;
-  }
+      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+          prediction_likelihood,
+      bool async)
+      : quiet_ui_reason_(quiet_ui_reason),
+        prediction_likelihood_(prediction_likelihood),
+        async_(async) {}
 
   void SelectUiToUse(PermissionRequest* request,
                      DecisionMadeCallback callback) override {
@@ -703,16 +705,26 @@ class MockNotificationPermissionUiSelector
     }
   }
 
-  static void CreateForManager(PermissionRequestManager* manager,
-                               base::Optional<QuietUiReason> quiet_ui_reason,
-                               bool async) {
+  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  PredictedGrantLikelihoodForUKM() override {
+    return prediction_likelihood_;
+  }
+
+  static void CreateForManager(
+      PermissionRequestManager* manager,
+      base::Optional<QuietUiReason> quiet_ui_reason,
+      bool async,
+      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+          prediction_likelihood = base::nullopt) {
     manager->add_notification_permission_ui_selector_for_testing(
-        std::make_unique<MockNotificationPermissionUiSelector>(quiet_ui_reason,
-                                                               async));
+        std::make_unique<MockNotificationPermissionUiSelector>(
+            quiet_ui_reason, prediction_likelihood, async));
   }
 
  private:
   base::Optional<QuietUiReason> quiet_ui_reason_;
+  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      prediction_likelihood_;
   bool async_;
 };
 
@@ -861,6 +873,61 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
     } else {
       EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
     }
+
+    Accept();
+    EXPECT_TRUE(request.granted());
+  }
+}
+
+TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
+  using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
+  using PredictionLikelihood = PermissionUmaUtil::PredictionGrantLikelihood;
+  const auto VeryLikely = PredictionLikelihood::
+      PermissionSuggestion_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
+  const auto Neutral = PredictionLikelihood::
+      PermissionSuggestion_Likelihood_DiscretizedLikelihood_NEUTRAL;
+
+  const struct {
+    std::vector<bool> enable_quiet_uis;
+    std::vector<base::Optional<PredictionLikelihood>> prediction_likelihoods;
+    base::Optional<PredictionLikelihood> expected_prediction_likelihood;
+  } kTests[] = {
+      // Sanity check: prediction likelihood is populated correctly.
+      {{true}, {VeryLikely}, VeryLikely},
+      {{false}, {Neutral}, Neutral},
+
+      // Prediction likelihood is populated only if the selector was considered.
+      {{true, true}, {base::nullopt, VeryLikely}, base::nullopt},
+      {{false, true}, {base::nullopt, VeryLikely}, VeryLikely},
+      {{false, false}, {base::nullopt, VeryLikely}, VeryLikely},
+
+      // First considered selector is preserved.
+      {{true, true}, {Neutral, VeryLikely}, Neutral},
+      {{false, true}, {Neutral, VeryLikely}, Neutral},
+      {{false, false}, {Neutral, VeryLikely}, Neutral},
+  };
+
+  for (const auto& test : kTests) {
+    manager_->clear_notification_permission_ui_selector_for_testing();
+    for (size_t i = 0; i < test.enable_quiet_uis.size(); ++i) {
+      MockNotificationPermissionUiSelector::CreateForManager(
+          manager_,
+          test.enable_quiet_uis[i]
+              ? base::Optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)
+              : base::nullopt,
+          false /* async */, test.prediction_likelihoods[i]);
+    }
+
+    MockPermissionRequest request("foo", RequestType::kNotifications,
+                                  PermissionRequestGestureType::GESTURE);
+
+    manager_->AddRequest(web_contents()->GetMainFrame(), &request);
+    WaitForBubbleToBeShown();
+
+    EXPECT_TRUE(prompt_factory_->is_visible());
+    EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request.GetRequestType()));
+    EXPECT_EQ(test.expected_prediction_likelihood,
+              manager_->prediction_grant_likelihood_for_testing());
 
     Accept();
     EXPECT_TRUE(request.granted());

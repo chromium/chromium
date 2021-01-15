@@ -796,12 +796,6 @@ void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
     }
   }
 
-  if (!prediction_grant_likelihood_.has_value()) {
-    prediction_grant_likelihood_ =
-        notification_permission_ui_selectors_[selector_index]
-            ->PredictedGrantLikelihoodForUKM();
-  }
-
   // We have already made a decision because of a higher priority selector
   // therefore this selector's decision can be discarded.
   if (current_request_ui_to_use_.has_value())
@@ -814,12 +808,20 @@ void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
   while (decision_index < selector_decisions_.size() &&
          selector_decisions_[decision_index].has_value()) {
     const UiDecision& current_decision =
-        selector_decisions_[decision_index++].value();
+        selector_decisions_[decision_index].value();
+
+    if (!prediction_grant_likelihood_.has_value()) {
+      prediction_grant_likelihood_ =
+          notification_permission_ui_selectors_[decision_index]
+              ->PredictedGrantLikelihoodForUKM();
+    }
 
     if (current_decision.quiet_ui_reason.has_value()) {
       current_request_ui_to_use_ = current_decision;
       break;
     }
+
+    ++decision_index;
   }
 
   // All decisions have been considered and none was conclusive.
