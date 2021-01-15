@@ -153,8 +153,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onReceivedLightProbe(ctx, lightProbe) {
         ctx.xrLightProbe = lightProbe;
-        setInterval(()=>onReflectionChanged(ctx),1000);
-        // ctx.xrLightProbe.addEventListener('reflectionchange', () => onReflectionChanged(ctx));
+        ctx.xrLightProbe.addEventListener('reflectionchange', () => onReflectionChanged(ctx));
       }
 
       function onReflectionChanged(ctx) {
