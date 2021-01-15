@@ -762,6 +762,120 @@ int QuicChromiumClientSession::StreamRequest::DoRequestStreamComplete(int rv) {
   return rv;
 }
 
+QuicChromiumClientSession::QuicChromiumPathValidationContext::
+    QuicChromiumPathValidationContext(
+        const quic::QuicSocketAddress& self_address,
+        const quic::QuicSocketAddress& peer_address,
+        NetworkChangeNotifier::NetworkHandle network,
+        std::unique_ptr<DatagramClientSocket> socket,
+        std::unique_ptr<QuicChromiumPacketWriter> writer,
+        std::unique_ptr<QuicChromiumPacketReader> reader)
+    : QuicPathValidationContext(self_address, peer_address),
+      network_handle_(network),
+      socket_(std::move(socket)),
+      writer_(std::move(writer)),
+      reader_(std::move(reader)) {}
+
+QuicChromiumClientSession::QuicChromiumPathValidationContext::
+    ~QuicChromiumPathValidationContext() = default;
+
+NetworkChangeNotifier::NetworkHandle
+QuicChromiumClientSession::QuicChromiumPathValidationContext::network() {
+  return network_handle_;
+}
+quic::QuicPacketWriter*
+QuicChromiumClientSession::QuicChromiumPathValidationContext::WriterToUse() {
+  return writer_.get();
+}
+std::unique_ptr<QuicChromiumPacketWriter>
+QuicChromiumClientSession::QuicChromiumPathValidationContext::ReleaseWriter() {
+  return std::move(writer_);
+}
+std::unique_ptr<DatagramClientSocket>
+QuicChromiumClientSession::QuicChromiumPathValidationContext::ReleaseSocket() {
+  return std::move(socket_);
+}
+std::unique_ptr<QuicChromiumPacketReader>
+QuicChromiumClientSession::QuicChromiumPathValidationContext::ReleaseReader() {
+  return std::move(reader_);
+}
+
+QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
+    ConnectionMigrationValidationResultDelegate(
+        QuicChromiumClientSession* session)
+    : session_(session) {}
+
+void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
+    OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context) {
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnConnectionMigrationProbeSucceeded(
+      chrome_context->network(), chrome_context->peer_address(),
+      chrome_context->self_address(), chrome_context->ReleaseSocket(),
+      chrome_context->ReleaseWriter(), chrome_context->ReleaseReader());
+}
+
+void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
+    OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) {
+  // Note that socket, packet writer, and packet reader in |context| will be
+  // discarded.
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnProbeFailed(chrome_context->network(),
+                          chrome_context->peer_address());
+}
+
+QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    QuicChromiumPathValidationWriterDelegate(
+        QuicChromiumClientSession* session,
+        base::SequencedTaskRunner* task_runner)
+    : session_(session),
+      task_runner_(task_runner),
+      network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
+
+QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    ~QuicChromiumPathValidationWriterDelegate() = default;
+
+int QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    HandleWriteError(
+        int error_code,
+        scoped_refptr<QuicChromiumPacketWriter::ReusableIOBuffer> last_packet) {
+  // Write error on the probing network is not recoverable.
+  DVLOG(1) << "Probing packet encounters write error " << error_code;
+  // Post a task to notify |session_| that this probe failed and cancel
+  // undergoing probing, which will delete the packet writer.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &QuicChromiumPathValidationWriterDelegate::NotifySessionProbeFailed,
+          weak_factory_.GetWeakPtr(), network_));
+  return error_code;
+}
+
+void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    OnWriteError(int error_code) {
+  NotifySessionProbeFailed(network_);
+}
+void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    OnWriteUnblocked() {}
+
+void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    NotifySessionProbeFailed(NetworkChangeNotifier::NetworkHandle network) {
+  session_->OnProbeFailed(network, peer_address_);
+}
+
+void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    set_peer_address(const quic::QuicSocketAddress& peer_address) {
+  peer_address_ = peer_address;
+}
+
+void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
+    set_network(NetworkChangeNotifier::NetworkHandle network) {
+  network_ = network;
+}
+
 QuicChromiumClientSession::QuicChromiumClientSession(
     quic::QuicConnection* connection,
     std::unique_ptr<DatagramClientSocket> socket,
@@ -865,7 +979,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       attempted_zero_rtt_(false),
       num_migrations_(0),
       last_key_update_reason_(quic::KeyUpdateReason::kInvalid),
-      push_promise_index_(std::move(push_promise_index)) {
+      push_promise_index_(std::move(push_promise_index)),
+      path_validation_writer_delegate_(this, task_runner_) {
   // Make sure connection migration and goaway on path degrading are not turned
   // on at the same time.
   DCHECK(!(migrate_session_early_v2_ && go_away_on_path_degrading_));
@@ -2352,6 +2467,19 @@ void QuicChromiumClientSession::OnProbeFailed(
                                                        /*is_success=*/false);
                     });
 
+  if (version().HasIetfQuicFrames()) {
+    auto* context = static_cast<QuicChromiumPathValidationContext*>(
+        connection()->GetPathValidationContext());
+
+    if (!context)
+      return;
+
+    if (context->network() == network &&
+        context->peer_address() == peer_address) {
+      connection()->CancelPathValidation();
+    }
+  }
+
   LogProbeResultToHistogram(current_migration_cause_, false);
 
   if (network != NetworkChangeNotifier::kInvalidNetworkHandle) {
@@ -2418,7 +2546,16 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       "disconnected_network", disconnected_network);
 
   // Stop probing the disconnected network if there is one.
-  probing_manager_.CancelProbing(disconnected_network, peer_address());
+  if (version().HasIetfQuicFrames()) {
+    auto* context = static_cast<QuicChromiumPathValidationContext*>(
+        connection()->GetPathValidationContext());
+    if (context && context->network() == disconnected_network &&
+        context->peer_address() == peer_address()) {
+      connection()->CancelPathValidation();
+    }
+  } else {
+    probing_manager_.CancelProbing(disconnected_network, peer_address());
+  }
   if (disconnected_network == default_network_) {
     DVLOG(1) << "Default network: " << default_network_ << " is disconnected.";
     default_network_ = NetworkChangeNotifier::kInvalidNetworkHandle;
@@ -2535,7 +2672,16 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Cancel probing on |network| if there is any.
-  probing_manager_.CancelProbing(network, peer_address());
+  if (version().HasIetfQuicFrames()) {
+    auto* context = static_cast<QuicChromiumPathValidationContext*>(
+        connection()->GetPathValidationContext());
+    if (context && context->network() == network &&
+        context->peer_address() == peer_address()) {
+      connection()->CancelPathValidation();
+    }
+  } else {
+    probing_manager_.CancelProbing(network, peer_address());
+  }
 
   MigrationResult result =
       Migrate(network, ToIPEndPoint(connection()->peer_address()),
@@ -2854,7 +3000,8 @@ ProbingResult QuicChromiumClientSession::MaybeStartProbing(
     return ProbingResult::DISABLED_WITH_IDLE_SESSION;
 
   // Abort probing if connection migration is disabled by config.
-  if (config()->DisableConnectionMigration()) {
+  if (config()->DisableConnectionMigration() ||
+      (version().HasIetfQuicFrames() && !connection()->use_path_validator())) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
@@ -2870,8 +3017,16 @@ ProbingResult QuicChromiumClientSession::StartProbing(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
   // Check if probing manager is probing the same path.
-  if (probing_manager_.IsUnderProbing(network, peer_address))
+  if (version().HasIetfQuicFrames()) {
+    auto* context = static_cast<QuicChromiumPathValidationContext*>(
+        connection()->GetPathValidationContext());
+    if (context && context->network() == network &&
+        context->peer_address() == peer_address) {
+      return ProbingResult::PENDING;
+    }
+  } else if (probing_manager_.IsUnderProbing(network, peer_address)) {
     return ProbingResult::PENDING;
+  }
 
   // Create and configure socket on |network|.
   std::unique_ptr<DatagramClientSocket> probing_socket =
@@ -2901,6 +3056,24 @@ ProbingResult QuicChromiumClientSession::StartProbing(
   if (rtt_ms == 0 || rtt_ms > kDefaultRTTMilliSecs)
     rtt_ms = kDefaultRTTMilliSecs;
   int timeout_ms = rtt_ms * 2;
+
+  if (version().HasIetfQuicFrames() &&
+      current_migration_cause_ != CHANGE_PORT_ON_PATH_DEGRADING) {
+    probing_reader->StartReading();
+    path_validation_writer_delegate_.set_network(network);
+    path_validation_writer_delegate_.set_peer_address(peer_address);
+    probing_writer->set_delegate(&path_validation_writer_delegate_);
+    IPEndPoint local_address;
+    probing_socket->GetLocalAddress(&local_address);
+    auto context = std::make_unique<QuicChromiumPathValidationContext>(
+        ToQuicSocketAddress(local_address), peer_address, network,
+        std::move(probing_socket), std::move(probing_writer),
+        std::move(probing_reader));
+    ValidatePath(
+        std::move(context),
+        std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
+    return ProbingResult::PENDING;
+  }
 
   probing_manager_.StartProbing(
       network, peer_address, std::move(probing_socket),

@@ -205,6 +205,20 @@ class QuicTestPacketMaker {
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details);
 
+  std::unique_ptr<quic::QuicReceivedPacket>
+  MakeDataRstAckAndConnectionClosePacket(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId data_stream_id,
+      absl::string_view data,
+      quic::QuicStreamId rst_stream_id,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicErrorCode quic_error,
+      const std::string& quic_error_details,
+      uint64_t frame_type);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndConnectionClosePacket(
       uint64_t num,
       bool include_version,

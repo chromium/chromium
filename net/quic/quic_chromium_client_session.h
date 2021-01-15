@@ -44,7 +44,9 @@
 #include "net/third_party/quiche/src/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quic/core/quic_crypto_client_stream.h"
+#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_path_validator.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -407,6 +409,89 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     base::WeakPtrFactory<StreamRequest> weak_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(StreamRequest);
+  };
+
+  // This class contains all the context needed for path validation and
+  // migration.
+  class NET_EXPORT_PRIVATE QuicChromiumPathValidationContext
+      : public quic::QuicPathValidationContext {
+   public:
+    QuicChromiumPathValidationContext(
+        const quic::QuicSocketAddress& self_address,
+        const quic::QuicSocketAddress& peer_address,
+        NetworkChangeNotifier::NetworkHandle network,
+        std::unique_ptr<DatagramClientSocket> socket,
+        std::unique_ptr<QuicChromiumPacketWriter> writer,
+        std::unique_ptr<QuicChromiumPacketReader> reader);
+    ~QuicChromiumPathValidationContext() override;
+
+    NetworkChangeNotifier::NetworkHandle network();
+    quic::QuicPacketWriter* WriterToUse() override;
+
+    // Transfer the ownership from |this| to the caller.
+    std::unique_ptr<QuicChromiumPacketWriter> ReleaseWriter();
+    std::unique_ptr<DatagramClientSocket> ReleaseSocket();
+    std::unique_ptr<QuicChromiumPacketReader> ReleaseReader();
+
+   private:
+    NetworkChangeNotifier::NetworkHandle network_handle_;
+    std::unique_ptr<DatagramClientSocket> socket_;
+    std::unique_ptr<QuicChromiumPacketWriter> writer_;
+    std::unique_ptr<QuicChromiumPacketReader> reader_;
+  };
+
+  // This class implements Chrome logic for path validation events associated
+  // with connection migration.
+  class NET_EXPORT_PRIVATE ConnectionMigrationValidationResultDelegate
+      : public quic::QuicPathValidator::ResultDelegate {
+   public:
+    explicit ConnectionMigrationValidationResultDelegate(
+        QuicChromiumClientSession* session);
+
+    void OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+
+    void OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+
+   private:
+    // |session_| owns |this| and should out live |this|.
+    QuicChromiumClientSession* session_;
+  };
+
+  // This class is used to handle writer events that occur on the probing path.
+  class NET_EXPORT_PRIVATE QuicChromiumPathValidationWriterDelegate
+      : public QuicChromiumPacketWriter::Delegate {
+   public:
+    QuicChromiumPathValidationWriterDelegate(
+        QuicChromiumClientSession* session,
+        base::SequencedTaskRunner* task_runner);
+    ~QuicChromiumPathValidationWriterDelegate();
+
+    // QuicChromiumPacketWriter::Delegate interface.
+    int HandleWriteError(
+        int error_code,
+        scoped_refptr<QuicChromiumPacketWriter::ReusableIOBuffer> last_packet)
+        override;
+    void OnWriteError(int error_code) override;
+    void OnWriteUnblocked() override;
+
+    void set_peer_address(const quic::QuicSocketAddress& peer_address);
+    void set_network(NetworkChangeNotifier::NetworkHandle network);
+
+   private:
+    void NotifySessionProbeFailed(NetworkChangeNotifier::NetworkHandle network);
+
+    // |session_| owns |this| and should out live |this|.
+    QuicChromiumClientSession* session_;
+    // |task_owner_| should out live |this|.
+    base::SequencedTaskRunner* task_runner_;
+    // The path validation context of the most recent probing.
+    NetworkChangeNotifier::NetworkHandle network_;
+    quic::QuicSocketAddress peer_address_;
+    base::WeakPtrFactory<QuicChromiumPathValidationWriterDelegate>
+        weak_factory_{this};
+    DISALLOW_COPY_AND_ASSIGN(QuicChromiumPathValidationWriterDelegate);
   };
 
   // Constructs a new session which will own |connection|, but not
@@ -951,6 +1036,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   quic::KeyUpdateReason last_key_update_reason_;
 
   std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
+
+  QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 

@@ -72,6 +72,8 @@
 #include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
 #include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_config_peer.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_connection_peer.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_path_validator_peer.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
@@ -280,6 +282,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic_params_->migrate_sessions_early_v2 = true;
     quic_params_->allow_port_migration = false;
     socket_factory_.reset(new TestMigrationSocketFactory);
+    FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
+    FLAGS_quic_reloadable_flag_quic_send_path_response = true;
+    FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
     Initialize();
   }
 
@@ -2789,7 +2794,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
       ->NotifyNetworkConnected(kNewNetworkForTests);
 
   // Cause the connection to report path degrading to the session.
-  // Due to lack of alternate network, session will not mgirate connection.
+  // Due to lack of alternate network, session will not migrate connection.
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
@@ -2800,14 +2805,21 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
 
   // Execute the posted task to migrate back to the default network.
   task_runner->RunUntilIdle();
-  // Another task to try send a new connectivity probe is posted. And a task to
-  // retry migrate back to default network is scheduled.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+
+  base::TimeDelta next_task_delay;
+  // IETF QUIC's PATH_CHALLENGE is managed by a timer set in the core QUIC code.
+  if (!version_.HasIetfQuicFrames()) {
+    // Another task to try send a new connectivity probe is posted. And a task
+    // to retry migrate back to default network is scheduled.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  } else {
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  }
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -2824,9 +2836,10 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
-  // There should be three pending tasks, the nearest one will complete
-  // migration to the new network.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  // There should be three pending tasks for gQUIC and 2 for IETF QUIC, the
+  // nearest one will complete migration to the new network.
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
@@ -2835,13 +2848,17 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(200, response.headers->response_code());
 
-  // Now there are two pending tasks, the nearest one was to send connectivity
-  // probe and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta time_advanced;
+  if (!version_.HasIetfQuicFrames()) {
+    // Now there are two pending tasks, the nearest one was to send connectivity
+    // probe and has been cancelled due to successful migration.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+    time_advanced = next_task_delay;
+    task_runner->FastForwardBy(next_task_delay);
+  }
 
   // There's one more task to mgirate back to the default network in 0.4s, which
   // is also cancelled due to the success migration on the previous trial.
@@ -2849,7 +2866,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   next_task_delay = task_runner->NextPendingTaskDelay();
   base::TimeDelta expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+      time_advanced;
   EXPECT_EQ(expected_delay, next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
@@ -2996,19 +3013,29 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
 
   // Execute the posted task to migrate back to the default network.
   task_runner->RunUntilIdle();
-  // Another task to resend a new connectivity probe is posted. And a task to
-  // retry migrate back to default network is scheduled.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  base::TimeDelta expected_delay =
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
-  EXPECT_EQ(expected_delay, next_task_delay);
 
-  // Fast forward to send the second connectivity probe. The write will be
-  // asynchronous and complete after the read completes.
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta next_task_delay;
+  base::TimeDelta expected_delay;
+  if (!version_.HasIetfQuicFrames()) {
+    // Another task to resend a new connectivity probe is posted. And a task to
+    // retry migrate back to default network is scheduled.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    expected_delay =
+        base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+    EXPECT_EQ(expected_delay, next_task_delay);
+    // Fast forward to send the second connectivity probe. The write will be
+    // asynchronous and complete after the read completes.
+    task_runner->FastForwardBy(next_task_delay);
+  } else {
+    // Manually trigger retransmission of PATH_CHALLENGE.
+    auto* path_validator =
+        quic::test::QuicConnectionPeer::path_validator(session->connection());
+    quic::test::QuicPathValidatorPeer::retry_timer(path_validator)->Cancel();
+    path_validator->OnRetryTimeout();
+  }
 
   // Resume quic data and a connectivity probe response will be read on the new
   // socket, declare probing as successful.
@@ -3024,7 +3051,8 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
   // migration to the new network. Second task will retry migrate back to
   // default but cancelled, and the third task will retry send connectivity
   // probe but also cancelled.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   EXPECT_EQ(base::TimeDelta(), task_runner->NextPendingTaskDelay());
   task_runner->RunUntilIdle();
 
@@ -3037,7 +3065,8 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
 
   // Now there are two pending tasks, the nearest one was to retry migrate back
   // to default network and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 1u : 2u,
+            task_runner->GetPendingTaskCount());
   expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
       expected_delay;
@@ -3045,15 +3074,17 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
   EXPECT_EQ(expected_delay, next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
 
-  // There's one more task to retry sending connectivity probe in 0.4s and has
-  // also been cancelled due to the successful probing.
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  expected_delay =
-      base::TimeDelta::FromMilliseconds(3 * 2 * kDefaultRTTMilliSecs) -
-      base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs);
-  EXPECT_EQ(expected_delay, next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  if (!version_.HasIetfQuicFrames()) {
+    // There's one more task to retry sending connectivity probe in 0.4s and has
+    // also been cancelled due to the successful probing.
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    expected_delay =
+        base::TimeDelta::FromMilliseconds(3 * 2 * kDefaultRTTMilliSecs) -
+        base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs);
+    EXPECT_EQ(expected_delay, next_task_delay);
+    task_runner->FastForwardBy(next_task_delay);
+  }
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
   // Verify that the session is still alive.
@@ -3217,7 +3248,7 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
                 GetNthClientInitiatedBidirectionalStreamId(0),
                 quic::QUIC_STREAM_CANCELLED, 1, 1,
                 quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
+                "net error", /*path_response_frame*/ 0x1b));
       } else {
         socket_data.AddWrite(
             SYNCHRONOUS,
@@ -4114,12 +4145,15 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
   session->connection()->OnPathDegradingDetected();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  base::TimeDelta next_task_delay;
+  if (!version_.HasIetfQuicFrames()) {
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  }
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -4137,7 +4171,8 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
 
   // There should be three pending tasks, the nearest one will complete
   // migration to the new network.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
@@ -4148,20 +4183,24 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(200, response.headers->response_code());
 
-  // Now there are two pending tasks, the nearest one was to send connectivity
-  // probe and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta time_advanced;
+  if (!version_.HasIetfQuicFrames()) {
+    // Now there are two pending tasks, the nearest one was to send connectivity
+    // probe and has been cancelled due to successful migration.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+    time_advanced = next_task_delay;
+    task_runner->FastForwardBy(next_task_delay);
+  }
 
   // There's one more task to mgirate back to the default network in 0.4s.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   base::TimeDelta expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+      time_advanced;
   EXPECT_EQ(expected_delay, next_task_delay);
 
   // Deliver a signal that the alternate network now becomes default to session,
@@ -4312,12 +4351,17 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   session->connection()->OnPathDegradingDetected();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  base::TimeDelta next_task_delay;
+  // IETF QUIC's PATH_CHALLENGE retransmission is managed by timer in core QUIC
+  // code.
+  if (!version_.HasIetfQuicFrames()) {
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  }
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -4335,7 +4379,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
 
   // There should be three pending tasks, the nearest one will complete
   // migration to the new network.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  // IETF QUIC has no task for probe retransmission, thus only having 2 tasks.
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
@@ -4350,18 +4396,24 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
 
   // Now there are two pending tasks, the nearest one was to send connectivity
   // probe and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta advanced_time;
+  if (!version_.HasIetfQuicFrames()) {
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+    task_runner->FastForwardBy(next_task_delay);
+    advanced_time = next_task_delay;
+  }
 
-  // There's one more task to mgirate back to the default network in 0.4s.
+  // There's one more task to migrate back to the default network in 0.4s.
+  // For IETF QUIC, since we didn't advance time for cancelling probing, the
+  // delay for migrating back is 1s.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   base::TimeDelta expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+      advanced_time;
   EXPECT_EQ(expected_delay, next_task_delay);
 
   // Deliver a signal that the alternate network now becomes default to session,
@@ -4382,6 +4434,260 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   EXPECT_TRUE(quic_data1.AllReadDataConsumed());
   EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
   EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyProbingWriterError) {
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  if (VersionUsesHttp3(version_.transport_version)) {
+    quic_data1.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(packet_number++));
+  }
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(packet_number++,
+                                GetNthClientInitiatedBidirectionalStreamId(0),
+                                true, true));
+  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddRead(
+      ASYNC,
+      ConstructOkResponsePacket(
+          1, GetNthClientInitiatedBidirectionalStreamId(0), false, true));
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used for path validation.
+  MockQuicData quic_data2(version_);
+  // Connectivity probe to be sent on the new path.
+  quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.MakeConnectivityProbingPacket(1, false));
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          host_port_pair_, version_, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkIsolationKey(), false /* disable_secure_dns */,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
+                                         net_log_, CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+  // Cause the connection to report path degrading to the session.
+  // Session will start to probe the alternate network.
+  // However, the probing writer will fail. This should result in a failed probe
+  // but no connection close.
+  session->connection()->OnPathDegradingDetected();
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+  // The connection should still be alive, and not marked as going away.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+
+  // There should be one task of notifying the session that probing failed.
+  if (version_.HasIetfQuicFrames()) {
+    EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+  }
+  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
+  EXPECT_EQ(base::TimeDelta(), next_task_delay);
+  task_runner->FastForwardBy(next_task_delay);
+  // Verify that path validation is cancelled.
+  if (version_.HasIetfQuicFrames()) {
+    EXPECT_FALSE(session->connection()->HasPendingPathValidation());
+  }
+
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+  quic_data1.Resume();
+  // Response headers are received on the original network..
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(200, response.headers->response_code());
+
+  // Verify that the session is still alive.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  stream.reset();
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest,
+       MigrateSessionEarlyProbingWriterErrorThreeNetworks) {
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+
+  if (!version_.HasIetfQuicFrames())
+    return;
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(packet_number++,
+                                GetNthClientInitiatedBidirectionalStreamId(0),
+                                true, true));
+  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddRead(
+      ASYNC,
+      ConstructOkResponsePacket(
+          1, GetNthClientInitiatedBidirectionalStreamId(0), false, true));
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used for path validation.
+  MockQuicData quic_data2(version_);
+  // Connectivity probe to be sent on the new path.
+  quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.MakeConnectivityProbingPacket(1, false));
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  packet_number++;
+
+  MockQuicData quic_data3(version_);
+  // Connectivity probe to be sent on the new path.
+  quic_data3.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
+                                       packet_number++, true));
+  quic_data3.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data3.AddRead(ASYNC,
+                     server_maker_.MakeConnectivityProbingPacket(1, false));
+  quic_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          host_port_pair_, version_, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkIsolationKey(), false /* disable_secure_dns */,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
+                                         net_log_, CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+  // Cause the connection to report path degrading to the session.
+  // Session will start to probe the alternate network.
+  // However, the probing writer will fail. This should result in a failed probe
+  // but no connection close.
+  session->connection()->OnPathDegradingDetected();
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+  // The connection should still be alive, and not marked as going away.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+
+  // There should be one task of notifying the session that probing failed.
+  EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+
+  // Trigger another path degrading, but this time another network is available.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->SetConnectedNetworksList({kDefaultNetworkForTests, 3});
+  session->connection()->OnPathDegradingDetected();
+
+  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
+  EXPECT_EQ(base::TimeDelta(), next_task_delay);
+  task_runner->FastForwardBy(next_task_delay);
+  // Verify that the task is executed, but since a new path validation is under
+  // way, it won't be cancelled.
+  EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+  EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+  quic_data1.Resume();
+  // Response headers are received on the original network..
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(200, response.headers->response_code());
+
+  // Verify that the session is still alive.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  stream.reset();
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
@@ -5285,12 +5591,15 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  base::TimeDelta next_task_delay;
+  if (!version_.HasIetfQuicFrames()) {
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+    base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  }
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5306,25 +5615,30 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
 
   // There should be three pending tasks, the nearest one will complete
   // migration to the new network.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
 
-  // Now there are two pending tasks, the nearest one was to send connectivity
-  // probe and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta time_advanced;
+  if (!version_.HasIetfQuicFrames()) {
+    // Now there are two pending tasks, the nearest one was to send connectivity
+    // probe and has been cancelled due to successful migration.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+    time_advanced = next_task_delay;
+    task_runner->FastForwardBy(next_task_delay);
+  }
 
   // There's one more task to mgirate back to the default network in 0.4s.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   base::TimeDelta expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+      time_advanced;
   EXPECT_EQ(expected_delay, next_task_delay);
 
   base::RunLoop().RunUntilIdle();
@@ -5469,12 +5783,15 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkConnected(kNewNetworkForTests);
 
-  // Next connectivity probe is scheduled to be sent in 2 *
-  // kDefaultRTTMilliSecs.
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  base::TimeDelta next_task_delay;
+  if (!version_.HasIetfQuicFrames()) {
+    // Next connectivity probe is scheduled to be sent in 2 *
+    // kDefaultRTTMilliSecs.
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+    base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  }
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5492,7 +5809,8 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
 
   // There should be three pending tasks, the nearest one will complete
   // migration to the new network.
-  EXPECT_EQ(3u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 2u : 3u,
+            task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
@@ -5505,20 +5823,24 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(200, response.headers->response_code());
 
-  // Now there are two pending tasks, the nearest one was to send connectivity
-  // probe and has been cancelled due to successful migration.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
-  task_runner->FastForwardBy(next_task_delay);
+  base::TimeDelta time_advanced;
+  if (!version_.HasIetfQuicFrames()) {
+    // Now there are two pending tasks, the nearest one was to send connectivity
+    // probe and has been cancelled due to successful migration.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+    time_advanced = next_task_delay;
+    task_runner->FastForwardBy(next_task_delay);
+  }
 
   // There's one more task to mgirate back to the default network in 0.4s.
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
   next_task_delay = task_runner->NextPendingTaskDelay();
   base::TimeDelta expected_delay =
       base::TimeDelta::FromSeconds(kMinRetryTimeForDefaultNetworkSecs) -
-      base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs);
+      time_advanced;
   EXPECT_EQ(expected_delay, next_task_delay);
 
   // Deliver a signal that the alternate network now becomes default to session,
@@ -5841,7 +6163,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
                 GetNthClientInitiatedBidirectionalStreamId(0),
                 quic::QUIC_STREAM_CANCELLED, 1, 1,
                 quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
+                "net error", 0x1b));
       } else {
         socket_data.AddWrite(
             SYNCHRONOUS,
@@ -6323,7 +6645,8 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
 
   // There should be one task posted to one will resend a connectivity probe and
   // the other will retry migrate back, both are cancelled.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(version_.HasIetfQuicFrames() ? 1u : 2u,
+            task_runner->GetPendingTaskCount());
   task_runner->FastForwardBy(
       base::TimeDelta::FromSeconds(2 * kMinRetryTimeForDefaultNetworkSecs));
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
@@ -6641,12 +6964,14 @@ void QuicStreamFactoryTestBase::
             next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
 
-  // There should be two tasks posted. One will retry probing and the other
-  // will retry migrate back.
-  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
-  next_task_delay = task_runner->NextPendingTaskDelay();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
-            next_task_delay);
+  if (!version_.HasIetfQuicFrames()) {
+    // There should be two tasks posted. One will retry probing and the other
+    // will retry migrate back.
+    EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
+    next_task_delay = task_runner->NextPendingTaskDelay();
+    EXPECT_EQ(base::TimeDelta::FromMilliseconds(2 * kDefaultRTTMilliSecs),
+              next_task_delay);
+  }
 
   // Deliver the signal that the default network is disconnected.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
