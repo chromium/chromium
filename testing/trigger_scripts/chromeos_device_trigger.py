@@ -129,7 +129,9 @@ def main():
   ])
   new_args += additional_args[1:]
 
-  return triggerer.run_swarming_go(new_args, True)
+  if args.use_swarming_go:
+    return triggerer.run_swarming_go(new_args, True)
+  return triggerer.run_swarming(new_args, True)
 
 
 if __name__ == '__main__':
