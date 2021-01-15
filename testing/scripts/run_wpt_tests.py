@@ -34,6 +34,7 @@ WPT_OVERRIDE_EXPECTATIONS_PATH = (
     "../../third_party/blink/web_tests/WPTOverrideExpectations")
 
 CHROME_BINARY = "../../out/{}/chrome"
+CHROME_BINARY_MAC = "../../out/{}/Chromium.app/Contents/MacOS/Chromium"
 CHROMEDRIVER_BINARY = "../../out/{}/chromedriver"
 
 DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = "../../out/{}/results.json"
@@ -50,6 +51,14 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
         # Update the output directory to the default if it's not set.
         self.maybe_set_default_isolated_script_test_output()
 
+        chrome = CHROME_BINARY.format(self.options.target)
+        chromedriver = CHROMEDRIVER_BINARY.format(self.options.target)
+        if self.port.host.platform.is_win():
+            chrome = "%s.exe" % chrome
+            chromedriver = "%s.exe" % chromedriver
+        elif self.port.host.platform.is_mac():
+            chrome = CHROME_BINARY_MAC.format(self.options.target)
+
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
             "../../third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt",
@@ -60,14 +69,13 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "run",
             "chrome"
         ] + self.options.test_list + [
-            "--binary=" + CHROME_BINARY.format(self.options.target),
+            "--binary=" + chrome,
             "--binary-arg=--host-resolver-rules="
                 "MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1",
             "--binary-arg=--enable-experimental-web-platform-features",
             "--binary-arg=--enable-blink-test-features",
             "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
-            "--webdriver-binary=" + CHROMEDRIVER_BINARY.format(
-                self.options.target),
+            "--webdriver-binary=" + chromedriver,
             "--webdriver-arg=--enable-chrome-logs",
             "--headless",
             "--no-capture-stdio",
