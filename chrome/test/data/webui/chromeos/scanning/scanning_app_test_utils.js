@@ -64,10 +64,12 @@ function strToMojoString16(str) {
 export function changeSelect(select, value, selectedIndex) {
   if (value) {
     select.value = value;
-  }
-  if (selectedIndex) {
+  } else if (selectedIndex !== null) {
     select.selectedIndex = selectedIndex;
+  } else {
+    return Promise.reject();
   }
+
   select.dispatchEvent(new CustomEvent('change'));
   return flushTasks();
 }

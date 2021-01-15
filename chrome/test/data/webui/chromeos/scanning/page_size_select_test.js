@@ -89,4 +89,28 @@ export function pageSizeSelectTest() {
     // default when Letter is not an available option.
     assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedPageSize);
   });
+
+  // Verify the correct default option is selected when a scanner is selected
+  // and the options change.
+  test('selectDefaultWhenOptionsChange', () => {
+    const select =
+        /** @type {!HTMLSelectElement} */ (pageSizeSelect.$$('select'));
+    pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max, PageSize.A4];
+    flush();
+    return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
+        .then(() => {
+          assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedPageSize);
+          assertEquals(
+              PageSize.A4.toString(),
+              select.options[select.selectedIndex].value);
+
+          pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max];
+          flush();
+          assertEquals(
+              PageSize.Letter.toString(), pageSizeSelect.selectedPageSize);
+          assertEquals(
+              PageSize.Letter.toString(),
+              select.options[select.selectedIndex].value);
+        });
+  });
 }

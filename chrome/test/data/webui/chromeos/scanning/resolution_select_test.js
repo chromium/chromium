@@ -81,4 +81,23 @@ export function resolutionSelectTest() {
     // default when 300 is not an available option.
     assertEquals('1200', resolutionSelect.selectedResolution);
   });
+
+  // Verify the correct default option is selected when a scanner is selected
+  // and the options change.
+  test('selectDefaultWhenOptionsChange', () => {
+    const select =
+        /** @type {!HTMLSelectElement} */ (resolutionSelect.$$('select'));
+    resolutionSelect.resolutions = [600, 300, 150];
+    flush();
+    return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
+        .then(() => {
+          assertEquals('600', resolutionSelect.selectedResolution);
+          assertEquals('600', select.options[select.selectedIndex].value);
+
+          resolutionSelect.resolutions = [300, 150];
+          flush();
+          assertEquals('300', resolutionSelect.selectedResolution);
+          assertEquals('300', select.options[select.selectedIndex].value);
+        });
+  });
 }
