@@ -438,48 +438,9 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   // //services/network/public/cpp/is_potentially_trustworthy.h).
 
   DCHECK_NE(protocol_, "data");
-
-  // The code below is based on the specification at
-  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
-
-  // 1. If origin is an opaque origin, return "Not Trustworthy".
   if (IsOpaque())
     return is_opaque_origin_potentially_trustworthy_;
-
-  // 2. Assert: origin is a tuple origin.
-  DCHECK(!IsOpaque());
-
-  // 3. If origin’s scheme is either "https" or "wss", return "Potentially
-  //    Trustworthy".
-  // This is handled by the url::GetSecureSchemes() call below.
-
-  // 4. If origin’s host component matches one of the CIDR notations 127.0.0.0/8
-  //    or ::1/128 [RFC4632], return "Potentially Trustworthy".
-  // 5. If origin’s host component is "localhost" or falls within ".localhost",
-  //    and the user agent conforms to the name resolution rules in
-  //    [let-localhost-be-localhost], return "Potentially Trustworthy".
-  if (IsLocalhost())
-    return true;
-
-  // 6. If origin’s scheme component is file, return "Potentially Trustworthy".
-  // This is handled by the IsLocal() call below.
-
-  // 7. If origin’s scheme component is one which the user agent considers to be
-  //    authenticated, return "Potentially Trustworthy".
-  //    Note: See §7.1 Packaged Applications for detail here.
-  //
-  if (base::Contains(url::GetSecureSchemes(), protocol_.Ascii()) || IsLocal())
-    return true;
-
-  // 8. If origin has been configured as a trustworthy origin, return
-  //    "Potentially Trustworthy".
-  //    Note: See §7.2 Development Environments for detail here.
-  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
-          ToUrlOrigin()))
-    return true;
-
-  // 9. Return "Not Trustworthy".
-  return false;
+  return network::IsOriginPotentiallyTrustworthy(ToUrlOrigin());
 }
 
 // static
