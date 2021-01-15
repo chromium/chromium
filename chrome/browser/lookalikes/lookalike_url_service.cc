@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "base/time/default_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -75,11 +76,15 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
 std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
     base::Time now,
     scoped_refptr<HostContentSettingsMap> map) {
+  TRACE_EVENT0("navigation",
+               "LookalikeUrlService UpdateEngagedSitesOnWorkerThread");
   std::vector<DomainInfo> new_engaged_sites;
 
   auto details =
       site_engagement::SiteEngagementService::GetAllDetailsInBackground(now,
                                                                         map);
+  TRACE_EVENT1("navigation", "LookalikeUrlService SiteEngagementService",
+               "site_count", details.size());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
       continue;
@@ -121,6 +126,7 @@ bool LookalikeUrlService::EngagedSitesNeedUpdating() const {
 void LookalikeUrlService::ForceUpdateEngagedSites(
     EngagedSitesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("navigation", "LookalikeUrlService::ForceUpdateEngagedSites");
 
   // Queue an update on a worker thread if necessary.
   if (!update_in_progress_) {
@@ -156,7 +162,9 @@ void LookalikeUrlService::SetClockForTesting(base::Clock* clock) {
 void LookalikeUrlService::OnUpdateEngagedSitesCompleted(
     std::vector<DomainInfo> new_engaged_sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  DCHECK(update_in_progress_);
+  TRACE_EVENT0("navigation",
+               "LookalikeUrlService::OnUpdateEngagedSitesCompleted");
   engaged_sites_.swap(new_engaged_sites);
   last_engagement_fetch_time_ = clock_->Now();
   update_in_progress_ = false;

@@ -23,6 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/lookalikes/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -381,6 +382,7 @@ DomainInfo::~DomainInfo() = default;
 DomainInfo::DomainInfo(const DomainInfo&) = default;
 
 DomainInfo GetDomainInfo(const std::string& hostname) {
+  TRACE_EVENT0("navigation", "GetDomainInfo");
   if (net::HostStringIsLocalhost(hostname) ||
       net::IsHostnameNonUnique(hostname)) {
     return DomainInfo(std::string(), std::string(), std::string(),
