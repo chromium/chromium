@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_OBSERVER_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_OBSERVER_H_
 
+#include "base/observer_list_types.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
@@ -18,7 +19,7 @@ struct ChildProcessTerminationInfo;
 // in RenderProcessHost lifecycle events. Note that this does not allow
 // observing the creation of a RenderProcessHost. There is a separate observer
 // for that: RenderProcessHostCreationObserver.
-class CONTENT_EXPORT RenderProcessHostObserver {
+class CONTENT_EXPORT RenderProcessHostObserver : public base::CheckedObserver {
  public:
   // This method is invoked when the process was launched and the channel was
   // connected. This is the earliest time it is safe to call Shutdown on the
@@ -48,7 +49,7 @@ class CONTENT_EXPORT RenderProcessHostObserver {
   virtual void RenderProcessHostDestroyed(RenderProcessHost* host) {}
 
  protected:
-  virtual ~RenderProcessHostObserver() {}
+  ~RenderProcessHostObserver() override;
 };
 
 }  // namespace content

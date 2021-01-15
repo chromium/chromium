@@ -151,15 +151,11 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
   if (pending_destroyers_ == NULL)
     pending_destroyers_ = new DestroyerSet;
   pending_destroyers_->insert(this);
-  for (auto i = hosts->begin(); i != hosts->end(); ++i) {
-    (*i)->AddObserver(this);
-    // For each of the observations, we bump up our reference count.
-    // It will go back to 0 and free us when all hosts are terminated.
-    ++num_hosts_;
-  }
+  for (auto* host : *hosts)
+    observations_.AddObservation(host);
   // If we are going to wait for render process hosts, we don't want to do it
   // for longer than kTimerDelaySeconds.
-  if (num_hosts_) {
+  if (observations_.IsObservingAnySource()) {
     timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kTimerDelaySeconds),
                  base::BindOnce(&ProfileDestroyer::DestroyProfile,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -182,9 +178,9 @@ ProfileDestroyer::~ProfileDestroyer() {
                             num_hosts_
                                 ? ProfileDestructionType::kDelayedAndCrashed
                                 : ProfileDestructionType::kDelayed);
-  CHECK_EQ(0U, num_hosts_) << "Some render process hosts were not "
-                           << "destroyed early enough!";
-  DCHECK(pending_destroyers_ != NULL);
+  CHECK(!observations_.IsObservingAnySource())
+      << "Some render process hosts were not destroyed early enough!";
+  DCHECK(pending_destroyers_);
   auto iter = pending_destroyers_->find(this);
   DCHECK(iter != pending_destroyers_->end());
   pending_destroyers_->erase(iter);
@@ -198,9 +194,8 @@ void ProfileDestroyer::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   TRACE_EVENT2("shutdown", "ProfileDestroyer::RenderProcessHostDestroyed",
                "profile", profile_, "render_process_host", host);
-  DCHECK_GT(num_hosts_, 0u);
-  --num_hosts_;
-  if (num_hosts_ == 0) {
+  observations_.RemoveObservation(host);
+  if (!observations_.IsObservingAnySource()) {
     // Delay the destruction one step further in case other observers need to
     // look at the profile attached to the host.
     base::ThreadTaskRunnerHandle::Get()->PostTask(

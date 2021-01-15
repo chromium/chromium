@@ -1055,7 +1055,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::set<mojo::ReceiverId> dom_storage_receiver_ids_;
 
   // The observers watching our lifetime.
-  base::ObserverList<RenderProcessHostObserver>::Unchecked observers_;
+  base::ObserverList<RenderProcessHostObserver> observers_;
 
   // True if the process can be shut down suddenly.  If this is true, then we're
   // sure that all the RenderViews in the process can be shutdown suddenly.  If

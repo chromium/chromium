@@ -22,6 +22,7 @@
 #include "base/optional.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -1096,8 +1098,6 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
   bool did_exit_normally() { return did_exit_normally_; }
 
  private:
-  // Stop observing and drop the reference to the RenderProcessHost.
-  void ClearProcessHost();
   // Quit the run loop and clean up.
   void QuitRunLoop();
 
@@ -1107,7 +1107,8 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  RenderProcessHost* render_process_host_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_{this};
   WatchType type_;
   bool did_exit_normally_;
 

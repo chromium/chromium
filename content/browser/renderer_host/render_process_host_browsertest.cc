@@ -172,8 +172,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHungBeaconWithResolver(
 class RenderProcessHostTest : public ContentBrowserTest,
                               public RenderProcessHostObserver {
  public:
-  RenderProcessHostTest()
-      : process_exits_(0), host_destructions_(0), use_frame_priority_(false) {}
+  RenderProcessHostTest() = default;
 
   void SetUp() override {
     if (use_frame_priority_) {
@@ -201,9 +200,17 @@ class RenderProcessHostTest : public ContentBrowserTest,
     RenderProcessHostImpl* impl = static_cast<RenderProcessHostImpl*>(process);
     impl->visible_clients_ = visible_clients;
   }
+
  protected:
-  void set_process_exit_callback(base::OnceClosure callback) {
+  void SetProcessExitCallback(RenderProcessHost* rph,
+                              base::OnceClosure callback) {
+    Observe(rph);
     process_exit_callback_ = std::move(callback);
+  }
+
+  void Observe(RenderProcessHost* rph) {
+    DCHECK(!observation_.IsObserving());
+    observation_.Observe(rph);
   }
 
   // RenderProcessHostObserver:
@@ -215,16 +222,19 @@ class RenderProcessHostTest : public ContentBrowserTest,
   }
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
     ++host_destructions_;
+    observation_.Reset();
   }
   void WaitUntilProcessExits(int target) {
     while (process_exits_ < target)
       base::RunLoop().RunUntilIdle();
   }
 
-  int process_exits_;
-  int host_destructions_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_{this};
+  int process_exits_ = 0;
+  int host_destructions_ = 0;
   base::OnceClosure process_exit_callback_;
-  bool use_frame_priority_;
+  bool use_frame_priority_ = false;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -363,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRenderProcessHostKilled) {
   spare_renderer->BindReceiver(service.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop;
-  set_process_exit_callback(run_loop.QuitClosure());
-  spare_renderer->AddObserver(this);  // For process_exit_callback.
+  SetProcessExitCallback(spare_renderer, run_loop.QuitClosure());
 
   // Should reply with a bad message and cause process death.
   {
@@ -752,8 +761,12 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 
   // Ensure that the ShellCloser observer is first, so that it will have first
   // dibs on the ProcessExited callback.
-  rph->AddObserver(&shell_closer);
-  rph->AddObserver(&observer_logger);
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_1(&shell_closer);
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_2(&observer_logger);
+  observation_1.Observe(rph);
+  observation_2.Observe(rph);
 
   // This will crash the render process, and start all the callbacks.
   // We can't use NavigateToURL here since it accesses the shell() after
@@ -768,13 +781,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
             "ObserverLogger::RenderProcessExited "
             "ShellCloser::RenderProcessHostDestroyed "
             "ObserverLogger::RenderProcessHostDestroyed ", logging_string);
-
-  // If the test fails, and somehow the RPH is still alive somehow, at least
-  // deregister the observers so that the test fails and doesn't also crash.
-  if (!observer_logger.host_destroyed()) {
-    rph->RemoveObserver(&shell_closer);
-    rph->RemoveObserver(&observer_logger);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessOnBadMojoMessage) {
@@ -787,13 +793,12 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessOnBadMojoMessage) {
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
 
   mojo::Remote<mojom::TestService> service;
   rph->BindReceiver(service.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop;
-  set_process_exit_callback(run_loop.QuitClosure());
+  SetProcessExitCallback(rph, run_loop.QuitClosure());
 
   // Should reply with a bad message and cause process death.
   {
@@ -804,8 +809,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessOnBadMojoMessage) {
 
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(0, host_destructions_);
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 // Observes a WebContents and a specific frame within it, and waits until they
@@ -894,7 +897,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
 
   mojo::Remote<mojom::TestService> service;
   rph->BindReceiver(service.BindNewPipeAndPassReceiver());
@@ -906,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
     // must run after these notifications have been delivered.
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(rph);
     base::RunLoop run_loop;
-    set_process_exit_callback(media::BindToCurrentLoop(run_loop.QuitClosure()));
+    SetProcessExitCallback(rph, run_loop.QuitClosure());
     service->DoSomething(base::DoNothing());
     run_loop.Run();
   }
@@ -924,8 +926,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
   EXPECT_EQ(0, rph->get_media_stream_count_for_testing());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(0, host_destructions_);
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 // Test class instance to run specific setup steps for capture streams.
@@ -996,7 +996,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
 
   mojo::Remote<mojom::TestService> service;
   rph->BindReceiver(service.BindNewPipeAndPassReceiver());
@@ -1005,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // Force a bad message event to occur which will terminate the renderer.
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(rph);
     base::RunLoop run_loop;
-    set_process_exit_callback(media::BindToCurrentLoop(run_loop.QuitClosure()));
+    SetProcessExitCallback(rph, run_loop.QuitClosure());
     service->DoSomething(base::DoNothing());
     run_loop.Run();
   }
@@ -1022,8 +1021,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_EQ(0, rph->get_media_stream_count_for_testing());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(0, host_destructions_);
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 // Tests that media stream count increments when getUserMedia() is
@@ -1062,7 +1059,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
 
   mojo::Remote<mojom::TestService> service;
   rph->BindReceiver(service.BindNewPipeAndPassReceiver());
@@ -1071,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // Force a bad message event to occur which will terminate the renderer.
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(rph);
     base::RunLoop run_loop;
-    set_process_exit_callback(media::BindToCurrentLoop(run_loop.QuitClosure()));
+    SetProcessExitCallback(rph, run_loop.QuitClosure());
     service->DoSomething(base::DoNothing());
     run_loop.Run();
   }
@@ -1088,8 +1084,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_EQ(0, rph->get_media_stream_count_for_testing());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(0, host_destructions_);
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
@@ -1119,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
+  Observe(rph);
   rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(30));
 
   // Navigate to a site that will be in a different process.
@@ -1130,8 +1124,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
   WaitUntilProcessExits(1);
 
   EXPECT_LT(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(30));
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
@@ -1186,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
+  Observe(rph);
   rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(1));
 
   base::TimeTicks start = base::TimeTicks::Now();
@@ -1195,8 +1187,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   WaitUntilProcessExits(1);
 
   EXPECT_GE(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(1));
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
@@ -1223,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 
   host_destructions_ = 0;
   process_exits_ = 0;
-  rph->AddObserver(this);
+  Observe(rph);
   rfh->SetKeepAliveTimeoutForTesting(base::TimeDelta::FromSeconds(1));
 
   base::TimeTicks start = base::TimeTicks::Now();
@@ -1232,8 +1222,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   WaitUntilProcessExits(1);
 
   EXPECT_GE(base::TimeTicks::Now() - start, base::TimeDelta::FromSeconds(1));
-  if (!host_destructions_)
-    rph->RemoveObserver(this);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ManyKeepaliveRequests) {

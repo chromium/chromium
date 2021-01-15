@@ -260,7 +260,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   int id_;
   bool has_connection_;
   BrowserContext* browser_context_;
-  base::ObserverList<RenderProcessHostObserver>::Unchecked observers_;
+  base::ObserverList<RenderProcessHostObserver> observers_;
 
   base::flat_set<PriorityClient*> priority_clients_;
   int prev_routing_id_;

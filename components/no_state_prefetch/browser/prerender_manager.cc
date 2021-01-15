@@ -977,6 +977,7 @@ void PrerenderManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   size_t erased = prerender_process_hosts_.erase(host);
+  host->RemoveObserver(this);
   DCHECK_EQ(1u, erased);
 }
 
