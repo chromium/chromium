@@ -5882,3 +5882,4 @@ crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 
 # Sheriff 2021-01-15
 crbug.com/1167210 [ Mac ] virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Pass Failure ]
+crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
