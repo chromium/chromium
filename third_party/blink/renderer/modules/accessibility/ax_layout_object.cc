@@ -33,6 +33,7 @@
 #include <string>
 
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -889,19 +890,38 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
   if (style_image && !style_image->ErrorOccurred())
     return ax::mojom::blink::ListStyle::kImage;
 
-  switch (computed_style->ListStyleType()) {
-    case EListStyleType::kNone:
+  // TODO(crbug.com/1166766): Use the 'speak-as' descriptor value following
+  // https://drafts.csswg.org/css-counter-styles-3/#counter-style-speak-as
+  switch (ListMarker::GetListStyleCategory(*GetDocument(), *computed_style)) {
+    case ListMarker::ListStyleCategory::kNone:
       return ax::mojom::blink::ListStyle::kNone;
-    case EListStyleType::kDisc:
-      return ax::mojom::blink::ListStyle::kDisc;
-    case EListStyleType::kCircle:
-      return ax::mojom::blink::ListStyle::kCircle;
-    case EListStyleType::kSquare:
-      return ax::mojom::blink::ListStyle::kSquare;
-    case EListStyleType::kDecimal:
-    case EListStyleType::kDecimalLeadingZero:
-      return ax::mojom::blink::ListStyle::kNumeric;
-    default:
+    case ListMarker::ListStyleCategory::kSymbol: {
+      AtomicString counter_style_name =
+          computed_style->GetListStyleType()->GetCounterStyleName();
+      if (counter_style_name == "disc")
+        return ax::mojom::blink::ListStyle::kDisc;
+      if (counter_style_name == "circle")
+        return ax::mojom::blink::ListStyle::kCircle;
+      if (counter_style_name == "square")
+        return ax::mojom::blink::ListStyle::kSquare;
+      return ax::mojom::blink::ListStyle::kOther;
+    }
+    case ListMarker::ListStyleCategory::kLanguage: {
+      AtomicString counter_style_name =
+          computed_style->GetListStyleType()->GetCounterStyleName();
+      if (counter_style_name == "decimal")
+        return ax::mojom::blink::ListStyle::kNumeric;
+      if (counter_style_name == "decimal-leading-zero") {
+        // 'decimal-leading-zero' may be overridden by custom counter styles. We
+        // return kNumeric only when we are using the predefined counter style.
+        if (&ListMarker::GetCounterStyle(*GetDocument(), *computed_style) ==
+            &CounterStyleMap::GetUACounterStyleMap()
+                 ->FindCounterStyleAcrossScopes("decimal-leading-zero"))
+          return ax::mojom::blink::ListStyle::kNumeric;
+      }
+      return ax::mojom::blink::ListStyle::kOther;
+    }
+    case ListMarker::ListStyleCategory::kStaticString:
       return ax::mojom::blink::ListStyle::kOther;
   }
 }

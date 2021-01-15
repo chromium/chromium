@@ -967,7 +967,7 @@ class ComputedStyle : public ComputedStyleBase,
   AtomicString ListStyleStringValue() const;
   // TODO(crbug.com/687225): Get rid of the deprecated functions above so that
   // the getter can also be auto-generated.
-  ListStyleTypeData* GetListStyleType() const;
+  CORE_EXPORT ListStyleTypeData* GetListStyleType() const;
   bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
     return DataEquivalent(ListStyleTypeInternal(),
                           other.ListStyleTypeInternal());
