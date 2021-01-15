@@ -21,8 +21,6 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
-#include "components/printing/common/print.mojom.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -181,60 +179,6 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, Embedded) {
   gv_manager->WaitForAllGuestsDeleted();
   EXPECT_EQ(1U, gv_manager->num_guests_created());
 }
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-class PrintPreviewWaiter : public content::BrowserMessageFilter {
- public:
-  PrintPreviewWaiter() : BrowserMessageFilter(PrintMsgStart) {}
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    IPC_BEGIN_MESSAGE_MAP(PrintPreviewWaiter, message)
-      IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
-    IPC_END_MESSAGE_MAP()
-    return false;
-  }
-
-  void OnDidStartPreview(const printing::mojom::DidStartPreviewParams& params,
-                         const printing::mojom::PreviewIds& ids) {
-    // Expect that there is at least one page.
-    did_load_ = true;
-    run_loop_.Quit();
-
-    EXPECT_TRUE(params.page_count >= 1);
-  }
-
-  void Wait() {
-    if (!did_load_)
-      run_loop_.Run();
-  }
-
- private:
-  ~PrintPreviewWaiter() override = default;
-
-  bool did_load_ = false;
-  base::RunLoop run_loop_;
-};
-
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, EmbeddedThenPrint) {
-  RunTest("test_embedded.html");
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-  auto* gv_manager = GetGuestViewManager();
-  gv_manager->WaitForAllGuestsDeleted();
-  EXPECT_EQ(1U, gv_manager->num_guests_created());
-
-  // Verify that print dialog comes up.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
-  auto print_preview_waiter = base::MakeRefCounted<PrintPreviewWaiter>();
-  web_contents->GetMainFrame()->GetProcess()->AddFilter(
-      print_preview_waiter.get());
-  // Use setTimeout() to prevent ExecuteScript() from blocking on the print
-  // dialog.
-  ASSERT_TRUE(content::ExecuteScript(
-      main_frame, "setTimeout(function() { window.print(); }, 0)"));
-  print_preview_waiter->Wait();
-}
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // This test start with an <object> that has a content frame. Then the content
 // frame (plugin frame) is navigated to a cross-origin target page. After the

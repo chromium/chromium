@@ -41,9 +41,6 @@ specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
     "+content/public/test",
   ],
-  "mime_handler_view_browsertest.cc": [
-    "+components/printing/common",
-  ],
   "mime_handler_view_interactive_uitest.cc": [
     "+chrome/browser/ui/exclusive_access/exclusive_access_test.h",
     "+chrome/test/base/interactive_test_utils.h",

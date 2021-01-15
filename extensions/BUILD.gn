@@ -305,7 +305,6 @@ source_set("chrome_extensions_browsertests") {
     "//components/dom_distiller/core:test_support",
     "//components/guest_view/browser:test_support",
     "//components/javascript_dialogs",
-    "//components/printing/common",
     "//components/resources",
     "//components/strings",
     "//components/sync",

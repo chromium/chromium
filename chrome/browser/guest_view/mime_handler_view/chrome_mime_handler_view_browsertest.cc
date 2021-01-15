@@ -12,6 +12,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,6 +47,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -53,6 +55,9 @@
 #include "url/url_constants.h"
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
+#endif
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
 using extensions::ExtensionsAPIClient;
@@ -184,6 +189,42 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
                                base::span<const uint8_t> message) override {}
 };
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
+ public:
+  PrintPreviewDelegate() {
+    printing::PrintPreviewUI::SetDelegateForTesting(this);
+  }
+  PrintPreviewDelegate(const PrintPreviewDelegate&) = delete;
+  PrintPreviewDelegate& operator=(const PrintPreviewDelegate&) = delete;
+  ~PrintPreviewDelegate() override {
+    printing::PrintPreviewUI::SetDelegateForTesting(nullptr);
+  }
+
+  void WaitUntilPreviewIsReady() {
+    if (total_page_count_ > 0)
+      return;
+
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  // PrintPreviewUI::TestDelegate:
+  void DidGetPreviewPageCount(uint32_t page_count) override {
+    EXPECT_GE(page_count, 1u);
+    total_page_count_ = page_count;
+    if (quit_callback_)
+      std::move(quit_callback_).Run();
+  }
+  void DidRenderPreviewPage(content::WebContents* preview_dialog) override {}
+
+  uint32_t total_page_count_ = 0;
+  base::OnceClosure quit_callback_;
+};
+#endif
+
 }  // namespace
 
 // Flaky (https://crbug.com/1033009)
@@ -229,3 +270,23 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
   ui_test_utils::NavigateToURL(browser(), data_url);
   ASSERT_TRUE(GetGuestViewManager()->WaitForSingleGuestCreated());
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
+  PrintPreviewDelegate print_preview_delegate;
+  InitializeTestPage(embedded_test_server()->GetURL("/test_embedded.html"));
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  auto* gv_manager = GetGuestViewManager();
+  gv_manager->WaitForAllGuestsDeleted();
+  EXPECT_EQ(1U, gv_manager->num_guests_created());
+
+  // Verify that print dialog comes up.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* main_frame = web_contents->GetMainFrame();
+  // Use setTimeout() to prevent ExecuteScript() from blocking on the print
+  // dialog.
+  ASSERT_TRUE(content::ExecuteScript(
+      main_frame, "setTimeout(function() { window.print(); }, 0)"));
+  print_preview_delegate.WaitUntilPreviewIsReady();
+}
+#endif
