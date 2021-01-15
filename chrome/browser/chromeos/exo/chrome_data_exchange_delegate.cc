@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/arc/arc_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -165,12 +167,17 @@ void ShareAndSend(aura::Window* target,
                   exo::DataExchangeDelegate::SendDataCallback callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   aura::Window* toplevel = target->GetToplevelWindow();
+  bool is_arc = ash::IsArcWindow(target->GetToplevelWindow());
   bool is_crostini = crostini::IsCrostiniWindow(toplevel);
   bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
 
   base::FilePath vm_mount;
   std::string vm_name;
-  if (is_crostini) {
+  if (is_arc) {
+    // For ARC, |share_required| below will always be false and |vm_name| will
+    // not be used. Setting it to arc::kArcVmName has no effect.
+    vm_name = arc::kArcVmName;
+  } else if (is_crostini) {
     vm_mount = crostini::ContainerChromeOSBaseDirectory();
     vm_name = crostini::kCrostiniDefaultVmName;
   } else if (is_plugin_vm) {
@@ -185,29 +192,52 @@ void ShareAndSend(aura::Window* target,
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : files) {
-    base::FilePath path_to_send = info.path;
-    if (is_crostini || is_plugin_vm) {
+    std::string line_to_send;
+    bool share_required = false;
+    if (is_arc) {
+      GURL arc_url;
+      if (!file_manager::util::ConvertPathToArcUrl(info.path, &arc_url,
+                                                   &share_required)) {
+        LOG(WARNING) << "Could not convert arc path " << info.path;
+        continue;
+      }
+      line_to_send = arc_url.spec();
+    } else if (is_crostini || is_plugin_vm) {
+      base::FilePath path;
       // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
       if (base::StartsWith(info.path.value(), vm_prefix,
                            base::CompareCase::SENSITIVE)) {
-        path_to_send =
-            base::FilePath(info.path.value().substr(vm_prefix.size()));
+        line_to_send = PathToURL(
+            base::FilePath(info.path.value().substr(vm_prefix.size())).value());
       } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
                      primary_profile, info.url, vm_mount,
-                     /*map_crostini_home=*/is_crostini, &path_to_send)) {
-        // Convert to path inside the VM and check if the path needs sharing.
-        if (!share_path->IsPathShared(vm_name, info.path))
-          paths_to_share.emplace_back(info.path);
+                     /*map_crostini_home=*/is_crostini, &path)) {
+        // Convert to path inside the VM.
+        line_to_send = PathToURL(path.value());
+        share_required = true;
       } else {
-        LOG(WARNING) << "Could not convert path " << info.path;
+        LOG(WARNING) << "Could not convert into VM path " << info.path;
         continue;
       }
+    } else {
+      // Use path without conversion as default.
+      line_to_send = PathToURL(info.path.value());
     }
-    lines_to_send.emplace_back(PathToURL(path_to_send.value()));
+    lines_to_send.emplace_back(line_to_send);
+    if (share_required && !share_path->IsPathShared(vm_name, info.path))
+      paths_to_share.emplace_back(info.path);
   }
 
+  // Arc uses utf-16 data.
   std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
-  auto data = base::RefCountedString::TakeString(&joined);
+  scoped_refptr<base::RefCountedMemory> data;
+  if (is_arc) {
+    base::string16 utf16 = base::UTF8ToUTF16(joined);
+    data = base::RefCountedString16::TakeString(&utf16);
+  } else {
+    data = base::RefCountedString::TakeString(&joined);
+  }
+
   if (!paths_to_share.empty()) {
     if (!is_plugin_vm) {
       share_path->SharePaths(
@@ -328,20 +358,6 @@ void ChromeDataExchangeDelegate::SendFileInfo(
     aura::Window* target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
-  // ARC converts to ArcUrl and uses utf-16.
-  if (ash::IsArcWindow(target->GetToplevelWindow())) {
-    std::vector<std::string> lines;
-    GURL url;
-    for (const auto& info : files) {
-      if (file_manager::util::ConvertPathToArcUrl(info.path, &url))
-        lines.emplace_back(url.spec());
-    }
-    base::string16 data =
-        base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
-    std::move(callback).Run(base::RefCountedString16::TakeString(&data));
-    return;
-  }
-
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath virtual_path;
@@ -379,8 +395,9 @@ void ChromeDataExchangeDelegate::SendPickle(aura::Window* target,
       std::move(callback).Run(nullptr);
       return;
     }
-    file_manager::util::ConvertToContentUrls(
-        file_system_urls, base::BindOnce(&SendArcUrls, std::move(callback)));
+    arc::ConvertToContentUrlsAndShare(
+        ProfileManager::GetPrimaryUserProfile(), file_system_urls,
+        base::BindOnce(&SendArcUrls, std::move(callback)));
     return;
   }
 

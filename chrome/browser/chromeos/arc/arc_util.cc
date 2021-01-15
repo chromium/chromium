@@ -27,6 +27,8 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/login/configuration_keys.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
@@ -213,6 +215,41 @@ void ShowContactAdminDialog() {
   chrome::ShowWarningMessageBox(
       nullptr, l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_CONTACT_ADMIN_TITLE),
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_CONTACT_ADMIN_CONTEXT));
+}
+
+void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
+                         const std::vector<GURL>& content_urls,
+                         const std::vector<base::FilePath>& paths_to_share) {
+  DCHECK(arc::IsArcVmEnabled() || paths_to_share.empty());
+  std::vector<base::FilePath> path_list;
+  for (const auto& path : paths_to_share) {
+    if (!guest_os::GuestOsSharePath::GetForProfile(
+             ProfileManager::GetPrimaryUserProfile())
+             ->IsPathShared(arc::kArcVmName, path)) {
+      path_list.push_back(path);
+    }
+  }
+  if (path_list.empty()) {
+    std::move(callback).Run(content_urls);
+    return;
+  }
+
+  guest_os::GuestOsSharePath::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile())
+      ->SharePaths(arc::kArcVmName, path_list, /*persist=*/false,
+                   base::BindOnce(
+                       [](ConvertToContentUrlsAndShareCallback callback,
+                          const std::vector<GURL>& content_urls, bool success,
+                          const std::string& failure_reason) {
+                         if (success) {
+                           std::move(callback).Run(content_urls);
+                         } else {
+                           LOG(ERROR) << "Error sharing ARC content URLs: "
+                                      << failure_reason;
+                           std::move(callback).Run(std::vector<GURL>());
+                         }
+                       },
+                       std::move(callback), content_urls));
 }
 
 }  // namespace
@@ -674,6 +711,15 @@ std::string GetHistogramNameByUserType(const std::string& base_name,
 std::string GetHistogramNameByUserTypeForPrimaryProfile(
     const std::string& base_name) {
   return GetHistogramNameByUserType(base_name, /*profile=*/nullptr);
+}
+
+void ConvertToContentUrlsAndShare(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    ConvertToContentUrlsAndShareCallback callback) {
+  file_manager::util::ConvertToContentUrls(
+      profile, std::move(file_system_urls),
+      base::BindOnce(&SharePathIfRequired, std::move(callback)));
 }
 
 }  // namespace arc

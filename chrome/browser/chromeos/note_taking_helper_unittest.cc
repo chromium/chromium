@@ -99,7 +99,9 @@ IntentHandlerInfoPtr CreateIntentHandlerInfo(const std::string& name,
 // Converts a filesystem path to an ARC URL.
 std::string GetArcUrl(const base::FilePath& path) {
   GURL url;
-  EXPECT_TRUE(file_manager::util::ConvertPathToArcUrl(path, &url));
+  bool requires_sharing = false;
+  EXPECT_TRUE(
+      file_manager::util::ConvertPathToArcUrl(path, &url, &requires_sharing));
   return url.spec();
 }
 

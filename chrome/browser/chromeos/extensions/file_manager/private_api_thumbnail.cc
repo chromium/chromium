@@ -339,9 +339,17 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
 }
 
 void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-    GotContentUrls(const gfx::Size& size_hint, const std::vector<GURL>& urls) {
+    GotContentUrls(const gfx::Size& size_hint,
+                   const std::vector<GURL>& urls,
+                   const std::vector<base::FilePath>& paths_to_share) {
   if (urls.size() != 1 || urls[0] == GURL()) {
     Respond(Error("Failed to resolve to countent URL"));
+    return;
+  }
+  if (!paths_to_share.empty()) {
+    Respond(
+        Error("paths_to_share should be empty when getting "
+              "ArcDocumentsProviderThumbnail URL"));
     return;
   }
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -674,56 +675,71 @@ FileSystemURL CreateExternalURL(const base::FilePath& path) {
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Removable) {
   GURL url;
+  bool requires_sharing = false;
   EXPECT_TRUE(ConvertPathToArcUrl(
-      base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"), &url));
+      base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"), &url,
+      &requires_sharing));
   EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/0123-abcd/b/c"),
             url);
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
   GURL url;
+  bool requires_sharing = false;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
       chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
-  EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url));
+  EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url,
+                                  &requires_sharing));
   EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
                  "0000000000000000000000000000CAFEF00D2019/"
                  "a/b/c"),
             url);
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertPathToArcUrl_InvalidRemovable) {
   GURL url;
+  bool requires_sharing = false;
   EXPECT_FALSE(ConvertPathToArcUrl(
-      base::FilePath::FromUTF8Unsafe("/media/removable_foobar"), &url));
+      base::FilePath::FromUTF8Unsafe("/media/removable_foobar"), &url,
+      &requires_sharing));
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertPathToArcUrl_InvalidDownloads) {
   // Non-primary profile's downloads folder is not supported for ARC yet.
   GURL url;
+  bool requires_sharing = false;
   const base::FilePath downloads2 = GetDownloadsFolderForProfile(
       chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user2@gmail.com-hash"));
-  EXPECT_FALSE(ConvertPathToArcUrl(downloads2.AppendASCII("a/b/c"), &url));
+  EXPECT_FALSE(ConvertPathToArcUrl(downloads2.AppendASCII("a/b/c"), &url,
+                                   &requires_sharing));
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Crostini) {
   GURL url;
-  EXPECT_TRUE(
-      ConvertPathToArcUrl(crostini_mount_point_.AppendASCII("a/b/c"), &url));
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(crostini_mount_point_.AppendASCII("a/b/c"),
+                                  &url, &requires_sharing));
   EXPECT_EQ(GURL("content://org.chromium.arc.chromecontentprovider/"
                  "externalfile%3A"
                  "crostini_user%40gmail.com-hash_termina_penguin%2Fa%2Fb%2Fc"),
             url);
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
   GURL url;
-  EXPECT_TRUE(
-      ConvertPathToArcUrl(drive_mount_point_.AppendASCII("a/b/c"), &url));
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(drive_mount_point_.AppendASCII("a/b/c"), &url,
+                                  &requires_sharing));
   // "@" appears escaped 3 times here because escaping happens when:
   // - creating drive mount point name for user
   // - creating externalfile: URL from the path
@@ -732,6 +748,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
                  "externalfile%3Adrivefs-b1f44746e7144c3caafeacaa8bb5c569%2Fa"
                  "%2Fb%2Fc"),
             url);
+  EXPECT_FALSE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
@@ -740,22 +757,26 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   command_line->InitFromArgv({"", "--enable-arcvm"});
   EXPECT_TRUE(arc::IsArcVmEnabled());
   GURL url;
-  EXPECT_TRUE(
-      ConvertPathToArcUrl(drive_mount_point_.AppendASCII("a/b/c"), &url));
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(drive_mount_point_.AppendASCII("a/b/c"), &url,
+                                  &requires_sharing));
   EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
                  "MyDrive/a/b/c"),
             url);
+  EXPECT_TRUE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidMountType) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
           url::Origin(), storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);
@@ -767,10 +788,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{CreateExternalURL(
           base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(
@@ -788,10 +811,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(myfiles.AppendASCII("a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
@@ -807,10 +832,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidRemovable) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{CreateExternalURL(
           base::FilePath::FromUTF8Unsafe("/media/removable_foobar"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);
@@ -825,10 +852,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(downloads.AppendASCII("a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(
@@ -847,10 +876,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
           "user2@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(downloads.AppendASCII("a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);
@@ -862,10 +893,12 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Special) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(drive_mount_point_.AppendASCII("a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL("content://org.chromium.arc.chromecontentprovider/"
@@ -892,6 +925,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
           url::Origin(), storage::kFileSystemTypeArcDocumentsProvider,
           base::FilePath::FromUTF8Unsafe(
@@ -899,7 +933,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
               "com.android.providers.media.documents/"
               "images_root/Download/photo.jpg"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL("content://com.android.providers.media.documents/"
@@ -914,6 +949,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_ArcDocumentsProviderFileNotFound) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{FileSystemURL::CreateForTest(
           url::Origin(), storage::kFileSystemTypeArcDocumentsProvider,
           base::FilePath::FromUTF8Unsafe(
@@ -921,7 +957,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
               "com.android.providers.media.documents/"
               "images_root/Download/photo.jpg"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL(""), urls[0]);
@@ -933,11 +970,13 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_AndroidFiles) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(base::FilePath::FromUTF8Unsafe(
               "/run/arc/sdcard/write/emulated/0/Pictures/a/b.jpg"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(
@@ -952,11 +991,13 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidAndroidFiles) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(base::FilePath::FromUTF8Unsafe(
               "/run/arc/sdcard/read/emulated/0/a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);  // Invalid URL.
@@ -967,6 +1008,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
   base::RunLoop run_loop;
   ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
       std::vector<FileSystemURL>{
           CreateExternalURL(base::FilePath::FromUTF8Unsafe("/invalid")),
           CreateExternalURL(
@@ -975,7 +1017,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
           CreateExternalURL(base::FilePath::FromUTF8Unsafe(
               "/run/arc/sdcard/write/emulated/0/a/b/c"))},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(4U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);  // Invalid URL.

@@ -134,21 +134,23 @@ bool ConvertPathInsideVMToFileSystemURL(
 // and /special/drive, this CANNOT convert paths under ARC media directories
 // (/special/arc-documents-provider).
 // TODO(crbug.com/811679): Migrate all callers and remove this.
-bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out);
+// |requires_sharing_out| will be set to true if |path| needs to be made
+// available to ARCVM by sharing via Seneschal.
+bool ConvertPathToArcUrl(const base::FilePath& path,
+                         GURL* arc_url_out,
+                         bool* requires_sharing_out);
 
+// |paths_to_share| is a list of paths to be made available to ARCVM by sharing
+// them via Seneschal.
 using ConvertToContentUrlsCallback =
-    base::OnceCallback<void(const std::vector<GURL>& content_urls)>;
+    base::OnceCallback<void(const std::vector<GURL>& content_urls,
+                            const std::vector<base::FilePath>& paths_to_share)>;
 
 // Asynchronously converts Chrome OS file system URLs to content:// URLs.
 // Always returns a vector of the same size as |file_system_urls|.
 // Empty GURLs are filled in the vector if conversion fails.
 void ConvertToContentUrls(
     Profile* profile,
-    const std::vector<storage::FileSystemURL>& file_system_urls,
-    ConvertToContentUrlsCallback callback);
-
-// Convers Chrome OS file system URLs using a primary profile.
-void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 

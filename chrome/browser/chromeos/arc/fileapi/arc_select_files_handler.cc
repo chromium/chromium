@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_select_files_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
@@ -312,8 +314,8 @@ void ArcSelectFilesHandler::FilesSelectedInternal(
     file_system_urls.push_back(file_system_context->CrackURL(gurl));
   }
 
-  file_manager::util::ConvertToContentUrls(
-      file_system_urls,
+  arc::ConvertToContentUrlsAndShare(
+      ProfileManager::GetPrimaryUserProfile(), file_system_urls,
       base::BindOnce(&ContentUrlsResolved, std::move(callback_)));
 }
 

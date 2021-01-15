@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -155,8 +156,15 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
   }
 
   GURL arc_url_out;
-  if (!file_manager::util::ConvertPathToArcUrl(path, &arc_url_out) ||
+  bool requires_sharing = false;
+  if (!file_manager::util::ConvertPathToArcUrl(path, &arc_url_out,
+                                               &requires_sharing) ||
       !arc_url_out.is_valid()) {
+    return std::string();
+  }
+  if (requires_sharing) {
+    LOG(ERROR) << "File path should be in MyFiles and not require any sharing";
+    NOTREACHED();
     return std::string();
   }
   return arc_url_out.spec();

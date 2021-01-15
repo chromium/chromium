@@ -547,10 +547,18 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
       return LaunchResult::ANDROID_NOT_RUNNING;
 
     GURL clip_data_uri;
+    bool requires_sharing = false;
     if (!path.empty()) {
-      if (!file_manager::util::ConvertPathToArcUrl(path, &clip_data_uri) ||
+      if (!file_manager::util::ConvertPathToArcUrl(path, &clip_data_uri,
+                                                   &requires_sharing) ||
           !clip_data_uri.is_valid()) {
         LOG(WARNING) << "Failed to convert " << path.value() << " to ARC URI";
+        return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
+      }
+      // TODO(b/177651157): To support annotating image from Google Drive.
+      if (requires_sharing) {
+        LOG(ERROR) << "Can't launch Android app with path " << path.value()
+                   << ". NoteTakingHelper does not handle path sharing yet.";
         return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
       }
     }

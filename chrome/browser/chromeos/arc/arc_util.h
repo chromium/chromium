@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "components/arc/session/arc_supervision_transition.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 // Most utility should be put in components/arc/arc_util.{h,cc}, rather than
 // here. However, some utility implementation requires other modules defined in
@@ -202,6 +203,19 @@ std::string GetHistogramNameByUserType(const std::string& base_name,
 // profile.
 std::string GetHistogramNameByUserTypeForPrimaryProfile(
     const std::string& base_name);
+
+using ConvertToContentUrlsAndShareCallback =
+    base::OnceCallback<void(const std::vector<GURL>& content_urls)>;
+
+// Asynchronously converts Chrome OS file system URLs to content:// URLs
+// using file_manager::util::ConvertToContentUrls with the supplied profile.
+// Subsequently, if the URLS needs to be made available for ARCVM, it will
+// be shared by Seneschal.
+void ConvertToContentUrlsAndShare(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    ConvertToContentUrlsAndShareCallback callback);
+
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_CHROMEOS_ARC_ARC_UTIL_H_

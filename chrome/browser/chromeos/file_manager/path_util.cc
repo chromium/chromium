@@ -24,7 +24,6 @@
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
@@ -94,9 +93,11 @@ void OnSingleContentUrlResolved(const base::RepeatingClosure& barrier_closure,
 }
 
 // Helper function for |ConvertToContentUrls|.
-void OnAllContentUrlsResolved(ConvertToContentUrlsCallback callback,
-                              std::unique_ptr<std::vector<GURL>> urls) {
-  std::move(callback).Run(*urls);
+void OnAllContentUrlsResolved(
+    ConvertToContentUrlsCallback callback,
+    std::unique_ptr<std::vector<GURL>> urls,
+    std::unique_ptr<std::vector<base::FilePath>> paths_to_share) {
+  std::move(callback).Run(*urls, *paths_to_share);
 }
 
 // On non-ChromeOS system (test+development), the primary profile uses
@@ -548,8 +549,11 @@ bool ConvertPathInsideVMToFileSystemURL(
   return file_system_url->is_valid();
 }
 
-bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
+bool ConvertPathToArcUrl(const base::FilePath& path,
+                         GURL* arc_url_out,
+                         bool* requires_sharing_out) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  *requires_sharing_out = false;
 
   // Obtain the primary profile. This information is required because currently
   // only the file systems for the primary profile is exposed to ARC.
@@ -618,9 +622,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
       integration_service->GetMountPointPath().AppendRelativePath(
           path, &relative_path)) {
     if (arc::IsArcVmEnabled()) {
-      guest_os::GuestOsSharePath::GetForProfile(primary_profile)
-          ->SharePath(arc::kArcVmName, path, /*persist=*/false,
-                      base::DoNothing());
+      *requires_sharing_out = true;
       *arc_url_out =
           GURL(kArcDriveContentUrlPrefix)
               .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
@@ -675,7 +677,7 @@ void ConvertToContentUrls(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (file_system_urls.empty()) {
-    std::move(callback).Run(std::vector<GURL>());
+    std::move(callback).Run(std::vector<GURL>(), std::vector<base::FilePath>());
     return;
   }
 
@@ -687,10 +689,12 @@ void ConvertToContentUrls(
   // specify index when updating it like (*out_urls)[index] = url.
   auto out_urls = std::make_unique<std::vector<GURL>>(file_system_urls.size());
   auto* out_urls_ptr = out_urls.get();
+  auto paths_to_share = std::make_unique<std::vector<base::FilePath>>();
+  auto* paths_to_share_ptr = paths_to_share.get();
   auto barrier = base::BarrierClosure(
       file_system_urls.size(),
       base::BindOnce(&OnAllContentUrlsResolved, std::move(callback),
-                     std::move(out_urls)));
+                     std::move(out_urls), std::move(paths_to_share)));
   auto single_content_url_callback =
       base::BindRepeating(&OnSingleContentUrlResolved, barrier, out_urls_ptr);
 
@@ -713,21 +717,19 @@ void ConvertToContentUrls(
     }
 
     GURL arc_url;
+    bool requires_sharing = false;
     if (file_system_url.mount_type() == storage::kFileSystemTypeExternal &&
-        ConvertPathToArcUrl(file_system_url.path(), &arc_url)) {
+        ConvertPathToArcUrl(file_system_url.path(), &arc_url,
+                            &requires_sharing)) {
+      if (requires_sharing) {
+        paths_to_share_ptr->push_back(file_system_url.path());
+      }
       single_content_url_callback.Run(index, arc_url);
       continue;
     }
 
     single_content_url_callback.Run(index, GURL());
   }
-}
-
-void ConvertToContentUrls(
-    const std::vector<storage::FileSystemURL>& file_system_urls,
-    ConvertToContentUrlsCallback callback) {
-  ConvertToContentUrls(ProfileManager::GetPrimaryUserProfile(),
-                       file_system_urls, std::move(callback));
 }
 
 bool ReplacePrefix(std::string* s,

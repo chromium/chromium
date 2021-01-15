@@ -121,8 +121,12 @@ class FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction
       const arc::ArcDocumentsProviderRoot::ExtraFileMetadata& metadata);
 
   // A callback invoked when a FilesystemURL is resolved to content URLs.
+  // |paths_to_share| is always expected to be empty because
+  // ArcDocumentsProviderThumbnail related functions do not share path
+  // to ARCVM via Seneschal.
   void GotContentUrls(const gfx::Size& size_hint,
-                      const std::vector<GURL>& urls);
+                      const std::vector<GURL>& urls,
+                      const std::vector<base::FilePath>& paths_to_share);
 
   // A callback invoked when ARC thumbnail file has been opened.
   void GotArcThumbnailFileHandle(mojo::ScopedHandle handle);
