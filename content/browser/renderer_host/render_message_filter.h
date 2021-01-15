@@ -52,8 +52,7 @@ class ResourceContext;
 // IPC thread.
 class CONTENT_EXPORT RenderMessageFilter
     : public BrowserMessageFilter,
-      public BrowserAssociatedInterface<mojom::RenderMessageFilter>,
-      public mojom::RenderMessageFilter {
+      public BrowserAssociatedInterface<mojom::RenderMessageFilter> {
  public:
   // Create the filter.
   RenderMessageFilter(int render_process_id,
