@@ -239,7 +239,11 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
-  removed_previews_.clear();
+  if (!removed_previews_.empty()) {
+    removed_previews_.clear();
+    OnOldItemsRemoved();
+  }
+
   for (const auto& preview : previews_by_id_)
     preview.second->OnShelfAlignmentChanged(old_alignment, shelf_->alignment());
 
@@ -253,7 +257,11 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
 }
 
 void HoldingSpaceTrayIcon::OnShelfConfigUpdated() {
-  removed_previews_.clear();
+  if (!removed_previews_.empty()) {
+    removed_previews_.clear();
+    OnOldItemsRemoved();
+  }
+
   for (const auto& preview : previews_by_id_)
     preview.second->OnShelfConfigChanged();
 
