@@ -35,11 +35,13 @@ js_type_check("closure_compile_jsmodules") {
     ":constants.m",
     ":crossover_search_utils.m",
     ":crostini_controller.m",
+    ":deferred_elements.m",
     ":dialog_type.m",
     ":directory_contents.m",
     ":directory_model.m",
     ":directory_tree_naming_controller.m",
     ":drop_effect_and_label.m",
+    ":elements_importer.m",
     ":empty_folder_controller.m",
     ":fake_android_app_list_model.m",
     ":fake_file_selection_handler.m",
@@ -650,6 +652,27 @@ js_library("drop_effect_and_label.m") {
 }
 
 js_library("elements_importer") {
+}
+
+js_library("elements_importer.m") {
+  deps = [ ":deferred_elements.m" ]
+}
+
+js_library("deferred_elements.m") {
+  deps = [
+    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_spinner.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/elements:xf_button.m",
+    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
+    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel.m",
+    "//ui/file_manager/file_manager/foreground/elements:xf_panel_item.m",
+  ]
 }
 
 js_library("empty_folder_controller") {
