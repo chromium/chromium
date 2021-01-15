@@ -32,6 +32,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -52,7 +53,8 @@ class ASH_EXPORT AmbientController
       public PowerStatus::Observer,
       public chromeos::PowerManagerClient::Observer,
       public device::mojom::FingerprintObserver,
-      public ui::UserActivityObserver {
+      public ui::UserActivityObserver,
+      public ui::EventHandler {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -89,6 +91,9 @@ class ASH_EXPORT AmbientController
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   void AddAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
   void RemoveAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);

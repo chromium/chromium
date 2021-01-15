@@ -208,6 +208,8 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       if (!user_activity_observer_.IsObserving())
         user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 
+      Shell::Get()->AddPreTargetHandler(this);
+
       StartRefreshingImages();
       break;
     case AmbientUiVisibility::kHidden:
@@ -227,6 +229,8 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
       // Should do nothing if the wake lock has already been released.
       ReleaseWakeLock();
+
+      Shell::Get()->RemovePreTargetHandler(this);
 
       // |start_time_| may be empty in case of |AmbientUiVisibility::kHidden| if
       // ambient mode has just started.
@@ -408,6 +412,12 @@ void AmbientController::OnAuthScanDone(
 }
 
 void AmbientController::OnUserActivity(const ui::Event* event) {
+  DismissUI();
+}
+
+void AmbientController::OnKeyEvent(ui::KeyEvent* event) {
+  // Prevent dispatching key press event to the login UI.
+  event->StopPropagation();
   DismissUI();
 }
 
