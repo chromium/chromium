@@ -5431,29 +5431,6 @@
             ]
         }
     ],
-    "ProactivelySwapBrowsingInstance": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithCrossSiteReuseProcess",
-                    "params": {
-                        "level": "CrossSiteReuseProcess"
-                    },
-                    "enable_features": [
-                        "ProactivelySwapBrowsingInstance"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProbabilisticCryptidRenderer": [
         {
             "platforms": [
