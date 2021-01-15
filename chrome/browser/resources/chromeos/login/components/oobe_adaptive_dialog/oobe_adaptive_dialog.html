@@ -87,7 +87,9 @@
         --oobe-adaptive-dialog-content-direction: column;
         --oobe-adaptive-dialog-item-alignment: center;
         --oobe-text-alignment: center;
-        --oobe-adaptive-dialog-content-width: 100%;
+        --oobe-adaptive-dialog-content-width: calc(
+            var(--oobe-adaptive-dialog-width) -
+            2 * var(--oobe-adaptive-dialog-content-padding));
         /* Header takes 40% of the width remaining after applying padding */
         --oobe-adaptive-dialog-header-width: clamp(302px,
             calc(0.4 * (var(--oobe-adaptive-dialog-width) -
