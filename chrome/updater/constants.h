@@ -128,9 +128,6 @@ extern const char kDevOverrideKeyUrl[];
 extern const char kDevOverrideKeyUseCUP[];
 extern const char kDevOverrideKeyInitialDelay[];
 
-// File name of developer overrides file.
-extern const char kDevOverrideFileName[];
-
 // Timing constants.
 #if defined(OS_WIN)
 // How long to wait for an application installer (such as
