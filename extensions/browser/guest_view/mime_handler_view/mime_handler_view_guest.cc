@@ -217,6 +217,7 @@ void MimeHandlerViewGuest::CreateWebContents(
 }
 
 void MimeHandlerViewGuest::DidAttachToEmbedder() {
+  DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   web_contents()->GetController().LoadURL(
       stream_->handler_url(), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
@@ -441,6 +442,18 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   navigation_handle->RegisterSubresourceOverride(
       stream_->TakeTransferrableURLLoader());
+}
+
+void MimeHandlerViewGuest::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInMainFrame()) {
+    // We should not navigate the guest away from the handling extension.
+    const url::Origin handler_origin =
+        url::Origin::Create(stream_->handler_url());
+    const url::Origin new_origin =
+        url::Origin::Create(navigation_handle->GetURL());
+    CHECK(new_origin.IsSameOriginWith(handler_origin));
+  }
 }
 
 void MimeHandlerViewGuest::FuseBeforeUnloadControl(

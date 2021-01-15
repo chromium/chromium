@@ -428,11 +428,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         'keydown',
         e => this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (e)));
 
-    const tabId = this.browserApi.getStreamInfo().tabId;
     this.navigator_ = new PdfNavigator(
         this.originalUrl, this.viewport,
         /** @type {!OpenPdfParamsParser} */ (this.paramsParser),
-        new NavigatorDelegateImpl(tabId));
+        new NavigatorDelegateImpl(browserApi));
 
     // Listen for save commands from the browser.
     if (chrome.mimeHandlerPrivate && chrome.mimeHandlerPrivate.onSave) {

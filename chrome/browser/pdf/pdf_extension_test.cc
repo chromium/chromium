@@ -1776,10 +1776,11 @@ class PDFExtensionLinkClickTest : public PDFExtensionTestWithParam {
   ~PDFExtensionLinkClickTest() override {}
 
  protected:
-  void LoadTestLinkPdfGetGuestContents() {
+  content::WebContents* LoadTestLinkPdfGetGuestContents() {
     GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-link.pdf"));
     guest_contents_ = LoadPdfGetGuestContents(test_pdf_url);
-    ASSERT_TRUE(guest_contents_);
+    EXPECT_TRUE(guest_contents_);
+    return guest_contents_;
   }
 
   // The rectangle of the link in test-link.pdf is [72 706 164 719] in PDF user
@@ -1972,6 +1973,49 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
 
   const GURL& url = new_web_contents->GetURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
+}
+
+namespace {
+// Fails the test if a navigation is started in the given WebContents.
+class FailOnNavigation : public content::WebContentsObserver {
+ public:
+  explicit FailOnNavigation(content::WebContents* contents)
+      : content::WebContentsObserver(contents) {}
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    ADD_FAILURE() << "Unexpected navigation";
+  }
+};
+}  // namespace
+
+// If the PDF viewer can't navigate the tab using a tab id, make sure it doesn't
+// try to navigate the mime handler extension's frame.
+// Regression test for https://crbug.com/1158381
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, LinkClickInPdfInNonTab) {
+  // For ease of testing, we'll still load the PDF in a tab, but we clobber the
+  // tab id in the viewer to make it think it's not in a tab.
+  WebContents* guest_contents = LoadTestLinkPdfGetGuestContents();
+  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(
+      content::ExecuteScript(guest_contents,
+                             "window.viewer.browserApi.getStreamInfo().tabId = "
+                             "    chrome.tabs.TAB_ID_NONE;"));
+
+  FailOnNavigation fail_if_mimehandler_navigates(guest_contents);
+  content::SimulateMouseClickAt(
+      GetWebContentsForInputRouting(), blink::WebInputEvent::kNoModifiers,
+      blink::WebMouseEvent::Button::kLeft, GetLinkPosition());
+
+  // Since the guest contents is for a mime handling extension (in this case,
+  // the PDF viewer extension), it must not navigate away from the extension. If
+  // |fail_if_mimehandler_navigates| doesn't see a navigation, we consider the
+  // test to have passed.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,

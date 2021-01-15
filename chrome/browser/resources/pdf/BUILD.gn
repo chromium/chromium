@@ -245,6 +245,7 @@ js_library("metrics") {
 
 js_library("navigator") {
   deps = [
+    ":browser_api",
     ":open_pdf_params_parser",
     ":viewport",
   ]

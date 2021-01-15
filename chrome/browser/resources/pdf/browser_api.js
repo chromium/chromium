@@ -86,6 +86,27 @@ export class BrowserApi {
   }
 
   /**
+   * Navigates the current tab.
+   * @param {string} url The URL to navigate the tab to.
+   */
+  navigateInCurrentTab(url) {
+    const tabId = this.getStreamInfo().tabId;
+    // We need to use the tabs API to navigate because
+    // |window.location.href| cannot be used. This PDF extension is not loaded
+    // in the top level frame (it's embedded using MimeHandlerView). Using
+    // |window.location| would navigate the wrong frame, so we can't
+    // use it as a fallback. If it turns out that we do need a way to navigate
+    // in non-tab cases, we would need to create another mechanism to
+    // communicate with MimeHandler code in the browser (e.g. via
+    // mimeHandlerPrivate), which could then navigate the correct frame.
+    // Furthermore, navigations to local resources would be blocked with
+    // |window.location|.
+    if (chrome.tabs && tabId !== chrome.tabs.TAB_ID_NONE) {
+      chrome.tabs.update(tabId, {url: url});
+    }
+  }
+
+  /**
    * Sets the browser zoom.
    * @param {number} zoom The zoom factor to send to the browser.
    * @return {Promise} A promise that will be resolved when the browser zoom

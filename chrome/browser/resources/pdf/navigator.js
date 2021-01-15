@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserApi} from './browser_api.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {Viewport} from './viewport.js';
 
@@ -33,24 +34,15 @@ export class NavigatorDelegate {
 // navigating.
 /** @implements {NavigatorDelegate} */
 export class NavigatorDelegateImpl {
-  /**
-   * @param {number} tabId The tab ID of the PDF viewer or -1 if the viewer is
-   *     not displayed in a tab.
-   */
-  constructor(tabId) {
-    /** @private {number} */
-    this.tabId_ = tabId;
+  /** @param {!BrowserApi} browserApi */
+  constructor(browserApi) {
+    /** @private {!BrowserApi} */
+    this.browserApi_ = browserApi;
   }
 
   /** @override */
   navigateInCurrentTab(url) {
-    // When the PDFviewer is inside a browser tab, prefer the tabs API because
-    // it can navigate from one file:// URL to another.
-    if (chrome.tabs && this.tabId_ !== -1) {
-      chrome.tabs.update(this.tabId_, {url: url});
-    } else {
-      window.location.href = url;
-    }
+    this.browserApi_.navigateInCurrentTab(url);
   }
 
   /** @override */
