@@ -36,8 +36,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 /**
  * Tests of {@link ChromeImageViewPreference}.
  *
- * TODO(chouinard): Once SettingsLauncher and SettingsActivity have compontentized interfaces, these
- * tests should be moved to //components/browser_ui/settings/.
+ * TODO(crbug.com/1166810): Move these tests to //components/browser_ui/settings/.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class ChromeImageViewPreferenceTest {

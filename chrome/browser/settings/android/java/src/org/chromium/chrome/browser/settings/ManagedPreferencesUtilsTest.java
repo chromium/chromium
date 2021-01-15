@@ -37,9 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Tests of {@link ManagedPreferencesUtils}.
  *
- * TODO(chouinard): Once SettingsLauncher and SettingsActivity have
- * compontentized interfaces, these test should be moved to
- * //components/browser_ui/settings/.
+ * TODO(crbug.com/1166810): Move these tests to //components/browser_ui/settings/.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class ManagedPreferencesUtilsTest {
