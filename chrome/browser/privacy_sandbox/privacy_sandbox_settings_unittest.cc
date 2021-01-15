@@ -209,9 +209,17 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+
+  // Should  block due to impression origin.
   EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
+  // Should  block due to conversion origin.
+  EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 }
 

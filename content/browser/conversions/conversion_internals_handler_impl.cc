@@ -76,7 +76,7 @@ void ConversionInternalsHandlerImpl::IsMeasurementEnabled(
   content::WebContents* contents = web_ui_->GetWebContents();
   bool measurement_enabled =
       manager_provider_->GetManager(contents) &&
-      GetContentClient()->browser()->AllowConversionMeasurement(
+      GetContentClient()->browser()->IsConversionMeasurementAllowed(
           contents->GetBrowserContext());
   std::move(callback).Run(measurement_enabled);
 }

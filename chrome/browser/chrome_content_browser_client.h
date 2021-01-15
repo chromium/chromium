@@ -291,8 +291,14 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   std::string GetWebBluetoothBlocklist() override;
-  bool AllowConversionMeasurement(
+  bool IsConversionMeasurementAllowed(
       content::BrowserContext* browser_context) override;
+  bool IsConversionMeasurementOperationAllowed(
+      content::BrowserContext* browser_context,
+      ConversionMeasurementOperation operation,
+      const url::Origin* impression_origin,
+      const url::Origin* conversion_origin,
+      const url::Origin* reporting_origin) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif

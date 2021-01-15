@@ -31,9 +31,59 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-bool ConversionDisallowingContentBrowserClient::AllowConversionMeasurement(
-    BrowserContext* context) {
+bool ConversionDisallowingContentBrowserClient::IsConversionMeasurementAllowed(
+    content::BrowserContext* browser_context) {
   return false;
+}
+
+bool ConversionDisallowingContentBrowserClient::
+    IsConversionMeasurementOperationAllowed(
+        content::BrowserContext* browser_context,
+        ConversionMeasurementOperation operation,
+        const url::Origin* impression_origin,
+        const url::Origin* conversion_origin,
+        const url::Origin* reporting_origin) {
+  return false;
+}
+
+ConfigurableConversionTestBrowserClient::
+    ConfigurableConversionTestBrowserClient() = default;
+ConfigurableConversionTestBrowserClient::
+    ~ConfigurableConversionTestBrowserClient() = default;
+
+bool ConfigurableConversionTestBrowserClient::
+    IsConversionMeasurementOperationAllowed(
+        content::BrowserContext* browser_context,
+        ConversionMeasurementOperation operation,
+        const url::Origin* impression_origin,
+        const url::Origin* conversion_origin,
+        const url::Origin* reporting_origin) {
+  if (!!blocked_impression_origin_ != !!impression_origin ||
+      !!blocked_conversion_origin_ != !!conversion_origin ||
+      !!blocked_reporting_origin_ != !!reporting_origin) {
+    return true;
+  }
+
+  // Allow the operation if any rule doesn't match.
+  if ((impression_origin &&
+       *blocked_impression_origin_ != *impression_origin) ||
+      (conversion_origin &&
+       *blocked_conversion_origin_ != *conversion_origin) ||
+      (reporting_origin && *blocked_reporting_origin_ != *reporting_origin)) {
+    return true;
+  }
+
+  return false;
+}
+
+void ConfigurableConversionTestBrowserClient::
+    BlockConversionMeasurementInContext(
+        base::Optional<url::Origin> impression_origin,
+        base::Optional<url::Origin> conversion_origin,
+        base::Optional<url::Origin> reporting_origin) {
+  blocked_impression_origin_ = impression_origin;
+  blocked_conversion_origin_ = conversion_origin;
+  blocked_reporting_origin_ = reporting_origin;
 }
 
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;

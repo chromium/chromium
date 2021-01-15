@@ -168,6 +168,91 @@ TEST_F(ConversionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
+TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
+  ConfigurableConversionTestBrowserClient browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&browser_client);
+
+  browser_client.BlockConversionMeasurementInContext(
+      base::nullopt /* impression_origin */,
+      base::make_optional(url::Origin::Create(GURL("https://top.example"))),
+      base::make_optional(
+          url::Origin::Create(GURL("https://embedded.example"))));
+
+  struct {
+    GURL top_frame_url;
+    GURL reporting_origin;
+    bool conversion_allowed;
+  } kTestCases[] = {
+      {GURL("https://top.example"), GURL("https://embedded.example"), false},
+      {GURL("https://embedded.example"), GURL("https://top.example"), true},
+      {GURL("https://other.example"), GURL("https://embedded.example"), true}};
+
+  for (const auto& test_case : kTestCases) {
+    contents()->NavigateAndCommit(test_case.top_frame_url);
+    conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+
+    blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+    conversion->reporting_origin =
+        url::Origin::Create(test_case.reporting_origin);
+    conversion_host()->RegisterConversion(std::move(conversion));
+
+    EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
+              test_manager_.num_conversions())
+        << "Top frame url: " << test_case.top_frame_url
+        << ", reporting origin: " << test_case.reporting_origin;
+
+    test_manager_.Reset();
+  }
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(ConversionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
+  ConfigurableConversionTestBrowserClient browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&browser_client);
+
+  browser_client.BlockConversionMeasurementInContext(
+      base::make_optional(url::Origin::Create(GURL("https://top.example"))),
+      base::nullopt /* conversion_origin */,
+      base::make_optional(
+          url::Origin::Create(GURL("https://embedded.example"))));
+
+  struct {
+    GURL top_frame_url;
+    GURL reporting_origin;
+    bool impression_allowed;
+  } kTestCases[] = {
+      {GURL("https://top.example"), GURL("https://embedded.example"), false},
+      {GURL("https://embedded.example"), GURL("https://top.example"), true},
+      {GURL("https://other.example"), GURL("https://embedded.example"), true}};
+
+  for (const auto& test_case : kTestCases) {
+    contents()->NavigateAndCommit(test_case.top_frame_url);
+    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(kConversionUrl), main_rfh());
+    navigation->SetInitiatorFrame(main_rfh());
+
+    blink::Impression impression;
+    impression.reporting_origin =
+        url::Origin::Create(GURL(test_case.reporting_origin));
+    impression.conversion_destination =
+        url::Origin::Create(GURL(kConversionUrl));
+    navigation->set_impression(std::move(impression));
+    navigation->Commit();
+
+    EXPECT_EQ(static_cast<size_t>(test_case.impression_allowed),
+              test_manager_.num_impressions())
+        << "Top frame url: " << test_case.top_frame_url
+        << ", reporting origin: " << test_case.reporting_origin;
+
+    test_manager_.Reset();
+  }
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
 TEST_F(ConversionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   ConversionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =

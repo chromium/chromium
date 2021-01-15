@@ -427,8 +427,17 @@ std::string ContentBrowserClient::GetWebBluetoothBlocklist() {
   return std::string();
 }
 
-bool ContentBrowserClient::AllowConversionMeasurement(
+bool ContentBrowserClient::IsConversionMeasurementAllowed(
     content::BrowserContext* browser_context) {
+  return true;
+}
+
+bool ContentBrowserClient::IsConversionMeasurementOperationAllowed(
+    content::BrowserContext* browser_context,
+    ConversionMeasurementOperation operation,
+    const url::Origin* impression_origin,
+    const url::Origin* conversion_origin,
+    const url::Origin* reporting_origin) {
   return true;
 }
 

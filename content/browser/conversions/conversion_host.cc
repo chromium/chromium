@@ -160,17 +160,20 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  if (!GetContentClient()->browser()->AllowConversionMeasurement(
-          web_contents()->GetBrowserContext())) {
-    return;
-  }
-
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
   const url::Origin& reporting_origin = !impression.reporting_origin
                                             ? impression_origin
                                             : *impression.reporting_origin;
+
+  if (!GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+          web_contents()->GetBrowserContext(),
+          ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+          &impression_origin, nullptr /* conversion_origin */,
+          &reporting_origin)) {
+    return;
+  }
 
   // Conversion measurement is only allowed in secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
@@ -213,10 +216,11 @@ void ConversionHost::RegisterConversion(
   if (!conversion_manager)
     return;
 
+  url::Origin conversion_origin = render_frame_host->GetLastCommittedOrigin();
+
   // Only allow conversion registration on secure pages with a secure conversion
   // redirects.
-  if (!network::IsOriginPotentiallyTrustworthy(
-          render_frame_host->GetLastCommittedOrigin()) ||
+  if (!network::IsOriginPotentiallyTrustworthy(conversion_origin) ||
       !network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin)) {
     mojo::ReportBadMessage(
         "blink.mojom.ConversionHost can only be used in secure contexts with a "
@@ -224,8 +228,11 @@ void ConversionHost::RegisterConversion(
     return;
   }
 
-  if (!GetContentClient()->browser()->AllowConversionMeasurement(
-          web_contents()->GetBrowserContext())) {
+  if (!GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+          web_contents()->GetBrowserContext(),
+          ContentBrowserClient::ConversionMeasurementOperation::kConversion,
+          nullptr /* impression_origin */, &conversion_origin,
+          &conversion->reporting_origin)) {
     return;
   }
 

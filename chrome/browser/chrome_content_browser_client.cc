@@ -116,6 +116,8 @@
 #include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -2785,14 +2787,47 @@ std::string ChromeContentBrowserClient::GetWebBluetoothBlocklist() {
                                             "blocklist_additions");
 }
 
-bool ChromeContentBrowserClient::AllowConversionMeasurement(
+bool ChromeContentBrowserClient::IsConversionMeasurementAllowed(
     content::BrowserContext* browser_context) {
-  // For now, disable conversion measurement if third party cookie blocking is
-  // enabled.
-  // TODO(crbug.com/1058018): Add dedicated UI to this feature.
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  return !cookie_settings->ShouldBlockThirdPartyCookies();
+  PrivacySandboxSettings* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+
+  return privacy_sandbox_settings &&
+         privacy_sandbox_settings->IsPrivacySandboxAllowed();
+}
+
+bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
+    content::BrowserContext* browser_context,
+    ConversionMeasurementOperation operation,
+    const url::Origin* impression_origin,
+    const url::Origin* conversion_origin,
+    const url::Origin* reporting_origin) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  PrivacySandboxSettings* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+  if (!privacy_sandbox_settings)
+    return false;
+
+  switch (operation) {
+    case ConversionMeasurementOperation::kImpression:
+      DCHECK(impression_origin);
+      DCHECK(reporting_origin);
+      return privacy_sandbox_settings->IsConversionMeasurementAllowed(
+          *impression_origin, *reporting_origin);
+    case ConversionMeasurementOperation::kConversion:
+      DCHECK(conversion_origin);
+      DCHECK(reporting_origin);
+      return privacy_sandbox_settings->IsConversionMeasurementAllowed(
+          *conversion_origin, *reporting_origin);
+    case ConversionMeasurementOperation::kReport:
+      DCHECK(impression_origin);
+      DCHECK(conversion_origin);
+      DCHECK(reporting_origin);
+      return privacy_sandbox_settings->ShouldSendConversionReport(
+          *impression_origin, *conversion_origin, *reporting_origin);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
