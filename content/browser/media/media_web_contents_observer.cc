@@ -528,14 +528,11 @@ void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
       MediaPlayerId(render_frame_host, delegate_id), raw_device_id);
 }
 
-media::mojom::MediaPlayer* MediaWebContentsObserver::GetMediaPlayerRemote(
-    const MediaPlayerId& player_id) {
-  if (media_player_remotes_.contains(player_id)) {
-    DCHECK(media_player_remotes_[player_id].is_bound());
-    return media_player_remotes_.at(player_id).get();
-  }
-
-  return nullptr;
+mojo::Remote<media::mojom::MediaPlayer>&
+MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
+  DCHECK(media_player_remotes_.contains(player_id));
+  DCHECK(media_player_remotes_[player_id].is_bound());
+  return media_player_remotes_.at(player_id);
 }
 
 void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(
