@@ -211,6 +211,7 @@ bool HasPendingUncleanExit(Profile* profile);
 // Returns the path that contains the profile that should be loaded on process
 // startup.
 base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
+                                     const base::FilePath& cur_dir,
                                      const base::CommandLine& command_line);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)

@@ -2235,4 +2235,37 @@ IN_PROC_BROWSER_TEST_P(GuestStartupBrowserCreatorPickerTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          GuestStartupBrowserCreatorPickerTest,
                          /*ephemeral_guest_profile_enabled=*/testing::Bool());
+
+class StartupBrowserCreatorPickerNoParamsTest
+    : public StartupBrowserCreatorPickerTestBase {};
+
+// Create a secondary profile in a separate PRE run because the existence of
+// profiles is checked during startup in the actual test.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
+                       PRE_ShowPickerWhenAlreadyLaunched) {
+  CreateMultipleProfiles();
+  // Need to close the browser window manually so that the real test does not
+  // treat it as session restore.
+  CloseAllBrowsers();
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
+                       ShowPickerWhenAlreadyLaunched) {
+  // Preprequisite: The picker is shown on the first start-up
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Simulate a second start when the browser is already running.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath user_data_dir = profile_manager->user_data_dir();
+  base::FilePath current_dir = base::FilePath();
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, current_dir,
+      GetStartupProfilePath(user_data_dir, current_dir, command_line));
+  base::RunLoop().RunUntilIdle();
+
+  // The picker is shown again if no profile was previously opened.
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

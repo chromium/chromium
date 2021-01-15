@@ -1229,6 +1229,7 @@ bool HasPendingUncleanExit(Profile* profile) {
 }
 
 base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
+                                     const base::FilePath& cur_dir,
                                      const base::CommandLine& command_line) {
 // If the browser is launched due to activation on Windows native notification,
 // the profile id encoded in the notification launch id should be chosen over
@@ -1254,14 +1255,6 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
         command_line.GetSwitchValuePath(switches::kProfileDirectory));
   }
 
-  return g_browser_process->profile_manager()->GetLastUsedProfileDir(
-      user_data_dir);
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
-Profile* GetStartupProfile(const base::FilePath& user_data_dir,
-                           const base::FilePath& cur_dir,
-                           const base::CommandLine& command_line) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
@@ -1281,13 +1274,21 @@ Profile* GetStartupProfile(const base::FilePath& user_data_dir,
       // profile picker lives) also exists (or is creatable).
       // TODO(crbug.com/1150326): Refactor this to indicate more directly that
       // profile picker should be shown (returning an enum, or so).
-      return guest_profile;
+      return ProfileManager::GetGuestProfilePath();
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+  return profile_manager->GetLastUsedProfileDir(user_data_dir);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+Profile* GetStartupProfile(const base::FilePath& user_data_dir,
+                           const base::FilePath& cur_dir,
+                           const base::CommandLine& command_line) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path =
-      GetStartupProfilePath(user_data_dir, command_line);
+      GetStartupProfilePath(user_data_dir, cur_dir, command_line);
   Profile* profile = profile_manager->GetProfile(profile_path);
 
   // If there is no entry in profile attributes storage, the profile is deleted,
