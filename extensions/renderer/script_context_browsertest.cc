@@ -65,7 +65,7 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   ASSERT_TRUE(frame);
   blink::WebRuntimeFeatures::EnableDisallowDocumentAccess(true);
 
-  content::RenderFrame::FromWebFrame(frame)->LoadHTMLString(
+  content::RenderFrame::FromWebFrame(frame)->LoadHTMLStringForTesting(
       frame_html, top_url, "UTF-8", GURL(), false /* replace_current_item */);
   content::FrameLoadWaiter(content::RenderFrame::FromWebFrame(frame)).Wait();
 
@@ -98,7 +98,7 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   ASSERT_EQ("frame6", frame6->AssignedName());
 
   // Load a blank document in a frame from a different origin.
-  content::RenderFrame::FromWebFrame(frame3)->LoadHTMLString(
+  content::RenderFrame::FromWebFrame(frame3)->LoadHTMLStringForTesting(
       frame3_html, different_url, "UTF-8", GURL(),
       false /* replace_current_item */);
   content::FrameLoadWaiter(content::RenderFrame::FromWebFrame(frame3)).Wait();

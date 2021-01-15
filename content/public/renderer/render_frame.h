@@ -248,11 +248,14 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   // |replace_current_item| should be true if we load html instead of the
   // existing page. In this case |unreachable_url| might be the original url
   // which did fail loading.
-  virtual void LoadHTMLString(const std::string& html,
-                              const GURL& base_url,
-                              const std::string& text_encoding,
-                              const GURL& unreachable_url,
-                              bool replace_current_item) = 0;
+  //
+  // This should be used only for testing. Real code should follow the
+  // navigation code path and inherit the correct security properties
+  virtual void LoadHTMLStringForTesting(const std::string& html,
+                                        const GURL& base_url,
+                                        const std::string& text_encoding,
+                                        const GURL& unreachable_url,
+                                        bool replace_current_item) = 0;
 
   // Returns true in between the time that Blink requests navigation until the
   // browser responds with the result.

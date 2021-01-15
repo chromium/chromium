@@ -1023,9 +1023,9 @@ TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   // Test the case where we have an unreachable URL.
   GURL unreachable_url = GURL("http://www.example.com");
   waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
-  GetMainRenderFrame()->LoadHTMLString("test", data_url, "UTF-8",
-                                       unreachable_url,
-                                       false /* replace_current_item */);
+  GetMainRenderFrame()->LoadHTMLStringForTesting(
+      "test", data_url, "UTF-8", unreachable_url,
+      false /* replace_current_item */);
   waiter->Wait();
   EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()),
             unreachable_url);

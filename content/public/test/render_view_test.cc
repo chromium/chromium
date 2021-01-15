@@ -358,8 +358,8 @@ void RenderViewTest::LoadHTML(const char* html) {
   std::string url_string = "data:text/html;charset=utf-8,";
   url_string.append(net::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
-      ->LoadHTMLString(html, GURL(url_string), "UTF-8", GURL(),
-                       false /* replace_current_item */);
+      ->LoadHTMLStringForTesting(html, GURL(url_string), "UTF-8", GURL(),
+                                 false /* replace_current_item */);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
@@ -371,8 +371,8 @@ void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
                                              const char* url_override) {
   FrameLoadWaiter waiter(view_->GetMainRenderFrame());
   RenderFrame::FromWebFrame(GetMainFrame())
-      ->LoadHTMLString(html, GURL(url_override), "UTF-8", GURL(),
-                       false /* replace_current_item */);
+      ->LoadHTMLStringForTesting(html, GURL(url_override), "UTF-8", GURL(),
+                                 false /* replace_current_item */);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();

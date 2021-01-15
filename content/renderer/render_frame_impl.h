@@ -378,11 +378,11 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::PreviewsState GetPreviewsState() override;
   bool IsPasting() override;
   bool IsBrowserSideNavigationPending() override;
-  void LoadHTMLString(const std::string& html,
-                      const GURL& base_url,
-                      const std::string& text_encoding,
-                      const GURL& unreachable_url,
-                      bool replace_current_item) override;
+  void LoadHTMLStringForTesting(const std::string& html,
+                                const GURL& base_url,
+                                const std::string& text_encoding,
+                                const GURL& unreachable_url,
+                                bool replace_current_item) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) override;
   int GetEnabledBindings() override;

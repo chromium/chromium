@@ -6161,11 +6161,11 @@ bool RenderFrameImpl::IsBrowserSideNavigationPending() {
   return browser_side_navigation_pending_;
 }
 
-void RenderFrameImpl::LoadHTMLString(const std::string& html,
-                                     const GURL& base_url,
-                                     const std::string& text_encoding,
-                                     const GURL& unreachable_url,
-                                     bool replace_current_item) {
+void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
+                                               const GURL& base_url,
+                                               const std::string& text_encoding,
+                                               const GURL& unreachable_url,
+                                               bool replace_current_item) {
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 

@@ -2703,8 +2703,9 @@ TEST_F(RenderViewImplTest, AccessibilityModeOnClosingConnection) {
 TEST_F(RenderViewImplTest, RendererNavigationStartTransmittedToBrowser) {
   base::TimeTicks lower_bound_navigation_start(base::TimeTicks::Now());
   FrameLoadWaiter waiter(frame());
-  frame()->LoadHTMLString("hello world", GURL("data:text/html,"), "UTF-8",
-                          GURL(), false /* replace_current_item */);
+  frame()->LoadHTMLStringForTesting("hello world", GURL("data:text/html,"),
+                                    "UTF-8", GURL(),
+                                    false /* replace_current_item */);
   waiter.Wait();
   NavigationState* navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
