@@ -204,6 +204,19 @@ std::string CreatePolicyData(const std::string& policy_value) {
   return policy_data.SerializeAsString();
 }
 
+em::DeviceManagementRequest GetPolicyRequest() {
+  em::DeviceManagementRequest policy_request;
+
+  em::PolicyFetchRequest* policy_fetch_request =
+      policy_request.mutable_policy_request()->add_requests();
+  policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
+  policy_fetch_request->set_device_dm_token(kDeviceDMToken);
+
+  return policy_request;
+}
+
 em::DeviceManagementResponse GetPolicyResponse() {
   em::DeviceManagementResponse policy_response;
   policy_response.mutable_policy_response()->add_responses()->set_policy_data(
@@ -278,13 +291,6 @@ class CloudPolicyClientTest : public testing::Test {
     fake_signing_service_.SignDataSynchronously(
         data.SerializeAsString(),
         cert_based_register_request->mutable_signed_request());
-
-    em::PolicyFetchRequest* policy_fetch_request =
-        policy_request_.mutable_policy_request()->add_requests();
-    policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
-    policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
-    policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
-    policy_fetch_request->set_device_dm_token(kDeviceDMToken);
 
     registration_response_.mutable_register_response()
         ->set_device_management_token(kDMToken);
@@ -498,7 +504,6 @@ class CloudPolicyClientTest : public testing::Test {
   em::DeviceManagementRequest reregistration_request_;
   em::DeviceManagementRequest cert_based_registration_request_;
   em::DeviceManagementRequest enrollment_token_request_;
-  em::DeviceManagementRequest policy_request_;
   em::DeviceManagementRequest unregistration_request_;
   em::DeviceManagementRequest upload_machine_certificate_request_;
   em::DeviceManagementRequest upload_enrollment_certificate_request_;
@@ -577,7 +582,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -603,7 +608,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   EXPECT_THAT(query_params_,
               Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -635,7 +640,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -673,7 +678,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -713,7 +718,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
   EXPECT_THAT(query_params_,
               Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -750,7 +755,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -890,6 +895,8 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
 }
 
 TEST_F(CloudPolicyClientTest, PolicyUpdate) {
+  const em::DeviceManagementRequest policy_request = GetPolicyRequest();
+
   RegisterClient();
 
   {
@@ -903,7 +910,7 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
               job_type_);
     EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
     EXPECT_EQ(job_request_.SerializePartialAsString(),
-              policy_request_.SerializePartialAsString());
+              policy_request.SerializePartialAsString());
     CheckPolicyResponse(policy_response);
   }
 
@@ -920,25 +927,28 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
               job_type_);
     EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
     EXPECT_EQ(job_request_.SerializePartialAsString(),
-              policy_request_.SerializePartialAsString());
+              policy_request.SerializePartialAsString());
     EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
     CheckPolicyResponse(policy_response);
   }
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
+  const int kPublicKeyVersion = 42;
+  const base::Time kTimestamp(base::Time::UnixEpoch() +
+                              base::TimeDelta::FromDays(20));
+  em::DeviceManagementRequest policy_request = GetPolicyRequest();
+  em::PolicyFetchRequest* policy_fetch_request =
+      policy_request.mutable_policy_request()->mutable_requests(0);
+  policy_fetch_request->set_timestamp(kTimestamp.ToJavaTime());
+  policy_fetch_request->set_public_key_version(kPublicKeyVersion);
+
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   RegisterClient();
 
-  const base::Time timestamp(base::Time::UnixEpoch() +
-                             base::TimeDelta::FromDays(20));
-  client_->set_last_policy_timestamp(timestamp);
-  client_->set_public_key_version(42);
-  em::PolicyFetchRequest* policy_fetch_request =
-      policy_request_.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_timestamp(timestamp.ToJavaTime());
-  policy_fetch_request->set_public_key_version(42);
+  client_->set_last_policy_timestamp(kTimestamp);
+  client_->set_public_key_version(kPublicKeyVersion);
 
   ExpectAndCaptureJob(/*response=*/policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched(_));
@@ -948,22 +958,27 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   CheckPolicyResponse(policy_response);
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidation) {
+  const int64_t kInvalidationVersion = 12345;
+  const std::string kInvalidationPayload("12345");
+
+  em::DeviceManagementRequest policy_request = GetPolicyRequest();
+  em::PolicyFetchRequest* policy_fetch_request =
+      policy_request.mutable_policy_request()->mutable_requests(0);
+  policy_fetch_request->set_invalidation_version(kInvalidationVersion);
+  policy_fetch_request->set_invalidation_payload(kInvalidationPayload);
+
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   RegisterClient();
 
   int64_t previous_version = client_->fetched_invalidation_version();
-  client_->SetInvalidationInfo(12345, "12345");
+  client_->SetInvalidationInfo(kInvalidationVersion, kInvalidationPayload);
   EXPECT_EQ(previous_version, client_->fetched_invalidation_version());
-  em::PolicyFetchRequest* policy_fetch_request =
-      policy_request_.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_invalidation_version(12345);
-  policy_fetch_request->set_invalidation_payload("12345");
 
   ExpectAndCaptureJob(/*response=*/policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched(_));
@@ -973,7 +988,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidation) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   CheckPolicyResponse(policy_response);
   EXPECT_EQ(12345, client_->fetched_invalidation_version());
 }
@@ -995,7 +1010,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   CheckPolicyResponse(policy_response);
   EXPECT_EQ(-12345, client_->fetched_invalidation_version());
 }
@@ -1003,6 +1018,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
 // Tests that previous OAuth token is no longer sent in policy fetch after its
 // value was cleared.
 TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
+  em::DeviceManagementRequest policy_request = GetPolicyRequest();
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   RegisterClient();
@@ -1018,7 +1034,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
   EXPECT_THAT(query_params_,
               Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   CheckPolicyResponse(policy_response);
 
   ExpectAndCaptureJob(/*response=*/policy_response);
@@ -1030,11 +1046,12 @@ TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   CheckPolicyResponse(policy_response);
 }
 
 TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
+  const em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::DeviceManagementResponse policy_response;
 
   RegisterClient();
@@ -1047,7 +1064,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
 
@@ -1063,7 +1080,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            policy_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   CheckPolicyResponse(policy_response);
 }
@@ -1171,11 +1188,11 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   }
 
   // Make a policy fetch.
+  em::DeviceManagementRequest request;
   DeviceManagementService::JobConfiguration::JobType job_type;
   EXPECT_CALL(service_, StartJob(_))
       .WillOnce(DoAll(
-          service_.CaptureJobType(&job_type),
-          service_.CaptureRequest(&policy_request_),
+          service_.CaptureJobType(&job_type), service_.CaptureRequest(&request),
           service_.StartJobAsync(net::OK, DeviceManagementService::kSuccess,
                                  policy_response)));
   EXPECT_CALL(observer_, OnPolicyFetched(_));
@@ -1187,9 +1204,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
             job_type);
 
   // Verify that the request includes the expected namespaces.
-  ASSERT_TRUE(policy_request_.has_policy_request());
-  const em::DevicePolicyRequest& policy_request =
-      policy_request_.policy_request();
+  ASSERT_TRUE(request.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = request.policy_request();
   ASSERT_EQ(2, policy_request.requests_size());
   for (int i = 0; i < policy_request.requests_size(); ++i) {
     const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
@@ -1427,7 +1443,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWhilePolicyFetchActive) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            policy_request_.SerializePartialAsString());
+            GetPolicyRequest().SerializePartialAsString());
   CheckPolicyResponse(policy_response);
 
   // upload_status_job->SendResponse(DM_STATUS_SUCCESS,
