@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
-    OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalLargerThanActualSize) {
+    DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalLargerThanActualSize) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection.
   std::vector<OfflineItem> items;
