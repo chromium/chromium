@@ -4153,24 +4153,6 @@
             ]
         }
     ],
-    "MediaFeeds": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaFeeds"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationAsyncH264Encoding": [
         {
             "platforms": [
@@ -4196,25 +4178,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MediaFoundationVP8Decoding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MediaHistory": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseMediaHistoryStore"
                     ]
                 }
             ]
