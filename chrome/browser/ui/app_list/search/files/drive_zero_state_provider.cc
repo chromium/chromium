@@ -53,6 +53,11 @@ void LogStatus(Status status) {
                             status);
 }
 
+bool IsSuggestedContentEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      chromeos::prefs::kSuggestedContentEnabled);
+}
+
 // Given an absolute path representing a file in the user's Drive, returns a
 // reparented version of the path within the user's drive fs mount.
 base::FilePath ReparentToDriveMount(
@@ -72,9 +77,7 @@ DriveZeroStateProvider::DriveZeroStateProvider(
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
       item_suggest_cache_(profile, std::move(url_loader_factory)),
-      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled() &&
-                               profile->GetPrefs()->GetBoolean(
-                                   chromeos::prefs::kSuggestedContentEnabled)) {
+      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -205,7 +208,7 @@ void DriveZeroStateProvider::OnFilePathsLocated(
 
     provider_results.emplace_back(
         MakeListResult(path_or_error->get_path(), score));
-    if (suggested_files_enabled_) {
+    if (suggested_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
       provider_results.emplace_back(
           MakeChipResult(path_or_error->get_path(), score));
     }
