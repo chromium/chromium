@@ -393,6 +393,10 @@ void WebRuntimeFeatures::EnableWebXRDepth(bool enable) {
   RuntimeEnabledFeatures::SetWebXRDepthEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebXRHandInput(bool enable) {
+  RuntimeEnabledFeatures::SetWebXRHandInputEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebXRHitTest(bool enable) {
   RuntimeEnabledFeatures::SetWebXRHitTestEnabled(enable);
 }

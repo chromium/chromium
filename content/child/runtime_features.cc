@@ -213,6 +213,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
     {wf::EnableWebXR, features::kWebXr},
     {wf::EnableWebXRARModule, features::kWebXrArModule},
+    {wf::EnableWebXRHandInput, features::kWebXrHandInput},
     {wf::EnableWebXRHitTest, features::kWebXrHitTest},
     {wf::EnableWebXRAnchors, features::kWebXrIncubations},
     {wf::EnableWebXRCameraAccess, features::kWebXrIncubations},

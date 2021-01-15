@@ -304,6 +304,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::PLANE_DETECTION:
     case XRSessionFeature::DEPTH:
     case XRSessionFeature::IMAGE_TRACKING:
+    case XRSessionFeature::HAND_INPUT:
       // Not recording metrics for these features currently.
       break;
   }

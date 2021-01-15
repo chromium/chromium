@@ -23,6 +23,7 @@ namespace blink {
 
 class Element;
 class XRGripSpace;
+class XRHand;
 class XRInputSourceEvent;
 class XRSession;
 class XRSpace;
@@ -48,6 +49,8 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   void setActiveFrameId(int16_t id) { state_.active_frame_id = id; }
 
   XRSession* session() const { return session_; }
+
+  XRHand* hand() const { return hand_; }
 
   const String handedness() const;
   const String targetRayMode() const;
@@ -161,6 +164,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   Member<XRTargetRaySpace> target_ray_space_;
   Member<XRGripSpace> grip_space_;
   Member<Gamepad> gamepad_;
+  Member<XRHand> hand_{nullptr};
 
   // Input device pose in mojo space. This is the grip pose for
   // tracked controllers, and the viewer pose for screen input.

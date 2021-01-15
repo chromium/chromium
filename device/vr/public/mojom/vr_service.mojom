@@ -66,6 +66,7 @@ enum XRSessionFeature {
   PLANE_DETECTION = 11, // Experimental feature.
   DEPTH = 12, // Experimental feature.
   IMAGE_TRACKING = 13, // Experimental feature.
+  HAND_INPUT = 14, // Experimental feature.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

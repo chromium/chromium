@@ -2251,6 +2251,11 @@
       status: "experimental",
     },
     {
+      name: "WebXRHandInput",
+      depends_on: ["WebXRARModule"],
+      status: "experimental"
+    },
+    {
       name: "WebXRHitTest",
       depends_on: ["WebXRARModule"],
       status: "stable",

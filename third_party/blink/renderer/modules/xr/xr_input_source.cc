@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/modules/xr/xr_grip_space.h"
+#include "third_party/blink/renderer/modules/xr/xr_hand.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_session_event.h"
@@ -129,6 +130,7 @@ XRInputSource::XRInputSource(const XRInputSource& other)
           MakeGarbageCollected<XRTargetRaySpace>(other.session_, this)),
       grip_space_(MakeGarbageCollected<XRGripSpace>(other.session_, this)),
       gamepad_(other.gamepad_),
+      hand_(other.hand_),
       mojo_from_input_(
           TryGetTransformationMatrix(other.mojo_from_input_.get())),
       input_from_pointer_(
@@ -614,6 +616,7 @@ void XRInputSource::Trace(Visitor* visitor) const {
   visitor->Trace(target_ray_space_);
   visitor->Trace(grip_space_);
   visitor->Trace(gamepad_);
+  visitor->Trace(hand_);
   ScriptWrappable::Trace(visitor);
 }
 

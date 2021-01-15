@@ -856,6 +856,10 @@ const base::Feature kWebXr{"WebXR", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebXrArModule{"WebXRARModule",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables access to articulated hand tracking sensor input.
+const base::Feature kWebXrHandInput{"WebXRHandInput",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables access to raycasting against estimated XR scene geometry.
 const base::Feature kWebXrHitTest{"WebXRHitTest",
                                   base::FEATURE_ENABLED_BY_DEFAULT};

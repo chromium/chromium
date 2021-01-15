@@ -24,5 +24,6 @@ enum XRTargetRayMode {
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
   [SameObject, Measure] readonly attribute Gamepad? gamepad;
+  [SameObject, RuntimeEnabled=WebXRHandInput] readonly attribute XRHand? hand;
   [SameObject, SaveSameObject] readonly attribute FrozenArray<DOMString> profiles;
 };

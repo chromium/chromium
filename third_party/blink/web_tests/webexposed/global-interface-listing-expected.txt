@@ -10502,13 +10502,26 @@ interface XRFrame
     getter trackedAnchors
     method constructor
     method createAnchor
+    method fillJointRadii
+    method fillPoses
     method getDepthInformation
     method getHitTestResults
     method getHitTestResultsForTransientInput
     method getImageTrackingResults
+    method getJointPose
     method getLightEstimate
     method getPose
     method getViewerPose
+interface XRHand
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method get
+    method keys
+    method values
 interface XRHitTestResult
     attribute @@toStringTag
     method constructor
@@ -10529,6 +10542,7 @@ interface XRInputSource
     attribute @@toStringTag
     getter gamepad
     getter gripSpace
+    getter hand
     getter handedness
     getter profiles
     getter targetRayMode
@@ -10553,6 +10567,14 @@ interface XRInputSourcesChangeEvent : Event
     getter added
     getter removed
     getter session
+    method constructor
+interface XRJointPose : XRPose
+    attribute @@toStringTag
+    getter radius
+    method constructor
+interface XRJointSpace : XRSpace
+    attribute @@toStringTag
+    getter jointName
     method constructor
 interface XRLayer : EventTarget
     attribute @@toStringTag

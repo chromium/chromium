@@ -9,6 +9,8 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
+#include "third_party/blink/renderer/modules/xr/xr_joint_pose.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -24,8 +26,10 @@ class XRHitTestResult;
 class XRHitTestSource;
 class XRImageTrackingResult;
 class XRInputSource;
+class XRJointPose;
 class XRLightEstimate;
 class XRLightProbe;
+class XRJointSpace;
 class XRPlaneSet;
 class XRPose;
 class XRReferenceSpace;
@@ -78,6 +82,17 @@ class XRFrame final : public ScriptWrappable {
 
   HeapVector<Member<XRImageTrackingResult>> getImageTrackingResults(
       ExceptionState&);
+
+  XRJointPose* getJointPose(XRJointSpace* joint,
+                            XRSpace* baseSpace,
+                            ExceptionState& exception_state);
+  bool fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
+                      NotShared<DOMFloat32Array> radii,
+                      ExceptionState& exception_state);
+  bool fillPoses(HeapVector<Member<XRSpace>>& spaces,
+                 XRSpace* baseSpace,
+                 NotShared<DOMFloat32Array> transforms,
+                 ExceptionState& exception_state);
 
  private:
   std::unique_ptr<TransformationMatrix> GetAdjustedPoseMatrix(XRSpace*) const;

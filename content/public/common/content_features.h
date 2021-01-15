@@ -193,6 +193,7 @@ CONTENT_EXPORT extern const base::Feature kWebUIReportOnlyTrustedTypes;
 CONTENT_EXPORT extern const base::Feature kWebUsb;
 CONTENT_EXPORT extern const base::Feature kWebXr;
 CONTENT_EXPORT extern const base::Feature kWebXrArModule;
+CONTENT_EXPORT extern const base::Feature kWebXrHandInput;
 CONTENT_EXPORT extern const base::Feature kWebXrHitTest;
 CONTENT_EXPORT extern const base::Feature kWebXrIncubations;
 

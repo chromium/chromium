@@ -150,6 +150,9 @@ base::Optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
   } else if (RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context) &&
              feature_string == "image-tracking") {
     return device::mojom::XRSessionFeature::IMAGE_TRACKING;
+  } else if (RuntimeEnabledFeatures::WebXRHandInputEnabled(context) &&
+             feature_string == "hand-tracking") {
+    return device::mojom::XRSessionFeature::HAND_INPUT;
   }
 
   return base::nullopt;
@@ -169,6 +172,7 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::ANCHORS:
+    case device::mojom::XRSessionFeature::HAND_INPUT:
       return mode == device::mojom::blink::XRSessionMode::kImmersiveVr ||
              mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
     case device::mojom::XRSessionFeature::DOM_OVERLAY:
@@ -223,6 +227,7 @@ bool HasRequiredFeaturePolicy(const ExecutionContext* context,
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
     case device::mojom::XRSessionFeature::DEPTH:
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
+    case device::mojom::XRSessionFeature::HAND_INPUT:
       return context->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
+#include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_estimate.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
@@ -379,6 +380,28 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
 HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
     ExceptionState& exception_state) {
   return session_->ImageTrackingResults(exception_state);
+}
+
+XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
+                                   XRSpace* baseSpace,
+                                   ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
+                             NotShared<DOMFloat32Array> radii,
+                             ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
+                        XRSpace* baseSpace,
+                        NotShared<DOMFloat32Array> transforms,
+                        ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void XRFrame::Trace(Visitor* visitor) const {
