@@ -1774,25 +1774,6 @@
             ]
         }
     ],
-    "CodeCacheDeletionWithoutFilter": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CodeCacheDeletionWithoutFilter"
-                    ]
-                }
-            ]
-        }
-    ],
     "CompositeCrossOriginIframes": [
         {
             "platforms": [
