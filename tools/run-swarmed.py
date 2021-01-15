@@ -243,12 +243,12 @@ def main():
 
   print('Uploading to isolate server, this can take a while...')
   isolate = os.path.join(args.out_dir, args.target_name + '.isolate')
-  digest_json = os.path.join(args.out_dir, args.target_name + '.digest.json')
+  archive_json = os.path.join(args.out_dir, args.target_name + '.archive.json')
   subprocess.check_output([
       'tools/luci-go/isolate', 'archive', '-cas-instance', 'chromium-swarm',
-      '-isolate', isolate, '-dump-json', digest_json
+      '-isolate', isolate, '-dump-json', archive_json
   ])
-  with open(digest_json) as f:
+  with open(archive_json) as f:
     cas_digest = json.load(f).get(args.target_name)
 
   mb_cmd = [

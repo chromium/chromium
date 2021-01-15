@@ -608,8 +608,7 @@ class MetaBuildWrapper(object):
         self.RemoveDirectory(zip_dir)
 
   def _RunUnderSwarming(self, build_dir, target, isolate_cmd):
-    isolate_server = 'isolateserver.appspot.com'
-    namespace = 'default-gzip'
+    cas_instance = 'chromium-swarm'
     swarming_server = 'chromium-swarm.appspot.com'
     # TODO(dpranke): Look up the information for the target in
     # the //testing/buildbot.json file, if possible, so that we
@@ -629,12 +628,8 @@ class MetaBuildWrapper(object):
         'archive',
         '-i',
         self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
-        '-s',
-        self.ToSrcRelPath('%s/%s.isolated' % (build_dir, target)),
-        '-I',
-        isolate_server,
-        '-namespace',
-        namespace,
+        '-cas-instance',
+        cas_instance,
         '-dump-json',
         archive_json_path,
     ]
@@ -665,7 +660,7 @@ class MetaBuildWrapper(object):
           'Failed to read JSON file "%s"' % archive_json_path, file=sys.stderr)
       return 1
     try:
-      isolated_hash = archive_hashes[target]
+      cas_digest = archive_hashes[target]
     except Exception:
       self.Print(
           'Cannot find hash for "%s" in "%s", file content: %s' %
@@ -681,12 +676,8 @@ class MetaBuildWrapper(object):
       cmd = [
           self.PathJoin('tools', 'luci-go', 'swarming'),
           'trigger',
-          '-isolated',
-          isolated_hash,
-          '-I',
-          'https://' + isolate_server,
-          '-namespace',
-          namespace,
+          '-digest',
+          cas_digest,
           '-server',
           swarming_server,
           '-tag=purpose:user-debug-mb',
