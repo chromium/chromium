@@ -121,6 +121,7 @@ class MockAV1Accelerator : public AV1Decoder::AV1Accelerator {
                     base::span<const uint8_t>));
   MOCK_METHOD1(OutputPicture, bool(const AV1Picture&));
 };
+}  // namespace
 
 class AV1DecoderTest : public ::testing::Test {
  public:
@@ -130,6 +131,7 @@ class AV1DecoderTest : public ::testing::Test {
   ~AV1DecoderTest() override = default;
   void SetUp() override;
   std::vector<DecodeResult> Decode(scoped_refptr<DecoderBuffer> buffer);
+  void Reset();
   scoped_refptr<DecoderBuffer> ReadDecoderBuffer(const std::string& fname);
   std::vector<scoped_refptr<DecoderBuffer>> ReadIVF(const std::string& fname);
   std::vector<scoped_refptr<DecoderBuffer>> ReadWebm(const std::string& fname);
@@ -170,7 +172,34 @@ std::vector<AcceleratedVideoDecoder::DecodeResult> AV1DecoderTest::Decode(
   } while (res != DecodeResult::kDecodeError &&
            res != DecodeResult::kRanOutOfStreamData);
   return results;
-}  // namespace
+}
+
+void AV1DecoderTest::Reset() {
+  EXPECT_NE(decoder_->state_->current_frame_id, -1);
+  EXPECT_TRUE(decoder_->parser_);
+  EXPECT_EQ(decoder_->accelerator_.get(), mock_accelerator_);
+  EXPECT_LT(base::checked_cast<AV1ReferenceFrameVector::size_type>(
+                base::STLCount(decoder_->ref_frames_, nullptr)),
+            decoder_->ref_frames_.size());
+  EXPECT_FALSE(decoder_->current_frame_header_);
+  EXPECT_FALSE(decoder_->current_frame_);
+  EXPECT_NE(decoder_->stream_id_, 0);
+  EXPECT_TRUE(decoder_->stream_);
+  EXPECT_GT(decoder_->stream_size_, 0u);
+
+  decoder_->Reset();
+  EXPECT_EQ(decoder_->state_->current_frame_id, -1);
+  EXPECT_FALSE(decoder_->parser_);
+  EXPECT_EQ(decoder_->accelerator_.get(), mock_accelerator_);
+  EXPECT_EQ(base::checked_cast<AV1ReferenceFrameVector::size_type>(
+                base::STLCount(decoder_->ref_frames_, nullptr)),
+            decoder_->ref_frames_.size());
+  EXPECT_FALSE(decoder_->current_frame_header_);
+  EXPECT_FALSE(decoder_->current_frame_);
+  EXPECT_EQ(decoder_->stream_id_, 0);
+  EXPECT_FALSE(decoder_->stream_);
+  EXPECT_EQ(decoder_->stream_size_, 0u);
+}
 
 scoped_refptr<DecoderBuffer> AV1DecoderTest::ReadDecoderBuffer(
     const std::string& fname) {
@@ -473,7 +502,147 @@ TEST_F(AV1DecoderTest, DecodeFilmGrain) {
 #endif
 }
 
-// TODO(hiroh): Add more tests, Reset() flow, mid-stream configuration change,
-// and reference frame tracking.
-}  // namespace
+// TODO(b/175895249): Test in isolation each of the conditions that trigger a
+// kConfigChange event.
+TEST_F(AV1DecoderTest, ConfigChange) {
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  constexpr auto kMediaProfile = VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
+  const std::string kSimpleStreams[] = {"bear-av1.webm",
+                                        "bear-av1-480x360.webm"};
+  constexpr gfx::Size kFrameSizes[] = {{320, 240}, {480, 360}};
+  constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
+  std::vector<DecodeResult> expected;
+  std::vector<DecodeResult> results;
+  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+    std::vector<scoped_refptr<DecoderBuffer>> buffers =
+        ReadWebm(kSimpleStreams[i]);
+    ASSERT_FALSE(buffers.empty());
+    expected.push_back(DecodeResult::kConfigChange);
+    for (auto buffer : buffers) {
+      ::testing::InSequence sequence;
+      auto av1_picture = base::MakeRefCounted<AV1Picture>();
+      EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+          .WillOnce(Return(av1_picture));
+      EXPECT_CALL(
+          *mock_accelerator_,
+          SubmitDecode(MatchesFrameHeader(kFrameSizes[i], kRenderSizes[i],
+                                          /*show_existing_frame=*/false,
+                                          /*show_frame=*/true),
+                       MatchesYUV420SequenceHeader(
+                           kProfile, /*bitdepth=*/8, kFrameSizes[i],
+                           /*film_grain_params_present=*/false),
+                       _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+          .WillOnce(Return(true));
+      EXPECT_CALL(*mock_accelerator_,
+                  OutputPicture(SameAV1PictureInstance(av1_picture)))
+          .WillOnce(Return(true));
+      for (DecodeResult r : Decode(buffer))
+        results.push_back(r);
+      expected.push_back(DecodeResult::kRanOutOfStreamData);
+      EXPECT_EQ(decoder_->GetProfile(), kMediaProfile);
+      EXPECT_EQ(decoder_->GetPicSize(), kFrameSizes[i]);
+      EXPECT_EQ(decoder_->GetVisibleRect(), gfx::Rect(kRenderSizes[i]));
+      EXPECT_EQ(decoder_->GetBitDepth(), 8u);
+      testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+    }
+  }
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(AV1DecoderTest, Reset) {
+  constexpr gfx::Size kFrameSize(320, 240);
+  constexpr gfx::Size kRenderSize(320, 240);
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  constexpr auto kMediaProfile = VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
+  const std::string kSimpleStream("bear-av1.webm");
+  std::vector<DecodeResult> expected;
+  std::vector<DecodeResult> results;
+
+  std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadWebm(kSimpleStream);
+  ASSERT_FALSE(buffers.empty());
+  for (int k = 0; k < 2; k++) {
+    expected.push_back(DecodeResult::kConfigChange);
+    for (auto buffer : buffers) {
+      ::testing::InSequence sequence;
+      auto av1_picture = base::MakeRefCounted<AV1Picture>();
+      EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+          .WillOnce(Return(av1_picture));
+      EXPECT_CALL(
+          *mock_accelerator_,
+          SubmitDecode(
+              MatchesFrameHeader(kFrameSize, kRenderSize,
+                                 /*show_existing_frame=*/false,
+                                 /*show_frame=*/true),
+              MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
+                                          /*film_grain_params_present=*/false),
+              _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+          .WillOnce(Return(true));
+      EXPECT_CALL(*mock_accelerator_,
+                  OutputPicture(SameAV1PictureInstance(av1_picture)))
+          .WillOnce(Return(true));
+      for (DecodeResult r : Decode(buffer))
+        results.push_back(r);
+      expected.push_back(DecodeResult::kRanOutOfStreamData);
+      EXPECT_EQ(decoder_->GetProfile(), kMediaProfile);
+      EXPECT_EQ(decoder_->GetPicSize(), kFrameSize);
+      EXPECT_EQ(decoder_->GetVisibleRect(), gfx::Rect(kRenderSize));
+      testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+    }
+
+    Reset();
+  }
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(AV1DecoderTest, ResetAndConfigChange) {
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  constexpr auto kMediaProfile = VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
+  const std::string kSimpleStreams[] = {"bear-av1.webm",
+                                        "bear-av1-480x360.webm"};
+  constexpr gfx::Size kFrameSizes[] = {{320, 240}, {480, 360}};
+  constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
+  std::vector<DecodeResult> expected;
+  std::vector<DecodeResult> results;
+
+  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+    std::vector<scoped_refptr<DecoderBuffer>> buffers =
+        ReadWebm(kSimpleStreams[i]);
+    ASSERT_FALSE(buffers.empty());
+    expected.push_back(DecodeResult::kConfigChange);
+    for (auto buffer : buffers) {
+      ::testing::InSequence sequence;
+      auto av1_picture = base::MakeRefCounted<AV1Picture>();
+      EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+          .WillOnce(Return(av1_picture));
+      EXPECT_CALL(
+          *mock_accelerator_,
+          SubmitDecode(MatchesFrameHeader(kFrameSizes[i], kRenderSizes[i],
+                                          /*show_existing_frame=*/false,
+                                          /*show_frame=*/true),
+                       MatchesYUV420SequenceHeader(
+                           kProfile, /*bitdepth=*/8, kFrameSizes[i],
+                           /*film_grain_params_present=*/false),
+                       _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+          .WillOnce(Return(true));
+      EXPECT_CALL(*mock_accelerator_,
+                  OutputPicture(SameAV1PictureInstance(av1_picture)))
+          .WillOnce(Return(true));
+      for (DecodeResult r : Decode(buffer))
+        results.push_back(r);
+      expected.push_back(DecodeResult::kRanOutOfStreamData);
+      EXPECT_EQ(decoder_->GetProfile(), kMediaProfile);
+      EXPECT_EQ(decoder_->GetPicSize(), kFrameSizes[i]);
+      EXPECT_EQ(decoder_->GetVisibleRect(), gfx::Rect(kRenderSizes[i]));
+      testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+    }
+
+    Reset();
+  }
+  EXPECT_EQ(results, expected);
+}
+
+// TODO(hiroh): Add more tests: reference frame tracking, render size change,
+// profile change, bit depth change, render size different than the frame size,
+// visible rectangle change in the middle of video sequence, reset while waiting
+// for buffers, flushing.
 }  // namespace media
