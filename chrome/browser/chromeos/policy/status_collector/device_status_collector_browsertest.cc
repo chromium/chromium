@@ -433,28 +433,29 @@ std::vector<em::CPUTempInfo> GetFakeCPUTempInfo(
 }
 
 void CallAndroidStatusReceiver(
-    const policy::StatusCollector::AndroidStatusReceiver& receiver,
+    policy::StatusCollector::AndroidStatusReceiver receiver,
     const std::string& status,
     const std::string& droid_guard_info) {
-  receiver.Run(status, droid_guard_info);
+  std::move(receiver).Run(status, droid_guard_info);
 }
 
 bool GetEmptyAndroidStatus(
-    const policy::StatusCollector::AndroidStatusReceiver& receiver) {
+    policy::StatusCollector::AndroidStatusReceiver receiver) {
   // Post it to the thread because this call is expected to be asynchronous.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&CallAndroidStatusReceiver, receiver, "", ""));
+      FROM_HERE,
+      base::BindOnce(&CallAndroidStatusReceiver, std::move(receiver), "", ""));
   return true;
 }
 
 bool GetFakeAndroidStatus(
     const std::string& status,
     const std::string& droid_guard_info,
-    const policy::StatusCollector::AndroidStatusReceiver& receiver) {
+    policy::StatusCollector::AndroidStatusReceiver receiver) {
   // Post it to the thread because this call is expected to be asynchronous.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&CallAndroidStatusReceiver, receiver, status,
-                                droid_guard_info));
+      FROM_HERE, base::BindOnce(&CallAndroidStatusReceiver, std::move(receiver),
+                                status, droid_guard_info));
   return true;
 }
 

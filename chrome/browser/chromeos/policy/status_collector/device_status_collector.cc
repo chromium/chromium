@@ -421,7 +421,7 @@ void FetchGraphicsStatus(
 }
 
 bool ReadAndroidStatus(
-    const policy::StatusCollector::AndroidStatusReceiver& receiver) {
+    policy::StatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
@@ -433,7 +433,7 @@ bool ReadAndroidStatus(
       ARC_GET_INSTANCE_FOR_METHOD(instance_holder, GetStatus);
   if (!instance)
     return false;
-  instance->GetStatus(receiver);
+  instance->GetStatus(std::move(receiver));
   return true;
 }
 
@@ -674,8 +674,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
   bool FetchAndroidStatus(
       const StatusCollector::AndroidStatusFetcher& android_status_fetcher) {
-    return android_status_fetcher.Run(
-        base::Bind(&DeviceStatusCollectorState::OnAndroidInfoReceived, this));
+    return android_status_fetcher.Run(base::BindOnce(
+        &DeviceStatusCollectorState::OnAndroidInfoReceived, this));
   }
 
   void FetchTpmStatus(
@@ -1348,16 +1348,16 @@ DeviceStatusCollector::DeviceStatusCollector(
   task_runner_ = base::SequencedTaskRunnerHandle::Get();
 
   if (volume_info_fetcher_.is_null())
-    volume_info_fetcher_ = base::Bind(&GetVolumeInfo);
+    volume_info_fetcher_ = base::BindRepeating(&GetVolumeInfo);
 
   if (cpu_statistics_fetcher_.is_null())
-    cpu_statistics_fetcher_ = base::Bind(&ReadCPUStatistics);
+    cpu_statistics_fetcher_ = base::BindRepeating(&ReadCPUStatistics);
 
   if (cpu_temp_fetcher_.is_null())
-    cpu_temp_fetcher_ = base::Bind(&ReadCPUTempInfo);
+    cpu_temp_fetcher_ = base::BindRepeating(&ReadCPUTempInfo);
 
   if (android_status_fetcher_.is_null())
-    android_status_fetcher_ = base::Bind(&ReadAndroidStatus);
+    android_status_fetcher_ = base::BindRepeating(&ReadAndroidStatus);
 
   if (tpm_status_fetcher_.is_null())
     tpm_status_fetcher_ = base::BindRepeating(&ReadTpmStatus);
@@ -1365,8 +1365,10 @@ DeviceStatusCollector::DeviceStatusCollector(
   if (emmc_lifetime_fetcher_.is_null())
     emmc_lifetime_fetcher_ = base::BindRepeating(&ReadDiskLifeTimeEstimation);
 
-  if (stateful_partition_info_fetcher_.is_null())
-    stateful_partition_info_fetcher_ = base::Bind(&ReadStatefulPartitionInfo);
+  if (stateful_partition_info_fetcher_.is_null()) {
+    stateful_partition_info_fetcher_ =
+        base::BindRepeating(&ReadStatefulPartitionInfo);
+  }
 
   if (cros_healthd_data_fetcher_.is_null()) {
     cros_healthd_data_fetcher_ =
@@ -1388,7 +1390,7 @@ DeviceStatusCollector::DeviceStatusCollector(
 
   // Watch for changes to the individual policies that control what the status
   // reports contain.
-  base::Closure callback = base::Bind(
+  base::Closure callback = base::BindRepeating(
       &DeviceStatusCollector::UpdateReportingSettings, base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceVersionInfo, callback);

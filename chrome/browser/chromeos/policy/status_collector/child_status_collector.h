@@ -47,17 +47,6 @@ class ChildStatusCollectorState;
 class ChildStatusCollector : public StatusCollector,
                              public chromeos::UsageTimeStateNotifier::Observer {
  public:
-  // Passed into asynchronous mojo interface for communicating with Android.
-  using AndroidStatusReceiver =
-      base::Callback<void(const std::string&, const std::string&)>;
-
-  // Calls the reporting mojo interface, passing over the AndroidStatusReceiver.
-  // Returns false if the mojo interface isn't available, in which case no
-  // asynchronous query is emitted and the android status query fails
-  // synchronously. The |AndroidStatusReceiver| is not called in this case.
-  using AndroidStatusFetcher =
-      base::Callback<bool(const AndroidStatusReceiver&)>;
-
   // Constructor. Callers can inject their own *Fetcher callbacks, e.g. for unit
   // testing. A null callback can be passed for any *Fetcher parameter, to use
   // the default implementation. These callbacks are always executed on Blocking

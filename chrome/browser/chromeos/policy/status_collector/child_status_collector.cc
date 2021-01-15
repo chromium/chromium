@@ -70,7 +70,7 @@ static constexpr base::TimeDelta kUpdateChildActiveTimeInterval =
     base::TimeDelta::FromSeconds(30);
 
 bool ReadAndroidStatus(
-    const policy::ChildStatusCollector::AndroidStatusReceiver& receiver) {
+    policy::ChildStatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
@@ -82,7 +82,7 @@ bool ReadAndroidStatus(
       ARC_GET_INSTANCE_FOR_METHOD(instance_holder, GetStatus);
   if (!instance)
     return false;
-  instance->GetStatus(receiver);
+  instance->GetStatus(std::move(receiver));
   return true;
 }
 
@@ -99,7 +99,7 @@ class ChildStatusCollectorState : public StatusCollectorState {
 
   bool FetchAndroidStatus(
       const StatusCollector::AndroidStatusFetcher& android_status_fetcher) {
-    return android_status_fetcher.Run(base::BindRepeating(
+    return android_status_fetcher.Run(base::BindOnce(
         &ChildStatusCollectorState::OnAndroidInfoReceived, this));
   }
 
