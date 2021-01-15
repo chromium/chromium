@@ -26,7 +26,6 @@ class Size;
 namespace content {
 
 class BrowserContext;
-class RenderFrameHost;
 
 // This interface allows embedders of content/ to write tests that depend on a
 // test version of WebContents.  This interface can be retrieved from any
@@ -92,17 +91,6 @@ class WebContentsTester {
 
   // Sets the loading state to the given value.
   virtual void TestSetIsLoading(bool value) = 0;
-
-  // Simulates a navigation with the given information.
-  //
-  // Guidance for calling these:
-  // - did_create_new_entry should be true if simulating a navigation that
-  //   created a new navigation entry; false for history navigations, reloads,
-  //   and other navigations that don't affect the history list.
-  virtual void TestDidNavigate(RenderFrameHost* render_frame_host,
-                               bool did_create_new_entry,
-                               const GURL& url,
-                               ui::PageTransition transition) = 0;
 
   // Simulate this WebContents' main frame having an opener that points to the
   // main frame of |opener|.

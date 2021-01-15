@@ -771,9 +771,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
 
   EXPECT_TRUE(controller().NeedsReload());
   controller().LoadIfNecessary();
-  orig_rfh->PrepareForCommit();
-  contents()->TestDidNavigate(orig_rfh, false, native_url,
-                              ui::PAGE_TRANSITION_RELOAD);
+  orig_rfh->SendNavigateWithTransition(0, false, native_url,
+                                       ui::PAGE_TRANSITION_RELOAD);
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   EXPECT_EQ(GURL(), contents()->GetSiteInstance()->GetSiteURL());
   EXPECT_FALSE(orig_instance->HasSite());
@@ -814,8 +813,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
   EXPECT_TRUE(controller().NeedsReload());
   controller().LoadIfNecessary();
   orig_rfh->PrepareForCommit();
-  contents()->TestDidNavigate(orig_rfh, false, regular_url,
-                              ui::PAGE_TRANSITION_RELOAD);
+  orig_rfh->SendNavigateWithTransition(0, false, regular_url,
+                                       ui::PAGE_TRANSITION_RELOAD);
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   EXPECT_TRUE(orig_instance->HasSite());
   EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
@@ -1244,8 +1243,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(entry1, controller().GetLastCommittedEntry());
 
   // When the second back commits, it should be ignored.
-  contents()->TestDidNavigate(google_rfh, false, url2,
-                              ui::PAGE_TRANSITION_TYPED);
+  google_rfh->SendNavigateWithTransition(0, false, url2,
+                                         ui::PAGE_TRANSITION_TYPED);
   EXPECT_EQ(entry1, controller().GetLastCommittedEntry());
 
   // The newly created process for url1 should be locked to chrome://gpu.

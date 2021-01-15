@@ -3443,8 +3443,8 @@ TEST_F(NavigationControllerTest, CopyStateFromAndPruneTargetPending2) {
   EXPECT_EQ(url2b, other_controller.GetPendingEntry()->GetURL());
 
   // Let the pending entry commit.
-  other_contents->TestDidNavigate(other_contents->GetMainFrame(), false, url2b,
-                                  ui::PAGE_TRANSITION_LINK);
+  other_contents->GetMainFrame()->SendNavigateWithTransition(
+      0, false, url2b, ui::PAGE_TRANSITION_LINK);
 }
 
 // Test CopyStateFromAndPrune with 2 urls, a back navigation pending in the

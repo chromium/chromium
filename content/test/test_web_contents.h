@@ -74,18 +74,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void NavigateAndFail(const GURL& url, int error_code) override;
   void TestSetIsLoading(bool value) override;
-  void TestDidNavigate(RenderFrameHost* render_frame_host,
-                       bool did_create_new_entry,
-                       const GURL& url,
-                       ui::PageTransition transition) override;
-  void TestDidNavigateWithSequenceNumber(RenderFrameHost* render_frame_host,
-                                         bool did_create_new_entry,
-                                         const GURL& url,
-                                         const Referrer& referrer,
-                                         ui::PageTransition transition,
-                                         bool was_within_same_document,
-                                         int item_sequence_number,
-                                         int document_sequence_number);
   void SetOpener(WebContents* opener) override;
   const std::string& GetSaveFrameHeaders() override;
   const base::string16& GetSuggestedFileName() override;
