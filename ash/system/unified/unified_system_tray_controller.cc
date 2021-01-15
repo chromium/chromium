@@ -441,6 +441,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());
   if (features::IsCaptureModeEnabled())
     AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
+  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<NightLightFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<CastFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<VPNFeaturePodController>(this));
@@ -448,7 +449,6 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
   if (features::IsDarkLightModeEnabled())
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
 
   // If you want to add a new feature pod item, add here.
 
