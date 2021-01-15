@@ -31,7 +31,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadLazyImageFirstKFullyLoad(&out->lazy_image_first_k_fully_load) ||
       !data.ReadDefaultEncoding(&out->default_encoding) ||
       !data.ReadTextTrackBackgroundColor(&out->text_track_background_color) ||
-      !data.ReadDefaultEncoding(&out->text_track_text_color) ||
       !data.ReadTextTrackTextSize(&out->text_track_text_size) ||
       !data.ReadTextTrackTextShadow(&out->text_track_text_shadow) ||
       !data.ReadTextTrackFontFamily(&out->text_track_font_family) ||
