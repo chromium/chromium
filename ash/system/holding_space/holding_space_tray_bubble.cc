@@ -62,34 +62,39 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
       time_of_first_entry - time_of_first_availability);
 }
 
-// HoldingSpaceEventFilter -----------------------------------------------------
-class HoldingSpaceEventFilter : public ui::EventHandler {
+// HoldingSpaceTrayBubbleEventHandler ------------------------------------------
+class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  public:
-  HoldingSpaceEventFilter(HoldingSpaceItemViewDelegate* delegate)
+  explicit HoldingSpaceTrayBubbleEventHandler(
+      HoldingSpaceItemViewDelegate* delegate)
       : delegate_(delegate) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
   }
-  ~HoldingSpaceEventFilter() override {
+
+  HoldingSpaceTrayBubbleEventHandler(
+      const HoldingSpaceTrayBubbleEventHandler&) = delete;
+  HoldingSpaceTrayBubbleEventHandler& operator=(
+      const HoldingSpaceTrayBubbleEventHandler&) = delete;
+
+  ~HoldingSpaceTrayBubbleEventHandler() override {
     aura::Env::GetInstance()->RemovePreTargetHandler(this);
   }
-  HoldingSpaceEventFilter(const HoldingSpaceEventFilter&) = delete;
-  HoldingSpaceEventFilter& operator=(const HoldingSpaceEventFilter&) = delete;
 
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
     if (event->type() == ui::ET_KEY_PRESSED &&
-        delegate_->OnHoldingSpaceTrayKeyPressed(*event)) {
+        delegate_->OnHoldingSpaceTrayBubbleKeyPressed(*event)) {
       event->StopPropagation();
     }
-    return;
   }
 
-  HoldingSpaceItemViewDelegate* delegate_;
+  HoldingSpaceItemViewDelegate* const delegate_;
 };
 
 // ChildBubbleContainerLayout --------------------------------------------------
+
 // A class similar to a `views::LayoutManager` which supports calculating and
 // applying `views::ProposedLayout`s. Views are laid out similar to a vertical
 // `views::BoxLayout` with the first child flexing to cede layout space if the
@@ -320,7 +325,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       ->frame_view()
       ->SetVisible(false);
 
-  event_filter_ = std::make_unique<HoldingSpaceEventFilter>(&delegate_);
+  event_handler_ =
+      std::make_unique<HoldingSpaceTrayBubbleEventHandler>(&delegate_);
 
   PrefService* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -341,7 +347,6 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 }
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
-  event_filter_.reset();
   bubble_wrapper_->bubble_view()->ResetDelegate();
 
   // Explicitly reset child bubbles so that they will stop observing the holding

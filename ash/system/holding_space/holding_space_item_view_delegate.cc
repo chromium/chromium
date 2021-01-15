@@ -227,7 +227,7 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
     OpenItems(GetSelection());
 }
 
-bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayKeyPressed(
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
     const ui::KeyEvent& event) {
   // The ENTER key should open all selected holding space items.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
@@ -239,16 +239,14 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayKeyPressed(
   return false;
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewsSectionMousePressed(
-    const ui::MouseEvent& event) {
-  SetSelection({});
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
+    const ui::GestureEvent& event) {
+  if (event.type() == ui::ET_GESTURE_TAP)
+    SetSelection({});
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewsSectionGestureEvent(
-    const ui::GestureEvent& event) {
-  if (event.type() != ui::ET_GESTURE_TAP)
-    return;
-
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
+    const ui::MouseEvent& event) {
   SetSelection({});
 }
 
