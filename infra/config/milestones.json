@@ -1,0 +1,17 @@
+{
+    "86": {
+        "name": "m86",
+        "project": "chromium-m86",
+        "ref": "refs/branch-heads/4240"
+    },
+    "87": {
+        "name": "m87",
+        "project": "chromium-m87",
+        "ref": "refs/branch-heads/4280"
+    },
+    "88": {
+        "name": "m88",
+        "project": "chromium-m88",
+        "ref": "refs/branch-heads/4324"
+    }
+}

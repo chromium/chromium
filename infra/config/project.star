@@ -73,16 +73,6 @@ def _milestone_details(*, project, ref):
 # The 3rd portion of the version number is the branch number for the associated
 # milestone
 ACTIVE_MILESTONES = {
-    "m86": _milestone_details(
-        project = "chromium-m86",
-        ref = "refs/branch-heads/4240",
-    ),
-    "m87": _milestone_details(
-        project = "chromium-m87",
-        ref = "refs/branch-heads/4280",
-    ),
-    "m88": _milestone_details(
-        project = "chromium-m88",
-        ref = "refs/branch-heads/4324",
-    ),
+    m["name"]: _milestone_details(project = m["project"], ref = m["ref"])
+    for m in json.decode(io.read_file("./milestones.json")).values()
 }
