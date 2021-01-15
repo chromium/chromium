@@ -295,8 +295,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     // NGFragmentItem to renderer rounded rect even if nested inline, e.g.
     // <a>ABC<b>DEF</b>GHI</a>.
     // See gesture-tapHighlight-simple-nested.html
-    if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled() &&
-        use_rounded_rects && object->IsLayoutInline() &&
+    if (use_rounded_rects && object->IsLayoutInline() &&
         object->IsInLayoutNGInlineFormattingContext()) {
       NGInlineCursor cursor;
       cursor.MoveTo(*object);

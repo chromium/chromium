@@ -149,14 +149,12 @@ void LayoutInline::DeleteLineBoxes() {
 void LayoutInline::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   first_fragment_item_index_ = 0u;
 }
 
 void LayoutInline::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK_NE(index, 0u);
   first_fragment_item_index_ = index;
 }

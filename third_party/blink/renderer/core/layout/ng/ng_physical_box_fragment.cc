@@ -1099,23 +1099,21 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
   if (layout_object_ && layout_object_->ChildPaintBlockedByDisplayLock())
     return;
 
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-      if (has_line_boxes)
-        DCHECK(HasItems());
-    } else {
-      DCHECK_EQ(HasItems(), has_line_boxes);
-    }
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    if (has_line_boxes)
+      DCHECK(HasItems());
+  } else {
+    DCHECK_EQ(HasItems(), has_line_boxes);
+  }
 
-    if (has_line_boxes) {
-      DCHECK(!has_inlines);
-      DCHECK(!has_inflow_blocks);
-      // The following objects should be in the items, not in the tree. One
-      // exception is that floats may occur as regular fragments in the tree
-      // after a fragmentainer break.
-      DCHECK(!has_floats || !IsFirstForNode());
-      DCHECK(!has_list_markers);
-    }
+  if (has_line_boxes) {
+    DCHECK(!has_inlines);
+    DCHECK(!has_inflow_blocks);
+    // The following objects should be in the items, not in the tree. One
+    // exception is that floats may occur as regular fragments in the tree
+    // after a fragmentainer break.
+    DCHECK(!has_floats || !IsFirstForNode());
+    DCHECK(!has_list_markers);
   }
 }
 #endif

@@ -477,7 +477,6 @@ String NGFragmentItem::ToString() const {
 
 PhysicalRect NGFragmentItem::LocalVisualRectFor(
     const LayoutObject& layout_object) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK(layout_object.IsInLayoutNGInlineFormattingContext());
 
   PhysicalRect visual_rect;

@@ -315,7 +315,6 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DetachAbstractInlineTextBoxesIfNeeded();
   first_fragment_item_index_ = 0u;
 }
@@ -324,7 +323,6 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |NGAbstractInlineTextBox::WillDestroy()|.
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK_NE(index, 0u);
   DetachAbstractInlineTextBoxesIfNeeded();
   first_fragment_item_index_ = index;
@@ -2339,8 +2337,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 }
 
 void LayoutText::InvalidateVisualOverflow() {
-  DCHECK(IsInLayoutNGInlineFormattingContext() &&
-         RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
+  DCHECK(IsInLayoutNGInlineFormattingContext());
   NGInlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     cursor.Current()->GetMutableForPainting().InvalidateInkOverflow();

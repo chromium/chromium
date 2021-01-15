@@ -2444,7 +2444,6 @@ inline void LayoutBox::SetInlineBoxWrapper(InlineBox* box_wrapper) {
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   return first_fragment_item_index_;
 }
 

@@ -22,14 +22,14 @@ std::ostream& operator<<(std::ostream& ostream,
          << inline_box_position.offset_in_box;
 }
 
-class InlineBoxPositionTest : public EditingTestBase {};
+class InlineBoxPositionTest : public EditingTestBase,
+                              private ScopedLayoutNGForTest {
+ public:
+  // InlineBoxPosition is a legacy-only data structure.
+  InlineBoxPositionTest() : ScopedLayoutNGForTest(false) {}
+};
 
 TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionBidiIsolate) {
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return;
-  // InlineBoxPosition is a legacy-only data structure.
-  ScopedLayoutNGForTest scoped_layout_ng(false);
-
   // "|" is bidi-level 0, and "foo" and "bar" are bidi-level 2
   SetBodyContent(
       "|<span id=sample style='unicode-bidi: isolate;'>foo<br>bar</span>|");
@@ -45,9 +45,6 @@ TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionBidiIsolate) {
 
 // http://crbug.com/716093
 TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionMixedEditable) {
-  // InlineBoxPosition is a legacy-only data structure.
-  ScopedLayoutNGForTest scoped_layout_ng(false);
-
   SetBodyContent(
       "<div contenteditable id=sample>abc<input contenteditable=false></div>");
   Element* const sample = GetDocument().getElementById("sample");
@@ -68,9 +65,6 @@ TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionMixedEditable) {
 
 // http://crbug.com/841363
 TEST_F(InlineBoxPositionTest, InFlatTreeAfterInputWithPlaceholderDoesntCrash) {
-  // InlineBoxPosition is a legacy-only data structure.
-  ScopedLayoutNGForTest scoped_layout_ng(false);
-
   SetBodyContent("foo <input placeholder=bla> bar");
   const Element* const input = GetDocument().QuerySelector("input");
   const auto* const input_layout = input->GetLayoutBox();
@@ -89,11 +83,6 @@ TEST_F(InlineBoxPositionTest, InFlatTreeAfterInputWithPlaceholderDoesntCrash) {
 }
 
 TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakLTR) {
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return;
-  // InlineBoxPosition is a legacy-only data structure.
-  ScopedLayoutNGForTest scoped_layout_ng(false);
-
   // This test is for a bidi caret afinity specific behavior.
   ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
 
@@ -113,11 +102,6 @@ TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakLTR) {
 }
 
 TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakRTL) {
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return;
-  // InlineBoxPosition is a legacy-only data structure.
-  ScopedLayoutNGForTest scoped_layout_ng(false);
-
   // This test is for a bidi caret afinity specific behavior.
   ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
 

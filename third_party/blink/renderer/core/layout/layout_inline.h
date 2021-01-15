@@ -466,7 +466,6 @@ inline LineBoxList* LayoutInline::MutableLineBoxes() {
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   return first_fragment_item_index_;
 }
 

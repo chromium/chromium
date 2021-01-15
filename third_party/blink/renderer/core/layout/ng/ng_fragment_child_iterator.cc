@@ -18,7 +18,6 @@ NGFragmentChildIterator::NGFragmentChildIterator(
     : parent_fragment_(&parent),
       parent_break_token_(parent_break_token),
       is_fragmentation_context_root_(parent.IsFragmentationContextRoot()) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   current_.link_.fragment = nullptr;
   if (parent_break_token)
     child_break_tokens_ = parent_break_token->ChildBreakTokens();

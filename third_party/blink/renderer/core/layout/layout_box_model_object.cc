@@ -661,8 +661,7 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
   // is an inline box or an atomic inline, its ink overflow is stored in
   // |NGFragmentItem| in the inline formatting context.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     NGInlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())

@@ -1362,8 +1362,6 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
     const NGFragmentItems& items,
     const NGBlockBreakToken* previous_break_token) const {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
-
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token)
     previously_consumed_block_size = previous_break_token->ConsumedBlockSize();
