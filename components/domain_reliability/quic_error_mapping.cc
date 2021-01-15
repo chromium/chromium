@@ -436,6 +436,18 @@ const struct QuicErrorMapping {
     {quic::QUIC_INVALID_PRIORITY_UPDATE, "quic::quic_invalid_priority_update"},
     {quic::QUIC_PEER_PORT_CHANGE_HANDSHAKE_UNCONFIRMED,
      "quic.peer_port_change_handshake_unconfirmed"},
+
+    {quic::QUIC_TLS_BAD_CERTIFICATE, "quic::quic_tls_bad_certificate"},
+    {quic::QUIC_TLS_UNSUPPORTED_CERTIFICATE,
+     "quic::quic_tls_unsupported_certificate"},
+    {quic::QUIC_TLS_CERTIFICATE_REVOKED, "quic::quic_tls_certificate_revoked"},
+    {quic::QUIC_TLS_CERTIFICATE_EXPIRED, "quic::quic_tls_certificate_expired"},
+    {quic::QUIC_TLS_CERTIFICATE_UNKNOWN, "quic::quic_tls_certificate_unknown"},
+    {quic::QUIC_TLS_INTERNAL_ERROR, "quic::quic_tls_internal_error"},
+    {quic::QUIC_TLS_UNRECOGNIZED_NAME, "quic::quic_tls_unrecognized_name"},
+    {quic::QUIC_TLS_CERTIFICATE_REQUIRED,
+     "quic::quic_tls_certificate_required"},
+
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 

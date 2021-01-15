@@ -1194,7 +1194,8 @@ void QuicTestPacketMaker::AddQuicConnectionCloseFrame(
     const std::string& quic_error_details,
     uint64_t frame_type) {
   auto* close_frame = new quic::QuicConnectionCloseFrame(
-      version_.transport_version, quic_error, quic_error_details, frame_type);
+      version_.transport_version, quic_error, quic::NO_IETF_QUIC_ERROR,
+      quic_error_details, frame_type);
   frames_.push_back(quic::QuicFrame(close_frame));
   DVLOG(1) << "Adding frame: " << frames_.back();
 }
