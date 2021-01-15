@@ -2776,6 +2776,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.NotAllowlistedDisabled" units="extensions"
+    expires_after="2021-06-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    The total number of disabled extensions that are not present in the Enhanced
+    Safe Browsing CRX allowlist. Recorded for all users on profile
+    initialization.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.NotAllowlistedDisabledAndEsbUser"
+    units="extensions" expires_after="2021-06-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    The total number of disabled extensions that are not present in the Enhanced
+    Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
+    users on profile initialization.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.NotAllowlistedEnabled" units="extensions"
+    expires_after="2021-06-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    The total number of enabled extensions that are not present in the Enhanced
+    Safe Browsing CRX allowlist. Recorded for all users on profile
+    initialization.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.NotAllowlistedEnabledAndEsbUser" units="extensions"
+    expires_after="2021-06-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    The total number of enabled extensions that are not present in the Enhanced
+    Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
+    users on profile initialization.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Permissions_AutoDisable3"
     enum="ExtensionPermission3" expires_after="2020-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
