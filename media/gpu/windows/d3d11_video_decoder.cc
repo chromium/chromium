@@ -624,7 +624,7 @@ void D3D11VideoDecoder::DoDecode() {
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
       if (new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
-          new_bit_depth == bit_depth_) {
+          new_bit_depth == bit_depth_ && !picture_buffers_.size()) {
         continue;
       }
 
