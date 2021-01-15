@@ -516,7 +516,7 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
   delegate_->OnAshLockAnimationFinished();
 
   AccessibilityManager::Get()->PlayEarcon(
-      Sound::kLock, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+      Sound::kLock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
 void ScreenLocker::ClearErrors() {
@@ -658,7 +658,7 @@ void ScreenLocker::ScheduleDeletion() {
   VLOG(1) << "Deleting ScreenLocker " << screen_locker_;
 
   AccessibilityManager::Get()->PlayEarcon(
-      Sound::kUnlock, PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+      Sound::kUnlock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
   delete screen_locker_;
   screen_locker_ = nullptr;

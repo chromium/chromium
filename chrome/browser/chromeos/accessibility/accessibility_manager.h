@@ -90,11 +90,11 @@ class AccessibilityPanelWidgetObserver;
 
 enum class PlaySoundOption {
   // The sound is always played.
-  ALWAYS = 0,
+  kAlways = 0,
 
   // The sound is played only if spoken feedback is enabled, and
   // --ash-disable-system-sounds is not set.
-  ONLY_IF_SPOKEN_FEEDBACK_ENABLED,
+  kOnlyIfSpokenFeedbackEnabled,
 };
 
 // AccessibilityManager changes the statuses of accessibility features

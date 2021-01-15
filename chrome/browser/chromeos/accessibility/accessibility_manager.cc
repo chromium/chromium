@@ -565,7 +565,7 @@ bool AccessibilityManager::PlayEarcon(Sound sound_key, PlaySoundOption option) {
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(kAshDisableSystemSounds))
     return false;
-  if (option == PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED &&
+  if (option == PlaySoundOption::kOnlyIfSpokenFeedbackEnabled &&
       !IsSpokenFeedbackEnabled()) {
     return false;
   }
@@ -1062,7 +1062,7 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
 
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   if (GetStartupSoundEnabled()) {
-    PlayEarcon(Sound::kStartup, PlaySoundOption::ALWAYS);
+    PlayEarcon(Sound::kStartup, PlaySoundOption::kAlways);
     return;
   }
 
@@ -1072,7 +1072,7 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
     if (user_manager::known_user::GetBooleanPref(
             account_ids[i], kUserSpokenFeedbackEnabled, &val) &&
         val) {
-      PlayEarcon(Sound::kStartup, PlaySoundOption::ALWAYS);
+      PlayEarcon(Sound::kStartup, PlaySoundOption::kAlways);
       break;
     }
   }
@@ -1225,7 +1225,7 @@ void AccessibilityManager::ActiveUserChanged(user_manager::User* active_user) {
 
 base::TimeDelta AccessibilityManager::PlayShutdownSound() {
   if (!PlayEarcon(Sound::kShutdown,
-                  PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED)) {
+                  PlaySoundOption::kOnlyIfSpokenFeedbackEnabled)) {
     return base::TimeDelta();
   }
   return audio::SoundsManager::Get()->GetDuration(
@@ -1315,7 +1315,7 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
 void AccessibilityManager::PlayVolumeAdjustSound() {
   if (VolumeAdjustSoundEnabled()) {
     PlayEarcon(Sound::kVolumeAdjust,
-               chromeos::PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+               PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
   }
 }
 
@@ -1410,7 +1410,7 @@ void AccessibilityManager::PostLoadChromeVox() {
                                              base::DoNothing());
   }
 
-  PlayEarcon(Sound::kSpokenFeedbackEnabled, PlaySoundOption::ALWAYS);
+  PlayEarcon(Sound::kSpokenFeedbackEnabled, PlaySoundOption::kAlways);
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
@@ -1450,7 +1450,7 @@ void AccessibilityManager::PostUnloadChromeVox() {
   chromeos::UpstartClient::Get()->StopJob(kBrlttyUpstartJobName, {},
                                           base::DoNothing());
 
-  PlayEarcon(Sound::kSpokenFeedbackDisabled, PlaySoundOption::ALWAYS);
+  PlayEarcon(Sound::kSpokenFeedbackDisabled, PlaySoundOption::kAlways);
 
   RemoveFocusRings(extension_misc::kChromeVoxExtensionId);
 

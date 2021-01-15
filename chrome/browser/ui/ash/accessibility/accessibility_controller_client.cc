@@ -100,7 +100,7 @@ void AccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
 
 void AccessibilityControllerClient::PlayEarcon(chromeos::Sound sound_key) {
   chromeos::AccessibilityManager::Get()->PlayEarcon(
-      sound_key, chromeos::PlaySoundOption::ONLY_IF_SPOKEN_FEEDBACK_ENABLED);
+      sound_key, chromeos::PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
 base::TimeDelta AccessibilityControllerClient::PlayShutdownSound() {

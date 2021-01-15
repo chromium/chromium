@@ -1098,7 +1098,7 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
     return;
   }
   AccessibilityManager::Get()->PlayEarcon(Sound::kStartup,
-                                          PlaySoundOption::ALWAYS);
+                                          PlaySoundOption::kAlways);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
