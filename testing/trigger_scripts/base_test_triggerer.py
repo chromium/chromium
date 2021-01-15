@@ -306,10 +306,7 @@ class BaseTestTriggerer(object):
                                         suffix='.json')
         args_to_pass = self.modify_args(filtered_remaining_args, bot_index,
                                         shard_index, args.shards, json_temp)
-        if args.use_swarming_go:
-          ret = self.run_swarming_go(args_to_pass, verbose)
-        else:
-          ret = self.run_swarming(args_to_pass, verbose)
+        ret = self.run_swarming_go(args_to_pass, verbose)
         if ret:
           sys.stderr.write('Failed to trigger a task, aborting\n')
           return ret
@@ -324,11 +321,9 @@ class BaseTestTriggerer(object):
           # which will be handled specially.
           merged_json['tasks'] = {}
         tasks = result_json['tasks']
-        if args.use_swarming_go:
-          # TODO(crbug.com/1127205): remove this
-          tasks = {
-            task['request']['task_id']: task['request'] for task in tasks
-          }
+        tasks = {
+          task['request']['task_id']: task['request'] for task in tasks
+        }
         for k, v in tasks.items():
           v['shard_index'] = shard_index
           merged_json['tasks'][k + ':%d:%d' % (shard_index, args.shards)] = v
@@ -361,6 +356,7 @@ class BaseTestTriggerer(object):
 
   @staticmethod
   def add_use_swarming_go_arg(parser):
+    # TODO(crbug.com/1127205): remove this.
     parser.add_argument(
         '--use-swarming-go',
         default=False,
