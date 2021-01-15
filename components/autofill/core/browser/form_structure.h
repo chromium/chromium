@@ -79,6 +79,7 @@ class FormStructure {
       bool form_was_autofilled,
       const std::string& login_form_signature,
       bool observed_submission,
+      bool is_raw_metadata_uploading_enabled,
       autofill::AutofillUploadContents* upload,
       std::vector<FormSignature>* encoded_signatures) const;
 
@@ -494,6 +495,7 @@ class FormStructure {
       std::vector<FormSignature>* queried_form_signatures) const;
 
   void EncodeFormForUpload(
+      bool is_raw_metadata_uploading_enabled,
       autofill::AutofillUploadContents* upload,
       std::vector<FormSignature>* encoded_signatures) const;
 

@@ -102,6 +102,13 @@ bool AutofillHandler::IsRichQueryEnabled(version_info::Channel channel) {
          channel != version_info::Channel::BETA;
 }
 
+// static
+bool AutofillHandler::IsRawMetadataUploadingEnabled(
+    version_info::Channel channel) {
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
+}
+
 AutofillHandler::AutofillHandler(
     AutofillDriver* driver,
     LogManager* log_manager,
@@ -112,7 +119,10 @@ AutofillHandler::AutofillHandler(
       is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
-        driver, this, GetAPIKeyForUrl(channel), log_manager);
+        driver, this, GetAPIKeyForUrl(channel),
+        AutofillDownloadManager::IsRawMetadataUploadingEnabled(
+            IsRawMetadataUploadingEnabled(channel)),
+        log_manager);
   }
 }
 

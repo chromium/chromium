@@ -590,10 +590,12 @@ ScopedActiveAutofillExperiments::~ScopedActiveAutofillExperiments() {
 std::vector<variations::VariationID>*
     AutofillDownloadManager::active_experiments_ = nullptr;
 
-AutofillDownloadManager::AutofillDownloadManager(AutofillDriver* driver,
-                                                 Observer* observer,
-                                                 const std::string& api_key,
-                                                 LogManager* log_manager)
+AutofillDownloadManager::AutofillDownloadManager(
+    AutofillDriver* driver,
+    Observer* observer,
+    const std::string& api_key,
+    IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
+    LogManager* log_manager)
     : driver_(driver),
       observer_(observer),
       api_key_(api_key),
@@ -601,7 +603,8 @@ AutofillDownloadManager::AutofillDownloadManager(AutofillDriver* driver,
       autofill_server_url_(GetAutofillServerURL()),
       throttle_reset_period_(GetThrottleResetPeriod()),
       max_form_cache_size_(kAutofillDownloadManagerMaxFormCacheSize),
-      loader_backoff_(&kAutofillBackoffPolicy) {
+      loader_backoff_(&kAutofillBackoffPolicy),
+      is_raw_metadata_uploading_enabled_(is_raw_metadata_uploading_enabled) {
   DCHECK(observer_);
 }
 
@@ -610,6 +613,7 @@ AutofillDownloadManager::AutofillDownloadManager(AutofillDriver* driver,
     : AutofillDownloadManager(driver,
                               observer,
                               kDefaultAPIKey,
+                              IsRawMetadataUploadingEnabled(false),
                               /*log_manager=*/nullptr) {}
 
 AutofillDownloadManager::~AutofillDownloadManager() = default;
@@ -706,7 +710,8 @@ bool AutofillDownloadManager::StartUploadRequest(
   std::vector<FormSignature> form_signatures;
   if (!form.EncodeUploadRequest(available_field_types, form_was_autofilled,
                                 login_form_signature, observed_submission,
-                                &upload, &form_signatures)) {
+                                is_raw_metadata_uploading_enabled_, &upload,
+                                &form_signatures)) {
     return false;
   }
 

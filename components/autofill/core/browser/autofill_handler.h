@@ -55,6 +55,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // neither on the STABLE nor BETA release channel.
   static bool IsRichQueryEnabled(version_info::Channel channel);
 
+  // Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
+  // channel.
+  static bool IsRawMetadataUploadingEnabled(version_info::Channel channel);
+
   // TODO(crbug.com/1151542): Move to anonymous namespace once
   // AutofillManager::OnLoadedServerPredictions() moves to AutofillHandler.
   static void LogAutofillTypePredictionsAvailable(
