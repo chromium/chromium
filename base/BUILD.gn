@@ -70,6 +70,9 @@ declare_args() {
   # TODO(https://crbug.com/1149922): Remove this. If you're setting this to
   # false on a bot, please leave a note on that bug.
   build_base_unittests = true
+
+  # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
+  use_backup_ref_ptr = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -2336,7 +2339,10 @@ buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
   header_dir = "base"
 
-  flags = [ "USE_PARTITION_ALLOC=$use_partition_alloc" ]
+  flags = [
+    "USE_PARTITION_ALLOC=$use_partition_alloc",
+    "USE_BACKUP_REF_PTR=$use_backup_ref_ptr",
+  ]
 }
 
 buildflag_header("clang_profiling_buildflags") {
