@@ -83,15 +83,15 @@ Polymer({
     });
 
     this.webview_.addEventListener('loadcommit', (e) => {
-      this.configureUiForGaiaFlow(new URL(e.url));
+      this.configureUiForGaiaFlow();
     });
   },
 
   /**
    * Configures the UI for showing/hiding the GAIA login flow.
-   * @param {URL} currentUrl
    */
-  configureUiForGaiaFlow(currentUrl) {
+  configureUiForGaiaFlow() {
+    var currentUrl = new URL(this.webview_.src);
     var mainDiv = this.$$('edu-coexistence-template').$$('div.main');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
