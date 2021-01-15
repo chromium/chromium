@@ -16,6 +16,12 @@ namespace reporting {
 // the server. It uses boringssl implementation available on the client.
 class SignatureVerifier {
  public:
+  // Well-known public signature verification keys that is used to verify
+  // that signed data is indeed originating from reporting server.
+  // Exists in two flavors: PROD and DEV.
+  static base::StringPiece VerificationKey();
+  static base::StringPiece VerificationKeyDev();
+
   // Ed25519 |verification_public_key| must consist of ED25519_PUBLIC_KEY_LEN
   // bytes.
   explicit SignatureVerifier(base::StringPiece verification_public_key);

@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/messaging_layer/encryption/verification.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
@@ -427,7 +428,10 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
 
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
   StorageModule::Create(
-      StorageOptions().set_directory(reporting_path),
+      StorageOptions()
+          .set_directory(reporting_path)
+          .set_signature_verification_public_key(
+              SignatureVerifier::VerificationKey()),
       std::move(start_upload_cb_), base::MakeRefCounted<EncryptionModule>(),
       base::BindOnce(
           &ReportingClient::InitializingContext::OnStorageModuleConfigured,
