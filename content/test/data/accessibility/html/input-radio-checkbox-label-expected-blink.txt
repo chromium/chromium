@@ -3,11 +3,9 @@ rootWebArea
 ++++genericContainer
 ++++++labelText ignored
 ++++++++staticText ignored name='label ignored for radio button '
-++++++++++inlineTextBox ignored name='label ignored for radio button '
 ++++++++radioButton name='label ignored for radio button' checkedState=false
 ++++++labelText ignored
 ++++++++staticText ignored name='label ignored for checkbox '
-++++++++++inlineTextBox ignored name='label ignored for checkbox '
 ++++++++checkBox name='label ignored for checkbox' checkedState=false
 ++++++labelText name='label exposed for radio button '
 ++++++++staticText name='label exposed for radio button '

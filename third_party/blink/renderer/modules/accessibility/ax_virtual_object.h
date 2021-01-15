@@ -21,7 +21,6 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
 
   // AXObject overrides.
   void Detach() override;
-  AXObject* ComputeParent() const override { return parent_; }
   bool IsVirtualObject() const override { return true; }
   void AddChildren() override;
   void ChildrenChanged() override;

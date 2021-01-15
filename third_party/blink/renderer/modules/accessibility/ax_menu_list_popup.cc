@@ -61,17 +61,14 @@ bool AXMenuListPopup::ComputeAccessibilityIsIgnored(
 }
 
 AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
-    HTMLElement* element) const {
+    HTMLElement* element) {
   DCHECK(element);
   if (!IsA<HTMLOptionElement>(*element))
     return nullptr;
 
-  auto* ax_object =
-      DynamicTo<AXMenuListOption>(AXObjectCache().GetOrCreate(element));
-  if (!ax_object)
-    return nullptr;
+  AXObject* ax_object = AXObjectCache().GetOrCreate(element, this);
 
-  return ax_object;
+  return DynamicTo<AXMenuListOption>(ax_object);
 }
 
 int AXMenuListPopup::GetSelectedIndex() const {
@@ -93,7 +90,16 @@ bool AXMenuListPopup::OnNativeClickAction() {
 }
 
 void AXMenuListPopup::AddChildren() {
+#if DCHECK_IS_ON()
   DCHECK(!IsDetached());
+  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  DCHECK_EQ(children_.size(), 0U)
+      << "Parent still has " << children_.size() << " children before adding:"
+      << "\nParent is " << ToString(true, true) << "\nFirst child is "
+      << children_[0]->ToString(true, true);
+#endif
+
   if (!parent_)
     return;
 
@@ -109,8 +115,8 @@ void AXMenuListPopup::AddChildren() {
   for (auto* const option_element : html_select_element->GetOptionList()) {
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
     if (option) {
+      DCHECK(!option->IsDetached());
       children_.push_back(option);
-      option->SetParent(this);
     }
   }
 }

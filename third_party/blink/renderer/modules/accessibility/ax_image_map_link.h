@@ -57,7 +57,7 @@ class AXImageMapLink final : public AXNodeObject {
   Element* ActionElement() const override;
   KURL Url() const override;
   bool IsLinked() const override { return true; }
-  AXObject* ComputeParent() const override;
+  AXObject* ComputeParentImpl() const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
                          SkMatrix44& out_container_transform,

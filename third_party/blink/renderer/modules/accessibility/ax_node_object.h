@@ -85,7 +85,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Overridden from AXObject.
   //
 
-  void Init() override;
+  void Init(AXObject* parent_if_known) override;
   void Detach() override;
   bool IsDetached() const override;
   bool IsAXNodeObject() const final;
@@ -208,10 +208,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                          SkMatrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
 
-  // High-level accessibility tree access.
-  AXObject* ComputeParent() const override;
-  AXObject* ComputeParentIfExists() const override;
-
   void AddChildren() override;
 
   bool CanHaveChildren() const override;
@@ -306,12 +302,14 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void AddNodeChildren();
   void AddLayoutChildren();
-  void AddInlineTextBoxChildren(bool force);
+  void AddInlineTextBoxChildren(bool force = false);
   void AddImageMapChildren();
   void AddPopupChildren();
   bool IsHtmlTable() const;
   void AddTableChildren();
   void AddValidationMessageChild();
+  void AddOwnedChildren();
+
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   DISALLOW_COPY_AND_ASSIGN(AXNodeObject);

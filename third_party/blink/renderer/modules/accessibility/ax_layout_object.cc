@@ -223,8 +223,10 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
 }
 
 ax::mojom::blink::Role AXLayoutObject::DetermineAccessibilityRole() {
-  if (!layout_object_)
+  if (!layout_object_) {
+    NOTREACHED();
     return ax::mojom::blink::Role::kUnknown;
+  }
   if (GetCSSAltText(GetNode())) {
     const ComputedStyle* style = GetNode()->GetComputedStyle();
     ContentData* content_data = style->GetContentData();
@@ -280,10 +282,6 @@ Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
   }
 
   return GetNode();
-}
-
-void AXLayoutObject::Init() {
-  AXNodeObject::Init();
 }
 
 void AXLayoutObject::Detach() {
@@ -1415,7 +1413,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
         // No visible rendered text -- must be whitespace.
         // Either it is useful whitespace for separating words or not.
         if (layout_text->IsAllCollapsibleWhitespace()) {
-          if (cached_is_ignored_)
+          if (LastKnownIsIgnoredValue())
             return "";
           // If no textboxes, this was whitespace at the line's end.
           text_alternative = " ";
@@ -1525,179 +1523,6 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
   }
 
   return result;
-}
-
-//
-// Low-level accessibility tree exploration, only for use within the
-// accessibility module.
-//
-// LAYOUT TREE WALKING ALGORITHM
-//
-// The fundamental types of elements in the Blink layout tree are block
-// elements and inline elements. It can get a little confusing when
-// an inline element has both inline and block children, for example:
-//
-//   <a href="#">
-//     Before Block
-//     <div>
-//       In Block
-//     </div>
-//     Outside Block
-//   </a>
-//
-// Blink wants to maintain the invariant that all of the children of a node
-// are either all block or all inline, so it creates three anonymous blocks:
-//
-//      #1 LayoutBlockFlow (anonymous)
-//        #2 LayoutInline A continuation=#4
-//          #3 LayoutText "Before Block"
-//      #4 LayoutBlockFlow (anonymous) continuation=#8
-//        #5 LayoutBlockFlow DIV
-//          #6 LayoutText "In Block"
-//      #7 LayoutBlockFlow (anonymous)
-//        #8 LayoutInline A is_continuation
-//          #9 LayoutText "Outside Block"
-//
-// For a good explanation of why this is done, see this blog entry. It's
-// describing WebKit in 2007, but the fundamentals haven't changed much.
-//
-// https://webkit.org/blog/115/webcore-rendering-ii-blocks-and-inlines/
-//
-// Now, it's important to understand that we couldn't just use the layout
-// tree as the accessibility tree as-is, because the div is no longer
-// inside the link! In fact, the link has been split into two different
-// nodes, #2 and #8. Luckily, the layout tree contains continuations to
-// help us untangle situations like this.
-//
-// Here's the algorithm we use to walk the layout tree in order to build
-// the accessibility tree:
-//
-// 1. When computing the first child or next sibling of a node, skip over any
-//    LayoutObjects that are continuations.
-//
-// 2. When computing the next sibling of a node and there are no more siblings
-//    in the layout tree, see if the parent node has a continuation, and if
-//    so follow it and make that the next sibling.
-//
-// 3. When computing the first child of a node that has a continuation but
-//    no children in the layout tree, the continuation is the first child.
-//
-// The end result is this tree, which we use as the basis for the
-// accessibility tree.
-//
-//      #1 LayoutBlockFlow (anonymous)
-//        #2 LayoutInline A
-//          #3 LayoutText "Before Block"
-//          #4 LayoutBlockFlow (anonymous)
-//            #5 LayoutBlockFlow DIV
-//              #6 LayoutText "In Block"
-//            #8 LayoutInline A is_continuation
-//              #9 LayoutText "Outside Block"
-//      #7 LayoutBlockFlow (anonymous)
-//
-// This algorithm results in an accessibility tree that preserves containment
-// (i.e. the contents of the link in the example above are descendants of the
-// link node) while including all of the rich layout detail from the layout
-// tree.
-//
-// There are just a couple of other corner cases to walking the layout tree:
-//
-// * Walk tables in table order (thead, tbody, tfoot), which may not match
-//   layout order.
-// * Skip CSS first-letter nodes.
-//
-
-// Given a layout object, return the start of the continuation chain.
-static inline LayoutInline* StartOfContinuations(LayoutObject* layout_object) {
-  // See LAYOUT TREE WALKING ALGORITHM, above, for more context as to why
-  // we need to do this.
-
-  // For inline elements, if it's a continuation, the start of the chain
-  // is always the primary layout object associated with the node.
-  if (layout_object->IsInlineElementContinuation())
-    return To<LayoutInline>(layout_object->GetNode()->GetLayoutObject());
-
-  // Blocks with a previous continuation always have a next continuation,
-  // so we can get the next continuation and do the same trick to get
-  // the primary layout object associated with the node.
-  auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(layout_object);
-  if (layout_block_flow && layout_block_flow->InlineElementContinuation()) {
-    auto* result =
-        To<LayoutInline>(layout_block_flow->InlineElementContinuation()
-                             ->GetNode()
-                             ->GetLayoutObject());
-    DCHECK_NE(result, layout_object);
-    return result;
-  }
-
-  return nullptr;
-}
-
-// See LAYOUT TREE WALKING ALGORITHM, above, for details.
-static inline LayoutObject* ParentLayoutObject(LayoutObject* layout_object) {
-  if (!layout_object)
-    return nullptr;
-
-  // If the node is a continuation, the parent is the start of the continuation
-  // chain.  See LAYOUT TREE WALKING ALGORITHM, above, for more context as to
-  // why we need to do this.
-  LayoutObject* start_of_conts = StartOfContinuations(layout_object);
-  if (start_of_conts)
-    return start_of_conts;
-
-  // Otherwise just return the parent in the layout tree.
-  return layout_object->Parent();
-}
-
-//
-// High-level accessibility tree access.
-//
-
-AXObject* AXLayoutObject::ComputeParent() const {
-  DCHECK(!IsDetached());
-  if (!layout_object_)
-    return nullptr;
-
-  if (AriaRoleAttribute() == ax::mojom::blink::Role::kMenuBar)
-    return AXObjectCache().GetOrCreate(layout_object_->Parent());
-
-  if (GetNode())
-    return AXNodeObject::ComputeParent();
-
-  LayoutObject* parent_layout_obj = ParentLayoutObject(layout_object_);
-  if (parent_layout_obj)
-    return AXObjectCache().GetOrCreate(parent_layout_obj);
-
-  // A WebArea's parent should be the page popup owner, if any, otherwise null.
-  if (IsWebArea()) {
-    LocalFrame* frame = layout_object_->GetFrame();
-    return AXObjectCache().GetOrCreate(frame->PagePopupOwner());
-  }
-
-  return nullptr;
-}
-
-AXObject* AXLayoutObject::ComputeParentIfExists() const {
-  if (!layout_object_)
-    return nullptr;
-
-  if (AriaRoleAttribute() == ax::mojom::blink::Role::kMenuBar)
-    return AXObjectCache().Get(layout_object_->Parent());
-
-  if (GetNode())
-    return AXNodeObject::ComputeParentIfExists();
-
-  LayoutObject* parent_layout_obj = ParentLayoutObject(layout_object_);
-  if (parent_layout_obj)
-    return AXObjectCache().Get(parent_layout_obj);
-
-  // A WebArea's parent should be the page popup owner, if any, otherwise null.
-  if (IsWebArea()) {
-    LocalFrame* frame = layout_object_->GetFrame();
-    return AXObjectCache().Get(frame->PagePopupOwner());
-  }
-
-  return nullptr;
 }
 
 bool AXLayoutObject::CanHaveChildren() const {

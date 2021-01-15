@@ -28,7 +28,8 @@ class CORE_EXPORT AXObjectCacheBase : public AXObjectCache {
   ~AXObjectCacheBase() override = default;
 
   virtual AXObject* Get(const Node*) = 0;
-  virtual AXObject* GetOrCreate(LayoutObject*) = 0;
+  virtual AXObject* GetOrCreate(LayoutObject*,
+                                AXObject* parent_if_known = nullptr) = 0;
 
  protected:
   AXObjectCacheBase() = default;

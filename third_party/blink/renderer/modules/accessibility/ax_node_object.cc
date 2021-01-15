@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -124,6 +125,31 @@ bool IsNeutralWithinTable(blink::AXObject* obj) {
          role == ax::mojom::blink::Role::kGenericContainer ||
          role == ax::mojom::blink::Role::kIgnored ||
          role == ax::mojom::blink::Role::kRowGroup;
+}
+
+// Within a table, provide the accessible, semantic parent of |node|,
+// by traversing the DOM tree, ignoring elements that are neutral in a table.
+// Return the AXObject for the ancestor.
+blink::AXObject* GetDOMTableAXAncestor(blink::Node* node,
+                                       blink::AXObjectCacheImpl& cache) {
+  // Used by code to determine roles of elements inside of an HTML table,
+  // Use DOM to get parent since parent_ is not initialized yet when role is
+  // being computed, and because HTML table structure should not take into
+  // account aria-owns.
+  if (!node)
+    return nullptr;
+
+  while (true) {
+    node = blink::NodeTraversal::Parent(*node);
+    if (!node)
+      return nullptr;
+
+    blink::AXObject* ax_object = cache.GetOrCreate(node);
+    if (ax_object && !IsNeutralWithinTable(ax_object))
+      return ax_object;
+  }
+
+  return nullptr;
 }
 
 enum class AXAction {
@@ -682,7 +708,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableSectionRole() const {
   if (!GetElement())
     return ax::mojom::blink::Role::kUnknown;
 
-  AXObject* parent = ParentObject();
+  AXObject* parent = GetDOMTableAXAncestor(GetNode(), AXObjectCache());
   if (!parent || !parent->IsTableLikeRole())
     return ax::mojom::blink::Role::kGenericContainer;
 
@@ -693,9 +719,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableSectionRole() const {
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineTableRowRole() const {
-  AXObject* parent = ParentObject();
-  while (IsNeutralWithinTable(parent))
-    parent = parent->ParentObject();
+  AXObject* parent = GetDOMTableAXAncestor(GetNode(), AXObjectCache());
 
   if (!parent || !parent->IsTableLikeRole())
     return ax::mojom::blink::Role::kGenericContainer;
@@ -710,14 +734,13 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableRowRole() const {
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
-  AXObject* parent = ParentObject();
+  AXObject* parent = GetDOMTableAXAncestor(GetNode(), AXObjectCache());
   if (!parent || !parent->IsTableRowLikeRole())
     return ax::mojom::blink::Role::kGenericContainer;
 
   // Ensure table container.
-  AXObject* grandparent = parent->ParentObject();
-  while (IsNeutralWithinTable(grandparent))
-    grandparent = grandparent->ParentObject();
+  AXObject* grandparent =
+      GetDOMTableAXAncestor(parent->GetNode(), AXObjectCache());
   if (!grandparent || !grandparent->IsTableLikeRole())
     return ax::mojom::blink::Role::kGenericContainer;
 
@@ -1018,8 +1041,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
-  if (!GetNode())
+  if (!GetNode()) {
+    NOTREACHED();
     return ax::mojom::blink::Role::kUnknown;
+  }
 
   native_role_ = NativeRoleIgnoringAria();
 
@@ -1158,12 +1183,12 @@ Element* AXNodeObject::MouseButtonListener() const {
   return nullptr;
 }
 
-void AXNodeObject::Init() {
+void AXNodeObject::Init(AXObject* parent_if_known) {
 #if DCHECK_IS_ON()
   DCHECK(!initialized_);
   initialized_ = true;
 #endif
-  AXObject::Init();
+  AXObject::Init(parent_if_known);
 }
 
 void AXNodeObject::Detach() {
@@ -2751,6 +2776,8 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   HeapVector<Member<AXObject>> owned_children;
   AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
+  // TODO(aleventhal) Why isn't this just using cached children?
+  AXNodeObject* parent = const_cast<AXNodeObject*>(this);
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     auto* child_text_node = DynamicTo<Text>(child);
@@ -2759,7 +2786,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
       // skip over empty text nodes
       continue;
     }
-    AXObject* child_obj = AXObjectCache().GetOrCreate(child);
+    AXObject* child_obj = AXObjectCache().GetOrCreate(child, parent);
     if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
       children.push_back(child_obj);
   }
@@ -2942,28 +2969,6 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   }
 }
 
-static Node* GetParentNodeForComputeParent(Node* node) {
-  if (!node)
-    return nullptr;
-
-  return LayoutTreeBuilderTraversal::Parent(*node);
-}
-
-AXObject* AXNodeObject::ComputeParent() const {
-  DCHECK(!IsDetached());
-  if (Node* parent_node = GetParentNodeForComputeParent(GetNode()))
-    return AXObjectCache().GetOrCreate(parent_node);
-
-  return nullptr;
-}
-
-AXObject* AXNodeObject::ComputeParentIfExists() const {
-  if (Node* parent_node = GetParentNodeForComputeParent(GetNode()))
-    return AXObjectCache().Get(parent_node);
-
-  return nullptr;
-}
-
 bool AXNodeObject::IsHtmlTable() const {
   return IsTableLikeRole() && GetLayoutObject() &&
          GetLayoutObject()->IsTable() && IsA<HTMLTableElement>(GetNode());
@@ -3092,6 +3097,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
   if (GetLayoutObject()->IsText()) {
     ClearChildren();
     AddInlineTextBoxChildren(true);
+    have_children_ = true;  // Avoid adding these children twice.
     return;
   }
 
@@ -3121,20 +3127,22 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
     return;
   }
 
+  if (LastKnownIsIgnoredValue()) {
+    // Inline textboxes are included if and only if the parent is unignored.
+    // If the parent is ignored but included in tree, the inline textbox is
+    // still withheld.
+    return;
+  }
+
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (scoped_refptr<AbstractInlineTextBox> box =
            layout_text->FirstAbstractInlineTextBox();
        box.get(); box = box->NextInlineTextBox()) {
-    AXObject* ax_box = AXObjectCache().GetOrCreate(box.get());
-    if (!ax_box || !ax_box->AccessibilityIsIncludedInTree())
+    AXObject* ax_box = AXObjectCache().GetOrCreate(box.get(), this);
+    if (!ax_box)
       continue;
 
     children_.push_back(ax_box);
-    // If |force| is set to true, it means that we are forcing the children to
-    // be added without going through the normal tree building mechanism, which
-    // would have also set the parent of each child to |this|.
-    if (force)
-      ax_box->SetParent(this);
   }
 }
 
@@ -3155,7 +3163,7 @@ void AXNodeObject::AddImageMapChildren() {
   for (HTMLAreaElement& area :
        Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
     // add an <area> element for this child if it has a link
-    AddChild(AXObjectCache().GetOrCreate(&area));
+    AddChild(AXObjectCache().GetOrCreate(&area, this));
   }
 }
 
@@ -3177,7 +3185,7 @@ void AXNodeObject::AddLayoutChildren() {
   DCHECK(GetLayoutObject());
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    AddChild(AXObjectCache().GetOrCreate(child));
+    AddChild(AXObjectCache().GetOrCreate(child, this));
     child = child->NextSibling();
   }
 }
@@ -3188,7 +3196,8 @@ void AXNodeObject::AddNodeChildren() {
 
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    AXObject* child_obj = AXObjectCache().GetOrCreate(child);
+    AXObject* child_obj = AXObjectCache().GetOrCreate(child, this);
+
     if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
         child_obj &&
         child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
@@ -3203,9 +3212,28 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
+void AXNodeObject::AddOwnedChildren() {
+  AXObjectVector owned_children;
+  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
+
+  for (const auto& owned_child : owned_children) {
+    owned_child->SetParent(this);
+    AddChild(owned_child, true);
+  }
+}
+
 void AXNodeObject::AddChildren() {
-  if (IsDetached())
-    return;
+#if DCHECK_IS_ON()
+  DCHECK(!IsDetached());
+  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  DCHECK_EQ(children_.size(), 0U)
+      << "\nParent still has " << children_.size() << " children before adding:"
+      << "\nParent is " << ToString(true, true) << "\nFirst child is "
+      << children_[0]->ToString(true, true);
+#endif
+#define CHECK_ATTACHED() \
+  DCHECK(!IsDetached()) << "Detached adding children: " << ToString(true, true)
 
   // If the need to add more children in addition to existing children arises,
   // childrenChanged should have been called, leaving the object with no
@@ -3213,40 +3241,47 @@ void AXNodeObject::AddChildren() {
   DCHECK(!have_children_);
   have_children_ = true;
 
-  AXObjectVector owned_children;
-  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
-
   if (IsHtmlTable())
     AddTableChildren();
   else if (ShouldUseLayoutObjectTraversalForChildren())
     AddLayoutChildren();
   else
     AddNodeChildren();
-
-  // TODO(crbug.com/1158511) This shouldn't be needed!
-  if (IsDetached())
-    return;
+  CHECK_ATTACHED();
 
   AddPopupChildren();
+  CHECK_ATTACHED();
+
   AddImageMapChildren();
-  AddInlineTextBoxChildren(false);
+  CHECK_ATTACHED();
+
+  AddInlineTextBoxChildren();
+  CHECK_ATTACHED();
+
   AddValidationMessageChild();
+  CHECK_ATTACHED();
+
   AddAccessibleNodeChildren();
+  CHECK_ATTACHED();
 
-  for (const auto& owned_child : owned_children)
-    AddChild(owned_child, true);
+  AddOwnedChildren();
+  CHECK_ATTACHED();
 
+#if DCHECK_IS_ON()
+  // All added children must be attached.
   for (const auto& child : children_) {
-    if (!child->CachedParentObject())
-      child->SetParent(this);
+    DCHECK(!child->IsDetached())
+        << "A brand new child was detached: " << child->ToString(true, true)
+        << "\n ... of parent " << ToString(true, true);
   }
+#endif
 }
 
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
 
-  AddChild(AXObjectCache().GetOrCreate(node));
+  AddChild(AXObjectCache().GetOrCreate(node, this));
 }
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
@@ -3263,6 +3298,8 @@ void AXNodeObject::InsertChild(AXObject* child,
   if (!child || !CanHaveChildren())
     return;
 
+  DCHECK(!child->IsDetached())
+      << "Cannot add a detached child: " << child->ToString(true, true);
   if (is_from_aria_owns) {
     DCHECK(AXObjectCache().IsAriaOwned(child));
   } else {
@@ -3272,11 +3309,29 @@ void AXNodeObject::InsertChild(AXObject* child,
       return;
   }
 
-  if (!child->AccessibilityIsIncludedInTree()) {
-    DCHECK(!is_from_aria_owns) << "Owned elements smust be in tree";
+  // Set the parent:
+  // - For a new object it will have already been set.
+  // - For a reused, older object, it may need to be changed to a new parent.
+  child->SetParent(this);
+
+#if DCHECK_IS_ON()
+  child->EnsureCorrectParentComputation();
+#endif
+
+  // Update cached values preemptively, but don't allow children changed to be
+  // called if ignored change, we are already recomputing children and don't
+  // want to recurse.
+  child->UpdateCachedAttributeValuesIfNeeded(false);
+
+  if (!child->LastKnownIsIncludedInTreeValue()) {
+    DCHECK(!is_from_aria_owns)
+        << "Owned elements must be in tree: " << child->ToString(true, true)
+        << "\nRecompute included in tree: "
+        << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
     // Child is ignored and not in the tree.
     // Recompute the child's children now as we skip over the ignored object.
     child->SetNeedsToUpdateChildren();
+
     // Get the ignored child's children and add to children of ancestor
     // included in tree. This will recurse if necessary, skipping levels of
     // unignored descendants as it goes.
@@ -3287,11 +3342,16 @@ void AXNodeObject::InsertChild(AXObject* child,
       // If the child was owned, it will be added elsewhere as a direct
       // child of the object owning it, and not as an indirect child under
       // an object not included in the tree.
-      if (!AXObjectCache().IsAriaOwned(children[i]))
+      if (!AXObjectCache().IsAriaOwned(children[i])) {
+        DCHECK(!children[i]->IsDetached()) << "Cannot add a detached child: "
+                                           << children[i]->ToString(true, true);
         children_.insert(new_index++, children[i]);
+      }
     }
   } else if (!child->IsMenuListOption()) {
     // MenuListOptions must only be added in AXMenuListPopup::AddChildren.
+    DCHECK(!child->IsDetached())
+        << "Cannot add a detached child: " << child->ToString(true, true);
     children_.insert(index, child);
   }
 }
@@ -3655,6 +3715,21 @@ void AXNodeObject::ChildrenChanged() {
   if (!GetNode() && !GetLayoutObject())
     return;
 
+  // When children changed on a <map> that means we need to forward the
+  // children changed to the <img> that parents the <area> elements.
+  // TODO(accessibility) Consider treating <img usemap> as aria-owns so that
+  // we get implementation "for free" vai relation cache, etc.
+  if (HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(GetNode())) {
+    HTMLImageElement* image_element = map_element->ImageElement();
+    if (image_element) {
+      AXObject* ax_image = AXObjectCache().Get(image_element);
+      if (ax_image) {
+        ax_image->ChildrenChanged();
+        return;
+      }
+    }
+  }
+
   // Always update current object, in case it wasn't included in the tree but
   // now is. In that case, the LastKnownIsIncludedInTreeValue() won't have been
   // updated yet, so we can't use that. Unfortunately, this is not a safe time
@@ -3672,7 +3747,6 @@ void AXNodeObject::ChildrenChanged() {
       node_to_update->SetNeedsToUpdateChildren();
   }
 
-
   // If this node's children are not part of the accessibility tree then
   // skip notification and walking up the ancestors.
   // Cases where this happens:
@@ -3680,7 +3754,7 @@ void AXNodeObject::ChildrenChanged() {
   // - this or an ancestor is a leaf node
   // Uses |cached_is_descendant_of_leaf_node_| to avoid updating cached
   // attributes for eachc change via | UpdateCachedAttributeValuesIfNeeded()|.
-  if (!CanHaveChildren() || cached_is_descendant_of_leaf_node_)
+  if (!CanHaveChildren() || LastKnownIsDescendantOfLeafNode())
     return;
 
   // Calling CanHaveChildren(), above, can occasionally detach |this|.
@@ -3692,10 +3766,70 @@ void AXNodeObject::ChildrenChanged() {
 }
 
 void AXNodeObject::UpdateChildrenIfNecessary() {
-  if (NeedsToUpdateChildren())
+#if DCHECK_IS_ON()
+  DCHECK(GetDocument());
+  DCHECK(GetDocument()->IsActive());
+  DCHECK(!GetDocument()->IsDetached());
+  DCHECK(GetDocument()->GetPage());
+  DCHECK(GetDocument()->View());
+  DCHECK(!AXObjectCache().HasBeenDisposed());
+
+  // Store previous children for DCHECK to ensure no lost children, left
+  // without parents.
+  HashSet<AXID> prev_children_axids;
+  for (const auto& child : children_) {
+    if (!child->IsDetached()) {
+      AXID prev_child_axid = child->AXObjectID();
+      prev_children_axids.insert(prev_child_axid);
+      DCHECK(AXObjectCache().ObjectFromAXID(prev_child_axid));
+    }
+  }
+#endif
+
+  // Clear current children and get new children.
+  // TODO(accessibility) is it necessary to have a separate
+  // NeedsToUpdateChildren() from HasChildren()?
+  if (NeedsToUpdateChildren()) {
     ClearChildren();
+    if (!IsMenuList()) {  // AXMenuList is special and keeps its popup child.
+      // Ensure children have been correctly cleared.
+      DCHECK(!HasChildren())
+          << GetNode() << "  with " << children_.size() << " children";
+      DCHECK_EQ(children_.size(), 0U);
+    }
+  } else if (HasChildren()) {
+    return;  // Keep existing children.
+  } else {
+    // Will update children even though NeedsToUpdateChildren() was not true.
+    // Cannot have children otherwise will end up adding to them.
+    DCHECK_EQ(children_.size(), 0U);
+  }
 
   AXObject::UpdateChildrenIfNecessary();
+
+#if DCHECK_IS_ON()
+  // Remove current children's AXIDs from set so that we can see what children
+  // have been lost.
+  for (const auto& child : children_)
+    prev_children_axids.erase(child->AXObjectID());
+
+  // Report lost children. These are children that had |this| as a parent at
+  // the start of this method, but no longer do, yet the cache still considers
+  // them alive.
+  bool has_last_children = false;
+  for (AXID prev_child_axid : prev_children_axids) {
+    AXObject* prev_child = nullptr;
+    if (prev_child_axid)
+      AXObjectCache().ObjectFromAXID(prev_child_axid);
+    if (prev_child) {
+      has_last_children = true;
+      LOG(ERROR) << "Lost child: " << prev_child->ToString(true, true)
+                 << "\nThis: " << ToString(true, true);
+    }
+  }
+
+  DCHECK(!has_last_children);
+#endif
 }
 
 void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
@@ -4276,7 +4410,8 @@ String AXNodeObject::NativeTextAlternative(
       }
 
       Element* title_element = document->TitleElement();
-      AXObject* title_ax_object = AXObjectCache().GetOrCreate(title_element);
+      AXObject* title_ax_object = AXObjectCache().GetOrCreate(
+          title_element, AXObjectCache().Get(document));
       if (title_ax_object) {
         if (related_objects) {
           local_related_objects.push_back(

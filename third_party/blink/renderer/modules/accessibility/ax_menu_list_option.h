@@ -38,6 +38,7 @@ class AXMenuListOption final : public AXNodeObject {
  public:
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
   ~AXMenuListOption() override;
+  bool IsDetached() const override { return !element_; }
 
  private:
   void Trace(Visitor*) const override;
@@ -46,10 +47,9 @@ class AXMenuListOption final : public AXNodeObject {
 
   Node* GetNode() const override { return element_; }
   void Detach() override;
-  bool IsDetached() const override { return !element_; }
   LocalFrameView* DocumentFrameView() const override;
   bool CanHaveChildren() const override { return false; }
-  AXObject* ComputeParent() const override;
+  AXObject* ComputeParentImpl() const override;
 
   Element* ActionElement() const override;
   bool IsVisible() const override;

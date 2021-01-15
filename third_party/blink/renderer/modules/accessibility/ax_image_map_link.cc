@@ -50,15 +50,14 @@ HTMLMapElement* AXImageMapLink::MapElement() const {
   return Traversal<HTMLMapElement>::FirstAncestor(*area);
 }
 
-AXObject* AXImageMapLink::ComputeParent() const {
-  DCHECK(!IsDetached());
-  if (parent_)
-    return parent_;
-
-  if (!MapElement())
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
+AXObject* AXImageMapLink::ComputeParentImpl() const {
+  if (MapElement()) {
+    AXObject* ax_parent =
+        AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
+    if (ax_parent)
+      return ax_parent;
+  }
+  return AXNodeObject::ComputeParentImpl();
 }
 
 ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {

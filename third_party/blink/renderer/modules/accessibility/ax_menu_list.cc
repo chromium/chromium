@@ -64,19 +64,31 @@ void AXMenuList::ClearChildren() {
 
   // There's no reason to clear our AXMenuListPopup child. If we get a
   // call to clearChildren, it's because the options might have changed,
-  // so call it on our popup.
-  DCHECK_EQ(ChildCountIncludingIgnored(), 1);
+  // so call it on our popup. Clearing the AXMenuListPopup child would cause
+  // additional thrashing and events that the AT would need to process,
+  // potentially causing the AT to believe that the popup had closed and a
+  // new popup and reopened.
+  DCHECK_EQ(children_.size(), 1U);
   children_[0]->ClearChildren();
 }
 
 void AXMenuList::AddChildren() {
+#if DCHECK_IS_ON()
   DCHECK(!IsDetached());
+  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  DCHECK_EQ(children_.size(), 0U)
+      << "Parent still has " << children_.size() << " children before adding:"
+      << "\nParent is " << ToString(true, true) << "\nFirst child is "
+      << children_[0]->ToString(true, true);
+#endif
   have_children_ = true;
 
   AXObjectCacheImpl& cache = AXObjectCache();
-  AXObject* popup = cache.GetOrCreate(ax::mojom::Role::kMenuListPopup);
+  AXObject* popup =
+      cache.CreateAndInit(ax::mojom::blink::Role::kMenuListPopup, this);
   DCHECK(popup);
-  To<AXMockObject>(popup)->SetParent(this);
+  DCHECK(!popup->IsDetached());
   children_.push_back(popup);
   popup->AddChildren();
 }

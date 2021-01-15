@@ -27,6 +27,15 @@ bool AXVirtualObject::ComputeAccessibilityIsIgnored(
 }
 
 void AXVirtualObject::AddChildren() {
+#if DCHECK_IS_ON()
+  DCHECK(!IsDetached());
+  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  DCHECK_EQ(children_.size(), 0U)
+      << "Parent still has " << children_.size() << " children before adding:"
+      << "\nParent is " << ToString(true, true) << "\nFirst child is "
+      << children_[0]->ToString(true, true);
+#endif
   if (!accessible_node_)
     return;
 
@@ -34,12 +43,13 @@ void AXVirtualObject::AddChildren() {
   have_children_ = true;
 
   for (const auto& child : accessible_node_->GetChildren()) {
-    AXObject* ax_child = AXObjectCache().GetOrCreate(child);
+    AXObject* ax_child = AXObjectCache().GetOrCreate(child, this);
     if (!ax_child)
       continue;
+    DCHECK(!ax_child->IsDetached());
+    DCHECK(ax_child->AccessibilityIsIncludedInTree());
 
     children_.push_back(ax_child);
-    ax_child->SetParent(this);
   }
 }
 

@@ -5,7 +5,10 @@ rootWebArea name='done'
 ++++++++genericContainer ignored invisible name='cats'
 ++++++++++comboBoxGrouping ignored invisible
 ++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
 ++++++++++++listBox ignored invisible
 ++++++++++++++listItem ignored invisible
 ++++++++++++++++listMarker ignored invisible name='• '
+++++++++++++++++++staticText ignored name='• '
 ++++++++genericContainer ignored invisible
+

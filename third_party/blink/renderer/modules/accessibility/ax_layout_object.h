@@ -76,7 +76,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Overridden from AXObject.
   //
 
-  void Init() override;
   void Detach() override;
   bool IsDetached() const override;
   bool IsAXLayoutObject() const final;
@@ -135,11 +134,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // Hit testing.
   AXObject* AccessibilityHitTest(const IntPoint&) const override;
-
-  // High-level accessibility tree access. Other modules should only use these
-  // functions.
-  AXObject* ComputeParent() const override;
-  AXObject* ComputeParentIfExists() const override;
 
   bool CanHaveChildren() const override;
 

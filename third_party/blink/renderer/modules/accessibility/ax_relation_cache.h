@@ -45,7 +45,9 @@ class AXRelationCache {
   // just changed, check to see if another object wants to be its parent due to
   // aria-owns. If so, add it to a queue of ids to process later during
   // ProcessUpdatesWithCleanLayout.
-  void UpdateRelatedTree(Node*);
+  // |node| is not optional.
+  // |obj| is optional. If provided, it must match the AXObject for |node|.
+  void UpdateRelatedTree(Node* node, AXObject* obj);
 
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
@@ -146,7 +148,7 @@ class AXRelationCache {
 
   // Helpers that call back into object cache
   AXObject* ObjectFromAXID(AXID) const;
-  AXObject* GetOrCreate(Node*);
+  AXObject* GetOrCreate(Node*, const AXObject* owner);
   AXObject* Get(Node*);
   void ChildrenChanged(AXObject*);
 

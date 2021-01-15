@@ -93,6 +93,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void SelectionChanged(Node*) override;
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);
+  void ChildrenChanged(AXObject*);
   void ChildrenChanged(Node*) override;
   void ChildrenChanged(const LayoutObject*) override;
   void ChildrenChanged(AccessibleNode*) override;
@@ -184,14 +185,17 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ObjectFromAXID(AXID id) const { return objects_.at(id); }
   AXObject* Root();
 
-  // Used for objects without backing elements.
-  AXObject* GetOrCreate(ax::mojom::blink::Role);
+  // Used for objects without backing DOM nodes, layout objects, etc.
+  AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
-  AXObject* GetOrCreate(AccessibleNode*);
-  AXObject* GetOrCreate(LayoutObject*) override;
-  AXObject* GetOrCreate(const Node*);
+  AXObject* GetOrCreate(AccessibleNode*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known) override;
+  AXObject* GetOrCreate(LayoutObject* layout_object);
+  AXObject* GetOrCreate(const Node*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(Node*, AXObject* parent_if_known);
   AXObject* GetOrCreate(Node*);
-  AXObject* GetOrCreate(AbstractInlineTextBox*);
+  AXObject* GetOrCreate(const Node*);
+  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
 
   AXID GetAXID(Node*) override;
   Element* GetElementFromAXID(AXID) override;
@@ -207,7 +211,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
-  void MaybeNewRelationTarget(Node* node, AXObject* obj);
+  // When an object is created or its id changes, this must be called so that
+  // the relation cache is updated.
+  void MaybeNewRelationTarget(Node& node, AXObject* obj);
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
@@ -292,6 +298,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
 
+#if DCHECK_IS_ON()
+  bool HasBeenDisposed() { return has_been_disposed_; }
+#endif
+
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
@@ -313,8 +323,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*, AXID use_axid = 0);
-  AXObject* CreateAndInit(LayoutObject*, AXID use_axid = 0);
+  AXObject* CreateAndInit(Node*, AXObject* parent_if_known, AXID use_axid = 0);
+  AXObject* CreateAndInit(LayoutObject*,
+                          AXObject* parent_if_known,
+                          AXID use_axid = 0);
 
   // Mark object as invalid and needing to be refreshed when layout is clean.
   // Will result in a new object with the same AXID, and will also call

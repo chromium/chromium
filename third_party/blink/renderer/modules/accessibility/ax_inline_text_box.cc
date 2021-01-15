@@ -163,17 +163,6 @@ String AXInlineTextBox::GetName(ax::mojom::blink::NameFrom& name_from,
   return inline_text_box_->GetText();
 }
 
-AXObject* AXInlineTextBox::ComputeParent() const {
-  DCHECK(!IsDetached());
-  if (!inline_text_box_ || !ax_object_cache_)
-    return nullptr;
-  LineLayoutText line_layout_text = inline_text_box_->GetLineLayoutItem();
-  if (!line_layout_text)
-    return nullptr;
-  return ax_object_cache_->GetOrCreate(
-      LineLayoutAPIShim::LayoutObjectFrom(line_layout_text));
-}
-
 // In addition to LTR and RTL direction, edit fields also support
 // top to bottom and bottom to top via the CSS writing-mode property.
 ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
@@ -211,7 +200,7 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   scoped_refptr<AbstractInlineTextBox> next_on_line =
       inline_text_box_->NextOnLine();
   if (next_on_line)
-    return ax_object_cache_->GetOrCreate(next_on_line.get());
+    return AXObjectCache().GetOrCreate(next_on_line.get(), parent_);
 
   return nullptr;
 }
@@ -226,7 +215,7 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   scoped_refptr<AbstractInlineTextBox> previous_on_line =
       inline_text_box_->PreviousOnLine();
   if (previous_on_line)
-    return ax_object_cache_->GetOrCreate(previous_on_line.get());
+    return AXObjectCache().GetOrCreate(previous_on_line.get(), parent_);
 
   return nullptr;
 }
@@ -321,8 +310,11 @@ void AXInlineTextBox::GetDocumentMarkers(
   }
 }
 
-void AXInlineTextBox::Init() {
+void AXInlineTextBox::Init(AXObject* parent) {
   role_ = ax::mojom::blink::Role::kInlineTextBox;
+  DCHECK(parent);
+  SetParent(parent);
+  UpdateCachedAttributeValuesIfNeeded(false);
 }
 
 void AXInlineTextBox::Detach() {

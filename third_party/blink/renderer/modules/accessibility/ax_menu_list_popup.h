@@ -60,7 +60,7 @@ class AXMenuListPopup final : public AXMockObject {
   void AddChildren() override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
-  AXMenuListOption* MenuListOptionAXObject(HTMLElement*) const;
+  AXMenuListOption* MenuListOptionAXObject(HTMLElement*);
   int GetSelectedIndex() const;
 
   // Note that this may be -1 if nothing is selected.

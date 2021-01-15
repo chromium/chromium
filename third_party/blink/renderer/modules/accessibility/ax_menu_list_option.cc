@@ -57,7 +57,7 @@ Element* AXMenuListOption::ActionElement() const {
   return element_;
 }
 
-AXObject* AXMenuListOption::ComputeParent() const {
+AXObject* AXMenuListOption::ComputeParentImpl() const {
   Node* node = GetNode();
   if (!node)
     return nullptr;
@@ -73,17 +73,20 @@ AXObject* AXMenuListOption::ComputeParent() const {
   if (!menu_list)
     return select_ax_object;
 
-  if (menu_list->HasChildren()) {
-    const auto& child_objects = menu_list->ChildrenIncludingIgnored();
-    if (child_objects.IsEmpty())
-      return nullptr;
-    DCHECK_EQ(child_objects.size(), 1UL);
-    DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
-    To<AXMenuListPopup>(child_objects[0].Get())->UpdateChildrenIfNecessary();
-  } else {
+  if (!menu_list->HasChildren()) {
     menu_list->UpdateChildrenIfNecessary();
   }
-  return parent_.Get();
+
+  const auto& child_objects = menu_list->ChildrenIncludingIgnored();
+  if (child_objects.IsEmpty())
+    return nullptr;
+  DCHECK_EQ(child_objects.size(), 1UL)
+      << "A menulist must have a single popup child";
+  DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
+  To<AXMenuListPopup>(child_objects[0].Get())->UpdateChildrenIfNecessary();
+
+  // Return the popup child, which is the parent of this AXMenuListOption.
+  return child_objects[0];
 }
 
 bool AXMenuListOption::IsVisible() const {
