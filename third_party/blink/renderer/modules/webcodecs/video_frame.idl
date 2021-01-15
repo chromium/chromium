@@ -45,9 +45,12 @@
   // TODO(sandersd): color space metadata.
   // TODO(sandersd): rotation metadata.
 
+  // DEPRECATED: use close() instead.
   // Release held resources immediately.
-  // TODO(sandersd): Describe how a destroyed VideoFrame acts.
-  void destroy();
+  [CallWith=ExecutionContext] void destroy();
+
+  // Release held resources.
+  void close();
 
   // Creates of the copy of this VideoFrame, which needs to be independently
   // destroyed.

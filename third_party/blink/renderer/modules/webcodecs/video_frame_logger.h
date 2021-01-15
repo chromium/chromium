@@ -16,12 +16,12 @@
 
 namespace blink {
 
-// This class is used to distribute a VideoFrameDestructionAuditor flag to
+// This class is used to distribute a VideoFrameCloseAuditor flag to
 // VideoFrameHandles. If a handle's destructor is run without having received a
-// call to Invalidate(), it will set |destruction_auditor_|. The
-// VideoFrameLogger periodically checks whether or not the flag is set, and
-// outputs an error message to the JS console, reminding developers to call
-// destroy() on their VideoFrames.
+// call to Invalidate(), it will set |close_auditor_|. The VideoFrameLogger
+// periodically checks whether or not the flag is set, and outputs an error
+// message to the JS console, reminding developers to call close() on their
+// VideoFrames.
 //
 // This class lets us avoid making VideoFrames ExecutionLifeCycleObservers,
 // which could add 1000s of observers per second. It also avoids the use of
@@ -31,21 +31,21 @@ class MODULES_EXPORT VideoFrameLogger
       public Supplement<ExecutionContext> {
  public:
   // Class that reports when blink::VideoFrames have been garbage collected
-  // without having destroy() called on them. This is a web page application
+  // without having close() called on them. This is a web page application
   // error which can cause a web page to stall.
-  class VideoFrameDestructionAuditor
-      : public WTF::ThreadSafeRefCounted<VideoFrameDestructionAuditor> {
+  class VideoFrameCloseAuditor
+      : public WTF::ThreadSafeRefCounted<VideoFrameCloseAuditor> {
    public:
-    void ReportUndestroyedFrame();
+    void ReportUnclosedFrame();
     void Clear();
 
-    bool were_frames_not_destroyed() { return were_frames_not_destroyed_; }
+    bool were_frames_not_closed() { return were_frames_not_closed_; }
 
    private:
-    friend class WTF::ThreadSafeRefCounted<VideoFrameDestructionAuditor>;
-    ~VideoFrameDestructionAuditor() = default;
+    friend class WTF::ThreadSafeRefCounted<VideoFrameCloseAuditor>;
+    ~VideoFrameCloseAuditor() = default;
 
-    bool were_frames_not_destroyed_ = false;
+    bool were_frames_not_closed_ = false;
   };
 
   static const char kSupplementName[];
@@ -59,19 +59,19 @@ class MODULES_EXPORT VideoFrameLogger
   VideoFrameLogger& operator=(const VideoFrameLogger&) = delete;
   VideoFrameLogger(const VideoFrameLogger&) = delete;
 
-  // Returns |destruction_auditor_| and starts |timer_| if needed.
-  scoped_refptr<VideoFrameDestructionAuditor> GetDestructionAuditor();
+  // Returns |close_auditor_| and starts |timer_| if needed.
+  scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
   void Trace(Visitor*) const override;
 
  private:
-  void LogDestructionErrors(TimerBase*);
+  void LogCloseErrors(TimerBase*);
 
   base::TimeTicks last_auditor_access_;
 
   std::unique_ptr<TimerBase> timer_;
 
-  scoped_refptr<VideoFrameDestructionAuditor> destruction_auditor_;
+  scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
 };
 
 }  // namespace blink

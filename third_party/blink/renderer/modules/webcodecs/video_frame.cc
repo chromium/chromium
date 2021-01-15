@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_factories.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -367,9 +368,17 @@ base::Optional<uint64_t> VideoFrame::duration() const {
   return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
-void VideoFrame::destroy() {
-  // TODO(tguilbert): Add a warning when destroying already destroyed frames?
+void VideoFrame::close() {
+  // TODO(tguilbert): Add a warning when closing already closed frames?
   handle_->Invalidate();
+}
+
+void VideoFrame::destroy(ExecutionContext* execution_context) {
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kDeprecation,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "VideoFrame.destroy() is deprecated; use VideoFrame.close()."));
+  close();
 }
 
 VideoFrame* VideoFrame::clone(ScriptState* script_state,
@@ -378,7 +387,7 @@ VideoFrame* VideoFrame::clone(ScriptState* script_state,
 
   if (!frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot clone destroyed VideoFrame.");
+                                      "Cannot clone closed VideoFrame.");
     return nullptr;
   }
 

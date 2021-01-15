@@ -135,7 +135,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   dummy_exception_state.ClearException();
   VideoFrame* video_frame = nullptr;
   auto chunk = CreateVideoFrameChunk(script_state, &video_frame);
-  video_frame->destroy();
+  video_frame->close();
   EXPECT_FALSE(dummy_exception_state.HadException());
   sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
               nullptr, dummy_exception_state);

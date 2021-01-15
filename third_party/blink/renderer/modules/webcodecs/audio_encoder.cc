@@ -97,7 +97,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
     media_encoder_->EncodeAudio(*audio_bus, time);
   }
 
-  frame->destroy();
+  frame->close();
 }
 
 void AudioEncoder::ProcessReconfigure(Request* request) {

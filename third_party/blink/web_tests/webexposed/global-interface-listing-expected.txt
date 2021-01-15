@@ -8830,6 +8830,7 @@ interface VideoFrame
     getter planes
     getter timestamp
     method clone
+    method close
     method constructor
     method createImageBitmap
     method destroy

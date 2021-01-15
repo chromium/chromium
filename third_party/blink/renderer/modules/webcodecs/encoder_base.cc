@@ -122,18 +122,18 @@ void EncoderBase<Traits>::encode(FrameType* frame,
     return;
   }
 
-  // This will fail if |frame| is already destroyed.
+  // This will fail if |frame| is already closed.
   auto* internal_frame = CloneFrame(frame, context);
 
   if (!internal_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Cannot encode destroyed frame.");
+                                      "Cannot encode closed frame.");
     return;
   }
 
-  // At this point, we have "consumed" the frame, and will destroy the clone
-  // in ProcessEncode().
-  frame->destroy();
+  // At this point, we have "consumed" the frame, and will close the clone in
+  // ProcessEncode().
+  frame->close();
 
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
@@ -198,7 +198,7 @@ void EncoderBase<Traits>::ResetInternal() {
     if (pending_req->resolver)
       pending_req->resolver.Release()->Resolve();
     if (pending_req->frame)
-      pending_req->frame.Release()->destroy();
+      pending_req->frame.Release()->close();
   }
   stall_request_processing_ = false;
 }

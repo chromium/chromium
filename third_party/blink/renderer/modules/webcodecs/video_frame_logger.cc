@@ -15,21 +15,20 @@ constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kTimerShutdownDelay =
     base::TimeDelta::FromSeconds(60);
 
-void VideoFrameLogger::VideoFrameDestructionAuditor::ReportUndestroyedFrame() {
-  were_frames_not_destroyed_ = true;
+void VideoFrameLogger::VideoFrameCloseAuditor::ReportUnclosedFrame() {
+  were_frames_not_closed_ = true;
 }
 
-void VideoFrameLogger::VideoFrameDestructionAuditor::Clear() {
-  were_frames_not_destroyed_ = false;
+void VideoFrameLogger::VideoFrameCloseAuditor::Clear() {
+  were_frames_not_closed_ = false;
 }
 
 VideoFrameLogger::VideoFrameLogger(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
-      destruction_auditor_(
-          base::MakeRefCounted<VideoFrameDestructionAuditor>()) {
+      close_auditor_(base::MakeRefCounted<VideoFrameCloseAuditor>()) {
   timer_ = std::make_unique<TaskRunnerTimer<VideoFrameLogger>>(
       context.GetTaskRunner(TaskType::kInternalMedia), this,
-      &VideoFrameLogger::LogDestructionErrors);
+      &VideoFrameLogger::LogCloseErrors);
 }
 
 // static
@@ -44,30 +43,29 @@ VideoFrameLogger& VideoFrameLogger::From(ExecutionContext& context) {
   return *supplement;
 }
 
-scoped_refptr<VideoFrameLogger::VideoFrameDestructionAuditor>
-VideoFrameLogger::GetDestructionAuditor() {
-  // We cannot directly log destruction errors: they are detected during
-  // garbage collection, and it would be unsafe to access GC'ed objects from
-  // a GC'ed object's destructor. Instead, start a timer here to periodically
-  // poll for these errors. The timer should stop itself after a period of
-  // inactivity.
+scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor>
+VideoFrameLogger::GetCloseAuditor() {
+  // We cannot directly log close errors: they are detected during garbage
+  // collection, and it would be unsafe to access GC'ed objects from a GC'ed
+  // object's destructor. Instead, start a timer here to periodically poll for
+  // these errors. The timer should stop itself after a period of inactivity.
   if (!timer_->IsActive())
     timer_->StartRepeating(kTimerInterval, FROM_HERE);
 
   last_auditor_access_ = base::TimeTicks::Now();
 
-  return destruction_auditor_;
+  return close_auditor_;
 }
 
-void VideoFrameLogger::LogDestructionErrors(TimerBase*) {
+void VideoFrameLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.
   if (base::TimeTicks::Now() - last_auditor_access_ > kTimerShutdownDelay &&
-      destruction_auditor_->HasOneRef()) {
+      close_auditor_->HasOneRef()) {
     timer_->Stop();
   }
 
-  if (!destruction_auditor_->were_frames_not_destroyed())
+  if (!close_auditor_->were_frames_not_closed())
     return;
 
   auto* execution_context = GetSupplementable();
@@ -75,12 +73,12 @@ void VideoFrameLogger::LogDestructionErrors(TimerBase*) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kError,
-        "A VideoFrame was garbage collected without being destroyed. "
-        "Applications should call destroy() on frames when done with them to "
+        "A VideoFrame was garbage collected without being closed. "
+        "Applications should call close() on frames when done with them to "
         "prevent stalls."));
   }
 
-  destruction_auditor_->Clear();
+  close_auditor_->Clear();
 }
 
 void VideoFrameLogger::Trace(Visitor* visitor) const {

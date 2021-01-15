@@ -37,7 +37,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of
-  // the frames receives a call to destroy().
+  // the frames receives a call to close().
   explicit VideoFrame(scoped_refptr<VideoFrameHandle> handle);
 
   // video_frame.idl implementation.
@@ -65,10 +65,13 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
-  void destroy();
+  void close();
 
-  // Creates a copy of |this|, with a new Handle, referencing the same
-  // media::VideoFrame. The cloned frame will not be destroyed when |this| is,
+  // DEPRECATED. Alias for close().
+  void destroy(ExecutionContext*);
+
+  // Creates a clone of |this|, with a new Handle, referencing the same
+  // media::VideoFrame. The cloned frame will not be closed when |this| is,
   // and its lifetime should be independently managed.
   VideoFrame* clone(ScriptState*, ExceptionState&);
   VideoFrame* CloneFromNative(ExecutionContext*);

@@ -70,7 +70,7 @@ void Plane::readInto(MaybeShared<DOMArrayBufferView> dst,
   auto local_frame = handle_->frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot read from destroyed VideoFrame.");
+                                      "Cannot read from closed VideoFrame.");
     return;
   }
 
