@@ -292,8 +292,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Sends the thumbnail image data.
   void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
 
-  // Bound the given scroll offset to the document.
-  gfx::PointF BoundScrollOffsetToDocument(const gfx::PointF& scroll_offset);
+  // Bound the given scroll position to the document.
+  gfx::PointF BoundScrollPositionToDocument(const gfx::PointF& scroll_position);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -344,8 +344,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // The current cursor.
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
 
-  // The scroll offset in CSS pixels.
-  gfx::Point scroll_offset_;
+  // The scroll position in CSS pixels.
+  gfx::Point scroll_position_;
 
   // Enumeration of pinch states.
   // This should match PinchPhase enum in
@@ -362,7 +362,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool needs_reraster_ = true;
   // The scroll position for the last raster, before any transformations are
   // applied.
-  gfx::PointF scroll_offset_at_last_raster_;
+  gfx::PointF scroll_position_at_last_raster_;
   // True if last bitmap was smaller than screen.
   bool last_bitmap_smaller_ = false;
   // True if the plugin is full-page.

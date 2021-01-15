@@ -855,7 +855,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   }
 
   if (!stop_scrolling_) {
-    scroll_offset_ = PointFromPPPoint(view.GetScrollOffset());
+    scroll_position_ = PointFromPPPoint(view.GetScrollOffset());
     UpdateScroll();
   }
 }
@@ -867,12 +867,12 @@ void OutOfProcessInstance::UpdateScroll() {
   // are 0-based (i.e. they do not correspond to the viewport's coordinates in
   // JS), so we need to subtract the toolbar height to convert them into
   // viewport coordinates.
-  gfx::PointF scroll_offset_float(
-      scroll_offset_.x(),
-      scroll_offset_.y() - top_toolbar_height_in_viewport_coords());
-  scroll_offset_float = BoundScrollOffsetToDocument(scroll_offset_float);
-  engine()->ScrolledToXPosition(scroll_offset_float.x() * device_scale());
-  engine()->ScrolledToYPosition(scroll_offset_float.y() * device_scale());
+  gfx::PointF scroll_position_float(
+      scroll_position_.x(),
+      scroll_position_.y() - top_toolbar_height_in_viewport_coords());
+  scroll_position_float = BoundScrollPositionToDocument(scroll_position_float);
+  engine()->ScrolledToXPosition(scroll_position_float.x() * device_scale());
+  engine()->ScrolledToYPosition(scroll_position_float.y() * device_scale());
 }
 
 void OutOfProcessInstance::DidChangeFocus(bool has_focus) {
@@ -1972,7 +1972,7 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
 
   int x = dict.Get(pp::Var(kJSUpdateScrollX)).AsInt();
   int y = dict.Get(pp::Var(kJSUpdateScrollY)).AsInt();
-  scroll_offset_ = gfx::Point(x, y);
+  scroll_position_ = gfx::Point(x, y);
   UpdateScroll();
 }
 
@@ -2001,11 +2001,11 @@ void OutOfProcessInstance::HandleViewportMessage(
   double new_zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
   double zoom_ratio = new_zoom / zoom();
 
-  gfx::PointF scroll_offset(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
-                            dict.Get(pp::Var(kJSYOffset)).AsDouble());
+  gfx::PointF scroll_position(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
+                              dict.Get(pp::Var(kJSYOffset)).AsDouble());
 
   if (pinch_phase == PINCH_START) {
-    scroll_offset_at_last_raster_ = scroll_offset;
+    scroll_position_at_last_raster_ = scroll_position;
     last_bitmap_smaller_ = false;
     needs_reraster_ = false;
     return;
@@ -2044,9 +2044,9 @@ void OutOfProcessInstance::HandleViewportMessage(
       // We want to keep the paint in the middle but it must stay in the same
       // position relative to the scroll bars.
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
-      scroll_delta = gfx::Vector2d(
-          0,
-          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
+      scroll_delta =
+          gfx::Vector2d(0, (scroll_position.y() -
+                            scroll_position_at_last_raster_.y() * zoom_ratio));
 
       pinch_vector = gfx::Vector2d();
       last_bitmap_smaller_ = true;
@@ -2059,9 +2059,11 @@ void OutOfProcessInstance::HandleViewportMessage(
           (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
       pinch_vector = gfx::Vector2d();
-      scroll_delta = gfx::Vector2d(
-          (scroll_offset.x() - scroll_offset_at_last_raster_.x() * zoom_ratio),
-          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
+      scroll_delta =
+          gfx::Vector2d((scroll_position.x() -
+                         scroll_position_at_last_raster_.x() * zoom_ratio),
+                        (scroll_position.y() -
+                         scroll_position_at_last_raster_.y() * zoom_ratio));
     }
 
     paint_manager().SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
@@ -2081,9 +2083,9 @@ void OutOfProcessInstance::HandleViewportMessage(
     needs_reraster_ = true;
 
     // If we're rerastering due to zooming out, we need to update
-    // |scroll_offset_at_last_raster_|, in case the user continues the
+    // |scroll_position_at_last_raster_|, in case the user continues the
     // gesture by zooming in.
-    scroll_offset_at_last_raster_ = scroll_offset;
+    scroll_position_at_last_raster_ = scroll_position;
   }
 
   // Bound the input parameters.
@@ -2091,9 +2093,9 @@ void OutOfProcessInstance::HandleViewportMessage(
   DCHECK(dict.Get(pp::Var(kJSUserInitiated)).is_bool());
 
   SetZoom(new_zoom);
-  scroll_offset = BoundScrollOffsetToDocument(scroll_offset);
-  engine()->ScrolledToXPosition(scroll_offset.x() * device_scale());
-  engine()->ScrolledToYPosition(scroll_offset.y() * device_scale());
+  scroll_position = BoundScrollPositionToDocument(scroll_position);
+  engine()->ScrolledToXPosition(scroll_position.x() * device_scale());
+  engine()->ScrolledToYPosition(scroll_position.y() * device_scale());
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {
@@ -2493,17 +2495,17 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
 }
 
-gfx::PointF OutOfProcessInstance::BoundScrollOffsetToDocument(
-    const gfx::PointF& scroll_offset) {
+gfx::PointF OutOfProcessInstance::BoundScrollPositionToDocument(
+    const gfx::PointF& scroll_position) {
   float max_x = std::max(
       document_size().width() * float{zoom()} - plugin_dip_size().width(),
       0.0f);
-  float x = base::ClampToRange(scroll_offset.x(), 0.0f, max_x);
+  float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
   float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
       document_size().height() * float{zoom()} - plugin_dip_size().height(),
       min_y);
-  float y = base::ClampToRange(scroll_offset.y(), min_y, max_y);
+  float y = base::ClampToRange(scroll_position.y(), min_y, max_y);
   return gfx::PointF(x, y);
 }
 
