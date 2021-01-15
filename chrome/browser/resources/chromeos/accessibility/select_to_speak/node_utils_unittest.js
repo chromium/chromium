@@ -840,6 +840,84 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getPositionFromNodeGroup', function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51. The first and the
+      // second inline text nodes belong to one parent, and the third and the
+      // forth inline text nodes belong to another parent.
+      const nodeGroup = generateTestNodeGroup();
+
+      let testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[0].node.children[0]);
+      assertEquals(testPosition.offset, 0);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 4 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[0].node.children[0]);
+      assertEquals(testPosition.offset, 4);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 10 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[0].node.children[1]);
+      assertEquals(testPosition.offset, 1);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 20 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[1].node.children[0]);
+      assertEquals(testPosition.offset, 0);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 30 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[1].node.children[1]);
+      assertEquals(testPosition.offset, 0);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 39 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[1].node.children[1]);
+      assertEquals(testPosition.offset, 9);
+
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 52 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[2].node);
+      assertEquals(testPosition.offset, 1);
+
+      // The index is out of the text of the node group, fallback to the end.
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 100 /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[2].node);
+      assertEquals(testPosition.offset, 18);
+
+      // The index is out of the text of the node group, fall back to the start.
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 100 /* charIndex */, false /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[0].node.children[0]);
+      assertEquals(testPosition.offset, 0);
+
+      // The index is undefined, fallback to the end.
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, undefined /* charIndex */, true /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[2].node);
+      assertEquals(testPosition.offset, 18);
+
+      // The index is undefined, fall back to the start.
+      testPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, undefined /* charIndex */, false /* fallbackToEnd */);
+      assertEquals(testPosition.node, nodeGroup.nodes[0].node.children[0]);
+      assertEquals(testPosition.offset, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroup_emptyNodeGroup', function() {
+      const nodeGroup = {nodes: []};
+      const result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+      assertEquals(result.offset, -1);
+    });
+
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_forward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -1011,6 +1089,48 @@ SYNC_TEST_F(
       assertEquals(result.nodes.length, 1);
       assertEquals(result.nodes[0].name, 'Sentence');
       assertEquals(result.offset, 8);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getDirectionBetweenPositions',
+    function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51. The first and the
+      // second inline text nodes belong to one parent, and the third and the
+      // forth inline text nodes belong to another parent.
+      const nodeGroup = generateTestNodeGroup();
+
+      let startPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 0, true /* fallbackToEnd */);
+      let endPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 1, true /* fallbackToEnd */);
+      assertEquals(
+          NodeUtils.getDirectionBetweenPositions(startPosition, endPosition),
+          constants.Dir.FORWARD);
+
+      startPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 1, true /* fallbackToEnd */);
+      endPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 10, true /* fallbackToEnd */);
+      assertEquals(
+          NodeUtils.getDirectionBetweenPositions(startPosition, endPosition),
+          constants.Dir.FORWARD);
+
+      startPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 20, true /* fallbackToEnd */);
+      endPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 6, true /* fallbackToEnd */);
+      assertEquals(
+          NodeUtils.getDirectionBetweenPositions(startPosition, endPosition),
+          constants.Dir.BACKWARD);
+
+      startPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 8, true /* fallbackToEnd */);
+      endPosition = NodeUtils.getPositionFromNodeGroup(
+          nodeGroup, 8, true /* fallbackToEnd */);
+      assertEquals(
+          NodeUtils.getDirectionBetweenPositions(startPosition, endPosition),
+          constants.Dir.BACKWARD);
     });
 
 /**

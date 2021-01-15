@@ -574,6 +574,14 @@ ParagraphUtils.NodeGroup = class {
      * @type {string|undefined}
      */
     this.detectedLanguage = undefined;
+
+    /**
+     * The offset marks the end index of selected content in this nodeGroup. For
+     * example, if a user selects a part of a paragraph, we will remove all text
+     * after the |endOffset| so it is not spoken.
+     * @type {number|undefined}
+     */
+    this.endOffset;
   }
 };
 
