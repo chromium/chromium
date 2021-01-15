@@ -11,11 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
@@ -69,9 +67,6 @@ import org.chromium.contextual_search.mojom.OverlayPosition;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Manages the Contextual Search feature. This class keeps track of the status of Contextual
@@ -378,16 +373,12 @@ public class ContextualSearchManager
         return mSelectionController.getBaseWebContents();
     }
 
-    /** @return The Base Page's {@link URL}. */
+    /** @return The Base Page's {@link GURL}. */
     @Nullable
-    private URL getBasePageURL() {
+    private GURL getBasePageURL() {
         WebContents baseWebContents = mSelectionController.getBaseWebContents();
         if (baseWebContents == null) return null;
-        try {
-            return new URL(baseWebContents.getVisibleUrl().getSpec());
-        } catch (MalformedURLException e) {
-            return null;
-        }
+        return baseWebContents.getVisibleUrl();
     }
 
     /** Notifies that the base page has started loading a page. */
@@ -539,15 +530,10 @@ public class ContextualSearchManager
 
     @Override
     @Nullable
-    public URL getBasePageUrl() {
+    public GURL getBasePageUrl() {
         WebContents baseWebContents = getBaseWebContents();
         if (baseWebContents == null) return null;
-
-        try {
-            return new URL(baseWebContents.getLastCommittedUrl());
-        } catch (MalformedURLException e) {
-            return null;
-        }
+        return baseWebContents.getLastCommittedUrl();
     }
 
     /** Accessor for the {@code InfoBarContainer} currently attached to the {@code Tab}. */
@@ -1232,7 +1218,9 @@ public class ContextualSearchManager
         // this problem, we are ignoring tap gestures in the Search Bar if we don't know what
         // to search for.
         if (mSearchRequest != null && getSearchPanelWebContents() != null) {
-            String url = getContentViewUrl(getSearchPanelWebContents());
+            GURL gurl = getContentViewUrl(getSearchPanelWebContents());
+            // TODO(yfriedman): crbug/783819 - Finish ContextualSearch migration to gurl.
+            String url = gurl.getSpec();
 
             // If it's a search URL, format it so the SearchBox becomes visible.
             if (mSearchRequest.isContextualSearchUrl(url)) {
@@ -1253,11 +1241,11 @@ public class ContextualSearchManager
      * @param searchWebContents The given WebContents.
      * @return The current loaded URL.
      */
-    private String getContentViewUrl(WebContents searchWebContents) {
+    private GURL getContentViewUrl(WebContents searchWebContents) {
         // First, check the pending navigation entry, because there might be an navigation
         // not yet committed being processed. Otherwise, get the URL from the WebContents.
         NavigationEntry entry = searchWebContents.getNavigationController().getPendingEntry();
-        return entry != null ? entry.getUrl().getSpec() : searchWebContents.getLastCommittedUrl();
+        return entry != null ? entry.getUrl() : searchWebContents.getLastCommittedUrl();
     }
 
     @Override

@@ -85,7 +85,10 @@ public class JavascriptAppModalDialogTest {
         onView(withText(R.string.cancel)).perform(click());
 
         Assert.assertEquals(BEFORE_UNLOAD_URL,
-                mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl());
+                mActivityTestRule.getActivity()
+                        .getCurrentWebContents()
+                        .getLastCommittedUrl()
+                        .getSpec());
         executeJavaScriptAndWaitForDialog("history.back();");
 
         jsDialog = getCurrentDialog();
@@ -98,7 +101,10 @@ public class JavascriptAppModalDialogTest {
         onView(withText(R.string.leave)).perform(click());
         onPageLoaded.waitForCallback(callCount);
         Assert.assertEquals(EMPTY_PAGE,
-                mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl());
+                mActivityTestRule.getActivity()
+                        .getCurrentWebContents()
+                        .getLastCommittedUrl()
+                        .getSpec());
     }
 
     /**
@@ -165,7 +171,10 @@ public class JavascriptAppModalDialogTest {
         Assert.assertNotNull("No dialog showing.", jsDialog);
         onView(withText(R.string.cancel)).perform(click());
         Assert.assertEquals(BEFORE_UNLOAD_URL,
-                mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl());
+                mActivityTestRule.getActivity()
+                        .getCurrentWebContents()
+                        .getLastCommittedUrl()
+                        .getSpec());
 
         // Show it again, it should have the option to suppress subsequent dialogs.
         OnEvaluateJavaScriptResultHelper resultHelper =
@@ -178,7 +187,10 @@ public class JavascriptAppModalDialogTest {
                 .check(matches(isChecked()));
         onView(withText(R.string.cancel)).perform(click());
         Assert.assertEquals(BEFORE_UNLOAD_URL,
-                mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl());
+                mActivityTestRule.getActivity()
+                        .getCurrentWebContents()
+                        .getLastCommittedUrl()
+                        .getSpec());
 
         // Try showing a dialog again and verify it is not shown.
         resultHelper.evaluateJavaScriptForTests(

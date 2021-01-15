@@ -292,7 +292,7 @@ public interface WebContents extends Parcelable {
      *
      * @return The last committed URL.
      */
-    String getLastCommittedUrl();
+    GURL getLastCommittedUrl();
 
     /**
      * Get the InCognito state of WebContents.

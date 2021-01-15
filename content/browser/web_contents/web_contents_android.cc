@@ -422,11 +422,11 @@ jint WebContentsAndroid::GetBackgroundColor(JNIEnv* env,
   return *rwhva->GetCachedBackgroundColor();
 }
 
-ScopedJavaLocalRef<jstring> WebContentsAndroid::GetLastCommittedURL(
+ScopedJavaLocalRef<jobject> WebContentsAndroid::GetLastCommittedURL(
     JNIEnv* env,
     const JavaParamRef<jobject>&) const {
-  return ConvertUTF8ToJavaString(env,
-                                 web_contents_->GetLastCommittedURL().spec());
+  return url::GURLAndroid::FromNativeGURL(env,
+                                          web_contents_->GetLastCommittedURL());
 }
 
 jboolean WebContentsAndroid::IsIncognito(JNIEnv* env,

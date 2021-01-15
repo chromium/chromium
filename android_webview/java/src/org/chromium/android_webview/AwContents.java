@@ -2059,7 +2059,8 @@ public class AwContents implements SmartClipProvider {
         }
 
         // If we are reloading the same url, then set transition type as reload.
-        if (params.getUrl() != null && params.getUrl().equals(mWebContents.getLastCommittedUrl())
+        if (params.getUrl() != null
+                && params.getUrl().equals(mWebContents.getLastCommittedUrl().getSpec())
                 && params.getTransitionType() == PageTransition.TYPED) {
             params.setTransitionType(PageTransition.RELOAD);
         }
@@ -2131,9 +2132,9 @@ public class AwContents implements SmartClipProvider {
      */
     public String getLastCommittedUrl() {
         if (isDestroyed(NO_WARN)) return null;
-        String url = mWebContents.getLastCommittedUrl();
-        if (url == null || url.trim().isEmpty()) return null;
-        return url;
+        GURL url = mWebContents.getLastCommittedUrl();
+        if (url == null || url.isEmpty()) return null;
+        return url.getSpec();
     }
 
     public void requestFocus() {

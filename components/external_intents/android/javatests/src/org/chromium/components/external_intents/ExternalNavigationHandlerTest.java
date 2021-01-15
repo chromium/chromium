@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.net.URISyntaxException;
@@ -1376,8 +1377,8 @@ public class ExternalNavigationHandlerTest {
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
 
-        mUrlHandler.mLastCommittedUrl = "https://refertest.com";
-        checkUrl("http://refertest.com")
+        mUrlHandler.mLastCommittedUrl = new GURL("https://refertest.com");
+        checkUrl("https://refertest.com")
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
@@ -1980,7 +1981,7 @@ public class ExternalNavigationHandlerTest {
 
     private static class ExternalNavigationHandlerForTesting extends ExternalNavigationHandler {
         public String defaultSmsPackageName;
-        public String mLastCommittedUrl;
+        public GURL mLastCommittedUrl;
         public boolean mIsSerpReferrer;
         public boolean mShouldRequestFileAccess;
         public String mNewUrlAfterClobbering;
@@ -2018,7 +2019,7 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected String getLastCommittedUrl() {
+        protected GURL getLastCommittedUrl() {
             return mLastCommittedUrl;
         }
 

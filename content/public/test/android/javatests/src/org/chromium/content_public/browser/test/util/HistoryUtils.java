@@ -109,7 +109,7 @@ public class HistoryUtils {
                 instrumentation, new Callable<String>() {
                     @Override
                     public String call() {
-                        return webContents.getLastCommittedUrl();
+                        return webContents.getLastCommittedUrl().getSpec();
                     }
                 });
     }

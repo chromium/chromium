@@ -1270,7 +1270,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
         final FaviconHelper faviconHelper = new FaviconHelper();
         faviconHelper.getLocalFaviconImageForURL(Profile.fromWebContents(mWebContents),
-                mWebContents.getLastCommittedUrl(),
+                mWebContents.getLastCommittedUrl().getSpec(),
                 activity.getResources().getDimensionPixelSize(R.dimen.payments_favicon_size),
                 (bitmap, iconUrl) -> {
                     if (bitmap == null) {

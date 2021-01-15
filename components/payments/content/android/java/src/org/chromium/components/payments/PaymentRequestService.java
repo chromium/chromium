@@ -226,7 +226,7 @@ public class PaymentRequestService
          * @param url The URL to check.
          * @return Whether the origin of the URL is secure.
          */
-        default boolean isOriginSecure(String url) {
+        default boolean isOriginSecure(GURL url) {
             return OriginSecurityChecker.isOriginSecure(url);
         }
 
@@ -263,7 +263,7 @@ public class PaymentRequestService
          * @param url The URL to check.
          * @return Whether the page is allowed to use web payment APIs.
          */
-        default boolean isOriginAllowedToUseWebPaymentApis(String url) {
+        default boolean isOriginAllowedToUseWebPaymentApis(GURL url) {
             return UrlUtil.isOriginAllowedToUseWebPaymentApis(url);
         }
 
@@ -429,7 +429,8 @@ public class PaymentRequestService
             return false;
         }
         // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
-        mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
+        mTopLevelOrigin =
+                mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl().getSpec());
 
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = mDelegate.getCertificateChain(mWebContents);

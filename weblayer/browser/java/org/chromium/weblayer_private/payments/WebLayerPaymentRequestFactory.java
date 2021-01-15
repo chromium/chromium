@@ -25,6 +25,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.MojoResult;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.TabImpl;
 
@@ -63,7 +64,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (webContents == null || webContents.isDestroyed()) return null;
 
-            String url = webContents.getLastCommittedUrl();
+            GURL url = webContents.getLastCommittedUrl();
             if (url == null || !OriginSecurityChecker.isSchemeCryptographic(url)) {
                 return null;
             }

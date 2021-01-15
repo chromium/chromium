@@ -57,6 +57,7 @@ import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.PermissionCallback;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
@@ -938,9 +939,9 @@ public class ExternalNavigationHandler {
 
         // TODO(https://crbug.com/1009539): Replace this host parsing with a UrlUtilities or GURL
         //   function call.
-        String lastCommittedUrl = getLastCommittedUrl();
+        GURL lastCommittedUrl = getLastCommittedUrl();
         String previousUriString =
-                lastCommittedUrl != null ? lastCommittedUrl : params.getReferrerUrl();
+                lastCommittedUrl != null ? lastCommittedUrl.getSpec() : params.getReferrerUrl();
         if (previousUriString == null || (!isLink && !isFormSubmit)) return false;
 
         URI currentUri;
@@ -1793,7 +1794,7 @@ public class ExternalNavigationHandler {
      * @return The last committed URL from the WebContents.
      */
     @VisibleForTesting
-    protected String getLastCommittedUrl() {
+    protected GURL getLastCommittedUrl() {
         if (mDelegate.getWebContents() == null) return null;
         return mDelegate.getWebContents().getLastCommittedUrl();
     }

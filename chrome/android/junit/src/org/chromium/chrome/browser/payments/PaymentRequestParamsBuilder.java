@@ -36,6 +36,8 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
@@ -69,7 +71,9 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         mPaymentUiService = paymentUiService;
         mJourneyLogger = Mockito.mock(JourneyLogger.class);
         mWebContents = Mockito.mock(WebContents.class);
-        Mockito.doReturn("https://top.level.origin").when(mWebContents).getLastCommittedUrl();
+        Mockito.doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1))
+                .when(mWebContents)
+                .getLastCommittedUrl();
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
         Mockito.doReturn("https://frame.origin").when(mRenderFrameHost).getLastCommittedURL();
         Origin origin = Mockito.mock(Origin.class);
@@ -144,7 +148,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public boolean isOriginSecure(String url) {
+    public boolean isOriginSecure(GURL url) {
         return true;
     }
 
@@ -164,7 +168,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public boolean isOriginAllowedToUseWebPaymentApis(String url) {
+    public boolean isOriginAllowedToUseWebPaymentApis(GURL url) {
         return true;
     }
 

@@ -31,6 +31,7 @@ import org.chromium.services.media_session.MediaImage;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.List;
@@ -440,7 +441,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         // Don't waste time trying to find it.
         if (!mMaybeHasFavicon) return false;
 
-        String pageUrl = mWebContents.getLastCommittedUrl();
+        GURL pageUrl = mWebContents.getLastCommittedUrl();
         int size = MediaNotificationImageUtils.MINIMAL_MEDIA_IMAGE_SIZE_PX;
         if (mLargeIconBridge == null) {
             mLargeIconBridge = new LargeIconBridge(mDelegate.getBrowserContextHandle());
@@ -453,7 +454,7 @@ public class MediaSessionHelper implements MediaImageCallback {
             }
         };
 
-        return mLargeIconBridge.getLargeIconForStringUrl(pageUrl, size, callback);
+        return mLargeIconBridge.getLargeIconForUrl(pageUrl, size, callback);
     }
 
     /**

@@ -12,6 +12,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
@@ -62,7 +63,7 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
   } else if (ShouldShowChangePasswordButton()) {
     Java_PasswordChangeLauncher_start(
         env, window_android_->GetJavaObject(),
-        base::android::ConvertUTF8ToJavaString(env, origin_.spec()),
+        url::GURLAndroid::FromNativeGURL(env, origin_),
         base::android::ConvertUTF16ToJavaString(env, username_));
   }
 

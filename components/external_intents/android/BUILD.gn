@@ -86,6 +86,8 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
     "//ui/android:ui_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
     "//url:origin_java",
   ]
 }

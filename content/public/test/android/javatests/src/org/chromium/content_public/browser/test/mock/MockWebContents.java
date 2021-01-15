@@ -184,7 +184,7 @@ public class MockWebContents implements WebContents {
             int startAdjust, int endAdjust, boolean showSelectionMenu) {}
 
     @Override
-    public String getLastCommittedUrl() {
+    public GURL getLastCommittedUrl() {
         return null;
     }
 

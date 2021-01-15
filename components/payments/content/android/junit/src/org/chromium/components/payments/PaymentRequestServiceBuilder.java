@@ -17,6 +17,8 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.Origin;
 
 import java.util.Collection;
@@ -60,7 +62,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
             JourneyLogger journeyLogger) {
         mDelegate = this;
         mWebContents = Mockito.mock(WebContents.class);
-        setTopLevelOrigin("https://top.level.origin");
+        setTopLevelOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
         setFrameOrigin("https://frame.origin");
         Origin origin = Mockito.mock(Origin.class);
@@ -122,7 +124,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     }
 
     @Override
-    public boolean isOriginSecure(String url) {
+    public boolean isOriginSecure(GURL url) {
         return mIsOriginSecure;
     }
 
@@ -142,7 +144,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     }
 
     @Override
-    public boolean isOriginAllowedToUseWebPaymentApis(String lastCommittedUrl) {
+    public boolean isOriginAllowedToUseWebPaymentApis(GURL lastCommittedUrl) {
         return mIsOriginAllowedToUseWebPaymentApis;
     }
 
@@ -230,7 +232,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setTopLevelOrigin(String topLevelOrigin) {
+    /* package */ PaymentRequestServiceBuilder setTopLevelOrigin(GURL topLevelOrigin) {
         Mockito.doReturn(topLevelOrigin).when(mWebContents).getLastCommittedUrl();
         return this;
     }

@@ -16,9 +16,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.url.GURL;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -558,17 +557,12 @@ class ContextualSearchFakeServer
 
     @Override
     @Nullable
-    public URL getBasePageUrl() {
-        URL baseUrl = mBaseManager.getBasePageUrl();
+    public GURL getBasePageUrl() {
+        GURL baseUrl = mBaseManager.getBasePageUrl();
         if (baseUrl != null) {
-            try {
-                // Return plain HTTP URLs so we can test that we don't give them our legacy privacy
-                // exceptions.
-                return new URL(baseUrl.toString().replace("https://", "http://"));
-            } catch (MalformedURLException e) {
-                // TODO(donnd): Replace Auto-generated catch block
-                e.printStackTrace();
-            }
+            // Return plain HTTP URLs so we can test that we don't give them our legacy privacy
+            // exceptions.
+            return new GURL(baseUrl.getSpec().replace("https://", "http://"));
         }
         return baseUrl;
     }

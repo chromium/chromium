@@ -28,8 +28,9 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
@@ -349,7 +350,7 @@ class ContextualSearchPolicy {
         // and it's also possible that public pages, e.g. news, have more searches for multi-word
         // entities like people.
         if (!isUserUndecided()) {
-            URL url = mNetworkCommunicator.getBasePageUrl();
+            GURL url = mNetworkCommunicator.getBasePageUrl();
             ContextualSearchUma.logBasePageProtocol(isBasePageHTTP(url));
             boolean isSingleWord = !CONTAINS_WHITESPACE_PATTERN.matcher(searchTerm.trim()).find();
             ContextualSearchUma.logSearchTermResolvedWords(isSingleWord);
@@ -388,10 +389,9 @@ class ContextualSearchPolicy {
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return false;
 
         // Only allow HTTP or HTTPS URLs.
-        URL url = mNetworkCommunicator.getBasePageUrl();
-        String urlProtocol = url != null ? url.getProtocol() : "";
-        if (!(urlProtocol.equals(UrlConstants.HTTP_SCHEME)
-                    || urlProtocol.equals(UrlConstants.HTTPS_SCHEME))) {
+        GURL url = mNetworkCommunicator.getBasePageUrl();
+
+        if (url == null || !UrlUtilities.isHttpOrHttps(url)) {
             return false;
         }
 
@@ -523,8 +523,8 @@ class ContextualSearchPolicy {
      * @param url The URL of the base page.
      * @return Whether the given content view is for an HTTP page.
      */
-    boolean isBasePageHTTP(@Nullable URL url) {
-        return url != null && UrlConstants.HTTP_SCHEME.equals(url.getProtocol());
+    boolean isBasePageHTTP(@Nullable GURL url) {
+        return url != null && UrlConstants.HTTP_SCHEME.equals(url.getScheme());
     }
 
     // --------------------------------------------------------------------------------------------

@@ -45,6 +45,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -423,8 +424,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return;
 
-        String url = webContents.getLastCommittedUrl();
-        if (url == null) return;
+        GURL url = webContents.getLastCommittedUrl();
 
         onStartedReaderMode();
 
@@ -461,15 +461,14 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return;
 
-        String url = webContents.getLastCommittedUrl();
-        if (url == null) return;
+        GURL url = webContents.getLastCommittedUrl();
 
         onStartedReaderMode();
 
         DomDistillerTabUtils.distillCurrentPage(webContents);
 
         String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                DOM_DISTILLER_SCHEME, url, webContents.getTitle());
+                DOM_DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);

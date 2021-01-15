@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Class for starting a password change flow in Autofill Assistant. */
 public class PasswordChangeLauncher {
@@ -26,7 +27,7 @@ public class PasswordChangeLauncher {
     private static final String INTENT = "PASSWORD_CHANGE";
 
     @CalledByNative
-    public static void start(WindowAndroid windowAndroid, String origin, String username) {
+    public static void start(WindowAndroid windowAndroid, GURL origin, String username) {
         ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
         if (activity == null) {
             Log.v(TAG, "Failed to retrieve ChromeActivity.");
@@ -34,7 +35,7 @@ public class PasswordChangeLauncher {
         }
         AutofillAssistantFacade.start(activity,
                 AutofillAssistantArguments.newBuilder()
-                        .withInitialUrl(origin)
+                        .withInitialUrl(origin.getSpec())
                         .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER, username)
                         .addParameter(INTENT_PARAMETER, INTENT)
                         .addParameter(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, true)

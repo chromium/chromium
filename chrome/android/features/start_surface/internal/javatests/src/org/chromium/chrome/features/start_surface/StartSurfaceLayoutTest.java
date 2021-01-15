@@ -57,7 +57,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -135,6 +134,7 @@ import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -587,10 +587,9 @@ public class StartSurfaceLayoutTest {
             }, "Overview not hidden yet");
             int delta;
             if (switchToAnotherTab
-                    && !TextUtils.equals(mActivityTestRule.getActivity()
-                                                 .getCurrentWebContents()
-                                                 .getLastCommittedUrl(),
-                            NTP_URL)) {
+                    && !UrlUtilities.isNTPUrl(mActivityTestRule.getActivity()
+                                                      .getCurrentWebContents()
+                                                      .getLastCommittedUrl())) {
                 // Capture the original tab.
                 delta = 1;
             } else {
@@ -2130,9 +2129,9 @@ public class StartSurfaceLayoutTest {
 
         // Make sure the fading animation is done.
         int delta;
-        if (TextUtils.equals(
-                    mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl(),
-                    NTP_URL)) {
+        if (UrlUtilities.isNTPUrl(mActivityTestRule.getActivity()
+                                          .getCurrentWebContents()
+                                          .getLastCommittedUrl())) {
             // NTP is not invalidated, so no new captures.
             delta = 0;
         } else {
@@ -2187,9 +2186,9 @@ public class StartSurfaceLayoutTest {
 
     private void checkFinalCaptureCount(boolean switchToAnotherTab, int initCount) {
         int expected;
-        if (TextUtils.equals(
-                    mActivityTestRule.getActivity().getCurrentWebContents().getLastCommittedUrl(),
-                    NTP_URL)) {
+        if (UrlUtilities.isNTPUrl(mActivityTestRule.getActivity()
+                                          .getCurrentWebContents()
+                                          .getLastCommittedUrl())) {
             expected = 0;
         } else {
             expected = mRepeat;

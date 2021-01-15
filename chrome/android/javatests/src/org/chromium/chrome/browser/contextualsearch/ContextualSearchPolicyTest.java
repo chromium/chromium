@@ -27,8 +27,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.net.URL;
+import org.chromium.url.GURL;
 
 /**
  * Tests for the ContextualSearchPolicy class.
@@ -58,7 +57,7 @@ public class ContextualSearchPolicyTest {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile(), true);
         try {
-            when(mMockServer.getBasePageUrl()).thenReturn(new URL("https://someUrl"));
+            when(mMockServer.getBasePageUrl()).thenReturn(new GURL("https://someUrl"));
         } catch (Exception e) {
             Assert.fail("Exception raised building a sample URL");
         }
@@ -114,7 +113,7 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             setupAllConditionsToSendUrl();
             try {
-                when(mMockServer.getBasePageUrl()).thenReturn(new URL("ftp://someSource"));
+                when(mMockServer.getBasePageUrl()).thenReturn(new GURL("ftp://someSource"));
             } catch (Exception e) {
                 Assert.fail("Exception building FTP Uri");
             }

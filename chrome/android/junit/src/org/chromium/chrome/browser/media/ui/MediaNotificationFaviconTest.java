@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.url.GURL;
 
 /**
  * Test of media notifications to ensure that the favicon is displayed on normal devices and
@@ -57,8 +58,8 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
         }
 
         @Override
-        public boolean getLargeIconForStringUrl(
-                final String pageUrl, int desiredSizePx, final LargeIconCallback callback) {
+        public boolean getLargeIconForUrl(
+                final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
             mGetIconCalledAtLeastOnce = true;
             mCallback = callback;
             return true;

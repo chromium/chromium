@@ -97,7 +97,7 @@ class CONTENT_EXPORT WebContentsAndroid {
                          const base::android::JavaParamRef<jobject>& obj);
   jint GetBackgroundColor(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jstring> GetLastCommittedURL(
+  base::android::ScopedJavaLocalRef<jobject> GetLastCommittedURL(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;
   jboolean IsIncognito(JNIEnv* env,

@@ -146,6 +146,7 @@ android_library("content_shell_apk_java") {
     "//net/android:net_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   sources = [

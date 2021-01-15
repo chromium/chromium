@@ -626,7 +626,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public String getLastCommittedUrl() {
+    public GURL getLastCommittedUrl() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getLastCommittedURL(
                 mNativeWebContentsAndroid, WebContentsImpl.this);
@@ -1110,7 +1110,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void selectWordAroundCaret(long nativeWebContentsAndroid, WebContentsImpl caller);
         void adjustSelectionByCharacterOffset(long nativeWebContentsAndroid, WebContentsImpl caller,
                 int startAdjust, int endAdjust, boolean showSelectionMenu);
-        String getLastCommittedURL(long nativeWebContentsAndroid, WebContentsImpl caller);
+        GURL getLastCommittedURL(long nativeWebContentsAndroid, WebContentsImpl caller);
         boolean isIncognito(long nativeWebContentsAndroid, WebContentsImpl caller);
         void resumeLoadingCreatedWebContents(long nativeWebContentsAndroid, WebContentsImpl caller);
         void evaluateJavaScript(long nativeWebContentsAndroid, WebContentsImpl caller,
