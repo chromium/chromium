@@ -436,6 +436,7 @@
               "external/wpt/content-security-policy/worker-src",
               "external/wpt/fetch/",
               "external/wpt/html/browsers/offline/appcache/workers/",
+              "external/wpt/html/cross-origin-embedder-policy",
               "external/wpt/referrer-policy",
               "external/wpt/resource-timing",
               "external/wpt/service-workers",

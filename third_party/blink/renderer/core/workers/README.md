@@ -160,6 +160,7 @@ in the following files and directories to avoid breakage.
 
 - Web Platform Tests
   - [content-security-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/content-security-policy/)
+  - [cross-origin-embedder-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/)
   - [fetch/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/fetch/)
   - [mixed-content/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/mixed-content/)
   - [performance-timeline/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/performance-timeline/)

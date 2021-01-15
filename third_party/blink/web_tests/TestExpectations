@@ -5877,3 +5877,5 @@ crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pa
 
 # CSS spelling and grammar features (issue 1163437)
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-order.html [ Failure ]
+
+crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/dedicated-worker.https.html [ Timeout ]
