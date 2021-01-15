@@ -153,8 +153,6 @@ extern const char kFakeArcRecommendedAppsForTesting[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kForceCertVerifierBuiltin[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kForceDevToolsAvailable[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kForceFirstRunUI[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

@@ -363,11 +363,6 @@ const char kFakeArcRecommendedAppsForTesting[] =
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".
 const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 
-// Forces Chrome to use CertVerifyProcBuiltin for verification of server
-// certificates, ignoring the status of
-// net::features::kCertVerifierBuiltinFeature.
-const char kForceCertVerifierBuiltin[] = "force-cert-verifier-builtin";
-
 // Passed to Chrome the first time that it's run after the system boots.
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
