@@ -136,7 +136,7 @@
     color: var(--cr-secondary-text-color);
   }
 
-  .selected .option-description {
+  .selected #hideDescription {
     color: var(--ntp-selected-border-color);
   }
 
@@ -277,7 +277,9 @@
   <div id="hideIcon" class="cr-icon icon-visibility-off"></div>
   <div id="hideTitleContainer">
     <div id="hideTitle">$i18n{hideShortcuts}</div>
-    <div class="option-description">$i18n{hideShortcutsDesc}</div>
+    <div id="hideDescription" class="option-description">
+      $i18n{hideShortcutsDesc}
+    </div>
   </div>
   <cr-toggle id="hideToggle" title="$i18n{hideShortcuts}" checked="[[hide_]]"
       on-change="onHideChange_"></cr-toggle>
