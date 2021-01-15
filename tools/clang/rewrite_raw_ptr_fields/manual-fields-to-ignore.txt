@@ -132,6 +132,36 @@ KeyedServiceBaseFactory::service_name_ # used in decltype
 # therefore, it can refer to an invalid allocation slot
 base::BigEndianWriter::end_
 
+# ELEMENT() treats the CheckedPtr as a void*, and so when a pointer is written
+# AddRef() won't be called, causing AddRef/Deref mismatch.
+device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::alg
+device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::kty
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::client_data_hash
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::rp_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::cred_params
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::excluded_credentials
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::origin
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::challenge
+device::cablev2::authenticator::(anonymous namespace)::AttestationObject::fmt
+device::cablev2::authenticator::(anonymous namespace)::AttestationObject::auth_data
+device::cablev2::authenticator::(anonymous namespace)::AttestationObject::statement
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::rp_id
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::client_data_hash
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::allowed_credentials
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::origin
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::challenge
+device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
+device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::crv
+device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::key
+device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
+device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::crv
+device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::x
+device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::y
+device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
+device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::n
+device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::e
+
 #######
 # CheckedPtr2/MTECheckedPtr-specific sections
 #######
