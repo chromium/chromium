@@ -34,7 +34,7 @@ CSSParserTokenRange ConsumeNestedArgument(CSSParserTokenRange& range) {
   return range.MakeSubRange(&first, &range.Peek());
 }
 
-bool AtEndIgnoringWhitepace(CSSParserTokenRange range) {
+bool AtEndIgnoringWhitespace(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   return range.AtEnd();
 }
@@ -427,8 +427,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
   // [1] https://drafts.csswg.org/selectors/#matches
   // [2] https://drafts.csswg.org/selectors/#selector-subject
   base::AutoReset<bool> ignore_namespace(
-      &ignore_default_namespace_, resist_default_namespace_ && !has_q_name &&
-                                      AtEndIgnoringWhitepace(range));
+      &ignore_default_namespace_,
+      ignore_default_namespace_ || (resist_default_namespace_ && !has_q_name &&
+                                    AtEndIgnoringWhitespace(range)));
 
   if (!compound_selector) {
     AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
@@ -699,6 +700,10 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoCue: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
+      base::AutoReset<bool> ignore_namespace(
+          &ignore_default_namespace_,
+          ignore_default_namespace_ ||
+              selector->GetPseudoType() == CSSSelector::kPseudoCue);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
