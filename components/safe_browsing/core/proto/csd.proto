@@ -418,7 +418,7 @@ message LoginReputationClientResponse {
     SAFE = 1;
     // The site has low reputation or low popularity.
     LOW_REPUTATION = 2;
-    // The url matches with blacklist entries.
+    // The url matches with blocklist entries.
     PHISHING = 3;
   }
   optional VerdictType verdict_type = 1;
@@ -1125,7 +1125,7 @@ message ClientIncidentReport {
         optional ClientDownloadRequest.ImageHeaders image_headers = 5;
       }
       repeated Dll dll = 9;
-      repeated string blacklisted_dll = 10;
+      repeated string blocklisted_dll = 10;
       message ModuleState {
         enum ModifiedState {
           UNKNOWN = 0;
@@ -1158,7 +1158,7 @@ message ClientIncidentReport {
         STATE_UNKNOWN = 0;
         STATE_ENABLED = 1;
         STATE_DISABLED = 2;
-        STATE_BLACKLISTED = 3;
+        STATE_BLOCKLISTED = 3;
         STATE_BLOCKED = 4;
         STATE_TERMINATED = 5;
       }

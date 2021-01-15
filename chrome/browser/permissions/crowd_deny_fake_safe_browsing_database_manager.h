@@ -24,7 +24,7 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata);
 
-  void RemoveAllBlacklistedUrls();
+  void RemoveAllBlocklistedUrls();
 
   void set_simulate_timeout(bool simulate_timeout) {
     simulate_timeout_ = simulate_timeout;
@@ -38,7 +38,7 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
   ~CrowdDenyFakeSafeBrowsingDatabaseManager() override;
 
   // safe_browsing::TestSafeBrowsingDatabaseManager:
-  bool CheckApiBlacklistUrl(const GURL& url, Client* client) override;
+  bool CheckApiBlocklistUrl(const GURL& url, Client* client) override;
   bool CancelApiCheck(Client* client) override;
   bool IsSupported() const override;
   bool ChecksAreAlwaysAsync() const override;

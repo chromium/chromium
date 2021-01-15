@@ -612,7 +612,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
        safe_browsing::SB_THREAT_TYPE_API_ABUSE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_BLACKLISTED_RESOURCE,
+       safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
        safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,

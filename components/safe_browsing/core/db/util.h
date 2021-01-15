@@ -59,7 +59,7 @@ struct ThreatMetadata {
   // Returns the metadata in a format tracing can support.
   std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;
 
-  // Type of blacklisted page. Used on malware and UwS lists.
+  // Type of blocklisted page. Used on malware and UwS lists.
   // This will be NONE if it wasn't present in the reponse.
   ThreatPatternType threat_pattern_type;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Rice-Golomb decoder for blacklist updates.
+// Rice-Golomb decoder for blocklist updates.
 // Details at: https://en.wikipedia.org/wiki/Golomb_coding
 
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_DB_V4_RICE_H_

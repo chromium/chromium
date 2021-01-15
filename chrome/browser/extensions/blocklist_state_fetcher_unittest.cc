@@ -44,7 +44,7 @@ TEST_F(BlocklistStateFetcherTest, RequestMultipleBlocklistStates) {
   TestBlocklistStateFetcher tester(&fetcher);
 
   tester.SetBlocklistVerdict(
-      "a", ClientCRXListInfoResponse_Verdict_NOT_IN_BLACKLIST);
+      "a", ClientCRXListInfoResponse_Verdict_NOT_IN_BLOCKLIST);
   tester.SetBlocklistVerdict("b", ClientCRXListInfoResponse_Verdict_MALWARE);
   tester.SetBlocklistVerdict(
       "c", ClientCRXListInfoResponse_Verdict_SECURITY_VULNERABILITY);

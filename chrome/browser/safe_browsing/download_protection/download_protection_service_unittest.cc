@@ -2822,26 +2822,26 @@ class DownloadProtectionServiceFlagTest
  protected:
   DownloadProtectionServiceFlagTest()
       :  // Matches unsigned.exe within zipfile_one_unsigned_binary.zip
-        blacklisted_hash_hex_(
+        blocklisted_hash_hex_(
             "1e954d9ce0389e2ba7447216f21761f98d1e6540c2abecdbecff570e36c493d"
             "b") {}
 
   void SetUp() override {
     ASSERT_TRUE(
-        base::HexStringToString(blacklisted_hash_hex_, &blacklisted_hash_) &&
-        blacklisted_hash_.size() == 32);
+        base::HexStringToString(blocklisted_hash_hex_, &blocklisted_hash_) &&
+        blocklisted_hash_.size() == 32);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        safe_browsing::switches::kSbManualDownloadBlacklist,
-        blacklisted_hash_hex_);
+        safe_browsing::switches::kSbManualDownloadBlocklist,
+        blocklisted_hash_hex_);
 
     DownloadProtectionServiceTestBase::SetUp();
   }
 
   // Hex 64 chars
-  const std::string blacklisted_hash_hex_;
+  const std::string blocklisted_hash_hex_;
   // Binary 32 bytes
-  std::string blacklisted_hash_;
+  std::string blocklisted_hash_;
 };
 
 TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
@@ -2850,7 +2850,7 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
-  EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(blacklisted_hash_));
+  EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(blocklisted_hash_));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadWhitelistUrl(_))
       .WillRepeatedly(Return(false));
@@ -2872,7 +2872,7 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
 }
 
 // Test a real .zip with a real .exe in it, where the .exe is manually
-// blacklisted by hash.
+// blocklisted by hash.
 TEST_F(DownloadProtectionServiceFlagTest,
        CheckClientDownloadZipOverridenByFlag) {
   NiceMockDownloadItem item;

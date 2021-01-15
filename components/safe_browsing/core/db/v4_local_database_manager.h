@@ -196,7 +196,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // for that URL.
     ThreatMetadata url_metadata;
 
-    // The full hash that matched for a blacklisted resource URL. Used only for
+    // The full hash that matched for a blocklisted resource URL. Used only for
     // |CheckResourceUrl| case.
     FullHash matching_full_hash;
   };

@@ -238,14 +238,14 @@ bool CheckClientDownloadRequestBase::ShouldSampleUnsupportedFile(
 }
 
 // If the hash of either the original file or any executables within an
-// archive matches the blacklist flag, return true.
-bool CheckClientDownloadRequestBase::IsDownloadManuallyBlacklisted(
+// archive matches the blocklist flag, return true.
+bool CheckClientDownloadRequestBase::IsDownloadManuallyBlocklisted(
     const ClientDownloadRequest& request) {
-  if (service_->IsHashManuallyBlacklisted(request.digests().sha256()))
+  if (service_->IsHashManuallyBlocklisted(request.digests().sha256()))
     return true;
 
   for (auto bin_itr : request.archived_binary()) {
-    if (service_->IsHashManuallyBlacklisted(bin_itr.digests().sha256()))
+    if (service_->IsHashManuallyBlocklisted(bin_itr.digests().sha256()))
       return true;
   }
   return false;
@@ -436,13 +436,13 @@ void CheckClientDownloadRequestBase::SendRequest() {
     return;
   }
 
-  // User can manually blacklist a sha256 via flag, for testing.
+  // User can manually blocklist a sha256 via flag, for testing.
   // This is checked just before the request is sent, to verify the request
   // would have been sent.  This emmulates the server returning a DANGEROUS
   // verdict as closely as possible.
-  if (IsDownloadManuallyBlacklisted(*client_download_request_)) {
+  if (IsDownloadManuallyBlocklisted(*client_download_request_)) {
     DVLOG(1) << "Download verdict overridden to DANGEROUS by flag.";
-    FinishRequest(DownloadCheckResult::DANGEROUS, REASON_MANUAL_BLACKLIST);
+    FinishRequest(DownloadCheckResult::DANGEROUS, REASON_MANUAL_BLOCKLIST);
     return;
   }
 

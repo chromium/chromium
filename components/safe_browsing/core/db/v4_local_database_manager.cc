@@ -88,7 +88,7 @@ ListInfos GetListInfos() {
                GetCertCsdDownloadWhitelistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
                GetChromeUrlClientIncidentId(),
-               SB_THREAT_TYPE_BLACKLISTED_RESOURCE),
+               SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadWhitelist.store",
@@ -100,7 +100,8 @@ ListInfos GetListInfos() {
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlSuspiciousSite.store",
                GetUrlSuspiciousSiteId(), SB_THREAT_TYPE_SUSPICIOUS_SITE),
       ListInfo(kSyncNever, "", GetChromeUrlApiId(), SB_THREAT_TYPE_API_ABUSE),
-      ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos, "UrlHighConfidenceAllowlist.store",
+      ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
+               "UrlHighConfidenceAllowlist.store",
                GetUrlHighConfidenceAllowlistId(),
                SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST),
   });

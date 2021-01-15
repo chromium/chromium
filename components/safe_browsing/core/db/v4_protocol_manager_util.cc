@@ -585,11 +585,11 @@ void V4ProtocolManagerUtil::GenerateHostVariantsToCheck(
   //
   // Note that we don't need to be clever about stopping at the "real" eTLD --
   // the data on the server side has been filtered to ensure it will not
-  // blacklist a whole TLD, and it's not significantly slower on our side to
+  // blocklist a whole TLD, and it's not significantly slower on our side to
   // just check too much.
   //
-  // Also note that because we have a simple blacklist, not some sort of complex
-  // whitelist-in-blacklist or vice versa, it doesn't matter what order we check
+  // Also note that because we have a simple blocklist, not some sort of complex
+  // allowlist-in-blocklist or vice versa, it doesn't matter what order we check
   // these in.
   const size_t kMaxHostsToCheck = 4;
   bool skipped_last_component = false;

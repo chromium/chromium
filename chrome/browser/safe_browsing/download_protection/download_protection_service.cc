@@ -122,7 +122,7 @@ DownloadProtectionService::DownloadProtectionService(
     ui_manager_ = sb_service->ui_manager();
     database_manager_ = sb_service->database_manager();
     navigation_observer_manager_ = sb_service->navigation_observer_manager();
-    ParseManualBlacklistFlag();
+    ParseManualBlocklistFlag();
   }
 }
 
@@ -142,29 +142,29 @@ void DownloadProtectionService::SetEnabled(bool enabled) {
   }
 }
 
-void DownloadProtectionService::ParseManualBlacklistFlag() {
+void DownloadProtectionService::ParseManualBlocklistFlag() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(
-          safe_browsing::switches::kSbManualDownloadBlacklist))
+          safe_browsing::switches::kSbManualDownloadBlocklist))
     return;
 
   std::string flag_val = command_line->GetSwitchValueASCII(
-      safe_browsing::switches::kSbManualDownloadBlacklist);
+      safe_browsing::switches::kSbManualDownloadBlocklist);
   for (const std::string& hash_hex : base::SplitString(
            flag_val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::string bytes;
     if (base::HexStringToString(hash_hex, &bytes) && bytes.size() == 32) {
-      manual_blacklist_hashes_.insert(std::move(bytes));
+      manual_blocklist_hashes_.insert(std::move(bytes));
     } else {
       LOG(FATAL) << "Bad sha256 hex value '" << hash_hex << "' found in --"
-                 << safe_browsing::switches::kSbManualDownloadBlacklist;
+                 << safe_browsing::switches::kSbManualDownloadBlocklist;
     }
   }
 }
 
-bool DownloadProtectionService::IsHashManuallyBlacklisted(
+bool DownloadProtectionService::IsHashManuallyBlocklisted(
     const std::string& sha256_hash) const {
-  return manual_blacklist_hashes_.count(sha256_hash) > 0;
+  return manual_blocklist_hashes_.count(sha256_hash) > 0;
 }
 
 void DownloadProtectionService::CheckClientDownload(

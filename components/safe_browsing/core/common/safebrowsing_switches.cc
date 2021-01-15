@@ -13,7 +13,7 @@ namespace switches {
 // be whitelisted otherwise (by signature or URL) and must be on a supported
 // OS. Hashes are in hex. This is used for manual testing when looking
 // for ways to by-pass download protection.
-const char kSbManualDownloadBlacklist[] =
+const char kSbManualDownloadBlocklist[] =
     "safebrowsing-manual-download-blacklist";
 
 // Enable Safe Browsing Enhanced Protection.

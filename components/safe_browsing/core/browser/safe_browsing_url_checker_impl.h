@@ -43,7 +43,7 @@ class RealTimeUrlLookupServiceBase;
 // queries from the browser. In that case, the public methods are called
 // directly instead of through Mojo.
 //
-// To be considered "safe", a URL must not appear in the SafeBrowsing blacklists
+// To be considered "safe", a URL must not appear in the SafeBrowsing blocklists
 // (see SafeBrowsingService for details).
 //
 // Note that the SafeBrowsing check takes at most kCheckUrlTimeoutMs

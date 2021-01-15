@@ -76,7 +76,7 @@ std::string GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_SAFE:
     case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_EXTENSION:
-    case safe_browsing::SB_THREAT_TYPE_BLACKLISTED_RESOURCE:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
     case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
     case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
     case safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST:

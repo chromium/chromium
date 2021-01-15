@@ -56,7 +56,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
                    &SafeBrowsingClient::OnTimeout);
 
     if (!database_manager_->IsSupported() ||
-        database_manager_->CheckApiBlacklistUrl(origin.GetURL(), this)) {
+        database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
       timeout_.AbandonAndStop();
       SendResultToHandler(Verdict::kAcceptable);
     }
@@ -87,7 +87,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   // SafeBrowsingDatabaseManager::Client:
-  void OnCheckApiBlacklistUrlResult(
+  void OnCheckApiBlocklistUrlResult(
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata) override {
     timeout_.AbandonAndStop();

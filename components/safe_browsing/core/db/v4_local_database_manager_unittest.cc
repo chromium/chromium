@@ -1121,9 +1121,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchMalwareIP) {
   ReplaceV4Database(store_and_hash_prefixes);
 
   EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP(""));
-  // Not blacklisted.
+  // Not blocklisted.
   EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP("192.168.1.1"));
-  // Blacklisted.
+  // Blocklisted.
   EXPECT_TRUE(v4_local_database_manager_->MatchMalwareIP("192.168.1.2"));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1240,14 +1240,14 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckResourceUrlReturnsBad) {
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
-  TestClient client(SB_THREAT_TYPE_BLACKLISTED_RESOURCE, url_bad);
+  TestClient client(SB_THREAT_TYPE_BLOCKLISTED_RESOURCE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckResourceUrl(url_bad, &client));
   EXPECT_FALSE(client.on_check_resource_url_result_called());
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_resource_url_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlocklisted) {
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -1275,7 +1275,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlacklisted) {
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlocklisted) {
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHash bad_extension_id("aaaabbbbccccdddd"),
       good_extension_id("ddddccccbbbbaaaa");
@@ -1304,7 +1304,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlacklisted) {
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlocklisted) {
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -1332,7 +1332,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlacklisted) {
   EXPECT_TRUE(client.on_check_download_urls_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlocklisted) {
   // Setup to receive full-hash hit.
   std::string url_bad_no_scheme("example.com/bad/");
   FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This file includes Safe Browsing V4 API blacklist request and response
+// This file includes Safe Browsing V4 API blocklist request and response
 // protocol buffers. They should be kept in sync with the server implementation.
 
 syntax = "proto2";

@@ -71,7 +71,7 @@ class CheckClientDownloadRequestBase {
 
   bool ShouldSampleWhitelistedDownload();
   bool ShouldSampleUnsupportedFile(const base::FilePath& filename);
-  bool IsDownloadManuallyBlacklisted(const ClientDownloadRequest& request);
+  bool IsDownloadManuallyBlocklisted(const ClientDownloadRequest& request);
 
   void OnUrlWhitelistCheckDone(bool is_whitelisted);
   void OnRequestBuilt(std::unique_ptr<ClientDownloadRequest> request_proto);

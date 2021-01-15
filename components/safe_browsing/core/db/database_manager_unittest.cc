@@ -39,7 +39,7 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   TestClient() : callback_invoked_(false) {}
   ~TestClient() override {}
 
-  void OnCheckApiBlacklistUrlResult(const GURL& url,
+  void OnCheckApiBlocklistUrlResult(const GURL& url,
                                     const ThreatMetadata& metadata) override {
     blocked_permissions_ = metadata.api_permissions;
     callback_invoked_ = true;
@@ -113,16 +113,16 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
-TEST_F(SafeBrowsingDatabaseManagerTest, CheckApiBlacklistUrlWrongScheme) {
+TEST_F(SafeBrowsingDatabaseManagerTest, CheckApiBlocklistUrlWrongScheme) {
   EXPECT_TRUE(
-      db_manager_->CheckApiBlacklistUrl(GURL("file://example.txt"), nullptr));
+      db_manager_->CheckApiBlocklistUrl(GURL("file://example.txt"), nullptr));
 }
 
 TEST_F(SafeBrowsingDatabaseManagerTest, CancelApiCheck) {
   TestClient client;
   const GURL url("https://www.example.com/more");
 
-  EXPECT_FALSE(db_manager_->CheckApiBlacklistUrl(url, &client));
+  EXPECT_FALSE(db_manager_->CheckApiBlocklistUrl(url, &client));
   EXPECT_TRUE(db_manager_->CancelApiCheck(&client));
 
   base::RunLoop().RunUntilIdle();
@@ -141,7 +141,7 @@ TEST_F(SafeBrowsingDatabaseManagerTest, GetApiCheckResponse) {
         request_url = request.url;
       }));
 
-  EXPECT_FALSE(db_manager_->CheckApiBlacklistUrl(url, &client));
+  EXPECT_FALSE(db_manager_->CheckApiBlocklistUrl(url, &client));
   test_url_loader_factory_.AddResponse(request_url.spec(),
                                        GetStockV4GetHashResponse());
   base::RunLoop().RunUntilIdle();

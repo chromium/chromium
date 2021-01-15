@@ -190,7 +190,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
   }
 
   void ClearSafeBrowsingBlocklist() {
-    fake_database_manager_->RemoveAllBlacklistedUrls();
+    fake_database_manager_->RemoveAllBlocklistedUrls();
   }
 
   void QueryAndExpectDecisionForUrl(
