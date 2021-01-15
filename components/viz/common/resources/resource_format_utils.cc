@@ -206,8 +206,6 @@ unsigned int GLInternalFormat(ResourceFormat format) {
   switch (format) {
     case R16_EXT:
       return GL_R16_EXT;
-    case RG_88:
-      return GL_RG8_EXT;
     case RG16_EXT:
       return GL_RG16_EXT;
     case ETC1:
