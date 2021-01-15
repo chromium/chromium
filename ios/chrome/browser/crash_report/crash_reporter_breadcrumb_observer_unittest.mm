@@ -119,7 +119,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   }];
   [[mock_breakpad_controller_ expect]
       addUploadParameter:breadcrumbs_param_vaidation_block
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
 
   breadcrumb_service->AddEvent(std::string("Breadcrumb Event"));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
@@ -152,7 +153,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   }];
   [[mock_breakpad_controller_ expect]
       addUploadParameter:validation_block
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
@@ -179,7 +181,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              1, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(event);
 
   ChromeBrowserState* otr_browser_state =
@@ -193,7 +196,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              2, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   otr_breadcrumb_service->AddEvent(event);
 
   TestChromeBrowserState::Builder test_cbs_builder;
@@ -208,7 +212,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              3, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service_2->AddEvent(event);
 
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);

@@ -13,7 +13,7 @@
 namespace crash_keys {
 
 // Key for breadcrumbs attached to crash reports.
-extern NSString* const kBreadcrumbsProductDataKey;
+extern const char kBreadcrumbsProductDataKey[];
 
 // Sets a key if |background| is true, unset if false. This will allow tracking
 // of crashes that occur when the app is backgrounded.

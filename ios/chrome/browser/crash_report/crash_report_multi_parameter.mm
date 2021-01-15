@@ -26,15 +26,14 @@ const int kMaximumBreakpadValueSize = 255;
 }
 
 @implementation CrashReportMultiParameter {
-  NSString* _crashReportKey;
+  crash_reporter::CrashKeyString<256>* _key;
   std::unique_ptr<base::DictionaryValue> _dictionary;
 }
 
-- (instancetype)initWithKey:(NSString*)key {
+- (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key {
   if ((self = [super init])) {
-    DCHECK([key length] && ([key length] <= kMaximumBreakpadValueSize));
     _dictionary.reset(new base::DictionaryValue());
-    _crashReportKey = [key copy];
+    _key = &key;
   }
   return self;
 }
@@ -80,11 +79,7 @@ const int kMaximumBreakpadValueSize = 255;
     NOTREACHED();
     return;
   }
-  NSString* value = base::SysUTF8ToNSString(stateAsJson);
-  breakpad_helper::AddReportParameter(_crashReportKey, value, /*async=*/true);
-  [[PreviousSessionInfo sharedInstance]
-      setReportParameterValue:value
-                       forKey:_crashReportKey];
+  _key->Set(stateAsJson);
 }
 
 @end

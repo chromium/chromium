@@ -7,12 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#include "components/crash/core/common/crash_key.h"
+
 // CrashReportMultiParameter keeps state of multiple report values that will be
 // grouped in a single breakpad element to save limited number of breakpad
 // values.
 @interface CrashReportMultiParameter : NSObject
 // Init with the breakpad parameter key.
-- (instancetype)initWithKey:(NSString*)key NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

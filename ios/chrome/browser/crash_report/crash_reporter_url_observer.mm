@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
@@ -26,16 +27,24 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
+using crash_reporter::CrashKeyString;
 
-// Returns the breakpad key to use for a pending URL corresponding to the
-// same tab that is using |key|.
-NSString* PendingURLKeyForKey(NSString* key) {
-  return [key stringByAppendingString:@"-pending"];
-}
+namespace {
 
 // Max number of urls to send. This represent 1 URL per WebState group.
 const int kNumberOfURLsToSend = 3;
+
+// Keep the following two CrashKey arrays in sync with |kNumberOfURLsToSend|.
+static crash_reporter::CrashKeyString<1024> url_crash_keys[] = {
+    {"url0", CrashKeyString<1024>::Tag::kArray},
+    {"url1", CrashKeyString<1024>::Tag::kArray},
+    {"url2", CrashKeyString<1024>::Tag::kArray},
+};
+static CrashKeyString<1024> pending_url_crash_keys[] = {
+    {"url0-pending", CrashKeyString<1024>::Tag::kArray},
+    {"url1-pending", CrashKeyString<1024>::Tag::kArray},
+    {"url2-pending", CrashKeyString<1024>::Tag::kArray},
+};
 
 // The group for preload WebStates.
 const char kPreloadWebStateGroup[] = "PreloadGroup";
@@ -49,14 +58,23 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 @end
 
 @implementation CrashReporterParameterSetter
-- (void)removeReportParameter:(NSString*)key {
-  breakpad_helper::RemoveReportParameter(key);
-  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
+- (void)removeReportParameter:(NSNumber*)key pending:(BOOL)pending {
+  int index = key.intValue;
+  DCHECK(index < kNumberOfURLsToSend);
+  if (pending)
+    pending_url_crash_keys[index].Clear();
+  else
+    url_crash_keys[index].Clear();
 }
-- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
-  breakpad_helper::AddReportParameter(key, base::SysUTF8ToNSString(URL.spec()),
-                                      true);
-  [[PreviousSessionInfo sharedInstance] setReportParameterURL:URL forKey:key];
+- (void)setReportParameterURL:(const GURL&)URL
+                       forKey:(NSNumber*)key
+                      pending:(BOOL)pending {
+  int index = key.intValue;
+  DCHECK(index < kNumberOfURLsToSend);
+  if (pending)
+    pending_url_crash_keys[index].Set(URL.spec());
+  else
+    url_crash_keys[index].Set(URL.spec());
 }
 @end
 
@@ -77,7 +95,7 @@ CrashReporterURLObserver::CrashReporterURLObserver(
   breakpad_keys_ =
       [[NSMutableArray alloc] initWithCapacity:kNumberOfURLsToSend];
   for (int i = 0; i < kNumberOfURLsToSend; ++i)
-    [breakpad_keys_ addObject:[NSString stringWithFormat:@"url%d", i]];
+    [breakpad_keys_ addObject:[NSNumber numberWithInt:i]];
 }
 
 CrashReporterURLObserver::~CrashReporterURLObserver() {}
@@ -91,11 +109,11 @@ std::string CrashReporterURLObserver::GroupForWebStateList(
 
 void CrashReporterURLObserver::RemoveGroup(const std::string& group) {
   NSString* ns_group = base::SysUTF8ToNSString(group);
-  NSString* key = [breakpad_key_by_group_ objectForKey:ns_group];
+  NSNumber* key = [breakpad_key_by_group_ objectForKey:ns_group];
   if (!key)
     return;
-  [params_setter_ removeReportParameter:key];
-  [params_setter_ removeReportParameter:PendingURLKeyForKey(key)];
+  [params_setter_ removeReportParameter:key pending:NO];
+  [params_setter_ removeReportParameter:key pending:YES];
   [breakpad_key_by_group_ removeObjectForKey:ns_group];
   [breakpad_keys_ removeObject:key];
   [breakpad_keys_ insertObject:key atIndex:0];
@@ -116,7 +134,7 @@ void CrashReporterURLObserver::RecordURL(const GURL& url,
   std::string group = web_state_to_group_[web_state];
   DCHECK(group.size());
   NSString* ns_group = base::SysUTF8ToNSString(group);
-  NSString* breakpad_key = [breakpad_key_by_group_ objectForKey:ns_group];
+  NSNumber* breakpad_key = [breakpad_key_by_group_ objectForKey:ns_group];
   BOOL reusing_key = NO;
   if (!breakpad_key) {
     // Get the first breakpad key and push it back at the end of the keys.
@@ -136,14 +154,13 @@ void CrashReporterURLObserver::RecordURL(const GURL& url,
   [breakpad_keys_ addObject:breakpad_key];
 
   current_web_states_[group] = web_state;
-  NSString* pending_key = PendingURLKeyForKey(breakpad_key);
   if (pending) {
     if (reusing_key)
-      [params_setter_ removeReportParameter:breakpad_key];
-    [params_setter_ setReportParameterURL:url forKey:pending_key];
+      [params_setter_ removeReportParameter:breakpad_key pending:NO];
+    [params_setter_ setReportParameterURL:url forKey:breakpad_key pending:YES];
   } else {
-    [params_setter_ setReportParameterURL:url forKey:breakpad_key];
-    [params_setter_ removeReportParameter:pending_key];
+    [params_setter_ setReportParameterURL:url forKey:breakpad_key pending:NO];
+    [params_setter_ removeReportParameter:breakpad_key pending:YES];
   }
 }
 

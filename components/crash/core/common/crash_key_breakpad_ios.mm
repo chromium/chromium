@@ -7,6 +7,7 @@
 #include <dispatch/dispatch.h>
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/crash/core/common/breakpad_running_ios.h"
 #include "components/crash/core/common/crash_key_base_support.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
@@ -40,37 +41,34 @@ void WithBreakpadRefSync(void (^block)(BreakpadRef ref)) {
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
-// When setting a value, avoid to block the current thread.
-void WithBreakpadRefAsync(void (^block)(BreakpadRef ref)) {
-  [[BreakpadController sharedInstance] withBreakpadRef:^(BreakpadRef ref) {
-    block(ref);
-  }];
-}
-
 }  // namespace
 
 void CrashKeyStringImpl::Set(base::StringPiece value) {
+  if (!crash_reporter::IsBreakpadRunning())
+    return;
+
   NSString* key = base::SysUTF8ToNSString(name_);
   NSString* value_ns = base::SysUTF8ToNSString(value.as_string());
 
-  WithBreakpadRefAsync(^(BreakpadRef ref) {
-    BreakpadAddUploadParameter(ref, key, value_ns);
-  });
-
+  [[BreakpadController sharedInstance] addUploadParameter:value_ns forKey:key];
   [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns
                                                          forKey:key];
 }
 
 void CrashKeyStringImpl::Clear() {
+  if (!crash_reporter::IsBreakpadRunning())
+    return;
+
   NSString* key = base::SysUTF8ToNSString(name_);
 
-  WithBreakpadRefAsync(^(BreakpadRef ref) {
-    BreakpadRemoveUploadParameter(ref, key);
-  });
+  [[BreakpadController sharedInstance] removeUploadParameterForKey:key];
   [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
 }
 
 bool CrashKeyStringImpl::is_set() const {
+  if (!crash_reporter::IsBreakpadRunning())
+    return false;
+
   __block bool is_set = false;
   NSString* key = base::SysUTF8ToNSString(
       std::string(BREAKPAD_SERVER_PARAMETER_PREFIX) + name_);
@@ -105,11 +103,13 @@ void InitializeCrashKeysForTesting() {
     @BREAKPAD_URL : @"http://breakpad.test"
   }];
   [[BreakpadController sharedInstance] start:YES];
+  crash_reporter::SetBreakpadRunning(true);
   InitializeCrashKeys();
 }
 
 void ResetCrashKeysForTesting() {
   [[BreakpadController sharedInstance] stop];
+  crash_reporter::SetBreakpadRunning(false);
 }
 
 }  // namespace crash_reporter

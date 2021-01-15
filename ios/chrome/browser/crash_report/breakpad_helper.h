@@ -32,13 +32,6 @@ bool UserEnabledUploading();
 // Cleans up all stored crash reports.
 void CleanupCrashReports();
 
-// Add a key/value pair the next crash report. If async is false, this function
-// will wait until the key is registered before returning.
-void AddReportParameter(NSString* key, NSString* value, bool async);
-
-// Remove the key/value pair associated to key from the next crash report.
-void RemoveReportParameter(NSString* key);
-
 // Returns the number of crash reports waiting to send to the server. This
 // function will wait for an operation to complete on a background thread.
 int GetCrashReportCount();

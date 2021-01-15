@@ -56,6 +56,11 @@ class FakeWebState : public web::FakeWebState {
   std::unique_ptr<web::NavigationItem> pending_item_;
 };
 
+NSString* NumberToKey(NSNumber* number, bool pending) {
+  return [NSString stringWithFormat:@"url%d%@", number.intValue,
+                                    pending ? @"-pending" : @""];
+}
+
 }  // namespace
 
 @interface DictionaryParameterSetter : NSObject <CrashReporterParameterSetter>
@@ -72,11 +77,15 @@ class FakeWebState : public web::FakeWebState {
   return self;
 }
 
-- (void)removeReportParameter:(NSString*)key {
+- (void)removeReportParameter:(NSNumber*)number pending:(BOOL)pending {
+  NSString* key = NumberToKey(number, pending);
   [_params removeObjectForKey:key];
 }
 
-- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
+- (void)setReportParameterURL:(const GURL&)URL
+                       forKey:(NSNumber*)number
+                      pending:(BOOL)pending {
+  NSString* key = NumberToKey(number, pending);
   [_params setObject:base::SysUTF8ToNSString(URL.spec()) forKey:key];
 }
 
