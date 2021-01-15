@@ -82,10 +82,10 @@ class ResultSinkClient(object):
     report_check_size = MAX_REPORT_LEN - 45
     test_log_formatted = cgi.escape(test_log)
     if len(test_log) > report_check_size:
-      test_log_formatted = ('<pre>' + test_log[:report_check_size] +
+      test_log_formatted = ('<pre>' + test_log_formatted[:report_check_size] +
                             '...Full output in Artifact.</pre>')
     elif test_log:
-      test_log_formatted = '<pre>' + test_log + '</pre>'
+      test_log_formatted = '<pre>' + test_log_formatted + '</pre>'
 
     tr = {
         'expected': expected,
