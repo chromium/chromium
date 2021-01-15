@@ -2,21 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
 import {
   ErrorInfo,  // eslint-disable-line no-unused-vars
   PerfEntry,  // eslint-disable-line no-unused-vars
   PerfEvent,
+  Resolution,
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
 const TOP_BAR_HEIGHT = 32;
 
-// Default window outer size when using 4x3 camera preview.
-export const DEFAULT_PREVIEW_4X3_WINDOW_SIZE = [788, 538 + TOP_BAR_HEIGHT];
+const DEFAULT_WINDOW_WIDTH = 764;
 
-// Default window outer size when using 16x9 camera preview.
-export const DEFAULT_PREVIEW_16X9_WINDOW_SIZE = [788, 428 + TOP_BAR_HEIGHT];
+/**
+ * Gets default window size which minimizes the letterbox area for given preview
+ * aspect ratio.
+ * @param {number} aspectRatio Preview aspect ratio.
+ * @return {!Resolution}
+ */
+export function getDefaultWindowSize(aspectRatio) {
+  // For the call site from background.js cannot access letterbox space reserved
+  // for controls on 3 sides around #preview-box directly from dom. The
+  // letterbox size number is hard coded here.
+  // TODO(b/172345161): Reference these number from left, right, bottom of
+  // #preview-box's bounding client rect after background.js being removed.
+  const bottom = 88;
+  const left = 88;
+  const right = 100;
+
+  return new Resolution(
+      DEFAULT_WINDOW_WIDTH,
+      Math.round(
+          (DEFAULT_WINDOW_WIDTH - (left + right)) / aspectRatio + bottom +
+          TOP_BAR_HEIGHT));
+}
 
 /**
  * Class which is used to coordinate the setup of window between Tast side and
