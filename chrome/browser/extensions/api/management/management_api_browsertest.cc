@@ -65,7 +65,7 @@ class ExtensionManagementApiTestWithBackgroundType
       public testing::WithParamInterface<ContextType> {
  protected:
   const Extension* LoadExtensionWithParamFlags(const base::FilePath& path) {
-    int flags = kFlagEnableFileAccess;
+    int flags = kFlagNone;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
     return LoadExtensionWithFlags(path, flags);

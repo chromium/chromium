@@ -104,13 +104,13 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                                         const char* custom_arg)
       WARN_UNUSED_RESULT;
 
-  // Same as RunExtensionTest, but disables file access.
-  bool RunExtensionTestNoFileAccess(const std::string& extension_name)
+  // Same as RunExtensionTest, but enables file access.
+  bool RunExtensionTestWithFileAccess(const std::string& extension_name)
       WARN_UNUSED_RESULT;
 
-  // Same as RunExtensionTestIncognito, but disables file access.
-  bool RunExtensionTestIncognitoNoFileAccess(const std::string& extension_name)
-      WARN_UNUSED_RESULT;
+  // Same as RunExtensionTestIncognito, but enables file access.
+  bool RunExtensionTestIncognitoWithFileAccess(
+      const std::string& extension_name) WARN_UNUSED_RESULT;
 
   // If not empty, Load |extension_name|, load |page_url| and wait for pass /
   // fail notification from the extension API on the page. Note that if

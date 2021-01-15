@@ -177,8 +177,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabRace) {
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_file.html")) << message_;
+  ASSERT_TRUE(RunExtensionSubtestWithArgAndFlags(
+      "tabs/capture_visible_tab", "test_file.html", nullptr,
+      kFlagEnableFileAccess, kFlagNone))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleDisabled) {

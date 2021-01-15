@@ -204,20 +204,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsFileAccess) {
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
 
-  EXPECT_TRUE(
-      RunExtensionTestNoFileAccess("permissions/file_access_no")) << message_;
-  EXPECT_FALSE(prefs->AllowFileAccess("dgloelfbnddbdacakahpogklfdcccbib"));
-
-  EXPECT_TRUE(RunExtensionTest("permissions/file_access_yes")) << message_;
-  // TODO(kalman): ugh, it would be nice to test this condition, but it seems
-  // like there's somehow a race here where the prefs aren't updated in time
-  // with the "allow file access" bit, so we'll just have to trust that
-  // RunExtensionTest (unlike RunExtensionTestNoFileAccess) does indeed
-  // not set the allow file access bit. Otherwise this test doesn't mean
-  // a whole lot (i.e. file access works - but it'd better not be the case
-  // that the extension actually has file access, since that'd be the bug
-  // that this is supposed to be testing).
-  // EXPECT_TRUE(prefs->AllowFileAccess("hlonmbgfjccgolnaboonlakjckinmhmd"));
+  EXPECT_TRUE(RunExtensionTest("permissions/file_access_no")) << message_;
+  EXPECT_FALSE(prefs->AllowFileAccess(last_loaded_extension_id()));
+  EXPECT_TRUE(RunExtensionTestWithFileAccess("permissions/file_access_yes"))
+      << message_;
+  EXPECT_TRUE(prefs->AllowFileAccess(last_loaded_extension_id()));
 }
 
 // Tests loading of files or directory listings when an extension has file
