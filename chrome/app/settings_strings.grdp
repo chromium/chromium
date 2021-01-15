@@ -3295,6 +3295,9 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_PIN_INCORRECT_RETRIES_PL" desc="A message shown to the user when they enter an incorrect PIN for a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
     Incorrect PIN. You have <ph name="RETRIES">$1<ex>8</ex></ph> attempts remaining.
   </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_SAME_PIN_AS_CURRENT" desc="Error message. Displayed when the user attempts to set a new PIN for their security key, and the new PIN is the same as the currently set PIN. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
+    Create a new PIN that's different from your current PIN
+  </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_NEW_PIN" desc="A message shown when a user is trying to set a PIN on a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
     {MIN_PIN_LENGTH, plural,
      =1 {Enter your new PIN. A PIN must be at least one character long and can contain letters, numbers, and other characters.}

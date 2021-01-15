@@ -81,7 +81,12 @@
            form with cr-inputs that can be invalid, this space is also desired
            in order to have consistent spacing.
 
-           If spacing is not needed, apply "--cr-input-error-display: none". */
+           If spacing is not needed, apply "--cr-input-error-display: none".
+
+           When grouping cr-inputs horizontally, it might be helpful to set
+           --cr-input-error-white-space to "nowrap" and set a fixed width for
+           each cr-input so that a long error label does not shift the inputs
+           forward. */
         color: var(--cr-input-error-color);
         display: var(--cr-input-error-display, block);
         font-size: var(--cr-form-field-label-font-size);
@@ -89,6 +94,7 @@
         line-height: var(--cr-form-field-label-line-height);
         margin: 8px 0;
         visibility: hidden;
+        white-space: var(--cr-input-error-white-space);
       }
 
       :host([invalid]) #error {

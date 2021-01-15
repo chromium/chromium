@@ -4,6 +4,7 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BioEnrollDialogPage, CredentialManagementDialogPage, Ctap2Status, ResetDialogPage, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxyImpl,SecurityKeysResetBrowserProxyImpl, SetPINDialogPage} from 'chrome://settings/lazy_load.js';
@@ -548,6 +549,14 @@ suite('SecurityKeysSetPINDialog', function() {
     setChangePINEntries(tooShortCurrentPIN, validNewPIN, validNewPIN);
     assertTrue(dialog.$.currentPIN.invalid);
     assertFalse(dialog.$.newPIN.invalid);
+    assertFalse(dialog.$.confirmPIN.invalid);
+
+    setChangePINEntries(validNewPIN, validNewPIN, validNewPIN);
+    assertFalse(dialog.$.currentPIN.invalid);
+    assertTrue(dialog.$.newPIN.invalid);
+    assertEquals(
+        dialog.$.newPIN.errorMessage,
+        loadTimeData.getString('securityKeysSamePINAsCurrent'));
     assertFalse(dialog.$.confirmPIN.invalid);
 
     let setPINResolver = new PromiseResolver();

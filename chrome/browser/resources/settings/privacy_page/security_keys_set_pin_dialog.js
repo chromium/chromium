@@ -18,8 +18,7 @@ import '../settings_shared_css.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -199,10 +198,6 @@ Polymer({
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');
     this.browserProxy_ = SecurityKeysPINBrowserProxyImpl.getInstance();
     this.$.dialog.showModal();
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
 
     this.browserProxy_.startSetPIN().then(
         ({done, error, currentMinPinLength, newMinPinLength, retries}) => {
@@ -397,7 +392,6 @@ Polymer({
           this.isValidPIN_(this.currentPIN_, this.currentMinPinLength_);
       if (this.currentPINError_ !== '') {
         this.focusOn_(this.$.currentPIN);
-        this.fire('iron-announce', {text: this.currentPINError_});
         this.fire('ui-ready');  // for test synchronization.
         return;
       }
@@ -406,7 +400,6 @@ Polymer({
     this.newPINError_ = this.isValidPIN_(this.newPIN_, this.newMinPinLength_);
     if (this.newPINError_ !== '') {
       this.focusOn_(this.$.newPIN);
-      this.fire('iron-announce', {text: this.newPINError_});
       this.fire('ui-ready');  // for test synchronization.
       return;
     }
@@ -414,7 +407,13 @@ Polymer({
     if (this.newPIN_ !== this.confirmPIN_) {
       this.confirmPINError_ = this.i18n('securityKeysPINMismatch');
       this.focusOn_(this.$.confirmPIN);
-      this.fire('iron-announce', {text: this.confirmPINError_});
+      this.fire('ui-ready');  // for test synchronization.
+      return;
+    }
+
+    if (this.newPIN_ === this.currentPIN_) {
+      this.newPINError_ = this.i18n('securityKeysSamePINAsCurrent');
+      this.focusOn_(this.$.newPIN);
       this.fire('ui-ready');  // for test synchronization.
       return;
     }
@@ -441,7 +440,6 @@ Polymer({
                 this.mismatchError_(/** @type {number} */ (this.retries_));
             this.setPINButtonValid_ = true;
             this.focusOn_(this.$.currentPIN);
-            this.fire('iron-announce', {text: this.currentPINError_});
             this.fire('ui-ready');  // for test synchronization.
           } else {
             // Unknown error.
