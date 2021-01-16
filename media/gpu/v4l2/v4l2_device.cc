@@ -1534,8 +1534,7 @@ VideoCodecProfile V4L2Device::V4L2ProfileToVideoCodecProfile(VideoCodec codec,
 }
 
 std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
-    uint32_t pix_fmt,
-    bool is_encoder) {
+    uint32_t pix_fmt) {
   auto get_supported_profiles = [this](
                                     VideoCodec codec,
                                     std::vector<VideoCodecProfile>* profiles) {
@@ -2086,7 +2085,7 @@ V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
                            &profile.max_resolution);
 
     const auto video_codec_profiles =
-        V4L2PixFmtToVideoCodecProfiles(pixelformat, false);
+        V4L2PixFmtToVideoCodecProfiles(pixelformat);
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;
@@ -2117,7 +2116,7 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
                            &profile.max_resolution);
 
     const auto video_codec_profiles =
-        V4L2PixFmtToVideoCodecProfiles(pixelformat, true);
+        V4L2PixFmtToVideoCodecProfiles(pixelformat);
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;

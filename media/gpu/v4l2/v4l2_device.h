@@ -602,8 +602,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   static VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
                                                           uint32_t profile);
   std::vector<VideoCodecProfile> V4L2PixFmtToVideoCodecProfiles(
-      uint32_t pix_fmt,
-      bool is_encoder);
+      uint32_t pix_fmt);
   static uint32_t V4L2PixFmtToDrmFormat(uint32_t format);
   // Calculates the largest plane's allocation size requested by a V4L2 device.
   static gfx::Size AllocatedSizeFromV4L2Format(
