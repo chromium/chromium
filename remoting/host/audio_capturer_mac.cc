@@ -94,6 +94,77 @@ AudioCapturerInstanceSet* AudioCapturerInstanceSet::Get() {
 
 }  // namespace
 
+// static
+std::vector<AudioCapturerMac::AudioDeviceInfo>
+AudioCapturerMac::GetAudioDevices() {
+  AudioObjectPropertyAddress property_address;
+  property_address.mScope = kAudioObjectPropertyScopeGlobal;
+  property_address.mElement = kAudioObjectPropertyElementMaster;
+
+  UInt32 property_size;
+
+  // Get all audio device IDs (which are UInt32).
+  property_address.mSelector = kAudioHardwarePropertyDevices;
+  OSStatus result = AudioObjectGetPropertyDataSize(
+      kAudioObjectSystemObject, &property_address, 0, NULL, &property_size);
+  if (result != noErr) {
+    LOG(ERROR)
+        << "AudioObjectGetPropertyDataSize(kAudioHardwarePropertyDevices) "
+        << "failed. Error: " << result;
+    return {};
+  }
+
+  UInt32 num_devices = property_size / sizeof(AudioDeviceID);
+  auto device_ids = std::make_unique<AudioDeviceID[]>(num_devices);
+  result =
+      AudioObjectGetPropertyData(kAudioObjectSystemObject, &property_address, 0,
+                                 NULL, &property_size, device_ids.get());
+  if (result != noErr) {
+    LOG(ERROR) << "AudioObjectGetPropertyData(kAudioHardwarePropertyDevices) "
+               << "failed. Error: " << result;
+    return {};
+  }
+
+  std::vector<AudioDeviceInfo> audio_devices;
+
+  for (UInt32 i = 0u; i < num_devices; i++) {
+    AudioDeviceInfo audio_device;
+    AudioDeviceID device_id = device_ids.get()[i];
+
+    // Get the device name.
+    property_address.mSelector = kAudioObjectPropertyName;
+    base::ScopedCFTypeRef<CFStringRef> device_name;
+    property_size = sizeof(CFStringRef);
+    result = AudioObjectGetPropertyData(device_id, &property_address, 0, NULL,
+                                        &property_size,
+                                        device_name.InitializeInto());
+    if (result != noErr) {
+      LOG(ERROR) << "AudioObjectGetPropertyData(" << device_id
+                 << ", kAudioObjectPropertyName) "
+                 << "failed. Error: " << result;
+      continue;
+    }
+    audio_device.device_name = base::SysCFStringRefToUTF8(device_name);
+
+    // Now find out its UID.
+    property_address.mSelector = kAudioDevicePropertyDeviceUID;
+    base::ScopedCFTypeRef<CFStringRef> device_uid;
+    property_size = sizeof(CFStringRef);
+    result =
+        AudioObjectGetPropertyData(device_id, &property_address, 0, NULL,
+                                   &property_size, device_uid.InitializeInto());
+    if (result != noErr) {
+      LOG(ERROR) << "AudioObjectGetPropertyData(" << device_id
+                 << ", kAudioDevicePropertyDeviceUID) "
+                 << "failed. Error: " << result;
+      continue;
+    }
+    audio_device.device_uid = base::SysCFStringRefToUTF8(device_uid);
+    audio_devices.push_back(audio_device);
+  }
+  return audio_devices;
+}
+
 AudioCapturerMac::AudioCapturerMac(const std::string& audio_device_uid)
     : audio_device_uid_(audio_device_uid),
       silence_detector_(kAudioSilenceThreshold) {
