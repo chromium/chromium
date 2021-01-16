@@ -51,8 +51,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // view.
 @property(nonatomic, weak) ContentSuggestionsLayout* contentSuggestionsLayout;
 
-// Initial scrolling offset, used to restore the previous scrolling position.
-@property(nonatomic, assign) CGFloat initialContentOffset;
+// Content suggestions collection view height for setting the initial NTP offset
+// to be the top of the page. If value is |NAN|, then the offset was calculated
+// from the saved web state instead.
+@property(nonatomic, assign) CGFloat initialContentOffsetFromContentSuggestions;
 
 @end
 
@@ -69,8 +71,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
     _contentSuggestionsViewController = contentSuggestionsViewController;
     // TODO(crbug.com/1114792): Instantiate this depending on the initial scroll
     // position.
+    // TODO(crbug.com/1114792): Stick the fake omnibox based on default scroll
+    // position.
     _scrolledIntoFeed = NO;
-    _initialContentOffset = NAN;
+    _initialContentOffsetFromContentSuggestions = 0;
   }
 
   return self;
@@ -148,7 +152,15 @@ const CGFloat kOffsetToPinOmnibox = 100;
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
   self.headerSynchronizer.additionalOffset = collectionView.contentSize.height;
 
-  [self applyContentOffset];
+  // If scroll position was not set from the saved scroll position, and content
+  // suggestions collection height has increased, then set the content offset to
+  // reach the top of the page.
+  if (!isnan(self.initialContentOffsetFromContentSuggestions) &&
+      -collectionView.contentSize.height <
+          self.initialContentOffsetFromContentSuggestions) {
+    [self setContentOffset:-collectionView.contentSize.height
+            fromSavedState:NO];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -216,11 +228,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 - (void)setContentOffset:(CGFloat)offset {
-  self.initialContentOffset = offset;
-  if (self.isViewLoaded && self.collectionView.window &&
-      self.collectionView.contentSize.height != 0) {
-    [self applyContentOffset];
-  }
+  [self setContentOffset:offset fromSavedState:YES];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -343,26 +351,16 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.ntpContentDelegate reloadContentSuggestions];
 }
 
-// Sets the collectionView's contentOffset if |_initialContentOffset| is set.
-- (void)applyContentOffset {
-  if (!isnan(self.initialContentOffset)) {
-    UICollectionView* collection =
-        self.discoverFeedWrapperViewController.feedCollectionView;
-    // Don't set the offset such as the content of the collection is smaller
-    // than the part of the collection which should be displayed with that
-    // offset, taking into account the size of the toolbar.
-    CGFloat offset = MAX(
-        0, MIN(self.initialContentOffset,
-               collection.contentSize.height - collection.bounds.size.height -
-                   ToolbarExpandedHeight(
-                       self.traitCollection.preferredContentSizeCategory) +
-                   collection.contentInset.bottom));
-    if (collection.contentOffset.y != offset) {
-      collection.contentOffset = CGPointMake(0, offset);
-      // TODO(crbug.com/1114792): Add the FakeOmnibox if necessary.
-    }
-  }
-  self.initialContentOffset = NAN;
+// Sets the feed collection contentOffset to |offset| to set the initial scroll
+// position. If |fromSavedState| is NO, then the offset is set from the content
+// suggestions collection height. If |fromSavedState| is YES, then the offset is
+// forcefully set from a different source (like the cached navigation scroll
+// position).
+- (void)setContentOffset:(CGFloat)offset fromSavedState:(BOOL)isFromSavedState {
+  self.discoverFeedWrapperViewController.feedCollectionView.contentOffset =
+      CGPointMake(0, offset);
+  self.initialContentOffsetFromContentSuggestions =
+      isFromSavedState ? NAN : offset;
 }
 
 #pragma mark - Setters
