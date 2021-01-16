@@ -130,7 +130,7 @@ codebase. Here are a few other locations to check:
 
 *   [chrome/android/javatests/src/org/chromium/chrome/browser/accessibility](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/accessibility/)
 *   [chrome/browser/accessibility](https://cs.chromium.org/chromium/src/chrome/browser/accessibility/)
-*   [chrome/browser/chromeos/accessibility/](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/accessibility/)
+*   [chrome/browser/ash/accessibility/](https://cs.chromium.org/chromium/src/chrome/browser/ash/accessibility/)
 *   [ui/chromeos](https://cs.chromium.org/chromium/src/ui/chromeos/)
 *   [ui/views/accessibility](https://cs.chromium.org/chromium/src/ui/views/accessibility/)
 

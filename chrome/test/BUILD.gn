@@ -353,8 +353,8 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/chromeos/accessibility/speech_monitor.cc",
-      "../browser/chromeos/accessibility/speech_monitor.h",
+      "../browser/ash/accessibility/speech_monitor.cc",
+      "../browser/ash/accessibility/speech_monitor.h",
       "../browser/chromeos/arc/tracing/arc_app_performance_tracing_test_helper.cc",
       "../browser/chromeos/arc/tracing/arc_app_performance_tracing_test_helper.h",
       "../browser/chromeos/file_manager/file_manager_test_util.cc",
@@ -2405,18 +2405,18 @@ if (!is_android) {
       sources += [
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
-        "../browser/chromeos/accessibility/accessibility_common_browsertest.cc",
-        "../browser/chromeos/accessibility/accessibility_manager_browsertest.cc",
-        "../browser/chromeos/accessibility/dictation_chromeos_browsertest.cc",
-        "../browser/chromeos/accessibility/magnification_controller_browsertest.cc",
-        "../browser/chromeos/accessibility/magnification_manager_browsertest.cc",
-        "../browser/chromeos/accessibility/select_to_speak_browsertest.cc",
-        "../browser/chromeos/accessibility/spoken_feedback_app_list_browsertest.cc",
-        "../browser/chromeos/accessibility/spoken_feedback_browsertest.cc",
-        "../browser/chromeos/accessibility/spoken_feedback_browsertest.h",
-        "../browser/chromeos/accessibility/sticky_keys_browsertest.cc",
-        "../browser/chromeos/accessibility/switch_access_browsertest.cc",
-        "../browser/chromeos/accessibility/touch_exploration_controller_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_common_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
+        "../browser/ash/accessibility/dictation_chromeos_browsertest.cc",
+        "../browser/ash/accessibility/magnification_controller_browsertest.cc",
+        "../browser/ash/accessibility/magnification_manager_browsertest.cc",
+        "../browser/ash/accessibility/select_to_speak_browsertest.cc",
+        "../browser/ash/accessibility/spoken_feedback_app_list_browsertest.cc",
+        "../browser/ash/accessibility/spoken_feedback_browsertest.cc",
+        "../browser/ash/accessibility/spoken_feedback_browsertest.h",
+        "../browser/ash/accessibility/sticky_keys_browsertest.cc",
+        "../browser/ash/accessibility/switch_access_browsertest.cc",
+        "../browser/ash/accessibility/touch_exploration_controller_browsertest.cc",
         "../browser/chromeos/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/chromeos/app_mode/arc/arc_kiosk_app_manager_browsertest.cc",
         "../browser/chromeos/app_mode/kiosk_app_manager_browsertest.cc",
@@ -6403,7 +6403,7 @@ if (!is_android) {
     # test against live sites, as a way to catch potential regressions.
     test("accessibility_live_site_tests") {
       sources = [
-        "../browser/chromeos/accessibility/accessibility_live_site_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_live_site_browsertest.cc",
         "base/interactive_test_utils.cc",
         "base/interactive_test_utils.h",
         "base/interactive_test_utils_aura.cc",

@@ -2244,7 +2244,7 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
 }  // namespace
 
 // TODO (afakhry): Remove this class after refactoring MagnificationManager.
-// Mocked chrome/browser/chromeos/accessibility/magnification_manager.cc
+// Mocked chrome/browser/ash/accessibility/magnification_manager.cc
 class FakeMagnificationManager {
  public:
   FakeMagnificationManager() = default;

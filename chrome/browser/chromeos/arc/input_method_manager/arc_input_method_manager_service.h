@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_state.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/input_connection_impl.h"

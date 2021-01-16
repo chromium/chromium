@@ -1,4 +1,9 @@
 include_rules = [
+  # //chrome/browser/ash is conceptually part of "ash". See the "Lacros:
+  # ChromeOS source code directory migration" design doc at
+  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  "+ash",
+
   "+chrome/browser/image_decoder",
   # TODO(ananta): Remove this when we move files which display UI in
   # chrome/browser/chromeos to chrome/browser/ui/views/chromeos
@@ -30,19 +35,11 @@ specific_include_rules = {
   ".*fuzz.*": [
     "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
   ],
-  ".*test.*": [
-   "!ash",
-   "+ash/public",
-  ],
   "assistant_util_unittest\.cc": [
     "+ui/events/devices/device_data_manager.h",
   ],
   "child_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
-  ],
-  "chrome_browser_main_chromeos\.cc": [
-    "+ash/shell.h",
-    "+ash/sticky_keys/sticky_keys_controller.h",
   ],
   "device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
