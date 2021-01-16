@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import android.view.View;
+
+import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,6 +31,18 @@ public final class BaseCarouselSuggestionViewBinder {
             }
         } else if (key == BaseCarouselSuggestionViewProperties.TITLE) {
             view.getHeaderTextView().setText(model.get(BaseCarouselSuggestionViewProperties.TITLE));
+        } else if (key == BaseCarouselSuggestionViewProperties.SHOW_TITLE) {
+            final boolean showTitle = model.get(BaseCarouselSuggestionViewProperties.SHOW_TITLE);
+            final View headerView = view.getHeaderView();
+            final int verticalPad = view.getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_carousel_suggestion_padding);
+            if (showTitle) {
+                headerView.setVisibility(View.VISIBLE);
+                view.setPaddingRelative(0, 0, 0, verticalPad);
+            } else {
+                headerView.setVisibility(View.GONE);
+                view.setPaddingRelative(0, verticalPad, 0, verticalPad);
+            }
         }
     }
 }

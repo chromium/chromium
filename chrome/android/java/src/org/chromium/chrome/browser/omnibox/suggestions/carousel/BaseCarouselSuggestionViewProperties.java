@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.Collection;
@@ -22,7 +23,11 @@ public class BaseCarouselSuggestionViewProperties {
     public static final WritableObjectPropertyKey<CharSequence> TITLE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {TITLE, TILES};
+    /** Controls whether the Header should be shown. */
+    public static final WritableBooleanPropertyKey SHOW_TITLE = new WritableBooleanPropertyKey();
+
+    public static final PropertyKey[] ALL_UNIQUE_KEYS =
+            new PropertyKey[] {TITLE, SHOW_TITLE, TILES};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
