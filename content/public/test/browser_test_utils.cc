@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <set>
 #include <tuple>
 #include <utility>
@@ -1913,7 +1914,8 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context) {
+               net::CookieOptions::SameSiteCookieContext context,
+               net::CookieOptions::SamePartyCookieContextType party_context) {
   bool result = false;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -1927,6 +1929,7 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
+  options.set_same_party_cookie_context_type(party_context);
   cookie_manager->SetCanonicalCookie(
       *cc.get(), url, options,
       base::BindOnce(
@@ -1936,6 +1939,29 @@ bool SetCookie(BrowserContext* browser_context,
             run_loop->Quit();
           },
           &result, &run_loop));
+  run_loop.Run();
+  return result;
+}
+
+uint32_t DeleteCookies(BrowserContext* browser_context,
+                       network::mojom::CookieDeletionFilter filter) {
+  base::RunLoop run_loop;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  BrowserContext::GetDefaultStoragePartition(browser_context)
+      ->GetNetworkContext()
+      ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
+
+  uint32_t result = 0U;
+  cookie_manager->DeleteCookies(
+      network::mojom::CookieDeletionFilter::New(filter),
+      base::BindOnce(
+          [](uint32_t* result, base::RunLoop* run_loop,
+             uint32_t cookies_cleared) {
+            *result = cookies_cleared;
+            run_loop->Quit();
+          },
+          &result, &run_loop));
+
   run_loop.Run();
   return result;
 }

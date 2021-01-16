@@ -902,14 +902,21 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
     BrowserContext* browser_context,
     const GURL& url);
 
-// Sets a cookie for the given url. Uses an inclusive SameSiteCookieContext by
-// default, which gets cookies regardless of their SameSite attribute. Returns
-// true on success.
+// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
+// SamePartyCookieContextType by default, which get cookies regardless of their
+// SameSite and SameParty attributes. Returns true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+               net::CookieOptions::SamePartyCookieContextType party_context =
+                   net::CookieOptions::SamePartyCookieContextType::kSameParty);
+
+// Deletes cookies matching the provided filter. Returns the number of cookies
+// that were deleted.
+uint32_t DeleteCookies(BrowserContext* browser_context,
+                       network::mojom::CookieDeletionFilter filter);
 
 // Fetch the histograms data from other processes. This should be called after
 // the test code has been executed but before performing assertions.
