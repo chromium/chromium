@@ -16,19 +16,22 @@ namespace {
 class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
  public:
   explicit TestWebUIBubbleManager(Browser* browser)
-      : WebUIBubbleManagerBase(IDS_ACCNAME_TAB_SEARCH,
-                               BrowserView::GetBrowserViewForBrowser(browser),
-                               browser->profile(),
-                               GURL("chrome://about")) {}
+      : WebUIBubbleManagerBase(BrowserView::GetBrowserViewForBrowser(browser)),
+        browser_context_(browser->profile()) {}
   TestWebUIBubbleManager(const TestWebUIBubbleManager&) = delete;
   const TestWebUIBubbleManager& operator=(const TestWebUIBubbleManager&) =
       delete;
   ~TestWebUIBubbleManager() override = default;
 
+  // WebUIBubbleManagerBase:
+  void WebViewHidden() override {}
+
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
-    return std::make_unique<WebUIBubbleView>(browser_context());
+    return std::make_unique<WebUIBubbleView>(browser_context_);
   }
+
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace

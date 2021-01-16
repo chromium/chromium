@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -48,12 +49,26 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  TabSearchUI* GetWebUIController() {
+    return webui_contents_->GetWebUI()
+        ->GetController()
+        ->template GetAs<TabSearchUI>();
+  }
+
  protected:
   std::unique_ptr<content::WebContents> webui_contents_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
+                       EmbedderHiddenDestroysPageHandler) {
+  EXPECT_NE(nullptr, GetWebUIController());
+  EXPECT_NE(nullptr, GetWebUIController()->page_handler_for_testing());
+  GetWebUIController()->EmbedderHidden();
+  EXPECT_EQ(nullptr, GetWebUIController()->page_handler_for_testing());
+}
 
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor
 // JS code below.

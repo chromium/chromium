@@ -90,6 +90,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
 TabSearchUI::~TabSearchUI() = default;
 
+void TabSearchUI::EmbedderHidden() {
+  page_handler_.reset();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(TabSearchUI)
 
 void TabSearchUI::BindInterface(

@@ -28,11 +28,7 @@ class WebUIBubbleDialogView;
 // and caching of the WebView.
 class WebUIBubbleManagerBase : public views::WidgetObserver {
  public:
-  WebUIBubbleManagerBase(int task_manager_string_id,
-                         views::View* anchor_view,
-                         content::BrowserContext* browser_context,
-                         const GURL& webui_url,
-                         bool enable_extension_apis = false);
+  explicit WebUIBubbleManagerBase(views::View* anchor_view);
   WebUIBubbleManagerBase(const WebUIBubbleManagerBase&) = delete;
   const WebUIBubbleManagerBase& operator=(const WebUIBubbleManagerBase&) =
       delete;
@@ -45,10 +41,6 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  int task_manager_string_id() const { return task_manager_string_id_; }
-  content::BrowserContext* browser_context() { return browser_context_; }
-  const GURL& webui_url() const { return webui_url_; }
-  bool enable_extension_apis() const { return enable_extension_apis_; }
   bool bubble_using_cached_webview() const {
     return bubble_using_cached_webview_;
   }
@@ -58,19 +50,16 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
     return bubble_view_;
   }
 
+ protected:
+  WebUIBubbleView* cached_web_view() { return cached_web_view_.get(); }
+
  private:
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
+  virtual void WebViewHidden() = 0;
   void ResetWebView();
 
-  // Used for tagging the web contents so that a distinctive name shows up in
-  // the task manager.
-  const int task_manager_string_id_;
-
   views::View* anchor_view_;
-  content::BrowserContext* browser_context_;
-  GURL webui_url_;
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
-  const bool enable_extension_apis_;
 
   // Tracks whether the current bubble was created by reusing
   // |cached_web_view_|.
@@ -95,13 +84,23 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
 template <typename T>
 class WebUIBubbleManager : public WebUIBubbleManagerBase {
  public:
-  using WebUIBubbleManagerBase::WebUIBubbleManagerBase;
+  WebUIBubbleManager(int task_manager_string_id,
+                     views::View* anchor_view,
+                     content::BrowserContext* browser_context,
+                     const GURL& webui_url,
+                     bool enable_extension_apis = false)
+      : WebUIBubbleManagerBase(anchor_view),
+        task_manager_string_id_(task_manager_string_id),
+        browser_context_(browser_context),
+        webui_url_(webui_url),
+        enable_extension_apis_(enable_extension_apis) {}
+  ~WebUIBubbleManager() override = default;
 
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
-    auto web_view = std::make_unique<WebUIBubbleView>(browser_context());
+    auto web_view = std::make_unique<WebUIBubbleView>(browser_context_);
     content::WebContents* web_contents = web_view->GetWebContents();
-    if (enable_extension_apis()) {
+    if (enable_extension_apis_) {
       // In order for the WebUI in the renderer to use extensions APIs we must
       // add a ChromeExtensionWebContentsObserver to the WebView's WebContents.
       extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
@@ -109,11 +108,24 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
     }
 
     task_manager::WebContentsTags::CreateForToolContents(
-        web_contents, task_manager_string_id());
-
-    web_view->template LoadURL<T>(webui_url());
+        web_contents, task_manager_string_id_);
+    web_view->template LoadURL<T>(webui_url_);
     return web_view;
   }
+
+  void WebViewHidden() override {
+    DCHECK(cached_web_view());
+    return cached_web_view()
+        ->template GetWebUIController<T>()
+        ->EmbedderHidden();
+  }
+
+  // Used for tagging the web contents so that a distinctive name shows up in
+  // the task manager.
+  const int task_manager_string_id_;
+  content::BrowserContext* browser_context_;
+  const GURL webui_url_;
+  const bool enable_extension_apis_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_MANAGER_H_

@@ -42,11 +42,14 @@ class WebUIBubbleView : public views::WebView,
     GetWebContents()->WasShown();
     SetVisible(true);
     LoadInitialURL(url);
-    T* async_webui_controller =
-        GetWebContents()->GetWebUI()->GetController()->template GetAs<T>();
     // Depends on the WebUIController object being constructed synchronously
     // when the navigation is started in LoadInitialURL().
-    async_webui_controller->set_embedder(weak_ptr_factory_.GetWeakPtr());
+    GetWebUIController<T>()->set_embedder(weak_ptr_factory_.GetWeakPtr());
+  }
+
+  template <typename T>
+  T* GetWebUIController() {
+    return GetWebContents()->GetWebUI()->GetController()->template GetAs<T>();
   }
 
   void set_host(Host* host) { host_ = host; }
