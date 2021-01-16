@@ -1114,7 +1114,9 @@ void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
   std::string url;
   CHECK(args->GetString(0, &url));
   GURL launch_url(url);
-
+  // Do not install app for invalid url.
+  if (!launch_url.SchemeIsHTTPOrHTTPS())
+    return;
   // Can only install one app at a time.
   if (attempting_web_app_install_page_ordinal_.has_value())
     return;
