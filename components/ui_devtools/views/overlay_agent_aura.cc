@@ -22,6 +22,7 @@ OverlayAgentAura::OverlayAgentAura(DOMAgent* dom_agent)
 }
 
 OverlayAgentAura::~OverlayAgentAura() {
+  RemovePreTargetHandler();
   overlay_agent_aura_ = nullptr;
 }
 
