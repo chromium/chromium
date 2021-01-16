@@ -108,6 +108,18 @@ enum class MobileSessionAppState {
   kMaxValue = BackgroundXte
 };
 
+// Values of the Stability.iOS.Experimental.Counts histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IOSStabilityUserVisibleCrashType {
+  // Termination caused by system signal (f.e. EXC_BAD_ACCESS).
+  TerminationCausedBySystemSignal = 0,
+  // Termination caused by Hang / UI Thread freeze (ui thread was locked for 9+
+  // seconds and the app was quit by OS or the user).
+  TerminationCausedByHang = 1,
+  kMaxValue = TerminationCausedByHang
+};
+
 // Returns value to log for Stability.iOS.UTE.MobileSessionOOMShutdownHint
 // histogram.
 MobileSessionOomShutdownHint GetMobileSessionOomShutdownHint(
@@ -155,6 +167,33 @@ GetMobileSessionAppWillTerminateWasReceived(bool has_possible_explanation) {
   return has_possible_explanation
              ? MobileSessionAppWillTerminateWasReceived::WasReceivedForXte
              : MobileSessionAppWillTerminateWasReceived::WasReceivedForUte;
+}
+
+// Records Stability.iOS.Experimental.Counts if necessary.
+void LogStabilityIOSExperimentalCounts(
+    MobileSessionShutdownType shutdown_type) {
+  IOSStabilityUserVisibleCrashType type =
+      IOSStabilityUserVisibleCrashType::kMaxValue;
+  switch (shutdown_type) {
+    case SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING:
+    case SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING:
+      type = IOSStabilityUserVisibleCrashType::TerminationCausedBySystemSignal;
+      break;
+    case SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN:
+      type = IOSStabilityUserVisibleCrashType::TerminationCausedByHang;
+      break;
+    case SHUTDOWN_IN_BACKGROUND:
+    case SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING:
+    case SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING:
+    case FIRST_LAUNCH_AFTER_UPGRADE:
+    case MOBILE_SESSION_SHUTDOWN_TYPE_COUNT:
+      // Nothing to record.
+      return;
+  };
+
+  UMA_STABILITY_HISTOGRAM_ENUMERATION(
+      "Stability.iOS.Experimental.Counts", type,
+      IOSStabilityUserVisibleCrashType::kMaxValue);
 }
 
 // Logs |type| in the shutdown type histogram.
@@ -296,6 +335,8 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
 
   UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.iOS.TabCountBeforeCrash",
                                      allTabCount);
+
+  LogStabilityIOSExperimentalCounts(shutdown_type);
 
   // Log metrics to improve categorization of crashes.
   LogApplicationBackgroundedTime(session_info.sessionEndTime);
