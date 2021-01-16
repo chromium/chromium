@@ -1546,12 +1546,11 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   const base::string16 inline_autocompletion(match.inline_autocompletion);
   const base::string16 prefix_autocompletion(match.prefix_autocompletion);
   const auto split_autocompletion(match.split_autocompletion);
-  const base::string16 fill_into_edit_additional_text(
-      match.fill_into_edit_additional_text);
+  const base::string16 additional_text(match.additional_text);
   OnPopupDataChanged(base::string16(),
                      /*is_temporary_text=*/false, inline_autocompletion,
                      prefix_autocompletion, split_autocompletion, keyword,
-                     is_keyword_hint, fill_into_edit_additional_text);
+                     is_keyword_hint, additional_text);
 }
 
 // static

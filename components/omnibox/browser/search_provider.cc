@@ -1537,8 +1537,6 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   match.contents_class = navigation.match_contents_class();
   match.description = navigation.description();
   match.description_class = navigation.description_class();
-  if (OmniboxFieldTrial::RichAutocompletionShowTitles())
-    match.fill_into_edit_additional_text = match.description;
 
   match.RecordAdditionalInfo(
       kRelevanceFromServerKey,

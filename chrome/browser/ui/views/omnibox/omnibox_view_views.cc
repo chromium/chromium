@@ -1036,13 +1036,12 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
   if (save_original_selection)
     saved_temporary_selection_ = GetRenderText()->GetAllSelections();
 
-  // SetWindowTextAndCaretPos will fire the acesssibility notification,
+  // SetWindowTextAndCaretPos will fire the accessibility notification,
   // so do not also generate redundant notification here.
   SetAccessibilityLabel(display_text, match, false);
 
   SetWindowTextAndCaretPos(display_text, display_text.length(), false,
                            notify_text_changed);
-  SetAdditionalText(match.fill_into_edit_additional_text);
 }
 
 void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(

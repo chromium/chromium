@@ -526,20 +526,11 @@ struct AutocompleteMatch {
   // by pressing the arrow keys. This may be different than a URL, for example,
   // for search suggestions, this would just be the search terms.
   base::string16 fill_into_edit;
-  // This string is displayed adjacent to |fill_into_edit|. Will usually be
-  // either the |description| or |content|, whichever isn't represented by
-  // |fill_into_edit|. Always empty if kRichAutocompletionShowTitlesParam is
-  // disabled.
-  base::string16 fill_into_edit_additional_text;
-  // When rich autocompleting titles, |fill_into_edit| &
-  // |fill_into_edit_additional_text| are swapped (i.e. the former contains the
-  // title, and the latter contains the URL). This is consistent with how the
-  // suggestion should be displayed. But the shortcut DB must persist the
-  // original (i.e. URL) |fill_into_edit|; otherwise the shortcut provider may
-  // autocomplete the title even when title autocompletion is inappropriate
-  // (e.g. because the input is too short). Therefore, |swapped_fill_into_edit|
-  // is set to true when rich autocompleting titles.
-  bool swapped_fill_into_edit = false;
+
+  // This string is displayed adjacent to the omnibox if this match is the
+  // default. Will usually be URL when autocompleting a title, and empty
+  // otherwise.
+  base::string16 additional_text;
 
   // The inline autocompletion to display after the user's input in the
   // omnibox, if this match becomes the default match.  It may be empty.

@@ -150,8 +150,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       typed_count(match.typed_count),
       deletable(match.deletable),
       fill_into_edit(match.fill_into_edit),
-      fill_into_edit_additional_text(match.fill_into_edit_additional_text),
-      swapped_fill_into_edit(match.swapped_fill_into_edit),
+      additional_text(match.additional_text),
       inline_autocompletion(match.inline_autocompletion),
       rich_autocompletion_triggered(match.rich_autocompletion_triggered),
       prefix_autocompletion(match.prefix_autocompletion),
@@ -211,8 +210,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   typed_count = match.typed_count;
   deletable = match.deletable;
   fill_into_edit = match.fill_into_edit;
-  fill_into_edit_additional_text = match.fill_into_edit_additional_text;
-  swapped_fill_into_edit = match.swapped_fill_into_edit;
+  additional_text = match.additional_text;
   inline_autocompletion = match.inline_autocompletion;
   rich_autocompletion_triggered = match.rich_autocompletion_triggered;
   prefix_autocompletion = match.prefix_autocompletion;
@@ -1113,7 +1111,7 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
   size_t res = 0;
 
   res += base::trace_event::EstimateMemoryUsage(fill_into_edit);
-  res += base::trace_event::EstimateMemoryUsage(fill_into_edit_additional_text);
+  res += base::trace_event::EstimateMemoryUsage(additional_text);
   res += base::trace_event::EstimateMemoryUsage(inline_autocompletion);
   res += base::trace_event::EstimateMemoryUsage(prefix_autocompletion);
   res += base::trace_event::EstimateMemoryUsage(destination_url);
@@ -1197,13 +1195,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
 
   bool counterfactual = OmniboxFieldTrial::RichAutocompletionCounterfactual();
 
-  // If the appropriate param is enabled, titles should be shown in the omnibox
-  // regardless of whether the suggestion can be the default. By default,
-  // secondary text should be displayed unless we autocomplete the secondary
-  // text, in which case |fill_into_edit_additional_text| will be overridden.
-  if (OmniboxFieldTrial::RichAutocompletionShowTitles() && !counterfactual)
-    fill_into_edit_additional_text = secondary_text;
-
   if (input.prevent_inline_autocomplete())
     return false;
 
@@ -1215,7 +1206,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
   // Try matching the prefix of |primary_text|.
   if (base::StartsWith(primary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
-    // |fill_into_edit| should already be set to |primary_text|.
     if (counterfactual)
       return false;
     // This case intentionally doesn't set |rich_autocompletion_triggered| to
@@ -1239,9 +1229,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
+    additional_text = primary_text;
     inline_autocompletion = secondary_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "secondary & prefix");
@@ -1270,7 +1258,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    // |fill_into_edit| should already be set to |primary_text|.
     inline_autocompletion =
         primary_text.substr(find_index + input_text_lower.length());
     prefix_autocompletion = primary_text.substr(0, find_index);
@@ -1286,9 +1273,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
+    additional_text = primary_text;
     inline_autocompletion =
         secondary_text.substr(find_index + input_text_lower.length());
     prefix_autocompletion = secondary_text.substr(0, find_index);
@@ -1312,7 +1297,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    // |fill_into_edit| should already be set to |primary_text|.
     split_autocompletion = SplitAutocompletion(
         primary_text_lower,
         TermMatchesToSelections(primary_text_lower.length(), input_words));
@@ -1335,9 +1319,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
+    additional_text = primary_text;
     split_autocompletion = SplitAutocompletion(
         secondary_text_lower,
         TermMatchesToSelections(secondary_text_lower.length(), input_words));

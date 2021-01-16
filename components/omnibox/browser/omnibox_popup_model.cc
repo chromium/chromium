@@ -190,12 +190,12 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
           base::string16(),
           /*is_temporary_text=*/false, match.inline_autocompletion,
           match.prefix_autocompletion, match.split_autocompletion, keyword,
-          is_keyword_hint, match.fill_into_edit_additional_text);
+          is_keyword_hint, match.additional_text);
     } else {
       edit_model_->OnPopupDataChanged(
           match.fill_into_edit,
           /*is_temporary_text=*/true, base::string16(), base::string16(), {},
-          keyword, is_keyword_hint, match.fill_into_edit_additional_text);
+          keyword, is_keyword_hint, base::string16());
     }
   }
 }

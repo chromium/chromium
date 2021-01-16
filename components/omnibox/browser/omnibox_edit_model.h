@@ -359,9 +359,9 @@ class OmniboxEditModel {
   // efficiently. Specifically, it's invoked for temporary text, autocompletion,
   // and keyword changes.
   //   |temporary_text| is the new temporary text from the user selecting a
-  //   different match. This will be empty when selecting a suggestion
-  //   without a |fill_into_edit| (e.g. FOCUSED_BUTTON_HEADER) and when
-  //   |is_temporary_test| is false.
+  //     different match. This will be empty when selecting a suggestion
+  //     without a |fill_into_edit| (e.g. FOCUSED_BUTTON_HEADER) and when
+  //     |is_temporary_test| is false.
   //   |is_temporary_text| is true if invoked because of a temporary text change
   //     or false if |temporary_text| should be ignored.
   //   |inline_autocompletion|, |prefix_autocompletion|, and

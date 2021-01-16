@@ -402,7 +402,6 @@ bool IsRichAutocompletionEnabled();
 bool RichAutocompletionAutocompleteTitles();
 size_t RichAutocompletionAutocompleteTitlesMinChar();
 bool RichAutocompletionTwoLineOmnibox();
-bool RichAutocompletionShowTitles();
 bool RichAutocompletionAutocompleteNonPrefixAll();
 bool RichAutocompletionAutocompleteNonPrefixShortcutProvider();
 size_t RichAutocompletionAutocompleteNonPrefixMinChar();
@@ -540,7 +539,6 @@ extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 extern const char kRichAutocompletionAutocompleteTitlesParam[];
 extern const char kRichAutocompletionAutocompleteTitlesMinCharParam[];
 extern const char kRichAutocompletionTwoLineOmniboxParam[];
-extern const char kRichAutocompletionShowTitlesParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixAllParam[];
 extern const char
     kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[];

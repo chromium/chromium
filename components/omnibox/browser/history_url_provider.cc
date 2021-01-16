@@ -971,8 +971,6 @@ bool HistoryURLProvider::FixupExactSuggestion(
       // We have data for this match, use it.
       params->what_you_typed_match.deletable = true;
       auto title = classifier.url_row().title();
-      if (OmniboxFieldTrial::RichAutocompletionShowTitles())
-        params->what_you_typed_match.fill_into_edit_additional_text = title;
       params->what_you_typed_match.description = title;
       params->what_you_typed_match.destination_url = classifier.url_row().url();
       RecordAdditionalInfoFromUrlRow(classifier.url_row(),
