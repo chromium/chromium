@@ -73,7 +73,7 @@ void UsbDeviceWin::ReadDescriptors(base::OnceCallback<void(bool)> callback) {
 
 void UsbDeviceWin::UpdateFunction(int interface_number,
                                   const FunctionInfo& function_info) {
-  functions_.insert({interface_number, function_info});
+  functions_[interface_number] = function_info;
 
   for (UsbDeviceHandle* handle : handles()) {
     // This is safe because only this class only adds instance of
