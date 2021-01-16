@@ -2304,6 +2304,66 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 }
 
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       RequestTimingIsNonNegative) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  content::RenderFrameHost* frame = GetWebContents()->GetMainFrame();
+
+  // Check the request total time is non-negative.
+  int value = -1;
+  std::string script =
+      "window.domAutomationController.send(window.performance.timing."
+      "responseEnd - window.performance.timing.requestStart)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
+  EXPECT_LE(0, value);
+
+  // Check the response time is non-negative.
+  value = -1;
+  script =
+      "window.domAutomationController.send(window.performance.timing."
+      "responseEnd - window.performance.timing.responseStart)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
+  EXPECT_LE(0, value);
+
+  // Check request start is after (or the same as) navigation start.
+  value = -1;
+  script =
+      "window.domAutomationController.send(window.performance.timing."
+      "requestStart - window.performance.timing.navigationStart)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
+  EXPECT_LE(0, value);
+
+  // Check response end is after (or the same as) navigation start.
+  value = -1;
+  script =
+      "window.domAutomationController.send(window.performance.timing."
+      "responseEnd - window.performance.timing.navigationStart)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
+  EXPECT_LE(0, value);
+}
+
 // True means that responses are streamed, false means full responses must be
 // received in order to server the response.
 INSTANTIATE_TEST_SUITE_P(All,
