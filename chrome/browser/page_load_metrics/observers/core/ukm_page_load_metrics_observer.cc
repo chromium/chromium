@@ -273,7 +273,8 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   RecordSmoothnessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
-  RecordPageEndMetrics(&timing, current_time);
+  RecordPageEndMetrics(&timing, current_time,
+                       /* app_entered_background */ true);
   return STOP_OBSERVING;
 }
 
@@ -312,7 +313,8 @@ void UkmPageLoadMetricsObserver::OnFailedProvisionalLoad(
   if (is_portal_)
     return;
 
-  RecordPageEndMetrics(nullptr, base::TimeTicks());
+  RecordPageEndMetrics(nullptr, base::TimeTicks(),
+                       /* app_entered_background */ false);
   if (was_hidden_)
     return;
 
@@ -350,7 +352,8 @@ void UkmPageLoadMetricsObserver::OnComplete(
   ReportLayoutStability();
   RecordSmoothnessMetrics();
   ReportPerfectHeuristicsMetrics();
-  RecordPageEndMetrics(&timing, current_time);
+  RecordPageEndMetrics(&timing, current_time,
+                       /* app_entered_background */ false);
   RecordMobileFriendlinessMetrics();
 }
 
@@ -1088,7 +1091,8 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
     const page_load_metrics::mojom::PageLoadTiming* timing,
-    base::TimeTicks page_end_time) {
+    base::TimeTicks page_end_time,
+    bool app_entered_background) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
   builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
@@ -1097,10 +1101,11 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   // to int64_t.
   int64_t page_end_reason = GetDelegate().GetPageEndReason();
   if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
-      was_hidden_) {
-    page_end_reason = page_load_metrics::PageEndReason::END_HIDDEN;
+      app_entered_background) {
+    page_end_reason =
+        page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
   }
-  builder.SetNavigation_PageEndReason2(page_end_reason);
+  builder.SetNavigation_PageEndReason3(page_end_reason);
   bool is_user_initiated_navigation =
       // All browser initiated page loads are user-initiated.
       GetDelegate().GetUserInitiatedInfo().browser_initiated ||
