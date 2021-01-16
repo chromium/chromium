@@ -165,6 +165,82 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
         std::move(remote_typed_array));
   }
 
+  if (js_value->IsObject()) {
+    v8::Local<v8::Object> object_val = js_value.As<v8::Object>();
+    v8::Local<v8::Value> length_value;
+    v8::TryCatch try_catch(isolate);
+    v8::MaybeLocal<v8::Value> maybe_length_value = object_val->Get(
+        isolate->GetCurrentContext(), V8AtomicString(isolate, "length"));
+    if (try_catch.HasCaught() || !maybe_length_value.ToLocal(&length_value)) {
+      length_value = v8::Null(isolate);
+      try_catch.Reset();
+    }
+
+    if (!length_value->IsNumber()) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kNull);
+    }
+
+    double length = length_value.As<v8::Number>()->Value();
+    if (length < 0 || length > std::numeric_limits<int32_t>::max()) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kNull);
+    }
+
+    v8::Local<v8::Array> property_names;
+    if (!object_val->GetOwnPropertyNames(isolate->GetCurrentContext())
+             .ToLocal(&property_names)) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kNull);
+    }
+
+    WTF::Vector<mojom::blink::RemoteInvocationArgumentPtr> nested_arguments(
+        SafeCast<wtf_size_t>(length));
+    for (uint32_t i = 0; i < property_names->Length(); ++i) {
+      v8::Local<v8::Value> key;
+      if (!property_names->Get(isolate->GetCurrentContext(), i).ToLocal(&key) ||
+          key->IsString()) {
+        try_catch.Reset();
+        continue;
+      }
+
+      if (!key->IsNumber()) {
+        NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                     << "\" is not a number";
+        continue;
+      }
+
+      uint32_t key_value;
+      if (!key->Uint32Value(isolate->GetCurrentContext()).To(&key_value))
+        continue;
+
+      v8::Local<v8::Value> value_v8;
+      v8::MaybeLocal<v8::Value> maybe_value =
+          object_val->Get(isolate->GetCurrentContext(), key);
+      if (try_catch.HasCaught() || !maybe_value.ToLocal(&value_v8)) {
+        value_v8 = v8::Null(isolate);
+        try_catch.Reset();
+      }
+
+      auto nested_argument = JSValueToMojom(value_v8, isolate);
+      if (!nested_argument)
+        continue;
+      nested_arguments[key_value] = std::move(nested_argument);
+    }
+
+    // Ensure that the vector has a null value.
+    for (wtf_size_t i = 0; i < nested_arguments.size(); i++) {
+      if (!nested_arguments[i]) {
+        nested_arguments[i] =
+            mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+                mojom::blink::SingletonJavaScriptValue::kNull);
+      }
+    }
+
+    return mojom::blink::RemoteInvocationArgument::NewArrayValue(
+        std::move(nested_arguments));
+  }
+
   return nullptr;
 }
 
