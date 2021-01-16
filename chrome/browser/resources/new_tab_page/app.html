@@ -262,10 +262,12 @@
   </ntp-realbox>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
-      <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
-          use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
-          use-title-pill$="[[theme_.shortcutUseTitlePill]]">
-      </ntp-most-visited>
+      <template is="dom-if" if="[[shortcutsEnabled_]]">
+        <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
+            use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
+            use-title-pill$="[[theme_.shortcutUseTitlePill]]">
+        </ntp-most-visited>
+      </template>
       <ntp-middle-slot-promo
           on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
       </ntp-middle-slot-promo>
