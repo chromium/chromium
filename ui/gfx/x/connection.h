@@ -5,9 +5,6 @@
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
-#include <list>
-#include <queue>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
@@ -183,8 +180,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t KeycodeToKeysym(KeyCode keycode, uint32_t modifiers) const;
 
-  // Access the event buffer.  Clients can add, delete, or modify events.
-  std::list<Event>& events() {
+  // Access the event buffer.  Clients may modify the queue, including
+  // "deleting" events by setting events[i] = x11::Event(), which will
+  // guarantee all calls to x11::Event::As() will return nullptr.
+  base::circular_deque<Event>& events() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return events_;
   }
@@ -268,6 +267,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   bool HasNextResponse();
 
+  bool HasNextEvent();
+
   // Creates a new Request and adds it to the end of the queue.
   // |request_name_for_tracing| must be valid until the response is
   // dispatched; currently the string values are only stored in .rodata, so
@@ -312,7 +313,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   std::unique_ptr<KeyboardState> keyboard_state_;
 
-  std::list<Event> events_;
+  base::circular_deque<Event> events_;
 
   base::ObserverList<EventObserver>::Unchecked event_observers_;
 
