@@ -89,8 +89,5 @@ const base::Feature kSecurePaymentConfirmation {
 #endif  // OS_MAC
 };
 
-const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace payments

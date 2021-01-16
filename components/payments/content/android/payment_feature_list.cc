@@ -27,7 +27,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kAppStoreBilling,
     &features::kAppStoreBillingDebug,
     &features::kEnforceFullDelegation,
-    &features::kGPayAppDynamicUpdate,
     &features::kPaymentRequestSkipToGPay,
     &features::kPaymentRequestSkipToGPayIfNoCard,
     &features::kReturnGooglePayInBasicCard,
