@@ -4479,7 +4479,7 @@
       'future_on' : ['chrome_os'],
       'example_value': False,
       'features':{
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': True,
       },
       'items': [
