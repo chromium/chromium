@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Coordinator to show / hide a banner message on given container and delegate events.
@@ -29,6 +30,7 @@ public class SingleActionMessage implements MessageStateHandler {
     private final Callback<PropertyModel> mDismissHandler;
     private MessageAutoDismissTimer mAutoDismissTimer;
     private final Supplier<Integer> mMaxTranslationSupplier;
+    private final AccessibilityUtil mAccessibilityUtil;
 
     /**
      * @param container The container holding messages.
@@ -37,13 +39,15 @@ public class SingleActionMessage implements MessageStateHandler {
      * @param dismissHandler The {@link Callback<PropertyModel>} able to dismiss a message by given
      *         property model.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     *         value the message banner can have as a result of the animations or the gestures.
+     * @param accessibilityUtil A util to expose information related to system accessibility state.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
-            Callback<PropertyModel> dismissHandler, Supplier<Integer> maxTranslationSupplier) {
+            Callback<PropertyModel> dismissHandler, Supplier<Integer> maxTranslationSupplier,
+            AccessibilityUtil accessibilityUtil) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
+        mAccessibilityUtil = accessibilityUtil;
         mAutoDismissTimer = new MessageAutoDismissTimer(getAutoDismissDuration());
         mMaxTranslationSupplier = maxTranslationSupplier;
 
@@ -110,8 +114,9 @@ public class SingleActionMessage implements MessageStateHandler {
         mDismissHandler.onResult(mModel);
     }
 
-    private long getAutoDismissDuration() {
-        return MessageUtils.isA11yEnabled() ? DURATION_ON_A11Y : DURATION;
+    @VisibleForTesting
+    long getAutoDismissDuration() {
+        return mAccessibilityUtil.isAccessibilityEnabled() ? DURATION_ON_A11Y : DURATION;
     }
 
     @VisibleForTesting
