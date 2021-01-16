@@ -92,7 +92,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     // Check STS has not generated any errors.
-    EXPECT_EQ(0, console_observer_->messages().size())
+    EXPECT_EQ(0u, console_observer_->messages().size())
         << "Found console.log or console.warn with message: "
         << console_observer_->GetMessageAt(0);
   }
