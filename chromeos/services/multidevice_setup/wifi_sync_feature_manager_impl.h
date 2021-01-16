@@ -12,7 +12,9 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+#include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -32,7 +34,8 @@ namespace multidevice_setup {
 class WifiSyncFeatureManagerImpl
     : public WifiSyncFeatureManager,
       public HostStatusProvider::Observer,
-      public device_sync::DeviceSyncClient::Observer {
+      public device_sync::DeviceSyncClient::Observer,
+      public session_manager::SessionManagerObserver {
  public:
   class Factory {
    public:
@@ -40,6 +43,7 @@ class WifiSyncFeatureManagerImpl
         HostStatusProvider* host_status_provider,
         PrefService* pref_service,
         device_sync::DeviceSyncClient* device_sync_client,
+        AccountStatusChangeDelegateNotifier* delegate_notifier,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -50,6 +54,7 @@ class WifiSyncFeatureManagerImpl
         HostStatusProvider* host_status_provider,
         PrefService* pref_service,
         device_sync::DeviceSyncClient* device_sync_client,
+        AccountStatusChangeDelegateNotifier* delegate_notifier,
         std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
@@ -64,10 +69,12 @@ class WifiSyncFeatureManagerImpl
       delete;
 
  private:
-  WifiSyncFeatureManagerImpl(HostStatusProvider* host_status_provider,
-                             PrefService* pref_service,
-                             device_sync::DeviceSyncClient* device_sync_client,
-                             std::unique_ptr<base::OneShotTimer> timer);
+  WifiSyncFeatureManagerImpl(
+      HostStatusProvider* host_status_provider,
+      PrefService* pref_service,
+      device_sync::DeviceSyncClient* device_sync_client,
+      AccountStatusChangeDelegateNotifier* delegate_notifier,
+      std::unique_ptr<base::OneShotTimer> timer);
 
   // HostStatusProvider::Observer,
   void OnHostStatusChange(const HostStatusProvider::HostStatusWithDevice&
@@ -75,6 +82,9 @@ class WifiSyncFeatureManagerImpl
 
   // DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;
+
+  // SessionManagerObserver:
+  void OnSessionStateChanged() override;
 
   // WifiSyncFeatureManager:
 
@@ -124,10 +134,13 @@ class WifiSyncFeatureManagerImpl
   bool ShouldEnableOnVerify();
   void ProcessEnableOnVerifyAttempt();
   bool ShouldAttemptToEnableAfterHostVerified();
+  void ShowAnnouncementNotificationIfEligible();
+  bool IsWifiSyncSupported();
 
   HostStatusProvider* host_status_provider_;
   PrefService* pref_service_;
   device_sync::DeviceSyncClient* device_sync_client_;
+  AccountStatusChangeDelegateNotifier* delegate_notifier_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   bool network_request_in_flight_ = false;

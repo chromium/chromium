@@ -110,6 +110,9 @@ struct HostDevice {
   chromeos.device_sync.mojom.ConnectivityStatus connectivity_status;
 };
 
+// Delegate used to notify Chrome OS UI (//ash) of multidevice account changes
+// from the multidevice setup service (//chromeos/services/multidevice_setup).
+// Both sides currently live in the Chrome process.
 interface AccountStatusChangeDelegate {
   // Callback which indicates that one or more MultiDevice host phones are
   // available for setup with the MultiDevice setup flow. This function is only
@@ -134,6 +137,11 @@ interface AccountStatusChangeDelegate {
   // the current user. This function is only called if the current user has
   // already set up MultiDevice features.
   OnNewChromebookAddedForExistingUser(string new_host_device_name);
+
+  // Indicates that the existing host has become eligible for Wi-Fi Sync, but
+  // the feature is not yet enabled.  This is called when the announcement
+  // notification should be shown.
+  OnBecameEligibleForWifiSync();
 };
 
 interface HostStatusObserver {

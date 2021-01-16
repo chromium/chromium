@@ -61,6 +61,7 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
       const std::string& new_host_device_name) override;
   void OnNewChromebookAddedForExistingUser(
       const std::string& new_host_device_name) override;
+  void OnBecameEligibleForWifiSync() override;
 
   // SessionObserver:
   void OnUserSessionAdded(const AccountId& account_id) override;
@@ -79,7 +80,8 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   friend class MultiDeviceNotificationPresenterTest;
 
   // MultiDevice setup notification ID.
-  static const char kNotificationId[];
+  static const char kSetupNotificationId[];
+  static const char kWifiSyncNotificationId[];
 
   // Represents each possible MultiDevice setup notification that the setup flow
   // can show with a "none" option for the general state with no notification
@@ -107,12 +109,12 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
       Status notification_status);
 
   void ObserveMultiDeviceSetupIfPossible();
-  void ShowNotification(const Status notification_status,
+  void ShowSetupNotification(const Status notification_status,
+                             const base::string16& title,
+                             const base::string16& message);
+  void ShowNotification(const std::string& id,
                         const base::string16& title,
                         const base::string16& message);
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const base::string16& title,
-      const base::string16& message);
 
   void FlushForTesting();
 

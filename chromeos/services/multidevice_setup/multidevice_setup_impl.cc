@@ -121,17 +121,6 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_backend_delegate_.get(),
               device_sync_client,
               pref_service)),
-      wifi_sync_feature_manager_(WifiSyncFeatureManagerImpl::Factory::Create(
-          host_status_provider_.get(),
-          pref_service,
-          device_sync_client)),
-      feature_state_manager_(FeatureStateManagerImpl::Factory::Create(
-          pref_service,
-          host_status_provider_.get(),
-          device_sync_client,
-          android_sms_pairing_state_tracker,
-          wifi_sync_feature_manager_.get(),
-          is_secondary_user)),
       host_device_timestamp_manager_(
           HostDeviceTimestampManagerImpl::Factory::Create(
               host_status_provider_.get(),
@@ -144,6 +133,18 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_device_timestamp_manager_.get(),
               oobe_completion_tracker,
               base::DefaultClock::GetInstance())),
+      wifi_sync_feature_manager_(WifiSyncFeatureManagerImpl::Factory::Create(
+          host_status_provider_.get(),
+          pref_service,
+          device_sync_client,
+          delegate_notifier_.get())),
+      feature_state_manager_(FeatureStateManagerImpl::Factory::Create(
+          pref_service,
+          host_status_provider_.get(),
+          device_sync_client,
+          android_sms_pairing_state_tracker,
+          wifi_sync_feature_manager_.get(),
+          is_secondary_user)),
       device_reenroller_(
           DeviceReenroller::Factory::Create(device_sync_client,
                                             gcm_device_info_provider)),

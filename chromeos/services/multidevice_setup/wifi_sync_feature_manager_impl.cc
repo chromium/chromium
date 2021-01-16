@@ -18,6 +18,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
 
@@ -27,6 +28,12 @@ namespace {
 
 const char kPendingWifiSyncRequestEnabledPrefName[] =
     "multidevice_setup.pending_set_wifi_sync_enabled_request";
+
+// Pref to track whether the announcement notification can be shown the next
+// time the device is unlocked with a verified host and wi-fi sync supported but
+// disabled.
+const char kCanShowAnnouncementPrefName[] =
+    "multidevice_setup.can_show_wifi_sync_announcement";
 
 // The number of minutes to wait before retrying a failed attempt.
 const int kNumMinutesBetweenRetries = 5;
@@ -43,15 +50,17 @@ WifiSyncFeatureManagerImpl::Factory::Create(
     HostStatusProvider* host_status_provider,
     PrefService* pref_service,
     device_sync::DeviceSyncClient* device_sync_client,
+    AccountStatusChangeDelegateNotifier* delegate_notifier,
     std::unique_ptr<base::OneShotTimer> timer) {
   if (test_factory_) {
     return test_factory_->CreateInstance(host_status_provider, pref_service,
-                                         device_sync_client, std::move(timer));
+                                         device_sync_client, delegate_notifier,
+                                         std::move(timer));
   }
 
-  return base::WrapUnique(
-      new WifiSyncFeatureManagerImpl(host_status_provider, pref_service,
-                                     device_sync_client, std::move(timer)));
+  return base::WrapUnique(new WifiSyncFeatureManagerImpl(
+      host_status_provider, pref_service, device_sync_client, delegate_notifier,
+      std::move(timer)));
 }
 
 // static
@@ -65,22 +74,24 @@ WifiSyncFeatureManagerImpl::Factory::~Factory() = default;
 void WifiSyncFeatureManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kPendingWifiSyncRequestEnabledPrefName,
                                 static_cast<int>(PendingState::kPendingNone));
+  registry->RegisterBooleanPref(kCanShowAnnouncementPrefName, true);
 }
-
-WifiSyncFeatureManagerImpl::~WifiSyncFeatureManagerImpl() = default;
 
 WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
     HostStatusProvider* host_status_provider,
     PrefService* pref_service,
     device_sync::DeviceSyncClient* device_sync_client,
+    AccountStatusChangeDelegateNotifier* delegate_notifier,
     std::unique_ptr<base::OneShotTimer> timer)
     : WifiSyncFeatureManager(),
       host_status_provider_(host_status_provider),
       pref_service_(pref_service),
       device_sync_client_(device_sync_client),
+      delegate_notifier_(delegate_notifier),
       timer_(std::move(timer)) {
   host_status_provider_->AddObserver(this);
   device_sync_client_->AddObserver(this);
+  session_manager::SessionManager::Get()->AddObserver(this);
 
   if (GetCurrentState() == CurrentState::kValidPendingRequest) {
     AttemptSetWifiSyncHostStateNetworkRequest(false /* is_retry */);
@@ -89,6 +100,12 @@ WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
   if (ShouldEnableOnVerify()) {
     ProcessEnableOnVerifyAttempt();
   }
+}
+
+WifiSyncFeatureManagerImpl::~WifiSyncFeatureManagerImpl() {
+  host_status_provider_->RemoveObserver(this);
+  device_sync_client_->RemoveObserver(this);
+  session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
 void WifiSyncFeatureManagerImpl::OnHostStatusChange(
@@ -116,6 +133,45 @@ void WifiSyncFeatureManagerImpl::OnNewDevicesSynced() {
   }
 }
 
+void WifiSyncFeatureManagerImpl::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
+    return;
+  }
+
+  // Show the announcement notification when the device is unlocked and
+  // eligible for wi-fi sync.  This is done on unlock to avoid showing the
+  // notification on the first sign-in when it would distract from showoff
+  // and other announcements.
+  ShowAnnouncementNotificationIfEligible();
+}
+
+void WifiSyncFeatureManagerImpl::ShowAnnouncementNotificationIfEligible() {
+  if (!IsFeatureAllowed(mojom::Feature::kWifiSync, pref_service_)) {
+    return;
+  }
+
+  if (!pref_service_->GetBoolean(kCanShowAnnouncementPrefName)) {
+    return;
+  }
+
+  if (!IsWifiSyncSupported()) {
+    return;
+  }
+
+  if (GetCurrentState() == CurrentState::kNoVerifiedHost ||
+      IsWifiSyncEnabled()) {
+    pref_service_->SetBoolean(kCanShowAnnouncementPrefName, false);
+    return;
+  }
+
+  if (!delegate_notifier_->delegate()) {
+    return;
+  }
+
+  delegate_notifier_->delegate()->OnBecameEligibleForWifiSync();
+  pref_service_->SetBoolean(kCanShowAnnouncementPrefName, false);
+}
+
 void WifiSyncFeatureManagerImpl::SetIsWifiSyncEnabled(bool enabled) {
   if (GetCurrentState() == CurrentState::kNoVerifiedHost) {
     PA_LOG(ERROR)
@@ -127,6 +183,7 @@ void WifiSyncFeatureManagerImpl::SetIsWifiSyncEnabled(bool enabled) {
 
   SetPendingWifiSyncHostNetworkRequest(enabled ? PendingState::kPendingEnable
                                                : PendingState::kPendingDisable);
+  pref_service_->SetBoolean(kCanShowAnnouncementPrefName, false);
 
   // Stop timer since new attempt is started.
   timer_->Stop();
@@ -148,6 +205,19 @@ bool WifiSyncFeatureManagerImpl::IsWifiSyncEnabled() {
              ->GetSoftwareFeatureState(
                  multidevice::SoftwareFeature::kWifiSyncHost) ==
          multidevice::SoftwareFeatureState::kEnabled;
+}
+
+bool WifiSyncFeatureManagerImpl::IsWifiSyncSupported() {
+  CurrentState current_state = GetCurrentState();
+  if (current_state == CurrentState::kNoVerifiedHost) {
+    return false;
+  }
+
+  return host_status_provider_->GetHostWithStatus()
+             .host_device()
+             ->GetSoftwareFeatureState(
+                 multidevice::SoftwareFeature::kWifiSyncHost) !=
+         multidevice::SoftwareFeatureState::kNotSupported;
 }
 
 void WifiSyncFeatureManagerImpl::ResetPendingWifiSyncHostNetworkRequest() {
