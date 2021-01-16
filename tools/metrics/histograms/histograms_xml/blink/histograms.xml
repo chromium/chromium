@@ -288,6 +288,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.Canvas.ToBlob.CompleteEncodingDelay"
     units="microseconds" expires_after="2021-01-31">
+  <obsolete>
+    Removed in M89. Obsolete and unused. This has been replaced with
+    Blink.Canvas.ToBlob.TotalEncodingDelay
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -328,8 +332,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.ToBlob.InitialEncodingDelay.{Type}"
+    units="microseconds" expires_after="2022-04-04">
+  <owner>aaronhk@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    A new version of &quot;Blink.Canvas.ToBlob.InitiateEncodingDelay&quot;
+    (which will be allowed to expire) which allows for times &gt;10ms.
+
+    This metric measures the time spent from initiating image encoding (jpeg or
+    png) on idle task to the actual execution time of initiation, as part of a
+    canvas.toBlob API call.
+
+    This metric is useful in helping us adjust the IdleTaskStartTimeoutDelay in
+    canvas.toBlob. When the initialization idle task is delayed for longer than
+    IdleTaskStartTimeoutDelay, the browser will switch to a non-idle task to
+    force initialization and encoding to occur on the main thread.
+
+    In addition, metric values from OffscreenCanvas.convertToBlob API call are
+    also gathered into this histogram, because the logic flow is exactly the
+    same as canvas.toBlob. It's worth to note that the values can come from idle
+    tasks on either main or worker thread.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+  <token key="Type">
+    <variant name="JPEG"/>
+    <variant name="PNG"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Blink.Canvas.ToBlob.InitiateEncodingDelay"
     units="microseconds" expires_after="2021-01-31">
+  <obsolete>
+    Removed in M89. Obsolete and unused. This has been replaced with
+    Blink.Canvas.ToBlob.InitialEncodingDelay
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -370,6 +410,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     means these reports will be biased against a portion of the population on
     Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.ToBlob.TotalEncodingDelay.{Type}"
+    units="microseconds" expires_after="2022-04-04">
+  <owner>aaronhk@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    A new version of &quot;Blink.Canvas.ToBlob.InitiateEncodingDelay&quot;
+    (which will be allowed to expire) which allows for times &gt;10ms.
+
+    This metric measures the total time spent on completing encoding all the
+    rows of an image (jpeg or png), as part of a canvas.toBlob API call.
+    Encoding occurs during one or more idle periods on the main thread and the
+    waiting time of the next idle period is included in the measurement. If the
+    code has swtiched to force encoding path, we will not measure the delay in
+    this metric.
+
+    This metric is useful in helping us adjust the IdleTaskCompleteTimeoutDelay
+    in canvas.toBlob. When the encoding idle task is delayed for longer than
+    IdleTaskCompleteTimeoutDelay, the browser will switch to a non-idle task to
+    force encoding to happen on the main thread.
+
+    In addition, metric values from OffscreenCanvas.convertToBlob API call are
+    also gathered into this histogram, because the logic flow is exactly the
+    same as canvas.toBlob. It's worth to note that the values can come from idle
+    tasks on either main or worker thread.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+  <token key="Type">
+    <variant name="JPEG"/>
+    <variant name="PNG"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.ToDataURLScaledDuration"
