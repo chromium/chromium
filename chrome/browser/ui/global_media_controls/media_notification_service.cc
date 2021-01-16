@@ -326,10 +326,13 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
               base::BindRepeating(
                   &MediaNotificationService::OnCastNotificationsChanged,
                   base::Unretained(this)));
+      notification_providers_.insert(cast_notification_provider_.get());
     }
     if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
       presentation_request_notification_provider_ =
           std::make_unique<PresentationRequestNotificationProvider>(this);
+      notification_providers_.insert(
+          presentation_request_notification_provider_.get());
     }
   }
 
@@ -693,17 +696,18 @@ void MediaNotificationService::SetDialogDelegate(
   if (!dialog_delegate_)
     return;
 
-  std::list<std::string> sorted_session_ids;
-  for (const std::string& id : active_controllable_session_ids_) {
+  auto notification_ids = GetActiveControllableNotificationIds();
+  std::list<std::string> sorted_notification_ids;
+  for (const std::string& id : notification_ids) {
     auto session_it = sessions_.find(id);
     if (session_it != sessions_.end() && session_it->second.IsPlaying()) {
-      sorted_session_ids.push_front(id);
+      sorted_notification_ids.push_front(id);
     } else {
-      sorted_session_ids.push_back(id);
+      sorted_notification_ids.push_back(id);
     }
   }
 
-  for (const std::string& id : sorted_session_ids) {
+  for (const std::string& id : sorted_notification_ids) {
     base::WeakPtr<media_message_center::MediaNotificationItem> item =
         GetNotificationItem(id);
     MediaNotificationContainerImpl* container =
@@ -717,7 +721,7 @@ void MediaNotificationService::SetDialogDelegate(
   }
 
   media_message_center::RecordConcurrentNotificationCount(
-      active_controllable_session_ids_.size());
+      notification_ids.size());
 
   if (cast_notification_provider_) {
     media_message_center::RecordConcurrentCastNotificationCount(
@@ -726,7 +730,7 @@ void MediaNotificationService::SetDialogDelegate(
 }
 
 bool MediaNotificationService::HasActiveNotifications() const {
-  return !active_controllable_session_ids_.empty();
+  return !GetActiveControllableNotificationIds().empty();
 }
 
 bool MediaNotificationService::HasFrozenNotifications() const {
@@ -854,20 +858,24 @@ MediaNotificationService::Session* MediaNotificationService::GetSession(
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaNotificationService::GetNonSessionNotificationItem(const std::string& id) {
-  if (cast_notification_provider_) {
-    auto item = cast_notification_provider_->GetNotificationItem(id);
-    if (item)
+  for (auto* notification_provider : notification_providers_) {
+    auto item = notification_provider->GetNotificationItem(id);
+    if (item) {
       return item;
+    }
   }
-
-  if (presentation_request_notification_provider_) {
-    auto item =
-        presentation_request_notification_provider_->GetNotificationItem(id);
-    if (item)
-      return item;
-  }
-
   return nullptr;
+}
+
+std::set<std::string>
+MediaNotificationService::GetActiveControllableNotificationIds() const {
+  std::set<std::string> ids = active_controllable_session_ids_;
+  for (auto* notification_provider : notification_providers_) {
+    const std::set<std::string>& provider_ids =
+        notification_provider->GetActiveControllableNotificationIds();
+    ids.insert(provider_ids.begin(), provider_ids.end());
+  }
+  return ids;
 }
 
 void MediaNotificationService::OnNotificationChanged(

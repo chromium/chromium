@@ -54,6 +54,23 @@ CastMediaNotificationProvider::CastMediaNotificationProvider(
 
 CastMediaNotificationProvider::~CastMediaNotificationProvider() = default;
 
+base::WeakPtr<media_message_center::MediaNotificationItem>
+CastMediaNotificationProvider::GetNotificationItem(const std::string& id) {
+  const auto item_it = items_.find(id);
+  if (item_it == items_.end())
+    return nullptr;
+  return item_it->second.GetWeakPtr();
+}
+
+std::set<std::string>
+CastMediaNotificationProvider::GetActiveControllableNotificationIds() const {
+  std::set<std::string> ids;
+  for (const auto& item : items_) {
+    ids.insert(item.first);
+  }
+  return ids;
+}
+
 void CastMediaNotificationProvider::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes,
     const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
@@ -94,14 +111,6 @@ void CastMediaNotificationProvider::OnRoutesUpdated(
   }
   if (HasItems() != had_items)
     items_changed_callback_.Run();
-}
-
-base::WeakPtr<media_message_center::MediaNotificationItem>
-CastMediaNotificationProvider::GetNotificationItem(const std::string& id) {
-  const auto item_it = items_.find(id);
-  if (item_it == items_.end())
-    return nullptr;
-  return item_it->second.GetWeakPtr();
 }
 
 bool CastMediaNotificationProvider::HasItems() const {

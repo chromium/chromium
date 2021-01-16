@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -39,7 +40,8 @@
 // involved; at that point CastMediaNotificationProvider become responsible for
 // managing the notification for an active session.
 class PresentationRequestNotificationProvider final
-    : public media_router::WebContentsPresentationManager::Observer,
+    : public MediaNotificationProducer,
+      public media_router::WebContentsPresentationManager::Observer,
       public MediaNotificationServiceObserver {
  public:
   explicit PresentationRequestNotificationProvider(
@@ -50,14 +52,16 @@ class PresentationRequestNotificationProvider final
       const PresentationRequestNotificationProvider&) = delete;
   ~PresentationRequestNotificationProvider() final;
 
+  // MediaNotificationProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem>
-  GetNotificationItem(const std::string& id);
+  GetNotificationItem(const std::string& id) override;
+  std::set<std::string> GetActiveControllableNotificationIds() const override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
 
  private:
-  // MediaNotificationServiceObserver
+  // MediaNotificationServiceObserver:
   void OnNotificationListChanged() final;
   void OnMediaDialogOpened() final;
   void OnMediaDialogClosed() final;
@@ -69,7 +73,7 @@ class PresentationRequestNotificationProvider final
       base::WeakPtr<media_router::WebContentsPresentationManager>
           presentation_manager);
 
-  // WebContentsPresentationManager::Observer
+  // WebContentsPresentationManager::Observer:
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) final;
 

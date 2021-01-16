@@ -994,6 +994,7 @@ static_library("ui") {
       "global_media_controls/media_notification_device_provider.h",
       "global_media_controls/media_notification_device_provider_impl.cc",
       "global_media_controls/media_notification_device_provider_impl.h",
+      "global_media_controls/media_notification_producer.h",
       "global_media_controls/media_notification_service.cc",
       "global_media_controls/media_notification_service.h",
       "global_media_controls/media_notification_service_factory.cc",

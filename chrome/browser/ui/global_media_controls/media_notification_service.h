@@ -307,6 +307,8 @@ class MediaNotificationService
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNonSessionNotificationItem(const std::string& id);
 
+  std::set<std::string> GetActiveControllableNotificationIds() const;
+
   // Called after changing anything about a notification to notify any observers
   // and update the visibility of supplemental notifications.  If the change is
   // associated with a particular notification ID, that ID should be passed as
@@ -321,23 +323,23 @@ class MediaNotificationService
 
   // Used to track whether there are any active controllable sessions. If not,
   // then there's nothing to show in the dialog and we can hide the toolbar
-  // icon. Contains sessions from both Media Session API and Cast.
-  std::unordered_set<std::string> active_controllable_session_ids_;
+  // icon. Contains sessions from the Media Session API.
+  std::set<std::string> active_controllable_session_ids_;
 
   // Tracks the sessions that are currently frozen. If there are only frozen
   // sessions, we will disable the toolbar icon and wait to hide it.
-  std::unordered_set<std::string> frozen_session_ids_;
+  std::set<std::string> frozen_session_ids_;
 
   // Tracks the sessions that are currently dragged out of the dialog. These
   // should not be shown in the dialog and will be ignored for showing the
   // toolbar icon.
-  std::unordered_set<std::string> dragged_out_session_ids_;
+  std::set<std::string> dragged_out_session_ids_;
 
   // Tracks the sessions that are currently inactive. Sessions become inactive
   // after a period of time of being paused with no user interaction. Inactive
   // sessions are hidden from the dialog until the user interacts with them
   // again (e.g. by playing the session).
-  std::unordered_set<std::string> inactive_session_ids_;
+  std::set<std::string> inactive_session_ids_;
 
   // A mapping of supplemental notification IDs to their associated web
   // contents.  See MediaNotificationController::AddSupplementalNotification for
@@ -365,6 +367,9 @@ class MediaNotificationService
   std::unique_ptr<CastMediaNotificationProvider> cast_notification_provider_;
   std::unique_ptr<PresentationRequestNotificationProvider>
       presentation_request_notification_provider_;
+
+  // Pointers to all notification providers owned by |this|.
+  std::set<MediaNotificationProducer*> notification_providers_;
 
   base::ObserverList<MediaNotificationServiceObserver> observers_;
 
