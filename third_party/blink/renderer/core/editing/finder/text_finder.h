@@ -105,7 +105,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   bool FrameScoping() const { return frame_scoping_; }
   int TotalMatchCount() const { return total_match_count_; }
   bool ScopingInProgress() const { return scoping_in_progress_; }
-  void IncreaseMarkerVersion() { ++find_match_markers_version_; }
+  void IncreaseMarkerVersion();
 
   // Finishes the current scoping effort and triggers any updates if
   // appropriate.
@@ -180,6 +180,11 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // Clear the find-in-page matches cache forcing rects to be fully
   // calculated again next time updateFindMatchRects is called.
   void ClearFindMatchesCache();
+
+  // Forcing rects to be fully recomputed again next time UpdateFindMatchRects
+  // is called. This is different from ClearFindMatchesCache which will clear
+  // the matches cache.
+  void InvalidateFindMatchRects();
 
   // Select a find-in-page match marker in the current frame using a cache
   // match index returned by nearestFindMatch. Returns the ordinal of the new

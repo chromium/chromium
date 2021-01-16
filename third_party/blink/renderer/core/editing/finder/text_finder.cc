@@ -601,6 +601,21 @@ void TextFinder::ClearFindMatchesCache() {
   find_match_rects_are_valid_ = false;
 }
 
+void TextFinder::InvalidateFindMatchRects() {
+  // Increase version number is required to trigger FindMatchRects update when
+  // next find.
+  if (!find_matches_cache_.IsEmpty())
+    ++find_match_markers_version_;
+
+  // For subframes, we need to recalculate the FindMatchRects when the
+  // document size of mainframe changed even if the document size of current
+  // frame has not changed because Find-in-page coordinates are represented as
+  // normalized fractions of the main frame document. So we need to force the
+  // FindMatchRects to be updated instead of changing according to the current
+  // document size.
+  find_match_rects_are_valid_ = false;
+}
+
 void TextFinder::UpdateFindMatchRects() {
   IntSize current_document_size = OwnerFrame().DocumentSize();
   if (document_size_for_current_find_match_rects_ != current_document_size) {
@@ -938,6 +953,27 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
     marker_controller.AddTextMatchMarker(ephemeral_range,
                                          TextMatchMarker::MatchStatus::kActive);
     SetMarkerActive(context->range, true);
+  }
+}
+
+void TextFinder::IncreaseMarkerVersion() {
+  ++find_match_markers_version_;
+
+  // This is called when the size of the content changes. Normally, the check
+  // for the document size changed at the beginning of UpdateFindMatchRects()
+  // would be responsible for invalidating the cached matches as well.
+  // However, a subframe might not change size but its match rects may still be
+  // affected because Find-in-page coordinates are represented as normalized
+  // fractions of the main frame document, so invalidate the cached matches of
+  // subframes as well.
+  for (Frame* frame = GetFrame()->Tree().TraverseNext(GetFrame()); frame;
+       frame = frame->Tree().TraverseNext(GetFrame())) {
+    auto* web_local_frame_impl =
+        WebLocalFrameImpl::FromFrame(To<LocalFrame>(frame));
+    if (web_local_frame_impl->GetTextFinder() &&
+        web_local_frame_impl->GetTextFinder()->TotalMatchCount() > 0) {
+      web_local_frame_impl->GetTextFinder()->InvalidateFindMatchRects();
+    }
   }
 }
 
