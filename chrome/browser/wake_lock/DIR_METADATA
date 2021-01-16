@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>WakeLock"
+monorail: {
+  component: "Blink>WakeLock"
 }
-team_email:  "device-dev@chromium.org"
+team_email: "device-dev@chromium.org"

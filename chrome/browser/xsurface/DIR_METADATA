@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>ContentSuggestions>Feed"
+monorail: {
+  component: "UI>Browser>ContentSuggestions>Feed"
 }
-team_email:  "feed@chromium.org"
+team_email: "feed@chromium.org"

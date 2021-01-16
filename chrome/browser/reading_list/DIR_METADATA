@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>ReadLater"
+monorail: {
+  component: "UI>Browser>ReadLater"
 }
-os:  ANDROID
+os: ANDROID

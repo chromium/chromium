@@ -1,5 +1,5 @@
-monorail:  {
-  component:  "Upboarding>VideoTutorials"
+monorail: {
+  component: "Upboarding>VideoTutorials"
 }
-team_email:  "chrome-upboarding-eng@google.com"
-os:  ANDROID
+team_email: "chrome-upboarding-eng@google.com"
+os: ANDROID

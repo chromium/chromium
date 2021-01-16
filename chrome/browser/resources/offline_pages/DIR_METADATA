@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>Offline"
+monorail: {
+  component: "UI>Browser>Offline"
 }
-team_email:  "offline-dev@chromium.org"
+team_email: "offline-dev@chromium.org"

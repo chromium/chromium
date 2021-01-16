@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Platform>Extensions"
+monorail: {
+  component: "Platform>Extensions"
 }
-team_email:  "extensions-reviews@chromium.org"
+team_email: "extensions-reviews@chromium.org"

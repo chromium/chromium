@@ -1,5 +1,5 @@
-monorail:  {
-  component:  "TODO"
+monorail: {
+  component: "TODO"
 }
-team_email:  "TODO"
-os:  ANDROID
+team_email: "TODO"
+os: ANDROID

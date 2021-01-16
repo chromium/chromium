@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>Storage>FileSystem"
+monorail: {
+  component: "Blink>Storage>FileSystem"
 }
-team_email:  "storage-dev@chromium.org"
+team_email: "storage-dev@chromium.org"

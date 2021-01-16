@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Internals>PlatformIntegration"
+monorail: {
+  component: "Internals>PlatformIntegration"
 }
-team_email:  "windows-third-party@chromium.org"
+team_email: "windows-third-party@chromium.org"

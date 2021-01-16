@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>WebAuthentication"
+monorail: {
+  component: "Blink>WebAuthentication"
 }
-team_email:  "identity-dev@chromium.org"
+team_email: "identity-dev@chromium.org"

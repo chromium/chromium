@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>Media>PictureInPicture"
+monorail: {
+  component: "Blink>Media>PictureInPicture"
 }
-team_email:  "media-dev@chromium.org"
+team_email: "media-dev@chromium.org"

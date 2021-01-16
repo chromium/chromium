@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Services>Safebrowsing>ChromeCleanup"
+monorail: {
+  component: "Services>Safebrowsing>ChromeCleanup"
 }
-team_email:  "safebrowsing@chromium.org"
+team_email: "safebrowsing@chromium.org"

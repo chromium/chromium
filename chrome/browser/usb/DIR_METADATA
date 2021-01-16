@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>USB"
+monorail: {
+  component: "Blink>USB"
 }
-team_email:  "webusb@chromium.org"
+team_email: "webusb@chromium.org"

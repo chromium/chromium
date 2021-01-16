@@ -1,4 +1,4 @@
-monorail:  {
+monorail: {
   component: "Internals>Media>Feeds"
 }
 team_email: "media-dev@chromium.org"

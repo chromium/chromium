@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>Mobile"
+monorail: {
+  component: "UI>Browser>Mobile"
 }
-os:  ANDROID
+os: ANDROID

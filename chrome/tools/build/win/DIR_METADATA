@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Build"
+monorail: {
+  component: "Build"
 }
-team_email:  "build@chromium.org"
+team_email: "build@chromium.org"

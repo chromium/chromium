@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>URLPattern"
+monorail: {
+  component: "Blink>URLPattern"
 }
-team_email:  "worker-dev@chromium.org"
+team_email: "worker-dev@chromium.org"

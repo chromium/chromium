@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Services>Safebrowsing"
+monorail: {
+  component: "Services>Safebrowsing"
 }
-team_email:  "safebrowsing@chromium.org"
+team_email: "safebrowsing@chromium.org"

@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Internals>ResourceCoordinator"
+monorail: {
+  component: "Internals>ResourceCoordinator"
 }
-team_email:  "catan-team@chromium.org"
+team_email: "catan-team@chromium.org"

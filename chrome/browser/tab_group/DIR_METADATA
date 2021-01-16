@@ -1,4 +1,4 @@
 monorail {
   component: "UI>Browser>Mobile>TabSwitcher>Grid"
 }
-os:  ANDROID
+os: ANDROID

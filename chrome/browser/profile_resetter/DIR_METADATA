@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>Preferences"
+monorail: {
+  component: "UI>Browser>Preferences"
 }
-team_email:  "chromium-dev@chromium.org"
+team_email: "chromium-dev@chromium.org"
