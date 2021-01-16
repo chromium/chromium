@@ -282,7 +282,7 @@ class ChromeContentBrowserClientForMixedContentTest
  public:
   ChromeContentBrowserClientForMixedContentTest() {}
   void OverrideWebkitPrefs(
-      content::RenderViewHost* rvh,
+      content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->allow_running_insecure_content = allow_running_insecure_content_;
     web_prefs->strict_mixed_content_checking = strict_mixed_content_checking_;

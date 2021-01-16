@@ -21,6 +21,7 @@ namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 class VpnServiceProxy;
+class WebContents;
 }
 
 namespace url {
@@ -96,7 +97,7 @@ class ChromeContentBrowserClientExtensionsPart
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
   void SiteInstanceDeleting(content::SiteInstance* site_instance) override;
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   void GetAdditionalAllowedSchemesForFileSystem(

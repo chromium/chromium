@@ -3288,10 +3288,10 @@ content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
 }
 
 void ChromeContentBrowserClient::OverrideWebkitPrefs(
-    RenderViewHost* rvh,
+    WebContents* web_contents,
     WebPreferences* web_prefs) {
   Profile* profile =
-      Profile::FromBrowserContext(rvh->GetProcess()->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
 
 // Fill font preferences. These are not registered on Android
@@ -3421,12 +3421,11 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       base::GetFieldTrialParamByFeatureAsBool(features::kDataSaverHoldback,
                                               "holdback_web", false);
 
-  auto* contents = content::WebContents::FromRenderViewHost(rvh);
-  if (contents) {
+  if (web_contents) {
 #if defined(OS_ANDROID)
-    auto* delegate = TabAndroid::FromWebContents(contents)
+    auto* delegate = TabAndroid::FromWebContents(web_contents)
                          ? static_cast<android::TabWebContentsDelegateAndroid*>(
-                               contents->GetDelegate())
+                               web_contents->GetDelegate())
                          : nullptr;
     if (delegate) {
       web_prefs->embedded_media_experience_enabled =
@@ -3449,7 +3448,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       // if the app navigates off scope. This is not a problem because we still
       // want to use the scope of the app associated with the window, not the
       // WebContents.
-      Browser* browser = chrome::FindBrowserWithWebContents(contents);
+      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       if (browser && browser->app_controller() &&
           browser->app_controller()->HasAppId()) {
         const web_app::AppId& app_id = browser->app_controller()->GetAppId();
@@ -3461,11 +3460,12 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     }
 #endif
 
-    web_prefs->immersive_mode_enabled = vr::VrTabHelper::IsInVr(contents);
+    web_prefs->immersive_mode_enabled = vr::VrTabHelper::IsInVr(web_contents);
   }
 
-  web_prefs->lazy_load_enabled = !contents || !contents->GetDelegate() ||
-                                 contents->GetDelegate()->ShouldAllowLazyLoad();
+  web_prefs->lazy_load_enabled =
+      !web_contents || !web_contents->GetDelegate() ||
+      web_contents->GetDelegate()->ShouldAllowLazyLoad();
 
   if (base::FeatureList::IsEnabled(features::kLazyFrameLoading)) {
     const char* param_name =
@@ -3555,7 +3555,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   }
 
 #if !defined(OS_ANDROID)
-  if (IsAutoplayAllowedByPolicy(contents, prefs)) {
+  if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
     // If autoplay is allowed by policy then force the no user gesture required
     // autoplay policy.
     web_prefs->autoplay_policy =
@@ -3587,8 +3587,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       break;
   }
 
-  UpdatePreferredColorScheme(web_prefs, rvh->GetSiteInstance()->GetSiteURL(),
-                             contents, GetWebTheme());
+  UpdatePreferredColorScheme(
+      web_prefs, web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+      web_contents, GetWebTheme());
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
@@ -3608,7 +3609,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   }
 
   for (size_t i = 0; i < extra_parts_.size(); ++i)
-    extra_parts_[i]->OverrideWebkitPrefs(rvh, web_prefs);
+    extra_parts_[i]->OverrideWebkitPrefs(web_contents, web_prefs);
 }
 
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(

@@ -13871,10 +13871,10 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
  public:
   EnableForceZoomContentClient() = default;
 
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
     DCHECK(old_client_);
-    old_client_->OverrideWebkitPrefs(render_view_host, prefs);
+    old_client_->OverrideWebkitPrefs(web_contents, prefs);
     prefs->force_enable_zoom = true;
   }
 
@@ -15390,7 +15390,7 @@ class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
   DoubleTapZoomContentBrowserClient() = default;
 
   void OverrideWebkitPrefs(
-      content::RenderViewHost* rvh,
+      content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->double_tap_to_zoom_enabled = true;
   }

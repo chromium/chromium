@@ -109,28 +109,6 @@ void ResizeWebContentsView(Shell* shell, const gfx::Size& size,
   shell->ResizeWebContentForTests(size);
 }
 
-// Class to test that OverrideWebkitPrefs has been called for all relevant
-// RenderViewHosts.
-class NotifyPreferencesChangedTestContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  NotifyPreferencesChangedTestContentBrowserClient() = default;
-
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                           blink::web_pref::WebPreferences* prefs) override {
-    override_webkit_prefs_rvh_set_.insert(render_view_host);
-  }
-
-  const std::unordered_set<RenderViewHost*>& override_webkit_prefs_rvh_set() {
-    return override_webkit_prefs_rvh_set_;
-  }
-
- private:
-  std::unordered_set<RenderViewHost*> override_webkit_prefs_rvh_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifyPreferencesChangedTestContentBrowserClient);
-};
-
 class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
   WebContentsImplBrowserTest() {}
@@ -2979,32 +2957,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
   a_response->Send(kPartialResponse);
   waiter.Wait(net::LOAD_STATE_READING_RESPONSE, a_host);
   a_response->Done();
-}
-
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyPreferencesChanged) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
-
-  // Navigate to a site with two iframes in different origins.
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b,c)");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  auto* main_frame_rvh = main_frame->GetRenderViewHost();
-
-  NotifyPreferencesChangedTestContentBrowserClient new_client;
-  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
-
-  web_contents->NotifyPreferencesChanged();
-
-  // We should have updated the preferences for the WebContents, and should call
-  // OverrideWebkitPrefs with the main RenderViewHost only (not subframe RVHs).
-  EXPECT_EQ(std::unordered_set<RenderViewHost*>({main_frame_rvh}),
-            new_client.override_webkit_prefs_rvh_set());
-
-  SetBrowserClientForTesting(old_client);
 }
 
 namespace {

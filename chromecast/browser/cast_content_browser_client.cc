@@ -528,7 +528,7 @@ CastContentBrowserClient::GetSystemNetworkContext() {
 }
 
 void CastContentBrowserClient::OverrideWebkitPrefs(
-    content::RenderViewHost* render_view_host,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->allow_scripts_to_close_windows = true;
   // TODO(halliwell): http://crbug.com/391089. This pref defaults to to true
@@ -557,8 +557,6 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
 
   // Disable WebSQL databases by default.
   prefs->databases_enabled = false;
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderViewHost(render_view_host);
   if (web_contents) {
     chromecast::CastWebContents* cast_web_contents =
         chromecast::CastWebContents::FromWebContents(web_contents);

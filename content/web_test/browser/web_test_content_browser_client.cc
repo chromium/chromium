@@ -318,7 +318,7 @@ void WebTestContentBrowserClient::BindStorageAccessAutomation(
 }
 
 void WebTestContentBrowserClient::OverrideWebkitPrefs(
-    RenderViewHost* render_view_host,
+    WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   if (WebTestControlHost::Get())
     WebTestControlHost::Get()->OverrideWebkitPrefs(prefs);

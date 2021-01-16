@@ -742,7 +742,7 @@ class MockContentBrowserClient : public TestContentBrowserClient {
     return data_saver_enabled_;
   }
 
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
     prefs->data_saver_enabled = data_saver_enabled_;
   }

@@ -566,10 +566,9 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 }
 
 void AwContentBrowserClient::OverrideWebkitPrefs(
-    content::RenderViewHost* rvh,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
-  AwSettings* aw_settings = AwSettings::FromWebContents(
-      content::WebContents::FromRenderViewHost(rvh));
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if (aw_settings) {
     aw_settings->PopulateWebPreferences(web_prefs);
   }

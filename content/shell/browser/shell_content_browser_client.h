@@ -60,7 +60,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       std::unique_ptr<ClientCertificateDelegate> delegate) override;
   SpeechRecognitionManagerDelegate* CreateSpeechRecognitionManagerDelegate()
       override;
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   base::FilePath GetFontLookupTableCacheDir() override;
   DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;

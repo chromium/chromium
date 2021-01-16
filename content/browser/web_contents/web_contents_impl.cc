@@ -2498,8 +2498,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
       static_cast<int>(min_width / display.device_scale_factor()));
 #endif  // OS_ANDROID
 
-  GetContentClient()->browser()->OverrideWebkitPrefs(GetRenderViewHost(),
-                                                     &prefs);
+  GetContentClient()->browser()->OverrideWebkitPrefs(this, &prefs);
   return prefs;
 }
 

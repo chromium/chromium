@@ -341,12 +341,10 @@ blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
 }
 
 void ContentBrowserClientImpl::OverrideWebkitPrefs(
-    content::RenderViewHost* render_view_host,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->default_encoding = l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderViewHost(render_view_host);
   TabImpl* tab = TabImpl::FromWebContents(web_contents);
   if (tab)
     tab->SetWebPreferences(prefs);

@@ -115,7 +115,7 @@ std::string WebEngineContentBrowserClient::GetUserAgent() {
 }
 
 void WebEngineContentBrowserClient::OverrideWebkitPrefs(
-    content::RenderViewHost* rvh,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Disable WebSQL support since it's being removed from the web platform.
   web_prefs->databases_enabled = false;

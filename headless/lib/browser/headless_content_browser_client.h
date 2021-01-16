@@ -24,7 +24,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       const content::MainFunctionParams&) override;
-  void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,

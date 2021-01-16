@@ -15,15 +15,13 @@ ChromeContentBrowserClientTabStripPart::
     ~ChromeContentBrowserClientTabStripPart() = default;
 
 void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
-    content::RenderViewHost* rvh,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
-  content::WebContents* contents =
-      content::WebContents::FromRenderViewHost(rvh);
-
-  if (!contents)
+  if (!web_contents)
     return;
 
-  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetVisibleEntry();
   GURL url = entry ? entry->GetURL() : GURL();
 
   if (url.host_piece() != chrome::kChromeUITabStripHost) {

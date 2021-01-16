@@ -280,7 +280,7 @@ SpeechRecognitionManagerDelegate*
 }
 
 void ShellContentBrowserClient::OverrideWebkitPrefs(
-    RenderViewHost* render_view_host,
+    WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode)) {

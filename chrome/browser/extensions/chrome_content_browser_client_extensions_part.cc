@@ -684,10 +684,10 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceDeleting(
 }
 
 void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
-    RenderViewHost* rvh,
+    content::WebContents* web_contents,
     WebPreferences* web_prefs) {
   const ExtensionRegistry* registry =
-      ExtensionRegistry::Get(rvh->GetProcess()->GetBrowserContext());
+      ExtensionRegistry::Get(web_contents->GetBrowserContext());
   if (!registry)
     return;
 
@@ -698,11 +698,11 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
   // the correct scheme. Without this check, chrome-guest:// schemes used by
   // webview tags as well as hosts that happen to match the id of an
   // installed extension would get the wrong preferences.
-  const GURL& site_url = rvh->GetSiteInstance()->GetSiteURL();
+  const GURL& site_url =
+      web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
   if (!site_url.SchemeIs(kExtensionScheme))
     return;
 
-  WebContents* web_contents = WebContents::FromRenderViewHost(rvh);
   ViewType view_type = GetViewType(web_contents);
   const Extension* extension =
       registry->enabled_extensions().GetByID(site_url.host());

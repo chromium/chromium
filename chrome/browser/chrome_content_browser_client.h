@@ -354,7 +354,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif
   content::TtsPlatform* GetTtsPlatform() override;
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,

@@ -209,7 +209,6 @@ class QuotaPermissionContext;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
-class RenderViewHost;
 class SerialDelegate;
 class SiteInstance;
 class SpeechRecognitionManagerDelegate;
@@ -924,7 +923,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Called by WebContents to override the WebKit preferences that are used by
   // the renderer. The content layer will add its own settings, and then it's up
   // to the embedder to update it if it wants.
-  virtual void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  virtual void OverrideWebkitPrefs(WebContents* web_contents,
                                    blink::web_pref::WebPreferences* prefs) {}
 
   // Similar to OverrideWebkitPrefs, but is only called after navigations. Some

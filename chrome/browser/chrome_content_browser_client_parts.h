@@ -27,8 +27,8 @@ namespace content {
 class BrowserContext;
 class BrowserURLHandler;
 class RenderProcessHost;
-class RenderViewHost;
 class SiteInstance;
+class WebContents;
 }
 
 namespace storage {
@@ -47,7 +47,7 @@ class ChromeContentBrowserClientParts {
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
   virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
   virtual void SiteInstanceDeleting(content::SiteInstance* site_instance) {}
-  virtual void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
                                    blink::web_pref::WebPreferences* web_prefs) {
   }
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}

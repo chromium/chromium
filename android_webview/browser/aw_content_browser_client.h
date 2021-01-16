@@ -134,7 +134,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
