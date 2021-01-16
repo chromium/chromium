@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/run_loop.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
@@ -28,7 +27,7 @@ const char kChromeSelection[] = "CHROME_SELECTION";
 const int KSelectionRequestorTimerPeriodMs = 100;
 
 // The amount of time to wait for a request to complete before aborting it.
-const int kRequestTimeoutMs = 10000;
+const int kRequestTimeoutMs = 1000;
 
 static_assert(KSelectionRequestorTimerPeriodMs <= kRequestTimeoutMs,
               "timer period must be <= request timeout");
@@ -237,29 +236,30 @@ void SelectionRequestor::ConvertSelectionForCurrentRequest() {
 }
 
 void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
-  if (X11EventSource::HasInstance()) {
-    if (!abort_timer_.IsRunning()) {
-      abort_timer_.Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(KSelectionRequestorTimerPeriodMs),
-          this, &SelectionRequestor::AbortStaleRequests);
+  auto* connection = x11::Connection::Get();
+  auto& events = connection->events();
+  size_t i = 0;
+  while (!request->completed && request->timeout > base::TimeTicks::Now()) {
+    connection->Flush();
+    connection->ReadResponses();
+    size_t events_size = events.size();
+    for (; i < events_size; ++i) {
+      auto& event = events[i];
+      if (auto* notify = event.As<x11::SelectionNotifyEvent>()) {
+        if (notify->requestor == x_window_) {
+          OnSelectionNotify(*notify);
+          event = x11::Event();
+        }
+      } else if (auto* prop = event.As<x11::PropertyNotifyEvent>()) {
+        if (CanDispatchPropertyEvent(*prop)) {
+          OnPropertyEvent(*prop);
+          event = x11::Event();
+        }
+      }
     }
-
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    request->quit_closure = run_loop.QuitClosure();
-    run_loop.Run();
-
-    // We cannot put logic to process the next request here because the RunLoop
-    // might be nested. For instance, request 'B' may start a RunLoop while the
-    // RunLoop for request 'A' is running. It is not possible to end the RunLoop
-    // for request 'A' without first ending the RunLoop for request 'B'.
-  } else {
-    // This occurs if PerformBlockingConvertSelection() is called during
-    // shutdown and the X11EventSource has already been destroyed.
-    auto* conn = x11::Connection::Get();
-    while (!request->completed && request->timeout > base::TimeTicks::Now())
-      conn->DispatchAll();
+    DCHECK_EQ(events_size, events.size());
   }
+  AbortStaleRequests();
 }
 
 SelectionRequestor::Request* SelectionRequestor::GetCurrentRequest() {
