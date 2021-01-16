@@ -98,6 +98,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
      *         incognito state.
      * @param activityLifecycleDispatcher Allows observation of the activity state.
+     * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
+     * @param backKeyBehavior Delegate that allows customization of back key behavior.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -108,7 +110,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
+            BackKeyBehaviorDelegate backKeyBehavior) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -121,7 +124,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
-                LocaleManager.getInstance(), mTemplateUrlServiceSupplier);
+                LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -414,7 +417,15 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
+    public void onUrlChangedForTesting() {
+        mLocationBarMediator.onUrlChanged();
+    }
+
     /* package */ LocationBarMediator getMediatorForTesting() {
         return mLocationBarMediator;
+    }
+
+    /* package */ StatusCoordinator getStatusCoordinatorForTesting() {
+        return mStatusCoordinator;
     }
 }

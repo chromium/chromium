@@ -960,6 +960,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModel.java",
   "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModelBase.java",
   "java/src/org/chromium/chrome/browser/omnibox/AutocompleteState.java",
+  "java/src/org/chromium/chrome/browser/omnibox/BackKeyBehaviorDelegate.java",
   "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
   "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelper.java",
   "java/src/org/chromium/chrome/browser/omnibox/LocationBar.java",

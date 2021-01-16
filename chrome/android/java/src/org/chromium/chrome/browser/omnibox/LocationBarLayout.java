@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -71,8 +70,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     protected StatusCoordinator mStatusCoordinator;
 
     private WindowAndroid mWindowAndroid;
-
-    private String mOriginalUrl = "";
 
     private boolean mUrlFocusChangeInProgress;
     protected boolean mNativeInitialized;
@@ -248,12 +245,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         }
     }
 
-    public void backKeyPressed() {
-        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-        // Revert the URL to match the current page.
-        setUrl(mLocationBarDataProvider.getCurrentUrl());
-    }
-
     /* package */ void setUrlBarFocus(
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {
@@ -336,33 +327,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mVoiceSearchEnabled =
                 mVoiceRecognitionHandler != null && mVoiceRecognitionHandler.isVoiceSearchEnabled();
         updateButtonVisibility();
-    }
-
-    /**
-     * Sets the displayed URL to be the URL of the page currently showing.
-     *
-     * <p>The URL is converted to the most user friendly format (removing HTTP:// for example).
-     *
-     * <p>If the current tab is null, the URL text will be cleared.
-     */
-    protected void setUrl(String currentUrl) {
-        // If the URL is currently focused, do not replace the text they have entered with the URL.
-        // Once they stop editing the URL, the current tab's URL will automatically be filled in.
-        if (mUrlBar.hasFocus()) {
-            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrl)) {
-                // If we did not run the focus animations, then the user has not typed any text.
-                // So, clear the focus and accept whatever URL the page is currently attempting to
-                // display. If the NTP is showing, the current page's URL should not be displayed.
-                setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-            } else {
-                return;
-            }
-        }
-
-        mOriginalUrl = currentUrl;
-        setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.SCROLL_TO_TLD,
-                SelectionState.SELECT_ALL);
-        if (!mLocationBarDataProvider.hasTab()) return;
     }
 
     @CallSuper
@@ -462,11 +426,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
             mUrlFocusedFromFakebox = false;
             mUrlFocusedFromQueryTiles = false;
             mUrlFocusedWithoutAnimations = false;
-
-            // Focus change caused by a close-tab may result in an invalid current tab.
-            if (mLocationBarDataProvider.hasTab()) {
-                setUrl(mLocationBarDataProvider.getCurrentUrl());
-            }
 
             // Moving focus away from UrlBar(EditText) to a non-editable focus holder, such as
             // ToolbarPhone, won't automatically hide keyboard app, but restart it with TYPE_NULL,
@@ -627,15 +586,9 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * @return Returns the original url of the page.
-     */
-    public String getOriginalUrl() {
-        return mOriginalUrl;
-    }
-
-    /**
      * Changes the text on the url bar.  The text update will be applied regardless of the current
-     * focus state (comparing to {@link #setUrl} which only applies text updates when not focused).
+     * focus state (comparing to {@link LocationBarMediator#setUrl} which only applies text updates
+     * when not focused).
      *
      * @param urlBarData The contents of the URL bar, both for editing and displaying.
      * @param scrollType Specifies how the text should be scrolled in the unfocused state.

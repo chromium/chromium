@@ -169,6 +169,10 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
     }
 
+    /* package */ boolean hasFocus() {
+        return mUrlBar.hasFocus();
+    }
+
     /**
      * Controls keyboard visibility.
      *

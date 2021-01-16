@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -58,8 +59,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
-public class SearchActivity extends AsyncInitializationActivity
-        implements SnackbarManageable, SearchActivityLocationBarLayout.Delegate {
+public class SearchActivity
+        extends AsyncInitializationActivity implements SnackbarManageable, BackKeyBehaviorDelegate {
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
@@ -113,7 +114,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** The View that represents the search box. */
     private SearchActivityLocationBarLayout mSearchBox;
-    private LocationBarCoordinator mLocationBarCoordinator;
+    LocationBarCoordinator mLocationBarCoordinator;
 
     private SnackbarManager mSnackbarManager;
     private SearchBoxDataProvider mSearchBoxDataProvider;
@@ -124,11 +125,6 @@ public class SearchActivity extends AsyncInitializationActivity
     protected boolean isStartedUpCorrectly(Intent intent) {
         if (getActivityDelegate().isActivityDisabledForTests()) return false;
         return super.isStartedUpCorrectly(intent);
-    }
-
-    @Override
-    public void backKeyPressed() {
-        cancelSearch();
     }
 
     @Override
@@ -167,7 +163,6 @@ public class SearchActivity extends AsyncInitializationActivity
         // Build the search box.
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
-        mSearchBox.setDelegate(this);
         View anchorView = mContentView.findViewById(R.id.toolbar);
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
                 mProfileSupplier, mSearchBoxDataProvider, null, new WindowDelegate(getWindow()),
@@ -177,10 +172,12 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), /*overrideUrlLoadingDelegate=*/
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,
-                        boolean incognito) -> {
+                        boolean incognito)
+                        -> {
                     loadUrl(url, transition, postDataType, postData);
                     return true;
-                });
+                },
+                /*backKeyBehavior=*/this);
         mLocationBarCoordinator.setUrlBarFocusable(true);
 
         // Kick off everything needed for the user to type into the box.
@@ -291,6 +288,13 @@ public class SearchActivity extends AsyncInitializationActivity
         };
         getActivityDelegate().showSearchEngineDialogIfNeeded(
                 SearchActivity.this, onSearchEngineFinalizedCallback);
+    }
+
+    // OverrideBackKeyBehaviorDelegate implementation.
+    @Override
+    public boolean handleBackKeyPressed() {
+        cancelSearch();
+        return true;
     }
 
     private void finishDeferredInitialization() {
@@ -440,5 +444,9 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     static void setDelegateForTests(SearchActivityDelegate delegate) {
         sDelegate = delegate;
+    }
+
+    LocationBarCoordinator getLocationBarCoordinatorForTesting() {
+        return mLocationBarCoordinator;
     }
 }

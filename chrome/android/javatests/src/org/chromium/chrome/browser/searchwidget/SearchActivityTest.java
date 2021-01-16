@@ -19,6 +19,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.locale.DefaultSearchEnginePromoDialog.DefaultSearchEnginePromoDialogObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
@@ -665,6 +667,29 @@ public class SearchActivityTest {
                     TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
                             tab.getUrl()),
                     Matchers.is(false));
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testSetUrl_urlBarTextEmpty() throws Exception {
+        final SearchActivity searchActivity = startSearchActivity();
+        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
+        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
+        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
+
+        LocationBarCoordinator locationBarCoordinator =
+                searchActivity.getLocationBarCoordinatorForTesting();
+        UrlBar urlBar = (UrlBar) searchActivity.findViewById(R.id.url_bar);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.onUrlChangedForTesting();
+            Assert.assertTrue(urlBar.getText().toString().isEmpty());
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.clearOmniboxFocus();
+            locationBarCoordinator.onUrlChangedForTesting();
+            Assert.assertTrue(urlBar.getText().toString().isEmpty());
         });
     }
 

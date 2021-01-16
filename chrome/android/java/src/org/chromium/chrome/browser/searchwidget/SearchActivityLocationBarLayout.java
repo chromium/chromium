@@ -29,13 +29,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
-    /** Delegates calls out to the containing Activity. */
-    public static interface Delegate {
-        /** The user hit the back button. */
-        void backKeyPressed();
-    }
-
-    private Delegate mDelegate;
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
     private boolean mHasWindowFocus;
@@ -46,11 +39,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         setBackground(ToolbarPhone.createModernLocationBarBackground(getResources()));
         setShouldShowMicButtonWhenUnfocused(true);
 
-    }
-
-    /** Set the {@link Delegate}. */
-    void setDelegate(Delegate delegate) {
-        mDelegate = delegate;
     }
 
     @Override
@@ -64,16 +52,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
-    }
-
-    @Override
-    public void backKeyPressed() {
-        mDelegate.backKeyPressed();
-    }
-
-    @Override
-    protected void setUrl(String url) {
-        // Explicitly do nothing.  The tab is invisible, so showing its URL would be confusing.
     }
 
     @Override

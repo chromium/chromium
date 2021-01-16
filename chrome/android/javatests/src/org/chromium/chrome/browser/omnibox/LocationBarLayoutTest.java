@@ -77,9 +77,6 @@ public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS_URL = "testing.com";
     private static final String GOOGLE_SRP_URL = "https://www.google.com/search?q=machine+learning";
 
-    private static final String VERBOSE_URL = "https://www.suchwowveryyes.edu";
-    private static final String TRIMMED_URL = "suchwowveryyes.edu";
-
     private static final String GOOGLE_URL = "https://www.google.com";
     private static final String YAHOO_URL = "https://www.yahoo.com";
 
@@ -254,29 +251,6 @@ public class LocationBarLayoutTest {
             Criteria.checkThat(getDeleteButton().getVisibility(), Matchers.not(VISIBLE));
         });
         Assert.assertEquals("", getUrlText(getUrlBar()));
-    }
-
-    @Test
-    @SmallTest
-    public void testEditingTextShownOnFocus() {
-        final UrlBar urlBar = getUrlBar();
-
-        mTestLocationBarModel.setCurrentUrl(VERBOSE_URL);
-        mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
-        mTestLocationBarModel.mDisplayText = TRIMMED_URL;
-        mTestLocationBarModel.mEditingText = VERBOSE_URL;
-        updateLocationBar();
-
-        Assert.assertEquals(TRIMMED_URL, getUrlText(urlBar));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.requestFocus(); });
-
-        Assert.assertEquals(VERBOSE_URL, getUrlText(urlBar));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(0, urlBar.getSelectionStart());
-            Assert.assertEquals(VERBOSE_URL.length(), urlBar.getSelectionEnd());
-        });
     }
 
     /*

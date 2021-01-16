@@ -83,6 +83,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private TemplateUrl mSearchEngine;
     private final Context mContext;
+    private final BackKeyBehaviorDelegate mBackKeyBehavior;
+    private String mOriginalUrl = "";
 
     private boolean mNativeInitialized;
 
@@ -93,7 +95,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
-            @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier) {
+            @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
+            @NonNull BackKeyBehaviorDelegate backKeyBehavior) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -106,6 +109,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
+        mBackKeyBehavior = backKeyBehavior;
     }
 
     /**
@@ -145,6 +149,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mLocationBarLayout.onUrlFocusChange(hasFocus);
         onPrimaryColorChanged();
         mLocationBarLayout.updateStatusVisibility();
+        // Focus change caused by a closed tab may result in there not being an active tab.
+        if (!hasFocus && mLocationBarDataProvider.hasTab()) {
+            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+                    mLocationBarDataProvider.getUrlBarData());
+        }
     }
 
     /*package */ void onFinishNativeInitialization() {
@@ -223,7 +232,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             }
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
-            mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+                    mLocationBarDataProvider.getUrlBarData());
         }
     }
 
@@ -251,7 +261,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
                 && mPrivacyPreferencesManager.shouldPrerender()
                 && mLocationBarDataProvider.hasTab()) {
-            mOmniboxPrerender.prerenderMaybe(userText, mLocationBarLayout.getOriginalUrl(),
+            mOmniboxPrerender.prerenderMaybe(userText, mOriginalUrl,
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     mProfileSupplier.get(), mLocationBarDataProvider.getTab());
         }
@@ -335,10 +345,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mLocationBarLayout.updateButtonVisibility();
     }
 
-    /* package */ StatusCoordinator getStatusCoordinatorForTesting() {
-        return mStatusCoordinator;
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ void registerTemplateUrlObserver() {
         final TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
@@ -346,6 +352,33 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         // Force an update once to populate initial data.
         onTemplateURLServiceChanged();
+    }
+
+    /**
+     * Sets the displayed URL according to the provided url string and UrlBarData.
+     *
+     * <p>The URL is converted to the most user friendly format (removing HTTP:// for example).
+     *
+     * <p>If the current tab is null, the URL text will be cleared.
+     */
+    /* package */ void setUrl(String currentUrlString, UrlBarData urlBarData) {
+        // If the URL is currently focused, do not replace the text they have entered with the URL.
+        // Once they stop editing the URL, the current tab's URL will automatically be filled in.
+        if (mUrlCoordinator.hasFocus()) {
+            if (mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+                    && !UrlUtilities.isNTPUrl(currentUrlString)) {
+                // If we did not run the focus animations, then the user has not typed any text.
+                // So, clear the focus and accept whatever URL the page is currently attempting to
+                // display. If the NTP is showing, the current page's URL should not be displayed.
+                setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+            } else {
+                return;
+            }
+        }
+
+        mOriginalUrl = currentUrlString;
+        mLocationBarLayout.setUrlBarText(
+                urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
     // Private methods
@@ -394,7 +427,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
         if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !isUrlBarFocused()) {
-            mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+            updateUrl();
         }
         mStatusCoordinator.setUseDarkColors(useDarkColors);
         if (mAutocompleteCoordinator != null) {
@@ -444,7 +477,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     private void updateUrl() {
-        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
     }
 
     private void updateOmniboxPrerender() {
@@ -576,7 +609,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void backKeyPressed() {
-        mLocationBarLayout.backKeyPressed();
+        if (mBackKeyBehavior.handleBackKeyPressed()) {
+            return;
+        }
+
+        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        // Revert the URL to match the current page.
+        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
         focusCurrentTab();
     }
 
@@ -614,7 +653,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             } else if (KeyNavigationUtil.isActionUp(event)) {
                 mLocationBarLayout.getKeyDispatcherState().handleUpEvent(event);
                 if (event.isTracking() && !event.isCanceled()) {
-                    mLocationBarLayout.backKeyPressed();
+                    backKeyPressed();
                     return true;
                 }
             }

@@ -40,6 +40,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,10 +50,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Instrumentation tests for the LocationBar component.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
 public class LocationBarTest {
     private static final String TEST_QUERY = "testing query";
     private static final List<String> TEST_PARAMS = Arrays.asList("foo=bar");
+    private static final String HOSTNAME = "suchwowveryyes.edu";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -70,6 +73,7 @@ public class LocationBarTest {
 
     ChromeTabbedActivity mActivity;
     UrlBar mUrlBar;
+    LocationBarCoordinator mLocationBarCoordinator;
     LocationBarMediator mLocationBarMediator;
     String mSearchUrl;
 
@@ -124,12 +128,10 @@ public class LocationBarTest {
 
     private void doPostActivitySetup(ChromeActivity activity) {
         mUrlBar = activity.findViewById(org.chromium.chrome.R.id.url_bar);
-        // clang-format off
-        mLocationBarMediator = ((LocationBarCoordinator) activity.getToolbarManager()
-            .getToolbarLayoutForTesting()
-            .getLocationBar())
-            .getMediatorForTesting();
-        // clang-format on
+        mLocationBarCoordinator = ((LocationBarCoordinator) activity.getToolbarManager()
+                                           .getToolbarLayoutForTesting()
+                                           .getLocationBar());
+        mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
         mSearchUrl = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/search");
     }
 
@@ -232,7 +234,7 @@ public class LocationBarTest {
 
         mActivityTestRule.typeInOmnibox("", true);
         Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
-                mLocationBarMediator.getStatusCoordinatorForTesting()
+                mLocationBarCoordinator.getStatusCoordinatorForTesting()
                         .getSecurityIconResourceIdForTesting());
 
         doReturn(mNonGoogleSearchEngine)
@@ -244,7 +246,7 @@ public class LocationBarTest {
 
         mActivityTestRule.typeInOmnibox("", true);
         Assert.assertEquals(R.drawable.ic_search,
-                mLocationBarMediator.getStatusCoordinatorForTesting()
+                mLocationBarCoordinator.getStatusCoordinatorForTesting()
                         .getSecurityIconResourceIdForTesting());
     }
 
@@ -258,6 +260,25 @@ public class LocationBarTest {
             locationBarLayout.destroy();
             locationBarLayout.finishUrlFocusChange(true, true);
             locationBarLayout.setUrlFocusChangeInProgress(false);
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testEditingText() {
+        startActivityNormally();
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        mActivityTestRule.loadUrl(url);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mUrlBar.getText().toString().startsWith(HOSTNAME));
+            mUrlBar.requestFocus();
+            Assert.assertEquals("", mUrlBar.getText().toString());
+            mLocationBarCoordinator.setOmniboxEditingText(url);
+            Assert.assertEquals(url, mUrlBar.getText().toString());
+            Assert.assertEquals(url.length(), mUrlBar.getSelectionStart());
+            Assert.assertEquals(url.length(), mUrlBar.getSelectionEnd());
         });
     }
 }
