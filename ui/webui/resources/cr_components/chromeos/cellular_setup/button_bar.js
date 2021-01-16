@@ -15,7 +15,11 @@ Polymer({
      * Sets the states of all buttons
      * @type {!cellularSetup.ButtonBarState}
      */
-    buttonState: {type: Object, value: {}},
+    buttonState: {
+      type: Object,
+      value: {},
+      observer: 'focusDefaultButton_',
+    },
 
     /**
      * @type {!cellularSetup.Button}
@@ -68,6 +72,19 @@ Polymer({
   /** @private */
   onForwardButtonClicked_() {
     this.fire('forward-nav-requested');
+  },
+
+  /** @private */
+  focusDefaultButton_() {
+    const buttons = this.shadowRoot.querySelectorAll('cr-button');
+    // Focus the first non-disabled, non-hidden button from the end.
+    for (let i = buttons.length - 1; i >= 0; i--) {
+      const button = buttons.item(i);
+      if (!button.disabled && !button.hidden) {
+        cr.ui.focusWithoutInk(button);
+        return;
+      }
+    }
   },
 
   /**

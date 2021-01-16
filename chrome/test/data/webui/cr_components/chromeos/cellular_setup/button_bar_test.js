@@ -8,7 +8,7 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {ButtonState, Button, ButtonBarState, CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {assertFalse, assertTrue} from '../../../chai_assert.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 suite('CellularSetupButtonBarTest', function() {
@@ -84,4 +84,38 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonHidden(buttonBar.$$('#tryAgain')));
     assertTrue(isButtonHidden(buttonBar.$$('#forward')));
   });
+
+  test('default focus is on last button if all are enabled', function() {
+    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
+
+    Polymer.dom.flush();
+
+    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#forward'));
+  });
+
+  test('default focus is on first button if rest are hidden', function() {
+    buttonBar.buttonState = {
+      backward: cellularSetup.ButtonState.ENABLED,
+    };
+
+    Polymer.dom.flush();
+
+    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+  });
+
+  test(
+      'default focus is on first button if rest are visible but disabled',
+      function() {
+        buttonBar.buttonState = {
+          backward: cellularSetup.ButtonState.ENABLED,
+          cancel: cellularSetup.ButtonState.DISABLED,
+          forward: cellularSetup.ButtonState.DISABLED,
+          tryAgain: cellularSetup.ButtonState.DISABLED,
+        };
+
+        Polymer.dom.flush();
+
+        assertEquals(
+            buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+      });
 });
